@@ -16,7 +16,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
 import org.geoserver.wps.resource.ShapefileResource;
@@ -33,17 +36,27 @@ import org.geotools.util.URLs;
  */
 public class ShapeZipPPIO extends BinaryPPIO {
 
+    private final GeoServer gs;
+    private final Catalog catalog;
+    private final GeoServerResourceLoader resourceLoader;
     WPSResourceManager resources;
 
-    protected ShapeZipPPIO(WPSResourceManager resources) {
+    protected ShapeZipPPIO(
+            WPSResourceManager resources,
+            GeoServer gs,
+            Catalog catalog,
+            GeoServerResourceLoader resourceLoader) {
         super(FeatureCollection.class, FeatureCollection.class, "application/zip");
         this.resources = resources;
+        this.gs = gs;
+        this.catalog = catalog;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) value;
-        ShapeZipOutputFormat of = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat of = new ShapeZipOutputFormat(gs, catalog, resourceLoader);
         of.write(Collections.singletonList(fc), getCharset(), os, null);
     }
 

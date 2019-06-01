@@ -5,7 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -694,18 +693,6 @@ public interface CatalogFacade {
     /**
      * @return an iterator over the catalog objects of the requested type that match the given
      *     filter
-     * @deprecated use {@link #list(Class, Filter, Integer, Integer, SortBy...)}
-     */
-    public <T extends CatalogInfo> CloseableIterator<T> list(
-            final Class<T> of,
-            final Filter filter,
-            @Nullable Integer offset,
-            @Nullable Integer count,
-            @Nullable SortBy sortOrder);
-
-    /**
-     * @return an iterator over the catalog objects of the requested type that match the given
-     *     filter
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(
             final Class<T> of,
@@ -732,15 +719,12 @@ public interface CatalogFacade {
      */
     @SuppressWarnings("unchecked")
     static <T extends CatalogInfo> T any(Class<T> clazz) {
-        Class proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz);
         try {
             return (T)
-                    proxyClass
-                            .getConstructor(new Class[] {InvocationHandler.class})
-                            .newInstance(
-                                    new Object[] {
-                                        (InvocationHandler) (proxy, method, args) -> null
-                                    });
+                    Proxy.newProxyInstance(
+                            clazz.getClassLoader(),
+                            new Class[] {clazz},
+                            (proxy, method, args) -> null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

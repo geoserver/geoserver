@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import org.geotools.coverage.grid.GridCoverage2D;

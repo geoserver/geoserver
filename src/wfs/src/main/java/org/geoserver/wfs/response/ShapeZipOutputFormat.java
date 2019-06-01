@@ -96,14 +96,6 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     private long maxShpSize = Long.getLong("GS_SHP_MAX_SIZE", Integer.MAX_VALUE);
     private long maxDbfSize = Long.getLong("GS_DBF_MAX_SIZE", Integer.MAX_VALUE);
 
-    /** @deprecated use {@link #ShapeZipOutputFormat(GeoServer)} */
-    public ShapeZipOutputFormat() {
-        this(
-                GeoServerExtensions.bean(GeoServer.class),
-                (Catalog) GeoServerExtensions.bean("catalog"),
-                (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
-    }
-
     public ShapeZipOutputFormat(
             GeoServer gs, Catalog catalog, GeoServerResourceLoader resourceLoader) {
         super(gs, "SHAPE-ZIP");
@@ -295,7 +287,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                 StringBuilder url = new StringBuilder();
                 String parameters = httpRequest.getQueryString();
                 url.append(mangledUrl).append("?").append(parameters);
-                FileUtils.writeStringToFile(target, url.toString());
+                FileUtils.writeStringToFile(target, url.toString(), "UTF-8");
             } else {
                 org.geotools.xsd.Configuration cfg = null;
                 QName elementName = null;
@@ -407,12 +399,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
 
         if (file.getType() == Type.RESOURCE) {
             Properties properties = new Properties();
-            InputStream fis = null;
-            try {
-                fis = file.in();
+            try (InputStream fis = file.in()) {
                 properties.load(fis);
-            } finally {
-                org.apache.commons.io.IOUtils.closeQuietly(fis);
             }
 
             String data = (String) properties.get(epsgCode.toString());
@@ -483,7 +471,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         this.maxDbfSize = maxDbfSize;
     }
 
-    static class FileNameSource {
+    class FileNameSource {
 
         private Class clazz;
 
@@ -494,7 +482,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         private Properties processTemplate(FeatureTypeInfo ftInfo, String geometryType) {
             try {
                 // setup template subsystem
-                GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(clazz);
+                GeoServerTemplateLoader templateLoader =
+                        new GeoServerTemplateLoader(clazz, resourceLoader);
                 templateLoader.setFeatureType(ftInfo);
 
                 // load the template

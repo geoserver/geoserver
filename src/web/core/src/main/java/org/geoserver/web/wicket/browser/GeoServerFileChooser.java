@@ -23,6 +23,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
@@ -85,7 +87,12 @@ public class GeoServerFileChooser extends Panel {
 
         // first check if the file is a relative reference into the data dir
         if (selection != null) {
-            File relativeToDataDir = loader.url(selection.getPath());
+            File relativeToDataDir =
+                    Resources.find(
+                            Resources.fromURL(
+                                    Files.asResource(loader.getBaseDirectory()),
+                                    selection.getPath()),
+                            true);
             if (relativeToDataDir != null) {
                 selection = relativeToDataDir;
             }

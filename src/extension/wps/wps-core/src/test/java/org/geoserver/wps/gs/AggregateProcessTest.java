@@ -5,10 +5,10 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLUnit;

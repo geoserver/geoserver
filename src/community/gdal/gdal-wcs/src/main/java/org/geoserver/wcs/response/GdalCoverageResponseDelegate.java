@@ -17,13 +17,13 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.ZipOutputStream;
 import org.geoserver.config.GeoServer;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.FormatAdapter;
 import org.geoserver.ogr.core.FormatConverter;
 import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -304,8 +304,8 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
         // create the first temp directory, used for dumping gs generated
         // content
-        File tempGS = org.geoserver.data.util.IOUtils.createTempDirectory("gdaltmpin");
-        File tempGDAL = org.geoserver.data.util.IOUtils.createTempDirectory("gdaltmpout");
+        File tempGS = IOUtils.createTempDirectory("gdaltmpin");
+        File tempGDAL = IOUtils.createTempDirectory("gdaltmpout");
 
         // build the gdal wrapper used to run the gdal_translate commands
         ToolWrapper wrapper =

@@ -319,7 +319,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                 "wms?LEGEND_OPTIONS=forceLabels:on&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=200&HEIGHT=20&LAYER="
                         + getLayerId(MockData.POLYGONS)
                         + "&SLD_BODY=";
-        String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"));
+        String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
         MockHttpServletResponse response =
                 getAsServletResponse(base + URLEncoder.encode(sld, "UTF-8"));
         // should fail with an error message poiting at entity resolution

@@ -128,7 +128,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
 
             if (ftNamespaces.containsKey(uri)) {
                 String location = (String) ftNamespaces.get(uri);
-                ftNamespaces.put(uri, location + "," + urlEncode(meta.getPrefixedName()));
+                ftNamespaces.put(uri, location + "," + urlEncode(meta.prefixedName()));
             } else {
                 // don't blindly assume it's a feature type, this class is used also by WMS
                 // FeatureInfo
@@ -289,7 +289,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
                         "request",
                         "DescribeFeatureType",
                         "typeName",
-                        meta.getPrefixedName());
+                        meta.prefixedName());
         return buildURL(baseUrl, "wfs", params, URLType.SERVICE);
     }
 }

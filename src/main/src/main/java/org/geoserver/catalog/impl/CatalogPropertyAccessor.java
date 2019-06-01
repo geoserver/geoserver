@@ -6,11 +6,9 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Throwables.propagate;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -281,7 +279,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         try {
             properties.load(stream);
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         } finally {
             try {
                 Closeables.close(stream, false);
@@ -300,7 +298,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             try {
                 key = Class.forName(e.getKey());
             } catch (ClassNotFoundException e1) {
-                throw propagate(e1);
+                throw new RuntimeException(e1);
             }
             String[] split = e.getValue().split(",");
             Set<String> set = Sets.newHashSet();

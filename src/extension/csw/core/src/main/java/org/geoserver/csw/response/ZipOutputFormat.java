@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 
 /**

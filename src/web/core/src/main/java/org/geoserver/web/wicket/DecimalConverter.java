@@ -42,11 +42,11 @@ public class DecimalConverter extends DoubleConverter {
         final NumberFormat format = getNumberFormat(locale);
         final DecimalFormatSymbols symbols = ((DecimalFormat) format).getDecimalFormatSymbols();
         if (value.equals(symbols.getNaN())) {
-            return new Double(Double.NaN);
+            return Double.valueOf(Double.NaN);
         } else if (value.equals(symbols.getInfinity())) {
-            return new Double(Double.POSITIVE_INFINITY);
+            return Double.valueOf(Double.POSITIVE_INFINITY);
         } else if (value.equals("-" + symbols.getInfinity())) {
-            return new Double(Double.NEGATIVE_INFINITY);
+            return Double.valueOf(Double.NEGATIVE_INFINITY);
         } else {
             return super.convertToObject(value, locale);
         }

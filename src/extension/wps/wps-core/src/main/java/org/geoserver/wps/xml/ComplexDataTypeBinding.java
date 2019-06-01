@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.opengis.wps10.ComplexDataType;
 import net.opengis.wps10.Wps10Factory;
+import org.eclipse.xsd.XSDElementDeclaration;
 import org.geoserver.wps.XMLEncoderDelegate;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
@@ -20,7 +21,7 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
     }
 
     @Override
-    public List getProperties(Object object) throws Exception {
+    public List getProperties(Object object, XSDElementDeclaration element) throws Exception {
         ComplexDataType complex = (ComplexDataType) object;
         if (!complex.getData().isEmpty()
                 && complex.getData().get(0) instanceof XMLEncoderDelegate) {
@@ -31,7 +32,7 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
             return properties;
         }
 
-        return super.getProperties(object);
+        return super.getProperties(object, element);
     }
 
     @Override

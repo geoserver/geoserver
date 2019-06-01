@@ -111,7 +111,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
                 requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
-        Style selectedStyle = request.getStyles().get(0);
+        Style selectedStyle = request.getLegends().get(0).getStyle();
         assertNotNull(selectedStyle);
         assertEquals("Ponds", selectedStyle.getName());
 
@@ -121,7 +121,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
-        selectedStyle = request.getStyles().get(0);
+        selectedStyle = request.getLegends().get(0).getStyle();
         assertNotNull(selectedStyle);
         assertEquals("Lakes", selectedStyle.getName());
     }
@@ -171,13 +171,13 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getLayers().size() == 1);
+        assertTrue(request.getLegends().size() == 1);
 
         requiredParameters.put("LAYER", NATURE_GROUP);
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getLayers().size() > 1);
+        assertTrue(request.getLegends().size() > 1);
     }
 
     @org.junit.Test
@@ -202,7 +202,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getStyles().size() == 2);
+        assertTrue(request.getLegends().size() == 2);
     }
 
     @org.junit.Test
@@ -214,7 +214,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertTrue(request.getRules().size() == 2);
+        assertTrue(request.getLegends().size() == 2);
     }
 
     @org.junit.Test
@@ -225,6 +225,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
-        assertNotNull(request.getTitle(new NameImpl("http://www.opengis.net/cite", "Lakes")));
+        assertNotNull(
+                request.getLegend(new NameImpl("http://www.opengis.net/cite", "Lakes")).getTitle());
     }
 }

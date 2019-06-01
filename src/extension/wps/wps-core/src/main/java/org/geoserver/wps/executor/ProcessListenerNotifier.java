@@ -165,17 +165,6 @@ public class ProcessListenerNotifier {
         }
 
         @Override
-        public String getDescription() {
-            return this.description;
-        }
-
-        @Override
-        public void setDescription(String description) {
-            checkDismissed();
-            this.description = description;
-        }
-
-        @Override
         public void started() {
             progress(0f);
         }

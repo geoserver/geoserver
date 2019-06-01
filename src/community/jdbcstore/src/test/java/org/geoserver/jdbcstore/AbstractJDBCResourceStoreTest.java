@@ -4,8 +4,8 @@
  */
 package org.geoserver.jdbcstore;
 
+import static org.easymock.EasyMock.*;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.*;
 import static org.geoserver.platform.resource.ResourceMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -530,7 +530,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         // GEOS-7741: verify the icon file is created if it does exist in store
         assertTrue(iconFile.exists());
 
-        ctx.destroy();
+        ctx.close();
         ctx.close();
     }
 }

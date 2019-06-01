@@ -11,9 +11,9 @@ import java.util.Properties;
 import org.geoserver.cluster.configuration.EmbeddedBrokerConfiguration;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.config.SpringResourceAdaptor;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
@@ -48,14 +48,8 @@ public class JMSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigu
                         JMSConfiguration.getConfigPathDir());
         if (properties.getType() != Type.RESOURCE) {
             // copy the defaults
-            InputStream inputStream = null;
-            try {
-                inputStream = defaults.getInputStream();
+            try (InputStream inputStream = defaults.getInputStream()) {
                 IOUtils.copy(inputStream, properties.out());
-            } finally {
-                if (inputStream != null) {
-                    org.apache.commons.io.IOUtils.closeQuietly(inputStream);
-                }
             }
         }
         super.setLocation(new SpringResourceAdaptor(properties));

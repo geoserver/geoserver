@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.test.AbstractAppSchemaMockData;
@@ -737,8 +738,8 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         for (int i = 0; i < origCoordinates.length; i++) {
             BigDecimal origBd = new BigDecimal(origCoordinates[i]);
             BigDecimal expBd = new BigDecimal(expCoordinates[i]);
-            origBd = origBd.setScale(leniency, BigDecimal.ROUND_HALF_UP);
-            expBd = expBd.setScale(leniency, BigDecimal.ROUND_HALF_UP);
+            origBd = origBd.setScale(leniency, RoundingMode.HALF_UP);
+            expBd = expBd.setScale(leniency, RoundingMode.HALF_UP);
             if (!origBd.equals(expBd)) {
                 return false;
             }
@@ -1989,7 +1990,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         // the database whereas gsml:purpose is straight forward and can be pre processed on the
         // database
         assertTrue(
-                "*ypical*".equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getPattern()));
+                "*ypical*".equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getLiteral()));
         ArrayList<String> ids = new ArrayList<String>();
         while (iterator.hasNext()) {
             ids.add(iterator.next().getIdentifier().toString());

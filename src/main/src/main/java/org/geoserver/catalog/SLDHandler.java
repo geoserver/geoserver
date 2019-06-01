@@ -70,19 +70,24 @@ public class SLDHandler extends StyleHandler {
         try {
             TEMPLATES.put(
                     StyleType.POINT,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_point.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_point.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.POLYGON,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_polygon.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_polygon.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.LINE,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_line.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_line.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.RASTER,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_raster.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_raster.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.GENERIC,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_generic.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_generic.sld"), "UTF-8"));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -174,7 +179,7 @@ public class SLDHandler extends StyleHandler {
             }
             return sld;
         } finally {
-            IOUtils.closeQuietly(reader);
+            org.geoserver.util.IOUtils.closeQuietly(reader);
         }
     }
 

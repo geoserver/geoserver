@@ -142,9 +142,7 @@ public class DownloadProcessTest extends WPSTestSupport {
     public static File decode(InputStream input, File tempDirectory) throws Exception {
 
         // unzip to the temporary directory
-        ZipInputStream zis = null;
-        try {
-            zis = new ZipInputStream(input);
+        try (ZipInputStream zis = new ZipInputStream(input)) {
             ZipEntry entry = null;
 
             // Copy the whole file in the new position
@@ -156,24 +154,15 @@ public class DownloadProcessTest extends WPSTestSupport {
                     int count;
                     byte data[] = new byte[4096];
                     // write the files to the disk
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(file);
+
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
                         while ((count = zis.read(data)) != -1) {
                             fos.write(data, 0, count);
                         }
                         fos.flush();
-                    } finally {
-                        if (fos != null) {
-                            org.apache.commons.io.IOUtils.closeQuietly(fos);
-                        }
                     }
                 }
                 zis.closeEntry();
-            }
-        } finally {
-            if (zis != null) {
-                org.apache.commons.io.IOUtils.closeQuietly(zis);
             }
         }
 

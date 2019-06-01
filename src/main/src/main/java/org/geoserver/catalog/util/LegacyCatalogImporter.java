@@ -144,7 +144,7 @@ public class LegacyCatalogImporter {
                     }
                     catalog.add(featureType);
 
-                    LOGGER.info("Loaded feature type '" + featureType.getPrefixedName() + "'");
+                    LOGGER.info("Loaded feature type '" + featureType.prefixedName() + "'");
 
                     // create a wms layer for the feature type
                     LayerInfo layer = factory.createLayer();

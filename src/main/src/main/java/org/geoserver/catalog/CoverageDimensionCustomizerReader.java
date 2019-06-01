@@ -40,9 +40,8 @@ import org.geotools.data.ServiceInfo;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
+import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.factory.Hints;
-import org.opengis.coverage.ColorInterpretation;
-import org.opengis.coverage.PaletteInterpretation;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.SampleDimensionType;
 import org.opengis.coverage.grid.Format;
@@ -109,12 +108,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         public void createCoverage(String coverageName, SimpleFeatureType schema)
                 throws IOException, UnsupportedOperationException {
             structuredDelegate.createCoverage(coverageName, schema);
-        }
-
-        @Override
-        public boolean removeCoverage(String coverageName)
-                throws IOException, UnsupportedOperationException {
-            return structuredDelegate.removeCoverage(coverageName);
         }
 
         @Override
@@ -373,22 +366,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         return delegate.getMetadataValue(coverageName, name);
     }
 
-    public String[] listSubNames() throws IOException {
-        return delegate.listSubNames();
-    }
-
-    public String getCurrentSubname() throws IOException {
-        return delegate.getCurrentSubname();
-    }
-
-    public boolean hasMoreGridCoverages() throws IOException {
-        return delegate.hasMoreGridCoverages();
-    }
-
-    public void skip() throws IOException {
-        delegate.skip();
-    }
-
     public void dispose() throws IOException {
         delegate.dispose();
     }
@@ -457,15 +434,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
-    }
-
-    public int getNumOverviews() {
-        return delegate.getNumOverviews();
-    }
-
-    public int getNumOverviews(String coverageName) {
-        checkCoverageName(coverageName);
-        return delegate.getNumOverviews(coverageName);
     }
 
     public ImageLayout getImageLayout() throws IOException {
@@ -829,21 +797,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         @Override
         public double getScale() {
             return sampleDim.getScale();
-        }
-
-        @Override
-        public int[][] getPalette() {
-            return sampleDim.getPalette();
-        }
-
-        @Override
-        public PaletteInterpretation getPaletteInterpretation() {
-            return sampleDim.getPaletteInterpretation();
-        }
-
-        @Override
-        public ColorInterpretation getColorInterpretation() {
-            return sampleDim.getColorInterpretation();
         }
 
         @Override

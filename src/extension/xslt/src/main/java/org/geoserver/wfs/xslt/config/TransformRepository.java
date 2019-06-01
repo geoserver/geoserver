@@ -62,15 +62,11 @@ public class TransformRepository {
                         return null;
                     }
 
-                    InputStream fis = null;
-                    try {
-                        fis = file.in();
+                    try (InputStream fis = file.in()) {
                         TransformInfo info = (TransformInfo) xs.fromXML(fis);
                         info.setName(getTransformName(file));
 
                         return info;
-                    } finally {
-                        IOUtils.closeQuietly(fis);
                     }
                 }
             };
@@ -302,13 +298,11 @@ public class TransformRepository {
      */
     public void putTransformSheet(TransformInfo info, InputStream sheet) throws IOException {
         Resource txFile = getTransformFile(info);
-        OutputStream fos = null;
-        try {
-            fos = txFile.out();
+
+        try (OutputStream fos = txFile.out()) {
             IOUtils.copy(sheet, fos);
         } finally {
-            IOUtils.closeQuietly(sheet);
-            IOUtils.closeQuietly(fos);
+            org.geoserver.util.IOUtils.closeQuietly(sheet);
         }
     }
 

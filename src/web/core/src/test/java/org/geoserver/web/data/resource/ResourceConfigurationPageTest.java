@@ -77,7 +77,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
-        tester.assertLabel("publishedinfoname", layer.getResource().getPrefixedName());
+        tester.assertLabel("publishedinfoname", layer.getResource().prefixedName());
         tester.assertComponent(
                 "publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
     }

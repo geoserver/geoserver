@@ -20,10 +20,10 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.data.FeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Measure;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.Hints;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
@@ -166,10 +166,6 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
 
     public int getNumDecimals() {
         return delegate.getNumDecimals();
-    }
-
-    public String getPrefixedName() {
-        return delegate.getPrefixedName();
     }
 
     public String prefixedName() {

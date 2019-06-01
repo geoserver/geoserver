@@ -32,6 +32,7 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -188,18 +189,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         return filterResources(delegate.getFeatureTypesByNamespace(namespace));
     }
 
-    /** @deprecated */
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
-        return checkAccess(delegate.getFeatureTypeByStore(dataStore, name));
-    }
-
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return checkAccess(delegate.getFeatureTypeByDataStore(dataStore, name));
-    }
-
-    /** @deprecated */
-    public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
-        return filterResources(delegate.getFeatureTypesByStore(store));
     }
 
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {

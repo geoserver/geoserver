@@ -23,7 +23,7 @@ public class WrappingFeatureListener implements FeatureListener {
 
     public void changed(FeatureEvent featureEvent) {
         FeatureEvent retyped =
-                new FeatureEvent(source, featureEvent.getEventType(), featureEvent.getBounds());
+                new FeatureEvent(source, featureEvent.getType(), featureEvent.getBounds());
         listener.changed(retyped);
     }
 }

@@ -4,8 +4,8 @@
  */
 package org.geoserver.backuprestore;
 
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createNiceMock;
 
 import java.io.File;
 import java.io.FileOutputStream;

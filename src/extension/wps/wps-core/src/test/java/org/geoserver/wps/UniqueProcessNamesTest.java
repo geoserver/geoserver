@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;

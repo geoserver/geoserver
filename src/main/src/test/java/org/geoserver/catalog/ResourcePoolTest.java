@@ -32,7 +32,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.easymock.Capture;
-import org.easymock.classextension.EasyMock;
+import org.easymock.CaptureType;
+import org.easymock.EasyMock;
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -352,7 +353,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertFalse("foo".equals(lakes.getTitle()));
 
         GeoServerDataDirectory dd = new GeoServerDataDirectory(getResourceLoader());
-        File info = dd.findResourceFile(lakes);
+        File info = dd.config(lakes).file();
         // File info = getResourceLoader().find("featureTypes", "cite_Lakes", "info.xml");
 
         FileReader in = new FileReader(info);
@@ -741,7 +742,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 createNiceMock("theReader", AbstractGridCoverage2DReader.class);
         replay(reader);
         AbstractGridFormat format = createNiceMock("theFormat", AbstractGridFormat.class);
-        Capture<Hints> capturedHints = new Capture<>();
+        Capture<Hints> capturedHints = Capture.newInstance(CaptureType.LAST);
         expect(format.getReader(EasyMock.eq(url), capture(capturedHints)))
                 .andReturn(reader)
                 .anyTimes();

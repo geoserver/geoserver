@@ -5,12 +5,12 @@
  */
 package org.geoserver.wps.web;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;

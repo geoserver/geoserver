@@ -88,14 +88,12 @@ public class SenderXStreamInitializer implements NotificationXStreamInitializer 
             for (SenderXStreamInitializer serializer : serializers) {
                 if (serializer.name.equals(nodeName)) {
                     try {
-                        sender = serializer.clazz.newInstance();
+                        sender = serializer.clazz.getDeclaredConstructor().newInstance();
                         sender =
                                 (NotificationSender)
                                         context.convertAnother(sender, serializer.clazz);
                         break;
-                    } catch (InstantiationException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }

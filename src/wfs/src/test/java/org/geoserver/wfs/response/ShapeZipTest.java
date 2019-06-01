@@ -39,8 +39,10 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -53,6 +55,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.CoordinateXYZM;
@@ -104,7 +107,7 @@ public class ShapeZipTest extends WFSTestSupport {
     public void cleanupTemplates() throws Exception {
         WorkspaceInfo ws =
                 getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
-        File wsDir = getDataDirectory().findWorkspaceDir(ws);
+        File wsDir = Resources.directory(getDataDirectory().get(ws));
         new File(wsDir, "shapezip.ftl").delete();
         setupESRIFormatByDefault(getGeoServer(), false);
     }
@@ -140,7 +143,11 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testCharset() throws Exception {
         FeatureSource<? extends FeatureType, ? extends Feature> fs;
         fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -307,14 +314,19 @@ public class ShapeZipTest extends WFSTestSupport {
         // copy the new template to the data dir
         WorkspaceInfo ws =
                 getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
-        getDataDirectory()
-                .copyToWorkspaceDir(
-                        ws, getClass().getResourceAsStream("shapeziptest.ftl"), "shapezip.ftl");
+        Resources.copy(
+                getClass().getResourceAsStream("shapeziptest.ftl"),
+                getDataDirectory().get(ws),
+                "shapezip.ftl");
 
         // setup the request params
         SimpleFeatureCollection fc =
                 getFeatureSource(SystemTestData.BASIC_POLYGONS).getFeatures(Filter.INCLUDE);
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -335,12 +347,17 @@ public class ShapeZipTest extends WFSTestSupport {
         // copy the new template to the data dir
         WorkspaceInfo ws =
                 getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
-        getDataDirectory()
-                .copyToWorkspaceDir(
-                        ws, getClass().getResourceAsStream("shapeziptest.ftl"), "shapezip.ftl");
+        Resources.copy(
+                getClass().getResourceAsStream("shapeziptest.ftl"),
+                getDataDirectory().get(ws),
+                "shapezip.ftl");
 
         // setup the request params
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -363,12 +380,17 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testTemplateMultiGeomType() throws Exception {
         // copy the new template to the data dir
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(ALL_DOTS.getPrefix());
-        getDataDirectory()
-                .copyToWorkspaceDir(
-                        ws, getClass().getResourceAsStream("shapeziptest.ftl"), "shapezip.ftl");
+        Resources.copy(
+                getClass().getResourceAsStream("shapeziptest.ftl"),
+                getDataDirectory().get(ws),
+                "shapezip.ftl");
 
         // setup the request params
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -541,7 +563,11 @@ public class ShapeZipTest extends WFSTestSupport {
      * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
      */
     byte[] writeOut(FeatureCollection fc, long maxShpSize, long maxDbfSize) throws IOException {
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         zip.setMaxDbfSize(maxDbfSize);
         zip.setMaxShpSize(maxShpSize);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -556,7 +582,11 @@ public class ShapeZipTest extends WFSTestSupport {
      * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
      */
     byte[] writeOut(FeatureCollection fc) throws IOException {
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -601,7 +631,7 @@ public class ShapeZipTest extends WFSTestSupport {
 
         // create a datastore reading the uncompressed shapefile
         File shapeFile = new File(shapeFileName);
-        ShapefileDataStore ds = new ShapefileDataStore(shapeFile.toURL());
+        ShapefileDataStore ds = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
         SimpleFeatureSource fs = ds.getFeatureSource();
         SimpleFeatureCollection fc = fs.getFeatures();
         SimpleFeatureType schema = fc.getSchema();
@@ -702,7 +732,7 @@ public class ShapeZipTest extends WFSTestSupport {
                 try {
                     final String name = entry.getName();
                     if (name.toLowerCase().endsWith(fileName.toLowerCase())) {
-                        String unzippedFileContents = IOUtils.toString(zis);
+                        String unzippedFileContents = IOUtils.toString(zis, "UTF-8");
                         assertEquals(expectedContent, unzippedFileContents);
                         return;
                     }

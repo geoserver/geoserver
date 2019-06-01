@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.IOUtils;
 import org.springframework.util.AntPathMatcher;
 
 public class MonitorRequestFilter {

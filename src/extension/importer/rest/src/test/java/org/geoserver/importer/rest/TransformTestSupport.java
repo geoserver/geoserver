@@ -5,8 +5,8 @@
  */
 package org.geoserver.importer.rest;
 
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.replay;
 
 import java.beans.PropertyDescriptor;
 import java.io.StringWriter;

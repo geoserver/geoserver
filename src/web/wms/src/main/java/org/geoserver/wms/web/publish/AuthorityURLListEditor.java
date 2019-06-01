@@ -55,7 +55,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
      */
     public AuthorityURLListEditor(final String id, final IModel<List<AuthorityURLInfo>> list) {
         super(id, list);
-        Assert.notNull(list.getObject());
+        Assert.notNull(list.getObject(), "The list cannot be null");
 
         // container for ajax updates
         final WebMarkupContainer container = new WebMarkupContainer("container");

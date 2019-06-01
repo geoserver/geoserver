@@ -495,16 +495,6 @@ final class IsolatedCatalogFacade implements CatalogFacade {
             Filter filter,
             @Nullable Integer offset,
             @Nullable Integer count,
-            @Nullable SortBy sortOrder) {
-        return filterIsolated(of, facade.list(of, filter, offset, count, sortOrder));
-    }
-
-    @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(
-            Class<T> of,
-            Filter filter,
-            @Nullable Integer offset,
-            @Nullable Integer count,
             @Nullable SortBy... sortOrder) {
         return filterIsolated(of, facade.list(of, filter, offset, count, sortOrder));
     }

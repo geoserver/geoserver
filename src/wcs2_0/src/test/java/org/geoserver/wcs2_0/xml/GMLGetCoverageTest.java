@@ -25,7 +25,7 @@ public class GMLGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGMLExtension() throws Exception {
         final File xml = new File("./src/test/resources/requestGetCoverageGML.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 

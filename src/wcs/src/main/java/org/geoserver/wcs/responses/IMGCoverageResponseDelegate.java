@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.image.WorldImageWriter;
 import org.opengis.coverage.grid.Format;
@@ -81,7 +82,7 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
         } finally {
 
             // freeing everything
-            org.apache.commons.io.IOUtils.closeQuietly(output);
+            IOUtils.closeQuietly(output);
 
             try {
                 writer.dispose();

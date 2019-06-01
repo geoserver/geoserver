@@ -40,7 +40,7 @@ public class LayerNameNormalizer implements RequestPostProcessor {
                 // totally non prefixed, do a catalog lookup for the layer
                 LayerInfo l = cat.getLayerByName(layer);
                 if (l != null) {
-                    layers.set(i, l.getResource().getPrefixedName());
+                    layers.set(i, l.getResource().prefixedName());
                 }
             } else {
                 // prefix, may be by full namespace uri though

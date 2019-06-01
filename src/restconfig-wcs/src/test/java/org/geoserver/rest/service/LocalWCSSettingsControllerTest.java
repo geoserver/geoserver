@@ -174,7 +174,8 @@ public class LocalWCSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testPutFullAsXML() throws Exception {
         String xml =
                 IOUtils.toString(
-                        LocalWCSSettingsControllerTest.class.getResourceAsStream("wcs.xml"));
+                        LocalWCSSettingsControllerTest.class.getResourceAsStream("wcs.xml"),
+                        "UTF-8");
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wcs/workspaces/sf/settings",

@@ -1174,7 +1174,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setAdminUsername("roadRunner");
-        global.setTitle("ACME");
+        global.getSettings().setTitle("ACME");
         getGeoServer().save(global);
 
         File f = new File(testData.getDataDirectoryRoot(), "global.xml");

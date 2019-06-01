@@ -18,7 +18,8 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testValues() {
-        ContactInfo info = getGeoServerApplication().getGeoServer().getGlobal().getContact();
+        ContactInfo info =
+                getGeoServerApplication().getGeoServer().getGlobal().getSettings().getContact();
 
         login();
         tester.startPage(ContactPage.class);
@@ -35,7 +36,8 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         tester.assertRenderedPage(GeoServerHomePage.class);
 
-        ContactInfo info = getGeoServerApplication().getGeoServer().getGlobal().getContact();
+        ContactInfo info =
+                getGeoServerApplication().getGeoServer().getGlobal().getSettings().getContact();
         assertEquals("newAddress", info.getAddress());
     }
 }

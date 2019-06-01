@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
@@ -94,12 +95,11 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
     public synchronized int synchronize() throws IOException {
         checkProperties();
 
-        File propFile =
-                new File(getSecurityManager().getUserGroupRoot(), getUserGroupServiceName());
+        File propFile = new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         propFile = new File(propFile, AUTHKEYS_FILE);
 
         File backupFile =
-                new File(getSecurityManager().getUserGroupRoot(), getUserGroupServiceName());
+                new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         backupFile = new File(backupFile, AUTHKEYS_FILE + ".backup");
 
         // check if the previous synchronize failed
@@ -146,7 +146,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
 
         if (backupFile.exists()) backupFile.delete();
 
-        fileWatcher = new PropertyFileWatcher(propFile);
+        fileWatcher = new PropertyFileWatcher(Files.asResource(propFile));
         return counter;
     }
 }

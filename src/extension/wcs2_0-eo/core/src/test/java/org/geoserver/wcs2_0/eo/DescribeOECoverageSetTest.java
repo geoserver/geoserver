@@ -578,7 +578,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
     @Test
     public void testMixedTrimPost() throws Exception {
         final File xml = new File("./src/test/resources/describeEOCoverageSetTrims.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         Document dom = postAsDOM("wcs?", request);
         print(dom);
         assertEquals(

@@ -6,7 +6,6 @@ package org.geoserver.wms.vector;
 
 import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
 
-import com.google.common.base.Throwables;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -152,7 +151,7 @@ public class PipelineBuilder {
             context.pixelSizeInTargetCRS = Math.max(spans_targetCRS[0], spans_targetCRS[1]);
 
         } catch (TransformException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         context.screenSimplificationDistance = PIXEL_BASE_SAMPLE_SIZE / overSampleFactor;

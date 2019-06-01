@@ -131,12 +131,10 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         // use the same logic as streaming renderer to decide if a fts is active
         if (featureType == null
                 || (featureType.getName().getLocalPart() != null)
-                        && (featureType
-                                        .getName()
-                                        .getLocalPart()
-                                        .equalsIgnoreCase(fts.getFeatureTypeName())
-                                || FeatureTypes.isDecendedFrom(
-                                        featureType, null, fts.getFeatureTypeName()))) {
+                        && (fts.featureTypeNames().isEmpty()
+                                || fts.featureTypeNames()
+                                        .stream()
+                                        .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
             Expression tx = fts.getTransformation();
             if (tx != null) {
                 boolean rasterTransformation = false;

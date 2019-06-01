@@ -211,25 +211,18 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * @param featureTypeStyle The feature type style containing the rules.
      * @param feature The feature being filtered against.
      */
-    Rule[] filterRules(FeatureTypeStyle featureTypeStyle, SimpleFeature feature) {
-        Rule[] rules = featureTypeStyle.getRules();
-
-        if ((rules == null) || (rules.length == 0)) {
-            return new Rule[0];
-        }
-
-        List<Rule> filtered = new ArrayList<Rule>(rules.length);
+    List<Rule> filterRules(FeatureTypeStyle featureTypeStyle, SimpleFeature feature) {
+        List<Rule> filtered = new ArrayList<Rule>();
 
         // process the rules, keep track of the need to apply an else filters
         boolean match = false;
         boolean hasElseFilter = false;
 
-        for (int i = 0; i < rules.length; i++) {
-            Rule rule = rules[i];
+        for (Rule rule : featureTypeStyle.rules()) {
             LOGGER.finer(new StringBuffer("Applying rule: ").append(rule.toString()).toString());
 
             // does this rule have an else filter
-            if (rule.hasElseFilter()) {
+            if (rule.isElseFilter()) {
                 hasElseFilter = true;
 
                 continue;
@@ -265,16 +258,14 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         // any else filters
         if (!match && hasElseFilter) {
             // loop through again and apply all the else rules
-            for (int i = 0; i < rules.length; i++) {
-                Rule rule = rules[i];
-
-                if (rule.hasElseFilter()) {
+            for (Rule rule : featureTypeStyle.rules()) {
+                if (rule.isElseFilter()) {
                     filtered.add(rule);
                 }
             }
         }
 
-        return (Rule[]) filtered.toArray(new Rule[filtered.size()]);
+        return filtered;
     }
 
     /**
@@ -489,10 +480,12 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             int total = 0;
             for (int i = 0; i < ftsList.length; i++) {
                 FeatureTypeStyle fts = ftsList[i];
-                Rule[] rules = filterRules(fts, ft);
-                total += rules.length;
+                List<Rule> rules = filterRules(fts, ft);
+                total += rules.size();
 
-                for (int j = 0; j < rules.length; j++) processRule(ft, rules[j]);
+                for (Rule rule : rules) {
+                    processRule(ft, rule);
+                }
             }
             if (total == 0) return false;
             return true;
@@ -507,9 +500,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          */
         protected void processRule(SimpleFeature ft, Rule rule) throws IOException {
 
-            Symbolizer[] symbolizers = rule.getSymbolizers();
-            for (int i = 0; i < symbolizers.length; i++) {
-                Symbolizer symbolizer = symbolizers[i];
+            List<Symbolizer> symbolizers = rule.symbolizers();
+            for (Symbolizer symbolizer : symbolizers) {
                 // process any given symbolizer
                 processSymbolizer(ft, rule, symbolizer);
             }

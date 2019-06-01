@@ -4,9 +4,9 @@
  */
 package org.geoserver.wfs;
 
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.createMock;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

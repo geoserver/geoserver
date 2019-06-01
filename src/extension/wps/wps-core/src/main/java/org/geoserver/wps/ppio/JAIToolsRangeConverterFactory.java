@@ -68,10 +68,10 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
         }
 
         if (m.group(2) != null) {
-            min = new Double(m.group(2));
+            min = Double.valueOf(m.group(2));
         }
         if (m.group(3) != null) {
-            max = new Double(m.group(3));
+            max = Double.valueOf(m.group(3));
         }
 
         boolean inclmin;

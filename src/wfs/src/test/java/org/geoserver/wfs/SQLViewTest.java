@@ -5,10 +5,10 @@
  */
 package org.geoserver.wfs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.Map;
@@ -85,7 +85,7 @@ public class SQLViewTest extends WFSTestSupport {
         vt.addParameter(new VirtualTableParameter("bool", "true"));
         vt.addParameter(new VirtualTableParameter("name", "name-f001"));
         vt.addGeometryMetadatata("pointProperty", Point.class, 4326);
-        jds.addVirtualTable(vt);
+        jds.createVirtualTable(vt);
 
         FeatureTypeInfo vft = cb.buildFeatureType(jds.getFeatureSource(vt.getName()));
         vft.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);

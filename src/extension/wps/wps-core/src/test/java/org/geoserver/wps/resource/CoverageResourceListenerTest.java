@@ -4,15 +4,15 @@
  */
 package org.geoserver.wps.resource;
 
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;

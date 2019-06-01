@@ -595,7 +595,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
             DataStoreFactorySpi factory = null;
             try {
-                factory = clazz.newInstance();
+                factory = clazz.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Error creating DataStore factory: " + className, e);

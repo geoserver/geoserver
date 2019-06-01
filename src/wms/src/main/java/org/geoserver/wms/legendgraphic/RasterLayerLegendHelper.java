@@ -5,15 +5,11 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GradientPaint;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.util.HashMap;
+import java.util.List;
 import javax.imageio.ImageIO;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -102,7 +98,9 @@ public class RasterLayerLegendHelper {
         // if(!found)
         // throw new IllegalArgumentException("Unable to create legend for non raster style");
 
-        final FeatureTypeStyle[] ftStyles = gt2Style.getFeatureTypeStyles();
+        final FeatureTypeStyle[] ftStyles =
+                gt2Style.featureTypeStyles()
+                        .toArray(new FeatureTypeStyle[gt2Style.featureTypeStyles().size()]);
         final double scaleDenominator = request.getScale();
 
         final Rule[] applicableRules;
@@ -130,12 +128,12 @@ public class RasterLayerLegendHelper {
                 throw new IllegalArgumentException(
                         "Invalid width and or height for the GetLegendGraphicRequest");
 
-            final Symbolizer[] symbolizers = applicableRules[0].getSymbolizers();
-            if (symbolizers == null || symbolizers.length != 1 | symbolizers[0] == null)
+            final List<Symbolizer> symbolizers = applicableRules[0].symbolizers();
+            if (symbolizers.size() != 1 || symbolizers.get(0) == null)
                 throw new IllegalArgumentException(
                         "Unable to create a legend for this style, we need exactly 1 Symbolizer");
 
-            final Symbolizer symbolizer = symbolizers[0];
+            final Symbolizer symbolizer = symbolizers.get(0);
             if (!(symbolizer instanceof RasterSymbolizer))
                 throw new IllegalArgumentException(
                         "Unable to create a legend for this style, we need a RasterSymbolizer");

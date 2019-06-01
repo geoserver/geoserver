@@ -269,12 +269,6 @@ public class StructuredCoverageViewReader extends CoverageViewReader
     }
 
     @Override
-    public boolean removeCoverage(String coverageName)
-            throws IOException, UnsupportedOperationException {
-        return removeCoverage(referenceName, false);
-    }
-
-    @Override
     public boolean removeCoverage(String coverageName, boolean delete)
             throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("Operation unavailable for Coverage Views");

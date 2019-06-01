@@ -20,10 +20,6 @@ public interface PublishedInfo extends CatalogInfo {
     /** Sets the name. */
     void setName(String name);
 
-    /** @see prefixedName */
-    @Deprecated
-    public String getPrefixedName();
-
     /**
      * The derived prefixed name.
      *

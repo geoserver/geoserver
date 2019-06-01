@@ -14,7 +14,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMockData.DummyRasterMapProducer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.EnvFunction;
-import org.geotools.ows.wms.response.GetMapResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -49,7 +48,6 @@ public class GetMapTest {
         getMapOp = new GetMap(mockData.getWMS());
     }
 
-    /** Test method for {@link GetMapResponse#execute(org.vfny.geoserver.Request)}. */
     @Test
     public void testExecuteNoExtent() {
         request.setBbox(null);

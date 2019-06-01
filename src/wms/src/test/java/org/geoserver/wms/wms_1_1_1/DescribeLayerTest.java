@@ -33,7 +33,9 @@ public class DescribeLayerTest extends WMSTestSupport {
     public void testDescribeLayerVersion111() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
         String request = "wms?service=wms&version=1.1.1&request=DescribeLayer&layers=" + layer;
-        assertEquals("src/test/resources/geoserver", getGeoServer().getGlobal().getProxyBaseUrl());
+        assertEquals(
+                "src/test/resources/geoserver",
+                getGeoServer().getGlobal().getSettings().getProxyBaseUrl());
         Document dom = getAsDOM(request, true);
 
         assertEquals(

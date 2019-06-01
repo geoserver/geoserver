@@ -5,9 +5,9 @@
 
 package org.geoserver.notification;
 
-import org.geoserver.wfs.TransactionPlugin;
+import org.geoserver.wfs.TransactionCallback;
 
-public interface INotificationTransactionListener extends TransactionPlugin {
+public interface INotificationTransactionListener extends TransactionCallback {
 
     void setMessageMultiplexer(MessageMultiplexer messageMultiplexer);
 

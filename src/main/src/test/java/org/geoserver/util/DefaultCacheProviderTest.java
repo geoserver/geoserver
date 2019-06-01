@@ -5,9 +5,9 @@
 
 package org.geoserver.util;
 
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.*;
 
 import java.util.logging.Level;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerExtensionsHelper.ExtensionsHelperRule;
 import org.geotools.util.logging.Logging;
 import org.junit.Rule;

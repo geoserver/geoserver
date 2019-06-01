@@ -5,8 +5,8 @@
  */
 package org.geoserver.monitor;
 
-import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -132,7 +132,7 @@ public class MonitorServletRequestTest {
 
         MonitorServletRequest request = new MonitorServletRequest(mock, 1024);
         try (InputStream is = request.getInputStream()) {
-            assertEquals(THE_REQUEST, IOUtils.toString(is));
+            assertEquals(THE_REQUEST, IOUtils.toString(is, "UTF-8"));
         }
         ;
         assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());

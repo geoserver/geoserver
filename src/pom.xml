@@ -637,11 +637,6 @@
     <version>3.6</version>
    </dependency>
    <dependency>
-    <groupId>org.easymock</groupId>
-    <artifactId>easymockclassextension</artifactId>
-    <version>3.2</version>
-   </dependency>
-   <dependency>
     <groupId>cglib</groupId>
     <artifactId>cglib-nodep</artifactId>
     <version>2.2</version>
@@ -2016,6 +2011,7 @@
   <pmd.version>6.11.0</pmd.version>
   <checkstyle.skip>false</checkstyle.skip>
   <qa>false</qa>
+  <lint>deprecation</lint>
  </properties>
 
  <profiles>
@@ -2317,6 +2313,10 @@
               <compilerArgs>
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-Xlint:${lint}</arg>
+                <arg>-Werror</arg>
+                <arg>-Xmaxwarns</arg>
+                <arg>1000</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>
@@ -2352,6 +2352,10 @@
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
                 <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+                <arg>-Xlint:${lint}</arg>
+                <arg>-Werror</arg>
+                <arg>-Xmaxwarns</arg>
+                <arg>1000</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import junit.framework.TestCase;
 import org.custommonkey.xmlunit.Validator;
+import org.geotools.util.URLs;
 import org.xml.sax.InputSource;
 
 public class WebXmlTest extends TestCase {
@@ -19,8 +20,7 @@ public class WebXmlTest extends TestCase {
         Validator v =
                 new Validator(
                         is,
-                        new File("src/test/java/org/geoserver/web/web-app_2_3.dtd")
-                                .toURL()
+                        URLs.fileToUrl(new File("src/test/java/org/geoserver/web/web-app_2_3.dtd"))
                                 .toString());
         assertTrue(v.isValid());
     }

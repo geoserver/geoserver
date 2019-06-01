@@ -4,7 +4,7 @@
  */
 package org.geoserver.jdbcstore;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 import org.geoserver.jdbcstore.cache.SimpleResourceCache;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;

@@ -7,7 +7,6 @@ package org.geoserver.catalog.impl;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +19,10 @@ public class InfoObjectProxyTest {
         BeanImpl bean = new BeanImpl();
         ModificationProxy handler = new ModificationProxy(bean);
 
-        Class proxyClass =
-                Proxy.getProxyClass(Bean.class.getClassLoader(), new Class[] {Bean.class});
-
         Bean proxy =
                 (Bean)
-                        proxyClass
-                                .getConstructor(new Class[] {InvocationHandler.class})
-                                .newInstance(new Object[] {handler});
+                        Proxy.newProxyInstance(
+                                Bean.class.getClassLoader(), new Class[] {Bean.class}, handler);
 
         bean.setFoo("one");
         bean.setBar(1);

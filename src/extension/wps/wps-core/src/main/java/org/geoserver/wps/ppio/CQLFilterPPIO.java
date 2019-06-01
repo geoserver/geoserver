@@ -36,7 +36,7 @@ public class CQLFilterPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        return decode(IOUtils.toString(input));
+        return decode(IOUtils.toString(input, "UTF-8"));
     }
 
     @Override

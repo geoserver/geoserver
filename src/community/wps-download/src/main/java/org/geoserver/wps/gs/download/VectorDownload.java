@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.ppio.ComplexPPIO;
@@ -273,30 +272,7 @@ class VectorDownload {
         final Resource output = resourceManager.getTemporaryResource(extension);
 
         // write checking limits
-        OutputStream os = null;
-        try {
-
-            // If limits are configured we must create an OutputStream that checks limits
-            final BufferedOutputStream bufferedOutputStream =
-                    new BufferedOutputStream(output.out());
-            if (limit > DownloadServiceConfiguration.NO_LIMIT) {
-                os =
-                        new LimitedOutputStream(bufferedOutputStream, limit) {
-
-                            @Override
-                            protected void raiseError(long pSizeMax, long pCount)
-                                    throws IOException {
-                                IOException ioe =
-                                        new IOException(
-                                                "Download Exceeded the maximum HARD allowed size!");
-                                throw ioe;
-                            }
-                        };
-
-            } else {
-                os = bufferedOutputStream;
-            }
-
+        try (OutputStream os = getResourceOutputStream(output, limit)) {
             // write with PPIO
             if (ppio_ instanceof ComplexPPIO) {
                 ((ComplexPPIO) ppio_).encode(features, os);
@@ -305,13 +281,33 @@ class VectorDownload {
                 LOGGER.log(Level.FINE, "Flushing stream");
             }
             os.flush();
-        } finally {
-            if (os != null) {
-                IOUtils.closeQuietly(os);
-            }
         }
 
         // return
         return output;
+    }
+
+    private OutputStream getResourceOutputStream(Resource output, long limit) {
+        OutputStream os = null;
+        // If limits are configured we must create an OutputStream that checks limits
+        final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(output.out());
+        if (limit > DownloadServiceConfiguration.NO_LIMIT) {
+            os =
+                    new LimitedOutputStream(bufferedOutputStream, limit) {
+
+                        @Override
+                        protected void raiseError(long pSizeMax, long pCount) throws IOException {
+                            IOException ioe =
+                                    new IOException(
+                                            "Download Exceeded the maximum HARD allowed size!");
+                            throw ioe;
+                        }
+                    };
+
+        } else {
+            os = bufferedOutputStream;
+        }
+
+        return os;
     }
 }

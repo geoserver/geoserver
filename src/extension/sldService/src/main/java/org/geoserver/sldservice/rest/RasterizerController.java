@@ -305,7 +305,7 @@ public class RasterizerController extends BaseSLDServiceController {
             for (FeatureTypeStyle ftStyle :
                     sInfo.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0])) {
                 for (Rule rule : ftStyle.rules().toArray(new Rule[0])) {
-                    for (Symbolizer sym : rule.getSymbolizers()) {
+                    for (Symbolizer sym : rule.symbolizers()) {
                         if (sym instanceof RasterSymbolizer) {
                             rasterSymbolizer = (RasterSymbolizer) sym;
                             break;

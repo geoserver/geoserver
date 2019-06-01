@@ -199,7 +199,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
             FeatureTypeInfo ft = it.next();
             if (ft.enabled()) {
-                String prefixedName = ft.getPrefixedName();
+                String prefixedName = ft.prefixedName();
 
                 String xpathExpr =
                         "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"

@@ -176,16 +176,16 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
 
             // do a wfs request
             Document dom =
-                    getAsDOM("wfs?request=getFeature&typename=" + featureType.getPrefixedName());
+                    getAsDOM("wfs?request=getFeature&typename=" + featureType.prefixedName());
             assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
             assertEquals(
                     source.getCount(Query.ALL),
-                    dom.getElementsByTagName(featureType.getPrefixedName()).getLength());
+                    dom.getElementsByTagName(featureType.prefixedName()).getLength());
         }
 
         // do a wms request
         MockHttpServletResponse response =
-                getAsServletResponse("wms/reflect?layers=" + layer.getResource().getPrefixedName());
+                getAsServletResponse("wms/reflect?layers=" + layer.getResource().prefixedName());
         assertEquals("image/png", response.getContentType());
     }
 

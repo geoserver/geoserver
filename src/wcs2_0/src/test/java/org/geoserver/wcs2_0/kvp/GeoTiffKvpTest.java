@@ -576,9 +576,9 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
             assertEquals(g2, g3);
             assertEquals(b2, b3);
         } finally {
-            IOUtils.closeQuietly(streamOverviewTS);
-            IOUtils.closeQuietly(streamOverviewSF);
-            IOUtils.closeQuietly(streamNative);
+            org.geoserver.util.IOUtils.closeQuietly(streamOverviewTS);
+            org.geoserver.util.IOUtils.closeQuietly(streamOverviewSF);
+            org.geoserver.util.IOUtils.closeQuietly(streamNative);
             if (readerOverviewTS != null) {
                 try {
                     readerOverviewTS.dispose();

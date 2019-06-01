@@ -49,6 +49,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.FeatureSource;
@@ -519,8 +520,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
         ResourceInfo info =
                 getCatalog().getResourceByName(toName(featureTypeName), ResourceInfo.class);
-        getDataDirectory()
-                .copyToResourceDir(info, new ByteArrayInputStream(body.getBytes()), template);
+        Resources.copy(
+                new ByteArrayInputStream(body.getBytes()), getDataDirectory().get(info), template);
     }
 
     protected LayerGroupInfo createLakesPlacesLayerGroup(
@@ -584,6 +585,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
                 new Parser(
                         (Configuration)
                                 Class.forName("org.geotools.wms.v1_3.WMSConfiguration")
+                                        .getDeclaredConstructor()
                                         .newInstance());
         p.setValidating(true);
         p.parse(new DOMSource(dom));

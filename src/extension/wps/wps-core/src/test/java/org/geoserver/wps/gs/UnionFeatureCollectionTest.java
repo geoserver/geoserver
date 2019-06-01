@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -22,13 +22,14 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
 
 public class UnionFeatureCollectionTest extends WPSTestSupport {
 
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+    GeometryFactory gf = new GeometryFactory();
 
     @Test
     public void testExecute() throws Exception {
@@ -51,7 +52,7 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
                 firstArray[j] = new Coordinate(j + numFeatures, j + numFeatures);
             }
             firstArray[4] = new Coordinate(0 + numFeatures, 0 + numFeatures);
-            LinearRing shell = new LinearRing(firstArray, new PrecisionModel(), 0);
+            LinearRing shell = gf.createLinearRing(new CoordinateArraySequence(firstArray));
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             firstArrayGeometry[numFeatures] = gf.createPolygon(shell, null);
@@ -63,7 +64,7 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
                 array[j] = new Coordinate(j + numFeatures + 50, j + numFeatures + 50);
             }
             array[4] = new Coordinate(0 + numFeatures + 50, 0 + numFeatures + 50);
-            LinearRing shell = new LinearRing(array, new PrecisionModel(), 0);
+            LinearRing shell = gf.createLinearRing(new CoordinateArraySequence(array));
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             secondArrayGeometry[numFeatures] = gf.createPolygon(shell, null);

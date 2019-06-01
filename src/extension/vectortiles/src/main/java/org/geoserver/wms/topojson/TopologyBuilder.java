@@ -8,7 +8,6 @@ import static org.geoserver.wms.topojson.TopoJSONBuilderFactory.MIME_TYPE;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -64,7 +63,7 @@ public class TopologyBuilder implements VectorTileBuilder {
         try {
             this.screenToWorld.invert();
         } catch (NoninvertibleTransformException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         PrecisionModel precisionModel = new PrecisionModel(10.0);
@@ -82,8 +81,7 @@ public class TopologyBuilder implements VectorTileBuilder {
         try {
             topoObj = createObject(featureId, geometry, properties);
         } catch (MismatchedDimensionException | TransformException e) {
-            e.printStackTrace();
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         if (topoObj != null) {

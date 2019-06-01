@@ -209,7 +209,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                             // be supported if present.
                             Geometry geom = (Geometry) value;
                             value =
-                                    new WKTWriter(Double.isNaN(geom.getCoordinate().z) ? 2 : 3)
+                                    new WKTWriter(Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3)
                                             .write(geom);
                         }
                         if (value == null || value.toString().equalsIgnoreCase("null")) {

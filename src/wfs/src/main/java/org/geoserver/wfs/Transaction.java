@@ -18,7 +18,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -62,8 +61,7 @@ public class Transaction {
 
     protected List<TransactionElementHandler> transactionElementHandlers = new ArrayList<>();
     protected List<TransactionListener> transactionListeners = new ArrayList<>();
-    protected List<TransactionPlugin> transactionPlugins = new ArrayList<>();
-    protected List<TransactionCallback> transactionPlugins2 = new ArrayList<>();
+    protected List<TransactionCallback> transactionCallbacks = new ArrayList<>();
 
     public Transaction(WFSInfo wfs, Catalog catalog, ApplicationContext context) {
         this.wfs = wfs;
@@ -73,15 +71,11 @@ public class Transaction {
         transactionElementHandlers.addAll(
                 GeoServerExtensions.extensions(TransactionElementHandler.class));
         transactionListeners.addAll(GeoServerExtensions.extensions(TransactionListener.class));
-        transactionPlugins.addAll(GeoServerExtensions.extensions(TransactionPlugin.class));
-        transactionPlugins2.addAll(GeoServerExtensions.extensions(TransactionCallback.class));
+        transactionCallbacks.addAll(GeoServerExtensions.extensions(TransactionCallback.class));
         // plugins are listeners too, but I want to make sure they are notified
         // of
         // changes in the same order as the other plugin callbacks
-        transactionListeners.removeAll(transactionPlugins);
-        transactionListeners.removeAll(transactionPlugins2);
-        // sort plugins according to priority
-        Collections.sort(transactionPlugins, new TransactionPluginComparator());
+        transactionListeners.removeAll(transactionCallbacks);
     }
 
     public void setFilterFactory(FilterFactory filterFactory) {
@@ -425,16 +419,7 @@ public class Transaction {
     }
 
     private TransactionRequest fireBeforeTransaction(TransactionRequest request) {
-        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
-        if (tx != null) {
-            // TransactionPlugin cannot alter transactions since the advent of WFS 2.0, it's left
-            // like that and
-            // will be deprecated
-            for (TransactionPlugin tp : transactionPlugins) {
-                tp.beforeTransaction(tx);
-            }
-        }
-        for (TransactionCallback tp : transactionPlugins2) {
+        for (TransactionCallback tp : transactionCallbacks) {
             request = tp.beforeTransaction(request);
         }
 
@@ -443,27 +428,14 @@ public class Transaction {
 
     private void fireAfterTransaction(
             TransactionRequest request, TransactionResponse result, boolean committed) {
-        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
-        TransactionResponseType tr = TransactionResponse.WFS11.unadapt(result);
-        if (tx != null && tr != null) {
-            for (TransactionPlugin tp : transactionPlugins) {
-                tp.afterTransaction(tx, tr, committed);
-            }
-        }
-        for (TransactionCallback tp : transactionPlugins2) {
+        for (TransactionCallback tp : transactionCallbacks) {
             tp.afterTransaction(request, result, committed);
         }
     }
 
     private void fireBeforeCommit(TransactionRequest request) {
         // inform plugins we're about to commit
-        for (TransactionPlugin tp : transactionPlugins) {
-            TransactionType tx = TransactionRequest.WFS11.unadapt(request);
-            if (tx != null) {
-                tp.beforeCommit(tx);
-            }
-        }
-        for (TransactionCallback tp : transactionPlugins2) {
+        for (TransactionCallback tp : transactionCallbacks) {
             tp.beforeCommit(request);
         }
     }
@@ -658,8 +630,7 @@ public class Transaction {
         }
 
         public void dataStoreChange(TransactionEvent event) throws WFSException {
-            dataStoreChange(transactionPlugins, event);
-            dataStoreChange(transactionPlugins2, event);
+            dataStoreChange(transactionCallbacks, event);
             dataStoreChange(transactionListeners, event);
         }
     }

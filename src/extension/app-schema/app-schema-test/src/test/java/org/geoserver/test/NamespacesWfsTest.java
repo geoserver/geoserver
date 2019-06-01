@@ -283,8 +283,8 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
                 IOUtils.toString(
                         getClass()
                                 .getClassLoader()
-                                .getResourceAsStream(
-                                        "test-data/stations/stations_two_queries.xml"));
+                                .getResourceAsStream("test-data/stations/stations_two_queries.xml"),
+                        "UTF-8");
         Document document = postAsDOM("wfs", wfsQuery);
         checkCount(
                 WFS20_XPATH_ENGINE,
@@ -319,7 +319,8 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
                         getClass()
                                 .getClassLoader()
                                 .getResourceAsStream(
-                                        "test-data/stations/stations_two_queries_1.1.xml"));
+                                        "test-data/stations/stations_two_queries_1.1.xml"),
+                        "UTF-8");
         Document document = postAsDOM("wfs", wfsQuery);
         String output = toString(document);
         checkCount(

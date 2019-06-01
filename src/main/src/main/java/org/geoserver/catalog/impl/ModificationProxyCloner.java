@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import com.thoughtworks.xstream.XStream;
 import java.io.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -212,8 +213,8 @@ class ModificationProxyCloner {
         }
         Collection<T> copy;
         try {
-            copy = source.getClass().newInstance();
-        } catch (InstantiationException e) {
+            copy = source.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             // we'll just pick something
             if (source instanceof Set) {
                 copy = new HashSet<T>();
@@ -245,12 +246,13 @@ class ModificationProxyCloner {
      * @throws IllegalAccessException
      */
     public static <K, V> Map<K, V> cloneMap(Map<K, V> source, boolean deepCopy)
-            throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException,
+                    InvocationTargetException {
         if (source == null) {
             // nothing to copy
             return null;
         }
-        Map<K, V> copy = source.getClass().newInstance();
+        Map<K, V> copy = source.getClass().getDeclaredConstructor().newInstance();
         if (deepCopy) {
             for (Map.Entry<K, V> entry : source.entrySet()) {
                 K keyCopy = clone(entry.getKey());

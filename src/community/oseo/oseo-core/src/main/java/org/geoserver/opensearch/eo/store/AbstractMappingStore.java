@@ -22,7 +22,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
@@ -699,22 +698,9 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     }
 
     @Override
-    public void modifyFeatures(AttributeDescriptor[] types, Object[] values, Filter filter)
-            throws IOException {
-        Name[] names = Stream.of(types).map(type -> type.getName()).toArray(size -> new Name[size]);
-        modifyFeatures(names, values, filter);
-    }
-
-    @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
         modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
-    }
-
-    @Override
-    public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
-            throws IOException {
-        modifyFeatures(type.getName(), value, filter);
     }
 
     @Override

@@ -98,12 +98,8 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
      * @param resourceLocation
      */
     protected String getResourceAsString(String resourceLocation) throws IOException {
-        InputStream is = null;
-        try {
-            is = getClass().getResourceAsStream(resourceLocation);
-            return IOUtils.toString(is);
-        } finally {
-            IOUtils.closeQuietly(is);
+        try (InputStream is = getClass().getResourceAsStream(resourceLocation)) {
+            return IOUtils.toString(is, "UTF-8");
         }
     }
 

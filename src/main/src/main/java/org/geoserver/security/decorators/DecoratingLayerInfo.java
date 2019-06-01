@@ -17,7 +17,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
+import org.geotools.util.decorate.AbstractDecorator;
 
 /**
  * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected
@@ -182,11 +182,6 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     @Override
     public void setAbstract(String abstractTxt) {
         delegate.setAbstract(abstractTxt);
-    }
-
-    @Override
-    public String getPrefixedName() {
-        return delegate.getPrefixedName();
     }
 
     @Override

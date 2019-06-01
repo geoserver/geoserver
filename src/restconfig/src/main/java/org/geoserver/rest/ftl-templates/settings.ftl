@@ -29,12 +29,12 @@ Contact Information:
 Settings:
 
 <ul>
-  <li>Verbose Messages:  "${properties.verbose}"</li>
-  <li>Verbose Exception Reporting:  "${properties.verboseExceptions}"</li>
-  <li>Number of Decimals:  "${properties.numDecimals}"</li>
-  <li>Character Set:  "${properties.charset}"</li>
-  <li>Proxy Base URL:  "${properties.proxyBaseUrl!}"</li>
-  <li>Online Resource:  "${properties.onlineResource!}"</li>
+  <li>Verbose Messages:  "${properties.settings.verbose!}"</li>
+  <li>Verbose Exception Reporting:  "${properties.settings.verboseExceptions!}"</li>
+  <li>Number of Decimals:  "${properties.settings.numDecimals!}"</li>
+  <li>Character Set:  "${properties.settings.charset!}"</li>
+  <li>Proxy Base URL:  "${properties.settings.proxyBaseUrl!}"</li>
+  <li>Online Resource:  "${properties.settings.onlineResource!}"</li>
 </ul>
 
 JAI Configuration:
@@ -46,9 +46,7 @@ JAI Configuration:
   <li>Tile Threads:  "${properties.jAI.tileThreads}"</li>
   <li>Memory Capacity:  "${properties.jAI.memoryCapacity}"</li>
   <li>Memory Threshold:  "${properties.jAI.memoryThreshold}"</li>
-  <li>ImageIO Cache:  "${properties.jAI.imageIOCache}"</li>
   <li>PNG Encoder:  "${properties.jAI.pngEncoderType}"</li>
-  <li>PNG Acceleration:  "${properties.jAI.pngAcceleration}"</li>
   <li>JPEG Acceleration:  "${properties.jAI.jpegAcceleration}"</li>
   <li>Allow Native Mosaic:  "${properties.jAI.allowNativeMosaic}"</li>
 </ul>

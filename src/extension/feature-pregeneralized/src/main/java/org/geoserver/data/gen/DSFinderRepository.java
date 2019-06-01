@@ -15,6 +15,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataStore;
 import org.geotools.data.Repository;
 import org.opengis.feature.type.Name;
@@ -35,7 +37,10 @@ public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository
 
     protected URL getURLForLocation(String location) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        File f = loader.url(location);
+        File f =
+                Resources.find(
+                        Resources.fromURL(Files.asResource(loader.getBaseDirectory()), location),
+                        true);
         URL url = null;
         if (f.exists()) {
             url = f.toURI().toURL();

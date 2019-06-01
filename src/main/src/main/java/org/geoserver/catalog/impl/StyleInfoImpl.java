@@ -19,7 +19,6 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected WorkspaceInfo workspace;
 
-    @Deprecated
     // not used, maininting this property for xstream backward compatability
     protected Version sldVersion = null;
 
@@ -71,14 +70,6 @@ public class StyleInfoImpl implements StyleInfo {
 
     public void setWorkspace(WorkspaceInfo workspace) {
         this.workspace = workspace;
-    }
-
-    public Version getSLDVersion() {
-        return getFormatVersion();
-    }
-
-    public void setSLDVersion(Version v) {
-        setFormatVersion(v);
     }
 
     public String getFormat() {

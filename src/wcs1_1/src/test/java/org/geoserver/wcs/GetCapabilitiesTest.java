@@ -5,12 +5,12 @@
  */
 package org.geoserver.wcs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -169,7 +169,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     @Test
     public void testNoServiceContactInfo() throws Exception {
         // alter geoserver state so that there is no contact information
-        getGeoServer().getGlobal().setContact(new ContactInfoImpl());
+        getGeoServer().getGlobal().getSettings().setContact(new ContactInfoImpl());
 
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS");
         // print(dom);

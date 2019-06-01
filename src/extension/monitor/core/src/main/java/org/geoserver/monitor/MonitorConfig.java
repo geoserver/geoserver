@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServerPluginConfigurator;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
@@ -22,6 +21,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.IOUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
@@ -47,9 +47,6 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     public static enum Mode {
         HISTORY,
         LIVE,
-
-        @Deprecated // use live
-        HYBRID;
     }
 
     public static enum BboxMode {
@@ -96,9 +93,6 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
 
     public Mode getMode() {
         Mode m = Mode.valueOf(props().getProperty("mode", "history").toUpperCase());
-        if (m == Mode.HYBRID) {
-            m = Mode.LIVE;
-        }
         return m;
     }
 
@@ -163,7 +157,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         if (storage == null) {
             // storage key not found, for backward compatibility look up mode
             Mode mode = getMode();
-            if (mode == Mode.HISTORY || mode == Mode.HYBRID) {
+            if (mode == Mode.HISTORY) {
                 storage = "hibernate";
             }
         }

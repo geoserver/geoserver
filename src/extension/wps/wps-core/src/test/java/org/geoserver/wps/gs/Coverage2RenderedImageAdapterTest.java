@@ -5,9 +5,9 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -108,8 +108,8 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         // --- internal points should stay the same
         Point2D psrc = new Point2D.Double(2d, 3d); // this is on dst gc
         Point2D pdst = cria.mapSourcePoint(psrc, 0);
-        assertEquals(2d, pdst.getX());
-        assertEquals(3d, pdst.getY());
+        assertEquals(2d, pdst.getX(), 0d);
+        assertEquals(3d, pdst.getY(), 0d);
 
         // --- external points should not be remapped
         psrc = new Point2D.Double(600d, 600d); // this is on dst gc
@@ -133,8 +133,8 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         Point2D psrc = new Point2D.Double(13d, 16d); // this is on dst gc
         Point2D pdst = cria.mapSourcePoint(psrc, 0);
         assertNotNull("Can't convert " + psrc, pdst);
-        assertEquals(26d, pdst.getX());
-        assertEquals(32d, pdst.getY());
+        assertEquals(26d, pdst.getX(), 0d);
+        assertEquals(32d, pdst.getY(), 0d);
 
         // --- external points should not be remapped
         psrc = new Point2D.Double(600d, 600d); // this is on dst gc
@@ -163,13 +163,13 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         Point2D psrc = new Point2D.Double(0d, 0d);
         Point2D pdst = cria.mapSourcePoint(psrc, 0);
         // System.out.println(pdst);
-        assertEquals(0d, pdst.getX());
-        assertEquals(250d, pdst.getY());
+        assertEquals(0d, pdst.getX(), 0d);
+        assertEquals(250d, pdst.getY(), 0d);
 
         psrc = new Point2D.Double(20d, 30d); // this is on dst gc
         pdst = cria.mapSourcePoint(psrc, 0);
-        assertEquals(10d, pdst.getX());
-        assertEquals(250d + 15d, pdst.getY());
+        assertEquals(10d, pdst.getX(), 0d);
+        assertEquals(250d + 15d, pdst.getY(), 0d);
         // System.out.println(pdst);
 
         //        new Viewer(getName(), cria);
@@ -192,8 +192,8 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         Point2D psrc = new Point2D.Double(0d, 499d); // this is on dst gc
         Point2D pdst = cria.mapSourcePoint(psrc, 0);
         assertNotNull(pdst);
-        assertEquals(200d, pdst.getX());
-        assertEquals(299d, pdst.getY());
+        assertEquals(200d, pdst.getX(), 0d);
+        assertEquals(299d, pdst.getY(), 0d);
 
         // --- points not inside dest but inside src shoud be remapped on a novalue cell
         psrc = new Point2D.Double(0d, 0d); // this is on dst gc
@@ -201,7 +201,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         assertNull(pdst); // should not map on src raster
 
         double val = cria.getData().getSampleFloat(0, 0, 0);
-        assertEquals("Value should be noData", NODATA, val);
+        assertEquals("Value should be noData", NODATA, val, 0d);
 
         //        new Viewer(getName(), cria);
         //        Thread.sleep(20000);

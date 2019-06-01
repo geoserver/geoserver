@@ -45,15 +45,12 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
         p.put("driver", "org.h2.Driver");
         p.put("url", "jdbc:h2:mem:monitoring");
         File file = new File("./target/monitoring/db.properties");
-        FileOutputStream fos = null;
-        try {
-            if (!file.getParentFile().exists()) {
-                assertTrue(file.getParentFile().mkdirs());
-            }
-            fos = new FileOutputStream(file);
+        
+        if (!file.getParentFile().exists()) {
+            assertTrue(file.getParentFile().mkdirs());
+        }
+        try (FileOutputStream fos = new FileOutputStream(file)) {
             p.store(fos, null);
-        } finally {
-            IOUtils.closeQuietly(fos);
         }
 
         ctx =

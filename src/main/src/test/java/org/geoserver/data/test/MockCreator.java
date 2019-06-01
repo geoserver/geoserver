@@ -6,11 +6,11 @@
 package org.geoserver.data.test;
 
 import static org.easymock.EasyMock.aryEq;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.data.test.CiteTestData.CDF_PREFIX;
 import static org.geoserver.data.test.CiteTestData.CDF_TYPENAMES;
 import static org.geoserver.data.test.CiteTestData.CDF_URI;

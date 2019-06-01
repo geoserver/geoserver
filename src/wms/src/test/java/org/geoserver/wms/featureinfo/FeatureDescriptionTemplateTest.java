@@ -44,7 +44,7 @@ public class FeatureDescriptionTemplateTest {
                         new Object[] {
                             "three",
                             Integer.valueOf(3),
-                            new Double(3.3),
+                            Double.valueOf(3.3),
                             gf.createPoint(new Coordinate(3, 3))
                         },
                         "fid.3");

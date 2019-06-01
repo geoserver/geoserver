@@ -32,13 +32,11 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.DataAccessLimits;
-import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.InMemorySecurityFilter;
 import org.geoserver.security.LayerGroupAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
@@ -53,8 +51,8 @@ import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 /**
- * Default implementation of {@link DataAccessManager}, loads simple access rules from a properties
- * file or a Properties object. The format of each property is:<br>
+ * Default implementation of {@link ResourceAccessManager}, loads simple access rules from a
+ * properties file or a Properties object. The format of each property is:<br>
  * <code>workspace.layer.mode=[role]*</code><br>
  * where:
  *
@@ -81,7 +79,7 @@ import org.springframework.security.core.Authentication;
  *
  * @author Andrea Aime - TOPP
  */
-public class DefaultResourceAccessManager implements ResourceAccessManager, DataAccessManager {
+public class DefaultResourceAccessManager implements ResourceAccessManager {
     static final Logger LOGGER = Logging.getLogger(DefaultResourceAccessManager.class);
 
     /** A {@link LayerGroupSummary} extended with the associated secure tree node */
@@ -112,11 +110,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
     long lastLoaded = Long.MIN_VALUE;
 
     LayerGroupContainmentCache groupsCache;
-
-    @Deprecated
-    public DefaultResourceAccessManager(DataAccessRuleDAO dao) {
-        this(dao, (Catalog) GeoServerExtensions.bean("rawCatalog"));
-    }
 
     /**
      * Pass a reference to the raw, unsecured catalog. The reference is used to evaluate the
@@ -405,8 +398,8 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
     }
 
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
-        boolean read = canAccess(user, resource, AccessMode.READ);
-        boolean write = canAccess(user, resource, AccessMode.WRITE);
+        boolean read = canAccess(user, resource, AccessMode.READ, true);
+        boolean write = canAccess(user, resource, AccessMode.WRITE, true);
         Filter readFilter = read ? Filter.INCLUDE : Filter.EXCLUDE;
         Filter writeFilter = write ? Filter.INCLUDE : Filter.EXCLUDE;
         return buildLimits(resource.getClass(), readFilter, writeFilter);
@@ -667,18 +660,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
         } else {
             return access;
         }
-    }
-
-    // backwards compatibility methods
-
-    @Override
-    public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
-        return canAccess(user, resource, mode, true);
-    }
-
-    @Override
-    public boolean canAccess(Authentication user, LayerInfo layer, AccessMode mode) {
-        return canAccess(user, layer, mode, true);
     }
 
     @Override

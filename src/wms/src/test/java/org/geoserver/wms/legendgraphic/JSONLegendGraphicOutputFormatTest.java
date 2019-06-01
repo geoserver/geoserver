@@ -198,7 +198,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         // was the legend painted?
         assertNotEmpty(resp);
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
+        LegendRequest legend = new LegendRequest(ftInfo.getFeatureType());
         legend.setStyle(style);
         req.getLegends().add(legend);
 
@@ -222,20 +222,15 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
 
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
+        req.getLegends().clear();
+        req.getLegends().add(new LegendRequest(ftInfo.getFeatureType()));
+        req.getLegends().add(new LegendRequest(ftInfo.getFeatureType()));
 
-        List<Style> styles = new ArrayList<Style>();
         Style style1 =
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        styles.add(style1);
-        // printStyle(style1);
+        req.getLegends().get(0).setStyle(style1);
         Style style2 = getCatalog().getStyleByName(MockData.LAKES.getLocalPart()).getStyle();
-        styles.add(style2);
-        // printStyle(style2);
-        req.setStyles(styles);
+        req.getLegends().get(1).setStyle(style2);
 
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
         // System.out.println(result.toString(2));
@@ -259,6 +254,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers = new ArrayList<FeatureType>();
+        req.getLegends().clear();
         layers.add(ftInfo.getFeatureType());
 
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
@@ -269,16 +265,14 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         layers.add(feature.getSchema());
 
-        req.setLayers(layers);
+        layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-        List<Style> styles = new ArrayList<Style>();
         Style style1 =
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        styles.add(style1);
+        req.getLegends().get(0).setStyle(style1);
 
         Style style2 = getCatalog().getStyleByName("rainfall").getStyle();
-        styles.add(style2);
-        req.setStyles(styles);
+        req.getLegends().get(1).setStyle(style2);
 
         JSONObject resp = this.legendProducer.buildLegendGraphic(req);
         assertNotNull(resp);
@@ -310,28 +304,20 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
+        req.getLegends().clear();
+        req.getLegends().add(new LegendRequest(ftInfo.getFeatureType()));
 
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
-
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        req.getLegends().add(new LegendRequest(feature.getSchema()));
 
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        layers.add(feature.getSchema());
-
-        req.setLayers(layers);
-
-        List<Style> styles = new ArrayList<Style>();
         Style style1 =
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        styles.add(style1);
-
-        styles.add(readSLD("InvisibleRaster.sld"));
-
-        req.setStyles(styles);
+        req.getLegends().get(0).setStyle(style1);
+        req.getLegends().get(1).setStyle(readSLD("InvisibleRaster.sld"));
 
         JSONObject resp = this.legendProducer.buildLegendGraphic(req);
 
@@ -352,24 +338,20 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     public void testMultipleLayersWithVectorAndInvisibleVector() throws Exception {
         GetLegendGraphicRequest req = getRequest();
         req.setScale(1000);
+        req.getLegends().clear();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
+        req.getLegends().add(new LegendRequest(ftInfo.getFeatureType()));
+        req.getLegends().add(new LegendRequest(ftInfo.getFeatureType()));
 
-        List<Style> styles = new ArrayList<Style>();
         final StyleInfo roadStyle =
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
-        styles.add(roadStyle.getStyle());
-        styles.add(readSLD("InvisibleLine.sld"));
-
-        req.setStyles(styles);
+        req.getLegends().get(0).setStyle(roadStyle.getStyle());
+        req.getLegends().get(1).setStyle(readSLD("InvisibleLine.sld"));
 
         JSONObject resp = this.legendProducer.buildLegendGraphic(req);
 
@@ -419,14 +401,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         builder.add(new GeometryDescriptorImpl(gt, new NameImpl("GEOMETRY"), 0, 1, false, null));
 
         FeatureType fType = builder.buildFeatureType();
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(fType);
-
-        req.setLayers(layers);
-
-        List<Style> styles = new ArrayList<Style>();
-        styles.add(readSLD("MixedGeometry.sld"));
-        req.setStyles(styles);
+        req.getLegends().clear();
+        LegendRequest lr = new LegendRequest(fType);
+        lr.setStyle(readSLD("MixedGeometry.sld"));
+        req.getLegends().add(lr);
 
         JSONObject resp = this.legendProducer.buildLegendGraphic(req);
 

@@ -7,8 +7,6 @@ package org.geoserver.notification;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -18,6 +16,8 @@ import org.geoserver.notification.common.Notification;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.security.core.Authentication;
@@ -47,7 +47,7 @@ public class NotificationTransactionListener extends NotificationListener
     }
 
     @Override
-    public TransactionType beforeTransaction(TransactionType request) throws WFSException {
+    public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
         layersChangesResume =
                 new ThreadLocal<Map<String, Map<String, Object>>>() {
                     @Override
@@ -59,11 +59,11 @@ public class NotificationTransactionListener extends NotificationListener
     }
 
     @Override
-    public void beforeCommit(TransactionType request) throws WFSException {}
+    public void beforeCommit(TransactionRequest request) throws WFSException {}
 
     @Override
     public void afterTransaction(
-            TransactionType request, TransactionResponseType result, boolean committed) {
+            TransactionRequest request, TransactionResponse result, boolean committed) {
         if (committed) {
             String handle = request.getHandle();
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

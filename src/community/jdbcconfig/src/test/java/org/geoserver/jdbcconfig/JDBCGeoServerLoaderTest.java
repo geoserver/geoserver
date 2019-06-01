@@ -4,9 +4,9 @@
  */
 package org.geoserver.jdbcconfig;
 
+import static org.easymock.EasyMock.*;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.*;
 import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
 
 import org.geoserver.config.GeoServerInfo;

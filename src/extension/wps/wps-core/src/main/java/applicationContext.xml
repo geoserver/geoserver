@@ -184,6 +184,9 @@
     <!-- The PPIO that need to be registered into SPI because of their dependencies -->
     <bean id="shapeZipPPIO" class="org.geoserver.wps.ppio.ShapeZipPPIO">
       <constructor-arg ref="wpsResourceManager"/>
+      <constructor-arg ref="geoServer"/>
+      <constructor-arg ref="catalog"/>
+      <constructor-arg ref="resourceLoader"/>
     </bean>
     <bean id="interpolationPPIO" class="org.geoserver.wps.ppio.InterpolationPPIO" />
     <bean id="sldStylePPIO" class="org.geoserver.wps.ppio.SLDStylePPIO" />
@@ -201,7 +204,7 @@
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">
       <constructor-arg index="0" value="GeoServer specific processes"/>
       <constructor-arg index="1" value="gs"/>
-      <constructor-arg index="2" value="org.geotools.process.gs.GSProcess"/>
+      <constructor-arg index="2" value="org.geoserver.wps.gs.GeoServerProcess"/>
     </bean>
     <bean id="importProcess" class="org.geoserver.wps.gs.ImportProcess">
       <constructor-arg index="0" ref="catalog"/>

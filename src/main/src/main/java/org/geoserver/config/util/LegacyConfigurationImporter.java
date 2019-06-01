@@ -89,13 +89,13 @@ public class LegacyConfigurationImporter {
         Map<String, Object> global = reader.global();
 
         // info.setMaxFeatures( get( global, "maxFeatures", Integer.class ) );
-        info.setVerbose(get(global, "verbose", boolean.class));
-        info.setVerboseExceptions(get(global, "verboseExceptions", boolean.class));
-        info.setNumDecimals(get(global, "numDecimals", int.class, 4));
-        info.setCharset((String) global.get("charSet"));
+        info.getSettings().setVerbose(get(global, "verbose", boolean.class));
+        info.getSettings().setVerboseExceptions(get(global, "verboseExceptions", boolean.class));
+        info.getSettings().setNumDecimals(get(global, "numDecimals", int.class, 4));
+        info.getSettings().setCharset((String) global.get("charSet"));
         info.setUpdateSequence(get(global, "updateSequence", int.class).longValue());
-        info.setOnlineResource(get(global, "onlineResource", String.class));
-        info.setProxyBaseUrl(get(global, "ProxyBaseUrl", String.class));
+        info.getSettings().setOnlineResource(get(global, "onlineResource", String.class));
+        info.getSettings().setProxyBaseUrl(get(global, "ProxyBaseUrl", String.class));
 
         // contact
         Map<String, Object> contact = reader.contact();
@@ -114,7 +114,7 @@ public class LegacyConfigurationImporter {
         contactInfo.setAddressCountry((String) contact.get("Country"));
         contactInfo.setAddressState((String) contact.get("StateOrProvince"));
         contactInfo.setAddressPostalCode((String) contact.get("PostCode"));
-        info.setContact(contactInfo);
+        info.getSettings().setContact(contactInfo);
 
         // jai
         JAIInfo jai = new JAIInfoImpl();
@@ -132,8 +132,9 @@ public class LegacyConfigurationImporter {
                 (Integer) value(global.get("JaiTilePriority"), JAIInfoImpl.DEFAULT_TilePriority));
         jai.setJpegAcceleration(
                 (Boolean) value(global.get("JaiJPEGNative"), JAIInfoImpl.DEFAULT_JPEGNative));
-        jai.setPngAcceleration(
-                (Boolean) value(global.get("JaiPNGNative"), JAIInfoImpl.DEFAULT_PNGNative));
+        if (Boolean.TRUE.equals(value(global.get("JaiPNGNative"), JAIInfoImpl.DEFAULT_PNGNative))) {
+            jai.setPngEncoderType(JAIInfo.PngEncoderType.NATIVE);
+        }
         jai.setRecycling(
                 (Boolean) value(global.get("JaiRecycling"), JAIInfoImpl.DEFAULT_Recycling));
         jai.setAllowNativeMosaic(

@@ -15,7 +15,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.filter.Filter;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -32,7 +31,7 @@ import org.opengis.parameter.ParameterValueGroup;
     title = "GetFullCoverage",
     description = "Returns a raster from the catalog, with optional filtering"
 )
-public class GetFullCoverage implements GSProcess {
+public class GetFullCoverage implements GeoServerProcess {
 
     private Catalog catalog;
 

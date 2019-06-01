@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Map;

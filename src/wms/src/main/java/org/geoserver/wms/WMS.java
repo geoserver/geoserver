@@ -1061,27 +1061,6 @@ public class WMS implements ApplicationContextAware {
     /**
      * Returns the read parameters for the specified layer, merging some well known request
      * parameters into the read parameters if possible
-     *
-     * @deprecated Use {@link #getWMSReadParameters(GetMapRequest, MapLayerInfo, Filter, SortBy[],
-     *     List, List, GridCoverage2DReader, boolean)} instead
-     */
-    @Deprecated
-    public GeneralParameterValue[] getWMSReadParameters(
-            final GetMapRequest request,
-            final MapLayerInfo mapLayerInfo,
-            final Filter layerFilter,
-            final List<Object> times,
-            final List<Object> elevations,
-            final GridCoverage2DReader reader,
-            boolean readGeom)
-            throws IOException {
-        return getWMSReadParameters(
-                request, mapLayerInfo, layerFilter, null, times, elevations, reader, readGeom);
-    }
-
-    /**
-     * Returns the read parameters for the specified layer, merging some well known request
-     * parameters into the read parameters if possible
      */
     public GeneralParameterValue[] getWMSReadParameters(
             final GetMapRequest request,
@@ -1263,7 +1242,7 @@ public class WMS implements ApplicationContextAware {
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
             throw new ServiceException(
-                    "Layer " + coverage.getPrefixedName() + " does not have time support enabled");
+                    "Layer " + coverage.prefixedName() + " does not have time support enabled");
         }
 
         GridCoverage2DReader reader = null;

@@ -773,7 +773,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                             LOGGER.log(
                                     Level.WARNING,
                                     "Couldn't encode WFS Capabilities entry for FeatureType: "
-                                            + ftype.getPrefixedName(),
+                                            + ftype.prefixedName(),
                                     e);
                         } else {
                             throw e;
@@ -818,7 +818,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 bbox = info.getLatLonBoundingBox();
 
                 start("FeatureType");
-                element("Name", info.getPrefixedName());
+                element("Name", info.prefixedName());
                 element("Title", info.getTitle());
                 element("Abstract", info.getAbstract());
                 handleKeywords(info.getKeywords());
@@ -1565,7 +1565,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                                 LOGGER.log(
                                         Level.WARNING,
                                         "Couldn't encode WFS capabilities entry for featuretype: "
-                                                + featureType.getPrefixedName(),
+                                                + featureType.prefixedName(),
                                         ex);
                             } else {
                                 throw ex;
@@ -1675,7 +1675,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 start("FeatureType", attributes(new String[] {"xmlns:" + prefix, uri}));
 
-                element("Name", featureType.getPrefixedName());
+                element("Name", featureType.prefixedName());
                 element("Title", featureType.getTitle());
                 element("Abstract", featureType.getAbstract());
                 keywords(featureType.getKeywords());

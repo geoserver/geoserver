@@ -5,10 +5,10 @@
 package org.geoserver.security.oauth2.services;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.Map;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -46,7 +46,7 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
     protected String getAuthorizationHeader(String accessToken) {
         String creds = String.format("%s:%s", clientId, clientSecret);
         try {
-            return "Basic " + new String(Base64.encode(creds.getBytes("UTF-8")));
+            return "Basic " + new String(Base64.getEncoder().encode(creds.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Could not convert String");
         }

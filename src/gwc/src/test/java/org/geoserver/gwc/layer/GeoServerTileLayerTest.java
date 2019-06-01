@@ -5,25 +5,24 @@
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.same;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -48,6 +47,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -537,7 +538,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) anyObject()))
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) any()))
                 .thenReturn(mockResult);
 
         Resource result = layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
@@ -561,9 +562,9 @@ public class GeoServerTileLayerTest {
         assertEquals("50", capturedParams.get("X"));
         assertEquals("50", capturedParams.get("Y"));
 
-        verify(mockGWC, times(1)).dispatchOwsRequest((Map) anyObject(), (Cookie[]) anyObject());
+        verify(mockGWC, times(1)).dispatchOwsRequest((Map) any(), (Cookie[]) any());
 
-        when(mockGWC.dispatchOwsRequest((Map) anyObject(), (Cookie[]) anyObject()))
+        when(mockGWC.dispatchOwsRequest((Map) any(), (Cookie[]) any()))
                 .thenThrow(new RuntimeException("mock exception"));
         try {
             layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
@@ -632,7 +633,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) anyObject()))
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) any()))
                 .thenReturn(mockResult);
 
         BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
@@ -641,11 +642,11 @@ public class GeoServerTileLayerTest {
 
         RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);
         MimeType mimeType = MimeType.createFromFormat("image/png");
-        when(mockGWC.getResponseEncoder(eq(mimeType), (RenderedImageMap) anyObject()))
+        when(mockGWC.getResponseEncoder(eq(mimeType), (RenderedImageMap) any()))
                 .thenReturn(fakeResponseEncoder);
 
         StorageBroker storageBroker = mock(StorageBroker.class);
-        when(storageBroker.get((TileObject) anyObject())).thenReturn(false);
+        when(storageBroker.get((TileObject) any())).thenReturn(false);
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
 
@@ -671,7 +672,7 @@ public class GeoServerTileLayerTest {
         assertEquals(CacheResult.MISS, returned.getCacheResult());
         assertEquals(200, returned.getStatus());
 
-        verify(storageBroker, atLeastOnce()).get((TileObject) anyObject());
+        verify(storageBroker, atLeastOnce()).get((TileObject) any());
         verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
     }
 
@@ -735,12 +736,10 @@ public class GeoServerTileLayerTest {
         // Checking that the getLayerInfo and getLayerGroupInfo methods
         // returns a not null object
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
-        assertNotNull(layerInfoTileLayer.getLayerInfo());
-        assertNull(layerInfoTileLayer.getLayerGroupInfo());
+        assertThat(layerInfoTileLayer.getPublishedInfo(), instanceOf(LayerInfo.class));
 
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
-        assertNull(layerGroupInfoTileLayer.getLayerInfo());
-        assertNotNull(layerGroupInfoTileLayer.getLayerGroupInfo());
+        assertThat(layerGroupInfoTileLayer.getPublishedInfo(), instanceOf(LayerGroupInfo.class));
     }
 
     @Test

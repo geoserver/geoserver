@@ -113,7 +113,9 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             GetMapRequest request = mapContent.getRequest();
             map.put("request", request);
             map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
-            map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
+            map.put(
+                    "maxResolution",
+                    Double.valueOf(getMaxResolution(mapContent.getRenderingArea())));
             ProjectionHandler handler = null;
             try {
                 handler =

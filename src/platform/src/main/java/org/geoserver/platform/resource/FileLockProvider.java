@@ -17,10 +17,10 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import javax.servlet.ServletContext;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.util.IOUtils;
 import org.springframework.web.context.ServletContextAware;
 
 /**
@@ -186,7 +186,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
     private File getFile(String lockKey) {
         File locks = new File(root, "filelocks"); // avoid same directory as GWC
         locks.mkdirs();
-        String sha1 = DigestUtils.shaHex(lockKey);
+        String sha1 = DigestUtils.sha1Hex(lockKey);
         return new File(locks, sha1 + ".lock");
     }
 

@@ -6,7 +6,7 @@
 
 package org.geoserver.wps;
 
-import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.EasyMock.createMock;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -133,7 +133,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         loader.save(wps, getGeoServer(), Files.asResource(root));
 
         // check the xml
-        String xml = FileUtils.readFileToString(new File(root, "wps.xml"));
+        String xml = FileUtils.readFileToString(new File(root, "wps.xml"), "UTF-8");
         Document dom = dom(xml);
 
         // geometry factory

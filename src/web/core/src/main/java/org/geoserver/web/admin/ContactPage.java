@@ -28,7 +28,7 @@ public class ContactPage extends ServerAdminPage {
                     public void onSubmit() {
                         GeoServer gs = (GeoServer) geoServerModel.getObject();
                         GeoServerInfo global = gs.getGlobal();
-                        global.setContact((ContactInfo) contactModel.getObject());
+                        global.getSettings().setContact((ContactInfo) contactModel.getObject());
                         gs.save(global);
                         doReturn();
                     }

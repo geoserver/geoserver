@@ -8,7 +8,6 @@ package org.geoserver.gwc;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.getRootCause;
-import static com.google.common.base.Throwables.propagate;
 import static com.google.common.collect.Iterators.forEnumeration;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.geowebcache.grid.GridUtil.findBestMatchingGrid;
@@ -98,7 +97,6 @@ import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.ConfigurationPersistenceException;
 import org.geowebcache.config.TileLayerConfiguration;
-import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
@@ -688,10 +686,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ConfigurationException
      * @throws InterruptedException
      */
+    @SuppressWarnings("deprecation")
     void reload() {
         final Set<String> currLayerNames = new HashSet<String>(getTileLayerNames());
         try {
-            tld.reInit();
+            tld.reInit(); // some mock testing uses this blasted method, don't know how to work
+            // around it
         } catch (RuntimeException e) {
             log.log(Level.WARNING, "Unable to reinit TileLayerDispatcher", e);
             throw e;
@@ -1647,18 +1647,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
     }
 
-    /**
-     * Looks up the {@link XMLConfiguration} from the spring context.
-     *
-     * @deprecated Only to be used for testing
-     * @return The {@link XMLConfiguration}
-     */
-    @Deprecated
-    XMLConfiguration getXmlConfiguration() {
-        XMLConfiguration mainConfig = GeoWebCacheExtensions.bean(XMLConfiguration.class);
-        return mainConfig;
-    }
-
     private BlobStoreAggregator getBlobStoreAggregator() {
         return blobStoreAggregator;
     }
@@ -1721,12 +1709,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public boolean isQueryable(final GeoServerTileLayer geoServerTileLayer) {
         WMS wmsMediator = WMS.get();
-        LayerInfo layerInfo = geoServerTileLayer.getLayerInfo();
-        if (layerInfo != null) {
-            return wmsMediator.isQueryable(layerInfo);
+        PublishedInfo published = geoServerTileLayer.getPublishedInfo();
+        if (published instanceof LayerInfo) {
+            return wmsMediator.isQueryable((LayerInfo) published);
         }
-        LayerGroupInfo lgi = geoServerTileLayer.getLayerGroupInfo();
-        return wmsMediator.isQueryable(lgi);
+        return wmsMediator.isQueryable((LayerGroupInfo) published);
     }
 
     /**
@@ -2089,7 +2076,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         try {
             storageBroker.deleteByGridSetId(layerName, gridSetId);
         } catch (StorageException e) {
-            throw propagate(getRootCause(e));
+            Throwable throwable = getRootCause(e);
+            Throwables.throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
         }
     }
 
@@ -2377,11 +2366,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {
         GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(geoServerTileLayerName);
-        LayerInfo layerInfo = layer.getLayerInfo();
-        if (layerInfo != null) {
-            return layerInfo.getResource().getCRS();
+        PublishedInfo published = layer.getPublishedInfo();
+        if (published instanceof LayerInfo) {
+            return ((LayerInfo) published).getResource().getCRS();
         }
-        LayerGroupInfo layerGroupInfo = layer.getLayerGroupInfo();
+        LayerGroupInfo layerGroupInfo = (LayerGroupInfo) published;
         ReferencedEnvelope bounds = layerGroupInfo.getBounds();
         return bounds.getCoordinateReferenceSystem();
     }
@@ -2486,7 +2475,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             List<URL> urls = newArrayList(forEnumeration(classLoader.getResources(resourceName)));
             return GWC.getAdvertisedCachedFormats(type, urls);
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

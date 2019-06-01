@@ -24,7 +24,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
     public void testInterpolationSingleLinearXML() throws Exception {
 
         final File xml = new File("./src/test/resources/requestGetCoverageInterpolationLinear.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -46,7 +46,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         final File xml =
                 new File("./src/test/resources/requestGetCoverageInterpolationNearest.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -68,7 +68,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         final File xml =
                 new File("./src/test/resources/requestGetCoverageInterpolationMixedSupported.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -90,7 +90,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         final File xml =
                 new File("./src/test/resources/requestGetCoverageInterpolationMixedTime.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("application/xml", response.getContentType());
@@ -104,7 +104,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/requestGetCoverageInterpolationMixedUnsupported.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("application/xml", response.getContentType());
@@ -117,7 +117,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         final File xml =
                 new File("./src/test/resources/requestGetCoverageInterpolationMixedDuplicated.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("application/xml", response.getContentType());

@@ -5,15 +5,15 @@
  */
 package org.geoserver.security.decorators;
 
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
-import static org.easymock.classextension.EasyMock.createNiceMock;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.easymock.classextension.EasyMock;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;

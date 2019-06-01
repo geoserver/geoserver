@@ -17,9 +17,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableList;
@@ -39,6 +39,7 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.ows.LocalWorkspace;
+import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.junit.After;
@@ -127,7 +128,8 @@ public class CatalogConfigurationTest {
         when(catalog.getLayerGroupByName(eq(tileLayerName(groupWithNoTileLayer))))
                 .thenReturn(groupWithNoTileLayer);
 
-        gridSetBroker = new GridSetBroker(true, true);
+        gridSetBroker =
+                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
 
         Set<String> layerNames =
                 ImmutableSet.of(
@@ -279,12 +281,8 @@ public class CatalogConfigurationTest {
         newState.setName(orig.getInfo().getName());
         assertFalse(orig.equals(newState));
 
-        final GeoServerTileLayer modified;
-        if (orig.getLayerInfo() != null) {
-            modified = new GeoServerTileLayer(orig.getLayerInfo(), gridSetBroker, newState);
-        } else {
-            modified = new GeoServerTileLayer(orig.getLayerGroupInfo(), gridSetBroker, newState);
-        }
+        final GeoServerTileLayer modified =
+                new GeoServerTileLayer(orig.getPublishedInfo(), gridSetBroker, newState);
 
         assertEquals(
                 orig.getInfo(),
@@ -471,7 +469,7 @@ public class CatalogConfigurationTest {
         when(tl.getId()).thenReturn("layerWithNoGeometry");
         when(tl.isTransientLayer()).thenReturn(false);
         when(tl.getInfo()).thenReturn(info);
-        when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
+        when(tl.getPublishedInfo()).thenReturn(layerWithNoGeometry);
         when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);
         when(catalog.getLayerByName(eq(tileLayerName(layerWithNoGeometry))))
                 .thenReturn(layerWithNoGeometry);
@@ -533,12 +531,12 @@ public class CatalogConfigurationTest {
             otherWorkspace.setName("other");
             // setting the local workspace equal to layers workspace
             LocalWorkspace.set(testWorkspace);
-            assertThat(config.getTileLayerById(layer1.getId()), notNullValue());
-            assertThat(config.getTileLayerById(layer2.getId()), notNullValue());
+            assertThat(config.getLayer(layer1.prefixedName()).orElse(null), notNullValue());
+            assertThat(config.getLayer(layer2.prefixedName()).orElse(null), notNullValue());
             // setting the local workspace different from layers workspaces
             LocalWorkspace.set(otherWorkspace);
-            assertThat(config.getTileLayerById(layer1.getId()), nullValue());
-            assertThat(config.getTileLayerById(layer2.getId()), nullValue());
+            assertThat(config.getLayer(layer1.prefixedName()).orElse(null), nullValue());
+            assertThat(config.getLayer(layer2.prefixedName()).orElse(null), nullValue());
         } finally {
             // cleaning
             LocalWorkspace.set(null);

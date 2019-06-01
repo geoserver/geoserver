@@ -20,9 +20,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class DefaultServiceExceptionHandlerTest extends TestCase {
+public class OWS10ServiceExceptionHandlerTest extends TestCase {
 
-    private DefaultServiceExceptionHandler handler;
+    private OWS10ServiceExceptionHandler handler;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
     private Request requestInfo;
@@ -52,7 +52,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
 
         response = new MockHttpServletResponse();
 
-        handler = new DefaultServiceExceptionHandler();
+        handler = new OWS10ServiceExceptionHandler();
 
         requestInfo = new Request();
         requestInfo.setHttpRequest(request);

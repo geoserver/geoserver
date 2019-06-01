@@ -156,7 +156,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             Set<String> getLegendGraphicFormats,
             Collection<ExtendedCapabilitiesProvider> extCapsProviders) {
         super();
-        Assert.notNull(wms);
+        Assert.notNull(wms, "wms");
         Assert.notNull(baseURL, "baseURL");
         Assert.notNull(getMapFormats, "getMapFormats");
         Assert.notNull(getLegendGraphicFormats, "getLegendGraphicFormats");

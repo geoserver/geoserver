@@ -27,23 +27,6 @@ import org.geotools.util.Version;
 public class RequestUtils {
 
     /**
-     * Pulls out the base url ( from the client point of view ), from the given request object.
-     *
-     * @return A String of the form "&lt;scheme&gt;://&lt;server&gt;:&lt;port&gt;/&lt;context&gt;/"
-     * @deprecated Use {@link ResponseUtils#baseURL(HttpServletRequest)} instead
-     */
-    public static String baseURL(HttpServletRequest req) {
-        StringBuffer sb = new StringBuffer(req.getScheme());
-        sb.append("://")
-                .append(req.getServerName())
-                .append(":")
-                .append(req.getServerPort())
-                .append(req.getContextPath())
-                .append("/");
-        return sb.toString();
-    }
-
-    /**
      * Pulls out the first IP address from the X-Forwarded-For request header if it was provided;
      * otherwise just gets the client IP address.
      *

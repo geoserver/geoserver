@@ -538,7 +538,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                     "GetMap XML parser - couldnt find node 'BoundingBox' in GetMap tag");
         }
 
-        List coordList = ExpressionDOMParser.parseCoords(bboxNode);
+        List coordList =
+                new ExpressionDOMParser(CommonFactoryFinder.getFilterFactory2()).coords(bboxNode);
 
         if (coordList.size() != 2) {
             throw new Exception(

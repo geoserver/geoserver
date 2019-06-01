@@ -23,7 +23,6 @@ import org.geotools.styling.Mark;
 import org.geotools.styling.Rule;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.StyleFactory;
-import org.geotools.styling.Symbolizer;
 import org.geotools.util.factory.GeoTools;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -233,14 +232,14 @@ public class RulesBuilder {
             while (it.hasNext() && colors.hasNext()) {
                 color = colors.next();
                 rule = it.next();
-                rule.setSymbolizers(
-                        new Symbolizer[] {
-                            sb.createPolygonSymbolizer(
-                                    strokeWeight < 0
-                                            ? null
-                                            : sb.createStroke(strokeColor, strokeWeight),
-                                    sb.createFill(color))
-                        });
+                rule.symbolizers().clear();
+                rule.symbolizers()
+                        .add(
+                                sb.createPolygonSymbolizer(
+                                        strokeWeight < 0
+                                                ? null
+                                                : sb.createStroke(strokeColor, strokeWeight),
+                                        sb.createFill(color)));
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -285,11 +284,11 @@ public class RulesBuilder {
                                 includeStrokeForPoints && strokeWeight >= 0
                                         ? sb.createStroke(strokeColor, strokeWeight)
                                         : null);
-                rule.setSymbolizers(
-                        new Symbolizer[] {
-                            sb.createPointSymbolizer(
-                                    sb.createGraphic(null, mark, null, 1.0, pointSize, 0.0))
-                        });
+                rule.symbolizers().clear();
+                rule.symbolizers()
+                        .add(
+                                sb.createPointSymbolizer(
+                                        sb.createGraphic(null, mark, null, 1.0, pointSize, 0.0)));
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -326,7 +325,8 @@ public class RulesBuilder {
             while (it.hasNext() && colors.hasNext()) {
                 color = colors.next();
                 rule = it.next();
-                rule.setSymbolizers(new Symbolizer[] {sb.createLineSymbolizer(color)});
+                rule.symbolizers().clear();
+                rule.symbolizers().add(sb.createLineSymbolizer(color));
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -358,13 +358,13 @@ public class RulesBuilder {
             r = SF.createRule();
             f = FF.less(att, FF.literal(groups.getMax(0)));
             r.setFilter(f);
-            r.setTitle(" < " + FF.literal(groups.getMax(0)));
+            r.getDescription().setTitle(" < " + FF.literal(groups.getMax(0)));
             list.add(r);
             for (int i = 1; i < groups.getSize() - 1; i++) {
                 r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMax(i)));
-                    r.setTitle(FF.literal(groups.getMin(i)).toString());
+                    r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
                     r.setFilter(f);
                     list.add(r);
                 } else {
@@ -372,11 +372,12 @@ public class RulesBuilder {
                             FF.and(
                                     FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
                                     FF.less(att, FF.literal(groups.getMax(i))));
-                    r.setTitle(
-                            " >= "
-                                    + FF.literal(groups.getMin(i))
-                                    + " AND < "
-                                    + FF.literal(groups.getMax(i)));
+                    r.getDescription()
+                            .setTitle(
+                                    (" >= "
+                                            + FF.literal(groups.getMin(i))
+                                            + " AND < "
+                                            + FF.literal(groups.getMax(i))));
                     r.setFilter(f);
                     list.add(r);
                 }
@@ -385,7 +386,7 @@ public class RulesBuilder {
             r = SF.createRule();
             f = FF.greaterOrEqual(att, FF.literal(groups.getMin(groups.getSize() - 1)));
             r.setFilter(f);
-            r.setTitle(" >= " + FF.literal(groups.getMin(groups.getSize() - 1)));
+            r.getDescription().setTitle((" >= " + FF.literal(groups.getMin(groups.getSize() - 1))));
             list.add(r);
             return list;
         } catch (Exception e) {
@@ -428,7 +429,7 @@ public class RulesBuilder {
                 r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMin(i)));
-                    r.setTitle(FF.literal(groups.getMin(i)).toString());
+                    r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
                     r.setFilter(f);
                     list.add(r);
                 } else {
@@ -439,12 +440,13 @@ public class RulesBuilder {
                                             ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
                                             : FF.less(att, FF.literal(groups.getMax(i))));
 
-                    r.setTitle(
-                            " >= "
-                                    + FF.literal(groups.getMin(i))
-                                    + " AND "
-                                    + (i == (groups.getSize() - 1) ? "<=" : "<")
-                                    + FF.literal(groups.getMax(i)));
+                    r.getDescription()
+                            .setTitle(
+                                    (" >= "
+                                            + FF.literal(groups.getMin(i))
+                                            + " AND "
+                                            + (i == (groups.getSize() - 1) ? "<=" : "<")
+                                            + FF.literal(groups.getMax(i))));
                     r.setFilter(f);
                     list.add(r);
                 }
@@ -492,7 +494,7 @@ public class RulesBuilder {
                     szTitle += " OR " + val;
                 }
                 f = CQL.toFilter(szFilter);
-                r.setTitle(szTitle);
+                r.getDescription().setTitle(szTitle);
                 r.setFilter(f);
                 list.add(r);
             }

@@ -482,7 +482,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 // TODO: set lat lon bounding box
 
                 if (ftinfo.getId() == null) {
-
                     // do a check for a type already named this name in the catalog, if it is
                     // already
                     // there try to rename it
@@ -497,9 +496,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                         do {
                             ftinfo.setName(originalName + x);
                             x++;
-                        } while (x < 10
-                                && catalog.getFeatureTypeByName(namespace, ftinfo.getName())
-                                        != null);
+                        } while (catalog.getFeatureTypeByName(namespace, ftinfo.getName()) != null);
                     }
                     catalog.validate(ftinfo, true).throwIfInvalid();
                     catalog.add(ftinfo);

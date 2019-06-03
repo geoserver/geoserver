@@ -213,7 +213,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(
                 expected,
                 response.getContentAsString()
-                        .substring(response.getContentAsString().indexOf(":") + 2));
+                        .substring(response.getContentAsString().indexOf(":") + 1));
     }
 
     @Test
@@ -441,10 +441,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = super.deleteAsServletResponse(url);
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
         // See GWC's TileLayerRestlet
-        assertEquals(
-                "Unknown layer: badLayerName",
-                response.getContentAsString()
-                        .substring(response.getContentAsString().indexOf(":") + 2));
+        assertEquals("Unknown layer: badLayerName", response.getContentAsString());
     }
 
     @Test

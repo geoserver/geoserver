@@ -7,7 +7,12 @@ package org.geoserver.security;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
+import org.geoserver.security.config.SecurityConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 
 /**
@@ -74,5 +79,33 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
      */
     public void setMapperParameters(Map<String, String> mapperParameters) {
         this.mapperParameters = mapperParameters;
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        AuthenticationKeyFilterConfig target =
+                (AuthenticationKeyFilterConfig) SerializationUtils.clone(this);
+        if (target != null) {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment =
+                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+            if (target.getMapperParameters() != null && !target.getMapperParameters().isEmpty()) {
+                if (allowEnvParametrization) {
+                    for (Entry<String, String> param : target.getMapperParameters().entrySet()) {
+                        String key = param.getKey();
+                        Object value = param.getValue();
+
+                        if (gsEnvironment != null
+                                && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                            value = gsEnvironment.resolveValue(value);
+                        }
+
+                        target.getMapperParameters().put(key, (String) value);
+                    }
+                }
+            }
+        }
+
+        return target;
     }
 }

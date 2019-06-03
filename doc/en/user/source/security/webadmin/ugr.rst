@@ -126,7 +126,7 @@ To add a new LDAP user/group service, click the :guilabel:`Add new` link, and th
 
    * - Option
      - Description
-    * - Name
+   * - Name
      - Name of the LDAP role service in GeoServer
    * - Password encryption
      - The method to used to :ref:`encrypt user passwords <security_passwd_encryption>`
@@ -146,8 +146,11 @@ To add a new LDAP user/group service, click the :guilabel:`Add new` link, and th
      - Sets attribute containing the group name.  Leave blank to derive from name filter.
    * - Query format to retrieve the user/group mapping
      - Query format used for mapping user/group memberships.  Leave blank to derive from attribute.  This may contain some placeholder values:
+     
        ``{0}``, the ``username`` of the user, for example ``bob``.
+       
        ``{1}``, the  full DN of the user, for example ``uid=bob,ou=users``.
+       
    * - Attribute name to retrieve the user/group mapping
      - Attribute name used for mapping user/group memberships.  Leave blank to derive from filter.
    * - User search base
@@ -160,14 +163,12 @@ To add a new LDAP user/group service, click the :guilabel:`Add new` link, and th
      - Sets the attribute containing the name for users. Leave blank to derive from name filter.
    * - List of attributes to populate
      - Sets a comma separated list of attributes to populate on users.
-	 
    * - Authenticated onto the LDAP before querying
      - When checked all LDAP searches will be done in authenticated mode, using the credentials given with the *Username* and *Password* options
    * - Username
      - Username to use when connecting to the LDAP server. Only applicable when the *Authenticated onto the LDAP before querying* parameter is **checked**.
    * - Password
      - Password to use when connecting to the LDAP server. Only applicable when the *Authenticated onto the LDAP before querying* parameter is **checked**.
-	 
    * - Enable Hierarchical groups search
      - When checked all LDAP group searches will use hierarchical mode, retrieving LDAP parent groups too.
    * - Max depth for hierarchical groups search

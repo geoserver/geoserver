@@ -134,7 +134,7 @@ bill is a member of the ``admin`` group so he would be assigned a role named
 
    If you want support for hierarchical LDAP groups:
    
-   * Check ``Enable Hierarchical groups search `` box.
+   * Check :guilabel:`Enable Hierarchical groups search` box.
    * Set ``Max depth for hierarchical groups search`` to 10 (-1 for infinite depth, or the depth number you want to support).
    * Set ``Nested group search filter`` to "member={0}"
 

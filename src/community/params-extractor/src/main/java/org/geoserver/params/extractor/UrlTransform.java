@@ -52,13 +52,25 @@ public class UrlTransform {
         return queryStringBuilder.toString();
     }
 
-    public void addParameter(String name, String value, String combine) {
+    public void addParameter(String name, String value, String combine, Boolean repeat) {
         String rawName = getRawName(name);
+        String layersRawName = getRawName("layers");
         String[] existingValues = parameters.get(rawName);
-        if (existingValues != null && combine != null) {
-            String combinedValue = combine.replace("$1", existingValues[0]);
-            combinedValue = combinedValue.replace("$2", value);
-            existingValues[0] = combinedValue;
+        if ((existingValues != null || repeat) && combine != null) {
+            int num = 1;
+            if (repeat
+                    && parameters.containsKey(layersRawName)
+                    && parameters.get(layersRawName) != null) {
+                num = parameters.get(layersRawName)[0].split(",").length;
+            }
+            String existingValue = existingValues == null ? null : existingValues[0];
+            for (int count = 0; count < num; count++) {
+                String combinedValue =
+                        existingValue == null ? "$2" : combine.replace("$1", existingValue);
+                combinedValue = combinedValue.replace("$2", value);
+                existingValue = combinedValue;
+            }
+            parameters.put(rawName, new String[] {existingValue});
         } else {
             parameters.put(rawName, new String[] {value});
         }

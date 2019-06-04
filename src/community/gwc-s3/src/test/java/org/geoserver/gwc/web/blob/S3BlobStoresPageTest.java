@@ -26,6 +26,8 @@ import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.s3.S3BlobStoreInfo;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -37,6 +39,16 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
 
     private static final String ID_DUMMY1 = "zzz";
     private static final String ID_DUMMY2 = "yyy";
+    
+    @Before
+    public void before() {
+        login();
+    }
+
+    @After
+    public void after() {
+        logout();
+    }
 
     public BlobStoreInfo dummyStore1() {
         FileBlobStoreInfo config = new FileBlobStoreInfo(ID_DUMMY1);

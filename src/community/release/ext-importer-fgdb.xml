@@ -1,5 +1,5 @@
 <assembly>
-  <id>importer-fgdb</id>
+  <id>importer-fgdb-plugin</id>
   <formats>
     <format>zip</format>
   </formats>

@@ -23,10 +23,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.ogr.OGRDataStoreFactory;
 import org.geotools.data.ogr.jni.JniOGRDataStoreFactory;
 import org.geotools.util.KVP;
+import org.geotools.util.URLs;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -92,16 +92,16 @@ public class OGRDataStoreFactoryTest {
         unpack.delete();
         unpack.mkdirs();
         unpack(archive, unpack);
-        resourceURL = DataUtilities.fileToURL(unpack);
+        resourceURL = URLs.fileToUrl(unpack);
         System.out.println("locations.gdb unpacked into: " + resourceURL);
 
         assert resourceURL != null : "Could not find locations.gdb resource";
-        File resource = DataUtilities.urlToFile(resourceURL);
+        File resource = URLs.urlToFile(resourceURL);
 
         File gdbDirectory = new File(resource, "locations.gdb");
 
         gdbFile = new File(gdbDirectory, "gdb");
-        gdbURL = DataUtilities.fileToURL(gdbFile);
+        gdbURL = URLs.fileToUrl(gdbFile);
 
         System.out.println("Unpacked URL: " + resourceURL);
         System.out.println("Unpacked File: " + resource);

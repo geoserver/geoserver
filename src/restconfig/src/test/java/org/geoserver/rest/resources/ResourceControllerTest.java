@@ -49,6 +49,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     private Resource myRes;
 
     public ResourceControllerTest() {
+        // platform specific test, may not be UTF-8
         CharsetEncoder encoder = Charset.defaultCharset().newEncoder();
         if (encoder.canEncode("éö")) {
             STR_MY_TEST = "This is my test. é ö";

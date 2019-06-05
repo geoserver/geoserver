@@ -23,9 +23,10 @@ Fill in the *Basic Store Info* used to identify the database when managing layer
 
 .. list-table::
    :widths: 20 80
-
-   * - **Basic Store Info**
-     - **Description**
+   :header-rows: 1
+   
+   * - Basic Store Info
+     - Description
    * - :guilabel:`Workspace`
      - Name of the workspace to contain the database.  This will also be the prefix of any layer names created from tables in the database.
    * - :guilabel:`Data Source Name`
@@ -85,11 +86,11 @@ Connection parameters establishing a database connection (see :doc:`connection-p
      - Time (in seconds) the connection pool will wait before timing out.
    * - :guilabel:`validate connections`
      - Checks the connection is alive before using it.
-   * - Evictor run periodicity
+   * - :guilabel:`Evictor run periodicity`
      - Number of seconds between idle object evictor runs.
-   * - Max connection idle time
+   * - :guilabel:`Max connection idle time`
      - Number of seconds a connection needs to stay idle before the evictor starts to consider closing it.
-   * - Evictor tests per run
+   * - :guilabel:`Evictor tests per run`
      - Number of connections checked by the idle connection evictor for each of its runs.
 
 Connection parameters managing SQL generation:
@@ -159,9 +160,10 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG 
 
 .. list-table::
    :widths: 20 80
-
-   * - **Option**
-     - **Description**
+   :header-rows: 1
+   
+   * - Option
+     - Description
    * - :guilabel:`Workspace`
      - Name of the workspace to contain the store.  This will also be the prefix of all of the layer names created from the store.
    * - :guilabel:`Data Source Name`

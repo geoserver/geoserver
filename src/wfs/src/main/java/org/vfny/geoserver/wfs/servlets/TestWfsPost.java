@@ -185,21 +185,13 @@ public class TestWfsPost extends HttpServlet {
                 acon.setDoInput(true);
                 acon.setUseCaches(false);
 
-                // SISfixed - if there was authentication info in the request,
-                //           Pass it along the way to the target URL
-                // DJB: applied patch in GEOS-335
-                String authHeader = request.getHeader("Authorization");
-
                 String username = request.getParameter("username");
 
                 if ((username != null) && !username.trim().equals("")) {
                     String password = request.getParameter("password");
                     String up = username + ":" + password;
                     byte[] encoded = Base64.encodeBase64(up.getBytes());
-                    authHeader = "Basic " + new String(encoded);
-                }
-
-                if (authHeader != null) {
+                    String authHeader = "Basic " + new String(encoded);
                     acon.setRequestProperty("Authorization", authHeader);
                 }
 

@@ -64,10 +64,11 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(ComplexMongoDBSupport.class);
 
-    private static final Path ROOT_DIRECTORY = createTempDir();
+    protected static final Path ROOT_DIRECTORY = createTempDir();
 
     private static File APP_SCHEMA_MAPPINGS;
 
+    protected static final String STATIONS_STORE_NAME = UUID.randomUUID().toString();
     private static final String STATIONS_DATA_BASE_NAME = UUID.randomUUID().toString();
     private static final String STATIONS_COLLECTION_NAME = "stations";
 
@@ -141,7 +142,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         params.put("dbtype", "app-schema");
         params.put("url", "file:" + APP_SCHEMA_MAPPINGS.getAbsolutePath());
         DataStoreInfoImpl dataStore = new DataStoreInfoImpl(getCatalog());
-        dataStore.setName(UUID.randomUUID().toString());
+        dataStore.setName(STATIONS_STORE_NAME);
         dataStore.setType("app-schema");
         dataStore.setConnectionParameters(params);
         dataStore.setWorkspace(workspace);

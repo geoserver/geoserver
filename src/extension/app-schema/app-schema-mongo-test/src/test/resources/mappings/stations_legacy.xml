@@ -33,6 +33,10 @@
           <name>data_store_type</name>
           <value>complex</value>
         </Parameter>
+        <Parameter>
+          <name>objs_id_schema</name>
+          <value>58e5889ce4b02461ad5af080,58e5889ce4b02461ad5af081</value>
+        </Parameter>
       </parameters>
     </DataStore>
   </sourceDataStores>

@@ -193,3 +193,118 @@ A new ``geosciml`` data store will be created with three feature types in it:
        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/gsml/datastores/geosciml/featuretypes/GeologicUnit.xml" type="application/xml"/>
      </featureType>
    </featureTypes>
+   
+Cleaning schemas on internal MongoDB stores
+-------------------------------------------
+
+**Clean persisted schema on an internal MongoDB Store, allowing it to generate a new one from data.**
+
+*Request template*
+
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/{WORKSPACE}/appschemastores/{APP_SCHEMA_STORE_NAME}/datastores/{INTERNAL_STORE_ID}/cleanSchemas
+   
+*Request*
+   
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/st/appschemastores/AppSchemaStoreName/datastores/store_id/cleanSchemas
+
+*Response*
+
+::
+
+   200 OK
+   
+**Clean persisted schema on all internal MongoDB Stores, allowing it to generate them from data.**
+
+*Request template*
+
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/{WORKSPACE}/appschemastores/{APP_SCHEMA_STORE_NAME}/cleanSchemas
+   
+*Request*
+   
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/st/appschemastores/AppSchemaStoreName/cleanSchemas
+
+*Response*
+
+::
+
+   200 OK
+   
+**Rebuild persisted schema on internal MongoDB Store, allowing it to generate them from data and query parameters.**
+
+*Request template*
+
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/{WORKSPACE}/appschemastores/{APP_SCHEMA_STORE_NAME}/datastores/{INTERNAL_STORE_ID}/rebuildMongoSchemas?ids={ID_1},{ID_2}&max={MAX_OBJECTS}
+   
+- ids: Comma separated MongoDB JSON objects ids to query for generating schemas.  Not required if the 'max' is setted.
+- max: Max number of MongoDB JSON objects to get for generating schemas.  Not required if the 'ids' is setted.
+
+*Request*
+   
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/st/appschemastores/AppSchemaStoreName/datastores/store_id/rebuildMongoSchemas?ids=58e5889ce4b02461ad5af081,58e5889ce4b02461ad5af080&max=5
+
+*Response*
+
+::
+
+   200 OK
+   
+**Rebuild persisted schema on all internal MongoDB Stores, allowing it to generate them from data and query parameters.**
+
+*Request template*
+
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/{WORKSPACE}/appschemastores/{APP_SCHEMA_STORE_NAME}/rebuildMongoSchemas?ids={ID_1},{ID_2}&max={MAX_OBJECTS}
+   
+- ids: Comma separated MongoDB JSON objects ids to query for generating schemas.  Not required if the 'max' is setted.
+- max: Max number of MongoDB JSON objects to get for generating schemas.  Not required if the 'ids' is setted.
+
+*Request*
+   
+.. admonition:: curl
+
+   ::
+
+       curl -v -X POST 
+         -u admin:geoserver http://localhost:8080/geoserver/rest/workspaces/st/appschemastores/AppSchemaStoreName/rebuildMongoSchemas?ids=58e5889ce4b02461ad5af081,58e5889ce4b02461ad5af080&max=5
+
+*Response*
+
+::
+
+   200 OK
+   
+.. note:: This endpoins are only available when App-Schema and MongoDB modules are installed on Geoserver, and involved app-schema store have internal MongoDB stores in mappings definition.

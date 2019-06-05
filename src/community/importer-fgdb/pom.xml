@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.16-SNAPSHOT</version>
+    </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-importer-fgdb</artifactId>
+  <packaging>jar</packaging>
+  <name>ESRI File GeoDatabase Support</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.importer</groupId>
+      <artifactId>gs-importer-core</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-ogr-jni</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+
+    <!--  Test dependencies -->
+    <dependency>
+      <groupId>org.geoserver.importer</groupId>
+      <artifactId>gs-importer-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <version>0.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${gs.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.15</version>
+          <configuration>
+              <runOrder>alphabetical</runOrder>
+              <includes>
+                <include>**/*Test.java</include>
+              </includes>
+              <excludes>
+                <exclude>${online.skip.pattern}</exclude>
+                <exclude>${stress.skip.pattern}</exclude>
+                <exclude>${test.exclude.pattern}</exclude>
+              </excludes>
+              <argLine>-Xmx${test.maxHeapSize} ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Djava.io.tmpdir="${java.io.tmpdir}" -Djava.library.path="${env.GT_GDAL}"</argLine>
+              <environmentVariables>
+                  <!-- example GT_GDAL = /usr/local/opengeo/lib -->
+                  <PATH>${env.GT_GDAL}${path.separator}${env.PATH}</PATH>
+                  <DYLD_LIBRARY_PATH>${env.GT_GDAL}${path.separator}${env.DYLD_LIBRARY_PATH}</DYLD_LIBRARY_PATH>
+                  <LD_LIBRARY_PATH>${env.GT_GDAL}${path.separator}${env.LD_LIBRARY_PATH}</LD_LIBRARY_PATH>
+                  
+                  <GDAL_DRIVER_PATH>${env.GT_GDAL}${path.separator}gdal_plugins</GDAL_DRIVER_PATH>
+              </environmentVariables>
+              <testFailureIgnore>
+                ${allow.test.failure.ignore}
+              </testFailureIgnore>
+              <printSummary>true</printSummary>
+              <redirectTestOutputToFile>false</redirectTestOutputToFile>
+              <forkMode>${test.forkMode}</forkMode>
+        </configuration>
+      </plugin>
+
+      <plugin>
+       <artifactId>maven-assembly-plugin</artifactId>
+       <version>2.1</version>
+       <configuration>
+        <descriptors>
+         <descriptor>ext-importer-gdb.xml</descriptor>
+        </descriptors>
+        <!--finalName>geoserver-2.8-SNAPSHOT</finalName>
+        <outputDirectory>${project.build.directory}/release</outputDirectory-->
+       </configuration>
+      </plugin>
+      
+    </plugins>
+
+    <testResources>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
+
+</project>

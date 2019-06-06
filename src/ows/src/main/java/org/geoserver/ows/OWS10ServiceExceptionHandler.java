@@ -33,6 +33,10 @@ import org.geotools.xsd.Encoder;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
+
+    private static String CONTENT_TYPE =
+            System.getProperty("ows10.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+
     protected boolean verboseExceptions = false;
 
     /** Constructor to be called if the exception is not for a particular service. */
@@ -85,7 +89,7 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
 
         if (!request.isSOAP()) {
             // there will already be a SOAP mime type
-            request.getHttpResponse().setContentType("application/xml");
+            request.getHttpResponse().setContentType(CONTENT_TYPE);
         }
 
         // response.setCharacterEncoding( "UTF-8" );

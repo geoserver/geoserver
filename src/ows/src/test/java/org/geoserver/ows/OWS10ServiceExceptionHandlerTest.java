@@ -5,31 +5,58 @@
  */
 package org.geoserver.ows;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import javax.xml.parsers.DocumentBuilderFactory;
-import junit.framework.TestCase;
 import org.apache.xpath.XPathAPI;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class OWS10ServiceExceptionHandlerTest extends TestCase {
+public class OWS10ServiceExceptionHandlerTest {
 
-    private OWS10ServiceExceptionHandler handler;
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private Request requestInfo;
+    private static OWS10ServiceExceptionHandler handler;
+    private static MockHttpServletRequest request;
+    private static MockHttpServletResponse response;
+    private static Request requestInfo;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    private static final String XML_TYPE_TEXT = "text/xml";
 
+    @BeforeClass
+    public static void setupClass()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
+                    SecurityException {
+        // Playing with System.Properties and Static boolean fields can raises issues
+        // when running Junit tests via Maven, due to initialization orders.
+        // So let's change the fields via reflections for these tests
+        Field field = OWS10ServiceExceptionHandler.class.getDeclaredField("CONTENT_TYPE");
+        field.setAccessible(true);
+        field.set(null, XML_TYPE_TEXT);
+        System.setProperty("ows10.exception.xml.responsetype", XML_TYPE_TEXT);
+    }
+
+    @AfterClass
+    public static void teardownClass() {
+        System.clearProperty("ows10.exception.xml.responsetype");
+    }
+
+    @Before
+    public void setUp() throws Exception {
         HelloWorld helloWorld = new HelloWorld();
         Service service =
                 new Service(
@@ -57,10 +84,11 @@ public class OWS10ServiceExceptionHandlerTest extends TestCase {
         requestInfo = new Request();
         requestInfo.setHttpRequest(request);
         requestInfo.setHttpResponse(response);
-        requestInfo.setService("hello");
-        requestInfo.setVersion("1.0.0");
+        requestInfo.setService(service.getId());
+        requestInfo.setVersion(service.getVersion().toString());
     }
 
+    @Test
     public void testHandleServiceException() throws Exception {
         ServiceException exception = new ServiceException("hello service exception");
         exception.setCode("helloCode");
@@ -74,10 +102,10 @@ public class OWS10ServiceExceptionHandlerTest extends TestCase {
         docBuilderFactory.setNamespaceAware(true);
 
         Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
-
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
     }
 
+    @Test
     public void testHandleServiceExceptionEncoding() throws Exception {
         String message = "foo & <foo> \"foo's\"";
 
@@ -104,6 +132,7 @@ public class OWS10ServiceExceptionHandlerTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testHandleServiceExceptionEncodingMore() throws Exception {
         String message1 = "foo & <foo> \"foo's\"";
         String message2 = "a \"different\" <message>";
@@ -132,6 +161,7 @@ public class OWS10ServiceExceptionHandlerTest extends TestCase {
                 exceptionText.getTextContent());
     }
 
+    @Test
     public void testHandleServiceExceptionCauses() throws Exception {
         // create a stack of three exceptions
         IllegalArgumentException illegalArgument =
@@ -162,6 +192,7 @@ public class OWS10ServiceExceptionHandlerTest extends TestCase {
         assertTrue(exceptionText.indexOf(serviceException.getMessage()) != -1);
     }
 
+    @Test
     public void testHandleServiceExceptionNullMessages() throws Exception {
         // create a stack of three exceptions
         NullPointerException npe = new NullPointerException();
@@ -186,5 +217,18 @@ public class OWS10ServiceExceptionHandlerTest extends TestCase {
         String exceptionText = exceptionTextNode.getNodeValue().replaceAll("\\s+", " ");
         // used to contain an extra " null" at the end
         assertEquals("hello service exception NullPointerException", exceptionText);
+    }
+
+    @Test
+    public void exceptionType() throws Exception {
+        String message1 = "foo & <foo> \"foo's\"";
+        String message2 = "a \"different\" <message>";
+
+        ServiceException exception = new ServiceException(message1);
+        exception.setLocator("test-locator");
+        exception.getExceptionText().add(message2);
+
+        handler.handleServiceException(exception, requestInfo);
+        assertEquals(XML_TYPE_TEXT, response.getContentType());
     }
 }

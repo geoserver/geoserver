@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys, optparse, getpass
 import SOAPpy, SOAPpy.Types
 
@@ -12,12 +13,12 @@ class JIRA(object):
 
   def list_methods(self):
     for m in self.soap.methods.keys():
-      print m
+      print(m)
   
   def describe_method(self, name):
      m = self.soap.methods[name]
      for p in m.inparams:
-       print p.name.ljust(10), p.type 
+       print(p.name.ljust(10), p.type) 
 
   def list_versions(self):
     versions = self.soap.getVersions(self.auth, self.proj)
@@ -96,12 +97,12 @@ if __name__ == "__main__":
      sys.exit('Version %s does not exist in JIRA' % ver)
 
   if jira.is_version_released(ver) == True:
-     print 'Version %s is already released in JIRA, exiting' % ver
+     print('Version %s is already released in JIRA, exiting' % ver)
      sys.exit(0)
 
   if not jira.get_version_id(next_ver): 
      # create id
-     print 'creating version %s in JIRA' % next_ver
+     print('creating version %s in JIRA' % next_ver)
      jira.create_version(next_ver)
 
   if not jira.get_version_id(next_ver):
@@ -116,7 +117,7 @@ if __name__ == "__main__":
 
     for i in jira.get_open_issues(ver):
        if verbose == True:
-         print 'Setting fix version of %s to %s' % (i, next_ver)
+         print('Setting fix version of %s to %s' % (i, next_ver))
        jira.set_fixed_version(i, next_ver)
     x += 1
 
@@ -125,5 +126,5 @@ if __name__ == "__main__":
     sys.exit('Unable to move back all issues to version %s' % next_ver)
 
   # mark the version as released
-  print 'Releasing %s (%s) in JIRA' % (ver, ver_id)
+  print('Releasing %s (%s) in JIRA' % (ver, ver_id))
   jira.release_version(ver) 

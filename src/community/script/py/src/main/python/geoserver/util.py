@@ -10,7 +10,7 @@ def info(clazz):
      return object.__getattribute__(self, name)
 
    def __setattr__(self, name, value):
-     if name != "_info" and self.__dict__.has_key("_info"):
+     if name != "_info" and "_info" in self.__dict__:
        try:
          setattr(self._info, name, value)
        except (AttributeError,TypeError):
@@ -52,5 +52,5 @@ class lazy(object):
         return self
 
      value = self._func(obj)
-     setattr(obj, self._func.func_name, value)
+     setattr(obj, self._func.__name__, value)
      return value

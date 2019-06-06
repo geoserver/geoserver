@@ -4,7 +4,7 @@ try:
 except ImportError:
   try:
     import simplejson as json
-  except ImportError, e:
+  except ImportError as e:
     print e 
     exit('Install simplejson or run on Python 2.6+')
 
@@ -58,7 +58,7 @@ class SessionClient(object):
             print result,
             if not result[-1] == '\n':
               print
-        except SyntaxError, e:
+        except SyntaxError as e:
           print e  
     
   def close(self):
@@ -104,7 +104,7 @@ if __name__ == '__main__':
   if cmd not in cmds:
     p.error("unrecognized command '%s'" % cmd)
 
-  if cmd == 'connect' and not opts.has_key('session'):
+  if cmd == 'connect' and 'session' not in opts:
     p.error('connect command requires session option')
 
   try:

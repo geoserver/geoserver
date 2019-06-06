@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys, optparse, getpass, urllib2, json
 from base64 import b64encode
 from datetime import datetime
@@ -15,7 +16,7 @@ class GitHub(object):
       r = urllib2.urlopen(urllib2.Request(self.pulls_url(n)))
       obj = json.loads(r.read())
       obj = filter(
-        lambda x: x.has_key('merged_at') and x['merged_at'] is not None, obj)
+        lambda x: 'merged_at' in x and x['merged_at'] is not None, obj)
       if after is not None:
         obj = filter(lambda x: 
           datetime.strptime(x['merged_at'], '%Y-%m-%dT%H:%M:%SZ') > after, obj)
@@ -40,11 +41,11 @@ class PullRequest(object):
     return self.obj['title']
 
   def author(self):
-    if self.obj.has_key('user') and self.obj['user'] is not None:
+    if 'user' in self.obj and self.obj['user'] is not None:
       return self.obj['user']['login']
 
   def merged(self):
-    if self.obj.has_key('merged_at'):
+    if 'merged_at' in self.obj:
       return self.obj['merged_at']
 
 if __name__ == "__main__":
@@ -74,8 +75,8 @@ if __name__ == "__main__":
 
   gh = GitHub(args[0], args[1])
   for pr in gh.list_pulls(date):
-    print pr.title()
-    print pr.author()
-    print pr.url()
-    print pr.merged()
-    print ''
+    print(pr.title())
+    print(pr.author())
+    print(pr.url())
+    print(pr.merged())
+    print('')

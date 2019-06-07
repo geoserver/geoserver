@@ -6,6 +6,8 @@
 package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
@@ -39,5 +41,58 @@ public class CapabilitiesXmlReaderTest {
         assertEquals("GetCapabilities", request.getRequest());
         assertEquals("1.2.0", request.getVersion());
         assertEquals("1", request.getUpdateSequence());
+        assertNull(request.isNoRootLayer());
+    }
+
+    @Test
+    public void testParseXmlGetCapabilitiesNoRootLayerTrue() throws Exception {
+        CapabilitiesXmlReader reader =
+                new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+
+        String plainRequest =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
+                        + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
+                        + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
+                        + "         version=\"1.2.0\" updateSequence=\"1\" " //
+                        + "         noRootLayer=\"true\" " //
+                        + "        service=\"WMS\"> " //
+                        + "</ogc:GetCapabilities>";
+
+        Reader input = new StringReader(plainRequest);
+
+        Object read = reader.read(null, input, null);
+        assertTrue(read instanceof GetCapabilitiesRequest);
+
+        GetCapabilitiesRequest request = (GetCapabilitiesRequest) read;
+        assertEquals("GetCapabilities", request.getRequest());
+        assertEquals("1.2.0", request.getVersion());
+        assertEquals("1", request.getUpdateSequence());
+        assertTrue(request.isNoRootLayer());
+    }
+
+    @Test
+    public void testParseXmlGetCapabilitiesNoRootLayerFalse() throws Exception {
+        CapabilitiesXmlReader reader =
+                new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+
+        String plainRequest =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
+                        + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
+                        + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
+                        + "         version=\"1.2.0\" updateSequence=\"1\" " //
+                        + "         noRootLayer=\"false\" " //
+                        + "        service=\"WMS\"> " //
+                        + "</ogc:GetCapabilities>";
+
+        Reader input = new StringReader(plainRequest);
+
+        Object read = reader.read(null, input, null);
+        assertTrue(read instanceof GetCapabilitiesRequest);
+
+        GetCapabilitiesRequest request = (GetCapabilitiesRequest) read;
+        assertEquals("GetCapabilities", request.getRequest());
+        assertEquals("1.2.0", request.getVersion());
+        assertEquals("1", request.getUpdateSequence());
+        assertFalse(request.isNoRootLayer());
     }
 }

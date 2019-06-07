@@ -13,7 +13,8 @@ public class GetCapabilitiesLegendURL_1_1_1Test extends GetCapabilitiesLegendURL
 
     @Override
     protected TransformerBase createTransformer() {
-        return new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        return new GetCapabilitiesTransformer(
+                wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
     }
 
     @Override

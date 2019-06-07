@@ -218,6 +218,20 @@ Cache parameters that apply to the HTTP response from client requests.
 
 * **Response Cache Headers**— If selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
 
+Root Layer in Capabilities
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When a layer is the only top level element in the Capabilities document, it is possible to remove the Root Layer that contains it, and return
+a hierarchy where the layer is the root instead.
+
+To enable this functionality, choose the **No** option from the Root Layer in Capabilities section.
+By default this behaviour is inherited from the global WMS service settings (**WMS Global Settings** option).
+Finally, it is possible to override the service settings and force a **Yes** to always include the GeoServer root element.
+ 
+.. figure:: img/data_layers_root_in_capabilities.png
+  
+   Layer root layer in capabilities options
+
 Services Settings
 ^^^^^^^^^^^^^^^^^
 

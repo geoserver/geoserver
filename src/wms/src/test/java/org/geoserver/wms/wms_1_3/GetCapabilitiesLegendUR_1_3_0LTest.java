@@ -19,7 +19,8 @@ public class GetCapabilitiesLegendUR_1_3_0LTest extends GetCapabilitiesLegendURL
                 wmsConfig,
                 baseUrl,
                 wmsConfig.getAllowedMapFormats(),
-                new HashSet<ExtendedCapabilitiesProvider>());
+                new HashSet<ExtendedCapabilitiesProvider>(),
+                null);
     }
 
     @Override

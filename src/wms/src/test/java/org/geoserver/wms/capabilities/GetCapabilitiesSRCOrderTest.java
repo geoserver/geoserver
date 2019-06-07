@@ -96,7 +96,8 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
                         wms,
                         BASE_URL,
                         wms.getAllowedMapFormats(),
-                        new HashSet<ExtendedCapabilitiesProvider>());
+                        new HashSet<ExtendedCapabilitiesProvider>(),
+                        null);
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());

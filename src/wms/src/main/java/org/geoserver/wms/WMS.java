@@ -218,6 +218,12 @@ public class WMS implements ApplicationContextAware {
     /** DateLine Wrapping Heuristic key */
     public static String DATELINE_WRAPPING_HEURISTIC_KEY = "disableDatelineWrappingHeuristic";
 
+    /** Capabilities will be produced without a root Layer element, when not needed * */
+    public static Boolean NO_ROOT_LAYER_IN_CAPABILITIES = false;
+
+    /** No Root Layer in Capabilities key * */
+    public static String NO_ROOT_LAYER_IN_CAPABILITIES_KEY = "noRootLayerInCapabilities";
+
     /** GIF disposal methods */
     public static final String DISPOSAL_METHOD_NONE = "none";
 
@@ -575,6 +581,15 @@ public class WMS implements ApplicationContextAware {
                 getMetadataValue(
                         DATELINE_WRAPPING_HEURISTIC_KEY,
                         DISABLE_DATELINE_WRAPPING_HEURISTIC,
+                        Boolean.class);
+        return disabled;
+    }
+
+    public boolean isRootLayerInCapabilitesRemoved() {
+        Boolean disabled =
+                getMetadataValue(
+                        NO_ROOT_LAYER_IN_CAPABILITIES_KEY,
+                        NO_ROOT_LAYER_IN_CAPABILITIES,
                         Boolean.class);
         return disabled;
     }

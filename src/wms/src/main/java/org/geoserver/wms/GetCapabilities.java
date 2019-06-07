@@ -72,13 +72,19 @@ public class GetCapabilities {
             extCapsProviders = wms.getAvailableExtendedCapabilitiesProviders();
             transformer =
                     new GetCapabilitiesTransformer(
-                            wms, baseUrl, mapFormats, legendFormats, extCapsProviders);
+                            wms,
+                            baseUrl,
+                            mapFormats,
+                            legendFormats,
+                            extCapsProviders,
+                            request.isNoRootLayer());
         } else if (WMS.VERSION_1_3_0.equals(version)) {
             Collection<GetMapOutputFormat> mapFormats = wms.getAllowedMapFormats();
             Collection<ExtendedCapabilitiesProvider> extCapsProviders =
                     wms.getAvailableExtendedCapabilitiesProviders();
             transformer =
-                    new Capabilities_1_3_0_Transformer(wms, baseUrl, mapFormats, extCapsProviders);
+                    new Capabilities_1_3_0_Transformer(
+                            wms, baseUrl, mapFormats, extCapsProviders, request.isNoRootLayer());
         } else {
             throw new IllegalArgumentException("Unknown version: " + version);
         }

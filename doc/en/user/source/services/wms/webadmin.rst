@@ -23,6 +23,9 @@ Root Layer Information
 
 In this section is possible to define a title and an abstract for the root layer in the WMS capabilities. When these are left empty the WMS service title and abstract are used.
 
+It is also possible to set a flag to **Remove Root Layer when not needed**, that will not include the root layer in capabilities, when there is a single top level Layer element included in the capabilities.
+This allows compatibility with some WMS clients that are not happy with the two or more Layer tree levels. The default setting here can be overridden at the layer or request level.
+
 Raster Rendering Options
 ------------------------
 

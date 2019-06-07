@@ -18,6 +18,8 @@ public class GetCapabilitiesRequest extends WMSRequest {
 
     private String namespace;
 
+    private Boolean noRootLayer = null;
+
     public GetCapabilitiesRequest() {
         super("GetCapabilities");
     }
@@ -53,5 +55,14 @@ public class GetCapabilitiesRequest extends WMSRequest {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    /** @return whether to remove the root layer when there is a single top Layer element * */
+    public Boolean isNoRootLayer() {
+        return noRootLayer;
+    }
+
+    public void setNoRootLayer(Boolean noRootLayer) {
+        this.noRootLayer = noRootLayer;
     }
 }

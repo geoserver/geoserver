@@ -165,7 +165,7 @@ from the LDAP repository and allow access rights to be assigned to those roles.
 
 #. Click the ``LDAP`` option under the  ``New Role Service`` section.
 
-   .. figure:: images/ldap15.jpg
+   .. figure:: images/ldap_15.jpg
       :align: center
       
 #. Enter ``ldaprs`` in the  ``Name`` text field.
@@ -188,7 +188,7 @@ Then we need to a choose a user to authenticate on the server (many LDAP server 
 
 If we want Hierarchical groups working we need:
 
-#. Check the ``Enable Hierarchical groups search`` checkbox.
+#. Check the :guilabel:`Enable Hierarchical groups search` checkbox.
 
 #. Enter ``10`` in the  ``Max depth for hierarchical groups search`` text field.
 

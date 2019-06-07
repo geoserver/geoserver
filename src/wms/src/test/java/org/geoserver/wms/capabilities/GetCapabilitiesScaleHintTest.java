@@ -391,7 +391,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         info.getGeoServer().save(info);
 
         GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
+                new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null, null);
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_1_1.toString());

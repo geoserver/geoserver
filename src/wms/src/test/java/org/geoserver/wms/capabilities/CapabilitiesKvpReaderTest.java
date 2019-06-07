@@ -81,4 +81,13 @@ public class CapabilitiesKvpReaderTest {
         assertNotNull(read);
         assertEquals("1000", read.getUpdateSequence());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testNoRootLayer() throws Exception {
+        kvp.put("noRootLayer", "true");
+        GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);
+        assertNotNull(read);
+        assertTrue(read.isNoRootLayer());
+    }
 }

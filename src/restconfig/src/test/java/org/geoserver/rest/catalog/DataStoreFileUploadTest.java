@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -117,6 +118,10 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         return toBytes(getClass().getResourceAsStream("test-data/pdst.zip"));
     }
 
+    byte[] shpSameNameZipAsBytes(String path) throws IOException {
+        return toBytes(getClass().getResourceAsStream(path));
+    }
+
     byte[] toBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -177,6 +182,31 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNotNull(ds);
 
         assertEquals(2, cat.getFeatureTypesByDataStore(ds).size());
+    }
+
+    @Test
+    public void testRenamingFeatureTypeAlreadyInCatalog() throws Exception {
+        Catalog cat = getCatalog();
+
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/10bt/file.shp?configure=all",
+                shpSameNameZipAsBytes("test-data/10bt.zip"),
+                "application/zip");
+
+        List<String> ftNames = new ArrayList<>(10);
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "10bt");
+        cat.getFeatureTypesByDataStore(ds).forEach((ft) -> ftNames.add(ft.getName()));
+
+        assertEquals(10, ftNames.size());
+
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/bt/file.shp?configure=all",
+                shpSameNameZipAsBytes("test-data/bt.zip"),
+                "application/zip");
+
+        DataStoreInfo ds2 = cat.getDataStoreByName("gs", "bt");
+
+        assertEquals("bt10", cat.getFeatureTypesByDataStore(ds2).get(0).getName());
     }
 
     @Test

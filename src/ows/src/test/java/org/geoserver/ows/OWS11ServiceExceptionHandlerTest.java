@@ -6,7 +6,6 @@ package org.geoserver.ows;
 
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
@@ -28,15 +27,7 @@ public class OWS11ServiceExceptionHandlerTest {
     private static final String XML_TYPE_TEXT = "text/xml";
 
     @BeforeClass
-    public static void setupClass()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
-                    SecurityException {
-        // Playing with System.Properties and Static boolean fields can raises issues
-        // when running Junit tests via Maven, due to initialization orders.
-        // So let's change the fields via reflections for these tests
-        Field field = OWS10ServiceExceptionHandler.class.getDeclaredField("CONTENT_TYPE");
-        field.setAccessible(true);
-        field.set(null, XML_TYPE_TEXT);
+    public static void setupClass() {
         System.setProperty("ows11.exception.xml.responsetype", XML_TYPE_TEXT);
     }
 

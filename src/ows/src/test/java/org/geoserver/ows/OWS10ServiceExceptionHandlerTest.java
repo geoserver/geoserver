@@ -47,7 +47,6 @@ public class OWS10ServiceExceptionHandlerTest {
         Field field = OWS10ServiceExceptionHandler.class.getDeclaredField("CONTENT_TYPE");
         field.setAccessible(true);
         field.set(null, XML_TYPE_TEXT);
-        System.setProperty("ows10.exception.xml.responsetype", XML_TYPE_TEXT);
     }
 
     @AfterClass

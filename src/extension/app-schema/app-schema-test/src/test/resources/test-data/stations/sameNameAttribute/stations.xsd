@@ -1,0 +1,65 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.stations.org/1.0" version="1.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:st="http://www.stations.org/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <xs:complexType name="StationType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="location" type="gml:GeometryPropertyType"/>
+          <xs:element name="meta" type="st:MetaType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MetaType">
+    <xs:sequence>
+      <xs:element name="institutes" type="st:InstitutePropertyType" maxOccurs="unbounded" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InstitutePropertyType">
+    <xs:sequence>
+      <xs:element ref="st:Institute"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="InstituteType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="contact" type="st:ContactType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ContactType">
+    <xs:sequence>
+      <xs:element name="identification" type="st:IdentificationType"/>
+      <xs:element name="persons" type="st:PersonPropertyType" maxOccurs="unbounded" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="IdentificationType">
+    <xs:sequence>
+      <xs:element name="address" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PersonPropertyType">
+    <xs:sequence>
+      <xs:element ref="st:Person"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="PersonType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="mail" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Station" substitutionGroup="gml:AbstractFeature" type="st:StationType"/>
+  <xs:element name="Institute" substitutionGroup="gml:AbstractFeature" type="st:InstituteType"/>
+  <xs:element name="Person" substitutionGroup="gml:AbstractFeature" type="st:PersonType"/>
+</xs:schema>

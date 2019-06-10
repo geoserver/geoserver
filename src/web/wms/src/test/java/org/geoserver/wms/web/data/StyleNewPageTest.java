@@ -519,7 +519,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         // we can at least test that the right javascript code is there
         Pattern pattern =
                 Pattern.compile(
-                        "replaceSelection\\('<ExternalGraphic>\\\\n"
+                        "replaceSelection\\('<ExternalGraphic "
+                                + "xmlns=\"http://www.opengis.net/sld\" "
+                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
                                 + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
                                 + "(.*)\" />\\\\n"
                                 + "<Format>(.*)</Format>\\\\n"

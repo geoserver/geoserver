@@ -399,6 +399,26 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testRasterDescribeDomainsReprojectedFilterMosaic() throws Exception {
+        // perform the get describe domains operation with a spatial restriction in 3857, crossing
+        // the data
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(RASTER_ELEVATION_TIME)
+                                + "&bbox=700000,5000000,800000,6000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the space domain is not included
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain", "1");
+        // the domain should not contain 2 values
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
+    }
+
+    @Test
     public void testRasterDescribeDomainsOperationWithBoundingAndWrongTileMatrixSet()
             throws Exception {
         // perform the get describe domains operation with a spatial restriction and in invalid tile
@@ -423,6 +443,48 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the elevation domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']",
+                "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0,2.0,3.0,5.0']",
+                "1");
+        // check the time domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']",
+                "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']",
+                "1");
+    }
+
+    @Test
+    public void testVectorDescribeDomainsReprojectedFilter() throws Exception {
+        // perform the get describe domains operation with a spatial restriction
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME)
+                                + "&bbox=-20000000,-20000000,20000000,20000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check the space domain
+        assertXpathEvaluatesTo("1.1", "/md:Domains/@version", result);
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");

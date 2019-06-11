@@ -1,3 +1,4 @@
+from __future__ import print_function
 import base64, code, httplib, logging, optparse
 try:
   import json
@@ -5,11 +6,17 @@ except ImportError:
   try:
     import simplejson as json
   except ImportError as e:
-    print e 
+    print(e)
     exit('Install simplejson or run on Python 2.6+')
 
 logging.basicConfig(format='%(levelname)s - %(message)s')
 logger = logging.getLogger('session')
+
+try:
+  raw_input          # Python 2
+except NameError:
+  raw_input = input  # Python 3
+
 
 class SessionClient(object):
 
@@ -55,11 +62,11 @@ class SessionClient(object):
           self._check(r, 200, 'PUT statement failed')
           result = r.read()
           if result and len(result.strip()) > 0:
-            print result,
+            print(result, end=' ')
             if not result[-1] == '\n':
-              print
+              print()
         except SyntaxError as e:
-          print e  
+          print(e)
     
   def close(self):
      if self.cx:
@@ -116,7 +123,6 @@ if __name__ == '__main__':
   c = SessionClient(args[0], **opts)
 
   if cmd == 'list':
-    print c.list();
+    print(c.list())
   elif cmd == 'connect':
     c.connect(sid)
-

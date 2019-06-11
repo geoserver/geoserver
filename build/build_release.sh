@@ -7,19 +7,20 @@ set -e
 function usage() {
   echo "$0 [options] <tag> <user> <email>"
   echo
-  echo " tag :  Release tag (eg: 2.1.4, 2.2-beta1, ...)"
+  echo " tag :  Release tag (eg: 2.14.4, 2.15-beta1, ...)"
   echo " user:  Git username"
   echo " email: Git email"
   echo
   echo "Options:"
   echo " -h          : Print usage"
-  echo " -b <branch> : Branch to release from (eg: trunk, 2.1.x, ...)"
+  echo " -b <branch> : Branch to release from (eg: trunk, 2.14.x, ...)"
   echo " -r <rev>    : Revision to release (eg: 12345)"
-  echo " -g <ver>    : GeoTools version/revision (eg: 2.7.4, trunk:12345)"
-  echo " -w <ver>    : GeoWebCache version/revision (eg: 1.3-RC1, stable:abcd)"
+  echo " -g <ver>    : GeoTools version/revision (eg: 20.4, master:12345)"
+  echo " -w <ver>    : GeoWebCache version/revision (eg: 1.14.4, 1.14.x:abcd)"
   echo
   echo "Environment variables:"
   echo " SKIP_BUILD : Skips main release build"
+  echo " SKIP_TAG : Skips tag on release branch"
   echo " SKIP_INSTALLERS : Skips building of mac and windows installers"
   echo " SKIP_GT : Skips the GeoTools build"
   echo " SKIP_GWC : Skips the GeoWebCache build"
@@ -80,6 +81,18 @@ if [ `is_primary_branch_num $tag` == "1" ]; then
   echo "$tag is a not a valid release tag, can't be same as primary branch name"
   exit 1
 fi
+#checkout branch locally if it doesn't exist
+if ! git show-ref refs/heads/$branch; then 
+  echo "checkout branch #branch locally"
+  git fetch origin $branch:$branch
+fi
+
+# ensure there is a jira release
+jira_id=`get_jira_id $tag`
+if [ -z $jira_id ]; then
+  echo "Could not locate release $tag in JIRA"
+  exit -1
+fi
 
 echo "Building release with following parameters:"
 echo "  branch = $branch"
@@ -87,6 +100,7 @@ echo "  revision = $rev"
 echo "  tag = $tag"
 echo "  geotools = $gt_ver"
 echo "  geowebcache = $gwc_ver"
+echo "  jira id = $jira_id"
 
 echo "maven/java settings:"
 mvn -version
@@ -102,10 +116,7 @@ git checkout $branch
 git pull origin $branch
 
 # check to see if a release branch already exists
-set +e && git checkout rel_$tag && set -e
-if [ $? == 0 ]; then
-  # release branch already exists, kill it
-  git checkout $branch
+if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
   echo "branch rel_$tag exists, deleting it"
   git branch -D rel_$tag
 fi
@@ -127,18 +138,7 @@ fi
 # create a release branch
 git checkout -b rel_$tag $rev
 
-# generate release notes
-jira_id=`get_jira_id $tag`
-if [ -z $jira_id ]; then
-  echo "Could not locate release $tag in JIRA"
-  exit -1
-fi
-echo "jira id = $jira_id"
-
-# update README
-#search?jql=project+%3D+%22GEOS%22+and+fixVersion+%3D+%222.2-beta2%22"
-
-# setup geotools and geowebcache dependencies
+# setup geotools dependency
 if [ -z $SKIP_GT ]; then
   if [ ! -z $gt_ver ]; then
     # deterine if this is a revision or version number 
@@ -179,6 +179,14 @@ fi
 
 if [ ! -z $gt_tag ]; then
   echo "GeoTools version = $gt_tag"
+fi
+
+# update geotools version
+if [ ! -z $gt_tag ]; then
+  sed -i "s/\(<gt.version>\).*\(<\/gt.version>\)/\1$gt_tag\2/g" src/pom.xml
+else
+  # look up from pom instead
+  gt_tag=`cat src/pom.xml | grep "<gt.version>" | sed 's/ *<gt.version>\(.*\)<\/gt.version>/\1/g'`
 fi
 
 # setup geowebcache dependency
@@ -226,14 +234,7 @@ if [ ! -z $gwc_tag ]; then
   echo "GeoWebCache version = $gwc_tag"
 fi
 
-# update geotools + geowebcache versions
-if [ ! -z $gt_tag ]; then
-  sed -i "s/\(<gt.version>\).*\(<\/gt.version>\)/\1$gt_tag\2/g" src/pom.xml
-else
-  # look up from pom instead
-  gt_tag=`cat src/pom.xml | grep "<gt.version>" | sed 's/ *<gt.version>\(.*\)<\/gt.version>/\1/g'`
-fi
-
+# update geowebcache version
 if [ ! -z $gwc_tag ]; then
   sed -i "s/\(<gwc.version>\).*\(<\/gwc.version>\)/\1$gwc_tag\2/g" src/pom.xml
 else
@@ -267,44 +268,13 @@ if [ -z $SKIP_BUILD ]; then
   # Build the docs
   ##################
 
-
-
   pushd ../doc/en > /dev/null
 
-  # 2.11 and older uses make
-  if [ -e user/Makefile ]
-  then
-    # build the user docs
-    cd user
-    make clean html
-    make latex
-    cd build/latex
-
-    sed  "s/includegraphics/includegraphics[scale=0.5]/g" GeoServerUserManual.tex > manual.tex
-    # run pdflatex twice in a row to get the TOC, and ignore errors 
-    set +e
-    pdflatex -interaction batchmode manual.tex
-    pdflatex -interaction batchmode manual.tex
-    set -e
-
-    if [ ! -f manual.pdf ]; then
-      echo "Failed to build pdf manual. Printing latex log:"
-      cat manual.log
-    fi
-
-    # build the developer docs
-    cd ../../../developer
-    make clean html
-
-  # 2.12 and newer uses ant to do everything
-  else
-    ant clean user -Dproject.version=$tag
-    ant user-pdf -Dproject.version=$tag
-    ant developer -Dproject.version=$tag
-  fi
+  ant clean user -Dproject.version=$tag
+  ant user-pdf -Dproject.version=$tag
+  ant developer -Dproject.version=$tag
 
   popd > /dev/null
-
 
 fi
 
@@ -322,6 +292,7 @@ mkdir $dist
 mkdir $dist/plugins
 
 artifacts=`pwd`/target/release
+
 # bundle up mac and windows installer stuff
 pushd release/installer/mac > /dev/null
 zip -r $artifacts/geoserver-$tag-mac.zip *
@@ -340,17 +311,8 @@ if [ -e developer ]; then
   unlink developer
 fi
 
-# paths for 2.12 and newer docbuild
-usertarget=target/user
-devtarget=target/developer
-# paths for 2.11 and older docbuild
-if [ -e ../../../doc/en/user/Makefile ]; then
-  usertarget=user/build
-  devtarget=developer/build
-fi
-
-ln -sf ../../../doc/en/$usertarget/html user
-ln -sf ../../../doc/en/$devtarget/html developer
+ln -sf ../../../doc/en/target/user/html user
+ln -sf ../../../doc/en/target/developer/html developer
 ln -sf ../../../doc/en/release/README.txt readme
 
 htmldoc=geoserver-$tag-htmldoc.zip
@@ -379,6 +341,28 @@ init_git $git_user $git_email
 
 git add . 
 git commit -m "updating version numbers and release notes for $tag" .
+
+# tag release branch
+if [ -z $SKIP_TAG ]; then
+    # check to see if tag already exists
+    git fetch --tags
+    if [ `git tag --list $tag | wc -l` == 1 ]; then
+      echo "tag $tag exists, deleting it"
+      git tag -d $tag
+    fi
+
+    if  [ `git ls-remote --refs --tags origin tags/$tag | wc -l` == 1 ]; then
+      echo "tag $tag exists on $GIT_ROOT, deleting it"
+      git push --delete origin $tag
+    fi
+
+    # tag the release branch
+    git tag $tag
+
+    # push up tag
+    git push origin $tag
+fi
+
 popd > /dev/null
 
 # fire off mac and windows build machines

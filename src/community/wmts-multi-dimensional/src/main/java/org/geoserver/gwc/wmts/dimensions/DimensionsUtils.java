@@ -363,9 +363,7 @@ public final class DimensionsUtils {
                                 .getGeometryDescriptor()
                                 .getLocalName();
             } else if (resource instanceof CoverageInfo) {
-                CoverageDimensionsReader reader =
-                        CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
-                return reader.getGeometryAttributeName();
+                return "";
             }
             return geometryName;
         } catch (IOException e) {

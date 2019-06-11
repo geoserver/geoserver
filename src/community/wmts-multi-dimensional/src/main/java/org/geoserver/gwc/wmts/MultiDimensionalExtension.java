@@ -18,7 +18,9 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
@@ -35,8 +37,13 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionFilterBuilder;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.util.FeatureUtilities;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.SchemaException;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -51,10 +58,13 @@ import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.service.OWSException;
 import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -63,6 +73,8 @@ import org.springframework.http.HttpStatus;
  * requests.
  */
 public final class MultiDimensionalExtension extends WMTSExtensionImpl {
+
+    private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
 
     private static final Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
     public static final String SPACE_DIMENSION = "bbox";
@@ -221,7 +233,6 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         List<Dimension> dimensions =
                 DimensionsUtils.extractDimensions(wms, layerInfo, requestedDomains);
         ReferencedEnvelope boundingBox = getRequestedBoundingBox(conveyor, tileLayer);
-
         // add any domain provided restriction and set the bounding box
         ResourceInfo resource = layerInfo.getResource();
         Filter filter = getDomainRestrictions(conveyor, dimensions, boundingBox, resource);
@@ -328,7 +339,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             SimpleConveyor conveyor,
             List<Dimension> dimensions,
             ReferencedEnvelope boundingBox,
-            ResourceInfo resource) {
+            ResourceInfo resource)
+            throws IOException, TransformException, SchemaException {
         Filter filter = DimensionsUtils.getBoundingBoxFilter(resource, boundingBox, filterFactory);
         for (Dimension dimension : dimensions) {
             Object restriction = conveyor.getParameter(dimension.getDimensionName(), false);
@@ -340,7 +352,43 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                                 filter, attributes.first, attributes.second, restriction);
             }
         }
-        return filter;
+
+        // reproject the filter to the native CRS of the resouce
+        return reprojectFilter(filter, getSchemaForResource(resource));
+    }
+
+    private FeatureType getSchemaForResource(ResourceInfo resource)
+            throws IOException, TransformException, SchemaException {
+        FeatureType schema;
+        if (resource instanceof FeatureTypeInfo) {
+            schema = ((FeatureTypeInfo) resource).getFeatureType();
+        } else if (resource instanceof CoverageInfo) {
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            ((CoverageInfo) resource).getGridCoverageReader(null, null);
+            schema = FeatureUtilities.wrapGridCoverageReader(reader, null).getSchema();
+        } else {
+            throw new IllegalArgumentException(
+                    "Did not expect this resource, only vector and raster layers are supported: "
+                            + resource);
+        }
+
+        return schema;
+    }
+
+    private static Filter reprojectFilter(Filter filter, FeatureType schema) throws IOException {
+        if (filter == null || Filter.INCLUDE.equals(filter)) {
+            return filter;
+        }
+        try {
+            // and then we reproject all geometries so that the datastore receives
+            // them in the native projection system (or the forced one, in case of force)
+            ReprojectingFilterVisitor reprojectingVisitor =
+                    new ReprojectingFilterVisitor(FILTER_FACTORY, schema);
+            return (Filter) filter.accept(reprojectingVisitor, null);
+        } catch (Exception e) {
+            throw new DataSourceException("Had troubles handling filter reprojection...", e);
+        }
     }
 
     private ReferencedEnvelope getRequestedBoundingBox(SimpleConveyor conveyor, TileLayer tileLayer)
@@ -348,7 +396,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // let's see if we have a spatial limitation
         ReferencedEnvelope boundingBox = (ReferencedEnvelope) conveyor.getParameter("bbox", false);
         // if we have a bounding box we need to set the crs based on the tile matrix set
-        if (boundingBox != null) {
+        if (boundingBox != null && boundingBox.getCoordinateReferenceSystem() == null) {
             String providedTileMatrixSet = (String) conveyor.getParameter("tileMatrixSet", true);
             // getting the layer grid set corresponding to the provided tile matrix set
             GridSubset gridSubset = tileLayer.getGridSubset(providedTileMatrixSet);

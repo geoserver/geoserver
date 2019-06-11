@@ -190,7 +190,7 @@ public class JaxbRule {
         }
 
         public void setAllowedArea(MultiPolygon allowedArea) {
-            this.allowedArea = allowedArea.toText();
+            this.allowedArea = allowedArea != null ? allowedArea.toText() : null;
         }
 
         @XmlElement

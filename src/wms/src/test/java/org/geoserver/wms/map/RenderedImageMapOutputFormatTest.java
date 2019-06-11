@@ -26,13 +26,16 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +79,8 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.SchemaException;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.gce.imagemosaic.ImageMosaicReader;
+import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
@@ -113,6 +118,7 @@ import org.opengis.feature.IllegalAttributeException;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -508,6 +514,102 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Mockito.verify(graphics).draw(shape.capture());
         LiteShape2 drawnShape = (LiteShape2) shape.getValue();
         assertEquals(2, drawnShape.getGeometry().getCoordinates().length);
+    }
+
+    @Test
+    public void testDisableGutter() throws Exception {
+        setDisableGutter(true);
+        WMS wms = getWMS();
+        WMSInfo info = wms.getServiceInfo();
+        info.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, false);
+        getGeoServer().save(info);
+        Catalog catalog = getCatalog();
+        CoverageInfo ci =
+                catalog.getCoverageByName(
+                        SystemTestData.WORLD.getPrefix(), SystemTestData.WORLD.getLocalPart());
+
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
+        CoordinateReferenceSystem wgs84 = DefaultGeographicCRS.WGS84;
+        GeneralEnvelope env =
+                GeneralEnvelope.toGeneralEnvelope(new Envelope2D(wgs84, -40, 0, 40, 80));
+        MathTransform transform = CRS.findMathTransform(wgs84, crs);
+        env = CRS.transform(transform, env);
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(
+                        env.getMinimum(0),
+                        env.getMaximum(0),
+                        env.getMinimum(1),
+                        env.getMaximum(1),
+                        crs);
+        request.setBbox(bbox);
+        request.setInterpolations(
+                Collections.singletonList(
+                        Interpolation.getInstance(Interpolation.INTERP_BILINEAR)));
+        request.setSRS("EPSG:3857");
+        request.setFormat("image/png");
+
+        final WMSMapContent map = new WMSMapContent(request);
+        final int width = 300;
+        final int height = 300;
+        map.setMapWidth(width);
+        map.setMapHeight(height);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.getViewport().setBounds(bbox);
+
+        StyleBuilder builder = new StyleBuilder();
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        reader.getCoordinateReferenceSystem();
+        Layer l =
+                new CachedGridReaderLayer(
+                        reader, builder.createStyle(builder.createRasterSymbolizer()));
+        map.addLayer(l);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedImage image = imageMap.getImage();
+        RenderedImage warp[] = new RenderedImage[1];
+        lookForOp("Warp", image, warp);
+        // No Gutter has been done
+        assertEquals(width, image.getWidth());
+        assertEquals(height, image.getHeight());
+
+        imageMap.dispose();
+        setDisableGutter(false);
+        wms = getWMS();
+        info = wms.getServiceInfo();
+        info.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, true);
+        getGeoServer().save(info);
+    }
+
+    private void lookForOp(String opName, RenderedImage image, RenderedImage[] returnedOp) {
+        if (image instanceof RenderedOp) {
+            RenderedOp op = (RenderedOp) image;
+            String operationName = op.getOperationName();
+            if (opName.equalsIgnoreCase(operationName)) {
+                returnedOp[0] = op;
+                return;
+            } else {
+                Vector sources = op.getSources();
+                if (sources != null && !sources.isEmpty()) {
+                    Iterator iterator = sources.iterator();
+                    while (iterator.hasNext() && returnedOp[0] == null) {
+                        Object next = iterator.next();
+                        if (next instanceof RenderedImage) {
+                            lookForOp(opName, (RenderedImage) next, returnedOp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setDisableGutter(boolean value)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+                    IllegalAccessException {
+        Field field = RenderedImageMapOutputFormat.class.getDeclaredField("DISABLE_GUTTER");
+        field.setAccessible(true);
+        field.set(null, value);
     }
 
     /**

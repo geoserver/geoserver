@@ -73,6 +73,8 @@ git checkout -b rel_$tag $tag
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
+   echo "deploying with $MAVEN_FLAGS"
+   
    mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
 
    # deploy released community modules

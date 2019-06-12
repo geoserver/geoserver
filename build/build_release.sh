@@ -338,7 +338,8 @@ pushd .. > /dev/null
 
 init_git $git_user $git_email
 
-git add . 
+git add doc
+git add src
 git commit -m "updating version numbers and release notes for $tag" .
 
 # tag release branch

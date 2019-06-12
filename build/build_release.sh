@@ -142,7 +142,7 @@ fi
 # create a release branch
 git checkout -b rel_$tag $rev
 
-MAVEN_FLAGS = --batch-mode -Dfmt.skip=true
+MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
 # setup geotools dependency
 if [ -z $SKIP_GT ]; then
   if [ ! -z $gt_ver ]; then

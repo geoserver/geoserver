@@ -25,24 +25,32 @@ import org.geoserver.gwc.wmts.MultiDimensionalExtension;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.SchemaException;
 import org.geotools.feature.visitor.Aggregate;
 import org.geotools.feature.visitor.FeatureCalc;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
+import org.geotools.renderer.crs.ProjectionHandler;
+import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
 import org.geowebcache.service.OWSException;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.comparator.ComparableComparator;
 
 /** Some utils methods useful to interact with dimensions. */
@@ -330,26 +338,71 @@ public final class DimensionsUtils {
      * Builds a bounding box filter, or returns {@link Filter#INCLUDE} if the bounding box is null
      */
     public static Filter getBoundingBoxFilter(
-            ResourceInfo resource, ReferencedEnvelope boundingBox, FilterFactory filterFactory) {
+            ResourceInfo resource, ReferencedEnvelope boundingBox, FilterFactory filterFactory)
+            throws TransformException, IOException, SchemaException, FactoryException {
         String geometryName = getGeometryPropertyName(resource);
         if (boundingBox == null || geometryName == null) {
             return Filter.INCLUDE;
         }
-        CoordinateReferenceSystem coordinateReferenceSystem =
-                boundingBox.getCoordinateReferenceSystem();
-        String epsgCode =
-                coordinateReferenceSystem == null
-                        ? null
-                        : GML2EncodingUtils.toURI(coordinateReferenceSystem);
-        Filter spatialFilter =
-                filterFactory.bbox(
-                        geometryName,
-                        boundingBox.getMinX(),
-                        boundingBox.getMinY(),
-                        boundingBox.getMaxX(),
-                        boundingBox.getMaxY(),
-                        epsgCode);
-        return spatialFilter;
+
+        // do we need to query multiple areas?
+        ProjectionHandler handler =
+                ProjectionHandlerFinder.getHandler(
+                        boundingBox,
+                        getSchemaForResource(resource).getCoordinateReferenceSystem(),
+                        true);
+        if (handler == null) {
+            return toBoundingBoxFilter(boundingBox, filterFactory, geometryName);
+        }
+
+        List<ReferencedEnvelope> boxes = handler.getQueryEnvelopes();
+        List<Filter> filters =
+                boxes.stream()
+                        .map(re -> toBoundingBoxFilter(re, filterFactory, geometryName))
+                        .collect(Collectors.toList());
+        if (filters.size() == 1) {
+            return filters.get(0);
+        } else if (filters.size() > 1) {
+            return filterFactory.or(filters);
+        } else {
+            return Filter.INCLUDE;
+        }
+    }
+
+    protected static double rollLongitude(final double x) {
+        return x - 360 * Math.floor(x / 360 + 0.5);
+    }
+
+    private static FeatureType getSchemaForResource(ResourceInfo resource)
+            throws IOException, TransformException, SchemaException {
+        FeatureType schema;
+        if (resource instanceof FeatureTypeInfo) {
+            schema = ((FeatureTypeInfo) resource).getFeatureType();
+        } else if (resource instanceof CoverageInfo) {
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            ((CoverageInfo) resource).getGridCoverageReader(null, null);
+            schema = FeatureUtilities.wrapGridCoverageReader(reader, null).getSchema();
+        } else {
+            throw new IllegalArgumentException(
+                    "Did not expect this resource, only vector and raster layers are supported: "
+                            + resource);
+        }
+
+        return schema;
+    }
+
+    private static Filter toBoundingBoxFilter(
+            ReferencedEnvelope boundingBox, FilterFactory filterFactory, String geometryName) {
+        CoordinateReferenceSystem crs = boundingBox.getCoordinateReferenceSystem();
+        String epsgCode = crs == null ? null : GML2EncodingUtils.toURI(crs);
+        return filterFactory.bbox(
+                geometryName,
+                boundingBox.getMinX(),
+                boundingBox.getMinY(),
+                boundingBox.getMaxX(),
+                boundingBox.getMaxY(),
+                epsgCode);
     }
 
     private static String getGeometryPropertyName(ResourceInfo resource) {
@@ -363,9 +416,7 @@ public final class DimensionsUtils {
                                 .getGeometryDescriptor()
                                 .getLocalName();
             } else if (resource instanceof CoverageInfo) {
-                CoverageDimensionsReader reader =
-                        CoverageDimensionsReader.instantiateFrom((CoverageInfo) resource);
-                return reader.getGeometryAttributeName();
+                return "";
             }
             return geometryName;
         } catch (IOException e) {

@@ -399,6 +399,66 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
+    public void testRasterDescribeDomainsReprojectedFilterMosaic() throws Exception {
+        // perform the get describe domains operation with a spatial restriction in 3857, crossing
+        // the data
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(RASTER_ELEVATION_TIME)
+                                + "&bbox=700000,5000000,800000,6000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the space domain is not included
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain", "1");
+        // the domain should not contain 2 values
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
+    }
+
+    @Test
+    public void testRasterDescribeDomainsAcrossDateline() throws Exception {
+        // perform the get describe domains operation with a spatial restriction across the
+        // dateline,
+        // with the part covering the data fully outside of the dateline
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=170,40,374,45,EPSG:4326");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the space domain is not included
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain", "1");
+        // the domain should not contain 2 values
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
+    }
+
+    @Test
+    public void testRasterDescribeDomainsReprojectedOutsideValid() throws Exception {
+        // perform the get describe domains operation with a spatial restriction in 3857 and with
+        // values wrapped to a "second copy of the world" past the dateline
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(RASTER_ELEVATION_TIME)
+                                + "&bbox=40000000,5000000,41000000,6000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the space domain is not included
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain", "1");
+        // the domain should not contain 2 values
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
+    }
+
+    @Test
     public void testRasterDescribeDomainsOperationWithBoundingAndWrongTileMatrixSet()
             throws Exception {
         // perform the get describe domains operation with a spatial restriction and in invalid tile
@@ -449,6 +509,116 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']",
+                "1");
+    }
+
+    @Test
+    public void testVectorDescribeDomainsReprojectedFilter() throws Exception {
+        // perform the get describe domains operation with a spatial restriction
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME)
+                                + "&bbox=-20000000,-20000000,20000000,20000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // check the space domain
+        checkVectorElevationFullDomain(result);
+    }
+
+    @Test
+    public void testVectorDescribeDomainsAcrossDateline() throws Exception {
+        // spatial restriction across the dateline, the polygons are the 4 quadrants covering the
+        // world
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=170,-90,190,90,EPSG:4326");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // should hav gotten back everything
+        checkVectorElevationFullDomain(result);
+    }
+
+    @Test
+    public void testVectorDescribeDomainsOutsideWorld() throws Exception {
+        // spatial restriction is whole world but completely outside range, code should re-roll it
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=180,-90,540,90,EPSG:4326");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // should hav gotten back everything
+        checkVectorElevationFullDomain(result);
+    }
+
+    @Test
+    public void testVectorDescribeDomainsAcrossDatelineWebMercator() throws Exception {
+        // spatial restriction across the dateline in 3857, the polygons are the 4 quadrants
+        // covering the world
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME)
+                                + "&bbox=19000000,-20000000,21000000,20000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // should hav gotten back everything
+        checkVectorElevationFullDomain(result);
+    }
+
+    @Test
+    public void testVectorDescribeDomainsOutswideWorldWebMercator() throws Exception {
+        // spatial restriction outside of the valid 3857 domain, the polygons are the 4 quadrants
+        // covering the world
+        String queryRequest =
+                String.format(
+                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                        getLayerId(VECTOR_ELEVATION_TIME)
+                                + "&bbox=21000000,-20000000,59000000,20000000,EPSG:3857");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        Document result = getResultAsDocument(response);
+        print(result);
+        // should hav gotten back everything
+        checkVectorElevationFullDomain(result);
+    }
+
+    public void checkVectorElevationFullDomain(Document result) throws Exception {
+        // check the space domain, should be regular whole world
+        assertXpathEvaluatesTo("1.1", "/md:Domains/@version", result);
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
+        // check that we have two domains
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
+        // check the elevation domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']",
+                "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0,2"
+                        + ".0,3.0,5.0']",
+                "1");
+        // check the time domain
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']",
+                "1");
+        checkXpathCount(
+                result,
+                "/md:Domains/md:DimensionDomain[ows:Identifier='time' and "
+                        + "md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']",
                 "1");
     }
 

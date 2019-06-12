@@ -45,14 +45,17 @@ class DescribeDomainsTransformer extends TransformerBase {
                                 + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
-            Attributes nameSpaces =
+            Attributes attributes =
                     createAttributes(
                             new String[] {
                                 "xmlns",
-                                        "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
-                                "xmlns:ows", "http://www.opengis.net/ows/1.1"
+                                "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
+                                "xmlns:ows",
+                                "http://www.opengis.net/ows/1.1",
+                                "version",
+                                "1.1"
                             });
-            start("Domains", nameSpaces);
+            start("Domains", attributes);
             Map<String, Tuple<Integer, List<String>>> domainsValues = new HashMap<>();
             domains.getDimensions()
                     .forEach(

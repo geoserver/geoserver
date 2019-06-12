@@ -61,14 +61,14 @@ fi
 # create release branch from tag
 git checkout -b rel_$tag $tag
 
-# ensure no changes on it
-set +e
-git status | grep "working directory clean"
-if [ "$?" == "1" ]; then
-  echo "branch rel_$tag dirty, exiting"
-  exit 1
-fi
-set -e
+# ensure no changes on it (actually release folder is a change)
+# set +e
+# git status | grep "working directory clean"
+# if [ "$?" == "1" ]; then
+#   echo "branch rel_$tag dirty, exiting"
+#   exit 1
+# fi
+# set -e
 
 MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
 

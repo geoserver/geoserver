@@ -43,8 +43,21 @@ pushd .. > /dev/null
 
 init_git $git_user $git_email
 
-# switch to the release branch
-git checkout rel_$tag
+# ensure tag already exists
+git fetch --tags
+if [ `git tag --list $tag | wc -l` == 0 ]; then
+  echo "tag $tag not available on $GS_GIT_URL"
+  exit 1
+fi
+
+# check to see if a release branch already exists
+if [ `git branch --list rel_$tag | wc -l` == 1 ]; then
+  echo "branch rel_$tag exists, deleting it"
+  git branch -D rel_$tag
+fi
+
+# create release branch from tag
+git checkout -b rel_$tag $tag
 
 # ensure no changes on it
 set +e
@@ -69,7 +82,7 @@ if [ -z $SKIP_DEPLOY ]; then
    set -e
    popd > /dev/null
 else
-   echo "Skipping mvn clean deploy -P allExtensions -DskipTests"
+   echo "Skipping mvn clean install deploy -P allExtensions -DskipTests"
 fi
 
 popd > /dev/null

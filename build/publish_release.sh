@@ -41,7 +41,7 @@ fi
 
 pushd .. > /dev/null
 
-init_git $git_user $git_email
+# init_git $git_user $git_email
 
 # fetch single tag
 git fetch origin refs/tags/$tag:refs/tags/$tag --no-tags

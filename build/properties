@@ -19,7 +19,7 @@ SKIP_INSTALLERS=true
 #MAC_JENKINS_KEY=
 
 # maven environment
-MAVEN_FLAGS="-f --batch-mode -Dfmt.skip=true"
+MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
 
 if [ -z $MAVEN_SETTINGS ]; then
   # Use settings.xml override if provided

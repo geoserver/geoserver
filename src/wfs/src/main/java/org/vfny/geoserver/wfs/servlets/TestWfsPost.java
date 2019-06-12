@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.logging.Level;
@@ -184,21 +185,13 @@ public class TestWfsPost extends HttpServlet {
                 acon.setDoInput(true);
                 acon.setUseCaches(false);
 
-                // SISfixed - if there was authentication info in the request,
-                //           Pass it along the way to the target URL
-                // DJB: applied patch in GEOS-335
-                String authHeader = request.getHeader("Authorization");
-
                 String username = request.getParameter("username");
 
                 if ((username != null) && !username.trim().equals("")) {
                     String password = request.getParameter("password");
                     String up = username + ":" + password;
                     byte[] encoded = Base64.encodeBase64(up.getBytes());
-                    authHeader = "Basic " + new String(encoded);
-                }
-
-                if (authHeader != null) {
+                    String authHeader = "Basic " + new String(encoded);
                     acon.setRequestProperty("Authorization", authHeader);
                 }
 
@@ -311,25 +304,80 @@ public class TestWfsPost extends HttpServlet {
         return (GeoServer) GeoServerExtensions.bean("geoServer");
     }
 
-    void validateURL(HttpServletRequest request, String url, String proxyBase) {
+    /**
+     * Validates the destination URL parameter sent to the TestWfsPost to execute, to verify it is
+     * valid, and the request is actually coming from geoserver.
+     *
+     * <p>Two cases are checked, depending on whether or not GeoServer's Proxy Base URL is set.
+     *
+     * <p>If the Proxy Base URL is set, the host of the url parameter should match that of the Proxy
+     * Base URL (since the HTTP request is coming from inside GeoServer, while the url parameter is
+     * external)
+     *
+     * <p>Otherwise, the host of the url parameter should match that of the HTTP request.
+     *
+     * <p>In both cases, the path of the request url should be that of the TestWfsPost servlet
+     * endpoint.
+     *
+     * @param request The HTTP request sent from Wicket to the TestWfsPost servlet
+     * @param urlString The url that the TestWfsPost servlet is being asked to send an OWS request
+     *     to.
+     * @param proxyBase The proxy base URL of GeoServer
+     * @throws IllegalArgumentException - If the arguments are malformed or otherwise invalid
+     * @throws IllegalStateException - If something else is wrong
+     */
+    void validateURL(HttpServletRequest request, String urlString, String proxyBase) {
+        URL url;
+        URL requestUrl;
+
+        try {
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid url requested; not a URL: " + urlString, e);
+        }
+        String requestString = request.getRequestURL().toString();
+        try {
+            requestUrl = new URL(requestString);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Invalid request url; not a URL: " + requestString, e);
+        }
+
+        // this should not happen, but let's not make it an open proxy if it does
+        if (!request.getServletPath().equals(TEST_WFS_POST_PATH)) {
+            throw new IllegalStateException(
+                    "Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: "
+                            + requestString);
+        }
+        if (null != requestUrl.getQuery()) {
+            throw new IllegalStateException(
+                    "Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: "
+                            + requestString);
+        }
+        if (!request.getContextPath().equals(this.getServletContext().getContextPath())) {
+            throw new IllegalStateException(
+                    "Unepected, the TestWfsPost was accessed by a path from a different servlet context: "
+                            + requestString);
+        }
+
         if (proxyBase != null) {
-            if (!url.startsWith(proxyBase)) {
+            try {
+                URL proxyBaseUrl = new URL(proxyBase);
+
+                if (!url.getHost().equals(proxyBaseUrl.getHost())) {
+                    throw new IllegalArgumentException(
+                            "Invalid url requested, the demo requests should be hitting: "
+                                    + proxyBase);
+                }
+            } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(
-                        "Invalid url requested, the demo requests should be hitting: " + proxyBase);
+                        "Invalid Proxy Base URL; not a URL: " + proxyBase, e);
             }
         } else {
-            // use the requested url then, and remove the TestWfsPort
-            String requestedUrl = request.getRequestURL().toString();
-            // this should not happen, but let's not make it an open proxy if it does
-            if (!requestedUrl.endsWith(TEST_WFS_POST_PATH)) {
+            if (!url.getHost().equals(requestUrl.getHost())) {
                 throw new IllegalStateException(
-                        "Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: "
-                                + requestedUrl);
-            }
-            String base = requestedUrl.substring(0, requestedUrl.lastIndexOf(TEST_WFS_POST_PATH));
-            if (!url.startsWith(base)) {
-                throw new IllegalArgumentException(
-                        "Invalid url requested, the demo requests should be hitting: " + base);
+                        "Invalid url requested, the demo requests should be hitting: "
+                                + requestString.substring(
+                                        0, requestString.lastIndexOf(TEST_WFS_POST_PATH)));
             }
         }
     }

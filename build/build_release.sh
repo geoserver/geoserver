@@ -94,10 +94,11 @@ if [ -z $jira_id ]; then
   exit -1
 fi
 
-dist=../release/$tag
-echo "distribution folder $dist";
-mkdir -p $dist
-mkdir $dist/plugins
+# move to root of source tree
+pushd .. > /dev/null
+
+dist=`pwd`/release/$tag
+mkdir -p $dist/plugins
 
 echo "Building release with following parameters:"
 echo "  branch = $branch"
@@ -110,9 +111,6 @@ echo "  distribution = $dist"
 echo
 echo "maven/java settings:"
 mvn -version
-
-# move to root of source tree
-pushd .. > /dev/null
 
 # clear out any changes
 git reset --hard HEAD
@@ -144,6 +142,7 @@ fi
 # create a release branch
 git checkout -b rel_$tag $rev
 
+MAVEN_FLAGS = --batch-mode -Dfmt.skip=true
 # setup geotools dependency
 if [ -z $SKIP_GT ]; then
   if [ ! -z $gt_ver ]; then
@@ -174,7 +173,7 @@ if [ -z $SKIP_GT ]; then
       git checkout $gt_rev
 
       # build geotools
-      mvn clean install -Dall -DskipTests -Dall
+      mvn clean install $MAVEN_FLAGS -Dall -DskipTests
       popd > /dev/null
 
       # derive the gt version
@@ -226,7 +225,7 @@ if [ -z $SKIP_GWC ]; then
 
       # build geowebache
       pushd $gwc_dir/geowebcache > /dev/null
-      mvn -o clean install -DskipTests
+      mvn clean install $MAVEN_FLAGS -DskipTests
 
       # derive the gwc version
       gwc_tag=`get_pom_version pom.xml`
@@ -265,10 +264,10 @@ pushd src > /dev/null
 # build the release
 if [ -z $SKIP_BUILD ]; then
   echo "building release"
-  mvn $MAVEN_FLAGS clean install -DskipTests -P release
+  mvn clean install $MAVEN_FLAGS -DskipTests -P release
   
   # build the javadocs
-  mvn javadoc:aggregate
+  mvn javadoc:aggregate $MAVEN_FLAGS
 
   ##################
   # Build the docs
@@ -284,7 +283,7 @@ if [ -z $SKIP_BUILD ]; then
 
 fi
 
-mvn $MAVEN_FLAGS assembly:attached
+mvn assembly:attached $MAVEN_FLAGS
 
 artifacts=`pwd`/target/release
 

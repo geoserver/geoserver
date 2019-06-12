@@ -43,8 +43,10 @@ pushd .. > /dev/null
 
 init_git $git_user $git_email
 
+# fetch single tag
+git fetch upstream refs/tags/$tag:refs/tags/$tag --no-tags
+
 # ensure tag already exists
-git fetch --tags
 if [ `git tag --list $tag | wc -l` == 0 ]; then
   echo "tag $tag not available on $GS_GIT_URL"
   exit 1

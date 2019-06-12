@@ -70,17 +70,15 @@ git checkout -b rel_$tag $tag
 # fi
 # set -e
 
-MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
-
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   mvn deploy -P allExtensions -DskipTests	
+   mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
 
    # deploy released community modules
    pushd community > /dev/null
    set +e
-   mvn $MAVEN_FLAGS clean install deploy -P communityRelease -DskipTests
+   mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 
    set -e
    popd > /dev/null
 else

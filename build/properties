@@ -18,10 +18,17 @@ SKIP_INSTALLERS=true
 #MAC_JENKINS_USER=
 #MAC_JENKINS_KEY=
 
+# maven environment
+MAVEN_FLAGS="-f --batch-mode -Dfmt.skip=true"
+
+if [ -z $MAVEN_SETTINGS ]; then
+  # Use settings.xml override if provided
+  MAVEN_FLAGS="-s $MAVEN_SETTINGS $MAVEN_FLAGS"
+fi
 
 # parameter defaults
 if [ -z $branch ]; then
-  branch="trunk"
+  branch="master"
 fi
 
 if [ -z $rev ]; then
@@ -59,3 +66,4 @@ fi
 if [ -z $SF_PK ]; then
   SF_PK=$HOME/.ssh/id_dsa_${SF_USER}_frs.sourceforge.net
 fi
+

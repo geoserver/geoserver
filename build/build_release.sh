@@ -345,7 +345,7 @@ git commit -m "updating version numbers and release notes for $tag" .
 # tag release branch
 if [ -z $SKIP_TAG ]; then
     # fetch single tag
-    git fetch upstream refs/tags/$tag:refs/tags/$tag --no-tags
+    git fetch origin refs/tags/$tag:refs/tags/$tag --no-tags
 
     # check to see if tag already exists
     if [ `git tag --list $tag | wc -l` == 1 ]; then

@@ -22,8 +22,8 @@ function usage() {
   echo " SKIP_BUILD : Skips main release build"
   echo " SKIP_TAG : Skips tag on release branch"
   echo " SKIP_INSTALLERS : Skips building of mac and windows installers"
-  echo " SKIP_GT : Skips the GeoTools build"
-  echo " SKIP_GWC : Skips the GeoWebCache build"
+  echo " SKIP_GT : Skips the GeoTools build, as used to build revision"
+  echo " SKIP_GWC : Skips the GeoWebCache build, as used to build revision"
 }
 
 # parse options
@@ -94,6 +94,11 @@ if [ -z $jira_id ]; then
   exit -1
 fi
 
+dist=../release/$tag
+echo "distribution folder $dist";
+mkdir -p $dist
+mkdir $dist/plugins
+
 echo "Building release with following parameters:"
 echo "  branch = $branch"
 echo "  revision = $rev"
@@ -101,7 +106,8 @@ echo "  tag = $tag"
 echo "  geotools = $gt_ver"
 echo "  geowebcache = $gwc_ver"
 echo "  jira id = $jira_id"
-
+echo "  distribution = $dist"
+echo
 echo "maven/java settings:"
 mvn -version
 
@@ -168,7 +174,7 @@ if [ -z $SKIP_GT ]; then
       git checkout $gt_rev
 
       # build geotools
-      mvn clean install -DskipTests -Dall
+      mvn clean install -Dall -DskipTests -Dall
       popd > /dev/null
 
       # derive the gt version
@@ -280,17 +286,6 @@ fi
 
 mvn $MAVEN_FLAGS assembly:attached
 
-# copy over the artifacts
-if [ ! -e $DIST_PATH ]; then
-  mkdir -p $DIST_PATH
-fi
-dist=$DIST_PATH/$tag
-if [ -e $dist ]; then
-  rm -rf $dist
-fi
-mkdir $dist
-mkdir $dist/plugins
-
 artifacts=`pwd`/target/release
 
 # bundle up mac and windows installer stuff
@@ -326,6 +321,7 @@ unlink readme
 
 popd > /dev/null
 
+# stage distribution artifacts
 echo "copying artifacts to $dist"
 cp $artifacts/*-plugin.zip $dist/plugins
 for a in `ls $artifacts/*.zip | grep -v plugin`; do

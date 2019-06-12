@@ -4,27 +4,23 @@
 set -e
 
 function usage() {
-  echo "$0 [options] <tag> <branch> <user> <email>"
+  echo "$0 [options] <tag> <branch>"
   echo
   echo " tag : Release tag (eg: 2.1.4, 2.2-beta1, ...)"
   echo " branch: Release branch (eg, 2.1.x, 2.2.x)" 
-  echo " user:  Git username"
-  echo " email: Git email"
   echo 
   echo "Environment variables:"
   echo " SKIP_DEPLOY : Skips deploy to maven repository"
   echo " SKIP_UPLOAD : Skips upload to source forge"
 }
 
-if [ -z $4 ]; then
+if [ -z $2 ]; then
   usage
   exit
 fi
 
 tag=$1
 branch=$2
-git_user=$3
-git_email=$4
 
 # load properties + functions
 . "$( cd "$( dirname "$0" )" && pwd )"/properties

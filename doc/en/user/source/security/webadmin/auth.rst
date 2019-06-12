@@ -226,7 +226,7 @@ The following illustration shows the configuration options for the LDAP authenti
      - Search pattern for locating the LDAP groups a user belongs to. This may contain two placeholder values:
        ``{0}``, the full DN of the user, for example ``uid=bob,ou=people,dc=acme,dc=com``
        ``{1}``, the ``uid`` portion of the full DN, for example ``bob``.
-       Only applicable when the *Use LDAP groups for authorization* parameter is **checked**.
+       Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
    * - Admin Group
      - Name of the group to be mapped to Administrator role (defaults to ADMINISTRATOR). Example: ``ADMIN``. Adds the role ROLE_ADMINISTRATOR if the user belongs to a group named ADMIN (case insensitive)
    * - Group Admin Group
@@ -243,7 +243,7 @@ The following illustration shows the configuration options for the LDAP authenti
        ``{0}``, the full DN of the user, for example ``cn=it,ou=groups,dc=acme,dc=com``
        
        ``{1}``, the ``cn`` portion of the full DN, for example ``it``.
-       Only applicable when the **Enable Hierarchical groups search** parameter is **checked**.
+       Only applicable when the *Enable Hierarchical groups search( parameter is **checked**.
 
 Authentication chain
 --------------------

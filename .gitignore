@@ -18,6 +18,9 @@ target
 cucumber-report
 .mvn
 
+# Release process artifacts
+release/
+
 # NSG CITE testst data directory
 data/citensg-1.0/gwc/cite*
 data/citensg-1.0/gwc/geowebcache_*.bak

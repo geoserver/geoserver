@@ -13,8 +13,7 @@ function usage() {
   echo 
   echo "Environment variables:"
   echo " SKIP_DEPLOY : Skips deploy to maven repository"
-  echo " SKIP_MERGE_AND_TAG : Skips merge/tag of release branch"
-  echo " SKIP_PUSH : Skips pushing changes to release branch and tag"
+  echo " SKIP_UPLOAD : Skips upload to source forge"
 }
 
 if [ -z $4 ]; then
@@ -56,6 +55,8 @@ if [ "$?" == "1" ]; then
 fi
 set -e
 
+MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
+
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
@@ -64,19 +65,20 @@ if [ -z $SKIP_DEPLOY ]; then
    # deploy released community modules
    pushd community > /dev/null
    set +e
-   mvn clean install deploy -P communityRelease -DskipTests
+   mvn $MAVEN_FLAGS clean install deploy -P communityRelease -DskipTests
    set -e
    popd > /dev/null
 else
-   echo "Skipping mvn deploy -P allExtensions -DskipTests"
+   echo "Skipping mvn clean deploy -P allExtensions -DskipTests"
 fi
 
 popd > /dev/null
 
 # upload artifacts to sourceforge
-pushd $DIST_PATH/$tag > /dev/null
 
-if [ -z $SKIP_DEPLOY ]; then
+pushd release/$tag > /dev/null
+
+if [ -z $SKIP_UPLOAD ]; then
   rsync -ave "ssh -i $SF_PK" *-bin.zip *-war.zip *doc.zip *.pdf $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
   
   # don't fail if exe is not around
@@ -93,17 +95,4 @@ fi
 
 popd > /dev/null
 
-# tag release branch
-if [ -z $SKIP_MERGE_AND_TAG ]; then
-  git tag $tag
-else
-  echo "Skipping git tag $tag"
-fi
-
-# push tag up
-if [ -z $SKIP_PUSH ]; then
-  git push origin $tag
-else
-  echo "Skipping git push origin $tag"
-fi
 

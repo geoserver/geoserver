@@ -286,13 +286,14 @@ fi
 mvn assembly:attached $MAVEN_FLAGS
 
 artifacts=`pwd`/target/release
+echo "artifacts = $artifacts"
 
 # bundle up mac and windows installer stuff
 pushd release/installer/mac > /dev/null
-zip -r $artifacts/geoserver-$tag-mac.zip *
+zip -q -r $artifacts/geoserver-$tag-mac.zip *
 popd > /dev/null
 pushd release/installer/win > /dev/null
-zip -r $artifacts/geoserver-$tag-win.zip *
+zip -q -r $artifacts/geoserver-$tag-win.zip *
 popd > /dev/null
 
 pushd $artifacts > /dev/null
@@ -313,7 +314,7 @@ htmldoc=geoserver-$tag-htmldoc.zip
 if [ -e $htmldoc ]; then
   rm -f $htmldoc 
 fi
-zip -r $htmldoc user developer readme
+zip -q -r $htmldoc user developer readme
 unlink user
 unlink developer
 unlink readme
@@ -327,7 +328,10 @@ for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
 
-cp $artifacts/../../../doc/en/$usertarget/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
+cp $artifacts/../../../doc/en/target/user/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
+
+echo "generated artifacts:"
+ls -la $dist
 
 # git commit changes on the release branch
 pushd .. > /dev/null

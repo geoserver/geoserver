@@ -10,6 +10,7 @@ function usage() {
   echo " branch: Release branch (eg, 2.1.x, 2.2.x)" 
   echo 
   echo "Environment variables:"
+  echo " MAVEN_SETTINGS : settings.xml override"
   echo " SKIP_DEPLOY : Skips deploy to maven repository"
   echo " SKIP_UPLOAD : Skips upload to source forge"
 }
@@ -69,16 +70,14 @@ git checkout -b rel_$tag $tag
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   echo "deploying with $MAVEN_FLAGS"
-   
    mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
 
    # deploy released community modules
-   pushd community > /dev/null
-   set +e
-   mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 
-   set -e
-   popd > /dev/null
+   # pushd community > /dev/null
+   # set +e
+   # mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 
+   # set -e
+   # popd > /dev/null
 else
    echo "Skipping mvn clean install deploy -P allExtensions -DskipTests"
 fi

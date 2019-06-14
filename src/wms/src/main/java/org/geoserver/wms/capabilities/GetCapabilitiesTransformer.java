@@ -181,7 +181,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
     /**
      * Optional root layer include / exclude flag
      *
-     * @param includeRootlayer whether to always include root Layer element , also if there is a
+     * @param includeRootLayer whether to always include root Layer element , also if there is a
      *     already single top Layer element
      */
     public void setIncludeRootLayer(Boolean includeRootLayer) {

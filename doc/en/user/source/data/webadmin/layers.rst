@@ -220,11 +220,13 @@ Cache parameters that apply to the HTTP response from client requests.
 
 Root Layer in Capabilities
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Capabilities documents in GeoServer always have a top level (root) Layer element that works as a container of all the available layers and groups.
 
-When a layer is the only top level element in the Capabilities document, it is possible to remove the Root Layer that contains it, and return
+When a layer is the only top level element in the Capabilities document, it is possible to remove this root Layer and return
 a hierarchy where the layer is the root instead.
 
 To enable this functionality, choose the **No** option from the Root Layer in Capabilities section.
+
 By default this behaviour is inherited from the global WMS service settings (**WMS Global Settings** option).
 Finally, it is possible to override the service settings and force a **Yes** to always include the GeoServer root element.
  

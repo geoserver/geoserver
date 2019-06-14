@@ -106,13 +106,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new TextArea<String>("rootLayerAbstract"));
 
         PropertyModel metadataModel = new PropertyModel(info, "metadata");
-        MapModel rootLayerDisabled =
+        MapModel rootLayerEnabled =
                 defaultedModel(
                         metadataModel,
-                        WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY,
-                        WMS.NO_ROOT_LAYER_IN_CAPABILITIES);
-        CheckBox rootLayerDisabledField = new CheckBox("rootLayerRemove", rootLayerDisabled);
-        form.add(rootLayerDisabledField);
+                        WMS.ROOT_LAYER_IN_CAPABILITIES_KEY,
+                        WMS.ROOT_LAYER_IN_CAPABILITIES_DEFAULT);
+        CheckBox rootLayerEnabledField = new CheckBox("rootLayerEnabled", rootLayerEnabled);
+        form.add(rootLayerEnabledField);
 
         // authority URLs and Identifiers for the root layer
         LayerAuthoritiesAndIdentifiersPanel authAndIds;

@@ -27,8 +27,8 @@ public class RootLayerConfig extends PublishedConfigurationPanel<PublishedInfo> 
         add(rootLayer);
 
         IModel<Boolean> rootLayerGlobalModel = new Model<Boolean>(null);
-        IModel<Boolean> rootLayerYesModel = new Model<Boolean>(Boolean.FALSE);
-        IModel<Boolean> rootLayerNoModel = new Model<Boolean>(Boolean.TRUE);
+        IModel<Boolean> rootLayerYesModel = new Model<Boolean>(Boolean.TRUE);
+        IModel<Boolean> rootLayerNoModel = new Model<Boolean>(Boolean.FALSE);
 
         Radio<Boolean> rootLayerGlobal =
                 new Radio<Boolean>("rootLayerGlobal", rootLayerGlobalModel);

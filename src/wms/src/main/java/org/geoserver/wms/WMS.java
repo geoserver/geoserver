@@ -218,11 +218,14 @@ public class WMS implements ApplicationContextAware {
     /** DateLine Wrapping Heuristic key */
     public static String DATELINE_WRAPPING_HEURISTIC_KEY = "disableDatelineWrappingHeuristic";
 
-    /** Capabilities will be produced without a root Layer element, when not needed * */
-    public static Boolean NO_ROOT_LAYER_IN_CAPABILITIES = false;
+    /**
+     * Capabilities will be produced with a root Layer element, only when needed (there is no single
+     * top layer element) *
+     */
+    public static Boolean ROOT_LAYER_IN_CAPABILITIES_DEFAULT = true;
 
-    /** No Root Layer in Capabilities key * */
-    public static String NO_ROOT_LAYER_IN_CAPABILITIES_KEY = "noRootLayerInCapabilities";
+    /** Root Layer in Capabilities key * */
+    public static String ROOT_LAYER_IN_CAPABILITIES_KEY = "rootLayerInCapabilities";
 
     /** GIF disposal methods */
     public static final String DISPOSAL_METHOD_NONE = "none";
@@ -585,13 +588,9 @@ public class WMS implements ApplicationContextAware {
         return disabled;
     }
 
-    public boolean isRootLayerInCapabilitesRemoved() {
-        Boolean disabled =
-                getMetadataValue(
-                        NO_ROOT_LAYER_IN_CAPABILITIES_KEY,
-                        NO_ROOT_LAYER_IN_CAPABILITIES,
-                        Boolean.class);
-        return disabled;
+    public boolean isRootLayerInCapabilitesEnabled() {
+        return getMetadataValue(
+                ROOT_LAYER_IN_CAPABILITIES_KEY, ROOT_LAYER_IN_CAPABILITIES_DEFAULT, Boolean.class);
     }
 
     public int getMaxAllowedFrames() {

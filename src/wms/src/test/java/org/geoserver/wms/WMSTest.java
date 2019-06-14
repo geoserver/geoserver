@@ -222,12 +222,12 @@ public class WMSTest extends WMSTestSupport {
     }
 
     @Test
-    public void testRootLayerInCapabilitiesRemoved() {
-        assertFalse(wms.isRootLayerInCapabilitesRemoved());
+    public void testRootLayerInCapabilitiesEanbled() {
+        assertTrue(wms.isRootLayerInCapabilitesEnabled());
 
         WMSInfo info = wms.getServiceInfo();
-        info.getMetadata().put(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY, true);
+        info.getMetadata().put(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY, false);
         getGeoServer().save(info);
-        assertTrue(wms.isRootLayerInCapabilitesRemoved());
+        assertFalse(wms.isRootLayerInCapabilitesEnabled());
     }
 }

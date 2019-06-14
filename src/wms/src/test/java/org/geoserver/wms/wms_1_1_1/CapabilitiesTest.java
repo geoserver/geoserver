@@ -10,7 +10,10 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -734,8 +737,7 @@ public class CapabilitiesTest extends WMSTestSupport {
                         wms,
                         BASE_URL,
                         wms.getAllowedMapFormats(),
-                        new HashSet<ExtendedCapabilitiesProvider>(),
-                        null);
+                        new HashSet<ExtendedCapabilitiesProvider>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());
@@ -789,223 +791,6 @@ public class CapabilitiesTest extends WMSTestSupport {
             if (group != null) {
                 catalog.remove(group);
             }
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-            setAdvertised(catalog, MockData.NAMED_PLACES, true);
-            setQueryable(catalog, MockData.NAMED_PLACES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerRemovedWMSService() throws Exception {
-        // make layers non advertised
-        WMSInfo info = getWMS().getServiceInfo();
-        info.getMetadata().put(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY, true);
-        getGeoServer().save(info);
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        setAdvertised(catalog, MockData.NAMED_PLACES, false);
-        setQueryable(catalog, MockData.NAMED_PLACES, false);
-        LayerGroupInfo group = null;
-        try {
-            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            Document dom =
-                    dom(get("lakes_and_places/wms?request=GetCapabilities&version=1.1.0"), true);
-            // print(dom);
-
-            assertXpathEvaluatesTo(
-                    "lakes_and_places", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-        } finally {
-            if (group != null) {
-                catalog.remove(group);
-            }
-            info.getMetadata().remove(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY);
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-            setAdvertised(catalog, MockData.NAMED_PLACES, true);
-            setQueryable(catalog, MockData.NAMED_PLACES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerNotRemoved() throws Exception {
-        // make layers non advertised
-        WMSInfo info = getWMS().getServiceInfo();
-        info.getMetadata().put(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY, false);
-        getGeoServer().save(info);
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        setAdvertised(catalog, MockData.NAMED_PLACES, false);
-        setQueryable(catalog, MockData.NAMED_PLACES, false);
-        LayerGroupInfo group = null;
-        try {
-            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            Document dom =
-                    dom(get("lakes_and_places/wms?request=GetCapabilities&version=1.1.0"), true);
-            // print(dom);
-
-            assertXpathEvaluatesTo("", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-            assertXpathEvaluatesTo(
-                    "lakes_and_places", "/WMT_MS_Capabilities/Capability/Layer/Layer/Name", dom);
-        } finally {
-            if (group != null) {
-                catalog.remove(group);
-            }
-            info.getMetadata().remove(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY);
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-            setAdvertised(catalog, MockData.NAMED_PLACES, true);
-            setQueryable(catalog, MockData.NAMED_PLACES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerRemovedGroupConfig() throws Exception {
-        // make layers non advertised
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        setAdvertised(catalog, MockData.NAMED_PLACES, false);
-        setQueryable(catalog, MockData.NAMED_PLACES, false);
-        LayerGroupInfo group = null;
-        try {
-            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            group.getMetadata().put(PublishedInfo.ROOT_IN_CAPABILITIES, true);
-            Document dom =
-                    dom(get("lakes_and_places/wms?request=GetCapabilities&version=1.1.0"), true);
-            // print(dom);
-
-            assertXpathEvaluatesTo(
-                    "lakes_and_places", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-        } finally {
-            if (group != null) {
-                catalog.remove(group);
-            }
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-            setAdvertised(catalog, MockData.NAMED_PLACES, true);
-            setQueryable(catalog, MockData.NAMED_PLACES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerRemovedLayerConfig() throws Exception {
-        // make layers non advertised
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        LayerInfo layer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
-
-        try {
-            layer.getMetadata().put(PublishedInfo.ROOT_IN_CAPABILITIES, true);
-            catalog.save(layer);
-            Document dom = dom(get("cite/Lakes/wms?request=GetCapabilities&version=1.1.0"), true);
-            // print(dom);
-
-            assertXpathEvaluatesTo("Lakes", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-        } finally {
-            layer.getMetadata().put(PublishedInfo.ROOT_IN_CAPABILITIES, null);
-            catalog.save(layer);
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerRemovedRequestParam() throws Exception {
-        // make layers non advertised
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        setAdvertised(catalog, MockData.NAMED_PLACES, false);
-        setQueryable(catalog, MockData.NAMED_PLACES, false);
-        LayerGroupInfo group = null;
-        try {
-            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            Document dom =
-                    dom(
-                            get(
-                                    "lakes_and_places/wms?request=GetCapabilities&version=1.1.0&noRootLayer=true"),
-                            true);
-            // print(dom);
-
-            assertXpathEvaluatesTo(
-                    "lakes_and_places", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-        } finally {
-            if (group != null) {
-                catalog.remove(group);
-            }
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-            setAdvertised(catalog, MockData.NAMED_PLACES, true);
-            setQueryable(catalog, MockData.NAMED_PLACES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerRemovedRequestParamHasGreaterPriority() throws Exception {
-        // make layers non advertised
-        WMSInfo info = getWMS().getServiceInfo();
-        info.getMetadata().put(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY, true);
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        setAdvertised(catalog, MockData.NAMED_PLACES, false);
-        setQueryable(catalog, MockData.NAMED_PLACES, false);
-        LayerGroupInfo group = null;
-        try {
-            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            group.getMetadata().put(PublishedInfo.ROOT_IN_CAPABILITIES, true);
-            Document dom =
-                    dom(
-                            get(
-                                    "lakes_and_places/wms?request=GetCapabilities&version=1.1.0&noRootLayer=false"),
-                            true);
-            // print(dom);
-
-            assertXpathEvaluatesTo("", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-            assertXpathEvaluatesTo(
-                    "lakes_and_places", "/WMT_MS_Capabilities/Capability/Layer/Layer/Name", dom);
-        } finally {
-            if (group != null) {
-                catalog.remove(group);
-            }
-            info.getMetadata().remove(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY);
-            setAdvertised(catalog, MockData.LAKES, true);
-            setQueryable(catalog, MockData.LAKES, true);
-            setAdvertised(catalog, MockData.NAMED_PLACES, true);
-            setQueryable(catalog, MockData.NAMED_PLACES, true);
-        }
-    }
-
-    @Test
-    public void testRootLayerRemovedGroupConfigHasPriorityOnService() throws Exception {
-        // make layers non advertised
-        WMSInfo info = getWMS().getServiceInfo();
-        info.getMetadata().put(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY, true);
-        Catalog catalog = getCatalog();
-        setAdvertised(catalog, MockData.LAKES, false);
-        setQueryable(catalog, MockData.LAKES, false);
-        setAdvertised(catalog, MockData.NAMED_PLACES, false);
-        setQueryable(catalog, MockData.NAMED_PLACES, false);
-        LayerGroupInfo group = null;
-        try {
-            group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            group.getMetadata().put(PublishedInfo.ROOT_IN_CAPABILITIES, false);
-            Document dom =
-                    dom(get("lakes_and_places/wms?request=GetCapabilities&version=1.1.0"), true);
-            // print(dom);
-
-            assertXpathEvaluatesTo("", "/WMT_MS_Capabilities/Capability/Layer/Name", dom);
-            assertXpathEvaluatesTo(
-                    "lakes_and_places", "/WMT_MS_Capabilities/Capability/Layer/Layer/Name", dom);
-        } finally {
-            if (group != null) {
-                catalog.remove(group);
-            }
-            info.getMetadata().remove(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY);
             setAdvertised(catalog, MockData.LAKES, true);
             setQueryable(catalog, MockData.LAKES, true);
             setAdvertised(catalog, MockData.NAMED_PLACES, true);

@@ -202,8 +202,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
                         wms,
                         BASE_URL,
                         wms.getAllowedMapFormats(),
-                        new HashSet<ExtendedCapabilitiesProvider>(),
-                        null);
+                        new HashSet<ExtendedCapabilitiesProvider>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());

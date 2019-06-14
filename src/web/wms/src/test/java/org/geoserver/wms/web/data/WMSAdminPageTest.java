@@ -85,10 +85,10 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testRootLayerRemove() throws Exception {
         tester.startPage(WMSAdminPage.class);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("rootLayerRemove", true);
+        ft.setValue("rootLayerEnabled", false);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.NO_ROOT_LAYER_IN_CAPABILITIES_KEY), true);
+        assertEquals(wms.getMetadata().get(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY), false);
     }
 
     @Test

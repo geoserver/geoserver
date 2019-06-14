@@ -140,8 +140,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
     private Collection<ExtendedCapabilitiesProvider> extCapsProviders;
 
-    /** whether to skip root Layer element if there is a already single top Layer element * */
-    private Boolean noRootLayer = null;
+    /** if true, forces always including a root Layer element * */
+    private Boolean includeRootLayer = null;
 
     /**
      * Creates a new WMSCapsTransformer object.
@@ -160,29 +160,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             Set<String> getMapFormats,
             Set<String> getLegendGraphicFormats,
             Collection<ExtendedCapabilitiesProvider> extCapsProviders) {
-        this(wms, baseURL, getMapFormats, getLegendGraphicFormats, extCapsProviders, null);
-    }
-
-    /**
-     * Creates a new WMSCapsTransformer object.
-     *
-     * @param wms
-     * @param baseURL the base URL of the current request (usually "http://host:port/geoserver")
-     * @param getMapFormats the list of supported output formats to state for the GetMap request
-     * @param getLegendGraphicFormats the list of supported output formats to state for the
-     *     GetLegendGraphic request
-     * @param extCapsProviders collection of providers of extended capabilities content
-     * @param noRootLayer whether to skip root Layer element if there is a already single top Layer
-     *     element
-     * @throws NullPointerException if <code>schemaBaseUrl</code> is null;
-     */
-    public GetCapabilitiesTransformer(
-            WMS wms,
-            String baseURL,
-            Set<String> getMapFormats,
-            Set<String> getLegendGraphicFormats,
-            Collection<ExtendedCapabilitiesProvider> extCapsProviders,
-            Boolean noRootLayer) {
         super();
         Assert.notNull(wms, "wms");
         Assert.notNull(baseURL, "baseURL");
@@ -199,7 +176,16 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         setIndentation(2);
         final Charset encoding = wms.getCharSet();
         setEncoding(encoding);
-        this.noRootLayer = noRootLayer;
+    }
+
+    /**
+     * Optional root layer include / exclude flag
+     *
+     * @param includeRootlayer whether to always include root Layer element , also if there is a
+     *     already single top Layer element
+     */
+    public void setIncludeRootLayer(Boolean includeRootLayer) {
+        this.includeRootLayer = includeRootLayer;
     }
 
     @Override
@@ -210,7 +196,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 getMapFormats,
                 getLegendGraphicFormats,
                 extCapsProviders,
-                noRootLayer);
+                includeRootLayer);
     }
 
     /**
@@ -279,7 +265,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         private WMSInfo serviceInfo;
 
-        private Boolean noRootLayer;
+        private Boolean includeRootLayer;
 
         /**
          * Creates a new CapabilitiesTranslator object.
@@ -293,7 +279,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 Set<String> getMapFormats,
                 Set<String> getLegendGraphicFormats,
                 Collection<ExtendedCapabilitiesProvider> extCapsProviders,
-                Boolean noRootLayer) {
+                Boolean includeRootlayer) {
             super(handler, null, null);
             this.wmsConfig = wmsConfig;
             this.getMapFormats = getMapFormats;
@@ -318,7 +304,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             this.skipping =
                     ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                             wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
-            this.noRootLayer = noRootLayer;
+            this.includeRootLayer = includeRootlayer;
         }
 
         /**
@@ -713,7 +699,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             Set<LayerInfo> layersAlreadyProcessed =
                     getLayersInGroups(new ArrayList<LayerGroupInfo>(layerGroups));
 
-            if (!hasSingleRoot(layers, layerGroups, layersAlreadyProcessed)) {
+            if (includeRootLayer(layers, layerGroups, layersAlreadyProcessed)) {
                 start("Layer");
 
                 // WMSInfo serviceInfo = wmsConfig.getServiceInfo();
@@ -767,26 +753,30 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
         }
 
-        private boolean hasSingleRoot(
+        private boolean includeRootLayer(
                 List<LayerInfo> layers,
                 List<LayerGroupInfo> layerGroups,
                 Set<LayerInfo> layersAlreadyProcessed) {
             final PublishedInfo singleRoot =
                     getSingleRoot(layers, layerGroups, layersAlreadyProcessed);
+            // is there a single top element? if not, we have to include root
             if (singleRoot != null) {
-                if (noRootLayer != null) {
-                    return noRootLayer.booleanValue();
+                // first we check if the user has specified a rootLayer param
+                if (includeRootLayer != null) {
+                    return includeRootLayer.booleanValue();
                 }
-                Boolean layerAsRoot =
+                // then we check for layer / group level setting
+                Boolean layerIncludeRoot =
                         singleRoot
                                 .getMetadata()
                                 .get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class);
-                if (layerAsRoot == null) {
-                    return wmsConfig.isRootLayerInCapabilitesRemoved();
+                if (layerIncludeRoot != null) {
+                    return layerIncludeRoot.booleanValue();
                 }
-                return layerAsRoot.booleanValue();
+                // finally we return global WMS setting
+                return wmsConfig.isRootLayerInCapabilitesEnabled();
             }
-            return false;
+            return true;
         }
 
         private PublishedInfo getSingleRoot(

@@ -119,10 +119,10 @@ They are fully documented in the :ref:`wms_vendor_parameters` section.
    * - ``format``
      - No
      - request the capabilities document in a certain format
-   * - ``noRootLayer``
+   * - ``rootLayer``
      - No
-     - Flag to enable returning a single layer or group as the top level Layer element, removing the standard Root Layer. Values are true or false. 
-       If specified, will override the global WMS setting or layer / group setting for the same behaviour.
+     - Flag to enable/disable the standard Root top level Layer element. Values are true or false. When false, the Root element will be included only if there is NOT a single top level element already.
+       When specified, will override the global WMS setting or layer / group setting for the same behaviour.
 
 
 A example GetCapabilities request is: ::

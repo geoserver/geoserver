@@ -68,7 +68,7 @@ public class RootLayerConfigTest extends GeoServerWicketTestSupport {
                         .getFeedbackMessages()
                         .messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR))
                         .size());
-        assertFalse(polygons.getMetadata().get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class));
+        assertTrue(polygons.getMetadata().get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class));
     }
 
     @Test
@@ -83,6 +83,6 @@ public class RootLayerConfigTest extends GeoServerWicketTestSupport {
                         .getFeedbackMessages()
                         .messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR))
                         .size());
-        assertTrue(polygons.getMetadata().get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class));
+        assertFalse(polygons.getMetadata().get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class));
     }
 }

@@ -206,9 +206,7 @@ public class GetCapabilitiesTransformerTest {
     @Test
     public void testHeader() throws Exception {
         GetCapabilitiesTransformer tr;
-        tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         StringWriter writer = new StringWriter();
         tr.transform(req, writer);
         String content = writer.getBuffer().toString();
@@ -224,9 +222,7 @@ public class GetCapabilitiesTransformerTest {
     @Test
     public void testRootElement() throws Exception {
         GetCapabilitiesTransformer tr;
-        tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
 
         Document dom = WMSTestSupport.transform(req, tr);
         Element root = dom.getDocumentElement();
@@ -235,9 +231,7 @@ public class GetCapabilitiesTransformerTest {
         assertEquals("0", root.getAttribute("updateSequence"));
 
         geosInfo.setUpdateSequence(10);
-        tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         dom = WMSTestSupport.transform(req, tr);
         root = dom.getDocumentElement();
         assertEquals("10", root.getAttribute("updateSequence"));
@@ -273,9 +267,7 @@ public class GetCapabilitiesTransformerTest {
         wmsInfo.setAccessConstraints("accessConstraints");
 
         GetCapabilitiesTransformer tr;
-        tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
 
@@ -324,9 +316,7 @@ public class GetCapabilitiesTransformerTest {
     @Test
     public void testCRSList() throws Exception {
         GetCapabilitiesTransformer tr;
-        tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
         final Set<String> supportedCodes = CRS.getSupportedCodes("EPSG");
@@ -342,9 +332,7 @@ public class GetCapabilitiesTransformerTest {
         wmsInfo.getSRS().add("EPSG:23030");
 
         GetCapabilitiesTransformer tr;
-        tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig, baseUrl, mapFormats, legendFormats, null, null);
+        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
         NodeList limitedCrsCodes =
@@ -363,8 +351,7 @@ public class GetCapabilitiesTransformerTest {
                         baseUrl,
                         mapFormats,
                         legendFormats,
-                        Collections.singletonList(vendorCapsProvider),
-                        null);
+                        Collections.singletonList(vendorCapsProvider));
         tr.setIndentation(2);
         checkVendorSpecificCapsProviders(tr);
     }
@@ -381,8 +368,7 @@ public class GetCapabilitiesTransformerTest {
                         baseUrl,
                         mapFormats,
                         legendFormats,
-                        Arrays.asList(emptyCapsProvider, vendorCapsProvider),
-                        null);
+                        Arrays.asList(emptyCapsProvider, vendorCapsProvider));
         tr.setIndentation(2);
         checkVendorSpecificCapsProviders(tr);
     }

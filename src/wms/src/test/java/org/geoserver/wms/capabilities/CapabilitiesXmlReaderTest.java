@@ -41,7 +41,7 @@ public class CapabilitiesXmlReaderTest {
         assertEquals("GetCapabilities", request.getRequest());
         assertEquals("1.2.0", request.getVersion());
         assertEquals("1", request.getUpdateSequence());
-        assertNull(request.isNoRootLayer());
+        assertNull(request.isRootLayerEnabled());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class CapabilitiesXmlReaderTest {
                         + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
                         + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
                         + "         version=\"1.2.0\" updateSequence=\"1\" " //
-                        + "         noRootLayer=\"true\" " //
+                        + "         rootLayer=\"true\" " //
                         + "        service=\"WMS\"> " //
                         + "</ogc:GetCapabilities>";
 
@@ -67,7 +67,7 @@ public class CapabilitiesXmlReaderTest {
         assertEquals("GetCapabilities", request.getRequest());
         assertEquals("1.2.0", request.getVersion());
         assertEquals("1", request.getUpdateSequence());
-        assertTrue(request.isNoRootLayer());
+        assertTrue(request.isRootLayerEnabled());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class CapabilitiesXmlReaderTest {
                         + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
                         + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
                         + "         version=\"1.2.0\" updateSequence=\"1\" " //
-                        + "         noRootLayer=\"false\" " //
+                        + "         rootLayer=\"false\" " //
                         + "        service=\"WMS\"> " //
                         + "</ogc:GetCapabilities>";
 
@@ -93,6 +93,6 @@ public class CapabilitiesXmlReaderTest {
         assertEquals("GetCapabilities", request.getRequest());
         assertEquals("1.2.0", request.getVersion());
         assertEquals("1", request.getUpdateSequence());
-        assertFalse(request.isNoRootLayer());
+        assertFalse(request.isRootLayerEnabled());
     }
 }

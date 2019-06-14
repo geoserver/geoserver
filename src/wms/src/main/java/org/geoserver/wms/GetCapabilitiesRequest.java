@@ -18,7 +18,7 @@ public class GetCapabilitiesRequest extends WMSRequest {
 
     private String namespace;
 
-    private Boolean noRootLayer = null;
+    private Boolean includeRootLayer = null;
 
     public GetCapabilitiesRequest() {
         super("GetCapabilities");
@@ -57,12 +57,15 @@ public class GetCapabilitiesRequest extends WMSRequest {
         this.namespace = namespace;
     }
 
-    /** @return whether to remove the root layer when there is a single top Layer element * */
-    public Boolean isNoRootLayer() {
-        return noRootLayer;
+    /**
+     * @return whether to always include the root layer also when there is a single top Layer
+     *     element *
+     */
+    public Boolean isRootLayerEnabled() {
+        return includeRootLayer;
     }
 
-    public void setNoRootLayer(Boolean noRootLayer) {
-        this.noRootLayer = noRootLayer;
+    public void setRootLayerEnabled(Boolean includeRootLayer) {
+        this.includeRootLayer = includeRootLayer;
     }
 }

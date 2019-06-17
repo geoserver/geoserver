@@ -79,9 +79,9 @@ HTML
 
 #. Run the following command::
 
-      make html
+      ant user
 
-   The resulting HTML pages will be contained in :file:`doc/en/user/build/html`.
+   The resulting HTML pages will be contained in :file:`doc/en/target/user/html`.
 
 #. Watch the output of the above command for any errors and warnings.  These could be indicative of problems with your markup.  Please fix any errors and warnings before continuing.
 

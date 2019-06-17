@@ -44,6 +44,8 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
 
     private long cacheExpirationTime = defaultCacheExpirationTime;
 
+    private String authApiKey;
+
     @Override
     public String getAdminRoleName() {
         return adminGroup;
@@ -174,5 +176,18 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
         } else {
             return defaultCacheExpirationTime;
         }
+    }
+
+    /**
+     * @return the authApiKey if set, the rest client will create an "X-AUTH" custom header in order
+     *     to send authentication to the backend.
+     */
+    public String getAuthApiKey() {
+        return authApiKey;
+    }
+
+    /** @param authApiKey the authApiKey to set */
+    public void setAuthApiKey(String authApiKey) {
+        this.authApiKey = authApiKey;
     }
 }

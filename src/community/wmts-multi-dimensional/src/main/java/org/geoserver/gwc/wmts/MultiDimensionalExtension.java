@@ -546,7 +546,9 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                 // dimensions are not supported for layers groups
                 return null;
             }
-            return (LayerInfo) publishedInfo;
+            // go through the catalog to make sure we get all the wrapping necessary, including
+            // security
+            return catalog.getLayer(publishedInfo.getId());
         }
         // let's see if we are in the context of a virtual service
         WorkspaceInfo localWorkspace = LocalWorkspace.get();

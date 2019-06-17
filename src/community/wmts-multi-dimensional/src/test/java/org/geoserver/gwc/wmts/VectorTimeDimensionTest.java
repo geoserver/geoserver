@@ -23,7 +23,7 @@ import org.opengis.filter.Filter;
  * This class contains tests that check that time dimensions values are correctly extracted from
  * vector data.
  */
-public class VectorTimeDimensionTest extends TestsSupport {
+public class VectorTimeDimensionTest extends VectorTimeTestSupport {
 
     @Test
     public void testDisabledDimension() throws Exception {
@@ -75,17 +75,5 @@ public class VectorTimeDimensionTest extends TestsSupport {
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1D");
         assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-13T00:00:00.000Z/P1D"));
         assertThat(histogram.second, equalTo(Arrays.asList(3, 1)));
-    }
-
-    /** Helper method that just returns the current layer info. */
-    private LayerInfo getLayerInfo() {
-        return catalog.getLayerByName(VECTOR_ELEVATION.getLocalPart());
-    }
-
-    /** Helper method that just returns the current vector info. */
-    private FeatureTypeInfo getVectorInfo() {
-        LayerInfo layerInfo = getLayerInfo();
-        assertThat(layerInfo.getResource(), instanceOf(FeatureTypeInfo.class));
-        return (FeatureTypeInfo) layerInfo.getResource();
     }
 }

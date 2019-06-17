@@ -183,6 +183,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                             restRoleServiceConfig
                                     .getUsersJSONPath()
                                     .replace("${username}", username),
+                            restRoleServiceConfig.getAuthApiKey(),
                             new RestEndpointConnectionCallback() {
 
                                 @Override
@@ -282,6 +283,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                             restRoleServiceConfig.getBaseUrl(),
                             restRoleServiceConfig.getRolesRESTEndpoint(),
                             restRoleServiceConfig.getRolesJSONPath(),
+                            restRoleServiceConfig.getAuthApiKey(),
                             new RestEndpointConnectionCallback() {
 
                                 @Override
@@ -344,6 +346,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                             restRoleServiceConfig.getBaseUrl(),
                             restRoleServiceConfig.getRolesRESTEndpoint(),
                             restRoleServiceConfig.getRolesJSONPath(),
+                            restRoleServiceConfig.getAuthApiKey(),
                             new RestEndpointConnectionCallback() {
 
                                 @Override
@@ -401,6 +404,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                 restRoleServiceConfig.getBaseUrl(),
                                 restRoleServiceConfig.getAdminRoleRESTEndpoint(),
                                 restRoleServiceConfig.getAdminRoleJSONPath(),
+                                restRoleServiceConfig.getAuthApiKey(),
                                 new RestEndpointConnectionCallback() {
 
                                     @Override
@@ -492,6 +496,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
             final String roleRESTBaseURL,
             final String roleRESTEndpoint,
             final String roleJSONPath,
+            final String authApiKey,
             RestEndpointConnectionCallback callback)
             throws Exception {
         final String restEndPoint = roleRESTBaseURL + roleRESTEndpoint + roleJSONPath;
@@ -525,6 +530,12 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                                 getRestTemplate()
                                                         .getRequestFactory()
                                                         .createRequest(url.toURI(), HttpMethod.GET);
+
+                                        if (authApiKey != null) {
+                                            clientRequest
+                                                    .getHeaders()
+                                                    .add("Authorization", "ApiKey " + authApiKey);
+                                        }
                                         clientResponse = clientRequest.execute();
                                         int status = clientResponse.getRawStatusCode();
 

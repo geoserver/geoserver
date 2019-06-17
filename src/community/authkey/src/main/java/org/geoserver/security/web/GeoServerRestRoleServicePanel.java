@@ -18,6 +18,7 @@ public class GeoServerRestRoleServicePanel
 
     public GeoServerRestRoleServicePanel(String id, IModel<GeoServerRestRoleServiceConfig> model) {
         super(id, model);
+
         add(new TextField<String>("baseUrl").setRequired(true));
         add(new TextField<String>("rolesRESTEndpoint").setRequired(true));
         add(new TextField<String>("adminRoleRESTEndpoint").setRequired(true));
@@ -28,5 +29,6 @@ public class GeoServerRestRoleServicePanel
         add(new TextField<Integer>("cacheConcurrencyLevel").setRequired(true));
         add(new TextField<Long>("cacheMaximumSize").setRequired(true));
         add(new TextField<Long>("cacheExpirationTime").setRequired(true));
+        add(new TextField<String>("authApiKey").setRequired(false));
     }
 }

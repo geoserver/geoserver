@@ -25,7 +25,7 @@ In this section is possible to define a title and an abstract for the root layer
 
 It is also possible to set the flag **Always include Root Layer in capabilities**.
 This is checked by default, but can be unset so that the root layer is included in capabilities only when there is NOT already a single top level Layer element.
-This can be useful to allow compatibility with some WMS clients that are not happy with the two or more Layer tree levels.
+This can be useful to allow compatibility with some WMS clients that are not happy with the two or more layer tree levels.
 This default setting can be overridden at the layer or request level.
 
 Raster Rendering Options

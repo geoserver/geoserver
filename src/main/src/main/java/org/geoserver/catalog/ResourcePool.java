@@ -59,6 +59,7 @@ import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
@@ -1523,6 +1524,13 @@ public class ResourcePool {
             // GeoServer does not need to be updated to the multicoverage stuff
             // (we might want to introduce a hint later for code that really wants to get the
             // multi-coverage reader)
+
+            if (reader.getFormat() instanceof GeoTiffFormat) { //  GEOS-9236
+                if ("geotiff_coverage".equalsIgnoreCase(coverageInfo.getNativeCoverageName())) {
+                    coverageInfo.setNativeCoverageName(reader.getGridCoverageNames()[0]);
+                }
+            }
+
             return CoverageDimensionCustomizerReader.wrap(
                     (GridCoverage2DReader) reader, coverageName, coverageInfo);
         } else {

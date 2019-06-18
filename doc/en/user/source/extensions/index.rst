@@ -33,4 +33,4 @@ This section describes most of the extensions available for GeoServer. Other dat
    sldservice/index
    geofence/index
    geofence-server/index
-
+   status-monitoring/index

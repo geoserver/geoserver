@@ -3,7 +3,7 @@
 Status Monitoring 
 =================
 
-The status monitoring module add some extra information about the system in the GeoServer status page in a new tab named ``Monitoring``
+The status monitoring extension adds some extra information about the system in the GeoServer status page in a new tab named ``Monitoring``
 and make that info queryable through GeoServer REST interface. This info should allow an administrator to get a quick understanding about the status of the GeoServer instance. 
 
 `Library OSHI <https://github.com/oshi/oshi/>`_ is used to retrieving system-level information without depending on native libraries or DLLs, relying solely on `Apache JNA <https://github.com/java-native-access/jna/>`_. Major operating systems (Linux, Windows and MacOX) are supported out of the box.
@@ -112,7 +112,7 @@ If some information is not available the special term ``NOT AVAILABLE`` will app
 Installing the extension
 ------------------------
 
-#. Download the Status Monitoring extension from the nightly GeoServer community module builds.
+#. Download the Status Monitoring extension from GeoServer download page.
 
 #. Place the JARs into the ``WEB-INF/lib`` directory of the GeoServer installation.
 

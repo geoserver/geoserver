@@ -1,0 +1,26 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+  <wicket:panel>
+    <fieldset>
+        <legend><span><wicket:message key="rootLayer">Root Layer in Capabilities:</wicket:message></span></legend>
+        <div wicket:id="rootLayer">
+        <ul class="choiceList">
+            <li>
+                <input id="rootLayerGlobal" type="radio" wicket:id="rootLayerGlobal" value="Global"/>
+                <label for="rootLayerGlobal"><wicket:message key="rootLayerGlobal">WMS Global Settings</wicket:message></label>
+            </li>
+            <li>
+                <input id="rootLayerYes" type="radio" wicket:id="rootLayerYes" value="Yes"/>
+                <label for="rootLayerYes"><wicket:message key="rootLayerYes">Yes</wicket:message></label>
+            </li>
+            <li>
+                <input id="rootLayerNo" type="radio" wicket:id="rootLayerNo" value="Yes"/>
+                <label for="rootLayerNo"><wicket:message key="rootLayerNo">No</wicket:message></label>
+            </li>
+        </ul>
+      </div>
+    </fieldset>
+  </wicket:panel>
+</body>
+</html>

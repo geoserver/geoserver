@@ -218,6 +218,15 @@ public class WMS implements ApplicationContextAware {
     /** DateLine Wrapping Heuristic key */
     public static String DATELINE_WRAPPING_HEURISTIC_KEY = "disableDatelineWrappingHeuristic";
 
+    /**
+     * Capabilities will be produced with a root Layer element, only when needed (there is no single
+     * top layer element) *
+     */
+    public static Boolean ROOT_LAYER_IN_CAPABILITIES_DEFAULT = true;
+
+    /** Root Layer in Capabilities key * */
+    public static String ROOT_LAYER_IN_CAPABILITIES_KEY = "rootLayerInCapabilities";
+
     /** GIF disposal methods */
     public static final String DISPOSAL_METHOD_NONE = "none";
 
@@ -577,6 +586,11 @@ public class WMS implements ApplicationContextAware {
                         DISABLE_DATELINE_WRAPPING_HEURISTIC,
                         Boolean.class);
         return disabled;
+    }
+
+    public boolean isRootLayerInCapabilitesEnabled() {
+        return getMetadataValue(
+                ROOT_LAYER_IN_CAPABILITIES_KEY, ROOT_LAYER_IN_CAPABILITIES_DEFAULT, Boolean.class);
     }
 
     public int getMaxAllowedFrames() {

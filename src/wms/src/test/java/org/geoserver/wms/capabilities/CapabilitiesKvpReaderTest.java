@@ -81,4 +81,32 @@ public class CapabilitiesKvpReaderTest {
         assertNotNull(read);
         assertEquals("1000", read.getUpdateSequence());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRootLayerDefault() throws Exception {
+        GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);
+        assertNotNull(read);
+        assertNull(read.isRootLayerEnabled());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRootLayerEnabled() throws Exception {
+        kvp.put("rootLayer", "true");
+        rawKvp.put("ROOTLAYER", "true");
+        GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);
+        assertNotNull(read);
+        assertTrue(read.isRootLayerEnabled());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRootLayerRemoved() throws Exception {
+        kvp.put("rootLayer", "false");
+        rawKvp.put("ROOTLAYER", "false");
+        GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);
+        assertNotNull(read);
+        assertFalse(read.isRootLayerEnabled());
+    }
 }

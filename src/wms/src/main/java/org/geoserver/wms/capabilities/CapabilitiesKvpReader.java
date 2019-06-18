@@ -59,6 +59,10 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
         Version negotiatedVersion = wms.negotiateVersion(requestedVersion);
         request.setVersion(negotiatedVersion.toString());
 
+        if (rawKvp.containsKey("ROOTLAYER")) {
+            request.setRootLayerEnabled(Boolean.valueOf((String) rawKvp.get("ROOTLAYER")));
+        }
+
         return request;
     }
 }

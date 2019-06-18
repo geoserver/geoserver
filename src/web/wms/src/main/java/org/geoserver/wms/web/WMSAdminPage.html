@@ -11,7 +11,11 @@
           <li>
           	<label for="rootLayerAbstract"><wicket:message key="rootLayerAbstract">Abstract</wicket:message></label>
             <textarea class="field textarea" rows="10" cols="30" wicket:id="rootLayerAbstract"></textarea>
-          </li>          
+          </li>
+          <li class="choiceItem">
+            <input type="checkbox" wicket:id="rootLayerEnabled"></input>
+            <label for="rootLayerEnabled"><wicket:message key="rootLayerEnabled">Always include Root Layer in Capabilities</wicket:message></label>
+         </li>
         </ul>
       </fieldset>
     <li>

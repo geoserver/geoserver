@@ -53,8 +53,8 @@ Opening a sample NetCDF using that tool will show an output like this in the Vie
 * Each dimension has an associated independent coordinate variable (marked by the green rectangle).
 * Finally, the dataset has 3 geophysical variables, marked by a red rectangle, each having 4 dimensions.
 
-The NetCDF plugin fully supports datasets where each variable's axis is identified by an independent coordinate variable, as shown in the previous example. There is limited support for coordinate variables with two dimensions (see :ref:`netcdf_multidim`), either as part of the definition of a plain dataset (such as y,x/rows,cols/i,j/...) or the result of an aggregation (such as time,runtime - in the case of a runtime aggregation).
-
+The NetCDF plugin fully supports datasets where each variable's axis is identified by an independent coordinate variable, as shown in the previous example. There is limited support for coordinate variables with two dimensions (see :ref:`netcdf_multidim`), as part of the result of an aggregation (such as time,runtime - in the case of a runtime aggregation).
+Two dimensional non-independent latitude-longitude coordinate variables aren't currently supported. 
 A similar dataset will look like this in ToolsUI. Look at the red marked latitude and longitude coordinate variables, each one identified by a y,x 2D matrix.
 
 .. figure:: dataset2dcoords.png

@@ -336,7 +336,7 @@ The ``rootLayer`` parameter can be used to request capabilities documents to inc
 By default this top level root is always included as a parent of the configured layers and groups. The default can be changed at the service (WMS) level,
 or at the layer / group level.
 
-Using this parameter it is possible to exclude the default root when the resulting document already has a single top element (e.g. a single group with nested children).
+Using this parameter it is possible to exclude the default root when the resulting document has a single top element (e.g. a single group with nested children).
 To do that, use the **false** value.
 
 The parameter can also be used to override what is defined at the WMS or layer / group level. For example if the service is configure to exclude the Root element, we can force it

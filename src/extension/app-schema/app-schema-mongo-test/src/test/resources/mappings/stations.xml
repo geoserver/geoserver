@@ -88,6 +88,12 @@
             <OCQL>jsonSelect('geometry')</OCQL>
           </sourceExpression>
         </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:nullableField</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('nullableField')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
       </attributeMappings>
     </FeatureTypeMapping>
     <FeatureTypeMapping>

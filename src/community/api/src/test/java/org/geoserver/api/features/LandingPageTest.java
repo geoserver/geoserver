@@ -2,24 +2,6 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
- */
-
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2019, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
  *
  */
 
@@ -29,13 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
-
-import java.util.List;
 
 public class LandingPageTest extends FeaturesTestSupport {
 
@@ -77,11 +57,12 @@ public class LandingPageTest extends FeaturesTestSupport {
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*api\\/features\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*api\\/features\\/\\?.*/)].rel",
+                "alternate",
                 "alternate",
                 "alternate",
                 "alternate");

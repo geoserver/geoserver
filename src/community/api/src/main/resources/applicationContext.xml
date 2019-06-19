@@ -65,7 +65,7 @@
     <property name="mappings">
       <props>
         <prop key="/api">apiDispatcher</prop>
-        <prop key="/api/*">apiDispatcher</prop>
+        <prop key="/api/**">apiDispatcher</prop>
       </props>
     </property>
   </bean>

@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
@@ -11,6 +11,10 @@
  */
 package org.geoserver.api.features;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -19,11 +23,6 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.MapEntry;
 import org.geotools.util.logging.Logging;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Copy of NCNameResourceCodec found in WCS 2.0.

@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
@@ -13,11 +13,10 @@ package org.geoserver.api.features;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
 import java.util.List;
 
 /** Represents the conformance response, responses will encode in the desired formats */
-@JacksonXmlRootElement(localName = "ConformsTo")
+@JacksonXmlRootElement(localName = "ConformsTo", namespace = "http://www.opengis.net/wfs/3.0")
 public class ConformanceDocument {
 
     public static final String CORE = "http://www.opengis.net/spec/wfs-1/3.0/req/core";

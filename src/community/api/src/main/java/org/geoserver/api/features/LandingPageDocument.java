@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
@@ -14,28 +14,24 @@ package org.geoserver.api.features;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
+import io.swagger.v3.oas.models.OpenAPI;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
 import org.springframework.http.MediaType;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
-import io.swagger.v3.oas.models.OpenAPI;
-
 /**
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
  */
-@JacksonXmlRootElement(localName = "LandingPage")
+@JacksonXmlRootElement(localName = "LandingPage", namespace = "http://www.opengis.net/wfs/3.0")
 public class LandingPageDocument extends AbstractDocument {
 
-    public LandingPageDocument(WFSInfo wfs, Catalog catalog,
-            String featuresBase) {
+    public LandingPageDocument(WFSInfo wfs, Catalog catalog, String featuresBase) {
         String baseUrl = RequestInfo.get().getBaseURL();
 
         // self and alternate representations of landing page
@@ -47,7 +43,7 @@ public class LandingPageDocument extends AbstractDocument {
                 "landingPage",
                 new BiConsumer<MediaType, Link>() {
                     boolean first = true;
-                    
+
                     @Override
                     public void accept(MediaType mediaType, Link link) {
                         if (first && RequestInfo.get().isFormatRequested(mediaType)) {

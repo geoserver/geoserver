@@ -2,12 +2,6 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
- */
-
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
  */
 
 package org.geoserver.api;
@@ -18,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +21,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import javax.print.attribute.standard.RequestingUserName;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
@@ -47,6 +40,7 @@ import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,7 +81,8 @@ public class APIDispatcher extends AbstractController
 
     protected RequestMappingHandlerAdapter handlerAdapter;
     protected HandlerMethodReturnValueHandlerComposite returnValueHandlers;
-    protected APIContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
+    protected APIContentNegotiationManager contentNegotiationManager =
+            new APIContentNegotiationManager();
     private List<HttpMessageConverter<?>> messageConverters;
 
     // SHARE
@@ -224,9 +219,10 @@ public class APIDispatcher extends AbstractController
             // store it in the thread local
             Dispatcher.REQUEST.set(dr);
             // add a thread local with info on formats, base urls, and the like
-            RequestInfo requestInfo = new RequestInfo(httpRequest);
-            requestInfo.setRequestedMediaTypes(contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(dr.getHttpRequest())));
-            requestInfo.setConverters(messageConverters);
+            RequestInfo requestInfo = new RequestInfo(httpRequest, this);
+            requestInfo.setRequestedMediaTypes(
+                    contentNegotiationManager.resolveMediaTypes(
+                            new ServletWebRequest(dr.getHttpRequest())));
             RequestInfo.set(requestInfo);
 
             // lookup the handler adapter (same as service and operation)
@@ -463,5 +459,31 @@ public class APIDispatcher extends AbstractController
             uri = request.getRequestURI();
         }
         return uri;
+    }
+
+    public List<HttpMessageConverter<?>> getConverters() {
+        return messageConverters;
+    }
+
+    public Collection<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
+        List<MediaType> result = new ArrayList<>();
+        for (HttpMessageConverter<?> converter : this.messageConverters) {
+            if (converter instanceof GenericHttpMessageConverter) {
+                if (((GenericHttpMessageConverter<?>) converter)
+                        .canWrite(responseType, responseType, null)) {
+                    result.addAll(converter.getSupportedMediaTypes());
+                }
+            } else if (converter.canWrite(responseType, null)) {
+                result.addAll(converter.getSupportedMediaTypes());
+            }
+        }
+        if (addHTML) {
+            result.add(MediaType.TEXT_HTML);
+        }
+
+        return result.stream()
+                .filter(mt -> mt.isConcrete())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

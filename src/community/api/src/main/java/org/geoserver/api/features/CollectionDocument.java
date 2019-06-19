@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
@@ -16,7 +16,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -29,18 +36,9 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.http.MediaType;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"name", "title", "description", "extent", "links"})
-@JacksonXmlRootElement(localName = "Collection")
+@JacksonXmlRootElement(localName = "Collection", namespace = "http://www.opengis.net/wfs/3.0")
 public class CollectionDocument extends AbstractDocument {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 
@@ -51,8 +49,7 @@ public class CollectionDocument extends AbstractDocument {
     FeatureTypeInfo featureType;
     String mapPreviewURL;
 
-    public CollectionDocument(
-            GeoServer geoServer, FeatureTypeInfo featureType) {
+    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType) {
         // basic info
         String collectionId = NCNameResourceCodec.encode(featureType);
         setName(collectionId);

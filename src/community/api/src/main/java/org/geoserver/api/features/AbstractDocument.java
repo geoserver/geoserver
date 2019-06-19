@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /*
@@ -16,7 +16,6 @@ package org.geoserver.api.features;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

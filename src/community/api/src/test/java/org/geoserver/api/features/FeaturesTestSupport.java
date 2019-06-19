@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
@@ -20,7 +20,11 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonContext;
-
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
@@ -29,16 +33,6 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
-import javax.servlet.Filter;
-import javax.xml.namespace.QName;
 
 public class FeaturesTestSupport extends GeoServerSystemTestSupport {
 

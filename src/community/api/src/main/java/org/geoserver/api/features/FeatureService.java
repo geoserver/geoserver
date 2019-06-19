@@ -5,35 +5,24 @@
  *
  */
 
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- */
 package org.geoserver.api.features;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.logging.Logger;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIService;
 import org.geoserver.api.BaseURL;
 import org.geoserver.api.HTMLResponseBody;
-import org.geoserver.api.NegotiatedContentType;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.ows.Response;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -62,10 +51,38 @@ public class FeatureService {
 
     @GetMapping(name = "landingPage")
     @ResponseBody
-    @HTMLResponseBody(templateName = "./landingPage.ftl", fileName = "landingPage.html")
-    public LandingPageDocument getLandingPage(
-            @BaseURL String baseURL) {
+    @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
+    public LandingPageDocument getLandingPage(@BaseURL String baseURL) {
         return new LandingPageDocument(getService(), getCatalog(), "api/features");
     }
 
+    @GetMapping(path = "collections", name = "collections")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
+    public CollectionsDocument getCollections(@BaseURL String baseURL) {
+        return new CollectionsDocument(geoServer);
+    }
+
+    @GetMapping(path = "collections/{collectionId}", name = "collection")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
+    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
+        // single collection
+        Optional<FeatureTypeInfo> featureType =
+                NCNameResourceCodec.getLayers(getCatalog(), collectionId)
+                        .stream()
+                        .filter(l -> l.getResource() instanceof FeatureTypeInfo)
+                        .map(l -> (FeatureTypeInfo) l.getResource())
+                        .findFirst();
+        if (!featureType.isPresent()) {
+            throw new ServiceException(
+                    "Unknown collection " + collectionId,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "collectionId");
+        }
+        CollectionsDocument collections = new CollectionsDocument(geoServer, featureType.get());
+        CollectionDocument collection = collections.getCollections().next();
+
+        return collection;
+    }
 }

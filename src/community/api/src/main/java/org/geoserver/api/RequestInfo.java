@@ -11,22 +11,16 @@
  */
 package org.geoserver.api;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * An object which contains information about the "page" or "resource" being accessed in a rest
@@ -43,14 +37,14 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestInfo {
 
     /** key to reference this object by */
-    public static final String KEY = "RequestInfo";
+    public static final String KEY = "APIRequestInfo";
 
     String baseURL;
     String servletPath;
     String pagePath;
     String extension;
     List<MediaType> requestedMediaTypes;
-    List<HttpMessageConverter<?>> converters;
+    APIDispatcher dispatcher;
 
     private Map<String, String[]> queryMap;
 
@@ -62,7 +56,9 @@ public class RequestInfo {
      *
      * @param request
      */
-    public RequestInfo(HttpServletRequest request) {
+    public RequestInfo(HttpServletRequest request, APIDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+
         // http://host:port/appName
         baseURL =
                 request.getRequestURL()
@@ -184,37 +180,18 @@ public class RequestInfo {
     }
 
     public List<HttpMessageConverter<?>> getConverters() {
-        return converters;
-    }
-
-    public void setConverters(List<HttpMessageConverter<?>> converters) {
-        this.converters = converters;
+        return dispatcher.getConverters();
     }
 
     public Collection<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
-        List<MediaType> result = new ArrayList<>();
-        for (HttpMessageConverter<?> converter : this.converters) {
-            if (converter instanceof GenericHttpMessageConverter) {
-                if (((GenericHttpMessageConverter<?>) converter)
-                        .canWrite(responseType, responseType, null)) {
-                    result.addAll(converter.getSupportedMediaTypes());
-                }
-            } else if (converter.canWrite(responseType, null)) {
-                result.addAll(converter.getSupportedMediaTypes());
-            }
-        }
-        if (addHTML) {
-            result.add(MediaType.TEXT_HTML);
-        }
-        
-        return result.stream().filter(mt -> mt.isConcrete()).distinct().collect(Collectors.toList());
+        return dispatcher.getProducibleMediaTypes(responseType, addHTML);
     }
 
     public boolean isFormatRequested(MediaType mediaType) {
         if (requestedMediaTypes == null) {
             return false;
         }
-        
+
         return requestedMediaTypes.stream().anyMatch(curr -> mediaType.isCompatibleWith(curr));
     }
 }

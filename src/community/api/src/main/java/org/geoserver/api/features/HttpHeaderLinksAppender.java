@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
@@ -11,13 +11,12 @@
  */
 package org.geoserver.api.features;
 
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-
-import javax.servlet.http.HttpServletResponse;
 
 /** Appends paging links as HTTP headers for GetFeature responses */
 public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {

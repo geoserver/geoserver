@@ -7,7 +7,9 @@ package org.geoserver.api.features;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -18,15 +20,11 @@ import org.geoserver.platform.ServiceException;
 import org.opengis.filter.Filter;
 import org.springframework.http.MediaType;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A class representing the WFS3 server "collections" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
  */
-@JacksonXmlRootElement(localName = "Collections")
+@JacksonXmlRootElement(localName = "Collections", namespace = "http://www.opengis.net/wfs/3.0")
 @JsonPropertyOrder({"links", "links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
 
@@ -48,7 +46,8 @@ public class CollectionsDocument extends AbstractDocument {
         RequestInfo requestInfo = RequestInfo.get();
         String baseUrl = requestInfo.getBaseURL();
         boolean firstSelf = true;
-        for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+        for (MediaType format :
+                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
             String path =
                     "wfs3/collections/"
                             + (featureType != null ? NCNameResourceCodec.encode(featureType) : "");

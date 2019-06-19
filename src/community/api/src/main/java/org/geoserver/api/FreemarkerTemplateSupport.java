@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /*
@@ -12,6 +12,9 @@
  */
 package org.geoserver.api;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import java.io.IOException;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
@@ -20,11 +23,6 @@ import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
-
-import java.io.IOException;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class FreemarkerTemplateSupport {
 

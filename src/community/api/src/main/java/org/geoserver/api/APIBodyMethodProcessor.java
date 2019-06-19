@@ -2,7 +2,7 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *  
+ *
  */
 
 /*
@@ -14,6 +14,12 @@
 
 package org.geoserver.api;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.core.GenericTypeResolver;
@@ -31,15 +37,6 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.JsonViewResponseBodyAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.print.attribute.standard.RequestingUserName;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Customized {@link RequestResponseBodyMethodProcessor} that uses its own content negotiation
@@ -83,8 +80,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                     HttpMessageNotWritableException {
         HTMLResponseBody htmlResponseBody = returnType.getMethodAnnotation(HTMLResponseBody.class);
         MediaType mediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
-        if (htmlResponseBody != null
-                && MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
+        if (htmlResponseBody != null && MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
             // direct HTML encoding based on annotations
             SimpleHTTPMessageConverter converter =
                     new SimpleHTTPMessageConverter(

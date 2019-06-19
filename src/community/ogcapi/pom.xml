@@ -161,26 +161,6 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-app-schema</artifactId>
-            <version>${gt.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver.extension</groupId>
-            <artifactId>gs-app-schema-test</artifactId>
-            <version>${project.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver.extension</groupId>
-            <artifactId>gs-app-schema-postgis-test</artifactId>
-            <version>${project.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
             <artifactId>gt-jdbc</artifactId>
             <version>${gt.version}</version>
             <type>test-jar</type>

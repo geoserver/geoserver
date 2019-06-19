@@ -7,6 +7,10 @@
 
 package org.geoserver.api.features;
 
+import static org.geoserver.api.features.ConformanceDocument.*;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import org.geoserver.api.APIDispatcher;
@@ -26,7 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@APIService(service = "Feature", version = "1.0", landingPage = "api/features")
+@APIService(service = "Feature", version = "1.0", landingPage = "ogc/features")
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
@@ -53,7 +57,7 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public LandingPageDocument getLandingPage(@BaseURL String baseURL) {
-        return new LandingPageDocument(getService(), getCatalog(), "api/features");
+        return new LandingPageDocument(getService(), getCatalog(), "ogc/features");
     }
 
     @GetMapping(path = "collections", name = "collections")
@@ -84,5 +88,12 @@ public class FeatureService {
         CollectionDocument collection = collections.getCollections().next();
 
         return collection;
+    }
+
+    @GetMapping(path = "conformance", name = "conformance")
+    @ResponseBody
+    public ConformanceDocument confrmance() {
+        List<String> classes = Arrays.asList(CORE, OAS30, GEOJSON, GMLSF0);
+        return new ConformanceDocument(classes);
     }
 }

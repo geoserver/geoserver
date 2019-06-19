@@ -28,7 +28,7 @@ public class CollectionTest extends FeaturesTestSupport {
     @Test
     public void testCollectionJson() throws Exception {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
-        DocumentContext json = getAsJSONPath("api/features/collections/" + roadSegments, 200);
+        DocumentContext json = getAsJSONPath("ogc/features/collections/" + roadSegments, 200);
 
         assertEquals("cite__RoadSegments", json.read("$.name", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
@@ -51,7 +51,7 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("cite__RoadSegments items as " + format, item.get("title"));
             assertEquals("item", item.get("rel"));
         }
-        // the api/features specific GML3.2 output format is available
+        // the ogc/features specific GML3.2 output format is available
         assertNotNull(
                 json.read(
                         "$.links[?(@.type=='application/gml+xml;version=3.2;profile=http://www.opengis.net/def/profile/ogc/2.0/gml-sf0')]"));
@@ -61,7 +61,7 @@ public class CollectionTest extends FeaturesTestSupport {
     @Ignore // virtual services not working with API yet
     public void testCollectionVirtualWorkspace() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
-        DocumentContext json = getAsJSONPath("cite/api/features/collections/" + roadSegments, 200);
+        DocumentContext json = getAsJSONPath("cite/ogc/features/collections/" + roadSegments, 200);
 
         assertEquals("RoadSegments", json.read("$.name", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
@@ -80,7 +80,7 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("RoadSegments items as " + format, item.get("title"));
             assertEquals("item", item.get("rel"));
         }
-        // the api/features specific GML3.2 output format is available
+        // the ogc/features specific GML3.2 output format is available
         assertNotNull(
                 json.read(
                         "$.links[?(@.type==''application/gml+xml;version=3.2;profile=http://www.opengis.net/def/profile/ogc/2.0/gml-sf0'')]"));
@@ -88,13 +88,13 @@ public class CollectionTest extends FeaturesTestSupport {
         // tiling scheme extension
         Map tilingScheme = (Map) json.read("links[?(@.rel=='tilingScheme')]", List.class).get(0);
         assertEquals(
-                "http://localhost:8080/geoserver/cite/api/features/collections/"
+                "http://localhost:8080/geoserver/cite/ogc/features/collections/"
                         + roadSegments
                         + "/tiles/{tilingSchemeId}",
                 tilingScheme.get("href"));
         Map tiles = (Map) json.read("links[?(@.rel=='tiles')]", List.class).get(0);
         assertEquals(
-                "http://localhost:8080/geoserver/cite/api/features/collections/"
+                "http://localhost:8080/geoserver/cite/ogc/features/collections/"
                         + roadSegments
                         + "/tiles/{tilingSchemeId}/{level}/{row}/{col}",
                 tiles.get("href"));
@@ -105,12 +105,12 @@ public class CollectionTest extends FeaturesTestSupport {
     public void testCollectionXML() throws Exception {
         Document dom =
                 getAsDOM(
-                        "api/features/collections/"
+                        "ogc/features/collections/"
                                 + getEncodedName(MockData.ROAD_SEGMENTS)
                                 + "?f=application/xml");
         print(dom);
         String expected =
-                "http://localhost:8080/geoserver/api/features/collections/cite__RoadSegments/items?f=application%2Fjson";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?f=application%2Fjson";
         XMLAssert.assertXpathEvaluatesTo(
                 expected,
                 "//wfs:Collection[wfs:Name='cite__RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
@@ -121,7 +121,7 @@ public class CollectionTest extends FeaturesTestSupport {
     public void testCollectionYaml() throws Exception {
         String yaml =
                 getAsString(
-                        "api/features/collections/"
+                        "ogc/features/collections/"
                                 + getEncodedName(MockData.ROAD_SEGMENTS)
                                 + "?f=application/x-yaml");
         // System.out.println(yaml);

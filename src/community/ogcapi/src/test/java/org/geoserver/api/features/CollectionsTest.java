@@ -45,7 +45,7 @@ public class CollectionsTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionsJson() throws Exception {
-        DocumentContext json = getAsJSONPath("api/features/collections", 200);
+        DocumentContext json = getAsJSONPath("ogc/features/collections", 200);
         testCollectionsJson(json);
     }
 
@@ -71,7 +71,7 @@ public class CollectionsTest extends FeaturesTestSupport {
     @Test
     @Ignore // workspace specific
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
-        DocumentContext json = getAsJSONPath("cdf/api/features/collections", 200);
+        DocumentContext json = getAsJSONPath("cdf/ogc/features/collections", 200);
         long expected =
                 getCatalog()
                         .getFeatureTypes()
@@ -87,27 +87,27 @@ public class CollectionsTest extends FeaturesTestSupport {
         final String deleteHrefPath =
                 "collections[?(@.name=='Deletes')].links[?(@.rel=='item' && @.type=='application/geo+json')].href";
         assertEquals(
-                "http://localhost:8080/geoserver/cdf/api/features/collections/Deletes/items?f=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/cdf/ogc/features/collections/Deletes/items?f=application%2Fgeo%2Bjson",
                 ((JSONArray) json.read(deleteHrefPath)).get(0));
     }
 
     @Test
     public void testCollectionsXML() throws Exception {
-        Document dom = getAsDOM("api/features/collections?f=application/xml");
+        Document dom = getAsDOM("ogc/features/collections?f=application/xml");
         print(dom);
         // TODO: add actual tests
     }
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("api/features/collections/?f=application/x-yaml");
+        String yaml = getAsString("ogc/features/collections/?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testCollectionsJson(json);
     }
 
     @Test
     public void testCollectionsHTML() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("api/features/collections?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/features/collections?f=html");
 
         // check collection links
         List<FeatureTypeInfo> featureTypes = getCatalog().getFeatureTypes();
@@ -115,7 +115,7 @@ public class CollectionsTest extends FeaturesTestSupport {
             String encodedName = NCNameResourceCodec.encode(featureType);
             assertNotNull(document.select("#html_" + encodedName + "_link"));
             assertEquals(
-                    "http://localhost:8080/geoserver/api/features/collections/"
+                    "http://localhost:8080/geoserver/ogc/features/collections/"
                             + encodedName
                             + "/items?f=text%2Fhtml&limit=50",
                     document.select("#html_" + encodedName + "_link").attr("href"));

@@ -21,38 +21,38 @@ public class LandingPageTest extends FeaturesTestSupport {
 
     @Test
     public void testLandingPageNoSlash() throws Exception {
-        DocumentContext json = getAsJSONPath("api/features", 200);
+        DocumentContext json = getAsJSONPath("ogc/features", 200);
         checkJSONLandingPage(json);
     }
 
     @Test
     public void testLandingPageSlash() throws Exception {
-        DocumentContext json = getAsJSONPath("api/features/", 200);
+        DocumentContext json = getAsJSONPath("ogc/features/", 200);
         checkJSONLandingPage(json);
     }
 
     @Test
     public void testLandingPageJSON() throws Exception {
-        DocumentContext json = getAsJSONPath("api/features?f=json", 200);
+        DocumentContext json = getAsJSONPath("ogc/features?f=json", 200);
         checkJSONLandingPage(json);
     }
 
     @Test
     public void testLandingPageWorkspaceSpecific() throws Exception {
-        DocumentContext json = getAsJSONPath("api/features", 200);
+        DocumentContext json = getAsJSONPath("ogc/features", 200);
         checkJSONLandingPage(json);
     }
 
     @Test
     public void testLandingPageXML() throws Exception {
-        Document dom = getAsDOM("api/features?f=application/xml");
+        Document dom = getAsDOM("ogc/features?f=application/xml");
         print(dom);
         // TODO: add actual tests in here
     }
 
     @Test
     public void testLandingPageYaml() throws Exception {
-        String yaml = getAsString("api/features?f=application/x-yaml");
+        String yaml = getAsString("ogc/features?f=application/x-yaml");
         // System.out.println(yaml);
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
@@ -71,26 +71,26 @@ public class LandingPageTest extends FeaturesTestSupport {
 
     @Test
     public void testLandingPageHTML() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("api/features?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/features?f=html");
         // check a couple of links
         assertEquals(
-                "http://localhost:8080/geoserver/api/features/collections?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/features/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/api/features/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/features/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
     }
 
     @Test
     @Ignore // workspace specific services not working yet
     public void testLandingPageHTMLInWorkspace() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("sf/api/features?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("sf/ogc/features?f=html");
         // check a couple of links
         assertEquals(
-                "http://localhost:8080/geoserver/sf/api/features/collections?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/sf/ogc/features/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/sf/api/features/api?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/sf/ogc/features/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
     }
 
@@ -99,11 +99,11 @@ public class LandingPageTest extends FeaturesTestSupport {
         // check landing page links
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/json' && @.href =~ /.*api\\/features\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/json' && @.href =~ /.*ogc\\/features\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/json' && @.href =~ /.*api\\/features\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/\\?.*/)].rel",
                 "alternate",
                 "alternate",
                 "alternate",
@@ -115,7 +115,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         // check API links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*api\\/features\\/api.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/features\\/api.*/)].rel",
                 "service",
                 "service",
                 "service",
@@ -124,7 +124,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         // check conformance links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*api\\/features\\/conformance.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/features\\/conformance.*/)].rel",
                 "conformance",
                 "conformance",
                 "conformance",
@@ -133,7 +133,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         // check collection links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*api\\/features\\/collections.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/features\\/collections.*/)].rel",
                 "data",
                 "data",
                 "data",

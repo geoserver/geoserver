@@ -67,7 +67,7 @@ public class CollectionDocument extends AbstractDocument {
             String apiUrl =
                     ResponseUtils.buildURL(
                             baseUrl,
-                            "api/features/collections/" + collectionId + "/items",
+                            "ogc/features/collections/" + collectionId + "/items",
                             Collections.singletonMap("f", format.toString()),
                             URLMangler.URLType.SERVICE);
             addLink(

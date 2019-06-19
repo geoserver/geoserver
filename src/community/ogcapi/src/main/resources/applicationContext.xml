@@ -64,8 +64,8 @@
 
     <property name="mappings">
       <props>
-        <prop key="/api">apiDispatcher</prop>
-        <prop key="/api/**">apiDispatcher</prop>
+        <prop key="/ogc">apiDispatcher</prop>
+        <prop key="/ogc/**">apiDispatcher</prop>
       </props>
     </property>
   </bean>

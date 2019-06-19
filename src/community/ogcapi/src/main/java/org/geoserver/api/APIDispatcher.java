@@ -67,7 +67,7 @@ public class APIDispatcher extends AbstractController
 
     static final String RESPONSE_OBJECT = "ResponseObject";
 
-    public static final String ROOT_PATH = "api";
+    public static final String ROOT_PATH = "ogc";
 
     static final Charset UTF8 = Charset.forName("UTF-8");
 

@@ -35,12 +35,12 @@
   </bean>
   Exception handler -->
 
-  <bean id="wfsClasspathPublisherMapping"
+  <bean id="apiClasspathPublisherMapping"
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">
       <props>
-        <prop key="/wfs3css/**">classpathPublisher</prop>
+        <prop key="/apicss/**">classpathPublisher</prop>
         <prop key="/swagger-ui/**">classpathPublisher</prop>
       </props>
     </property>

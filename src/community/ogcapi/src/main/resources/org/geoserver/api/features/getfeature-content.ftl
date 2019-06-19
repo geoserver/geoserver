@@ -3,8 +3,8 @@
     will be called multiple times if there are various feature collections
     -->
     <#if collection??>
-      <#-- Expended only in WFS3 -->
-      <h2><a href="${serviceLink("wfs3/collections/${collection}")}"></a></h2>
+      <#-- Expended only in OGC Features -->
+      <h2><a href="${serviceLink("ogc/features/collections/${collection}")}"></a></h2>
     <#else>
       <h2>${data.type.name}</h2>
     </#if>

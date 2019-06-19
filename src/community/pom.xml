@@ -5,8 +5,7 @@
  application directory.
  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <parent>
+    <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
     <version>2.16-SNAPSHOT</version>
@@ -98,6 +97,7 @@
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
           <descriptor>release/ext-wmts-styles.xml</descriptor>
           <descriptor>release/ext-ogr-datastore.xml</descriptor>
+          <descriptor>release/ext-ogcapi.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -268,6 +268,7 @@
         <module>qos</module>
         <module>mapml</module>
         <module>web-ogr</module>
+        <module>ogcapi</module>
       </modules>
     </profile>
     <profile>
@@ -621,6 +622,12 @@
       <id>web-ogr</id>
       <modules>
         <module>web-ogr</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ogcapi</id>
+      <modules>
+        <module>ogcapi</module>
       </modules>
     </profile>
   </profiles>  

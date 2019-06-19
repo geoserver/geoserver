@@ -40,7 +40,7 @@
 
       // Build a system
       const ui = SwaggerUIBundle({
-        url: "${serviceLink('api/features?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0')}",
+        url: "${serviceLink('ogc/features/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0')}",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

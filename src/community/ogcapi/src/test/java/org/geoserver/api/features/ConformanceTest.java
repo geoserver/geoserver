@@ -14,7 +14,6 @@ package org.geoserver.api.features;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -37,7 +36,7 @@ public class ConformanceTest extends FeaturesTestSupport {
                 json.read("$.conformsTo[2]", String.class));
         assertEquals(
                 "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf0",
-                json.read("$.conformsTo[3]", String.class));        
+                json.read("$.conformsTo[3]", String.class));
     }
 
     @Test

@@ -9,9 +9,7 @@ package org.geoserver.api;
 import io.swagger.v3.core.util.Yaml;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MappingJackson2YAMLMessageConverter extends AbstractJackson2HttpMessageConverter {
 
     public static final MediaType APPLICATION_YAML = MediaType.parseMediaType("application/x-yaml");

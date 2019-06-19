@@ -4,11 +4,11 @@
  *  application directory.
  *
  */
-
 package org.geoserver.api.features;
 
 import static org.geoserver.api.features.ConformanceDocument.*;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIService;
 import org.geoserver.api.BaseURL;
 import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -25,6 +26,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,6 +60,21 @@ public class FeatureService {
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public LandingPageDocument getLandingPage(@BaseURL String baseURL) {
         return new LandingPageDocument(getService(), getCatalog(), "ogc/features");
+    }
+
+    @GetMapping(
+        path = "api",
+        name = "api",
+        produces = {
+            OpenAPIMessageConverter.OPEN_API_VALUE,
+            "application/x-yaml",
+            MediaType.TEXT_XML_VALUE
+        }
+    )
+    @ResponseBody
+    @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
+    public OpenAPI api() {
+        return new OpenAPIBuilder().build(getService());
     }
 
     @GetMapping(path = "collections", name = "collections")

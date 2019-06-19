@@ -16,7 +16,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.geoserver.community</groupId>
-    <artifactId>api</artifactId>
+    <artifactId>gs-ogcapi</artifactId>
 
     <dependencies>
         <dependency>

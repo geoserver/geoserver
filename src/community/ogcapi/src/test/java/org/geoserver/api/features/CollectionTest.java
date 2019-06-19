@@ -101,7 +101,8 @@ public class CollectionTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // ignoring XML output for the moment, we need to migrated it to use JAXB2 to be of any usefulness
+    @Ignore // ignoring XML output for the moment, we need to migrated it to use JAXB2 to be of any
+            // usefulness
     public void testCollectionXML() throws Exception {
         Document dom =
                 getAsDOM(

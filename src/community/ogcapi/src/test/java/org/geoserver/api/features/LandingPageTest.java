@@ -57,11 +57,11 @@ public class LandingPageTest extends FeaturesTestSupport {
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*api\\/features\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/features\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*api\\/features\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/features\\/\\?.*/)].rel",
                 "alternate",
                 "alternate",
                 "alternate",

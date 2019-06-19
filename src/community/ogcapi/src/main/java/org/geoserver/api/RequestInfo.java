@@ -192,6 +192,9 @@ public class RequestInfo {
             return false;
         }
 
-        return requestedMediaTypes.stream().anyMatch(curr -> mediaType.isCompatibleWith(curr));
+        return requestedMediaTypes
+                .stream()
+                .filter(mt -> !mt.equals(MediaType.ALL))
+                .anyMatch(curr -> mediaType.isCompatibleWith(curr));
     }
 }

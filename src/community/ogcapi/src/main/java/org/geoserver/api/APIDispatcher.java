@@ -110,6 +110,9 @@ public class APIDispatcher extends AbstractController
         handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
+        // force json as the first choice
+        handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
+        handlerAdapter.getMessageConverters().add(0, new MappingJackson2YAMLMessageConverter());
         // add all registered converters before the Spring ones too
         List<HttpMessageConverter> extensionConverters =
                 GeoServerExtensions.extensions(HttpMessageConverter.class);
@@ -120,8 +123,6 @@ public class APIDispatcher extends AbstractController
         while (itr.hasPrevious()) {
             handlerAdapter.getMessageConverters().add(0, itr.previous());
         }
-        // force json as the first choice
-        handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
         this.messageConverters = handlerAdapter.getMessageConverters();
 
         // add custom argument resolvers

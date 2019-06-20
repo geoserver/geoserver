@@ -235,7 +235,7 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-onelogin</artifactId>
+     <artifactId>gs-saml</artifactId>
      <version>${project.version}</version>
    </dependency>
    <!-- <dependency>

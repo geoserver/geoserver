@@ -1,0 +1,43 @@
+<samlp:Response xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="Rc62774614eafafd3441ba53d4b7d5f3bae931d76"
+    Version="2.0" IssueInstant="2016-09-15T08:19:43Z" Destination="http://localhost:8080/geoserver/saml/SSO"
+    InResponseTo="">
+    <saml:Issuer>https://localhost:8443/saml/metadata
+    </saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+    </samlp:Status>
+    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        Version="2.0" ID="pfx67fcf631-c992-e642-f633-891b0cc8260f"
+        IssueInstant="2016-09-15T11:30:43Z">
+        <saml:Issuer>https://localhost:8443/saml/metadata
+        </saml:Issuer>
+        <saml:Subject>
+            <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">user</saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData
+                    NotOnOrAfter="2016-09-15T11:30:43Z" Recipient="http://localhost:8080/geoserver/saml/SSO"
+                    InResponseTo="" />
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotBefore="2016-09-15T08:16:43Z"
+            NotOnOrAfter="2016-09-15T08:22:43Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>geoserver</saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement AuthnInstant="2016-09-15T08:19:42Z"
+            SessionNotOnOrAfter="2016-09-16T08:19:43Z" SessionIndex="_13f18e00-5d4b-0134-9ffb-063ee8b683cf">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+                </saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <saml:Attribute Name="attributeName">
+                <saml:AttributeValue xsi:type="xs:anyType">attributeValue</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>

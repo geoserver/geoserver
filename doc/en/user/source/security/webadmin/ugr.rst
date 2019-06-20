@@ -126,7 +126,7 @@ To add a new LDAP user/group service, click the :guilabel:`Add new` link, and th
 
    * - Option
      - Description
-    * - Name
+   * - Name
      - Name of the LDAP role service in GeoServer
    * - Password encryption
      - The method to used to :ref:`encrypt user passwords <security_passwd_encryption>`

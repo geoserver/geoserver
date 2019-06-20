@@ -53,7 +53,6 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandlerCom
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -71,7 +70,7 @@ public class APIDispatcher extends AbstractController
 
     static final Charset UTF8 = Charset.forName("UTF-8");
 
-    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.api");
 
     // SHARE
     /** list of callbacks */
@@ -104,9 +103,10 @@ public class APIDispatcher extends AbstractController
         this.mappingHandler.getUrlPathHelper().setAlwaysUseFullPath(true);
 
         // create the one handler adapter we need similar to how DispatcherServlet does it
-        WebMvcConfigurationSupport configurationSupport =
-                context.getAutowireCapableBeanFactory()
-                        .createBean(WebMvcConfigurationSupport.class);
+        // but with a special implementation that supports callbacks for the operation
+        APIConfigurationSupport configurationSupport =
+                context.getAutowireCapableBeanFactory().createBean(APIConfigurationSupport.class);
+        configurationSupport.setCallbacks(callbacks);
         handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
@@ -116,21 +116,13 @@ public class APIDispatcher extends AbstractController
         // add all registered converters before the Spring ones too
         List<HttpMessageConverter> extensionConverters =
                 GeoServerExtensions.extensions(HttpMessageConverter.class);
-        // add them in reverse order to the head, so that they will have the same order as extension
-        // priority commands
-        ListIterator<HttpMessageConverter> itr =
-                extensionConverters.listIterator(extensionConverters.size());
-        while (itr.hasPrevious()) {
-            handlerAdapter.getMessageConverters().add(0, itr.previous());
-        }
+        addToListBackwards(extensionConverters, handlerAdapter.getMessageConverters());
         this.messageConverters = handlerAdapter.getMessageConverters();
 
         // add custom argument resolvers
-        List<HandlerMethodArgumentResolver> argumentResolvers =
-                new ArrayList<>(handlerAdapter.getArgumentResolvers());
-        argumentResolvers.add(0, new BaseURLArgumentResolver());
-        argumentResolvers.add(0, new NegotiatedContentTypeArgumentResolver());
-        handlerAdapter.setArgumentResolvers(argumentResolvers);
+        List<HandlerMethodArgumentResolver> argumentResolves =
+                GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
+        addToListBackwards(argumentResolves, handlerAdapter.getArgumentResolvers());
 
         // default treatment of "f" parameter and headers, defaulting to JSON if nothing else has
         // been provided
@@ -177,6 +169,15 @@ public class APIDispatcher extends AbstractController
                                 mavContainer.getModel().put(RESPONSE_OBJECT, returnValue);
                             }
                         }));
+    }
+
+    private void addToListBackwards(List source, List target) {
+        // add them in reverse order to the head, so that they will have the same order as extension
+        // priority commands
+        ListIterator arIterator = source.listIterator(source.size());
+        while (arIterator.hasPrevious()) {
+            target.add(0, arIterator.previous());
+        }
     }
 
     @Override

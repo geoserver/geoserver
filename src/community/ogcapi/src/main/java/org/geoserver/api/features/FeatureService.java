@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIService;
-import org.geoserver.api.BaseURL;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
@@ -58,7 +57,7 @@ public class FeatureService {
     @GetMapping(name = "landingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
-    public LandingPageDocument getLandingPage(@BaseURL String baseURL) {
+    public LandingPageDocument getLandingPage() {
         return new LandingPageDocument(getService(), getCatalog(), "ogc/features");
     }
 
@@ -80,7 +79,7 @@ public class FeatureService {
     @GetMapping(path = "collections", name = "collections")
     @ResponseBody
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
-    public CollectionsDocument getCollections(@BaseURL String baseURL) {
+    public CollectionsDocument getCollections() {
         return new CollectionsDocument(geoServer);
     }
 

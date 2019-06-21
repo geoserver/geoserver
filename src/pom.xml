@@ -1292,7 +1292,7 @@
     <dependency>
      <groupId>com.github.oshi</groupId>
      <artifactId>oshi-core</artifactId>
-     <version>3.4.3</version>
+     <version>3.13.3</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -1575,7 +1575,7 @@
       <descriptor>release/ext-sldservice.xml</descriptor>
       <descriptor>release/ext-geofence.xml</descriptor>
       <descriptor>release/ext-geofence-server.xml</descriptor>
-      <descriptor>release/ext-status-monitoring.xml</descriptor>
+      <descriptor>release/ext-system-status.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.15-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

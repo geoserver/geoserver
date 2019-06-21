@@ -357,9 +357,9 @@
         </modules>
     </profile>
     <profile>
-      <id>status-monitoring</id>
+      <id>system-status</id>
       <modules>
-        <module>status-monitoring</module>
+        <module>system-status</module>
       </modules>
     </profile>
 
@@ -406,7 +406,7 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
-        <module>status-monitoring</module>
+        <module>system-status</module>
       </modules>
     </profile>
 
@@ -453,7 +453,7 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
-        <module>status-monitoring</module>
+        <module>system-status</module>
       </modules>
     </profile>
   </profiles>

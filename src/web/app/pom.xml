@@ -1568,11 +1568,11 @@
       </dependencies>
     </profile>
     <profile>
-      <id>status-monitoring</id>
+      <id>system-status</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-status-monitoring</artifactId>
+          <artifactId>gs-system-status</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

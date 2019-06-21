@@ -77,7 +77,7 @@
           <descriptor>release/ext-keycloak.xml</descriptor>
           <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
-          <descriptor>release/ext-onelogin.xml</descriptor> 
+          <descriptor>release/ext-saml.xml</descriptor> 
           <descriptor>release/ext-notification.xml</descriptor>
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
           <descriptor>release/ext-jdbc-metrics.xml</descriptor>
@@ -182,9 +182,9 @@
       </modules>
     </profile>
     <profile>
-      <id>onelogin</id>
+      <id>saml</id>
       <modules>
-        <module>onelogin</module>
+        <module>saml</module>
       </modules>
     </profile>
 	<profile>
@@ -250,7 +250,7 @@
         <module>security/keycloak</module>
         <module>wmts-multi-dimensional</module>
         <module>wmts-styles</module>
-        <module>onelogin</module>
+        <module>saml</module>
         <module>notification</module>
         <module>notification-common</module>
         <module>notification-geonode</module>

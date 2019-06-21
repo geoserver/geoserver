@@ -18,8 +18,8 @@ target
 cucumber-report
 .mvn
 
-# Release process artifacts
-release/
+# staging release artifacts
+distribution/
 
 # NSG CITE testst data directory
 data/citensg-1.0/gwc/cite*

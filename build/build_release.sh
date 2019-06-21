@@ -97,7 +97,7 @@ fi
 # move to root of source tree
 pushd .. > /dev/null
 
-dist=`pwd`/release/$tag
+dist=`pwd`/distribution/$tag
 mkdir -p $dist/plugins
 
 echo "Building release with following parameters:"
@@ -375,5 +375,5 @@ fi
 
 popd > /dev/null
 
-echo "build complete, artifacts available at $DIST_URL/$tag"
+echo "build complete, artifacts available at $DIST_URL/distribution/$tag"
 exit 0

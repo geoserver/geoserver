@@ -86,7 +86,7 @@ popd > /dev/null
 
 # upload artifacts to sourceforge
 
-pushd release/$tag > /dev/null
+pushd distribution/$tag > /dev/null
 
 if [ -z $SKIP_UPLOAD ]; then
   rsync -ave "ssh -i $SF_PK" *-bin.zip *-war.zip *doc.zip *.pdf $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/

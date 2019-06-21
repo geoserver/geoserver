@@ -178,15 +178,10 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 This job will checkout the specified branch/revision and build the GeoServer
 release artifacts against the GeoTools/GeoWebCache versions specified. When
-successfully complete all release artifacts will be uploaded to the following
-location::
+successfully complete all release artifacts will be listed under artifacts in the job summary.
 
-   http://build.geoserver.org/geoserver/release/<RELEASE>
-
-Additionally when the job completes it fires off two jobs for building the
-Windows and OSX installers. These jobs run on different hudson instances.
-When those jobs complete the ``.exe`` and ``.dmg`` artifacts will be uploaded
-to the location referenced above.
+Additionally when the job completes it fires off a job for a windows worker. When this job
+completes it will list the ``.exe`` artifacts.
 
 Test the Artifacts
 ------------------

@@ -412,11 +412,8 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
-<<<<<<< HEAD
         <module>authkey</module>
-=======
         <module>status-monitoring</module>
->>>>>>> [GEOS-9258] Promote status-monitoring module from Community to Extension
       </modules>
     </profile>
 
@@ -463,11 +460,8 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
-<<<<<<< HEAD
         <module>authkey</module>
-=======
         <module>status-monitoring</module>
->>>>>>> [GEOS-9258] Promote status-monitoring module from Community to Extension
       </modules>
     </profile>
   </profiles>

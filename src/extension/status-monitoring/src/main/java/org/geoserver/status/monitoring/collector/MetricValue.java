@@ -18,10 +18,6 @@ public class MetricValue implements Serializable {
 
     private static final long serialVersionUID = 344784541680947799L;
 
-    private static final double MB = 1048576.0;
-
-    private static final double GB = 1073741824.0;
-
     Object value;
 
     Boolean available;
@@ -37,8 +33,6 @@ public class MetricValue implements Serializable {
     String identifier;
 
     int priority;
-
-    private ValueHolder holder;
 
     /**
      * Initialize the metric value coping the definition from infomration obejct {@link MetricInfo}
@@ -60,7 +54,6 @@ public class MetricValue implements Serializable {
 
     public void setValue(Object value) {
         this.value = value;
-        this.holder = new ValueHolder(value);
     }
 
     public Boolean getAvailable() {
@@ -112,7 +105,11 @@ public class MetricValue implements Serializable {
             return BaseSystemInfoCollector.DEFAULT_VALUE;
         }
         if (value instanceof Double || value instanceof Float) {
-            return String.format("%.2f %s", value, unit);
+            final Number numberValue = (Number) value;
+            return String.format(
+                    "%.2f %s",
+                    value instanceof Double ? numberValue.doubleValue() : numberValue.floatValue(),
+                    unit);
         }
         if (unit != null && unit.equalsIgnoreCase("bytes")) {
             long bytes = Converters.convert(value, Long.class);

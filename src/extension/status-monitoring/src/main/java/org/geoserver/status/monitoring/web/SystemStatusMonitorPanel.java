@@ -4,10 +4,14 @@
  */
 package org.geoserver.status.monitoring.web;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
@@ -22,6 +26,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.status.monitoring.collector.MetricValue;
 import org.geoserver.status.monitoring.collector.Metrics;
 import org.geoserver.status.monitoring.collector.SystemInfoCollector;
+import org.geotools.util.logging.Logging;
 
 /**
  * Panel to visualize system informations
@@ -70,7 +75,9 @@ public class SystemStatusMonitorPanel extends Panel {
                                 new Label(
                                         "info",
                                         new PropertyModel<MetricValue>(
-                                                item.getModel(), "description")),
+                                                new MetricValueI18nDescriptionWrapper(
+                                                        item.getModel().getObject(), this),
+                                                "description")),
                                 new Label(
                                         "value",
                                         new PropertyModel<MetricValue>(
@@ -100,5 +107,44 @@ public class SystemStatusMonitorPanel extends Panel {
                         timeMdl.setObject(new Date());
                     }
                 });
+    }
+
+    /** An internal wrapper for getting optional localization string on description values. */
+    private static class MetricValueI18nDescriptionWrapper implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private static final Logger LOGGER =
+                Logging.getLogger(MetricValueI18nDescriptionWrapper.class);
+
+        private final MetricValue value;
+        private final Component component;
+
+        public MetricValueI18nDescriptionWrapper(MetricValue value, Component component) {
+            super();
+            this.value = value;
+            this.component = component;
+        }
+
+        public String getDescription() {
+            String keyValue = formatKeyValue(value);
+            LOGGER.log(
+                    Level.FINE,
+                    "Getting localized name for {0} -> {1}",
+                    new Object[] {keyValue, value.getDescription()});
+            final String localizedValue =
+                    component.getString(keyValue, null, value.getDescription());
+            return localizedValue;
+        }
+
+        private String formatKeyValue(MetricValue value) {
+            StringBuilder keyBuilder = new StringBuilder();
+            keyBuilder.append(scapeKeyString(value.getName().toLowerCase()));
+            keyBuilder.append("-");
+            keyBuilder.append(scapeKeyString(value.getIdentifier().toLowerCase()));
+            return keyBuilder.toString();
+        }
+
+        private String scapeKeyString(String value) {
+            return value.replace(" ", "_").replace(":", "_").replace("=", "_");
+        }
     }
 }

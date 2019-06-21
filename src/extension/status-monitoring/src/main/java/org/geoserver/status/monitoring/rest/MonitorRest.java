@@ -14,8 +14,6 @@ import freemarker.template.ObjectWrapper;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestBaseController;
@@ -45,8 +43,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/about/monitoring")
 public class MonitorRest extends RestBaseController {
-
-    private static Log log = LogFactory.getLog(MonitorRest.class);
 
     @Autowired SystemInfoCollector systemInfoCollector;
 

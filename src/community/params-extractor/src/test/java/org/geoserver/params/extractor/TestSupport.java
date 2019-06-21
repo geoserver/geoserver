@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-abstract class TestSupport {
+public abstract class TestSupport {
 
     private static final File TEST_DIRECTORY =
             new File(System.getProperty("java.io.tmpdir"), "params-extractor-data-directory");

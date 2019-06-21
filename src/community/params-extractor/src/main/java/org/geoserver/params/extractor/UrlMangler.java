@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -29,6 +32,20 @@ public class UrlMangler implements URLMangler {
                 notify -> echoParameters = EchoParametersDao.getEchoParameters(resource.in()));
     }
 
+    private HttpServletRequest getHttpRequest(Request request) {
+        HttpServletRequest httpRequest = request.getHttpRequest();
+        while (httpRequest instanceof HttpServletRequestWrapper
+                && !(httpRequest instanceof RequestWrapper)) {
+            ServletRequest servlet = ((HttpServletRequestWrapper) httpRequest).getRequest();
+            if (servlet instanceof HttpServletRequest) {
+                httpRequest = (HttpServletRequest) servlet;
+            } else {
+                throw new RuntimeException("Only HttpRequest is supported");
+            }
+        }
+        return httpRequest;
+    }
+
     @Override
     public void mangleURL(
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
@@ -38,8 +55,9 @@ public class UrlMangler implements URLMangler {
         }
         forwardOriginalUri(request, path);
         Map requestRawKvp = request.getRawKvp();
-        if (request.getHttpRequest() instanceof RequestWrapper) {
-            RequestWrapper requestWrapper = (RequestWrapper) request.getHttpRequest();
+        HttpServletRequest httpRequest = getHttpRequest(request);
+        if (httpRequest instanceof RequestWrapper) {
+            RequestWrapper requestWrapper = (RequestWrapper) httpRequest;
             Map parameters = requestWrapper.getOriginalParameters();
             requestRawKvp = new KvpMap(KvpUtils.normalize(parameters));
         }
@@ -47,9 +65,10 @@ public class UrlMangler implements URLMangler {
     }
 
     private void forwardOriginalUri(Request request, StringBuilder path) {
-        String requestUri = request.getHttpRequest().getRequestURI();
-        if (request.getHttpRequest() instanceof RequestWrapper) {
-            requestUri = ((RequestWrapper) request.getHttpRequest()).getOriginalRequestURI();
+        HttpServletRequest httpRequest = getHttpRequest(request);
+        String requestUri = httpRequest.getRequestURI();
+        if (httpRequest instanceof RequestWrapper) {
+            requestUri = ((RequestWrapper) httpRequest).getOriginalRequestURI();
         }
         Matcher matcher = URI_PATTERN.matcher(requestUri);
         if (!matcher.matches()) {

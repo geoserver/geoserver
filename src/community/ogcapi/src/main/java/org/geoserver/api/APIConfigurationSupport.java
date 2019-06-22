@@ -42,6 +42,7 @@ public class APIConfigurationSupport extends WebMvcConfigurationSupport {
                             getBridgedMethod(),
                             args);
             operation = fireOperationDispatchedCallback(request, operation);
+            request.setOperation(operation);
             try {
                 return operation
                         .getMethod()

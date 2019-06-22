@@ -17,6 +17,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.response.FeatureResponse;
 
 /** Appends paging links as HTTP headers for GetFeature responses */
 public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
@@ -25,9 +26,9 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         // is this a feature response we are about to encode?
-        if (result instanceof FeatureCollectionResponse) {
+        if (result instanceof FeaturesResponse) {
             HttpServletResponse httpResponse = request.getHttpResponse();
-            FeatureCollectionResponse fcr = (FeatureCollectionResponse) result;
+            FeatureCollectionResponse fcr = ((FeaturesResponse) result).getResponse();
             String contentType = response.getMimeType(result, operation);
             if (fcr.getPrevious() != null) {
                 addLink(httpResponse, "prev", contentType, fcr.getPrevious());

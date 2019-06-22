@@ -29,10 +29,7 @@ import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.Service;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.*;
 import org.geotools.util.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -120,9 +117,11 @@ public class APIDispatcher extends AbstractController
         this.messageConverters = handlerAdapter.getMessageConverters();
 
         // add custom argument resolvers
-        List<HandlerMethodArgumentResolver> argumentResolves =
+        List<HandlerMethodArgumentResolver> pluginResolvers =
                 GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
-        addToListBackwards(argumentResolves, handlerAdapter.getArgumentResolvers());
+        List<HandlerMethodArgumentResolver> adapterResolvers = new ArrayList<>(handlerAdapter.getArgumentResolvers());
+        addToListBackwards(pluginResolvers, adapterResolvers);
+        handlerAdapter.setArgumentResolvers(adapterResolvers);
 
         // default treatment of "f" parameter and headers, defaulting to JSON if nothing else has
         // been provided
@@ -140,7 +139,8 @@ public class APIDispatcher extends AbstractController
                                                 handlerAdapter.getMessageConverters(),
                                                 GeoServerExtensions.bean(
                                                         GeoServerResourceLoader.class),
-                                                GeoServerExtensions.bean(GeoServer.class));
+                                                GeoServerExtensions.bean(GeoServer.class),
+                                                callbacks);
                                     } else {
                                         return f;
                                     }
@@ -213,6 +213,7 @@ public class APIDispatcher extends AbstractController
         // set request / response
         dr.setHttpRequest(httpRequest);
         dr.setHttpResponse(httpResponse);
+        dr.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
 
         try {
             // initialize the request and allow callbacks to override it
@@ -241,6 +242,8 @@ public class APIDispatcher extends AbstractController
 
             // and this is response handling
             Object returnValue = mav.getModel().get(RESPONSE_OBJECT);
+            returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
+
             returnValueHandlers.handleReturnValue(
                     returnValue,
                     new ReturnValueMethodParameter(handler.getMethod(), returnValue),
@@ -450,6 +453,16 @@ public class APIDispatcher extends AbstractController
         }
         return service;
     }
+
+    // SHARE
+    Object fireOperationExecutedCallback(Request req, Operation op, Object result) {
+        for (DispatcherCallback cb : callbacks) {
+            Object r = cb.operationExecuted(req, op, result);
+            result = r != null ? r : result;
+        }
+        return result;
+    }
+
 
     /**
      * This comes from {@link org.springframework.web.servlet.DispatcherServlet}, it's private and

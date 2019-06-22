@@ -39,7 +39,7 @@ GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and
      - MIME
      - Description
    * - `MapBox Vector (MVT) <https://github.com/mapbox/vector-tile-spec>`_
-     - ``application/x-protobuf;type=mapbox-vector``
+     - ``application/vnd.mapbox-vector-tile``
      - **Recommended Format** This is an efficient binary format that is widely supported by almost all Vector Tile applications.
    * - `GeoJSON <http://geojson.org/>`_
      - ``application/json;type=geojson``
@@ -70,7 +70,7 @@ For this tutorial, we'll be using the layer ``opengeo:countries`` to show off th
 
    * ``application/json;type=geojson``
    * ``application/json;type=topojson``
-   * ``application/x-protobuf;type=mapbox-vector``
+   * ``application/vnd.mapbox-vector-tile``
 
    .. figure:: img/vectortiles_tileformats.png
 

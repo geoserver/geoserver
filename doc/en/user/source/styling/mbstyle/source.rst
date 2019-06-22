@@ -9,7 +9,7 @@ GeoServer can be configured to serve layers as vector tiles which can be used as
 
 2. Install the :ref:`Vector Tiles <vectortiles.install>` extension.
 
-3. Follow the :ref:`vectortiles.tutorial` to publish your layers in ``application/x-protobuf;type=mapbox-vector`` format (You only need to do the "Publish vector tiles in GeoWebCache" step).
+3. Follow the :ref:`vectortiles.tutorial` to publish your layers in ``application/vnd.mapbox-vector-tile`` format (You only need to do the "Publish vector tiles in GeoWebCache" step).
 
 Once these steps are complete, you will be able to use your GeoServer layers in any Mapbox-compatible client application that can access your GeoServer.
 
@@ -20,7 +20,7 @@ The source syntax to use these GeoServer layers in your MapBox Style is::
       "tiles": [
         "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS
             &VERSION=1.0.0&LAYER=<workspace>:<layer>&STYLE=&TILEMATRIX=EPSG:900913:{z}
-            &TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector
+            &TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile
             &TILECOL={x}&TILEROW={y}"
       ],
       "minZoom": 0,

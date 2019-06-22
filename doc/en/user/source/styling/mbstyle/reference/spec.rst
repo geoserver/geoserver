@@ -153,7 +153,7 @@ Data source specifications.
           "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile
               &SERVICE=WMTS&VERSION=1.0.0&LAYER=mapbox:streets&STYLE=
               &TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913
-              &FORMAT=application/x-protobuf;type=mapbox-vector
+              &FORMAT=application/vnd.mapbox-vector-tile
               &TILECOL={x}&TILEROW={y}"
         ],
         "minZoom": 0,
@@ -438,7 +438,7 @@ Mapbox, the ``"url"`` value should be of the form ``mapbox://mapid``.
       "tiles": [
         "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS
             &VERSION=1.0.0&LAYER=mapbox:streets&STYLE=&TILEMATRIX=EPSG:900913:{z}
-            &TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector
+            &TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile
             &TILECOL={x}&TILEROW={y}"
       ],
       "minZoom": 0,

@@ -5,35 +5,30 @@
 package org.geoserver.api;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 public class APIException extends RuntimeException {
 
     private final HttpStatus status;
-    private MediaType mediaType = MediaType.TEXT_PLAIN;
+    private final String code;
 
-    public APIException(String body, HttpStatus status) {
+    public APIException(String code, String body, HttpStatus status) {
         super(body);
         this.status = status;
+        this.code = code;
     }
 
-    public APIException(String body, HttpStatus status, Throwable t) {
+    public APIException(String code, String body, HttpStatus status, Throwable t) {
         super(body, t);
         this.status = status;
+        this.code = code;
     }
 
-    public APIException(String body, HttpStatus status, MediaType mediaType, Throwable t) {
-        super(body, t);
-        this.status = status;
-        this.mediaType = mediaType;
+    public String getCode() {
+        return code;
     }
 
     public HttpStatus getStatus() {
         return status;
-    }
-
-    public MediaType getMediaType() {
-        return mediaType;
     }
 
     @Override

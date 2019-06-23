@@ -15,8 +15,6 @@ import javax.xml.namespace.QName;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
@@ -30,17 +28,16 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.Version;
 import org.geowebcache.config.DefaultGridsets;
 import org.opengis.feature.Feature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Component
 public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
-
-    static final ThreadLocal<String> WFS3_FEATURE_ID = new ThreadLocal<String>();
 
     /** The MIME type requested by WFS3 for GeoJSON Responses */
     public static final String MIME = "application/geo+json";
@@ -58,14 +55,8 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         // was it a single feature request?
-        String requestFeatureId = getWFS3FeatureId();
-        if (requestFeatureId != null) {
-            try {
-                WFS3_FEATURE_ID.set(requestFeatureId);
-                writeSingleFeature((FeatureCollectionResponse) value, output, operation);
-            } finally {
-                WFS3_FEATURE_ID.remove();
-            }
+        if (getItemId() != null) {
+            writeSingleFeature((FeatureCollectionResponse) value, output, operation);
         } else {
             super.write(value, output, operation);
         }
@@ -76,16 +67,11 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
      *
      * @return
      */
-    private String getWFS3FeatureId() {
-        Request dr = Dispatcher.REQUEST.get();
-        String featureId = null;
-        if (dr != null && (new Version(dr.getVersion()).getMajor().equals(3))) {
-            Object featureIdValue = dr.getKvp().get("featureId");
-            if (featureIdValue instanceof List) {
-                featureId = (String) ((List) featureIdValue).get(0);
-            }
-        }
-        return featureId;
+    private String getItemId() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        return (String)
+                requestAttributes.getAttribute(
+                        FeatureService.ITEM_ID, RequestAttributes.SCOPE_REQUEST);
     }
 
     /**
@@ -112,7 +98,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     @Override
     protected void writeExtraFeatureProperties(
             Feature feature, Operation operation, GeoJSONBuilder jw) {
-        String featureId = WFS3_FEATURE_ID.get();
+        String featureId = getItemId();
         if (featureId != null) {
             writeLinks(null, operation, jw, featureId);
         }

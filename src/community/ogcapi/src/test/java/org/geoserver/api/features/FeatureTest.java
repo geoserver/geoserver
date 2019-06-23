@@ -293,7 +293,7 @@ public class FeatureTest extends FeaturesTestSupport {
                 getAsJSONPath("ogc/features/collections/" + roadSegments + "/items?limit=abc", 400);
         assertEquals("InvalidParameterValue", json.read("code"));
         assertThat(
-                json.read("description"), both(containsString("COUNT")).and(containsString("abc")));
+                json.read("description"), both(containsString("limit")).and(containsString("abc")));
     }
 
     @Test

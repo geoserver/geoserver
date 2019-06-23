@@ -24,16 +24,20 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
+import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.platform.*;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.Operation;
+import org.geoserver.platform.Service;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,9 +61,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
+import org.xml.sax.SAXException;
 
-public class APIDispatcher extends AbstractController
-        implements ApplicationListener<ContextStartedEvent> {
+public class APIDispatcher extends AbstractController {
 
     static final String RESPONSE_OBJECT = "ResponseObject";
 
@@ -80,12 +84,14 @@ public class APIDispatcher extends AbstractController
     protected APIContentNegotiationManager contentNegotiationManager =
             new APIContentNegotiationManager();
     private List<HttpMessageConverter<?>> messageConverters;
+    private List<APIExceptionHandler> exceptionHandlers;
 
     // SHARE
     @Override
     protected void initApplicationContext(ApplicationContext context) {
         // load life cycle callbacks
         callbacks = GeoServerExtensions.extensions(DispatcherCallback.class, context);
+        exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
 
         this.mappingHandler =
                 new RequestMappingHandlerMapping() {
@@ -181,9 +187,6 @@ public class APIDispatcher extends AbstractController
         }
     }
 
-    @Override
-    public void onApplicationEvent(ContextStartedEvent event) {}
-
     // SHARE
     protected void preprocessRequest(HttpServletRequest request) throws Exception {
         // set the charset
@@ -215,7 +218,7 @@ public class APIDispatcher extends AbstractController
         dr.setHttpRequest(httpRequest);
         dr.setHttpResponse(httpResponse);
         dr.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
-
+        RequestInfo requestInfo = new RequestInfo(httpRequest, httpResponse, this);
         try {
             // initialize the request and allow callbacks to override it
             dr = init(dr);
@@ -223,7 +226,7 @@ public class APIDispatcher extends AbstractController
             // store it in the thread local
             Dispatcher.REQUEST.set(dr);
             // add a thread local with info on formats, base urls, and the like
-            RequestInfo requestInfo = new RequestInfo(httpRequest, this);
+
             requestInfo.setRequestedMediaTypes(
                     contentNegotiationManager.resolveMediaTypes(
                             new ServletWebRequest(dr.getHttpRequest())));
@@ -250,31 +253,12 @@ public class APIDispatcher extends AbstractController
                     new ReturnValueMethodParameter(handler.getMethod(), returnValue),
                     mavContainer,
                     new DispatcherServletWebRequest(dr.getHttpRequest(), dr.getHttpResponse()));
-
-            // find the service
-            // service = service(request);
-            //
-            //            // throw any outstanding errors
-            //            if (request.getError() != null) {
-            //                throw request.getError();
-            //            }
-            //
-            //            // dispatch the operation
-            //            Operation operation = dispatch(request, service);
-            //            request.setOperation(operation);
-            //
-            //            // execute it
-            //            Object result = execute(request, operation);
-            //
-            //            // write the response
-            //            if (result != null) {
-            //                response(result, request, operation);
-            //            }
+            // TODO: fire the methods for response written
         } catch (Throwable t) {
             // make Spring security exceptions flow so that exception transformer filter can handle
             // them
             if (isSecurityException(t)) throw (Exception) t;
-            exception(t, dr);
+            exception(t, requestInfo);
         } finally {
             fireFinishedCallback(dr);
             Dispatcher.REQUEST.remove();
@@ -328,7 +312,7 @@ public class APIDispatcher extends AbstractController
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
-            throw new APIException(msg, HttpStatus.NOT_FOUND);
+            throw new APIException(null, msg, HttpStatus.NOT_FOUND);
         }
         Object handler = chain.getHandler();
         if (!handlerAdapter.supports(handler)) {
@@ -341,25 +325,61 @@ public class APIDispatcher extends AbstractController
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
-            throw new APIException(msg, HttpStatus.NOT_FOUND);
+            throw new APIException(null, msg, HttpStatus.NOT_FOUND);
         }
         return (HandlerMethod) handler;
     }
 
-    private void exception(Throwable t, Request request) throws IOException {
-        HttpServletResponse response = request.getHttpResponse();
+    private void exception(Throwable t, RequestInfo request) throws IOException {
+        HttpServletResponse response = request.getResponse();
+
+        // eliminate ClientStreamAbortedException
+        Throwable current = t;
+        while (current != null
+                && !(current instanceof ClientStreamAbortedException)
+                && !isSecurityException(current)
+                && !(current instanceof HttpErrorCodeException)) {
+            if (current instanceof SAXException) current = ((SAXException) current).getException();
+            else current = current.getCause();
+        }
+        if (current instanceof ClientStreamAbortedException) {
+            LOGGER.log(Level.FINER, "Client has closed stream", t);
+            return;
+        }
+
+        // make sure we don't eat security exceptions, they have their own handling
+        if (isSecurityException(current)) {
+            throw (RuntimeException) current;
+        }
+
         LOGGER.log(Level.SEVERE, "Failed to dispatch API request", t);
 
-        if (t instanceof APIException) {
-            APIException exception = (APIException) t;
-            response.setContentType(exception.getMediaType().toString());
-            response.sendError(exception.getStatus().value(), exception.getMessage());
-        } else {
-            response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-            response.sendError(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Internal server error, check logs for details");
+        // is it meant to be a simple and straight answer?
+        if (t instanceof HttpErrorCodeException) {
+            HttpErrorCodeException hec = (HttpErrorCodeException) t;
+            response.setContentType(
+                    hec.getContentType() != null ? hec.getContentType() : "text/plain");
+            if (hec.getErrorCode() >= 400) {
+                response.sendError(hec.getErrorCode(), hec.getMessage());
+            } else {
+                response.getOutputStream().print(hec.getMessage());
+            }
         }
+
+        APIExceptionHandler handler = getExceptionHandler(t, request);
+        if (handler == null) {
+            response.sendError(500, t.getMessage());
+        } else {
+            handler.handle(t, response);
+        }
+    }
+
+    private APIExceptionHandler getExceptionHandler(Throwable t, RequestInfo request) {
+        return exceptionHandlers
+                .stream()
+                .filter(h -> h.canHandle(t, request))
+                .findFirst()
+                .orElse(null);
     }
 
     Request init(Request request) throws ServiceException, IOException {

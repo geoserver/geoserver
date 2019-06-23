@@ -15,11 +15,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A parser that allows dateline crossing envelopes. TODO: Same as the OpenSearch one, the class
- * will eventually have to be either moved to core or merged with its based class.
+ * will eventually have to be either moved to core or merged with its based class with some option
+ * to allow dateline crossing envelopes, or not, depending on the context.
  *
  * @author Andrea Aime
  */
-public class FeaturesBBoxKvpParser extends BBoxKvpParser {
+class FeaturesBBoxKvpParser extends BBoxKvpParser {
 
     @Override
     protected Object buildEnvelope(

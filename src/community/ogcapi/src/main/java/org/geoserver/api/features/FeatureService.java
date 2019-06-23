@@ -55,10 +55,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @APIService(service = "Feature", version = "1.0", landingPage = "ogc/features")
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
+
+    public static String ITEM_ID = "OGCFeatures:ItemId";
 
     private static final Logger LOGGER = Logging.getLogger(FeatureService.class);
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -149,15 +153,19 @@ public class FeatureService {
         return new ConformanceDocument(classes);
     }
 
-    @GetMapping(path = "collections/{collectionId}/items", name = "items")
+    @GetMapping(
+        path = {"collections/{collectionId}/items", "collections/{collectionId}/items/{itemId:.+}"},
+        name = "items"
+    )
     @ResponseBody
-    public FeaturesResponse getFeature(
+    public FeaturesResponse items(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
-            @RequestParam(name = "time", required = false) String time)
+            @RequestParam(name = "time", required = false) String time,
+            @PathVariable(name = "itemId", required = false) String itemId)
             throws Exception {
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);
@@ -172,6 +180,9 @@ public class FeatureService {
         if (time != null) {
             filters.add(buildTimeFilter(ft, time));
         }
+        if (itemId != null) {
+            filters.add(FF.id(FF.featureId(itemId)));
+        }
         query.setFilter(mergeFiltersAnd(filters));
         request.setStartIndex(startIndex);
         request.setMaxFeatures(limit);
@@ -183,6 +194,10 @@ public class FeatureService {
         gf.setFilterFactory(FF);
         gf.setStoredQueryProvider(getStoredQueryProvider());
         FeatureCollectionResponse response = gf.run(request);
+
+        // store information about single vs multi request
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        requestAttributes.setAttribute(ITEM_ID, itemId, RequestAttributes.SCOPE_REQUEST);
 
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats

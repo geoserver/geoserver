@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
@@ -39,6 +40,9 @@ public class RequestInfo {
     /** key to reference this object by */
     public static final String KEY = "APIRequestInfo";
 
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
+
     String baseURL;
     String servletPath;
     String pagePath;
@@ -48,16 +52,16 @@ public class RequestInfo {
 
     private Map<String, String[]> queryMap;
 
-    /** Constructs an empty {@link RequestInfo} object */
-    public RequestInfo() {}
-
     /**
      * Constructs a {@link RequestInfo} object, generating content based on the passed request.
      *
      * @param request
      */
-    public RequestInfo(HttpServletRequest request, APIDispatcher dispatcher) {
+    public RequestInfo(
+            HttpServletRequest request, HttpServletResponse response, APIDispatcher dispatcher) {
         this.dispatcher = dispatcher;
+        this.request = request;
+        this.response = response;
 
         // http://host:port/appName
         baseURL =
@@ -196,5 +200,13 @@ public class RequestInfo {
                 .stream()
                 .filter(mt -> !mt.equals(MediaType.ALL))
                 .anyMatch(curr -> mediaType.isCompatibleWith(curr));
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public HttpServletResponse getResponse() {
+        return response;
     }
 }

@@ -245,8 +245,7 @@ public class OwsUtils {
     }
 
     /** Dumps a stack of service exception messages to a string buffer. */
-    public static void dumpExceptionMessages(
-            ServiceException e, StringBuffer s, boolean xmlEscape) {
+    public static void dumpExceptionMessages(Throwable e, StringBuffer s, boolean xmlEscape) {
         Throwable ex = e;
         do {
             Throwable cause = ex.getCause();

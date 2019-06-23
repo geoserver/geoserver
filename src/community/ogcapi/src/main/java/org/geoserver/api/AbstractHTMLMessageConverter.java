@@ -13,6 +13,10 @@
 
 package org.geoserver.api;
 
+import freemarker.template.TemplateMethodModel;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -22,12 +26,6 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import freemarker.template.TemplateMethodModel;
 
 public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessageConverter<T> {
 

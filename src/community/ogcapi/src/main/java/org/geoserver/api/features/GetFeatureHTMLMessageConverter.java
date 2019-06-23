@@ -6,6 +6,13 @@
  */
 package org.geoserver.api.features;
 
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.geoserver.api.AbstractHTMLMessageConverter;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -19,15 +26,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 /** Produces a Feature response in HTML. */
 @Component

@@ -5,17 +5,15 @@
  */
 package org.geoserver.api;
 
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 public class SimpleHTTPMessageConverter<T> extends AbstractHTMLMessageConverter<T> {
 

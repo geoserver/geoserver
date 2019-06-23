@@ -7,11 +7,10 @@ package org.geoserver.api.features;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 
 /**
- * A Features response that contains both the WFS request and response, to help reusing
- * the traditional WFS output formats
+ * A Features response that contains both the WFS request and response, to help reusing the
+ * traditional WFS output formats
  */
 public class FeaturesResponse {
 

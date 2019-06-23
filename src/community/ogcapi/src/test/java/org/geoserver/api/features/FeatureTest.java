@@ -4,7 +4,15 @@
  */
 package org.geoserver.api.features;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.*;
+
 import com.jayway.jsonpath.DocumentContext;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -16,21 +24,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.*;
-
 public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testGetLayerAsGeoJson() throws Exception {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
-        DocumentContext json = getAsJSONPath("ogc/features/collections/" + roadSegments + "/items", 200);
+        DocumentContext json =
+                getAsJSONPath("ogc/features/collections/" + roadSegments + "/items", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(5, (int) json.read("features.length()", Integer.class));
         // check self link
@@ -48,7 +48,9 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThat(
                 (String) selfLink.get(0),
                 startsWith(
-                        "http://localhost:8080/geoserver/ogc/features/collections/" + roadSegments + "?"));
+                        "http://localhost:8080/geoserver/ogc/features/collections/"
+                                + roadSegments
+                                + "?"));
     }
 
     @Test
@@ -88,7 +90,8 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testBBoxFilter() throws Exception {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath("ogc/features/collections/" + roadSegments + "/items?bbox=35,0,60,3", 200);
+                getAsJSONPath(
+                        "ogc/features/collections/" + roadSegments + "/items?bbox=35,0,60,3", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f002 and f003
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -102,7 +105,8 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testBBoxDatelineCrossingFilter() throws Exception {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath("ogc/features/collections/" + roadSegments + "/items?bbox=170,0,60,3", 200);
+                getAsJSONPath(
+                        "ogc/features/collections/" + roadSegments + "/items?bbox=170,0,60,3", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f002 and f003
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -116,7 +120,8 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testTimeFilter() throws Exception {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath("ogc/features/collections/" + roadSegments + "/items?time=2006-10-25", 200);
+                getAsJSONPath(
+                        "ogc/features/collections/" + roadSegments + "/items?time=2006-10-25", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -129,7 +134,9 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/" + roadSegments + "/items?time=2006-09-01/2006-10-23",
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?time=2006-09-01/2006-10-23",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -176,7 +183,9 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/" + roadSegments + "/items/RoadSegments.1107532045088",
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items/RoadSegments.1107532045088",
                         200);
         assertEquals("Feature", json.read("type", String.class));
         // check self link
@@ -230,7 +239,8 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse(
-                        "ogc/features/collections/" + roadSegments + "/items?startIndex=3&limit=1", 200);
+                        "ogc/features/collections/" + roadSegments + "/items?startIndex=3&limit=1",
+                        200);
         List<String> links = response.getHeaders("Link");
         assertThat(links, Matchers.hasSize(2));
         assertEquals(
@@ -259,7 +269,8 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse(
-                        "ogc/features/collections/" + roadSegments + "/items?startIndex=3&limit=3", 200);
+                        "ogc/features/collections/" + roadSegments + "/items?startIndex=3&limit=3",
+                        200);
         List<String> links = response.getHeaders("Link");
         assertThat(links, Matchers.hasSize(1));
         assertEquals(
@@ -302,7 +313,9 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
         String urlBase = "ogc/features/collections/" + roadSegments + "/items?f=html";
         String expectedBase =
-                "http://localhost:8080/geoserver/ogc/features/collections/" + roadSegments + "/items";
+                "http://localhost:8080/geoserver/ogc/features/collections/"
+                        + roadSegments
+                        + "/items";
 
         // first page, should only have next URL
         String firstPageURL = urlBase + "&limit=2";
@@ -348,7 +361,8 @@ public class FeatureTest extends FeaturesTestSupport {
             String encodedFeatureId = encodedLocalName + ".f004";
             DocumentContext json =
                     getAsJSONPath(
-                            "ogc/features/collections/" + typeName + "/items/" + encodedFeatureId, 200);
+                            "ogc/features/collections/" + typeName + "/items/" + encodedFeatureId,
+                            200);
 
             assertEquals("Feature", json.read("type", String.class));
             // check self link

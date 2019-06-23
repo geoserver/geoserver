@@ -119,7 +119,8 @@ public class APIDispatcher extends AbstractController
         // add custom argument resolvers
         List<HandlerMethodArgumentResolver> pluginResolvers =
                 GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
-        List<HandlerMethodArgumentResolver> adapterResolvers = new ArrayList<>(handlerAdapter.getArgumentResolvers());
+        List<HandlerMethodArgumentResolver> adapterResolvers =
+                new ArrayList<>(handlerAdapter.getArgumentResolvers());
         addToListBackwards(pluginResolvers, adapterResolvers);
         handlerAdapter.setArgumentResolvers(adapterResolvers);
 
@@ -463,7 +464,6 @@ public class APIDispatcher extends AbstractController
         }
         return result;
     }
-
 
     /**
      * This comes from {@link org.springframework.web.servlet.DispatcherServlet}, it's private and

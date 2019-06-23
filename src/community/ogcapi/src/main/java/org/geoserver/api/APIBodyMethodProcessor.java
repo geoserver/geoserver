@@ -31,8 +31,6 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -109,25 +107,32 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
         // DispatcherCallback bridging
         final MediaType finalMediaType = mediaType;
-        Response response = new Response(value.getClass()) {
+        Response response =
+                new Response(value.getClass()) {
 
-                @Override
-                public String getMimeType(Object value, Operation operation) throws ServiceException {
-                    return finalMediaType.toString();
-                }
+                    @Override
+                    public String getMimeType(Object value, Operation operation)
+                            throws ServiceException {
+                        return finalMediaType.toString();
+                    }
 
-                @Override
-                public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
-                    converter.write(value, finalMediaType, outputMessage);
-                }
-            };
+                    @Override
+                    public void write(Object value, OutputStream output, Operation operation)
+                            throws IOException, ServiceException {
+                        converter.write(value, finalMediaType, outputMessage);
+                    }
+                };
 
         Request dr = Dispatcher.REQUEST.get();
         response = fireResponseDispatchedCallback(dr, dr.getOperation(), value, response);
 
         // write using the response provided by the callbacks
-        outputMessage.getHeaders().setContentType(MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
-        response.write(value, outputMessage.getServletResponse().getOutputStream(), dr.getOperation());
+        outputMessage
+                .getHeaders()
+                .setContentType(
+                        MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
+        response.write(
+                value, outputMessage.getServletResponse().getOutputStream(), dr.getOperation());
     }
 
     private List<MediaType> getAcceptableMediaTypes(HttpServletRequest request)
@@ -249,9 +254,13 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         }
     }
 
-    protected <T> HttpMessageConverter getMessageConverter(@Nullable T value, MethodParameter returnType,
-                                                  ServletServerHttpRequest inputMessage, ServletServerHttpResponse outputMessage)
-            throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
+    protected <T> HttpMessageConverter getMessageConverter(
+            @Nullable T value,
+            MethodParameter returnType,
+            ServletServerHttpRequest inputMessage,
+            ServletServerHttpResponse outputMessage)
+            throws IOException, HttpMediaTypeNotAcceptableException,
+                    HttpMessageNotWritableException {
         Object body;
         Class valueType;
         Type targetType;
@@ -262,19 +271,25 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         } else {
             body = value;
             valueType = this.getReturnValueType(value, returnType);
-            targetType = GenericTypeResolver.resolveType(this.getGenericType(returnType), returnType.getContainingClass());
+            targetType =
+                    GenericTypeResolver.resolveType(
+                            this.getGenericType(returnType), returnType.getContainingClass());
         }
 
-        MediaType selectedMediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
+        MediaType selectedMediaType =
+                getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
 
         if (selectedMediaType != null) {
             selectedMediaType = selectedMediaType.removeQualityValue();
             for (HttpMessageConverter<?> converter : this.messageConverters) {
-                GenericHttpMessageConverter genericConverter = (converter instanceof GenericHttpMessageConverter ?
-                        (GenericHttpMessageConverter<?>) converter : null);
-                if (genericConverter != null ?
-                        ((GenericHttpMessageConverter) converter).canWrite(targetType, valueType, selectedMediaType) :
-                        converter.canWrite(valueType, selectedMediaType)) {
+                GenericHttpMessageConverter genericConverter =
+                        (converter instanceof GenericHttpMessageConverter
+                                ? (GenericHttpMessageConverter<?>) converter
+                                : null);
+                if (genericConverter != null
+                        ? ((GenericHttpMessageConverter) converter)
+                                .canWrite(targetType, valueType, selectedMediaType)
+                        : converter.canWrite(valueType, selectedMediaType)) {
                     return converter;
                 }
             }
@@ -294,6 +309,4 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         }
         return response;
     }
-
-
 }

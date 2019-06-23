@@ -9,8 +9,21 @@ import static org.geoserver.api.features.ConformanceDocument.GEOJSON;
 import static org.geoserver.api.features.ConformanceDocument.GMLSF0;
 import static org.geoserver.api.features.ConformanceDocument.OAS30;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
-
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIService;
 import org.geoserver.api.HTMLResponseBody;
@@ -20,7 +33,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.ows.kvp.TimeKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQueryProvider;
@@ -43,23 +55,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.namespace.QName;
-
-import io.swagger.v3.oas.models.OpenAPI;
 
 @APIService(service = "Feature", version = "1.0", landingPage = "ogc/features")
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
@@ -98,13 +93,14 @@ public class FeatureService {
     }
 
     @GetMapping(
-            path = "api",
-            name = "api",
-            produces = {
-                OpenAPIMessageConverter.OPEN_API_VALUE,
-                "application/x-yaml",
-                MediaType.TEXT_XML_VALUE
-            })
+        path = "api",
+        name = "api",
+        produces = {
+            OpenAPIMessageConverter.OPEN_API_VALUE,
+            "application/x-yaml",
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() {
@@ -132,7 +128,8 @@ public class FeatureService {
     private FeatureTypeInfo getFeatureType(String collectionId) {
         // single collection
         Optional<FeatureTypeInfo> featureType =
-                NCNameResourceCodec.getLayers(getCatalog(), collectionId).stream()
+                NCNameResourceCodec.getLayers(getCatalog(), collectionId)
+                        .stream()
                         .filter(l -> l.getResource() instanceof FeatureTypeInfo)
                         .map(l -> (FeatureTypeInfo) l.getResource())
                         .findFirst();
@@ -226,7 +223,8 @@ public class FeatureService {
 
     private List<String> getTimeProperties(FeatureTypeInfo ft) throws IOException {
         FeatureType schema = ft.getFeatureType();
-        return schema.getDescriptors().stream()
+        return schema.getDescriptors()
+                .stream()
                 .filter(pd -> Date.class.isAssignableFrom(pd.getType().getBinding()))
                 .map(pd -> pd.getName().getLocalPart())
                 .collect(Collectors.toList());

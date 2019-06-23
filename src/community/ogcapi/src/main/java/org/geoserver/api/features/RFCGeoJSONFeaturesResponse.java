@@ -4,6 +4,14 @@
  */
 package org.geoserver.api.features;
 
+import static org.geoserver.ows.util.ResponseUtils.urlEncode;
+
+import java.io.*;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.namespace.QName;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -25,28 +33,16 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.Version;
 import org.geowebcache.config.DefaultGridsets;
 import org.opengis.feature.Feature;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-
-import javax.xml.namespace.QName;
-import java.io.*;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
 @Component
 public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     static final ThreadLocal<String> WFS3_FEATURE_ID = new ThreadLocal<String>();
 
-    /**
-     * The MIME type requested by WFS3 for GeoJSON Responses
-     */
+    /** The MIME type requested by WFS3 for GeoJSON Responses */
     public static final String MIME = "application/geo+json";
 
     private DefaultGridsets gridSets;
@@ -150,8 +146,10 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             }
         }
         // alternate/self links
-        String basePath = "ogc/features/collections/" + urlEncode(NCNameResourceCodec.encode(featureType));
-        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+        String basePath =
+                "ogc/features/collections/" + urlEncode(NCNameResourceCodec.encode(featureType));
+        Collection<MediaType> formats =
+                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {
             String path = basePath + "/items";
             if (featureId != null) {
@@ -172,8 +170,8 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
         // backpointer to the collection
-        for (MediaType format : requestInfo.getProducibleMediaTypes(
-                CollectionDocument.class, true)) {
+        for (MediaType format :
+                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
             String href =
                     ResponseUtils.buildURL(
                             baseUrl,
@@ -223,9 +221,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         // not needed in WFS3
     }
 
-    /**
-     * capabilities output format string.
-     */
+    /** capabilities output format string. */
     public String getCapabilitiesElementName() {
         return "GeoJSON-RFC";
     }
@@ -244,5 +240,4 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
         return false;
     }
-
 }

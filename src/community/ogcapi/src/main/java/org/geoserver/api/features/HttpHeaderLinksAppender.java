@@ -17,7 +17,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.response.FeatureResponse;
 
 /** Appends paging links as HTTP headers for GetFeature responses */
 public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {

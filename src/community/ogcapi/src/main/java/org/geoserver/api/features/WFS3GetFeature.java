@@ -5,6 +5,15 @@
 
 package org.geoserver.api.features;
 
+import static org.geoserver.ows.util.ResponseUtils.urlEncode;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.xml.namespace.QName;
 import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -17,19 +26,7 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.util.logging.Logging;
 
-import javax.xml.namespace.QName;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import static org.geoserver.ows.util.ResponseUtils.urlEncode;
-
-/**
- * A subclass of GetFeature that builds proper API Feature nex/prev links
- */
+/** A subclass of GetFeature that builds proper API Feature nex/prev links */
 class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
 
     static final Logger LOGGER = Logging.getLogger(WFS3GetFeature.class);
@@ -48,7 +45,9 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
             Map<String, String> kvp) {
         // can we build the links?
         List<Query> queries = request.getQueries();
-        if (queries == null || queries.size() != 1 || queries.get(0).getTypeNames() == null
+        if (queries == null
+                || queries.size() != 1
+                || queries.get(0).getTypeNames() == null
                 || queries.get(0).getTypeNames().size() != 1) {
             LOGGER.log(
                     Level.INFO,
@@ -56,7 +55,9 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
             return;
         }
         QName typeName = queries.get(0).getTypeNames().get(0);
-        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+        FeatureTypeInfo typeInfo =
+                getCatalog()
+                        .getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
         if (typeInfo == null) {
             if (typeName == null) {
                 LOGGER.log(
@@ -121,6 +122,7 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
     }
 
     private String buildURL(String itemsPath, Map<String, String> kvp) {
-        return ResponseUtils.buildURL(RequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
+        return ResponseUtils.buildURL(
+                RequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
     }
 }

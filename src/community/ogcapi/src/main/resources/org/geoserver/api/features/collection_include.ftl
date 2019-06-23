@@ -1,13 +1,13 @@
       <ul>
       <#if collection.title??> 
-      <li><b>Title</b>: <span id="${collection.name}_title">${collection.title}</span><br/></li>
+      <li><b>Title</b>: <span id="${collection.id}_title">${collection.title}</span><br/></li>
       </#if>
       <#if collection.description??>
-      <li><b>Description</b>: <span id="${collection.name}_description">${collection.description!}</span><br/></li>
+      <li><b>Description</b>: <span id="${collection.id}_description">${collection.description!}</span><br/></li>
       </#if>
       <#assign se = collection.extent.spatial>
       <li><b>Geographic extents</b>: ${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
-      <li>Data as <a id="html_${collection.name}_link" href="${collection.getLinkUrl('items', 'text/html')!}&limit=${service.maxNumberOfFeaturesForPreview}">HTML</a>.           
+      <li>Data as <a id="html_${collection.id}_link" href="${collection.getLinkUrl('items', 'text/html')!}&limit=${service.maxNumberOfFeaturesForPreview}">HTML</a>.           
       Collection items are also available in the following formats:
       <select onchange="window.open(this.options[this.selectedIndex].value + '&limit=${service.maxNumberOfFeaturesForPreview}');this.selectedIndex=0" >
       <option value="none" selected>--Please choose an option--</option>

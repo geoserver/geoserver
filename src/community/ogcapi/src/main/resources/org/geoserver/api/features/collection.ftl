@@ -14,4 +14,4 @@
        <#else>
        Attribute information is not available.
        </#if>
-<#include "common-footer.ftl">       
+<#include "common-footer.ftl">

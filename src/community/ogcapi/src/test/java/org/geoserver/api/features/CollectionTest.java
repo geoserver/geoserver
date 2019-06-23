@@ -30,7 +30,7 @@ public class CollectionTest extends FeaturesTestSupport {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
         DocumentContext json = getAsJSONPath("ogc/features/collections/" + roadSegments, 200);
 
-        assertEquals("cite__RoadSegments", json.read("$.name", String.class));
+        assertEquals("cite__RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
         assertEquals(-180, json.read("$.extent.spatial[0]", Double.class), 0d);
         assertEquals(-90, json.read("$.extent.spatial[1]", Double.class), 0d);
@@ -63,7 +63,7 @@ public class CollectionTest extends FeaturesTestSupport {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         DocumentContext json = getAsJSONPath("cite/ogc/features/collections/" + roadSegments, 200);
 
-        assertEquals("RoadSegments", json.read("$.name", String.class));
+        assertEquals("RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
 
         // check we have the expected number of links and they all use the right "rel" relation
@@ -114,7 +114,7 @@ public class CollectionTest extends FeaturesTestSupport {
                 "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?f=application%2Fjson";
         XMLAssert.assertXpathEvaluatesTo(
                 expected,
-                "//wfs:Collection[wfs:Name='cite__RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
+                "//wfs:Collection[wfs:id='cite__RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
                 dom);
     }
 

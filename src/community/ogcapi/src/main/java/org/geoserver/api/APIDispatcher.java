@@ -401,6 +401,7 @@ public class APIDispatcher extends AbstractController
 
         if (kvp == null || kvp.isEmpty()) {
             request.setKvp(new HashMap());
+            request.setRawKvp(new HashMap());
         } else {
             // track parsed kvp and unparsd
             Map parsedKvp = KvpUtils.normalize(kvp);

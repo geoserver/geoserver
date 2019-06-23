@@ -17,6 +17,7 @@ import freemarker.template.Template;
 import java.io.IOException;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;

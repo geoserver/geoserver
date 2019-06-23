@@ -135,7 +135,6 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             GeoJSONBuilder jw,
             String featureId) {
         RequestInfo requestInfo = RequestInfo.get();
-        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeatureCollectionResponse.class, true);
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         FeatureTypeInfo featureType = getFeatureType(request);
         String baseUrl = request.getBaseUrl();
@@ -152,6 +151,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
         // alternate/self links
         String basePath = "ogc/features/collections/" + urlEncode(NCNameResourceCodec.encode(featureType));
+        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {
             String path = basePath + "/items";
             if (featureId != null) {
@@ -165,7 +165,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
                             URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
-            if (format.equals(MIME)) {
+            if (format.toString().equals(MIME)) {
                 linkType = Link.REL_SELF;
                 linkTitle = "This document";
             }

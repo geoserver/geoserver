@@ -51,7 +51,7 @@ public class MessageConverterResponseAdapter<T> implements HttpMessageConverter<
 
     @Override
     public boolean canWrite(Class<?> aClass, MediaType mediaType) {
-        return valueClass.isAssignableFrom(aClass) && (mediaType == null || getResponse(mediaType) != null);
+        return valueClass.isAssignableFrom(aClass) && (mediaType == null || getResponse(mediaType).isPresent());
     }
 
     @Override

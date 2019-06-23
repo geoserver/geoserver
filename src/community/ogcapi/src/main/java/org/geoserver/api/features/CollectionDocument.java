@@ -37,12 +37,12 @@ import org.opengis.feature.type.FeatureType;
 import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
-@JsonPropertyOrder({"name", "title", "description", "extent", "links"})
+@JsonPropertyOrder({"id", "title", "description", "extent", "links"})
 @JacksonXmlRootElement(localName = "Collection", namespace = "http://www.opengis.net/wfs/3.0")
 public class CollectionDocument extends AbstractDocument {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 
-    String name;
+    String id;
     String title;
     String description;
     WFSExtents extent;
@@ -52,7 +52,7 @@ public class CollectionDocument extends AbstractDocument {
     public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType) {
         // basic info
         String collectionId = NCNameResourceCodec.encode(featureType);
-        setName(collectionId);
+        setId(collectionId);
         setTitle(featureType.getTitle());
         setDescription(featureType.getAbstract());
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
@@ -94,19 +94,19 @@ public class CollectionDocument extends AbstractDocument {
                 geoServer
                         .getServices()
                         .stream()
-                        .filter(s -> "WMS".equals(s.getName()))
+                        .filter(s -> "WMS".equals(s.getId()))
                         .findFirst()
                         .orElse(null);
         return si != null;
     }
 
-    @JacksonXmlProperty(localName = "Name")
-    public String getName() {
-        return name;
+    @JacksonXmlProperty(localName = "Id")
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String collectionId) {
+        id = collectionId;
     }
 
     @JacksonXmlProperty(localName = "Title")

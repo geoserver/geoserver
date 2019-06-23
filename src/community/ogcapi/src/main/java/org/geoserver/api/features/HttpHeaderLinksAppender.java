@@ -25,9 +25,9 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         // is this a feature response we are about to encode?
-        if (result instanceof FeatureCollectionResponse) {
+        if (result instanceof FeaturesResponse) {
             HttpServletResponse httpResponse = request.getHttpResponse();
-            FeatureCollectionResponse fcr = (FeatureCollectionResponse) result;
+            FeatureCollectionResponse fcr = ((FeaturesResponse) result).getResponse();
             String contentType = response.getMimeType(result, operation);
             if (fcr.getPrevious() != null) {
                 addLink(httpResponse, "prev", contentType, fcr.getPrevious());

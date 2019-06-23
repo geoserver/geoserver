@@ -24,19 +24,20 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
+import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,7 +54,6 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandlerCom
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -61,9 +61,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
+import org.xml.sax.SAXException;
 
-public class APIDispatcher extends AbstractController
-        implements ApplicationListener<ContextStartedEvent> {
+public class APIDispatcher extends AbstractController {
 
     static final String RESPONSE_OBJECT = "ResponseObject";
 
@@ -71,7 +71,7 @@ public class APIDispatcher extends AbstractController
 
     static final Charset UTF8 = Charset.forName("UTF-8");
 
-    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.api");
 
     // SHARE
     /** list of callbacks */
@@ -84,12 +84,14 @@ public class APIDispatcher extends AbstractController
     protected APIContentNegotiationManager contentNegotiationManager =
             new APIContentNegotiationManager();
     private List<HttpMessageConverter<?>> messageConverters;
+    private List<APIExceptionHandler> exceptionHandlers;
 
     // SHARE
     @Override
     protected void initApplicationContext(ApplicationContext context) {
         // load life cycle callbacks
         callbacks = GeoServerExtensions.extensions(DispatcherCallback.class, context);
+        exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
 
         this.mappingHandler =
                 new RequestMappingHandlerMapping() {
@@ -104,9 +106,10 @@ public class APIDispatcher extends AbstractController
         this.mappingHandler.getUrlPathHelper().setAlwaysUseFullPath(true);
 
         // create the one handler adapter we need similar to how DispatcherServlet does it
-        WebMvcConfigurationSupport configurationSupport =
-                context.getAutowireCapableBeanFactory()
-                        .createBean(WebMvcConfigurationSupport.class);
+        // but with a special implementation that supports callbacks for the operation
+        APIConfigurationSupport configurationSupport =
+                context.getAutowireCapableBeanFactory().createBean(APIConfigurationSupport.class);
+        configurationSupport.setCallbacks(callbacks);
         handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
@@ -116,21 +119,16 @@ public class APIDispatcher extends AbstractController
         // add all registered converters before the Spring ones too
         List<HttpMessageConverter> extensionConverters =
                 GeoServerExtensions.extensions(HttpMessageConverter.class);
-        // add them in reverse order to the head, so that they will have the same order as extension
-        // priority commands
-        ListIterator<HttpMessageConverter> itr =
-                extensionConverters.listIterator(extensionConverters.size());
-        while (itr.hasPrevious()) {
-            handlerAdapter.getMessageConverters().add(0, itr.previous());
-        }
+        addToListBackwards(extensionConverters, handlerAdapter.getMessageConverters());
         this.messageConverters = handlerAdapter.getMessageConverters();
 
         // add custom argument resolvers
-        List<HandlerMethodArgumentResolver> argumentResolvers =
+        List<HandlerMethodArgumentResolver> pluginResolvers =
+                GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
+        List<HandlerMethodArgumentResolver> adapterResolvers =
                 new ArrayList<>(handlerAdapter.getArgumentResolvers());
-        argumentResolvers.add(0, new BaseURLArgumentResolver());
-        argumentResolvers.add(0, new NegotiatedContentTypeArgumentResolver());
-        handlerAdapter.setArgumentResolvers(argumentResolvers);
+        addToListBackwards(pluginResolvers, adapterResolvers);
+        handlerAdapter.setArgumentResolvers(adapterResolvers);
 
         // default treatment of "f" parameter and headers, defaulting to JSON if nothing else has
         // been provided
@@ -148,7 +146,8 @@ public class APIDispatcher extends AbstractController
                                                 handlerAdapter.getMessageConverters(),
                                                 GeoServerExtensions.bean(
                                                         GeoServerResourceLoader.class),
-                                                GeoServerExtensions.bean(GeoServer.class));
+                                                GeoServerExtensions.bean(GeoServer.class),
+                                                callbacks);
                                     } else {
                                         return f;
                                     }
@@ -179,8 +178,14 @@ public class APIDispatcher extends AbstractController
                         }));
     }
 
-    @Override
-    public void onApplicationEvent(ContextStartedEvent event) {}
+    private void addToListBackwards(List source, List target) {
+        // add them in reverse order to the head, so that they will have the same order as extension
+        // priority commands
+        ListIterator arIterator = source.listIterator(source.size());
+        while (arIterator.hasPrevious()) {
+            target.add(0, arIterator.previous());
+        }
+    }
 
     // SHARE
     protected void preprocessRequest(HttpServletRequest request) throws Exception {
@@ -212,7 +217,8 @@ public class APIDispatcher extends AbstractController
         // set request / response
         dr.setHttpRequest(httpRequest);
         dr.setHttpResponse(httpResponse);
-
+        dr.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
+        RequestInfo requestInfo = new RequestInfo(httpRequest, httpResponse, this);
         try {
             // initialize the request and allow callbacks to override it
             dr = init(dr);
@@ -220,7 +226,7 @@ public class APIDispatcher extends AbstractController
             // store it in the thread local
             Dispatcher.REQUEST.set(dr);
             // add a thread local with info on formats, base urls, and the like
-            RequestInfo requestInfo = new RequestInfo(httpRequest, this);
+
             requestInfo.setRequestedMediaTypes(
                     contentNegotiationManager.resolveMediaTypes(
                             new ServletWebRequest(dr.getHttpRequest())));
@@ -240,36 +246,19 @@ public class APIDispatcher extends AbstractController
 
             // and this is response handling
             Object returnValue = mav.getModel().get(RESPONSE_OBJECT);
+            returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
+
             returnValueHandlers.handleReturnValue(
                     returnValue,
                     new ReturnValueMethodParameter(handler.getMethod(), returnValue),
                     mavContainer,
                     new DispatcherServletWebRequest(dr.getHttpRequest(), dr.getHttpResponse()));
-
-            // find the service
-            // service = service(request);
-            //
-            //            // throw any outstanding errors
-            //            if (request.getError() != null) {
-            //                throw request.getError();
-            //            }
-            //
-            //            // dispatch the operation
-            //            Operation operation = dispatch(request, service);
-            //            request.setOperation(operation);
-            //
-            //            // execute it
-            //            Object result = execute(request, operation);
-            //
-            //            // write the response
-            //            if (result != null) {
-            //                response(result, request, operation);
-            //            }
+            // TODO: fire the methods for response written
         } catch (Throwable t) {
             // make Spring security exceptions flow so that exception transformer filter can handle
             // them
             if (isSecurityException(t)) throw (Exception) t;
-            exception(t, dr);
+            exception(t, requestInfo);
         } finally {
             fireFinishedCallback(dr);
             Dispatcher.REQUEST.remove();
@@ -323,7 +312,7 @@ public class APIDispatcher extends AbstractController
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
-            throw new APIException(msg, HttpStatus.NOT_FOUND);
+            throw new APIException(null, msg, HttpStatus.NOT_FOUND);
         }
         Object handler = chain.getHandler();
         if (!handlerAdapter.supports(handler)) {
@@ -336,25 +325,61 @@ public class APIDispatcher extends AbstractController
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
-            throw new APIException(msg, HttpStatus.NOT_FOUND);
+            throw new APIException(null, msg, HttpStatus.NOT_FOUND);
         }
         return (HandlerMethod) handler;
     }
 
-    private void exception(Throwable t, Request request) throws IOException {
-        HttpServletResponse response = request.getHttpResponse();
+    private void exception(Throwable t, RequestInfo request) throws IOException {
+        HttpServletResponse response = request.getResponse();
+
+        // eliminate ClientStreamAbortedException
+        Throwable current = t;
+        while (current != null
+                && !(current instanceof ClientStreamAbortedException)
+                && !isSecurityException(current)
+                && !(current instanceof HttpErrorCodeException)) {
+            if (current instanceof SAXException) current = ((SAXException) current).getException();
+            else current = current.getCause();
+        }
+        if (current instanceof ClientStreamAbortedException) {
+            LOGGER.log(Level.FINER, "Client has closed stream", t);
+            return;
+        }
+
+        // make sure we don't eat security exceptions, they have their own handling
+        if (isSecurityException(current)) {
+            throw (RuntimeException) current;
+        }
+
         LOGGER.log(Level.SEVERE, "Failed to dispatch API request", t);
 
-        if (t instanceof APIException) {
-            APIException exception = (APIException) t;
-            response.setContentType(exception.getMediaType().toString());
-            response.sendError(exception.getStatus().value(), exception.getMessage());
-        } else {
-            response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-            response.sendError(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Internal server error, check logs for details");
+        // is it meant to be a simple and straight answer?
+        if (t instanceof HttpErrorCodeException) {
+            HttpErrorCodeException hec = (HttpErrorCodeException) t;
+            response.setContentType(
+                    hec.getContentType() != null ? hec.getContentType() : "text/plain");
+            if (hec.getErrorCode() >= 400) {
+                response.sendError(hec.getErrorCode(), hec.getMessage());
+            } else {
+                response.getOutputStream().print(hec.getMessage());
+            }
         }
+
+        APIExceptionHandler handler = getExceptionHandler(t, request);
+        if (handler == null) {
+            response.sendError(500, t.getMessage());
+        } else {
+            handler.handle(t, response);
+        }
+    }
+
+    private APIExceptionHandler getExceptionHandler(Throwable t, RequestInfo request) {
+        return exceptionHandlers
+                .stream()
+                .filter(h -> h.canHandle(t, request))
+                .findFirst()
+                .orElse(null);
     }
 
     Request init(Request request) throws ServiceException, IOException {
@@ -397,6 +422,7 @@ public class APIDispatcher extends AbstractController
 
         if (kvp == null || kvp.isEmpty()) {
             request.setKvp(new HashMap());
+            request.setRawKvp(new HashMap());
         } else {
             // track parsed kvp and unparsd
             Map parsedKvp = KvpUtils.normalize(kvp);
@@ -448,6 +474,15 @@ public class APIDispatcher extends AbstractController
             service = s != null ? s : service;
         }
         return service;
+    }
+
+    // SHARE
+    Object fireOperationExecutedCallback(Request req, Operation op, Object result) {
+        for (DispatcherCallback cb : callbacks) {
+            Object r = cb.operationExecuted(req, op, result);
+            result = r != null ? r : result;
+        }
+        return result;
     }
 
     /**

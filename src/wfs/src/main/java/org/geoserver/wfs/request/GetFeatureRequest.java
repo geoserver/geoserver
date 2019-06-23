@@ -42,6 +42,10 @@ public abstract class GetFeatureRequest extends RequestObject {
         return eGet(adaptee, "startIndex", BigInteger.class);
     }
 
+    public void setStartIndex(BigInteger startIndex) {
+        eSet(adaptee, "startIndex", startIndex);
+    }
+
     public List<Map<String, String>> getViewParams() {
         return eGet(adaptee, "viewParams", List.class);
     }

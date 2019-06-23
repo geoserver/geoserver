@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.geoserver.wfs.WFSInfo;
+import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -47,8 +48,9 @@ public class ApiTest extends FeaturesTestSupport {
     @Test
     public void testApiJson() throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/api", 200);
-        assertEquals(
-                "application/openapi+json;version=3.0;charset=UTF-8", response.getContentType());
+        assertThat(
+                response.getContentType(),
+                CoreMatchers.startsWith("application/openapi+json;version=3.0"));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
@@ -106,7 +108,7 @@ public class ApiTest extends FeaturesTestSupport {
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
-        assertEquals("application/x-yaml;charset=UTF-8", response.getContentType());
+        assertThat(response.getContentType(), CoreMatchers.startsWith("application/x-yaml"));
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();

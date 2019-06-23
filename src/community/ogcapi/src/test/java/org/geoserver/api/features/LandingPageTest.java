@@ -139,6 +139,10 @@ public class LandingPageTest extends FeaturesTestSupport {
                 "data",
                 "data",
                 "data");
+        // check title
+        assertEquals("WFS 3.0 server", json.read("title"));
+        // check description
+        assertEquals("", json.read("description"));
     }
 
     static <T> void assertJSONList(DocumentContext json, String path, T... expected) {

@@ -13,6 +13,8 @@ package org.geoserver.api.features;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.util.Collections;
@@ -28,8 +30,12 @@ import org.springframework.http.MediaType;
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
  */
+@JsonPropertyOrder({"title", "description", "links"})
 @JacksonXmlRootElement(localName = "LandingPage", namespace = "http://www.opengis.net/wfs/3.0")
 public class LandingPageDocument extends AbstractDocument {
+
+    final String title;
+    final String description;
 
     public LandingPageDocument(WFSInfo wfs, Catalog catalog, String featuresBase) {
         String baseUrl = RequestInfo.get().getBaseURL();
@@ -81,6 +87,8 @@ public class LandingPageDocument extends AbstractDocument {
                 "collections",
                 null,
                 "data");
+        title = (wfs.getTitle() == null) ? "WFS 3.0 server" : wfs.getTitle();
+        description = (wfs.getAbstract() == null) ? "" : wfs.getAbstract();
     }
 
     /** Builds service links for the given response types */
@@ -104,5 +112,15 @@ public class LandingPageDocument extends AbstractDocument {
             }
             addLink(link);
         }
+    }
+
+    @JacksonXmlProperty(localName = "Title")
+    public String getTitle() {
+        return title;
+    }
+
+    @JacksonXmlProperty(localName = "Description")
+    public String getDescription() {
+        return description;
     }
 }

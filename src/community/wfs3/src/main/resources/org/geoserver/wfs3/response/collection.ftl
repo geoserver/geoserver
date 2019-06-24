@@ -1,3 +1,6 @@
+<#global pagetitle=model.name>
+<#global pagepath="/collections/"+model.name>
+<#global pagecrumbs="<a href='"+serviceLink("wfs3")+"'>Home</a><a href='"+serviceLink("wfs3")+"/collections'>Collections</a><b>"+model.name+"</b>">
 <#include "common-header.ftl">
        <h2>${model.name}</h2>
        <#assign collection=model>

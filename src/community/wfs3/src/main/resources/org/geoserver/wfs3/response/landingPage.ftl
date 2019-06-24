@@ -1,6 +1,9 @@
+<#global pagetitle=service.title!"OGC API provided by GeoServer">
+<#global pagepath="">
+<#global pagecrumbs="<b>Home</b>">
 <#include "common-header.ftl">
    <div id="content">
-       <h2>${service.title!"GeoServer WFS 3 Service"}</h2>
+       <h2>${pagetitle}</h2>
        <p>${service.abstract!""}<br/>
        This is the landing page of the WFS 3 service, providing links to the service API and its contents.
        <br/> 

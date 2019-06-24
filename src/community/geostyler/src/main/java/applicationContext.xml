@@ -1,0 +1,10 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="geostyler-preview" class="org.geoserver.wms.web.data.StyleEditTabPanelInfo">
+        <property name="id" value="geoStylerDiv"/>
+        <property name="titleKey" value="GeoStylerTabPanel.page.title"/>
+        <property name="descriptionKey" value="GeoStylerTabPanel.page.description"/>
+        <property name="componentClass" value="org.geoserver.wms.web.data.GeoStylerTabPanel"/>
+    </bean>
+</beans>

@@ -16,6 +16,11 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-mongodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-restconfig</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>

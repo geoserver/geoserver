@@ -467,10 +467,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             public Panel getPanel(String panelId) {
                                 StyleEditTabPanel tabPanel;
                                 try {
-                                    tabPanel =
-                                            panelClass
-                                                    .getConstructor(String.class, IModel.class)
-                                                    .newInstance(panelId, styleModel);
+                                    tabPanel = panelClass.getConstructor(String.class, AbstractStylePage.class)
+                                            .newInstance(panelId, AbstractStylePage.this);
                                 } catch (Exception e) {
                                     throw new WicketRuntimeException(e);
                                 }

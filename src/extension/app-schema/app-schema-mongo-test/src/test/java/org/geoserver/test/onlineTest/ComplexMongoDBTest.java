@@ -7,6 +7,7 @@ package org.geoserver.test.onlineTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -148,19 +149,7 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
             }
         }
         assertNotNull(mongoStore);
-        final MongoDataStore finalMongoStore = mongoStore;
-        mongoStore
-                .getSchemaStore()
-                .typeNames()
-                .forEach(
-                        tn -> {
-                            try {
-                                finalMongoStore.getSchemaStore().deleteSchema(new NameImpl(tn));
-                            } catch (IOException e) {
-                                // ok
-                            }
-                        });
-        assertTrue(mongoStore.getSchemaStore().typeNames().isEmpty());
+        clearSchemas(mongoStore);
         String restPath =
                 String.format(
                         "rest/workspaces/st/appschemastores/%s/rebuildMongoSchemas"
@@ -176,6 +165,48 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
                 mongoStore.getSchemaStore().retrieveSchema(new NameImpl("stations"));
         AttributeDescriptor attributeDescriptor = featureType.getDescriptor("inferredAttribute");
         assertNotNull(attributeDescriptor);
+        clearSchemas(mongoStore);
+        // return to default schema build
+        restPath =
+                String.format(
+                        "rest/workspaces/st/appschemastores/%s/rebuildMongoSchemas" + "?max=1",
+                        STATIONS_STORE_NAME);
+        servletResponse = postAsServletResponse(restPath);
+        assertEquals(200, servletResponse.getStatus());
+        featureType = mongoStore.getSchemaStore().retrieveSchema(new NameImpl("stations"));
+        attributeDescriptor = featureType.getDescriptor("inferredAttribute");
+        assertNull(attributeDescriptor);
+        // check all items schema generation
+        restPath =
+                String.format(
+                        "rest/workspaces/st/appschemastores/%s/datastores/%s/rebuildMongoSchemas"
+                                + "?max=-1&schema=%s",
+                        STATIONS_STORE_NAME, "data_source", STATIONS_COLLECTION_NAME);
+        servletResponse = postAsServletResponse(restPath);
+        assertEquals(200, servletResponse.getStatus());
+        // [stations]
+        typeNames = mongoStore.getSchemaStore().typeNames();
+        assertTrue(CollectionUtils.isNotEmpty(typeNames));
+        // check inferredAttribute
+        featureType = mongoStore.getSchemaStore().retrieveSchema(new NameImpl("stations"));
+        attributeDescriptor = featureType.getDescriptor("inferredAttribute");
+        assertNotNull(attributeDescriptor);
+    }
+
+    private void clearSchemas(MongoDataStore mongoStore) {
+        final MongoDataStore finalMongoStore = mongoStore;
+        finalMongoStore
+                .getSchemaStore()
+                .typeNames()
+                .forEach(
+                        tn -> {
+                            try {
+                                finalMongoStore.getSchemaStore().deleteSchema(new NameImpl(tn));
+                            } catch (IOException e) {
+                                // ok
+                            }
+                        });
+        assertTrue(finalMongoStore.getSchemaStore().typeNames().isEmpty());
     }
 
     protected MockHttpServletResponse postAsServletResponse(String path) throws Exception {

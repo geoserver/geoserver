@@ -70,7 +70,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
 
     protected static final String STATIONS_STORE_NAME = UUID.randomUUID().toString();
     private static final String STATIONS_DATA_BASE_NAME = UUID.randomUUID().toString();
-    private static final String STATIONS_COLLECTION_NAME = "stations";
+    protected static final String STATIONS_COLLECTION_NAME = "stations";
 
     private static MongoClient MONGO_CLIENT;
 

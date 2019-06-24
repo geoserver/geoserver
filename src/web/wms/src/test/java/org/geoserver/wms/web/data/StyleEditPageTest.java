@@ -28,7 +28,6 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
@@ -726,7 +725,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     private static class StyleEditTabPanelTest extends StyleEditTabPanel {
 
         /**
-         * @param id     The id given to the panel.
+         * @param id The id given to the panel.
          * @param parent
          */
         public StyleEditTabPanelTest(String id, AbstractStylePage parent) {
@@ -735,15 +734,18 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testStyleTabExtensionPoint() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testStyleTabExtensionPoint()
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+                    InstantiationException {
         StyleInfo styleInfo = new StyleInfoImpl(null);
         styleInfo.setName("point");
         styleInfo.setFilename("test.sld");
 
         StyleEditPage page = new StyleEditPage(styleInfo);
-        Object tabPanel = StyleEditTabPanelTest.class.getConstructor(String.class, AbstractStylePage.class)
-                .newInstance("someid", page);
+        Object tabPanel =
+                StyleEditTabPanelTest.class
+                        .getConstructor(String.class, AbstractStylePage.class)
+                        .newInstance("someid", page);
         Assert.notNull(tabPanel, "Constructor for plugin tab panels has a broken signature.");
     }
-
 }

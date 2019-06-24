@@ -4,6 +4,10 @@
  */
 package org.geoserver.test.onlineTest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -43,11 +47,8 @@ import org.geoserver.util.IOUtils;
 import org.geotools.feature.NameImpl;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
-import static org.hamcrest.CoreMatchers.is;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -73,8 +74,8 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     private static MongoClient MONGO_CLIENT;
 
     // xpath engines used to check WFS responses
-    private XpathEngine WFS11_XPATH_ENGINE;
-    private XpathEngine WFS20_XPATH_ENGINE;
+    protected XpathEngine WFS11_XPATH_ENGINE;
+    protected XpathEngine WFS20_XPATH_ENGINE;
 
     @Before
     public void beforeTest() {

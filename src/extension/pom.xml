@@ -453,6 +453,7 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
+        <module>authkey</module>
       </modules>
     </profile>
   </profiles>

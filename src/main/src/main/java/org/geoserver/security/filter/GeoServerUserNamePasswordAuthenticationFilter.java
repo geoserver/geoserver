@@ -21,6 +21,8 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 
 /**
  * User name / password authentication filter
@@ -81,6 +83,14 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         filter.setRememberMeServices(rms);
         GeoServerWebAuthenticationDetailsSource s = new GeoServerWebAuthenticationDetailsSource();
         filter.setAuthenticationDetailsSource(s);
+
+        try {
+            // Prevent session fixation when using Servlet 3.1+
+            filter.setSessionAuthenticationStrategy(new ChangeSessionIdAuthenticationStrategy());
+        } catch (IllegalStateException e) {
+            // Prevent session fixation when using < Servlet 3.1
+            filter.setSessionAuthenticationStrategy(new SessionFixationProtectionStrategy());
+        }
 
         filter.setAllowSessionCreation(false);
         // filter.setFilterProcessesUrl(URL_FOR_LOGIN);

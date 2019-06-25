@@ -61,7 +61,10 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
         request.setMethod("POST");
         request.setParameter("username", "admin");
         request.setParameter("password", "geoserver");
+        String oldSessionId = request.getSession().getId();
         dispatch(request);
+        // verify that the session ID changed
+        assertNotEquals(oldSessionId, request.getSession().getId());
         // the session in wicket tester mock does not disappear, the only
         // way to see if it has been invalidated is to check that the attributes are gone...
         assertNull(session.getAttribute("test"));

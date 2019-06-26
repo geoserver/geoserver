@@ -120,9 +120,10 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     }
 
     protected String getBaseURL() {
-        RequestInfo requestInfo = RequestInfo.get();
+        APIRequestInfo requestInfo = APIRequestInfo.get();
         if (requestInfo == null) {
-            throw new IllegalArgumentException("Cannot extract base URL, RequestInfo is not set");
+            throw new IllegalArgumentException(
+                    "Cannot extract base URL, APIRequestInfo is not set");
         }
         return requestInfo.getBaseURL();
     }

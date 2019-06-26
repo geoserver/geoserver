@@ -28,7 +28,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.ManifestLoader;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.ows.URLMangler;
@@ -94,7 +94,7 @@ public class OpenAPIBuilder {
         // the servers
         String wfsUrl =
                 ResponseUtils.buildURL(
-                        RequestInfo.get().getBaseURL(),
+                        APIRequestInfo.get().getBaseURL(),
                         "ogc/features",
                         null,
                         URLMangler.URLType.SERVICE);
@@ -143,7 +143,7 @@ public class OpenAPIBuilder {
         Operation get = pi.getGet();
         Content content = get.getResponses().get("200").getContent();
         List<String> formats =
-                RequestInfo.get()
+                APIRequestInfo.get()
                         .getProducibleMediaTypes(binding, true)
                         .stream()
                         .map(mt -> mt.toString())

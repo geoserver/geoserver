@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -61,8 +61,8 @@ public class CollectionDocument extends AbstractDocument {
 
         // links
         Collection<MediaType> formats =
-                RequestInfo.get().getProducibleMediaTypes(FeatureCollectionResponse.class, true);
-        String baseUrl = RequestInfo.get().getBaseURL();
+                APIRequestInfo.get().getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+        String baseUrl = APIRequestInfo.get().getBaseURL();
         for (MediaType format : formats) {
             String apiUrl =
                     ResponseUtils.buildURL(

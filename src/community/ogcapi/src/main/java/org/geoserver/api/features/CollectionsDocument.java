@@ -10,7 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
@@ -43,7 +43,7 @@ public class CollectionsDocument extends AbstractDocument {
         /* this.extensions = extensions; */
 
         // build the links
-        RequestInfo requestInfo = RequestInfo.get();
+        APIRequestInfo requestInfo = APIRequestInfo.get();
         String baseUrl = requestInfo.getBaseURL();
         boolean firstSelf = true;
         for (MediaType format :

@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
@@ -116,7 +116,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             Operation operation,
             GeoJSONBuilder jw,
             String featureId) {
-        RequestInfo requestInfo = RequestInfo.get();
+        APIRequestInfo requestInfo = APIRequestInfo.get();
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         FeatureTypeInfo featureType = getFeatureType(request);
         String baseUrl = request.getBaseUrl();

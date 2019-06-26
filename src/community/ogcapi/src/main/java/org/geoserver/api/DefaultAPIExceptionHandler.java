@@ -38,7 +38,7 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
     }
 
     @Override
-    public boolean canHandle(Throwable t, RequestInfo request) {
+    public boolean canHandle(Throwable t, APIRequestInfo request) {
         return true;
     }
 

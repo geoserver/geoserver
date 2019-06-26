@@ -4,11 +4,6 @@
  *  application directory.
  *
  */
-
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- */
 package org.geoserver.api;
 
 import java.util.Collection;
@@ -20,22 +15,15 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * An object which contains information about the "page" or "resource" being accessed in a rest
- * request.
- *
- * <p>Equivalent of PageInfo used by the old rest module.
- *
- * <p>An instance of this class can be referenced by any restlet via:
- *
- * <pre>
- * RequestContextHolder.getRequestAttributes().getAttribute( RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST );
- * </pre>
+ * An object which contains information about the current API request. If the current request is a
+ * API one, it can be retrieved using the {@link APIRequestInfo#get()} method
  */
-public class RequestInfo {
+public class APIRequestInfo {
 
     /** key to reference this object by */
     public static final String KEY = "APIRequestInfo";
@@ -44,20 +32,17 @@ public class RequestInfo {
     private final HttpServletResponse response;
 
     String baseURL;
-    String servletPath;
-    String pagePath;
-    String extension;
     List<MediaType> requestedMediaTypes;
     APIDispatcher dispatcher;
 
     private Map<String, String[]> queryMap;
 
     /**
-     * Constructs a {@link RequestInfo} object, generating content based on the passed request.
+     * Constructs a {@link APIRequestInfo} object, generating content based on the passed request.
      *
      * @param request
      */
-    public RequestInfo(
+    public APIRequestInfo(
             HttpServletRequest request, HttpServletResponse response, APIDispatcher dispatcher) {
         this.dispatcher = dispatcher;
         this.request = request;
@@ -68,20 +53,6 @@ public class RequestInfo {
                 request.getRequestURL()
                         .toString()
                         .replace(request.getRequestURI(), request.getContextPath());
-
-        servletPath = request.getServletPath();
-        pagePath = request.getServletPath() + request.getPathInfo();
-        setQueryMap(request.getParameterMap());
-        // strip off the extension
-        extension = ResponseUtils.getExtension(pagePath);
-        if (extension != null) {
-            pagePath = pagePath.substring(0, pagePath.length() - extension.length() - 1);
-        }
-
-        // trim leading slash
-        if (pagePath.endsWith("/")) {
-            pagePath = pagePath.substring(0, pagePath.length() - 1);
-        }
     }
 
     private void setQueryMap(Map<String, String[]> parameterMap) {
@@ -91,45 +62,6 @@ public class RequestInfo {
     /** Gets the base URL of the server, e.g. "http://localhost:8080/geoserver" */
     public String getBaseURL() {
         return baseURL;
-    }
-
-    public void setBaseURL(String baseURL) {
-        this.baseURL = baseURL;
-    }
-
-    /** Gets the relative path to the servlet, e.g. "/rest" */
-    public String getServletPath() {
-        return servletPath;
-    }
-
-    public void setServletPath(String servletPath) {
-        this.servletPath = servletPath;
-    }
-
-    /** Gets the relative path to the current page, e.g. "rest/layers" */
-    public String getPagePath() {
-        return pagePath;
-    }
-
-    public void setPagePath(String pagePath) {
-        this.pagePath = pagePath;
-    }
-
-    /** Gets the extension for the currnet page, e.g. "xml" */
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    public String pageURI(String path) {
-        return buildURI(pagePath, path);
-    }
-
-    public String servletURI(String path) {
-        return buildURI(servletPath, path);
     }
 
     String buildURI(String base, String path) {
@@ -146,15 +78,15 @@ public class RequestInfo {
     }
 
     /**
-     * Returns the RequestInfo from the current {@link RequestContextHolder}
+     * Returns the APIRequestInfo from the current {@link RequestContextHolder}
      *
      * @return
      */
-    public static RequestInfo get() {
+    public static APIRequestInfo get() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) return null;
-        return (RequestInfo)
-                requestAttributes.getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
+        return (APIRequestInfo)
+                requestAttributes.getAttribute(APIRequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
     }
 
     public Map<String, String[]> getQueryMap() {
@@ -162,27 +94,38 @@ public class RequestInfo {
     }
 
     /**
-     * Sets the provided RequestInfo into the {@link RequestContextHolder}
+     * Sets the provided APIRequestInfo into the {@link RequestContextHolder}
      *
      * @param requestInfo
      */
-    public static void set(RequestInfo requestInfo) {
+    static void set(APIRequestInfo requestInfo) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
             throw new IllegalStateException("Request attributes are not set");
         }
         requestAttributes.setAttribute(
-                RequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
+                APIRequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
     }
 
+    /**
+     * Returns the requested media types (the resolver will fill in defaults in case none was
+     * provided in the "f" parameter or in the Accept header
+     *
+     * @return
+     */
     public List<MediaType> getRequestedMediaTypes() {
         return requestedMediaTypes;
     }
 
-    public void setRequestedMediaTypes(List<MediaType> requestedMediaTypes) {
+    void setRequestedMediaTypes(List<MediaType> requestedMediaTypes) {
         this.requestedMediaTypes = requestedMediaTypes;
     }
 
+    /**
+     * Returns the message converters available in the dispatcher (as a read only collection)
+     *
+     * @return
+     */
     public List<HttpMessageConverter<?>> getConverters() {
         return dispatcher.getConverters();
     }
@@ -191,6 +134,22 @@ public class RequestInfo {
         return dispatcher.getProducibleMediaTypes(responseType, addHTML);
     }
 
+    /**
+     * Returns true if no indication was given as to what media type is to be returned
+     *
+     * @return
+     */
+    public boolean isAnyMediaTypeAccepted() {
+        return requestedMediaTypes == null
+                || ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(requestedMediaTypes);
+    }
+
+    /**
+     * Returns true if the given format has been requested
+     *
+     * @param mediaType
+     * @return
+     */
     public boolean isFormatRequested(MediaType mediaType) {
         if (requestedMediaTypes == null) {
             return false;
@@ -202,10 +161,12 @@ public class RequestInfo {
                 .anyMatch(curr -> mediaType.isCompatibleWith(curr));
     }
 
+    /** Returns the {@link HttpServletRequest} for the current API request */
     public HttpServletRequest getRequest() {
         return request;
     }
 
+    /** Returns the {@link HttpServletResponse} for the current API request */
     public HttpServletResponse getResponse() {
         return response;
     }

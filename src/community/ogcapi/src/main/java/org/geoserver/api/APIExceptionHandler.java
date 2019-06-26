@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface APIExceptionHandler {
 
-    public boolean canHandle(Throwable t, RequestInfo request);
+    public boolean canHandle(Throwable t, APIRequestInfo request);
 
     public void handle(Throwable t, HttpServletResponse response);
 }

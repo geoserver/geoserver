@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +85,11 @@ public class APIDispatcher extends AbstractController {
     private List<HttpMessageConverter<?>> messageConverters;
     private List<APIExceptionHandler> exceptionHandlers;
 
-    // SHARE
+    public APIDispatcher() {
+        // allow delete and put
+        super(false);
+    }
+
     @Override
     protected void initApplicationContext(ApplicationContext context) {
         // load life cycle callbacks
@@ -204,39 +207,38 @@ public class APIDispatcher extends AbstractController {
         request.setCharacterEncoding(charSet.name());
     }
 
-    // SHARE? SLIGHT CHANGES
     @Override
     protected ModelAndView handleRequestInternal(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
 
         preprocessRequest(httpRequest);
 
-        // create a new request instance
+        // create a new request instance compatible with DispatcherCallback and other mechanisms
+        // in GeoServer
         Request dr = new Request();
-
-        // set request / response
+        Dispatcher.REQUEST.set(dr);
         dr.setHttpRequest(httpRequest);
         dr.setHttpResponse(httpResponse);
         dr.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
-        RequestInfo requestInfo = new RequestInfo(httpRequest, httpResponse, this);
+
+        // setup a API specific contex object providing info about the current request
+        APIRequestInfo requestInfo = new APIRequestInfo(httpRequest, httpResponse, this);
+        APIRequestInfo.set(requestInfo);
+
+        // perform request execution
         try {
             // initialize the request and allow callbacks to override it
+            // store it in the thread local used by the
             dr = init(dr);
-
-            // store it in the thread local
-            Dispatcher.REQUEST.set(dr);
-            // add a thread local with info on formats, base urls, and the like
-
             requestInfo.setRequestedMediaTypes(
                     contentNegotiationManager.resolveMediaTypes(
                             new ServletWebRequest(dr.getHttpRequest())));
-            RequestInfo.set(requestInfo);
 
             // lookup the handler adapter (same as service and operation)
             HandlerMethod handler = getHandlerMethod(httpRequest, dr);
             dispatchService(dr, handler);
 
-            // this is actually "execute"
+            // this is actually "execute", internaly
             ModelAndView mav =
                     handlerAdapter.handle(dr.getHttpRequest(), dr.getHttpResponse(), handler);
 
@@ -330,7 +332,7 @@ public class APIDispatcher extends AbstractController {
         return (HandlerMethod) handler;
     }
 
-    private void exception(Throwable t, RequestInfo request) throws IOException {
+    private void exception(Throwable t, APIRequestInfo request) throws IOException {
         HttpServletResponse response = request.getResponse();
 
         // eliminate ClientStreamAbortedException
@@ -355,26 +357,27 @@ public class APIDispatcher extends AbstractController {
         LOGGER.log(Level.SEVERE, "Failed to dispatch API request", t);
 
         // is it meant to be a simple and straight answer?
-        if (t instanceof HttpErrorCodeException) {
-            HttpErrorCodeException hec = (HttpErrorCodeException) t;
+        if (current instanceof HttpErrorCodeException) {
+            HttpErrorCodeException hec = (HttpErrorCodeException) current;
             response.setContentType(
                     hec.getContentType() != null ? hec.getContentType() : "text/plain");
             if (hec.getErrorCode() >= 400) {
                 response.sendError(hec.getErrorCode(), hec.getMessage());
             } else {
+                response.setStatus(hec.getErrorCode());
                 response.getOutputStream().print(hec.getMessage());
             }
-        }
-
-        APIExceptionHandler handler = getExceptionHandler(t, request);
-        if (handler == null) {
-            response.sendError(500, t.getMessage());
         } else {
-            handler.handle(t, response);
+            APIExceptionHandler handler = getExceptionHandler(t, request);
+            if (handler == null) {
+                response.sendError(500, t.getMessage());
+            } else {
+                handler.handle(t, response);
+            }
         }
     }
 
-    private APIExceptionHandler getExceptionHandler(Throwable t, RequestInfo request) {
+    private APIExceptionHandler getExceptionHandler(Throwable t, APIRequestInfo request) {
         return exceptionHandlers
                 .stream()
                 .filter(h -> h.canHandle(t, request))
@@ -497,11 +500,23 @@ public class APIDispatcher extends AbstractController {
         return uri;
     }
 
+    /**
+     * Returns a read only list of available {@link HttpMessageConverter}
+     *
+     * @return
+     */
     public List<HttpMessageConverter<?>> getConverters() {
-        return messageConverters;
+        return Collections.unmodifiableList(messageConverters);
     }
 
-    public Collection<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
+    /**
+     * Returns a {@link List} of media types that can be produced for a given response object
+     *
+     * @param responseType
+     * @param addHTML
+     * @return
+     */
+    public List<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
             if (converter instanceof GenericHttpMessageConverter) {

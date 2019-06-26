@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -123,6 +123,6 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
 
     private String buildURL(String itemsPath, Map<String, String> kvp) {
         return ResponseUtils.buildURL(
-                RequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
+                APIRequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
     }
 }

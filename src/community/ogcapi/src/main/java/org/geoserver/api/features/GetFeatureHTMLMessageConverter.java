@@ -13,8 +13,8 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractHTMLMessageConverter;
-import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -72,7 +72,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", request.getBaseURL());
         model.put("response", response);
-        AbstractHTMLMessageConverter.addLinkFunctions(RequestInfo.get().getBaseURL(), model);
+        AbstractHTMLMessageConverter.addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
         try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody())) {
             try {

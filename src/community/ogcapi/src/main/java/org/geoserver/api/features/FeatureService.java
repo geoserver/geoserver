@@ -25,10 +25,11 @@ import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.api.APIDispatcher;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
+import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
-import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -158,6 +159,7 @@ public class FeatureService {
         name = "items"
     )
     @ResponseBody
+    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     public FeaturesResponse items(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
@@ -186,7 +188,7 @@ public class FeatureService {
         query.setFilter(mergeFiltersAnd(filters));
         request.setStartIndex(startIndex);
         request.setMaxFeatures(limit);
-        request.setBaseUrl(RequestInfo.get().getBaseURL());
+        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
         request.getAdaptedQueries().add(query.getAdaptee());
 
         // run it

@@ -17,7 +17,10 @@ package org.geoserver.api;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
@@ -141,7 +144,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         return contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
     }
 
-    protected <T> MediaType getMediaTypeToUse(
+    public <T> MediaType getMediaTypeToUse(
             @Nullable T value,
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,
@@ -177,8 +180,22 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         } else {
             HttpServletRequest request = inputMessage.getServletRequest();
             List<MediaType> acceptableTypes = getAcceptableMediaTypes(request);
+            // if we got no indication, see if the method has a default content type, and
+            // if not, default to JSON as per OGC API expectations
             List<MediaType> producibleTypes =
                     getProducibleMediaTypes(request, valueType, targetType);
+            if (ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(acceptableTypes)) {
+                MediaType defaultMediaType =
+                        Optional.ofNullable(
+                                        returnType.getMethodAnnotation(DefaultContentType.class))
+                                .map(t -> MediaType.parseMediaType(t.value()))
+                                .orElse(null);
+                if (defaultMediaType != null) {
+                    acceptableTypes = Collections.singletonList(defaultMediaType);
+                } else if (producibleTypes.contains(MediaType.APPLICATION_JSON)) {
+                    acceptableTypes = Collections.singletonList(MediaType.APPLICATION_JSON);
+                } // otherwise let it be free
+            }
             // we want to check if HTML is the first producible without using converters, adding it
             // to the mix
             producibleTypes.add(MediaType.TEXT_HTML);

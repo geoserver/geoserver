@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.geoserver.api.features.RFCGeoJSONFeaturesResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -32,7 +31,7 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
         // first use the f parameter
         strategies.add(new FormatContentNegotiationStrategy());
         strategies.add(new HeaderContentNegotiationStrategy());
-        strategies.add(new JSONContentNegotiationStrategy());
+        // strategies.add(new JSONContentNegotiationStrategy());
         this.getStrategies().addAll(strategies);
     }
 
@@ -64,9 +63,8 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
                 throws HttpMediaTypeNotAcceptableException {
             // default to JSON, allow all
             return Arrays.asList(
-                    MediaType.parseMediaType(RFCGeoJSONFeaturesResponse.MIME),
-                    MediaType.APPLICATION_JSON,
-                    MediaType.ALL);
+                    /* MediaType.parseMediaType(RFCGeoJSONFeaturesResponse.MIME), */
+                    MediaType.APPLICATION_JSON, MediaType.ALL);
         }
     }
 }

@@ -1,9 +1,7 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
-
 package org.geoserver.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +47,6 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
 
         String code = null;
         boolean statusSet = false;
-        String responseCode = null;
         String description = null;
         if (t instanceof OWS20Exception) {
             OWS20Exception ex = (OWS20Exception) t;

@@ -1,9 +1,8 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
+
 package org.geoserver.api;
 
 import java.util.Collection;
@@ -53,10 +52,6 @@ public class APIRequestInfo {
                 request.getRequestURL()
                         .toString()
                         .replace(request.getRequestURI(), request.getContextPath());
-    }
-
-    private void setQueryMap(Map<String, String[]> parameterMap) {
-        queryMap = parameterMap;
     }
 
     /** Gets the base URL of the server, e.g. "http://localhost:8080/geoserver" */

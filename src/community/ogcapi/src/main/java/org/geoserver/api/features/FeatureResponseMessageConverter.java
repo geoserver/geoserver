@@ -15,7 +15,6 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.util.Version;
 import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,7 +29,6 @@ public class FeatureResponseMessageConverter
 
     private static final Version V2 = new Version("2.0");
     List<Response> responses;
-    private List<MediaType> supportedMediaTypes;
 
     public FeatureResponseMessageConverter() {
         super(FeaturesResponse.class, FeatureCollectionResponse.class);

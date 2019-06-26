@@ -1,6 +1,6 @@
-/*  (c) 2018 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api.features;
@@ -59,13 +59,11 @@ class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
                 getCatalog()
                         .getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
         if (typeInfo == null) {
-            if (typeName == null) {
-                LOGGER.log(
-                        Level.INFO,
-                        "Cannot build prev/next links, the the target typename was not found: "
-                                + typeName);
-                return;
-            }
+            LOGGER.log(
+                    Level.INFO,
+                    "Cannot build prev/next links, the the target typename was not found: "
+                            + typeName);
+            return;
         }
         String collectionName = NCNameResourceCodec.encode(typeInfo);
         String itemsPath = "ogc/features/collections/" + urlEncode(collectionName) + "/items";

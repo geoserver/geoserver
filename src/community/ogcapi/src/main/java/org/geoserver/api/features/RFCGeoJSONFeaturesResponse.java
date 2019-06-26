@@ -6,11 +6,16 @@ package org.geoserver.api.features;
 
 import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,7 +33,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geowebcache.config.DefaultGridsets;
 import org.opengis.feature.Feature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
@@ -42,8 +46,6 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     /** The MIME type requested by WFS3 for GeoJSON Responses */
     public static final String MIME = "application/geo+json";
-
-    private DefaultGridsets gridSets;
 
     public RFCGeoJSONFeaturesResponse(GeoServer gs) {
         super(gs, MIME);
@@ -69,10 +71,14 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
      * @return
      */
     private String getItemId() {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        return (String)
-                requestAttributes.getAttribute(
-                        FeatureService.ITEM_ID, RequestAttributes.SCOPE_REQUEST);
+        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+                .map(
+                        att ->
+                                (String)
+                                        att.getAttribute(
+                                                FeatureService.ITEM_ID,
+                                                RequestAttributes.SCOPE_REQUEST))
+                .orElse(null);
     }
 
     /**

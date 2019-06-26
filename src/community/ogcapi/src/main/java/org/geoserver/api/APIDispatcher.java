@@ -1,7 +1,6 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api;
@@ -17,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -133,16 +133,20 @@ public class APIDispatcher extends AbstractController {
         // add custom argument resolvers
         List<HandlerMethodArgumentResolver> pluginResolvers =
                 GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
-        List<HandlerMethodArgumentResolver> adapterResolvers =
-                new ArrayList<>(handlerAdapter.getArgumentResolvers());
+        List<HandlerMethodArgumentResolver> adapterResolvers = new ArrayList<>();
+        List<HandlerMethodArgumentResolver> existingResolvers =
+                handlerAdapter.getArgumentResolvers();
+        if (existingResolvers != null) {
+            adapterResolvers.addAll(existingResolvers);
+        }
         addToListBackwards(pluginResolvers, adapterResolvers);
         handlerAdapter.setArgumentResolvers(adapterResolvers);
 
         // default treatment of "f" parameter and headers, defaulting to JSON if nothing else has
         // been provided
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
-                handlerAdapter
-                        .getReturnValueHandlers()
+                Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
+                        .orElse(Collections.emptyList())
                         .stream()
                         .map(
                                 f -> {
@@ -252,7 +256,7 @@ public class APIDispatcher extends AbstractController {
                     RequestContextUtils.getInputFlashMap(dr.getHttpRequest()));
 
             // and this is response handling
-            Object returnValue = mav.getModel().get(RESPONSE_OBJECT);
+            Object returnValue = mav != null ? mav.getModel().get(RESPONSE_OBJECT) : null;
             returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
 
             returnValueHandlers.handleReturnValue(
@@ -299,15 +303,6 @@ public class APIDispatcher extends AbstractController {
         service = fireServiceDispatchedCallback(dr, service);
         // replace in case callbacks have replaced it
         dr.setServiceDescriptor(service);
-    }
-
-    private Service getService(HandlerMethod handler) {
-        APIService annotation = handler.getBeanType().getAnnotation(APIService.class);
-        return new Service(
-                annotation.service(),
-                handler.getBean(),
-                new Version(annotation.service()),
-                Collections.emptyList());
     }
 
     private HandlerMethod getHandlerMethod(HttpServletRequest httpRequest, Request dr)
@@ -391,8 +386,6 @@ public class APIDispatcher extends AbstractController {
     }
 
     Request init(Request request) throws ServiceException, IOException {
-        HttpServletRequest httpRequest = request.getHttpRequest();
-
         // parse the request path into two components. (1) the 'path' which
         // is the string after the last '/', and the 'context' which is the
         // string before the last '/'

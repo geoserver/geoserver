@@ -1,6 +1,6 @@
-/*  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.api.features;
 
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
@@ -33,7 +32,6 @@ import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQueryProvider;
@@ -44,7 +42,6 @@ import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
-import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -71,10 +68,8 @@ public class FeatureService {
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
-    private static final Logger LOGGER = Logging.getLogger(FeatureService.class);
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private final GeoServerDataDirectory dataDirectory;
     private final GeoServer geoServer;
 
     // this could be done in an argument resolver returning a Filter, for example, however
@@ -85,7 +80,6 @@ public class FeatureService {
 
     public FeatureService(GeoServer geoServer) {
         this.geoServer = geoServer;
-        this.dataDirectory = new GeoServerDataDirectory(geoServer.getCatalog().getResourceLoader());
     }
 
     private WFSInfo getService() {
@@ -205,7 +199,9 @@ public class FeatureService {
 
         // store information about single vs multi request
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        requestAttributes.setAttribute(ITEM_ID, itemId, RequestAttributes.SCOPE_REQUEST);
+        if (requestAttributes != null) {
+            requestAttributes.setAttribute(ITEM_ID, itemId, RequestAttributes.SCOPE_REQUEST);
+        }
 
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats

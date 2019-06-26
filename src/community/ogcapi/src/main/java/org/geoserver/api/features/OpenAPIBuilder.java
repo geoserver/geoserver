@@ -55,10 +55,7 @@ public class OpenAPIBuilder {
      * Build the document based on request, current WFS configuration, and list of available
      * extensions
      *
-     * @param request The incoming request
      * @param wfs The WFS configuration
-     * @param extensions The list of WFS 3 extensions
-     * @return
      */
     public OpenAPI build(WFSInfo wfs) {
         OpenAPI api = readTemplate();

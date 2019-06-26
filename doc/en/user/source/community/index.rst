@@ -52,5 +52,4 @@ officially part of the GeoServer releases. They are however built along with the
    qose-module/index
    ogr-store/index
    mapml/index
-
-   
+   geostyler/index

@@ -98,6 +98,7 @@
           <descriptor>release/ext-wmts-styles.xml</descriptor>
           <descriptor>release/ext-ogr-datastore.xml</descriptor>
           <descriptor>release/ext-ogcapi.xml</descriptor>
+          <descriptor>release/ext-geostyler.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

@@ -4,7 +4,6 @@
  *  application directory.
  *
  */
-
 package org.geoserver.api.features;
 
 import static org.junit.Assert.assertEquals;

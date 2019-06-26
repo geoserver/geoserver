@@ -5,13 +5,6 @@
  *
  */
 
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
- */
-
 package org.geoserver.api;
 
 import java.io.IOException;
@@ -99,6 +92,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             converter =
                     new SimpleHTTPMessageConverter(
                             value.getClass(),
+                            getServiceClass(returnType),
                             returnType.getContainingClass(),
                             loader,
                             geoServer,
@@ -136,6 +130,14 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                         MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
         response.write(
                 value, outputMessage.getServletResponse().getOutputStream(), dr.getOperation());
+    }
+
+    private Class<?> getServiceClass(MethodParameter returnType) {
+        APIService apiService = returnType.getContainingClass().getAnnotation(APIService.class);
+        if (apiService != null) {
+            return apiService.serviceClass();
+        }
+        throw new RuntimeException("Could not find the APIService annotation in the controller");
     }
 
     private List<MediaType> getAcceptableMediaTypes(HttpServletRequest request)

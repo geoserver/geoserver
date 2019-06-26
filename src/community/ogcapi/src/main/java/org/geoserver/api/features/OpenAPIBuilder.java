@@ -38,7 +38,7 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
-/** Builds the OpenAPI document that will be returned to the clients */
+/** Builds the OGC Features OpenAPI document */
 public class OpenAPIBuilder {
 
     static final String OPENAPI_SPECIFICATION;

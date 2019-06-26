@@ -62,6 +62,11 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
 import org.xml.sax.SAXException;
 
+/**
+ * A dispatcher for OGC API requests (and suitable for implementation restful services in general.
+ * Supports {@link DispatcherCallback} and {@link Dispatcher#REQUEST} to properly play with the
+ * existing GeoServer ecosystem
+ */
 public class APIDispatcher extends AbstractController {
 
     static final String RESPONSE_OBJECT = "ResponseObject";

@@ -27,11 +27,11 @@ import org.geoserver.wfs.request.Query;
 import org.geotools.util.logging.Logging;
 
 /** A subclass of GetFeature that builds proper API Feature nex/prev links */
-class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
+class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
 
-    static final Logger LOGGER = Logging.getLogger(WFS3GetFeature.class);
+    static final Logger LOGGER = Logging.getLogger(FeaturesGetFeature.class);
 
-    public WFS3GetFeature(WFSInfo wfs, Catalog catalog) {
+    public FeaturesGetFeature(WFSInfo wfs, Catalog catalog) {
         super(wfs, catalog);
     }
 

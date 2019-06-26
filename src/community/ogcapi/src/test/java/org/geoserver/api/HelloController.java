@@ -2,12 +2,11 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *
  */
-
 package org.geoserver.api;
 
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
 import org.springframework.http.HttpHeaders;
@@ -23,9 +22,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@APIService(service = "Hello", version = "1.0", landingPage = "ogc/hello")
+@APIService(
+    service = "Hello",
+    version = "1.0",
+    landingPage = "ogc/hello",
+    serviceClass = HelloController.HelloServiceInfo.class
+)
 @RequestMapping(path = APIDispatcher.ROOT_PATH)
 public class HelloController {
+
+    static interface HelloServiceInfo extends ServiceInfo {};
 
     String defaultValue = "hello";
 

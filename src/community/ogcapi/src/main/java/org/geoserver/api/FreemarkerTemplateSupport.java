@@ -1,11 +1,4 @@
 /*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
- */
-
-/*
  * (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,6 +17,10 @@ import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
 
+/**
+ * Support class that locates the templates based on the current response and eventual {@link
+ * LocalWorkspace}
+ */
 public class FreemarkerTemplateSupport {
 
     private static Configuration templateConfig = TemplateUtils.getSafeConfiguration();

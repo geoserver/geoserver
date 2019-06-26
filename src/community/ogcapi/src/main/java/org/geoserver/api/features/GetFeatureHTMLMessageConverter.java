@@ -2,7 +2,6 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *
  */
 package org.geoserver.api.features;
 
@@ -19,6 +18,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
@@ -34,7 +34,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
     private static final String FORMAT = "text/html";
 
     public GetFeatureHTMLMessageConverter(GeoServerResourceLoader loader, GeoServer geoServer) {
-        super(FeaturesResponse.class, loader, geoServer);
+        super(FeaturesResponse.class, WFSInfo.class, loader, geoServer);
     }
 
     private FeatureTypeInfo getResource(FeatureCollection collection) {

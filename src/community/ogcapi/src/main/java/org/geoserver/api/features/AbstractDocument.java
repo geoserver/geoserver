@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/** Base OGC API document class with shared link generation facilities */
 public class AbstractDocument {
     protected final List<Link> links = new ArrayList<>();
 

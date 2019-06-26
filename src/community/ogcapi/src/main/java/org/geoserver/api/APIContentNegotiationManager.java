@@ -2,13 +2,6 @@
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
- *
- */
-
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
  */
 
 package org.geoserver.api;
@@ -24,6 +17,10 @@ import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 
+/**
+ * A ContentNegotiationManager using the "f" query parameter as a way to request a few well known
+ * formats in override to the HTTP Accept header
+ */
 public class APIContentNegotiationManager extends ContentNegotiationManager {
 
     public APIContentNegotiationManager() {
@@ -31,7 +28,6 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
         // first use the f parameter
         strategies.add(new FormatContentNegotiationStrategy());
         strategies.add(new HeaderContentNegotiationStrategy());
-        // strategies.add(new JSONContentNegotiationStrategy());
         this.getStrategies().addAll(strategies);
     }
 
@@ -53,18 +49,6 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
             } else {
                 return MEDIA_TYPE_ALL_LIST;
             }
-        }
-    }
-
-    private static class JSONContentNegotiationStrategy implements ContentNegotiationStrategy {
-
-        @Override
-        public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
-                throws HttpMediaTypeNotAcceptableException {
-            // default to JSON, allow all
-            return Arrays.asList(
-                    /* MediaType.parseMediaType(RFCGeoJSONFeaturesResponse.MIME), */
-                    MediaType.APPLICATION_JSON, MediaType.ALL);
         }
     }
 }

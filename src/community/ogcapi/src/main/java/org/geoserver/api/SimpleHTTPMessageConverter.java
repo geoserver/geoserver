@@ -15,20 +15,36 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
+/**
+ * A converter used when the {@link HTMLResponseBody} is found, to simply apply a template to the
+ * object returned by the controller method
+ *
+ * @param <T>
+ */
 public class SimpleHTTPMessageConverter<T> extends AbstractHTMLMessageConverter<T> {
 
     private final String templateName;
     private final Class serviceClass;
 
+    /**
+     * Builds a message converter
+     *
+     * @param binding The bean meant to act as the model for the template
+     * @param serviceConfigurationClass The class holding the configuration for the service
+     * @param serviceClass The controller class, used to lookup the default templates
+     * @param loader A loader used to locate templates in the GeoServer data directory
+     * @param geoServer The
+     */
     public SimpleHTTPMessageConverter(
             Class binding,
+            Class serviceConfigurationClass,
             Class serviceClass,
             GeoServerResourceLoader loader,
             GeoServer geoServer,
             String templateName) {
-        super(binding, loader, geoServer);
-        this.serviceClass = serviceClass;
+        super(binding, serviceConfigurationClass, loader, geoServer);
         this.templateName = templateName;
+        this.serviceClass = serviceClass;
     }
 
     @Override

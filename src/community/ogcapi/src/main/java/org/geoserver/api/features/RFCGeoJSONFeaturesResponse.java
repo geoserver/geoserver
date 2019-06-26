@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+/** A subclass of GeoJSONGetFeatureResponse that encodes a RFC compliant document */
 @Component
 public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 

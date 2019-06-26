@@ -1,7 +1,11 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.api.features;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import org.geoserver.api.MessageConverterResponseAdapter;
 import org.geoserver.ows.Request;
@@ -14,6 +18,12 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+/**
+ * Adapts all output formats able to encode a WFS {@link FeatureCollectionResponse} to a {@link
+ * org.springframework.http.converter.HttpMessageConverter} encoding a {@link
+ * org.geoserver.wfs.response.FeatureResponse}. Allows to reuse all existing WFS output formats in
+ * the OGC Features API implementation.
+ */
 @Component
 public class FeatureResponseMessageConverter
         extends MessageConverterResponseAdapter<FeaturesResponse> {

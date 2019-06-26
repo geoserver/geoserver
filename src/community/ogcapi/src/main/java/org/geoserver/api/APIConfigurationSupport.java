@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.api;
 
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +16,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
+/**
+ * Subclass of {@link WebMvcConfigurationSupport} adding support for dispatching {@link
+ * DispatcherCallback#operationDispatched} events to callbacks
+ */
 public class APIConfigurationSupport extends WebMvcConfigurationSupport {
 
     static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.api");

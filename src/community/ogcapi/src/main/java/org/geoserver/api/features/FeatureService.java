@@ -59,7 +59,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-@APIService(service = "Feature", version = "1.0", landingPage = "ogc/features")
+/** Implementation of OGC Features API service */
+@APIService(
+    service = "Feature",
+    version = "1.0",
+    landingPage = "ogc/features",
+    serviceClass = WFSInfo.class
+)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
@@ -192,7 +198,7 @@ public class FeatureService {
         request.getAdaptedQueries().add(query.getAdaptee());
 
         // run it
-        WFS3GetFeature gf = new WFS3GetFeature(getService(), getCatalog());
+        FeaturesGetFeature gf = new FeaturesGetFeature(getService(), getCatalog());
         gf.setFilterFactory(FF);
         gf.setStoredQueryProvider(getStoredQueryProvider());
         FeatureCollectionResponse response = gf.run(request);

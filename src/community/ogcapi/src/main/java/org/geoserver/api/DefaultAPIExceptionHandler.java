@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+/** Handles all exceptions encoding them as a JSON response as indicated by the OGC standards */
 @Component
 public class DefaultAPIExceptionHandler implements APIExceptionHandler, ExtensionPriority {
 

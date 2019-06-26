@@ -302,6 +302,7 @@ public class APIDispatcherTest {
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
 
+    @Test
     public void testDispatcherCallbackFailFinished() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 

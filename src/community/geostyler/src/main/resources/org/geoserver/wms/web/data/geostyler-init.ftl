@@ -50,7 +50,7 @@ Promise.all([stylePromise, wfsDataPromise])
             showDuplicatesColumn: false
         });
 
-        GeoStyler.locale.de_DE.GsRule.nameFieldLabel = 'Peter'
+        GeoStyler.locale.de_DE.GsRule.nameFieldLabel = 'GeoStyler'
         window._GeoStyler = ReactDOM.render(geostylerStyle, root);
     });
 
@@ -63,7 +63,7 @@ codeMirror.on('change', function() {
             props.style = style;
             var geostylerStyle = React.createElement(GeoStyler.Style, props);
 
-            GeoStyler.locale.de_DE.GsRule.nameFieldLabel = 'Peter'
+            GeoStyler.locale.de_DE.GsRule.nameFieldLabel = 'GeoStyler'
             window._GeoStyler = ReactDOM.render(geostylerStyle, root);
         });
 });

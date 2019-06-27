@@ -1,8 +1,6 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api.features;
@@ -14,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/** Base OGC API document class with shared link generation facilities */
 public class AbstractDocument {
     protected final List<Link> links = new ArrayList<>();
 

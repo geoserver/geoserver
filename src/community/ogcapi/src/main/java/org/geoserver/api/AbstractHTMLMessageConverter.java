@@ -1,14 +1,6 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
- */
-
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api;
@@ -18,26 +10,45 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wfs.WFSInfo;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+/**
+ * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML
+ * document based on a Freemarker template
+ *
+ * @param <T>
+ */
 public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessageConverter<T> {
 
     protected final Class binding;
     protected final GeoServer geoServer;
     protected final FreemarkerTemplateSupport templateSupport;
+    protected final Class<? extends ServiceInfo> serviceConfigurationClass;
 
+    /**
+     * Builds a message converter
+     *
+     * @param binding The bean meant to act as the model for the template
+     * @param serviceConfigurationClass The class holding the configuration for the service
+     * @param loader A loader used to locate templates
+     * @param geoServer The
+     */
     public AbstractHTMLMessageConverter(
-            Class binding, GeoServerResourceLoader loader, GeoServer geoServer) {
+            Class binding,
+            Class<? extends ServiceInfo> serviceConfigurationClass,
+            GeoServerResourceLoader loader,
+            GeoServer geoServer) {
         super(MediaType.TEXT_HTML);
         this.binding = binding;
         this.geoServer = geoServer;
+        this.serviceConfigurationClass = serviceConfigurationClass;
         this.templateSupport = new FreemarkerTemplateSupport(loader);
     }
 
@@ -74,7 +85,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     protected HashMap<String, Object> setupModel(Object value) {
         HashMap<String, Object> model = new HashMap<>();
         model.put("model", value);
-        model.put("service", geoServer.getService(WFSInfo.class));
+        model.put("service", geoServer.getService(serviceConfigurationClass));
         model.put("contact", geoServer.getGlobal().getSettings().getContact());
         final String baseURL = getBaseURL();
         model.put("baseURL", baseURL);
@@ -120,9 +131,10 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     }
 
     protected String getBaseURL() {
-        RequestInfo requestInfo = RequestInfo.get();
+        APIRequestInfo requestInfo = APIRequestInfo.get();
         if (requestInfo == null) {
-            throw new IllegalArgumentException("Cannot extract base URL, RequestInfo is not set");
+            throw new IllegalArgumentException(
+                    "Cannot extract base URL, APIRequestInfo is not set");
         }
         return requestInfo.getBaseURL();
     }

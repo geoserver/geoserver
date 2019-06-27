@@ -1,15 +1,6 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
- */
-
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api;
@@ -17,8 +8,12 @@ package org.geoserver.api;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
@@ -31,6 +26,7 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -88,6 +84,13 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             ServletServerHttpResponse outputMessage)
             throws IOException, HttpMediaTypeNotAcceptableException,
                     HttpMessageNotWritableException {
+        // handle case of null value returned by controller methods
+        HttpServletResponse servletResponse = outputMessage.getServletResponse();
+        if (value == null) {
+            servletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            return;
+        }
+
         HTMLResponseBody htmlResponseBody = returnType.getMethodAnnotation(HTMLResponseBody.class);
         MediaType mediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
         HttpMessageConverter converter;
@@ -96,6 +99,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             converter =
                     new SimpleHTTPMessageConverter(
                             value.getClass(),
+                            getServiceClass(returnType),
                             returnType.getContainingClass(),
                             loader,
                             geoServer,
@@ -131,8 +135,15 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 .getHeaders()
                 .setContentType(
                         MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
-        response.write(
-                value, outputMessage.getServletResponse().getOutputStream(), dr.getOperation());
+        response.write(value, servletResponse.getOutputStream(), dr.getOperation());
+    }
+
+    private Class<?> getServiceClass(MethodParameter returnType) {
+        APIService apiService = returnType.getContainingClass().getAnnotation(APIService.class);
+        if (apiService != null) {
+            return apiService.serviceClass();
+        }
+        throw new RuntimeException("Could not find the APIService annotation in the controller");
     }
 
     private List<MediaType> getAcceptableMediaTypes(HttpServletRequest request)
@@ -141,7 +152,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         return contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
     }
 
-    protected <T> MediaType getMediaTypeToUse(
+    public <T> MediaType getMediaTypeToUse(
             @Nullable T value,
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,
@@ -177,8 +188,22 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         } else {
             HttpServletRequest request = inputMessage.getServletRequest();
             List<MediaType> acceptableTypes = getAcceptableMediaTypes(request);
+            // if we got no indication, see if the method has a default content type, and
+            // if not, default to JSON as per OGC API expectations
             List<MediaType> producibleTypes =
                     getProducibleMediaTypes(request, valueType, targetType);
+            if (ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(acceptableTypes)) {
+                MediaType defaultMediaType =
+                        Optional.ofNullable(
+                                        returnType.getMethodAnnotation(DefaultContentType.class))
+                                .map(t -> MediaType.parseMediaType(t.value()))
+                                .orElse(null);
+                if (defaultMediaType != null) {
+                    acceptableTypes = Collections.singletonList(defaultMediaType);
+                } else if (producibleTypes.contains(MediaType.APPLICATION_JSON)) {
+                    acceptableTypes = Collections.singletonList(MediaType.APPLICATION_JSON);
+                } // otherwise let it be free
+            }
             // we want to check if HTML is the first producible without using converters, adding it
             // to the mix
             producibleTypes.add(MediaType.TEXT_HTML);

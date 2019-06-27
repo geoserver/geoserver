@@ -1,10 +1,3 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
- */
-
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +11,10 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
-/** Appends paging links as HTTP headers for GetFeature responses */
+/**
+ * Appends paging links as HTTP headers for GetFeature responses, mandatory for all formats that
+ * cannot do their own link encoding, and useful for all in general
+ */
 public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
 
     @Override

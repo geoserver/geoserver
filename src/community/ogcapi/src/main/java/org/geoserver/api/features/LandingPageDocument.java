@@ -1,10 +1,3 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
- */
-
 /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +13,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
@@ -38,7 +31,8 @@ public class LandingPageDocument extends AbstractDocument {
     final String description;
 
     public LandingPageDocument(WFSInfo wfs, Catalog catalog, String featuresBase) {
-        String baseUrl = RequestInfo.get().getBaseURL();
+        final APIRequestInfo requestInfo = APIRequestInfo.get();
+        String baseUrl = requestInfo.getBaseURL();
 
         // self and alternate representations of landing page
         addLinksFor(
@@ -52,7 +46,9 @@ public class LandingPageDocument extends AbstractDocument {
 
                     @Override
                     public void accept(MediaType mediaType, Link link) {
-                        if (first && RequestInfo.get().isFormatRequested(mediaType)) {
+                        if ((requestInfo.isAnyMediaTypeAccepted()
+                                        && MediaType.APPLICATION_JSON.equals(mediaType))
+                                || (first && requestInfo.isFormatRequested(mediaType))) {
                             link.setRel(Link.REL_SELF);
                             link.setTitle("This document");
                             first = false;
@@ -100,7 +96,8 @@ public class LandingPageDocument extends AbstractDocument {
             String classification,
             BiConsumer<MediaType, Link> linkUpdater,
             String rel) {
-        for (MediaType mediaType : RequestInfo.get().getProducibleMediaTypes(responseType, true)) {
+        for (MediaType mediaType :
+                APIRequestInfo.get().getProducibleMediaTypes(responseType, true)) {
             String format = mediaType.toString();
             Map<String, String> params = Collections.singletonMap("f", format);
             String url = buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);

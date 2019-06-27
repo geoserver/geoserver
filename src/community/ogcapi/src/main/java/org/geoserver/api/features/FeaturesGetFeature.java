@@ -1,6 +1,6 @@
-/*  (c) 2018 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api.features;
@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -27,11 +27,11 @@ import org.geoserver.wfs.request.Query;
 import org.geotools.util.logging.Logging;
 
 /** A subclass of GetFeature that builds proper API Feature nex/prev links */
-class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
+class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
 
-    static final Logger LOGGER = Logging.getLogger(WFS3GetFeature.class);
+    static final Logger LOGGER = Logging.getLogger(FeaturesGetFeature.class);
 
-    public WFS3GetFeature(WFSInfo wfs, Catalog catalog) {
+    public FeaturesGetFeature(WFSInfo wfs, Catalog catalog) {
         super(wfs, catalog);
     }
 
@@ -59,13 +59,11 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
                 getCatalog()
                         .getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
         if (typeInfo == null) {
-            if (typeName == null) {
-                LOGGER.log(
-                        Level.INFO,
-                        "Cannot build prev/next links, the the target typename was not found: "
-                                + typeName);
-                return;
-            }
+            LOGGER.log(
+                    Level.INFO,
+                    "Cannot build prev/next links, the the target typename was not found: "
+                            + typeName);
+            return;
         }
         String collectionName = NCNameResourceCodec.encode(typeInfo);
         String itemsPath = "ogc/features/collections/" + urlEncode(collectionName) + "/items";
@@ -123,6 +121,6 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
 
     private String buildURL(String itemsPath, Map<String, String> kvp) {
         return ResponseUtils.buildURL(
-                RequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
+                APIRequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
     }
 }

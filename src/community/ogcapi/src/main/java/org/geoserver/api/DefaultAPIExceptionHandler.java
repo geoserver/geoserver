@@ -1,9 +1,7 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
-
 package org.geoserver.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+/** Handles all exceptions encoding them as a JSON response as indicated by the OGC standards */
 @Component
 public class DefaultAPIExceptionHandler implements APIExceptionHandler, ExtensionPriority {
 
@@ -38,7 +37,7 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
     }
 
     @Override
-    public boolean canHandle(Throwable t, RequestInfo request) {
+    public boolean canHandle(Throwable t, APIRequestInfo request) {
         return true;
     }
 
@@ -48,7 +47,6 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
 
         String code = null;
         boolean statusSet = false;
-        String responseCode = null;
         String description = null;
         if (t instanceof OWS20Exception) {
             OWS20Exception ex = (OWS20Exception) t;

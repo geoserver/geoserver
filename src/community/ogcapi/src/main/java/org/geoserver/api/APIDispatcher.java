@@ -1,7 +1,6 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
 package org.geoserver.api;
@@ -12,12 +11,12 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,6 +62,11 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
 import org.xml.sax.SAXException;
 
+/**
+ * A dispatcher for OGC API requests (and suitable for implementation restful services in general.
+ * Supports {@link DispatcherCallback} and {@link Dispatcher#REQUEST} to properly play with the
+ * existing GeoServer ecosystem
+ */
 public class APIDispatcher extends AbstractController {
 
     static final String RESPONSE_OBJECT = "ResponseObject";
@@ -86,7 +90,11 @@ public class APIDispatcher extends AbstractController {
     private List<HttpMessageConverter<?>> messageConverters;
     private List<APIExceptionHandler> exceptionHandlers;
 
-    // SHARE
+    public APIDispatcher() {
+        // allow delete and put
+        super(false);
+    }
+
     @Override
     protected void initApplicationContext(ApplicationContext context) {
         // load life cycle callbacks
@@ -125,16 +133,20 @@ public class APIDispatcher extends AbstractController {
         // add custom argument resolvers
         List<HandlerMethodArgumentResolver> pluginResolvers =
                 GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
-        List<HandlerMethodArgumentResolver> adapterResolvers =
-                new ArrayList<>(handlerAdapter.getArgumentResolvers());
+        List<HandlerMethodArgumentResolver> adapterResolvers = new ArrayList<>();
+        List<HandlerMethodArgumentResolver> existingResolvers =
+                handlerAdapter.getArgumentResolvers();
+        if (existingResolvers != null) {
+            adapterResolvers.addAll(existingResolvers);
+        }
         addToListBackwards(pluginResolvers, adapterResolvers);
         handlerAdapter.setArgumentResolvers(adapterResolvers);
 
         // default treatment of "f" parameter and headers, defaulting to JSON if nothing else has
         // been provided
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
-                handlerAdapter
-                        .getReturnValueHandlers()
+                Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
+                        .orElse(Collections.emptyList())
                         .stream()
                         .map(
                                 f -> {
@@ -204,39 +216,38 @@ public class APIDispatcher extends AbstractController {
         request.setCharacterEncoding(charSet.name());
     }
 
-    // SHARE? SLIGHT CHANGES
     @Override
     protected ModelAndView handleRequestInternal(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
 
         preprocessRequest(httpRequest);
 
-        // create a new request instance
+        // create a new request instance compatible with DispatcherCallback and other mechanisms
+        // in GeoServer
         Request dr = new Request();
-
-        // set request / response
+        Dispatcher.REQUEST.set(dr);
         dr.setHttpRequest(httpRequest);
         dr.setHttpResponse(httpResponse);
         dr.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
-        RequestInfo requestInfo = new RequestInfo(httpRequest, httpResponse, this);
+
+        // setup a API specific contex object providing info about the current request
+        APIRequestInfo requestInfo = new APIRequestInfo(httpRequest, httpResponse, this);
+        APIRequestInfo.set(requestInfo);
+
+        // perform request execution
         try {
             // initialize the request and allow callbacks to override it
+            // store it in the thread local used by the
             dr = init(dr);
-
-            // store it in the thread local
-            Dispatcher.REQUEST.set(dr);
-            // add a thread local with info on formats, base urls, and the like
-
             requestInfo.setRequestedMediaTypes(
                     contentNegotiationManager.resolveMediaTypes(
                             new ServletWebRequest(dr.getHttpRequest())));
-            RequestInfo.set(requestInfo);
 
             // lookup the handler adapter (same as service and operation)
             HandlerMethod handler = getHandlerMethod(httpRequest, dr);
             dispatchService(dr, handler);
 
-            // this is actually "execute"
+            // this is actually "execute", internaly
             ModelAndView mav =
                     handlerAdapter.handle(dr.getHttpRequest(), dr.getHttpResponse(), handler);
 
@@ -245,7 +256,7 @@ public class APIDispatcher extends AbstractController {
                     RequestContextUtils.getInputFlashMap(dr.getHttpRequest()));
 
             // and this is response handling
-            Object returnValue = mav.getModel().get(RESPONSE_OBJECT);
+            Object returnValue = mav != null ? mav.getModel().get(RESPONSE_OBJECT) : null;
             returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
 
             returnValueHandlers.handleReturnValue(
@@ -294,15 +305,6 @@ public class APIDispatcher extends AbstractController {
         dr.setServiceDescriptor(service);
     }
 
-    private Service getService(HandlerMethod handler) {
-        APIService annotation = handler.getBeanType().getAnnotation(APIService.class);
-        return new Service(
-                annotation.service(),
-                handler.getBean(),
-                new Version(annotation.service()),
-                Collections.emptyList());
-    }
-
     private HandlerMethod getHandlerMethod(HttpServletRequest httpRequest, Request dr)
             throws Exception {
         HandlerExecutionChain chain = mappingHandler.getHandler(dr.getHttpRequest());
@@ -330,7 +332,7 @@ public class APIDispatcher extends AbstractController {
         return (HandlerMethod) handler;
     }
 
-    private void exception(Throwable t, RequestInfo request) throws IOException {
+    private void exception(Throwable t, APIRequestInfo request) throws IOException {
         HttpServletResponse response = request.getResponse();
 
         // eliminate ClientStreamAbortedException
@@ -355,26 +357,27 @@ public class APIDispatcher extends AbstractController {
         LOGGER.log(Level.SEVERE, "Failed to dispatch API request", t);
 
         // is it meant to be a simple and straight answer?
-        if (t instanceof HttpErrorCodeException) {
-            HttpErrorCodeException hec = (HttpErrorCodeException) t;
+        if (current instanceof HttpErrorCodeException) {
+            HttpErrorCodeException hec = (HttpErrorCodeException) current;
             response.setContentType(
                     hec.getContentType() != null ? hec.getContentType() : "text/plain");
             if (hec.getErrorCode() >= 400) {
                 response.sendError(hec.getErrorCode(), hec.getMessage());
             } else {
+                response.setStatus(hec.getErrorCode());
                 response.getOutputStream().print(hec.getMessage());
             }
-        }
-
-        APIExceptionHandler handler = getExceptionHandler(t, request);
-        if (handler == null) {
-            response.sendError(500, t.getMessage());
         } else {
-            handler.handle(t, response);
+            APIExceptionHandler handler = getExceptionHandler(t, request);
+            if (handler == null) {
+                response.sendError(500, t.getMessage());
+            } else {
+                handler.handle(t, response);
+            }
         }
     }
 
-    private APIExceptionHandler getExceptionHandler(Throwable t, RequestInfo request) {
+    private APIExceptionHandler getExceptionHandler(Throwable t, APIRequestInfo request) {
         return exceptionHandlers
                 .stream()
                 .filter(h -> h.canHandle(t, request))
@@ -383,8 +386,6 @@ public class APIDispatcher extends AbstractController {
     }
 
     Request init(Request request) throws ServiceException, IOException {
-        HttpServletRequest httpRequest = request.getHttpRequest();
-
         // parse the request path into two components. (1) the 'path' which
         // is the string after the last '/', and the 'context' which is the
         // string before the last '/'
@@ -497,11 +498,23 @@ public class APIDispatcher extends AbstractController {
         return uri;
     }
 
+    /**
+     * Returns a read only list of available {@link HttpMessageConverter}
+     *
+     * @return
+     */
     public List<HttpMessageConverter<?>> getConverters() {
-        return messageConverters;
+        return Collections.unmodifiableList(messageConverters);
     }
 
-    public Collection<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
+    /**
+     * Returns a {@link List} of media types that can be produced for a given response object
+     *
+     * @param responseType
+     * @param addHTML
+     * @return
+     */
+    public List<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
             if (converter instanceof GenericHttpMessageConverter) {

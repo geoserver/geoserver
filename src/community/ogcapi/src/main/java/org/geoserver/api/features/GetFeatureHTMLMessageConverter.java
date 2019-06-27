@@ -1,9 +1,8 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
+
 package org.geoserver.api.features;
 
 import freemarker.template.Template;
@@ -13,12 +12,13 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractHTMLMessageConverter;
-import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
@@ -31,10 +31,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter<FeaturesResponse> {
 
-    private static final String FORMAT = "text/html";
-
     public GetFeatureHTMLMessageConverter(GeoServerResourceLoader loader, GeoServer geoServer) {
-        super(FeaturesResponse.class, loader, geoServer);
+        super(FeaturesResponse.class, WFSInfo.class, loader, geoServer);
     }
 
     private FeatureTypeInfo getResource(FeatureCollection collection) {
@@ -72,7 +70,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", request.getBaseURL());
         model.put("response", response);
-        AbstractHTMLMessageConverter.addLinkFunctions(RequestInfo.get().getBaseURL(), model);
+        AbstractHTMLMessageConverter.addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
         try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody())) {
             try {

@@ -1,6 +1,6 @@
-/*  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.api.features;
 
@@ -19,20 +19,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.api.APIDispatcher;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
+import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
-import org.geoserver.api.RequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQueryProvider;
@@ -43,7 +42,6 @@ import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
-import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -58,16 +56,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-@APIService(service = "Feature", version = "1.0", landingPage = "ogc/features")
+/** Implementation of OGC Features API service */
+@APIService(
+    service = "Feature",
+    version = "1.0",
+    landingPage = "ogc/features",
+    serviceClass = WFSInfo.class
+)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
-    private static final Logger LOGGER = Logging.getLogger(FeatureService.class);
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private final GeoServerDataDirectory dataDirectory;
     private final GeoServer geoServer;
 
     // this could be done in an argument resolver returning a Filter, for example, however
@@ -78,7 +80,6 @@ public class FeatureService {
 
     public FeatureService(GeoServer geoServer) {
         this.geoServer = geoServer;
-        this.dataDirectory = new GeoServerDataDirectory(geoServer.getCatalog().getResourceLoader());
     }
 
     private WFSInfo getService() {
@@ -158,6 +159,7 @@ public class FeatureService {
         name = "items"
     )
     @ResponseBody
+    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     public FeaturesResponse items(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
@@ -186,18 +188,20 @@ public class FeatureService {
         query.setFilter(mergeFiltersAnd(filters));
         request.setStartIndex(startIndex);
         request.setMaxFeatures(limit);
-        request.setBaseUrl(RequestInfo.get().getBaseURL());
+        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
         request.getAdaptedQueries().add(query.getAdaptee());
 
         // run it
-        WFS3GetFeature gf = new WFS3GetFeature(getService(), getCatalog());
+        FeaturesGetFeature gf = new FeaturesGetFeature(getService(), getCatalog());
         gf.setFilterFactory(FF);
         gf.setStoredQueryProvider(getStoredQueryProvider());
         FeatureCollectionResponse response = gf.run(request);
 
         // store information about single vs multi request
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        requestAttributes.setAttribute(ITEM_ID, itemId, RequestAttributes.SCOPE_REQUEST);
+        if (requestAttributes != null) {
+            requestAttributes.setAttribute(ITEM_ID, itemId, RequestAttributes.SCOPE_REQUEST);
+        }
 
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats

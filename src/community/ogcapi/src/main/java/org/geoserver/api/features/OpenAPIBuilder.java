@@ -28,7 +28,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.ManifestLoader;
-import org.geoserver.api.RequestInfo;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.ows.URLMangler;
@@ -38,7 +38,7 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
-/** Builds the OpenAPI document that will be returned to the clients */
+/** Builds the OGC Features OpenAPI document */
 public class OpenAPIBuilder {
 
     static final String OPENAPI_SPECIFICATION;
@@ -55,10 +55,7 @@ public class OpenAPIBuilder {
      * Build the document based on request, current WFS configuration, and list of available
      * extensions
      *
-     * @param request The incoming request
      * @param wfs The WFS configuration
-     * @param extensions The list of WFS 3 extensions
-     * @return
      */
     public OpenAPI build(WFSInfo wfs) {
         OpenAPI api = readTemplate();
@@ -94,7 +91,7 @@ public class OpenAPIBuilder {
         // the servers
         String wfsUrl =
                 ResponseUtils.buildURL(
-                        RequestInfo.get().getBaseURL(),
+                        APIRequestInfo.get().getBaseURL(),
                         "ogc/features",
                         null,
                         URLMangler.URLType.SERVICE);
@@ -143,7 +140,7 @@ public class OpenAPIBuilder {
         Operation get = pi.getGet();
         Content content = get.getResponses().get("200").getContent();
         List<String> formats =
-                RequestInfo.get()
+                APIRequestInfo.get()
                         .getProducibleMediaTypes(binding, true)
                         .stream()
                         .map(mt -> mt.toString())

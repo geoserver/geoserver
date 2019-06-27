@@ -6,6 +6,9 @@ package org.geoserver.api;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * A OGC API specific exception class, supports creation of JSON exceptions mandated to the standard
+ */
 public class APIException extends RuntimeException {
 
     private final HttpStatus status;

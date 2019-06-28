@@ -22,7 +22,7 @@ SKIP_INSTALLERS=true
 MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
 
 # Use settings.xml override if provided
-if [ -n $MAVEN_SETTINGS ]; then
+if [ -n "$MAVEN_SETTINGS" ]; then
   MAVEN_FLAGS="-s $MAVEN_SETTINGS $MAVEN_FLAGS"
 fi
 

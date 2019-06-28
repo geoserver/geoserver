@@ -13,6 +13,7 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -50,6 +51,7 @@ import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 
 public class StyleEditPageTest extends GeoServerWicketTestSupport {
@@ -718,5 +720,32 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                         tester.getComponentFromLastRenderedPage("styleForm:context:panel");
         // check the SvgParameter has been interpreted and we get a red fill, not a gray one
         assertPixel(panel.legendImage, 10, 10, Color.RED);
+    }
+
+    private static class StyleEditTabPanelTest extends StyleEditTabPanel {
+
+        /**
+         * @param id The id given to the panel.
+         * @param parent
+         */
+        public StyleEditTabPanelTest(String id, AbstractStylePage parent) {
+            super(id, parent);
+        }
+    }
+
+    @Test
+    public void testStyleTabExtensionPoint()
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+                    InstantiationException {
+        StyleInfo styleInfo = new StyleInfoImpl(null);
+        styleInfo.setName("point");
+        styleInfo.setFilename("test.sld");
+
+        StyleEditPage page = new StyleEditPage(styleInfo);
+        Object tabPanel =
+                StyleEditTabPanelTest.class
+                        .getConstructor(String.class, AbstractStylePage.class)
+                        .newInstance("someid", page);
+        Assert.notNull(tabPanel, "Constructor for plugin tab panels has a broken signature.");
     }
 }

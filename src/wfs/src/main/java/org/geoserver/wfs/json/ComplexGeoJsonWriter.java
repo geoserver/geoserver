@@ -340,7 +340,7 @@ class ComplexGeoJsonWriter {
      * feature resolved as a link.
      */
     @SuppressWarnings("unchecked")
-    private boolean checkIfFeatureIsLinked(Property property, Map<NameImpl, String> attributes) {
+    static boolean checkIfFeatureIsLinked(Property property, Map<NameImpl, String> attributes) {
         if (!(property instanceof ComplexAttribute)) {
             // not a complex attribute, so we don't consider it a candidate to be a linked one
             return false;
@@ -350,10 +350,12 @@ class ComplexGeoJsonWriter {
             // has properties, so not a chained feature resolved as a link
             return false;
         }
-        for (NameImpl key : attributes.keySet()) {
-            if (key != null && key.getLocalPart().equalsIgnoreCase("href")) {
-                // we found a link
-                return true;
+        if (attributes != null) {
+            for (NameImpl key : attributes.keySet()) {
+                if (key != null && "href".equalsIgnoreCase(key.getLocalPart())) {
+                    // we found a link
+                    return true;
+                }
             }
         }
         // no link was found, so not a chained feature resolved as a link

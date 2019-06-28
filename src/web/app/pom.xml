@@ -1685,7 +1685,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>geostyler</artifactId>
+          <artifactId>gs-geostyler</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

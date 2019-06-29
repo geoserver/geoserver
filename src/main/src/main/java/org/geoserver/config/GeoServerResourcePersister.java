@@ -66,10 +66,14 @@ public class GeoServerResourcePersister implements CatalogListener {
             // here we handle name changes
             int i = event.getPropertyNames().indexOf("name");
             if (i > -1) {
+                String oldName = (String) event.getOldValues().get(i);
                 String newName = (String) event.getNewValues().get(i);
 
-                if (source instanceof StyleInfo) {
-                    renameStyle((StyleInfo) source, newName);
+                if (!newName.equals(oldName)) {
+                    /*GEOS-9229 Rename the resource only if the old name and the new one are not identical.*/
+                    if (source instanceof StyleInfo) {
+                        renameStyle((StyleInfo) source, newName);
+                    }
                 }
             }
 

@@ -5,7 +5,7 @@
  */
 package org.geoserver.wfs.flatgeobuf;
 
-import flatgeobuf.geotools.FeatureCollectionConversions;
+import org.wololo.flatgeobuf.geotools.FeatureCollectionConversions;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;

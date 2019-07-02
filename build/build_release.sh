@@ -327,7 +327,7 @@ for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
 
-#cp $artifacts/../../../doc/en/target/user/latex/*.pdf $dist
+cp $artifacts/../../../doc/en/target/user/latex/*.pdf $dist
 
 echo "generated artifacts:"
 ls -la $dist

@@ -72,12 +72,12 @@ pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
    mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
 
-   # deploy released community modules
-   # pushd community > /dev/null
-   # set +e
-   # mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 
-   # set -e
-   # popd > /dev/null
+   deploy released community modules
+   pushd community > /dev/null
+   set +e
+   mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 
+   set -e
+   popd > /dev/null
 else
    echo "Skipping mvn clean install deploy -P allExtensions -DskipTests"
 fi
@@ -89,11 +89,11 @@ popd > /dev/null
 pushd distribution/$tag > /dev/null
 
 if [ -z $SKIP_UPLOAD ]; then
-  rsync -ave "ssh " *-bin.zip *-war.zip *doc.zip *.pdf $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
+  rsync -ave "ssh " *-bin.zip *-war.zip *doc.zip $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
   
-  # don't fail if exe is not around
+  # don't fail if exe or pdf is not around
   set +e
-  rsync -ave "ssh " *.exe  $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
+  rsync -ave "ssh " *.exe  *.pdf $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
   set -e
   pushd plugins > /dev/null
   rsync -ave "ssh " *.zip $SF_USER@$SF_HOST:"/home/pfs/project/g/ge/geoserver/GeoServer/$tag/extensions"

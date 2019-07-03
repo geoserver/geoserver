@@ -35,7 +35,6 @@
       <version>2.1</version>
       <configuration>
         <descriptors>
-          <descriptor>release/ext-authkey.xml</descriptor>
           <!-- <descriptor>release/ext-groovy.xml</descriptor> -->
           <!-- <descriptor>release/ext-javascript.xml</descriptor> -->
           <!-- <descriptor>release/ext-spatialite.xml</descriptor> -->
@@ -216,7 +215,6 @@
     <profile>
       <id>communityRelease</id>
       <modules>
-        <module>authkey</module>
         <module>dds</module>
         <!-- <module>spatialite</module> -->
         <module>jdbcconfig</module>
@@ -289,12 +287,6 @@
       <id>sextante</id>
       <modules>
         <module>wps-sextante</module>
-      </modules>
-    </profile>
-    <profile>      
-      <id>authkey</id>
-      <modules>
-        <module>authkey</module>
       </modules>
     </profile>
     <profile>

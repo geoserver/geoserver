@@ -1570,6 +1570,7 @@
       <descriptor>release/ext-sldservice.xml</descriptor>
       <descriptor>release/ext-geofence.xml</descriptor>
       <descriptor>release/ext-geofence-server.xml</descriptor>
+      <descriptor>release/ext-authkey.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.16-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

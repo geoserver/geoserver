@@ -59,27 +59,36 @@ import org.junit.Test;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
-    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    protected static QName TIMERANGES =
+            new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(
+                TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Test
     public void testBasic() {
-        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+        LayerInfo layer =
+                getGeoServerApplication()
+                        .getCatalog()
+                        .getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
         tester.assertLabel("publishedinfoname", layer.getResource().prefixedName());
-        tester.assertComponent("publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
     }
 
     @Test
     public void testUpdateResource() {
-        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.GEOMETRYLESS));
+        LayerInfo layer =
+                getGeoServerApplication()
+                        .getCatalog()
+                        .getLayerByName(getLayerId(MockData.GEOMETRYLESS));
 
         login();
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
@@ -87,14 +96,17 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         tester.assertContainsNot("the_geom");
 
-        FeatureTypeInfo info = getCatalog().getResourceByName(MockData.BRIDGES.getLocalPart(), FeatureTypeInfo.class);
+        FeatureTypeInfo info =
+                getCatalog()
+                        .getResourceByName(MockData.BRIDGES.getLocalPart(), FeatureTypeInfo.class);
 
         // Apply the new feature to the page
-        page.add(new AjaxEventBehavior("ondblclick") {
-            public void onEvent(AjaxRequestTarget target) {
-                page.updateResource(info, target);
-            }
-        });
+        page.add(
+                new AjaxEventBehavior("ondblclick") {
+                    public void onEvent(AjaxRequestTarget target) {
+                        page.updateResource(info, target);
+                    }
+                });
         tester.executeAjaxEvent(page, "ondblclick");
         print(tester.getLastRenderedPage(), true, true);
 
@@ -107,7 +119,10 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         CatalogFactory fac = getGeoServerApplication().getCatalog().getFactory();
         FeatureTypeInfo fti = fac.createFeatureType();
         fti.setName("mylayer");
-        fti.setStore(getGeoServerApplication().getCatalog().getDataStoreByName(MockData.POLYGONS.getPrefix()));
+        fti.setStore(
+                getGeoServerApplication()
+                        .getCatalog()
+                        .getDataStoreByName(MockData.POLYGONS.getPrefix()));
         LayerInfo layer = fac.createLayer();
         layer.setResource(fti);
 
@@ -147,12 +162,15 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, true);
         tester.startPage(page);
         // print(tester.getLastRenderedPage(), true, true, true);
-        tester.executeAjaxEvent("publishedinfo:tabs:panel:theList:0:content:referencingForm:computeLatLon", "onclick");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:computeLatLon",
+                "onclick");
         // print(tester.getLastRenderedPage(), true, true, true);
         // we used to have error messages
         tester.assertNoErrorMessage();
-        Component llbox = tester.getComponentFromLastRenderedPage(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:latLonBoundingBox");
+        Component llbox =
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:latLonBoundingBox");
         ReferencedEnvelope re = (ReferencedEnvelope) llbox.getDefaultModelObject();
         assertEquals(-93, re.getMinX(), 0.1);
         assertEquals(4.5, re.getMinY(), 0.1);
@@ -162,37 +180,48 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testParametersUI() throws Exception {
-        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(TIMERANGES));
+        LayerInfo layer =
+                getGeoServerApplication().getCatalog().getLayerByName(getLayerId(TIMERANGES));
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
         // print(tester.getLastRenderedPage(), true, true);
 
         // get the list of parameters in the UI
-        ListView parametersList = (ListView) tester
-                .getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:1:content:parameters");
-        parametersList.visitChildren(ParamPanel.class, (c, v) -> {
-            MapModel mapModel = (MapModel) c.getDefaultModel();
-            String parameterKey = mapModel.getExpression();
-            if (USE_JAI_IMAGEREAD.getName().getCode().equals(parameterKey)
-                    || ACCURATE_RESOLUTION.getName().getCode().equals(parameterKey)
-                    || ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)
-                    || RESCALE_PIXELS.getName().getCode().equals(parameterKey)) {
-                assertThat(parameterKey, c, CoreMatchers.instanceOf(CheckBoxParamPanel.class));
-            } else if (EXCESS_GRANULE_REMOVAL.getName().getCode().equals(parameterKey)
-                    || FOOTPRINT_BEHAVIOR.getName().getCode().equals(parameterKey)
-                    || MERGE_BEHAVIOR.getName().getCode().equals(parameterKey)
-                    || OVERVIEW_POLICY.getName().getCode().equals(parameterKey)) {
-                assertThat(parameterKey, c, CoreMatchers.instanceOf(DropDownChoiceParamPanel.class));
-            } else if (BACKGROUND_COLOR.getName().getCode().equals(parameterKey)
-                    || OUTPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey)
-                    || INPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey)) {
-                assertThat(parameterKey, c, CoreMatchers.instanceOf(ColorPickerPanel.class));
-            } else {
-                assertThat(parameterKey, c, CoreMatchers.instanceOf(TextParamPanel.class));
-            }
-        });
-        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:parameters:0:parameterPanel",
+        ListView parametersList =
+                (ListView)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:1:content:parameters");
+        parametersList.visitChildren(
+                ParamPanel.class,
+                (c, v) -> {
+                    MapModel mapModel = (MapModel) c.getDefaultModel();
+                    String parameterKey = mapModel.getExpression();
+                    if (USE_JAI_IMAGEREAD.getName().getCode().equals(parameterKey)
+                            || ACCURATE_RESOLUTION.getName().getCode().equals(parameterKey)
+                            || ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)
+                            || RESCALE_PIXELS.getName().getCode().equals(parameterKey)) {
+                        assertThat(
+                                parameterKey, c, CoreMatchers.instanceOf(CheckBoxParamPanel.class));
+                    } else if (EXCESS_GRANULE_REMOVAL.getName().getCode().equals(parameterKey)
+                            || FOOTPRINT_BEHAVIOR.getName().getCode().equals(parameterKey)
+                            || MERGE_BEHAVIOR.getName().getCode().equals(parameterKey)
+                            || OVERVIEW_POLICY.getName().getCode().equals(parameterKey)) {
+                        assertThat(
+                                parameterKey,
+                                c,
+                                CoreMatchers.instanceOf(DropDownChoiceParamPanel.class));
+                    } else if (BACKGROUND_COLOR.getName().getCode().equals(parameterKey)
+                            || OUTPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey)
+                            || INPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey)) {
+                        assertThat(
+                                parameterKey, c, CoreMatchers.instanceOf(ColorPickerPanel.class));
+                    } else {
+                        assertThat(parameterKey, c, CoreMatchers.instanceOf(TextParamPanel.class));
+                    }
+                });
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:theList:1:content:parameters:0:parameterPanel",
                 CheckBoxParamPanel.class);
     }
 
@@ -211,16 +240,20 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         // print(tester.getLastRenderedPage(), true, true);
 
         // get the list of parameters in the UI
-        ListView parametersList = (ListView) tester
-                .getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:1:content:parameters");
+        ListView parametersList =
+                (ListView)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:1:content:parameters");
         AtomicBoolean editorFound = new AtomicBoolean(false);
-        parametersList.visitChildren(ParamPanel.class, (c, v) -> {
-            MapModel mapModel = (MapModel) c.getDefaultModel();
-            String parameterKey = mapModel.getExpression();
-            if (bandCode.equals(parameterKey)) {
-                editorFound.set(true);
-            }
-        });
+        parametersList.visitChildren(
+                ParamPanel.class,
+                (c, v) -> {
+                    MapModel mapModel = (MapModel) c.getDefaultModel();
+                    String parameterKey = mapModel.getExpression();
+                    if (bandCode.equals(parameterKey)) {
+                        editorFound.set(true);
+                    }
+                });
         assertTrue("Bands parameter not found", editorFound.get());
     }
 
@@ -233,16 +266,20 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new ResourceConfigurationPage(layer, false));
 
         // locate the overview parameter editor
-        ListView parametersList = (ListView) tester
-                .getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:1:content:parameters");
+        ListView parametersList =
+                (ListView)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:1:content:parameters");
         AtomicReference ref = new AtomicReference(null);
-        parametersList.visitChildren(ParamPanel.class, (c, v) -> {
-            MapModel mapModel = (MapModel) c.getDefaultModel();
-            String parameterKey = mapModel.getExpression();
-            if (OVERVIEW_POLICY.getName().getCode().equals(parameterKey)) {
-                ref.set(c.getPageRelativePath().substring("publishedInfo".length() + 1));
-            }
-        });
+        parametersList.visitChildren(
+                ParamPanel.class,
+                (c, v) -> {
+                    MapModel mapModel = (MapModel) c.getDefaultModel();
+                    String parameterKey = mapModel.getExpression();
+                    if (OVERVIEW_POLICY.getName().getCode().equals(parameterKey)) {
+                        ref.set(c.getPageRelativePath().substring("publishedInfo".length() + 1));
+                    }
+                });
 
         FormTester ft = tester.newFormTester("publishedinfo");
         ft.select(ref.get() + ":border:border_body:paramValue", 2);
@@ -250,8 +287,9 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // check it was saved
-        CoverageInfo ci = catalog.getResourceByName(TIMERANGES.getPrefix(), TIMERANGES.getLocalPart(),
-                CoverageInfo.class);
+        CoverageInfo ci =
+                catalog.getResourceByName(
+                        TIMERANGES.getPrefix(), TIMERANGES.getLocalPart(), CoverageInfo.class);
         Map<String, Serializable> parameters = ci.getParameters();
         assertEquals("NEAREST", parameters.get(OVERVIEW_POLICY.getName().toString()));
     }

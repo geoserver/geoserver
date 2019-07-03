@@ -79,9 +79,8 @@ import org.opengis.filter.sort.SortBy;
  * A default catalog implementation that is memory based.
  *
  * @author Justin Deoliveira, The Open Planning Project
- *         <p>
- *         TODO: remove synchronized blocks, make setting of default
- *         workspace/namespace part of dao contract TODO: move resolve() to dao
+ *     <p>TODO: remove synchronized blocks, make setting of default workspace/namespace part of dao
+ *     contract TODO: move resolve() to dao
  */
 public class CatalogImpl implements Catalog {
 
@@ -104,8 +103,7 @@ public class CatalogImpl implements Catalog {
 
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
-        // wrap the default catalog facade with the facade capable of handling isolated
-        // workspaces
+        // wrap the default catalog facade with the facade capable of handling isolated workspaces
         // behavior
         facade = new IsolatedCatalogFacade(facade);
         setFacade(facade);
@@ -119,9 +117,8 @@ public class CatalogImpl implements Catalog {
     /**
      * Turn on/off extended validation switch.
      *
-     * <p>
-     * This is not part of the public api, it is used for testing purposes where we
-     * have to bootstrap catalog contents.
+     * <p>This is not part of the public api, it is used for testing purposes where we have to
+     * bootstrap catalog contents.
      */
     public void setExtendedValidation(boolean extendedValidation) {
         this.extendedValidation = extendedValidation;
@@ -136,7 +133,8 @@ public class CatalogImpl implements Catalog {
     }
 
     public void setFacade(CatalogFacade facade) {
-        final GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        final GeoServerConfigurationLock configurationLock =
+                GeoServerExtensions.bean(GeoServerConfigurationLock.class);
         if (configurationLock != null) {
             facade = LockingCatalogFacade.create(facade, configurationLock);
         }
@@ -167,7 +165,8 @@ public class CatalogImpl implements Catalog {
             added = facade.add(resolve(store));
 
             // if there is no default store use this one as the default
-            if (getDefaultDataStore(store.getWorkspace()) == null && store instanceof DataStoreInfo) {
+            if (getDefaultDataStore(store.getWorkspace()) == null
+                    && store instanceof DataStoreInfo) {
                 setDefaultDataStore(store.getWorkspace(), (DataStoreInfo) store);
             }
         }
@@ -185,7 +184,12 @@ public class CatalogImpl implements Catalog {
         WorkspaceInfo workspace = store.getWorkspace();
         StoreInfo existing = getStoreByName(workspace, store.getName(), StoreInfo.class);
         if (existing != null && (isNew || !existing.getId().equals(store.getId()))) {
-            String msg = "Store '" + store.getName() + "' already exists in workspace '" + workspace.getName() + "'";
+            String msg =
+                    "Store '"
+                            + store.getName()
+                            + "' already exists in workspace '"
+                            + workspace.getName()
+                            + "'";
             throw new IllegalArgumentException(msg);
         }
 
@@ -243,14 +247,16 @@ public class CatalogImpl implements Catalog {
     }
 
     @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
-    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(
+            WorkspaceInfo workspace, String name, Class<T> clazz) {
 
         WorkspaceInfo ws = workspace;
         if (ws == null) {
             ws = getDefaultWorkspace();
         }
 
-        if (clazz != null && clazz.isAssignableFrom(DataStoreInfo.class)
+        if (clazz != null
+                && clazz.isAssignableFrom(DataStoreInfo.class)
                 && (name == null || name.equals(Catalog.DEFAULT))) {
             return (T) getDefaultDataStore(workspace);
         }
@@ -262,7 +268,8 @@ public class CatalogImpl implements Catalog {
         return store;
     }
 
-    public <T extends StoreInfo> T getStoreByName(String workspaceName, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(
+            String workspaceName, String name, Class<T> clazz) {
 
         WorkspaceInfo workspace = getWorkspaceByName(workspaceName);
         if (workspace != null) {
@@ -271,7 +278,8 @@ public class CatalogImpl implements Catalog {
         return null;
     }
 
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(
+            String workspaceName, Class<T> clazz) {
 
         WorkspaceInfo workspace = null;
         if (workspaceName != null) {
@@ -284,7 +292,8 @@ public class CatalogImpl implements Catalog {
         return getStoresByWorkspace(workspace, clazz);
     }
 
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(
+            WorkspaceInfo workspace, Class<T> clazz) {
 
         return facade.getStoresByWorkspace(workspace, clazz);
     }
@@ -333,8 +342,13 @@ public class CatalogImpl implements Catalog {
             }
 
             if (!store.getWorkspace().equals(workspace)) {
-                throw new IllegalArgumentException("Trying to mark as default " + "for workspace " + workspace.getName()
-                        + " a store that " + "is contained in " + store.getWorkspace().getName());
+                throw new IllegalArgumentException(
+                        "Trying to mark as default "
+                                + "for workspace "
+                                + workspace.getName()
+                                + " a store that "
+                                + "is contained in "
+                                + store.getWorkspace().getName());
             }
         }
         facade.setDefaultDataStore(workspace, store);
@@ -390,7 +404,8 @@ public class CatalogImpl implements Catalog {
         }
 
         if (isNull(resource.getNativeName())
-                && !(resource instanceof CoverageInfo && ((CoverageInfo) resource).getNativeCoverageName() != null)) {
+                && !(resource instanceof CoverageInfo
+                        && ((CoverageInfo) resource).getNativeCoverageName() != null)) {
             throw new NullPointerException("Resource native name must not be null");
         }
         if (resource.getStore() == null) {
@@ -403,16 +418,24 @@ public class CatalogImpl implements Catalog {
         StoreInfo store = resource.getStore();
         ResourceInfo existing = getResourceByStore(store, resource.getName(), ResourceInfo.class);
         if (existing != null && !existing.getId().equals(resource.getId())) {
-            String msg = "Resource named '" + resource.getName() + "' already exists in store: '" + store.getName()
-                    + "'";
+            String msg =
+                    "Resource named '"
+                            + resource.getName()
+                            + "' already exists in store: '"
+                            + store.getName()
+                            + "'";
             throw new IllegalArgumentException(msg);
         }
 
         NamespaceInfo namespace = resource.getNamespace();
         existing = getResourceByName(namespace, resource.getName(), ResourceInfo.class);
         if (existing != null && !existing.getId().equals(resource.getId())) {
-            String msg = "Resource named '" + resource.getName() + "' already exists in namespace: '"
-                    + namespace.getPrefix() + "'";
+            String msg =
+                    "Resource named '"
+                            + resource.getName()
+                            + "' already exists in namespace: '"
+                            + namespace.getPrefix()
+                            + "'";
             throw new IllegalArgumentException(msg);
         }
 
@@ -465,7 +488,8 @@ public class CatalogImpl implements Catalog {
     }
 
     @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
-    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByName(
+            NamespaceInfo ns, String name, Class<T> clazz) {
 
         NamespaceInfo namespace = ns;
         if (namespace == null) {
@@ -503,7 +527,8 @@ public class CatalogImpl implements Catalog {
         return facade.getResourcesByNamespace(namespace, clazz);
     }
 
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(String namespace, Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            String namespace, Class<T> clazz) {
         if (namespace == null) {
             return getResourcesByNamespace((NamespaceInfo) null, clazz);
         }
@@ -519,7 +544,8 @@ public class CatalogImpl implements Catalog {
         return getResourcesByNamespace(ns, clazz);
     }
 
-    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByStore(
+            StoreInfo store, String name, Class<T> clazz) {
         return facade.getResourceByStore(store, name, clazz);
     }
 
@@ -638,47 +664,59 @@ public class CatalogImpl implements Catalog {
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public ValidationResult validate(LayerInfo layer, boolean isNew) {
         // TODO: bring back when the layer/publishing split is in act
-        // if ( isNull(layer.getName()) ) {
-        // throw new NullPointerException( "Layer name must not be null" );
-        // }
+        //        if ( isNull(layer.getName()) ) {
+        //            throw new NullPointerException( "Layer name must not be null" );
+        //        }
 
         if (layer.getResource() == null) {
             throw new NullPointerException("Layer resource must not be null");
         }
 
-        // calling LayerInfo.setName(String) updates the resource (until the
-        // layer/publishing split
-        // is in act), but that doesn't mean the resource was saved previously, which
-        // can leave the
+        // calling LayerInfo.setName(String) updates the resource (until the layer/publishing split
+        // is in act), but that doesn't mean the resource was saved previously, which can leave the
         // catalog in an inconsistent state
         final NamespaceInfo ns = layer.getResource().getNamespace();
         if (null == getResourceByName(ns, layer.getResource().getName(), ResourceInfo.class)) {
             throw new IllegalStateException(
-                    "Found no resource named " + layer.prefixedName() + " , Layer with that name can't be added");
+                    "Found no resource named "
+                            + layer.prefixedName()
+                            + " , Layer with that name can't be added");
         }
         final String prefix = ns != null ? ns.getPrefix() : null;
         LayerInfo existing = getLayerByName(prefix, layer.getName());
         if (existing != null && !existing.getId().equals(layer.getId())) {
             throw new IllegalArgumentException(
-                    "Layer named '" + layer.getName() + "' in workspace '" + prefix + "' already exists.");
+                    "Layer named '"
+                            + layer.getName()
+                            + "' in workspace '"
+                            + prefix
+                            + "' already exists.");
         }
 
         // if the style is missing associate a default one, to avoid breaking WMS
         if (layer.getDefaultStyle() == null) {
             try {
-                LOGGER.log(Level.INFO,
-                        "Layer " + layer.prefixedName() + " is missing the default style, assigning one automatically");
+                LOGGER.log(
+                        Level.INFO,
+                        "Layer "
+                                + layer.prefixedName()
+                                + " is missing the default style, assigning one automatically");
                 StyleInfo style = new CatalogBuilder(this).getDefaultStyle(layer.getResource());
                 layer.setDefaultStyle(style);
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Layer " + layer.prefixedName() + " is missing the default style, "
-                        + "failed to associate one automatically", e);
+                LOGGER.log(
+                        Level.WARNING,
+                        "Layer "
+                                + layer.prefixedName()
+                                + " is missing the default style, "
+                                + "failed to associate one automatically",
+                        e);
             }
         }
 
         // clean up eventual dangling references to missing alternate styles
         Set<StyleInfo> styles = layer.getStyles();
-        for (Iterator it = styles.iterator(); it.hasNext();) {
+        for (Iterator it = styles.iterator(); it.hasNext(); ) {
             StyleInfo styleInfo = (StyleInfo) it.next();
             if (styleInfo == null) {
                 it.remove();
@@ -692,7 +730,8 @@ public class CatalogImpl implements Catalog {
         // ensure no references to the layer
         for (LayerGroupInfo lg : facade.getLayerGroups()) {
             if (lg.getLayers().contains(layer) || layer.equals(lg.getRootLayer())) {
-                String msg = "Unable to delete layer referenced by layer group '" + lg.getName() + "'";
+                String msg =
+                        "Unable to delete layer referenced by layer group '" + lg.getName() + "'";
                 throw new IllegalArgumentException(msg);
             }
         }
@@ -811,8 +850,7 @@ public class CatalogImpl implements Catalog {
         WorkspaceInfo ws = layerGroup.getWorkspace();
         LayerGroupInfo existing = getLayerGroupByName(ws, layerGroup.getName());
         if (existing != null && !existing.getId().equals(layerGroup.getId())) {
-            // null workspace can cause layer group in any workspace to be returned, check
-            // that
+            // null workspace can cause layer group in any workspace to be returned, check that
             // workspaces match
             WorkspaceInfo ews = existing.getWorkspace();
             if ((ws == null && ews == null) || (ws != null && ws.equals(ews))) {
@@ -827,8 +865,11 @@ public class CatalogImpl implements Catalog {
         // sanitize a bit broken layer references
         List<PublishedInfo> layers = layerGroup.getLayers();
         List<StyleInfo> styles = layerGroup.getStyles();
-        for (int i = 0; i < layers.size();) {
-            if (layers != null && styles != null && layers.get(i) == null && styles.get(i) == null) {
+        for (int i = 0; i < layers.size(); ) {
+            if (layers != null
+                    && styles != null
+                    && layers.get(i) == null
+                    && styles.get(i) == null) {
                 layers.remove(i);
                 styles.remove(i);
             } else {
@@ -839,11 +880,13 @@ public class CatalogImpl implements Catalog {
                         StyledLayerDescriptor sld = styles.get(i).getSLD();
                         List<Exception> errors = SLDNamedLayerValidator.validate(this, sld);
                         if (errors.size() > 0) {
-                            throw new IllegalArgumentException("Invalid style group: " + errors.get(0).getMessage(),
+                            throw new IllegalArgumentException(
+                                    "Invalid style group: " + errors.get(0).getMessage(),
                                     errors.get(0));
                         }
                     } catch (IOException e) {
-                        throw new IllegalArgumentException("Error validating style group: " + e.getMessage(), e);
+                        throw new IllegalArgumentException(
+                                "Error validating style group: " + e.getMessage(), e);
                     }
                 }
                 i++;
@@ -854,19 +897,21 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException("Layer group must not be empty");
         }
 
-        if (layerGroup.getStyles() != null && !layerGroup.getStyles().isEmpty()
+        if (layerGroup.getStyles() != null
+                && !layerGroup.getStyles().isEmpty()
                 && !(layerGroup.getStyles().size() == layerGroup.getLayers().size())) {
-            throw new IllegalArgumentException("Layer group has different number of styles than layers");
+            throw new IllegalArgumentException(
+                    "Layer group has different number of styles than layers");
         }
 
         LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
         Stack<LayerGroupInfo> loopPath = helper.checkLoops();
         if (loopPath != null) {
-            throw new IllegalArgumentException("Layer group is in a loop: " + helper.getLoopAsString(loopPath));
+            throw new IllegalArgumentException(
+                    "Layer group is in a loop: " + helper.getLoopAsString(loopPath));
         }
 
-        // if the layer group has a workspace assigned, ensure that every resource in
-        // that layer
+        // if the layer group has a workspace assigned, ensure that every resource in that layer
         // group lives within the same workspace
         if (ws != null) {
             checkLayerGroupResourceIsInWorkspace(layerGroup, ws);
@@ -877,22 +922,30 @@ public class CatalogImpl implements Catalog {
         } else if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
             if (layerGroup.getRootLayer() == null) {
                 throw new IllegalArgumentException(
-                        "Layer group in mode " + LayerGroupInfo.Mode.EO.getName() + " must have a root layer");
+                        "Layer group in mode "
+                                + LayerGroupInfo.Mode.EO.getName()
+                                + " must have a root layer");
             }
 
             if (layerGroup.getRootLayerStyle() == null) {
                 throw new IllegalArgumentException(
-                        "Layer group in mode " + LayerGroupInfo.Mode.EO.getName() + " must have a root layer style");
+                        "Layer group in mode "
+                                + LayerGroupInfo.Mode.EO.getName()
+                                + " must have a root layer style");
             }
         } else {
             if (layerGroup.getRootLayer() != null) {
                 throw new IllegalArgumentException(
-                        "Layer group in mode " + layerGroup.getMode().getName() + " must not have a root layer");
+                        "Layer group in mode "
+                                + layerGroup.getMode().getName()
+                                + " must not have a root layer");
             }
 
             if (layerGroup.getRootLayerStyle() != null) {
                 throw new IllegalArgumentException(
-                        "Layer group in mode " + layerGroup.getMode().getName() + " must not have a root layer style");
+                        "Layer group in mode "
+                                + layerGroup.getMode().getName()
+                                + " must not have a root layer style");
             }
         }
 
@@ -900,12 +953,14 @@ public class CatalogImpl implements Catalog {
     }
 
     private void checkLayerGroupResourceIsInWorkspace(LayerGroupInfo layerGroup, WorkspaceInfo ws) {
-        if (layerGroup == null)
-            return;
+        if (layerGroup == null) return;
 
         if (layerGroup.getWorkspace() != null && !ws.equals(layerGroup.getWorkspace())) {
-            throw new IllegalArgumentException("Layer group within a workspace (" + ws.getName()
-                    + ") can not contain resources from other workspace: " + layerGroup.getWorkspace().getName());
+            throw new IllegalArgumentException(
+                    "Layer group within a workspace ("
+                            + ws.getName()
+                            + ") can not contain resources from other workspace: "
+                            + layerGroup.getWorkspace().getName());
         }
 
         checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayer(), ws);
@@ -928,23 +983,27 @@ public class CatalogImpl implements Catalog {
     }
 
     private void checkLayerGroupResourceIsInWorkspace(StyleInfo style, WorkspaceInfo ws) {
-        if (style == null)
-            return;
+        if (style == null) return;
 
         if (style.getWorkspace() != null && !ws.equals(style.getWorkspace())) {
-            throw new IllegalArgumentException("Layer group within a workspace (" + ws.getName()
-                    + ") can not contain styles from other workspace: " + style.getWorkspace());
+            throw new IllegalArgumentException(
+                    "Layer group within a workspace ("
+                            + ws.getName()
+                            + ") can not contain styles from other workspace: "
+                            + style.getWorkspace());
         }
     }
 
     private void checkLayerGroupResourceIsInWorkspace(LayerInfo layer, WorkspaceInfo ws) {
-        if (layer == null)
-            return;
+        if (layer == null) return;
 
         ResourceInfo r = layer.getResource();
         if (r.getStore().getWorkspace() != null && !ws.equals(r.getStore().getWorkspace())) {
-            throw new IllegalArgumentException("Layer group within a workspace (" + ws.getName()
-                    + ") can not contain resources from other workspace: " + r.getStore().getWorkspace().getName());
+            throw new IllegalArgumentException(
+                    "Layer group within a workspace ("
+                            + ws.getName()
+                            + ") can not contain resources from other workspace: "
+                            + r.getStore().getWorkspace().getName());
         }
     }
 
@@ -952,7 +1011,10 @@ public class CatalogImpl implements Catalog {
         // ensure no references to the layer group
         for (LayerGroupInfo lg : facade.getLayerGroups()) {
             if (lg.getLayers().contains(layerGroup)) {
-                String msg = "Unable to delete layer group referenced by layer group '" + lg.getName() + "'";
+                String msg =
+                        "Unable to delete layer group referenced by layer group '"
+                                + lg.getName()
+                                + "'";
                 throw new IllegalArgumentException(msg);
             }
         }
@@ -1000,8 +1062,7 @@ public class CatalogImpl implements Catalog {
 
         final LayerGroupInfo layerGroup = getLayerGroupByName((String) null, name);
 
-        if (layerGroup != null)
-            return layerGroup;
+        if (layerGroup != null) return layerGroup;
 
         // last chance: checking handle prefixed name case
         String workspaceName = null;
@@ -1107,9 +1168,10 @@ public class CatalogImpl implements Catalog {
 
         if (namespace.isIsolated() && !getCatalogCapabilities().supportsIsolatedWorkspaces()) {
             // isolated namespaces \ workspaces are not supported by this catalog
-            throw new IllegalArgumentException(String.format(
-                    "Namespace '%s:%s' is isolated but isolated workspaces are not supported by this catalog.",
-                    namespace.getPrefix(), namespace.getURI()));
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Namespace '%s:%s' is isolated but isolated workspaces are not supported by this catalog.",
+                            namespace.getPrefix(), namespace.getURI()));
         }
 
         if (isNull(namespace.getPrefix())) {
@@ -1123,14 +1185,16 @@ public class CatalogImpl implements Catalog {
 
         NamespaceInfo existing = getNamespaceByPrefix(namespace.getPrefix());
         if (existing != null && !existing.getId().equals(namespace.getId())) {
-            throw new IllegalArgumentException("Namespace with prefix '" + namespace.getPrefix() + "' already exists.");
+            throw new IllegalArgumentException(
+                    "Namespace with prefix '" + namespace.getPrefix() + "' already exists.");
         }
 
         if (!namespace.isIsolated()) {
             // not an isolated namespace \ workplace so we need to check for duplicates
             existing = getNamespaceByURI(namespace.getURI());
             if (existing != null && !existing.getId().equals(namespace.getId())) {
-                throw new IllegalArgumentException("Namespace with URI '" + namespace.getURI() + "' already exists.");
+                throw new IllegalArgumentException(
+                        "Namespace with URI '" + namespace.getURI() + "' already exists.");
             }
         }
 
@@ -1142,7 +1206,11 @@ public class CatalogImpl implements Catalog {
             new URI(namespace.getURI());
         } catch (Exception e) {
             throw new IllegalArgumentException(
-                    "Invalid URI syntax for '" + namespace.getURI() + "' in namespace '" + namespace.getPrefix() + "'");
+                    "Invalid URI syntax for '"
+                            + namespace.getURI()
+                            + "' in namespace '"
+                            + namespace.getPrefix()
+                            + "'");
         }
 
         return postValidate(namespace, isNew);
@@ -1169,7 +1237,8 @@ public class CatalogImpl implements Catalog {
 
                 setDefaultNamespace(defaultNamespace);
                 if (defaultNamespace != null) {
-                    WorkspaceInfo defaultWorkspace = getWorkspaceByName(defaultNamespace.getPrefix());
+                    WorkspaceInfo defaultWorkspace =
+                            getWorkspaceByName(defaultNamespace.getPrefix());
                     if (defaultWorkspace != null) {
                         setDefaultWorkspace(defaultWorkspace);
                     }
@@ -1197,7 +1266,8 @@ public class CatalogImpl implements Catalog {
         if (defaultNamespace != null) {
             NamespaceInfo ns = getNamespaceByPrefix(defaultNamespace.getPrefix());
             if (ns == null) {
-                throw new IllegalArgumentException("No such namespace: '" + defaultNamespace.getPrefix() + "'");
+                throw new IllegalArgumentException(
+                        "No such namespace: '" + defaultNamespace.getPrefix() + "'");
             } else {
                 defaultNamespace = ns;
             }
@@ -1211,7 +1281,8 @@ public class CatalogImpl implements Catalog {
         validate(workspace, true);
 
         if (getWorkspaceByName(workspace.getName()) != null) {
-            throw new IllegalArgumentException("Workspace with name '" + workspace.getName() + "' already exists.");
+            throw new IllegalArgumentException(
+                    "Workspace with name '" + workspace.getName() + "' already exists.");
         }
 
         WorkspaceInfo added;
@@ -1230,9 +1301,10 @@ public class CatalogImpl implements Catalog {
 
         if (workspace.isIsolated() && !getCatalogCapabilities().supportsIsolatedWorkspaces()) {
             // isolated namespaces \ workspaces are not supported by this catalog
-            throw new IllegalArgumentException(String.format(
-                    "Workspace '%s' is isolated but isolated workspaces are not supported by this catalog.",
-                    workspace.getName()));
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Workspace '%s' is isolated but isolated workspaces are not supported by this catalog.",
+                            workspace.getName()));
         }
 
         if (isNull(workspace.getName())) {
@@ -1240,12 +1312,14 @@ public class CatalogImpl implements Catalog {
         }
 
         if (workspace.getName().equals(DEFAULT)) {
-            throw new IllegalArgumentException(DEFAULT + " is a reserved keyword, can't be used as the workspace name");
+            throw new IllegalArgumentException(
+                    DEFAULT + " is a reserved keyword, can't be used as the workspace name");
         }
 
         WorkspaceInfo existing = getWorkspaceByName(workspace.getName());
         if (existing != null && !existing.getId().equals(workspace.getId())) {
-            throw new IllegalArgumentException("Workspace named '" + workspace.getName() + "' already exists.");
+            throw new IllegalArgumentException(
+                    "Workspace named '" + workspace.getName() + "' already exists.");
         }
 
         return postValidate(workspace, isNew);
@@ -1253,8 +1327,7 @@ public class CatalogImpl implements Catalog {
 
     @SuppressFBWarnings("NP_NULL_PARAM_DEREF") // I don't see this happening...
     public void remove(WorkspaceInfo workspace) {
-        // JD: maintain the link between namespace and workspace, remove this when this
-        // is no
+        // JD: maintain the link between namespace and workspace, remove this when this is no
         // longer necessary
         if (getNamespaceByPrefix(workspace.getName()) != null) {
             throw new IllegalArgumentException("Cannot delete workspace with linked namespace");
@@ -1278,7 +1351,8 @@ public class CatalogImpl implements Catalog {
 
                 setDefaultWorkspace(defaultWorkspace);
                 if (defaultWorkspace != null) {
-                    NamespaceInfo defaultNamespace = getNamespaceByPrefix(defaultWorkspace.getName());
+                    NamespaceInfo defaultNamespace =
+                            getNamespaceByPrefix(defaultWorkspace.getName());
                     if (defaultNamespace != null) {
                         setDefaultNamespace(defaultNamespace);
                     }
@@ -1307,7 +1381,8 @@ public class CatalogImpl implements Catalog {
         if (defaultWorkspace != null) {
             WorkspaceInfo ws = facade.getWorkspaceByName(defaultWorkspace.getName());
             if (ws == null) {
-                throw new IllegalArgumentException("No such workspace: '" + defaultWorkspace.getName() + "'");
+                throw new IllegalArgumentException(
+                        "No such workspace: '" + defaultWorkspace.getName() + "'");
             } else {
                 defaultWorkspace = ws;
             }
@@ -1439,7 +1514,8 @@ public class CatalogImpl implements Catalog {
                     throw new IllegalArgumentException("Cannot rename default styles");
                 }
                 if (null != style.getWorkspace()) {
-                    throw new IllegalArgumentException("Cannot change the workspace of default styles");
+                    throw new IllegalArgumentException(
+                            "Cannot change the workspace of default styles");
                 }
             }
         }
@@ -1450,12 +1526,14 @@ public class CatalogImpl implements Catalog {
     public void remove(StyleInfo style) {
         // ensure no references to the style
         for (LayerInfo l : facade.getLayers(style)) {
-            throw new IllegalArgumentException("Unable to delete style referenced by '" + l.getName() + "'");
+            throw new IllegalArgumentException(
+                    "Unable to delete style referenced by '" + l.getName() + "'");
         }
 
         for (LayerGroupInfo lg : facade.getLayerGroups()) {
             if (lg.getStyles().contains(style) || style.equals(lg.getRootLayerStyle())) {
-                String msg = "Unable to delete style referenced by layer group '" + lg.getName() + "'";
+                String msg =
+                        "Unable to delete style referenced by layer group '" + lg.getName() + "'";
                 throw new IllegalArgumentException(msg);
             }
         }
@@ -1469,9 +1547,12 @@ public class CatalogImpl implements Catalog {
     }
 
     private boolean isDefaultStyle(StyleInfo s) {
-        return s.getWorkspace() == null && (StyleInfo.DEFAULT_POINT.equals(s.getName())
-                || StyleInfo.DEFAULT_LINE.equals(s.getName()) || StyleInfo.DEFAULT_POLYGON.equals(s.getName())
-                || StyleInfo.DEFAULT_RASTER.equals(s.getName()) || StyleInfo.DEFAULT_GENERIC.equals(s.getName()));
+        return s.getWorkspace() == null
+                && (StyleInfo.DEFAULT_POINT.equals(s.getName())
+                        || StyleInfo.DEFAULT_LINE.equals(s.getName())
+                        || StyleInfo.DEFAULT_POLYGON.equals(s.getName())
+                        || StyleInfo.DEFAULT_RASTER.equals(s.getName())
+                        || StyleInfo.DEFAULT_GENERIC.equals(s.getName()));
     }
 
     public void save(StyleInfo style) {
@@ -1499,7 +1580,10 @@ public class CatalogImpl implements Catalog {
 
     @Override
     public void removeListeners(Class listenerClass) {
-        new ArrayList<>(listeners).stream().filter(l -> listenerClass.isInstance(l)).forEach(l -> listeners.remove(l));
+        new ArrayList<>(listeners)
+                .stream()
+                .filter(l -> listenerClass.isInstance(l))
+                .forEach(l -> listeners.remove(l));
     }
 
     public Iterator search(String cql) {
@@ -1524,8 +1608,7 @@ public class CatalogImpl implements Catalog {
     }
 
     public void dispose() {
-        if (resourcePool != null)
-            resourcePool.dispose();
+        if (resourcePool != null) resourcePool.dispose();
         facade.dispose();
     }
 
@@ -1544,7 +1627,8 @@ public class CatalogImpl implements Catalog {
         event(event);
     }
 
-    public void fireModified(CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+    public void fireModified(
+            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
         CatalogModifyEventImpl event = new CatalogModifyEventImpl();
 
         event.setSource(object);
@@ -1555,7 +1639,8 @@ public class CatalogImpl implements Catalog {
         event(event);
     }
 
-    public void firePostModified(CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+    public void firePostModified(
+            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
         CatalogPostModifyEventImpl event = new CatalogPostModifyEventImpl();
         event.setSource(object);
         event.setPropertyNames(propertyNames);
@@ -1574,7 +1659,7 @@ public class CatalogImpl implements Catalog {
     protected void event(CatalogEvent event) {
         CatalogException toThrow = null;
 
-        for (Iterator l = listeners.iterator(); l.hasNext();) {
+        for (Iterator l = listeners.iterator(); l.hasNext(); ) {
             try {
                 CatalogListener listener = (CatalogListener) l.next();
                 if (event instanceof CatalogAddEvent) {
@@ -1590,7 +1675,8 @@ public class CatalogImpl implements Catalog {
                 if (t instanceof CatalogException && toThrow == null) {
                     toThrow = (CatalogException) t;
                 } else if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, "Catalog listener threw exception handling event.", t);
+                    LOGGER.log(
+                            Level.WARNING, "Catalog listener threw exception handling event.", t);
                 }
             }
         }
@@ -1609,13 +1695,17 @@ public class CatalogImpl implements Catalog {
             for (KeywordInfo kw : keywords) {
                 Matcher m = KeywordInfo.RE.matcher(kw.getValue());
                 if (!m.matches()) {
-                    throw new IllegalArgumentException("Illegal keyword '" + kw + "'. "
-                            + "Keywords must not be empty and must not contain the '\\' character");
+                    throw new IllegalArgumentException(
+                            "Illegal keyword '"
+                                    + kw
+                                    + "'. "
+                                    + "Keywords must not be empty and must not contain the '\\' character");
                 }
                 if (kw.getVocabulary() != null) {
                     m = KeywordInfo.RE.matcher(kw.getVocabulary());
                     if (!m.matches()) {
-                        throw new IllegalArgumentException("Keyword vocbulary must not contain the '\\' character");
+                        throw new IllegalArgumentException(
+                                "Keyword vocbulary must not contain the '\\' character");
                     }
                 }
             }
@@ -1690,8 +1780,8 @@ public class CatalogImpl implements Catalog {
     }
 
     /**
-     * We don't want the world to be able and call this without going trough
-     * {@link #resolve(ResourceInfo)}
+     * We don't want the world to be able and call this without going trough {@link
+     * #resolve(ResourceInfo)}
      *
      * @param featureType
      */
@@ -1776,8 +1866,7 @@ public class CatalogImpl implements Catalog {
             this.isNew = isNew;
         }
 
-        public void visit(Catalog catalog) {
-        }
+        public void visit(Catalog catalog) {}
 
         public void visit(WorkspaceInfo workspace) {
             validator.validate(workspace, isNew);
@@ -1879,20 +1968,28 @@ public class CatalogImpl implements Catalog {
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of, final Filter filter) {
+    public <T extends CatalogInfo> CloseableIterator<T> list(
+            final Class<T> of, final Filter filter) {
         return list(of, filter, null, null, null);
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of, final Filter filter, Integer offset,
-            Integer count, SortBy... sortOrder) {
+    public <T extends CatalogInfo> CloseableIterator<T> list(
+            final Class<T> of,
+            final Filter filter,
+            Integer offset,
+            Integer count,
+            SortBy... sortOrder) {
         CatalogFacade facade = getFacade();
         if (sortOrder != null) {
             for (SortBy sortBy : sortOrder) {
-                if (sortBy != null && !facade.canSort(of, sortBy.getPropertyName().getPropertyName())) {
+                if (sortBy != null
+                        && !facade.canSort(of, sortBy.getPropertyName().getPropertyName())) {
                     // TODO: use GeoTools' merge-sort code to provide sorting anyways
-                    throw new UnsupportedOperationException("Catalog backend can't sort on property "
-                            + sortBy.getPropertyName() + " in-process sorting is pending implementation");
+                    throw new UnsupportedOperationException(
+                            "Catalog backend can't sort on property "
+                                    + sortBy.getPropertyName()
+                                    + " in-process sorting is pending implementation");
                 }
             }
             // To avoid nulls array when it should be sortOrder == null
@@ -1905,7 +2002,8 @@ public class CatalogImpl implements Catalog {
     }
 
     @Override
-    public <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
+            throws IllegalArgumentException {
 
         final Integer limit = Integer.valueOf(2);
         CloseableIterator<T> it = list(type, filter, null, limit, null);
@@ -1914,7 +2012,8 @@ public class CatalogImpl implements Catalog {
             if (it.hasNext()) {
                 result = it.next();
                 if (it.hasNext()) {
-                    throw new IllegalArgumentException("Specified query predicate resulted in more than one object");
+                    throw new IllegalArgumentException(
+                            "Specified query predicate resulted in more than one object");
                 }
             }
         } finally {

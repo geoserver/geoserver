@@ -10,7 +10,10 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-authkey*</include>
-        <include>json*</include>
+        <include>json-lib*</include>
+        <include>json-path*</include>
+        <include>json-simple*</include>
+        <include>json-smart*</include>
         <include>httpcore*</include>
         <include>httpclient*</include>
       </includes>

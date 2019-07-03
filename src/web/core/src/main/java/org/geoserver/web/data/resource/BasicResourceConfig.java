@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -121,7 +122,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         refForm.add(new ReprojectionIsPossibleValidator(nativeCRS, declaredCRS, projectionPolicy));
 
-        TextField<Integer> sortIndex = new TextField<Integer>("sortIndex");
+        TextField<Integer> sortIndex = new SortIndexTextField("sortIndex");
         refForm.add(sortIndex);
     }
 

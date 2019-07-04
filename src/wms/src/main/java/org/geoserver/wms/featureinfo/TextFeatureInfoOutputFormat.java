@@ -10,9 +10,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import net.opengis.wfs.FeatureCollectionType;
+import org.geoserver.data.util.TemporalUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
@@ -102,8 +104,8 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
                             for (AttributeDescriptor descriptor : types) {
                                 final Name name = descriptor.getName();
-                                if (Geometry.class.isAssignableFrom(
-                                        descriptor.getType().getBinding())) {
+                                final Class<?> binding = descriptor.getType().getBinding();
+                                if (Geometry.class.isAssignableFrom(binding)) {
                                     // writer.println(types[j].getName() + " =
                                     // [GEOMETRY]");
 
@@ -130,6 +132,12 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                                         // GEOS-6829
                                         writer.println(name + " = null");
                                     }
+                                } else if (Date.class.isAssignableFrom(binding)
+                                        && TemporalUtils.isDateTimeFormatEnabled()) {
+                                    // Temporal types print handling
+                                    String printValue =
+                                            TemporalUtils.printDate((Date) f.getAttribute(name));
+                                    writer.println(name + " = " + printValue);
                                 } else {
                                     writer.println(name + " = " + f.getAttribute(name));
                                 }

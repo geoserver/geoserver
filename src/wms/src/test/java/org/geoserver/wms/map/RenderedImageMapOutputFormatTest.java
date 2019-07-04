@@ -110,7 +110,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opengis.feature.Feature;
@@ -383,7 +382,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ArgumentCaptor<Shape> shape = ArgumentCaptor.forClass(Shape.class);
         Mockito.verify(graphics).draw(shape.capture());
         LiteShape2 drawnShape = (LiteShape2) shape.getValue();
-        assertTrue(drawnShape.getGeometry() instanceof MultiLineString);
+        // used to become a multilinestring due to a wrapping bug that has been solved,
+        // but now it's a LineString...
+        // assertTrue(drawnShape.getGeometry() instanceof MultiLineString);
+        assertTrue(drawnShape.getGeometry() instanceof LineString);
     }
 
     @Test

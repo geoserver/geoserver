@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.io.Files;
@@ -58,5 +59,18 @@ public class FileExistsValidatorTest {
 
         validator.validate(validatable);
         assertTrue(validatable.isValid());
+    }
+
+    /**
+     * Checks validation error is present if remote URL is not allowed and an http:// url is
+     * validated.
+     */
+    @Test
+    public void testRemoteNotAllowed() throws Exception {
+        StringValidatable validatable =
+                new StringValidatable("http://localhost:8080/BlueMarble.tiff");
+        FileExistsValidator validator2 = new FileExistsValidator(false);
+        validator2.validate(validatable);
+        assertFalse(validatable.isValid());
     }
 }

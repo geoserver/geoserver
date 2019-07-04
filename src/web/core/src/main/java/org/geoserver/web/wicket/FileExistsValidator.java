@@ -55,6 +55,7 @@ public class FileExistsValidator implements IValidator<String> {
         try {
             URI uri = new URI(uriSpec);
             if (uri.getScheme() != null && !"file".equals(uri.getScheme())) {
+                // if delegate is null, remote URL is allowed
                 if (delegate != null) {
                     delegate.validate(validatable);
                     InputStream is = null;
@@ -71,6 +72,13 @@ public class FileExistsValidator implements IValidator<String> {
                     } finally {
                         IOUtils.closeQuietly(is);
                     }
+                } else {
+                    // no remote URL allowed and it isn't a file -> validation error
+                    IValidationError err =
+                            new ValidationError("FileExistsValidator.remoteNotAllowed")
+                                    .addKey("FileExistsValidator.remoteNotAllowed")
+                                    .setVariable("file", uriSpec);
+                    validatable.error(err);
                 }
                 return;
             } else {

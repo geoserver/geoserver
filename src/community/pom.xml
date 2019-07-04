@@ -61,6 +61,7 @@
           <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>
           <descriptor>release/ext-gwc-s3.xml</descriptor>
+          <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
@@ -234,6 +235,7 @@
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-s3</module>
+        <module>gwc-azure-blob</module>
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>web-resource</module>
@@ -430,6 +432,12 @@
       <id>gwc-s3</id>
       <modules>
         <module>gwc-s3</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gwc-azure-blob</id>
+      <modules>
+        <module>gwc-azure-blob</module>
       </modules>
     </profile>
     <profile>

@@ -194,7 +194,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new TextField(
                         "watermark.uRL",
                         new FileModel(new PropertyModel<String>(form.getModel(), "watermark.URL")));
-        watermarkUrlField.add(new FileExistsValidator(false));
+        watermarkUrlField.add(new FileExistsValidator(true));
         watermarkUrlField.setOutputMarkupId(true);
         form.add(watermarkUrlField);
         form.add(

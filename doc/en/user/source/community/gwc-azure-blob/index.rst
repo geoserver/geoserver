@@ -16,8 +16,8 @@ Installing the Azure BlobStore plugin
 Configuring the Azure BlobStore plugin
 --------------------------------------
 
-Once the plugin has been installed, one or more S3 BlobStores may be configured through :ref:`gwc_webadmin_blobstores`.
-Afterwards, cached layers can be explicitely assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
+Once the plugin has been installed, one or more Azure BlobStores may be configured through :ref:`gwc_webadmin_blobstores`.
+Afterwards, cached layers can be explicitly assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
 
 .. figure:: img/azureblobstore.png
    :align: center
@@ -37,7 +37,7 @@ Azure storage Account Key.
 
 Azure Object Key Prefix
 ~~~~~~~~~~~~~~~~~~~~~~~
-A prefix path to use as the root to store tiles under the bucket (optional).
+A prefix path to use as the root to store tiles under the container (optional).
 
 
 Maximum Connections

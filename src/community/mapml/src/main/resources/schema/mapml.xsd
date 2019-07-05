@@ -312,7 +312,7 @@
   </xs:element>
   <xs:element name="multipoint" substitutionGroup="GeometryContent">
     <xs:complexType>
-      <xs:group maxOccurs="unbounded" ref="coordinatePair"/>
+      <xs:group ref="twoOrMoreCoordinatePairs"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="multilinestring" substitutionGroup="GeometryContent">

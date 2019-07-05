@@ -173,10 +173,8 @@ public class MapMLGenerator {
     private static org.geoserver.mapml.xml.MultiPoint buildMultiPoint(
             org.locationtech.jts.geom.MultiPoint mp) {
         org.geoserver.mapml.xml.MultiPoint multiPoint = new org.geoserver.mapml.xml.MultiPoint();
-        List<JAXBElement<List<String>>> mpCoords = multiPoint.getCoordinatePair();
-        mpCoords.add(
-                factory.createMultiPointCoordinates(
-                        buildCoordinates(new CoordinateArraySequence(mp.getCoordinates()), null)));
+        List<String> mpCoords = multiPoint.getCoordinates();
+        buildCoordinates(new CoordinateArraySequence(mp.getCoordinates()), mpCoords);
         return multiPoint;
     }
 

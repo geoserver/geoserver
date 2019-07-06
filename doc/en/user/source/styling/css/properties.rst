@@ -280,6 +280,10 @@ Text symbology (labeling) - part 1
       * length
       * The size for the font to display. 
       * yes
+    - * ``font-opacity``
+      * percentage
+      * The opacity of the text, from 0 (fully transparent) to 1.0 (fully opaque).
+      * yes
     - * ``halo-radius``
       * length
       * The size of a halo to display around the lettering (to enhance

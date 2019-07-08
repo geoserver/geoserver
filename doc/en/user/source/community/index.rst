@@ -32,6 +32,7 @@ officially part of the GeoServer releases. They are however built along with the
    gwc-distributed/index
    gdal/index
    gwc-s3/index
+   gwc-azure-blob/index
    gwc-sqlite/index
    params-extractor/index
    remote-wps/index

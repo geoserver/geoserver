@@ -24,6 +24,7 @@ headContent =
         attribute content {text}?,
         attribute http-equiv {text}?
     }* &
+    element style { text }? &
     element title { text }? &
     links
 
@@ -107,7 +108,7 @@ GeometryContent = point | linestring | polygon | multipoint | multilinestring | 
 point = element point { coordinatePair }
 linestring = element linestring { twoOrMoreCoordinatePairs }
 polygon = element polygon { threeOrMoreCoordinatePairs+ }
-multipoint = element multipoint { coordinatePair+ }
+multipoint = element multipoint { twoOrMoreCoordinatePairs }
 multilinestring = element multilinestring { twoOrMoreCoordinatePairs+ }
 multipolygon = element multipolygon { polygon+ }
 geometrycollection = element geometrycollection {

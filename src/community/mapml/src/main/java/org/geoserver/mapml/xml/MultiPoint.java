@@ -10,10 +10,10 @@ package org.geoserver.mapml.xml;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -34,33 +34,33 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
     name = "",
-    propOrder = {"coordinatePair"}
+    propOrder = {"coordinates"}
 )
 public class MultiPoint {
 
-    @XmlElementRef(name = "coordinates", type = JAXBElement.class)
-    protected List<JAXBElement<List<String>>> coordinatePair;
+    @XmlList
+    @XmlElement(required = true)
+    protected List<String> coordinates;
 
     /**
-     * Gets the value of the coordinatePair property.
+     * Gets the value of the coordinates property.
      *
      * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
      * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the coordinatePair property.
+     * why there is not a <CODE>set</CODE> method for the coordinates property.
      *
      * <p>For example, to add a new item, do as follows:
      *
      * <pre>
-     *    getCoordinatePair().add(newItem);
+     *    getCoordinates().add(newItem);
      * </pre>
      *
-     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
-     * <}{@link List }{@code <}{@link String }{@code >}{@code >}
+     * <p>Objects of the following type(s) are allowed in the list {@link String }
      */
-    public List<JAXBElement<List<String>>> getCoordinatePair() {
-        if (coordinatePair == null) {
-            coordinatePair = new ArrayList<JAXBElement<List<String>>>();
+    public List<String> getCoordinates() {
+        if (coordinates == null) {
+            coordinates = new ArrayList<String>();
         }
-        return this.coordinatePair;
+        return this.coordinates;
     }
 }

@@ -432,6 +432,22 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPostToWorkspaceApplicationXML() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
+        response.setContentType(MediaType.APPLICATION_XML_VALUE);
+        assertEquals(201, response.getStatus());
+        assertThat(
+                response.getContentType(),
+                CoreMatchers.startsWith(MediaType.APPLICATION_XML_VALUE));
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+    }
+
+    @Test
     public void testPut() throws Exception {
         StyleInfo style = catalog.getStyleByName("Ponds");
         assertEquals("Ponds.sld", style.getFilename());

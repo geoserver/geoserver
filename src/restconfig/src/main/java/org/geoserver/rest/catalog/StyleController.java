@@ -118,7 +118,7 @@ public class StyleController extends AbstractCatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE
         },
-        produces = MediaType.TEXT_PLAIN_VALUE
+        produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @ResponseStatus(HttpStatus.CREATED)
     public String stylePost(

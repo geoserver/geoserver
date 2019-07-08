@@ -10,7 +10,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSInfo;
-import org.opengis.feature.type.Name;
 
 /**
  * Parses a {@code typeName} GetFeature parameter the form "([prefix:]local)+".
@@ -43,8 +42,7 @@ public class TypeNameKvpParser extends QNameKvpParser {
             if (ftInfo == null) {
                 return new QName(null, token);
             } else {
-                final Name name = ftInfo.getFeatureType().getName();
-                return new QName(name.getNamespaceURI(), name.getLocalPart());
+                return new QName(ftInfo.getNamespace().getURI(), token);
             }
         }
     }

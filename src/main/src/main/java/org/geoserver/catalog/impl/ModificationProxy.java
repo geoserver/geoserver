@@ -475,7 +475,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     private Collection cloneCollection(Collection oldCollection) {
         Class<? extends Collection> oldCollectionClass = oldCollection.getClass();
         try {
-            Collection clone = oldCollectionClass.newInstance();
+            Collection clone = oldCollectionClass.getDeclaredConstructor().newInstance();
             for (Object o : oldCollection) {
                 if (o instanceof CatalogInfo) {
                     CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) o);

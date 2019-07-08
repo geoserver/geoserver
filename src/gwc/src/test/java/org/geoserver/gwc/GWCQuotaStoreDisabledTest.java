@@ -5,8 +5,8 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import org.geoserver.config.GeoServerDataDirectory;

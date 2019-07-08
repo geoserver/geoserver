@@ -81,44 +81,34 @@ public class ProxyUtils {
      * @param h The invocation handler to intercept method calls.
      */
     public static <T> T createProxy(T proxyObject, Class<T> clazz, InvocationHandler h) {
-        ProxyClassConstructorKey key = new ProxyClassConstructorKey(proxyObject.getClass(), clazz);
-        Constructor<?> constructor = PROXY_CLASS_CACHE.get(key);
-        T proxy;
         try {
-            if (constructor == null) {
-                // proxy all interfaces implemented by the source object
-                List<Class> proxyInterfaces =
-                        (List) Arrays.asList(proxyObject.getClass().getInterfaces());
+            // proxy all interfaces implemented by the source object
+            List<Class> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());
 
-                // ensure that the specified class is included
-                boolean add = true;
-                for (Class interfce : proxyObject.getClass().getInterfaces()) {
-                    if (clazz.isAssignableFrom(interfce)) {
-                        add = false;
-                        break;
-                    }
+            // ensure that the specified class is included
+            boolean add = true;
+            for (Class interfce : proxyObject.getClass().getInterfaces()) {
+                if (clazz.isAssignableFrom(interfce)) {
+                    add = false;
+                    break;
                 }
-                if (add) {
-                    // make the list mutable (Arrays.asList is not) and then add the extra
-                    // interfaces
-                    proxyInterfaces = new ArrayList<Class>(proxyInterfaces);
-                    proxyInterfaces.add(clazz);
-                }
-
-                Class proxyClass =
-                        Proxy.getProxyClass(
-                                clazz.getClassLoader(),
-                                proxyInterfaces.toArray(new Class[proxyInterfaces.size()]));
-                constructor = proxyClass.getConstructor(new Class[] {InvocationHandler.class});
-                PROXY_CLASS_CACHE.put(key, constructor);
+            }
+            if (add) {
+                // make the list mutable (Arrays.asList is not) and then add the extra
+                // interfaces
+                proxyInterfaces = new ArrayList<>(proxyInterfaces);
+                proxyInterfaces.add(clazz);
             }
 
-            proxy = (T) constructor.newInstance(new Object[] {h});
+            return (T)
+                    Proxy.newProxyInstance(
+                            clazz.getClassLoader(),
+                            proxyInterfaces.toArray(new Class[proxyInterfaces.size()]),
+                            h);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return proxy;
     }
 
     /**

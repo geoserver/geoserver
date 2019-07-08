@@ -20,8 +20,8 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.decorate.AbstractDecorator;
 
 /**
  * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will override selected
@@ -185,11 +185,6 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
                 .append(delegate)
                 .append(']')
                 .toString();
-    }
-
-    @Override
-    public String getPrefixedName() {
-        return delegate.prefixedName();
     }
 
     @Override

@@ -213,7 +213,7 @@ public abstract class StyleHandler {
         return IMAGE_EXTENSIONS;
     }
 
-    public String insertImageCode(String imageFileName) {
+    public String insertImageCode(String imageFileName, String styleContent) {
         return imageFileName;
     }
 }

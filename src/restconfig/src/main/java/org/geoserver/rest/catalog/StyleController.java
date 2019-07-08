@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.xml.resolver.apps.resolver;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -54,7 +55,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -106,7 +117,8 @@ public class StyleController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE
-        }
+        },
+        produces = MediaType.TEXT_PLAIN_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
     public String stylePost(
@@ -185,6 +197,7 @@ public class StyleController extends AbstractCatalogController {
         LOGGER.info("POST Style Package: " + name + ", workspace: " + workspaceName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(getUri(name, workspaceName, builder));
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 
@@ -235,6 +248,7 @@ public class StyleController extends AbstractCatalogController {
         // build the new path
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(getUri(name, workspaceName, builder));
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 
@@ -534,7 +548,7 @@ public class StyleController extends AbstractCatalogController {
         try {
             catalog.getResourcePool().writeStyle(info, input);
         } finally {
-            IOUtils.closeQuietly(input);
+            org.geoserver.util.IOUtils.closeQuietly(input);
         }
     }
 
@@ -547,11 +561,7 @@ public class StyleController extends AbstractCatalogController {
      */
     private Style parseSld(File sldFile) throws RestException {
         Style style = null;
-        InputStream is = null;
-
-        try {
-            is = new FileInputStream(sldFile);
-
+        try (InputStream is = new FileInputStream(sldFile)) {
             SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
             EntityResolver resolver = catalog.getResourcePool().getEntityResolver();
             if (resolver != null) {
@@ -570,9 +580,6 @@ public class StyleController extends AbstractCatalogController {
         } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
             throw new RestException("Style error. " + ex.getMessage(), HttpStatus.BAD_REQUEST);
-
-        } finally {
-            IOUtils.closeQuietly(is);
         }
     }
 

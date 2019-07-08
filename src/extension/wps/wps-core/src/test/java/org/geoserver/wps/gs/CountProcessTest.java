@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;

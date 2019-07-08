@@ -49,7 +49,7 @@ public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
             gwcContactInfo.setAddressCountry(gsContactInfo.getAddressCountry());
             gwcContactInfo.setPhoneNumber(gsContactInfo.getContactVoice());
             gwcContactInfo.setFaxNumber(gsContactInfo.getContactFacsimile());
-            gwcContactInfo.setAddressEmail(gsContactInfo.getAddressElectronicMailAddress());
+            gwcContactInfo.setAddressEmail(gsContactInfo.getContactEmail());
             serviceProvider.setServiceContact(gwcContactInfo);
         }
         gwcInfo.setServiceProvider(serviceProvider);

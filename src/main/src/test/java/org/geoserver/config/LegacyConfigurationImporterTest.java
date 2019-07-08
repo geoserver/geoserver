@@ -38,10 +38,10 @@ public class LegacyConfigurationImporterTest {
         assertEquals("DEFAULT_LOGGING.properties", logging.getLevel());
         assertTrue(logging.isStdOutLogging());
         assertEquals("logs/geoserver.log", logging.getLocation());
-        assertFalse(info.isVerbose());
-        assertFalse(info.isVerboseExceptions());
-        assertEquals(8, info.getNumDecimals());
-        assertEquals("UTF-8", info.getCharset());
+        assertFalse(info.getSettings().isVerbose());
+        assertFalse(info.getSettings().isVerboseExceptions());
+        assertEquals(8, info.getSettings().getNumDecimals());
+        assertEquals("UTF-8", info.getSettings().getCharset());
         assertEquals(3, info.getUpdateSequence());
     }
 }

@@ -85,16 +85,14 @@ public class Script implements Serializable {
     }
 
     private String readFile(Resource file) {
-        InputStream in = file.in();
-        try {
+
+        try (InputStream in = file.in()) {
             String s = IOUtils.toString(in);
             return s;
         } catch (IOException ex) {
             LOGGER.warning(
                     String.format(
                             "Error reading file '%s' because ", file.path(), ex.getMessage()));
-        } finally {
-            IOUtils.closeQuietly(in);
         }
         return "";
     }

@@ -31,8 +31,8 @@ matrix:
   include:
     - jdk: oraclejdk8
       env: ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
-    - jdk: oraclejdk11
+    - jdk: openjdk11
       env: ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
-    - jdk: oraclejdk11
+    - jdk: openjdk11
       env: ARGS="-Dfmt.action=check -Dqa -DskipTests=true" COMMUNITY_ARGS="-Dfmt.action=check -DskipTests=true"
 

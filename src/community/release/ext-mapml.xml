@@ -11,6 +11,7 @@
       <includes>
         <include>gs-mapml*.jar</include>
         <include>spring-oxm*.jar</include>
+        <include>org.eclipse.persistence*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

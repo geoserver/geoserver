@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.servlet.ServletException;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -46,14 +47,27 @@ public class TestWfsPostOnlineIntegrationTest {
 
     protected MockHttpServletResponse doWfsPost(String username, String password)
             throws ServletException, IOException {
-        TestWfsPost servlet = new TestWfsPost();
+        return doWfsPost(username, password, false);
+    }
+
+    protected MockHttpServletResponse doWfsPost(
+            String username, String password, boolean useHttpBasicAuth)
+            throws ServletException, IOException {
+        TestWfsPost servlet = TestWfsPostTest.buildMockServlet();
         MockHttpServletRequest request = TestWfsPostTest.buildMockRequest();
         request.setParameter("url", "http://localhost:8080/geoserver/wfs");
         request.setParameter("body", WFS_REQUEST);
 
         if (username != null && password != null) {
-            request.setParameter("username", username);
-            request.setParameter("password", password);
+            if (useHttpBasicAuth) {
+                String up = username + ":" + password;
+                byte[] encoded = Base64.encodeBase64(up.getBytes());
+                String authHeader = "Basic " + new String(encoded);
+                request.addHeader("Authorization", authHeader);
+            } else {
+                request.setParameter("username", username);
+                request.setParameter("password", password);
+            }
         }
         request.setMethod("GET");
 
@@ -98,5 +112,15 @@ public class TestWfsPostOnlineIntegrationTest {
 
         assertFalse(response.getContentAsString().contains("wfs:FeatureCollection"));
         assertTrue(response.getContentAsString().contains("HTTP response: 401"));
+    }
+
+    @Test
+    public void testWfsPostNotForwardingHeader() throws IOException, ServletException {
+        Assume.assumeTrue(isOnline());
+        // Use a header with bad credentials, expecting it will be ignored
+        MockHttpServletResponse response = doWfsPost("admin", "badpassword", true);
+
+        assertFalse(response.getContentAsString().contains("HTTP response: 401"));
+        assertTrue(response.getContentAsString().contains("wfs:FeatureCollection"));
     }
 }

@@ -91,3 +91,12 @@ If you wish to change this behavior you can do so through the following properti
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
 
+
+OWS ServiceException XML mimeType
+--------------------------------------------------
+
+By default, OWS Service Exception XML responses have content-type set to application/xml.
+In case you want it set to text/xml instead, you need to setup the Java System properties:
+
+* -Dows10.exception.xml.responsetype=text/xml for OWS 1.0.0 version
+* -Dows11.exception.xml.responsetype=text/xml for OWS 1.1.0 version

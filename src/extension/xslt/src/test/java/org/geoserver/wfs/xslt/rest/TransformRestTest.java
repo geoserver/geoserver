@@ -27,6 +27,7 @@ import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -134,6 +135,7 @@ public class TransformRestTest extends XSLTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wfs/transforms", xml);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")
@@ -150,7 +152,8 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPostXSLT() throws Exception {
         String xslt =
                 FileUtils.readFileToString(
-                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"));
+                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"),
+                        "UTF-8");
 
         // test for missing params
         MockHttpServletResponse response =
@@ -209,7 +212,8 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPutXSLT() throws Exception {
         String xslt =
                 FileUtils.readFileToString(
-                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"));
+                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"),
+                        "UTF-8");
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wfs/transforms/general",
@@ -218,13 +222,9 @@ public class TransformRestTest extends XSLTTestSupport {
         assertEquals(200, response.getStatus());
 
         TransformInfo info = repository.getTransformInfo("general");
-        InputStream is = null;
-        String actual = null;
-        try {
-            is = repository.getTransformSheet(info);
-            actual = IOUtils.toString(is);
-        } finally {
-            IOUtils.closeQuietly(is);
+        String actual;
+        try (InputStream is = repository.getTransformSheet(info)) {
+            actual = IOUtils.toString(is, "UTF-8");
         }
 
         assertEquals(xslt, actual);

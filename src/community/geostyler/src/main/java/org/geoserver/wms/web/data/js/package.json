@@ -1,0 +1,31 @@
+{
+    "name": "GeoStyler - GeoSever integration",
+    "type": "code",
+    "version": "0.0.1",
+    "description": "GeoStyler - GeoSever integration",
+    "license": "GPL-3.0",
+    "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
+    "contributors": [
+        "Nils Bühner <buehner@terrestris.de>",
+        "André Henn <henn@terrestris.de>",
+        "Kai Volland <volland@terrestris.de>"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://gitlab.intranet.terrestris.de/terrestris/geoserver-geostyler-addon.git"
+    },
+    "bugs": {
+        "url": "https://to.be/defined"
+    },
+    "scripts": {},
+    "dependencies": {
+        "antd": "3.11.2",
+        "geostyler": "0.28.0",
+        "geostyler-geojson-parser": "0.4.6",
+        "geostyler-sld-parser": "0.18.0",
+        "geostyler-style": "0.14.2",
+        "geostyler-wfs-parser": "0.7.3",
+        "react": "16.7.0",
+        "react-dom": "16.7.0"
+    }
+}

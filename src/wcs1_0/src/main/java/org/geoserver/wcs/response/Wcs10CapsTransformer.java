@@ -661,13 +661,13 @@ public class Wcs10CapsTransformer extends TransformerBase {
                         LOGGER.log(
                                 Level.SEVERE,
                                 "Skipping coverage: "
-                                        + cvInfo.getPrefixedName()
+                                        + cvInfo.prefixedName()
                                         + " as its capabilities generation failed",
                                 e);
                     } else {
                         throw new RuntimeException(
                                 "Capabilities document generation failed on coverage "
-                                        + cvInfo.getPrefixedName(),
+                                        + cvInfo.prefixedName(),
                                 e);
                     }
                 }
@@ -695,7 +695,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                     element("wcs:description", tmp);
                 }
 
-                tmp = cv.getPrefixedName();
+                tmp = cv.prefixedName();
 
                 if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:name", tmp);

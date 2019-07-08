@@ -25,7 +25,7 @@ public class StringRawData extends AbstractRawData {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return IOUtils.toInputStream(data);
+        return IOUtils.toInputStream(data, "UTF-8");
     }
 
     @Override

@@ -67,7 +67,8 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals(MBStyleHandler.MIME_TYPE, response.getContentType());
         String responseContent = response.getContentAsString();
-        String expected = IOUtils.toString(this.getClass().getResourceAsStream("teststyle.json"));
+        String expected =
+                IOUtils.toString(this.getClass().getResourceAsStream("teststyle.json"), "UTF-8");
         assertEquals(expected, responseContent);
     }
 

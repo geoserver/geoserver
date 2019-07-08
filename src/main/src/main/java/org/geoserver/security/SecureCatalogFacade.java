@@ -363,16 +363,8 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.getFeatureTypesByNamespace(namespace);
     }
 
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
-        return catalog.getFeatureTypeByStore(dataStore, name);
-    }
-
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return catalog.getFeatureTypeByDataStore(dataStore, name);
-    }
-
-    public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
-        return catalog.getFeatureTypesByStore(store);
     }
 
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {
@@ -566,11 +558,6 @@ class SecureCatalogFacade implements CatalogFacade {
 
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
         return catalog.list(of, filter);
-    }
-
-    public <T extends CatalogInfo> CloseableIterator<T> list(
-            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
-        return catalog.list(of, filter, offset, count, sortBy);
     }
 
     @Override

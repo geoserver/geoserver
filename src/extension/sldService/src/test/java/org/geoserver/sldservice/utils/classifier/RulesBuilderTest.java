@@ -72,7 +72,7 @@ public class RulesBuilderTest {
                                 Integer.valueOf(i + 1),
                                 names[i],
                                 Integer.valueOf(iVal[i]),
-                                new Double(dVal[i]),
+                                Double.valueOf(dVal[i]),
                                 fac.createPoint(new Coordinate(iVal[i], iVal[i])),
                                 "Group" + (i % 4)
                             },
@@ -106,7 +106,7 @@ public class RulesBuilderTest {
                             jenksType,
                             new Object[] {
                                 Integer.valueOf(i + 1),
-                                new Double(jenks71[i]),
+                                Double.valueOf(jenks71[i]),
                                 fac.createLineString(
                                         new Coordinate[] {
                                             new Coordinate(jenks71[i], jenks71[i]),
@@ -198,8 +198,8 @@ public class RulesBuilderTest {
                             pointCollection, "foo", Integer.class, numClasses, false, false);
             builder.polygonStyle(rules, new BlueColorRamp(), false);
             Rule ruleOne = rules.get(0);
-            assertTrue(ruleOne.getSymbolizers()[0] instanceof PolygonSymbolizer);
-            PolygonSymbolizer symbolizer = (PolygonSymbolizer) ruleOne.getSymbolizers()[0];
+            assertTrue(ruleOne.symbolizers().get(0) instanceof PolygonSymbolizer);
+            PolygonSymbolizer symbolizer = (PolygonSymbolizer) ruleOne.symbolizers().get(0);
             assertEquals(
                     new Color(0, 0, MIN_COLOR_INT),
                     symbolizer.getFill().getColor().evaluate(null, Color.class));
@@ -216,7 +216,7 @@ public class RulesBuilderTest {
                     builder.equalIntervalClassification(
                             pointCollection, "foo", Integer.class, numClasses, false, false);
             builder.polygonStyle(rules, new BlueColorRamp(), true);
-            PolygonSymbolizer symbolizer = (PolygonSymbolizer) rules.get(0).getSymbolizers()[0];
+            PolygonSymbolizer symbolizer = (PolygonSymbolizer) rules.get(0).symbolizers().get(0);
             assertEquals(
                     new Color(0, 0, MAX_COLOR_INT),
                     symbolizer.getFill().getColor().evaluate(null, Color.class));
@@ -233,8 +233,8 @@ public class RulesBuilderTest {
                             lineCollection, "jenks71", Integer.class, numClasses, false, false);
             builder.lineStyle(rules, new BlueColorRamp(), false);
             Rule ruleOne = rules.get(0);
-            assertTrue(ruleOne.getSymbolizers()[0] instanceof LineSymbolizer);
-            LineSymbolizer symbolizer = (LineSymbolizer) ruleOne.getSymbolizers()[0];
+            assertTrue(ruleOne.symbolizers().get(0) instanceof LineSymbolizer);
+            LineSymbolizer symbolizer = (LineSymbolizer) ruleOne.symbolizers().get(0);
             assertEquals(
                     new Color(0, 0, MIN_COLOR_INT),
                     symbolizer.getStroke().getColor().evaluate(null, Color.class));
@@ -251,7 +251,7 @@ public class RulesBuilderTest {
                     builder.jenksClassification(
                             lineCollection, "jenks71", Integer.class, numClasses, false, false);
             builder.lineStyle(rules, new BlueColorRamp(), true);
-            LineSymbolizer symbolizer = (LineSymbolizer) rules.get(0).getSymbolizers()[0];
+            LineSymbolizer symbolizer = (LineSymbolizer) rules.get(0).symbolizers().get(0);
             assertEquals(
                     new Color(0, 0, MAX_COLOR_INT),
                     symbolizer.getStroke().getColor().evaluate(null, Color.class));

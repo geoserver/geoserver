@@ -18,7 +18,7 @@ public class ShapeZipPPIOTest {
     @Test
     public void testDecodeBadEntryName() throws Exception {
         try (InputStream input = ZipTestUtil.getZipSlipInput()) {
-            new ShapeZipPPIO(null).decode(input);
+            new ShapeZipPPIO(null, null, null, null).decode(input);
             fail("Expected decompression to fail");
         } catch (IOException e) {
             assertThat(e.getMessage(), startsWith("Entry is outside of the target directory"));

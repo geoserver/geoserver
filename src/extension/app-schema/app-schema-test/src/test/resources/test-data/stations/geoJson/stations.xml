@@ -58,6 +58,7 @@
                     <sourceExpression>
                         <OCQL>PHONE</OCQL>
                     </sourceExpression>
+                    <encodeIfEmpty>true</encodeIfEmpty>
                     <ClientProperty>
                         <name>timeZone</name>
                         <value>TIMEZONE</value>
@@ -86,6 +87,51 @@
                     <ClientProperty>
                         <name>xlink:href</name>
                         <value>strConcat('http://www.stations.org/', ID)</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st_${GML_PREFIX}:featureLinkA</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:role</name>
+                        <value>'http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/GeologicUnit/GeologicUnit.html'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'http://www.geoserver.org/featureA'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:title</name>
+                        <value>'The A feature'</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st_${GML_PREFIX}:featureLinkB</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:role</name>
+                        <value>'http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/GeologicUnit/GeologicUnit.html'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'http://www.geoserver.org/featureB'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:title</name>
+                        <value>'The B feature'</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st_${GML_PREFIX}:featureLinkC</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:role</name>
+                        <value>'http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/GeologicUnit/GeologicUnit.html'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'http://www.geoserver.org/featureC'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:title</name>
+                        <value>'The C feature'</value>
                     </ClientProperty>
                 </AttributeMapping>
             </attributeMappings>

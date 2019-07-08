@@ -5,7 +5,7 @@
  */
 package org.geoserver.wfs.response;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,7 +106,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         // ... a number cell
         cell = sheet.getRow(1).getCell(6);
         assertEquals(CellType.NUMERIC, cell.getCellType());
-        assertEquals(((Number) sf.getAttribute(5)).doubleValue(), cell.getNumericCellValue());
+        assertEquals(((Number) sf.getAttribute(5)).doubleValue(), cell.getNumericCellValue(), 0d);
         // ... a date cell (they are mapped as numeric in xms?)
         cell = sheet.getRow(1).getCell(10);
         assertEquals(CellType.NUMERIC, cell.getCellType());

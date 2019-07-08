@@ -10,8 +10,8 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geoserver.catalog.impl.FilteredList;
+import org.geotools.util.decorate.AbstractDecorator;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 

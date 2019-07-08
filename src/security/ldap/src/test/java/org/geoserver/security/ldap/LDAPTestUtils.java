@@ -11,24 +11,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import javax.naming.Binding;
 import javax.naming.ContextNotEmptyException;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.core.DefaultDirectoryService;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapAttributes;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DefaultDirObjectFactory;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.ldif.parser.LdifParser;
+import org.springframework.ldap.support.LdapUtils;
 
 /**
  * copied and modified from org.springframework.ldap.test.LdapTestUtils to allow anonymous access
@@ -39,7 +42,7 @@ import org.springframework.ldap.ldif.parser.LdifParser;
  * @author Niels Charlier
  */
 public class LDAPTestUtils {
-    private static final int LDAP_SERVER_PORT = 10389;
+    public static final int LDAP_SERVER_PORT = 10389;
     public static final String LDAP_SERVER_URL = "ldap://127.0.0.1:10389";
     public static final String LDAP_BASE_PATH = "dc=example,dc=com";
     public static final String DEFAULT_PRINCIPAL = "uid=admin,ou=system";
@@ -128,7 +131,7 @@ public class LDAPTestUtils {
                 // Clear out any old data - and load the test data
                 cleanAndSetup(
                         template.getContextSource(),
-                        new DistinguishedName("dc=example,dc=com"),
+                        new LdapName("dc=example,dc=com"),
                         new ClassPathResource(ldifPath));
                 return true;
             }
@@ -208,8 +211,9 @@ public class LDAPTestUtils {
             enumeration = ctx.listBindings(name);
             while (enumeration.hasMore()) {
                 Binding element = (Binding) enumeration.next();
-                DistinguishedName childName = new DistinguishedName(element.getName());
-                childName.prepend((DistinguishedName) name);
+                ArrayList<Rdn> list = new ArrayList<>(((LdapName) name).getRdns());
+                list.addAll(LdapUtils.newLdapName(element.getName()).getRdns());
+                LdapName childName = new LdapName(list);
 
                 try {
                     ctx.destroySubcontext(childName);
@@ -251,17 +255,18 @@ public class LDAPTestUtils {
     }
 
     public static void cleanAndSetup(
-            ContextSource contextSource, DistinguishedName rootNode, Resource ldifFile)
+            ContextSource contextSource, LdapName rootNode, Resource ldifFile)
             throws NamingException, IOException {
 
         clearSubContexts(contextSource, rootNode);
         loadLdif(contextSource, ldifFile);
     }
 
+    @SuppressWarnings("deprecation")
     private static void loadLdif(DirContext context, Resource ldifFile) throws IOException {
         try {
-            DistinguishedName baseDn =
-                    (DistinguishedName)
+            LdapName baseDn =
+                    (LdapName)
                             context.getEnvironment()
                                     .get(DefaultDirObjectFactory.JNDI_ENV_BASE_PATH_KEY);
 
@@ -270,7 +275,7 @@ public class LDAPTestUtils {
             while (parser.hasMoreRecords()) {
                 LdapAttributes record = parser.getRecord();
 
-                DistinguishedName dn = record.getDN();
+                org.springframework.ldap.core.DistinguishedName dn = record.getDN();
                 if (baseDn != null) {
                     dn.removeFirst(baseDn);
                 }

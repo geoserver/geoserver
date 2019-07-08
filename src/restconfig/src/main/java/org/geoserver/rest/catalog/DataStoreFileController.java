@@ -123,7 +123,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         if (factoryClassName != null) {
             try {
                 Class factoryClass = Class.forName(factoryClassName);
-                return (DataAccessFactory) factoryClass.newInstance();
+                return (DataAccessFactory) factoryClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RestException(
                         "Datastore format unavailable: " + factoryClassName,
@@ -216,11 +216,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             throw new RestException("No files for datastore " + storeName, HttpStatus.NOT_FOUND);
         }
 
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            BufferedOutputStream bufferedOutputStream =
-                    new BufferedOutputStream(byteArrayOutputStream);
-            ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                BufferedOutputStream bufferedOutputStream =
+                        new BufferedOutputStream(byteArrayOutputStream);
+                ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream)) {
 
             // packing files
             File[] files = directory.listFiles();
@@ -240,9 +239,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
             zipOutputStream.finish();
             zipOutputStream.flush();
-            IOUtils.closeQuietly(zipOutputStream);
-            IOUtils.closeQuietly(bufferedOutputStream);
-            IOUtils.closeQuietly(byteArrayOutputStream);
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.add(
@@ -485,7 +481,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 // TODO: set lat lon bounding box
 
                 if (ftinfo.getId() == null) {
-
                     // do a check for a type already named this name in the catalog, if it is
                     // already
                     // there try to rename it
@@ -500,9 +495,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                         do {
                             ftinfo.setName(originalName + x);
                             x++;
-                        } while (x < 10
-                                && catalog.getFeatureTypeByName(namespace, ftinfo.getName())
-                                        != null);
+                        } while (catalog.getFeatureTypeByName(namespace, ftinfo.getName()) != null);
                     }
                     catalog.validate(ftinfo, true).throwIfInvalid();
                     catalog.add(ftinfo);

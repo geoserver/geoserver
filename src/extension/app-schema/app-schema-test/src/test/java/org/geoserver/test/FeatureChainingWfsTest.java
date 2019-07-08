@@ -9,6 +9,7 @@ package org.geoserver.test;
 import static org.geoserver.test.AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL;
 import static org.geoserver.test.AbstractAppSchemaMockData.GSML_URI;
 import static org.geoserver.test.FeatureChainingMockData.EX_URI;
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -29,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.util.IOUtils;
@@ -486,6 +488,30 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 "WFS GetFeature&typename=gsml:CompositionPart response, exception expected:\n"
                         + prettyString(doc));
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+    }
+
+    @Test
+    public void testGetFeatureJSON() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1"
+                                + ".0&typename=gsml:GeologicUnit&outputFormat=application/json&featureId=gu.25678");
+        print(json);
+        JSONObject properties = getFeaturePropertiesById(json, "gu.25678");
+        assertNotNull(properties);
+        // make sure these are not encoded as GeoJSON features even if they are GeoTools Feature
+        // objects
+        JSONArray colors = properties.getJSONArray("exposureColor");
+        assertNotNull(colors);
+        JSONObject color = colors.getJSONObject(0);
+        // no top level feature elements
+        assertFalse(color.has("type"));
+        assertFalse(color.has("geometry"));
+        assertFalse(color.has("properties"));
+        // but value and codespace right in instead
+        color = color.getJSONObject("value");
+        assertThat(color.getString("value"), anyOf(is("Blue"), is("Yellow")));
+        assertThat(color.getString("@codeSpace"), is("some:uri"));
     }
 
     @Test

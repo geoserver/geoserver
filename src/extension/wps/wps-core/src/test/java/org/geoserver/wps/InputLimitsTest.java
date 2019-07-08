@@ -364,7 +364,7 @@ public class InputLimitsTest extends WPSTestSupport {
         String wkt = buildLineString((Short.MAX_VALUE + 10000) * 2);
         File tmp = getResourceLoader().find("tmp");
         File wktDataFile = new File(tmp, "line.wkt");
-        FileUtils.writeStringToFile(wktDataFile, wkt);
+        FileUtils.writeStringToFile(wktDataFile, wkt, "UTF-8");
 
         String xml =
                 "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" "

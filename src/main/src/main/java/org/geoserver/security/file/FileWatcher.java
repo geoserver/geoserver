@@ -6,10 +6,8 @@
 
 package org.geoserver.security.file;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
@@ -72,16 +70,6 @@ public abstract class FileWatcher implements ResourceListener {
         }
     }
 
-    /**
-     * @param file
-     * @deprecated Use Resource instead of File
-     */
-    @Deprecated
-    protected FileWatcher(File file) {
-        this.resource = Files.asResource(file);
-        this.path = resource.path();
-    }
-
     protected FileWatcher(Resource resource) {
         this.resource = resource;
         this.path = resource.path();
@@ -90,17 +78,6 @@ public abstract class FileWatcher implements ResourceListener {
     /** Used to register FileWatcher as a resource notification listener. */
     public void start() {
         resource.addListener(this);
-    }
-
-    /**
-     * Set the delay to observe between each check of the file changes. Use values > 1000, most file
-     * systems have a time granularity of seconds
-     *
-     * @param delay
-     * @deprecated No longer used as resource notifications handle checking the file system
-     */
-    public void setDelay(long delay) {
-        // this.delay = delay;
     }
 
     @Override

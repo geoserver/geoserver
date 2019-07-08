@@ -5,10 +5,11 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Throwables.propagate;
-import static com.google.common.base.Throwables.propagateIfInstanceOf;
+import static com.google.common.base.Throwables.throwIfInstanceOf;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableSet;
 import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +34,8 @@ import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.ResourceListener;
-import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
+import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resources.ExtensionFilter;
 import org.geotools.util.logging.Logging;
@@ -48,7 +49,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private static final String LAYERINFO_DIRECTORY = "gwc-layers";
 
-    private Map<String, GeoServerTileLayerInfo> layersById;
+    private ConcurrentMap<String, GeoServerTileLayerInfo> layersById;
 
     /** View of layer ids by name */
     private Map<String, String> layersByName;
@@ -60,8 +61,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     private final String baseDirectory;
 
     private volatile boolean initialized;
-
-    private Map<String, ResourceListener> listenersByFileName;
 
     private List<TileLayerCatalogListener> listeners;
 
@@ -82,7 +81,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
         this.layersByName = new ConcurrentHashMap<>();
         this.layersById = new ConcurrentHashMap<>();
-        this.listenersByFileName = new ConcurrentHashMap<>();
         this.listeners = new ArrayList<>();
         this.initialized = false;
 
@@ -94,34 +92,67 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         // automatically reload configuration on change
         resourceLoader
                 .get(baseDirectory)
-                .addListener(
-                        new ResourceListener() {
-                            @Override
-                            public void changed(ResourceNotification notify) {
-                                for (Event event : notify.events()) {
-                                    if ((event.getKind() == ResourceNotification.Kind.ENTRY_CREATE
-                                                    || event.getKind()
-                                                            == ResourceNotification.Kind
-                                                                    .ENTRY_MODIFY)
-                                            && !event.getPath().contains("/")
-                                            && event.getPath().toLowerCase().endsWith(".xml")
-                                            && !listenersByFileName.containsKey(event.getPath())) {
-                                        GeoServerTileLayerInfoImpl info =
-                                                load(
-                                                        resourceLoader
-                                                                .get(baseDirectory)
-                                                                .get(event.getPath()));
-                                        if (info != null) {
-                                            for (TileLayerCatalogListener listener : listeners) {
-                                                listener.onEvent(
-                                                        info.getId(),
-                                                        TileLayerCatalogListener.Type.CREATE);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
+                .addListener(evt -> evt.events().forEach(this::handleBaseDirectoryResourceEvent));
+    }
+
+    private void handleBaseDirectoryResourceEvent(Event event) {
+        final String path = event.getPath();
+        final boolean isLayerFile = !path.contains("/") && path.toLowerCase().endsWith(".xml");
+        if (!isLayerFile) {
+            return;
+        }
+        if (event.getKind() == Kind.ENTRY_DELETE) {
+            // resource is no longer available, figure out the id the hard(ish) way
+            String layerIdName =
+                    this.layersById
+                            .keySet()
+                            .parallelStream()
+                            .map(this::layerIdToFileName)
+                            .filter(path::equals)
+                            .findFirst()
+                            .orElse(null);
+            if (layerIdName == null) {
+                // we don't have it, no need to notify local listeners
+                return;
+            }
+            Preconditions.checkState(layerIdName.endsWith(".xml"));
+            final String layerId = layerIdName.substring(0, layerIdName.lastIndexOf(".xml"));
+            GeoServerTileLayerInfo removed = this.layersById.remove(layerId);
+            if (removed != null) {
+                this.layersByName.remove(removed.getName());
+            }
+            listeners.forEach(l -> l.onEvent(layerId, TileLayerCatalogListener.Type.DELETE));
+            return;
+        }
+
+        final Resource resource = resourceLoader.get(baseDirectory).get(path);
+        GeoServerTileLayerInfoImpl layerInfo;
+        try {
+            // do not call load(resource) here, the layer would end up in this.layersById
+            // even if it wasn't created by this instance
+            layerInfo = depersist(resource);
+        } catch (IOException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error depersisting tile layer information from file " + resource.name(),
+                    e);
+            return;
+        }
+        final String layerId = layerInfo.getId();
+        final GeoServerTileLayerInfo currentInfo = this.layersById.get(layerId);
+
+        final TileLayerCatalogListener.Type tileEventType =
+                event.getKind() == Kind.ENTRY_CREATE
+                        ? TileLayerCatalogListener.Type.CREATE
+                        : TileLayerCatalogListener.Type.MODIFY;
+
+        if (event.getKind() == Kind.ENTRY_MODIFY
+                && currentInfo != null
+                && !currentInfo.getName().contentEquals(layerInfo.getName())) {
+            layersByName.remove(currentInfo.getName());
+        }
+        saveInternal(layerInfo);
+        listeners.forEach(l -> l.onEvent(layerId, tileEventType));
     }
 
     @Override
@@ -139,15 +170,10 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
         LOGGER.info("GeoServer TileLayer store base directory is: " + baseDir.path());
         LOGGER.info("Loading tile layers from " + baseDir.path());
-
+        Stopwatch sw = Stopwatch.createStarted();
         ExtensionFilter xmlFilter = new Resources.ExtensionFilter("XML");
-        baseDir.list()
-                .parallelStream()
-                .filter(r -> xmlFilter.accept(r))
-                .forEach(
-                        res -> {
-                            load(res);
-                        });
+        baseDir.list().parallelStream().filter(r -> xmlFilter.accept(r)).forEach(this::load);
+        LOGGER.info(String.format("Loaded %,d tile layers in %s", layersById.size(), sw.stop()));
         this.initialized = true;
     }
 
@@ -196,22 +222,28 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     public GeoServerTileLayerInfo delete(final String tileLayerId) {
         checkInitialized();
         try {
-            GeoServerTileLayerInfo info = getLayerById(tileLayerId);
-            if (info != null) {
+            GeoServerTileLayerInfo currValue = layersById.remove(tileLayerId);
+            if (currValue != null) {
                 Resource file = getFile(tileLayerId);
-                layersById.remove(tileLayerId);
-                layersByName.remove(info.getName());
-                stopListening(file);
+                layersByName.remove(currValue.getName());
                 file.delete();
-                listenersByFileName.remove(file.name());
+                listeners.forEach(
+                        l -> l.onEvent(tileLayerId, TileLayerCatalogListener.Type.DELETE));
+                return currValue;
             }
-            return info;
         } catch (IOException notFound) {
             LOGGER.log(Level.FINEST, "Deleting " + tileLayerId, notFound);
-            return null;
         }
+        return null;
     }
 
+    /**
+     * Called both when a new tile layer is created or when an existing one is modified on this
+     * service instance
+     *
+     * @return the previous value, or {@code null} if the tile layer didn't previously exist on this
+     *     tile layer catalog
+     */
     @Override
     public GeoServerTileLayerInfo save(final GeoServerTileLayerInfo newValue) {
         checkInitialized();
@@ -226,7 +258,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             } catch (FileNotFoundException ignore) {
                 // ok
             } catch (Exception other) {
-                throw propagate(other);
+                throwIfUnchecked(other);
             }
 
             if (oldValue == null) {
@@ -242,16 +274,14 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             } else {
                 layersByName.remove(oldValue.getName());
             }
-
             persist(newValue);
             layersByName.put(newValue.getName(), newValue.getId());
             layersById.put(newValue.getId(), newValue.clone());
-
         } catch (Exception e) {
             if (e instanceof ExecutionException) {
-                propagate(((ExecutionException) e).getCause());
+                throwIfUnchecked(((ExecutionException) e).getCause());
             }
-            propagate(e);
+            throwIfUnchecked(e);
         }
         return oldValue;
     }
@@ -260,7 +290,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         GeoServerTileLayerInfoImpl info;
         try {
             info = depersist(res);
-            startListening(res, info.getId());
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -268,59 +297,21 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                     e);
             return null;
         }
-
-        layersByName.put(info.getName(), info.getId());
-        layersById.put(info.getId(), info);
-
+        saveInternal(info);
         if (LOGGER.isLoggable(Level.FINER)) {
             LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
         }
-
         return info;
     }
 
-    private void reload(String id, Resource res) {
-        GeoServerTileLayerInfo old = layersById.remove(id);
-        if (old != null) {
-            layersByName.remove(old.getName());
-        }
-        load(res);
-    }
-
-    private void startListening(Resource file, String tileLayerId) {
-        ResourceListener existingLayerListener =
-                new ResourceListener() {
-                    @Override
-                    public void changed(ResourceNotification notify) {
-                        if (notify.getKind() == ResourceNotification.Kind.ENTRY_MODIFY) {
-                            reload(tileLayerId, resourceLoader.get(notify.getPath()));
-                            for (TileLayerCatalogListener listener : listeners) {
-                                listener.onEvent(tileLayerId, TileLayerCatalogListener.Type.MODIFY);
-                            }
-                        } else if (notify.getKind() == ResourceNotification.Kind.ENTRY_DELETE) {
-                            delete(tileLayerId);
-                            for (TileLayerCatalogListener listener : listeners) {
-                                listener.onEvent(tileLayerId, TileLayerCatalogListener.Type.DELETE);
-                            }
-                        }
-                    }
-                };
-        listenersByFileName.put(file.name(), existingLayerListener);
-        file.addListener(existingLayerListener);
-    }
-
-    private void stopListening(Resource file) {
-        ResourceListener existingLayerListener = listenersByFileName.get(file.name());
-        if (existingLayerListener != null) {
-            file.removeListener(existingLayerListener);
-        }
+    private void saveInternal(GeoServerTileLayerInfoImpl info) {
+        layersByName.put(info.getName(), info.getId());
+        layersById.put(info.getId(), info);
     }
 
     private void persist(GeoServerTileLayerInfo real) throws IOException {
         final String tileLayerId = real.getId();
         Resource file = getFile(tileLayerId);
-
-        stopListening(file);
 
         boolean cleanup = false;
         if (file.getType() == Type.UNDEFINED) {
@@ -339,8 +330,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             if (cleanup) {
                 file.delete();
             }
-            propagateIfInstanceOf(e, IOException.class);
-            throw propagate(e);
+            throwIfInstanceOf(e, IOException.class);
+            throwIfUnchecked(e);
         }
         // sanity check
         try {
@@ -350,12 +341,11 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                     Level.WARNING,
                     "Persisted version of tile layer " + real.getName() + " can't be loaded back",
                     e);
-            propagateIfInstanceOf(e, IOException.class);
-            throw propagate(e);
+            throwIfInstanceOf(e, IOException.class);
+            throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
         rename(tmp, file);
-
-        startListening(file, tileLayerId);
     }
 
     private GeoServerTileLayerInfoImpl loadInternal(final String tileLayerId)
@@ -368,11 +358,15 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     }
 
     private Resource getFile(final String tileLayerId) throws IOException {
-        final String fileName = FilePathUtils.filteredLayerName(tileLayerId) + ".xml";
+        final String fileName = layerIdToFileName(tileLayerId);
 
         final Resource base = resourceLoader.get(baseDirectory);
 
         return base.get(fileName);
+    }
+
+    private String layerIdToFileName(final String tileLayerId) {
+        return FilePathUtils.filteredLayerName(tileLayerId) + ".xml";
     }
 
     private GeoServerTileLayerInfoImpl depersist(final Resource res) throws IOException {
@@ -404,7 +398,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         // different resource
         boolean win = System.getProperty("os.name").startsWith("Windows");
         if (win && Resources.exists(dest)) {
-            // windows does not do atomic renames, and can not rename a file if the dest file
+            // windows does not do atomic renames, and can not rename a file if the dest
+            // file
             // exists
             if (!dest.delete()) {
                 throw new IOException("Could not delete: " + dest.path());

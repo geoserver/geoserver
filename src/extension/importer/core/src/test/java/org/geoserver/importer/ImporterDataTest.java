@@ -716,9 +716,9 @@ public class ImporterDataTest extends ImporterTestSupport {
                 new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml2.xsd");
         File schemaFile = new File("./target/states.gml2.xsd");
         FileUtils.copyFile(schemaSourceFile, schemaFile);
-        String gml = FileUtils.readFileToString(gmlSourceFile);
+        String gml = FileUtils.readFileToString(gmlSourceFile, "UTF-8");
         gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
-        FileUtils.writeStringToFile(gmlFile, gml);
+        FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
         DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
@@ -735,9 +735,9 @@ public class ImporterDataTest extends ImporterTestSupport {
                 new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml3.xsd");
         File schemaFile = new File("./target/states.gml3.xsd");
         FileUtils.copyFile(schemaSourceFile, schemaFile);
-        String gml = FileUtils.readFileToString(gmlSourceFile);
+        String gml = FileUtils.readFileToString(gmlSourceFile, "UTF-8");
         gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
-        FileUtils.writeStringToFile(gmlFile, gml);
+        FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
         DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
@@ -1159,7 +1159,7 @@ public class ImporterDataTest extends ImporterTestSupport {
      * Helper for tests exercising the style file import function.
      */
     StyleInfo writeStyleAndImport(String sld, String filename, File dir) throws IOException {
-        FileUtils.write(new File(dir, filename), sld);
+        FileUtils.write(new File(dir, filename), sld, "UTF-8");
 
         ImportContext imp = importer.createContext(new Directory(dir));
         importer.run(imp);
@@ -1213,7 +1213,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
         File script = new File(scripts, "test.sh");
-        FileUtils.writeStringToFile(script, "touch test.properties\n");
+        FileUtils.writeStringToFile(script, "touch test.properties\n", "UTF-8");
         script.setExecutable(true, true);
 
         // create a simple import and place the script in the transform chain

@@ -44,7 +44,7 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
 
     @Test
     public void testInsertArc() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("insertArc.xml"));
+        String xml = IOUtils.toString(getClass().getResourceAsStream("insertArc.xml"), "UTF-8");
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);
@@ -62,7 +62,9 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
 
     @Test
     public void testUpdateCompoundCurve() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("updateCompoundCurve.xml"));
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("updateCompoundCurve.xml"), "UTF-8");
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);
@@ -94,7 +96,8 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
 
     @Test
     public void testInsertCurvePolygon() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("insertCurvePolygon.xml"));
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("insertCurvePolygon.xml"), "UTF-8");
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);
@@ -118,7 +121,8 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
 
     @Test
     public void testInsertMultiCurve() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("insertMultiCurve.xml"));
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("insertMultiCurve.xml"), "UTF-8");
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);

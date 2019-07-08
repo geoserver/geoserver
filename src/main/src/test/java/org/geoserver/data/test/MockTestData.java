@@ -5,8 +5,6 @@
  */
 package org.geoserver.data.test;
 
-import static org.easymock.classextension.EasyMock.*;
-
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;

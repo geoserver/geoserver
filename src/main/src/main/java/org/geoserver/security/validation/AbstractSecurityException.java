@@ -33,9 +33,4 @@ public class AbstractSecurityException extends GeoServerException {
     public AbstractSecurityException(String errorId, Object... args) {
         this(errorId, errorId, args);
     }
-
-    /** @deprecated use {@link #getId()} */
-    public String getErrorId() {
-        return getId();
-    }
 }

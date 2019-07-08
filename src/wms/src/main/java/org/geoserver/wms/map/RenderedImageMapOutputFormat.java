@@ -9,6 +9,7 @@ import it.geosolutions.jaiext.lookup.LookupTable;
 import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.vectorbin.ROIGeometry;
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -160,6 +161,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             "advancedProjectionHandlingDensification";
     private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
             "disableDatelineWrappingHeuristic";
+
+    /** Disable Gutter key */
+    public static final String DISABLE_GUTTER_KEY = "wms.raster.disableGutter";
+
+    /** Disable Gutter */
+    private static Boolean DISABLE_GUTTER = Boolean.getBoolean(DISABLE_GUTTER_KEY);
 
     /** The size of a megabyte */
     private static final int KB = 1024;
@@ -1074,23 +1081,25 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 final CoordinateReferenceSystem coverageCRS =
                         layer.getFeatureSource().getSchema().getCoordinateReferenceSystem();
                 final GridGeometry2D readGG;
-                final boolean equalsMetadata = CRS.equalsIgnoreMetadata(mapCRS, coverageCRS);
-                boolean sameCRS;
-                try {
-                    sameCRS =
-                            equalsMetadata
-                                    || CRS.findMathTransform(mapCRS, coverageCRS, true)
-                                            .isIdentity();
-                } catch (FactoryException e1) {
-                    final IOException ioe = new IOException();
-                    ioe.initCause(e1);
-                    throw ioe;
+                boolean useGutter = !DISABLE_GUTTER;
+                if (useGutter) {
+                    final boolean equalsMetadata = CRS.equalsIgnoreMetadata(mapCRS, coverageCRS);
+                    boolean sameCRS;
+                    try {
+                        sameCRS =
+                                equalsMetadata
+                                        || CRS.findMathTransform(mapCRS, coverageCRS, true)
+                                                .isIdentity();
+                    } catch (FactoryException e1) {
+                        final IOException ioe = new IOException();
+                        ioe.initCause(e1);
+                        throw ioe;
+                    }
+                    useGutter = !sameCRS || !(interpolation instanceof InterpolationNearest);
                 }
-                final boolean needsGutter =
-                        !sameCRS || !(interpolation instanceof InterpolationNearest);
-                if (!needsGutter) {
-                    readGG = new GridGeometry2D(new GridEnvelope2D(mapRasterArea), mapEnvelope);
 
+                if (!useGutter) {
+                    readGG = new GridGeometry2D(new GridEnvelope2D(mapRasterArea), mapEnvelope);
                 } else {
                     //
                     // SG added gutter to the drawing. We need to investigate much more and also we
@@ -1489,6 +1498,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 image = iw.getRenderedImage();
             }
         }
+        if (LOGGER.isLoggable(Level.FINE) && image != null) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Direct rendering path produced the following image chain:\n"
+                            + RenderedImageBrowser.dumpChain(image));
+        }
         return image;
     }
 
@@ -1507,7 +1522,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (roiCandidate instanceof ROI) {
             ROI imageROI = (ROI) roiCandidate;
             try {
-                roi = imageROI.intersect(new ROIGeometry(mapRasterArea));
+                roi = new ROIGeometry(mapRasterArea).intersect(imageROI);
             } catch (IllegalArgumentException e) {
                 // in the unlikely event that the ROI does not intersect the target map
                 // area an exception will be thrown. Catching the exception instead of checking

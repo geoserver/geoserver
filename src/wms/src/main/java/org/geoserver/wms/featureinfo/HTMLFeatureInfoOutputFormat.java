@@ -19,6 +19,7 @@ import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
@@ -67,20 +68,23 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                 });
     }
 
+    private final GeoServerResourceLoader resourceLoader;
+
     GeoServerTemplateLoader templateLoader;
 
     private WMS wms;
 
-    public HTMLFeatureInfoOutputFormat(final WMS wms) {
+    public HTMLFeatureInfoOutputFormat(final WMS wms, GeoServerResourceLoader resourceLoader) {
         super(FORMAT);
         this.wms = wms;
+        this.resourceLoader = resourceLoader;
     }
 
     /**
      * Writes the image to the client.
      *
      * @param out The output stream to write to.
-     * @throws org.vfny.geoserver.ServiceException For problems with geoserver
+     * @throws ServiceException For problems with geoserver
      * @throws java.io.IOException For problems writing the output.
      */
     @SuppressWarnings("unchecked")
@@ -184,7 +188,8 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * @return the template named <code>templateFileName</code>
      * @throws IOException if the template can't be loaded
      */
-    Template getTemplate(Name name, String templateFileName, Charset charset) throws IOException {
+    protected Template getTemplate(Name name, String templateFileName, Charset charset)
+            throws IOException {
         ResourceInfo ri = null;
         if (name != null) {
             ri = wms.getResourceInfo(name);
@@ -194,7 +199,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         synchronized (templateConfig) {
             // setup template subsystem
             if (templateLoader == null) {
-                templateLoader = new GeoServerTemplateLoader(getClass());
+                templateLoader = new GeoServerTemplateLoader(getClass(), resourceLoader);
             }
             templateLoader.setResource(ri);
             templateConfig.setTemplateLoader(templateLoader);

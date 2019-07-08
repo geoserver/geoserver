@@ -5,8 +5,8 @@
  */
 package org.geoserver.wms.describelayer;
 
-import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
 import javax.xml.transform.TransformerException;

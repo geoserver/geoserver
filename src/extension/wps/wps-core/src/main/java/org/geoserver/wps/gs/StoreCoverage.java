@@ -19,7 +19,6 @@ import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
@@ -30,7 +29,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author ETj <etj at geo-solutions.it>
  */
 @DescribeProcess(title = "Store Coverage", description = "Stores a raster on the server.")
-public class StoreCoverage implements GSProcess {
+public class StoreCoverage implements GeoServerProcess {
 
     private static final GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
 

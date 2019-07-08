@@ -182,7 +182,8 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testPutFullAsXML() throws Exception {
         String xml =
                 IOUtils.toString(
-                        LocalWMSSettingsControllerTest.class.getResourceAsStream("wms.xml"));
+                        LocalWMSSettingsControllerTest.class.getResourceAsStream("wms.xml"),
+                        "UTF-8");
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings",

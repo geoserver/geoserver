@@ -83,10 +83,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         assert (ajaxComponent instanceof EnvelopePanel);
         EnvelopePanel envPanel = (EnvelopePanel) ajaxComponent;
         assertEquals(
-                ((DecimalTextField) envPanel.get("minX")).getModelObject(), new Double(-180.0));
-        assertEquals(((DecimalTextField) envPanel.get("minY")).getModelObject(), new Double(-90.0));
-        assertEquals(((DecimalTextField) envPanel.get("maxX")).getModelObject(), new Double(180.0));
-        assertEquals(((DecimalTextField) envPanel.get("maxY")).getModelObject(), new Double(90.0));
+                ((DecimalTextField) envPanel.get("minX")).getModelObject(), Double.valueOf(-180.0));
+        assertEquals(
+                ((DecimalTextField) envPanel.get("minY")).getModelObject(), Double.valueOf(-90.0));
+        assertEquals(
+                ((DecimalTextField) envPanel.get("maxX")).getModelObject(), Double.valueOf(180.0));
+        assertEquals(
+                ((DecimalTextField) envPanel.get("maxY")).getModelObject(), Double.valueOf(90.0));
     }
 
     @Before

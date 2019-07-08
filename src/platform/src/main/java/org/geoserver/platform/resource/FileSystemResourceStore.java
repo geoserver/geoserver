@@ -215,6 +215,7 @@ public class FileSystemResourceStore implements ResourceStore {
                     }
 
                     @Override
+                    @SuppressWarnings("deprecation") // finalize is deprecated in Java 9
                     protected void finalize() throws IOException {
                         if (!closed) {
                             String warn =

@@ -115,7 +115,7 @@ public class PythonPlugin extends ScriptPlugin {
 
         if (clazz != null && PyObject.class.isAssignableFrom(clazz)) {
             try {
-                PyObject pyobj = (PyObject) clazz.newInstance();
+                PyObject pyobj = (PyObject) clazz.getDeclaredConstructor().newInstance();
                 Object obj = pyobj.__tojava__(Object.class);
                 if (obj != null) {
                     clazz = obj.getClass();

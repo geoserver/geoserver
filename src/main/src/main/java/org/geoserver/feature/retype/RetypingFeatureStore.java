@@ -7,6 +7,7 @@ package org.geoserver.feature.retype;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geoserver.feature.RetypingFeatureCollection.RetypingFeatureReader;
@@ -16,6 +17,7 @@ import org.geotools.data.FeatureStore;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -50,11 +52,6 @@ public class RetypingFeatureStore extends RetypingFeatureSource implements Simpl
         featureStore().setTransaction(transaction);
     }
 
-    public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
-            throws IOException {
-        modifyFeatures(new AttributeDescriptor[] {type}, new Object[] {value}, filter);
-    }
-
     public void removeFeatures(Filter filter) throws IOException {
         featureStore().removeFeatures(store.retypeFilter(filter, typeMap));
     }
@@ -83,53 +80,37 @@ public class RetypingFeatureStore extends RetypingFeatureSource implements Simpl
         return retyped;
     }
 
-    public void modifyFeatures(AttributeDescriptor[] type, Object[] values, Filter filter)
+    public void modifyFeatures(String[] names, Object[] attributeValues, Filter filter)
             throws IOException {
+        Name[] param = Arrays.stream(names).map(n -> new NameImpl(n)).toArray(n -> new Name[n]);
+        modifyFeatures(param, attributeValues, filter);
+    }
 
+    public void modifyFeatures(String name, Object attributeValue, Filter filter)
+            throws IOException {
+        modifyFeatures(new Name[] {new NameImpl(name)}, new Object[] {attributeValue}, filter);
+    }
+
+    public void modifyFeatures(Name[] names, Object[] values, Filter filter) throws IOException {
         SimpleFeatureType original = typeMap.getOriginalFeatureType();
 
         // map back attribute types and values to the original values
-        AttributeDescriptor[] originalTypes = new AttributeDescriptor[type.length];
         Object[] originalValues = new Object[values.length];
-        for (int i = 0; i < values.length; i++) {
-            originalTypes[i] = original.getDescriptor(type[i].getName());
+        for (int i = 0; i < names.length; i++) {
+            AttributeDescriptor ad = original.getDescriptor(names[i]);
             if (values[i] != null) {
-                Class<?> target = originalTypes[i].getType().getBinding();
+                Class<?> target = ad.getType().getBinding();
                 originalValues[i] = Converters.convert(values[i], target);
                 if (originalValues[i] == null)
                     throw new IOException("Could not map back " + values[i] + " to type " + target);
             }
         }
 
-        featureStore()
-                .modifyFeatures(originalTypes, originalValues, store.retypeFilter(filter, typeMap));
-    }
-
-    public void modifyFeatures(String name, Object attributeValue, Filter filter)
-            throws IOException {
-        modifyFeatures(getSchema().getDescriptor(name), attributeValue, filter);
-    }
-
-    public void modifyFeatures(String[] names, Object[] attributeValues, Filter filter)
-            throws IOException {
-        AttributeDescriptor[] descriptors = new AttributeDescriptor[names.length];
-        for (int i = 0; i < names.length; i++) {
-            descriptors[i] = getSchema().getDescriptor(names[i]);
-        }
-        modifyFeatures(descriptors, attributeValues, filter);
-    }
-
-    public void modifyFeatures(Name[] names, Object[] attributeValues, Filter filter)
-            throws IOException {
-        AttributeDescriptor[] descriptors = new AttributeDescriptor[names.length];
-        for (int i = 0; i < names.length; i++) {
-            descriptors[i] = getSchema().getDescriptor(names[i]);
-        }
-        modifyFeatures(descriptors, attributeValues, filter);
+        featureStore().modifyFeatures(names, originalValues, store.retypeFilter(filter, typeMap));
     }
 
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
-        modifyFeatures(getSchema().getDescriptor(attributeName), attributeValue, filter);
+        modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
     }
 }

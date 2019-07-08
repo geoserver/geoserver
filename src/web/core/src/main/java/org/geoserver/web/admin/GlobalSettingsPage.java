@@ -60,23 +60,35 @@ public class GlobalSettingsPage extends ServerAdminPage {
         final IModel<GeoServerInfo> globalInfoModel = getGlobalInfoModel();
         final IModel<LoggingInfo> loggingInfoModel = getLoggingInfoModel();
 
-        CompoundPropertyModel<GeoServerInfo> compoundPropertyModel =
-                new CompoundPropertyModel<GeoServerInfo>(globalInfoModel);
-        Form<GeoServerInfo> form = new Form<GeoServerInfo>("form", compoundPropertyModel);
+        CompoundPropertyModel<GeoServerInfo> model = new CompoundPropertyModel<>(globalInfoModel);
+        PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(model, "settings");
+        Form<GeoServerInfo> form = new Form<>("form", model);
 
         add(form);
 
-        form.add(new CheckBox("verbose"));
-        form.add(new CheckBox("verboseExceptions"));
+        form.add(new CheckBox("verbose", new PropertyModel<>(settingsModel, "verbose")));
+        form.add(
+                new CheckBox(
+                        "verboseExceptions",
+                        new PropertyModel<>(settingsModel, "verboseExceptions")));
         form.add(new CheckBox("globalServices"));
-        form.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
-        form.add(new Select2DropDownChoice<>("charset", AVAILABLE_CHARSETS));
+        form.add(
+                new TextField<Integer>(
+                                "numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
+                        .add(RangeValidator.minimum(0)));
+        form.add(
+                new Select2DropDownChoice<>(
+                        "charset",
+                        new PropertyModel<>(settingsModel, "charset"),
+                        AVAILABLE_CHARSETS));
         form.add(
                 new Select2DropDownChoice<>(
                         "resourceErrorHandling",
                         Arrays.asList(ResourceErrorHandling.values()),
                         new ResourceErrorHandlingRenderer()));
-        form.add(new TextField<String>("proxyBaseUrl"));
+        form.add(
+                new TextField<String>(
+                        "proxyBaseUrl", new PropertyModel<>(settingsModel, "proxyBaseUrl")));
         form.add(new CheckBox("useHeadersProxyURL"));
 
         logLevelsAppend(form, loggingInfoModel);
@@ -133,8 +145,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         // Extension plugin for Global Settings
         // Loading of the settings from the Global Info
-        IModel<SettingsInfo> settingsModel =
-                new PropertyModel<SettingsInfo>(globalInfoModel, "settings");
         ListView extensions =
                 SettingsPluginPanelInfo.createExtensions(
                         "extensions", settingsModel, getGeoServerApplication());

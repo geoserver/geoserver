@@ -21,6 +21,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -29,7 +30,6 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
@@ -54,7 +54,7 @@ import org.springframework.context.ApplicationContextAware;
     title = "Enterprise Download Process",
     description = "Downloads Layer Stream and provides a ZIP."
 )
-public class DownloadProcess implements GSProcess, ApplicationContextAware {
+public class DownloadProcess implements GeoServerProcess, ApplicationContextAware {
 
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(DownloadProcess.class);

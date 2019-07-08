@@ -54,7 +54,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
     @Test
     public void testScaleAxesByFactorXML() throws Exception {
         final File xml = new File("./src/test/resources/requestGetCoverageScaleAxesByFactor.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -80,7 +80,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
     public void testScaleToSizeXML() throws Exception {
 
         final File xml = new File("./src/test/resources/requestGetCoverageScaleToSize.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -105,7 +105,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
     @Test
     public void testScaleToExtentXML() throws Exception {
         final File xml = new File("./src/test/resources/requestGetCoverageScaleToExtent.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -131,7 +131,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
     public void testScaleByFactorXML() throws Exception {
 
         final File xml = new File("./src/test/resources/requestGetCoverageScaleByFactor.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());

@@ -70,19 +70,24 @@ public class SLDHandler extends StyleHandler {
         try {
             TEMPLATES.put(
                     StyleType.POINT,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_point.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_point.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.POLYGON,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_polygon.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_polygon.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.LINE,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_line.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_line.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.RASTER,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_raster.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_raster.sld"), "UTF-8"));
             TEMPLATES.put(
                     StyleType.GENERIC,
-                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_generic.sld")));
+                    IOUtils.toString(
+                            SLDHandler.class.getResourceAsStream("template_generic.sld"), "UTF-8"));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -174,7 +179,7 @@ public class SLDHandler extends StyleHandler {
             }
             return sld;
         } finally {
-            IOUtils.closeQuietly(reader);
+            org.geoserver.util.IOUtils.closeQuietly(reader);
         }
     }
 
@@ -358,8 +363,20 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
-    public String insertImageCode(String imageFileName) {
-        return new StringBuffer("<ExternalGraphic>\\n")
+    public String insertImageCode(String imageFileName, String styleContent) {
+        boolean version11 = false; // by default, we'll assume version 1.0;
+        if (styleContent != null) {
+            try {
+                version11 = VERSION_11.compareTo(version(styleContent)) == 0;
+            } catch (IOException e) {
+            }
+        }
+        return new StringBuffer("<ExternalGraphic ")
+                .append(
+                        version11
+                                ? "xmlns=\"http://www.opengis.net/se\" "
+                                : "xmlns=\"http://www.opengis.net/sld\" ")
+                .append("xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\n")
                 .append("<OnlineResource xlink:type=\"simple\" xlink:href=\"")
                 .append(imageFileName)
                 .append("\" />\\n")

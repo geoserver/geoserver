@@ -19,7 +19,10 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
+import org.geowebcache.s3.Access;
 import org.geowebcache.s3.S3BlobStoreInfo;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -28,6 +31,16 @@ import org.junit.Test;
  * @author Niels Charlier
  */
 public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
+
+    @Before
+    public void before() {
+        login();
+    }
+
+    @After
+    public void after() {
+        logout();
+    }
 
     @Test
     public void testPage() {
@@ -73,6 +86,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("blobSpecificPanel:bucket", "mybucket");
         formTester.setValue("blobSpecificPanel:awsAccessKey", "myaccesskey");
         formTester.setValue("blobSpecificPanel:awsSecretKey", "mysecretkey");
+        formTester.select("blobSpecificPanel:accessType", 1);
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
@@ -83,6 +97,36 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
         assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
         assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
+        assertEquals("PRIVATE", ((S3BlobStoreInfo) config).getAccess().toString());
+
+        GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
+    }
+
+    @Test
+    public void testNewAccessPublic() throws ConfigurationException {
+        BlobStorePage page = new BlobStorePage();
+
+        tester.startPage(page);
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
+
+        FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
+        formTester.setValue("name", "myblobstore");
+        formTester.setValue("enabled", false);
+        formTester.setValue("blobSpecificPanel:bucket", "mybucket");
+        formTester.setValue("blobSpecificPanel:awsAccessKey", "myaccesskey");
+        formTester.setValue("blobSpecificPanel:awsSecretKey", "mysecretkey");
+        formTester.select("blobSpecificPanel:accessType", 0);
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+
+        List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
+        BlobStoreInfo config = blobStores.get(0);
+        assertTrue(config instanceof S3BlobStoreInfo);
+        assertEquals("myblobstore", config.getName());
+        assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
+        assertEquals("myaccesskey", ((S3BlobStoreInfo) config).getAwsAccessKey());
+        assertEquals("mysecretkey", ((S3BlobStoreInfo) config).getAwsSecretKey());
+        assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
+        assertEquals("PUBLIC", ((S3BlobStoreInfo) config).getAccess().toString());
 
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
     }
@@ -97,6 +141,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         sconfig.setBucket("mybucket");
         sconfig.setAwsAccessKey("myaccesskey");
         sconfig.setAwsSecretKey("mysecretkey");
+        sconfig.setAccess(Access.PRIVATE);
         GWC.get().addBlobStore(sconfig);
         TileLayer layer = GWC.get().getTileLayerByName("cite:Lakes");
         layer.setBlobStoreId("myblobstore");
@@ -112,6 +157,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "yourblobstore");
         formTester.setValue("blobSpecificPanel:bucket", "yourbucket");
+        formTester.select("blobSpecificPanel:accessType", 0);
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
@@ -119,6 +165,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         assertTrue(config instanceof S3BlobStoreInfo);
         assertEquals("yourblobstore", config.getId());
         assertEquals("yourbucket", ((S3BlobStoreInfo) config).getBucket());
+        assertEquals("PUBLIC", ((S3BlobStoreInfo) config).getAccess().toString());
 
         // test updated id!
         layer = GWC.get().getTileLayerByName("cite:Lakes");

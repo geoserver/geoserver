@@ -40,7 +40,6 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
-import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.platform.GeoServerExtensions;
@@ -59,6 +58,7 @@ import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSStoreInfo;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.DefaultResourceAccessManager;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -70,7 +70,7 @@ import org.springframework.util.Assert;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
- * or a {@link DataAccessManager} registered in the Spring application context
+ * registered in the Spring application context
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -103,12 +103,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     static ResourceAccessManager lookupResourceAccessManager() throws Exception {
         ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
         if (manager == null) {
-            DataAccessManager daManager = lookupDataAccessManager();
-            if (daManager == null) {
-                manager = buildDefaultResourceAccessManager();
-            } else {
-                manager = new DataAccessManagerAdapter(daManager);
-            }
+            manager = buildDefaultResourceAccessManager();
         }
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
@@ -119,14 +114,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return new DefaultResourceAccessManager(
                 GeoServerExtensions.bean(DataAccessRuleDAO.class),
                 (Catalog) GeoServerExtensions.bean("rawCatalog"));
-    }
-
-    static DataAccessManager lookupDataAccessManager() throws Exception {
-        DataAccessManager manager = GeoServerExtensions.bean(DataAccessManager.class);
-        if (manager != null && manager instanceof DataAccessManagerWrapper) {
-            ((DataAccessManagerWrapper) manager).setDelegate(buildDefaultResourceAccessManager());
-        }
-        return manager;
     }
 
     public SecureCatalogImpl(Catalog catalog, ResourceAccessManager manager) {
@@ -290,22 +277,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return filterResources(user(), delegate.getFeatureTypesByNamespace(namespace));
     }
 
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
-        return checkAccess(
-                user(),
-                delegate.getFeatureTypeByStore(dataStore, name),
-                MixedModeBehavior.CHALLENGE);
-    }
-
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return checkAccess(
                 user(),
                 delegate.getFeatureTypeByDataStore(dataStore, name),
                 MixedModeBehavior.CHALLENGE);
-    }
-
-    public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
-        return filterResources(user(), delegate.getFeatureTypesByStore(store));
     }
 
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {
@@ -747,7 +723,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             Authentication user,
             @Nonnull CatalogInfo info,
             MixedModeBehavior mixedModeBehavior) {
-        Assert.notNull(info);
+        Assert.notNull(info, "CatalogInfo must not be null");
 
         if (info instanceof NamespaceInfo) {
             // route the security check thru the associated workspace info

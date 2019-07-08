@@ -212,7 +212,7 @@ public class Transaction3DTest extends WFSTestSupport {
 
     private Document postRequest(String requestFile, String... variableMap)
             throws IOException, Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream(requestFile));
+        String xml = IOUtils.toString(getClass().getResourceAsStream(requestFile), "UTF-8");
         if (variableMap != null) {
             for (int i = 0; i < variableMap.length; i += 2) {
                 String key = variableMap[i];

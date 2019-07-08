@@ -16,6 +16,8 @@ import javax.imageio.stream.ImageInputStream;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -32,7 +34,12 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
         // no mapping let's go with the ImageIO reader code
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
-        final File sourceFile = loader.url(cInfo.getStore().getURL());
+        final File sourceFile =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()),
+                                cInfo.getStore().getURL()),
+                        true);
         if (sourceFile == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Original source is null");

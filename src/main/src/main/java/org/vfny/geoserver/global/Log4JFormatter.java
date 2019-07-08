@@ -271,7 +271,7 @@ public class Log4JFormatter extends Formatter {
      * @param e the error that occured.
      */
     private static void unexpectedException(final Exception e) {
-        Logging.unexpectedException("org.geotools.resources", Log4JFormatter.class, "init", e);
+        Logging.unexpectedException(Log4JFormatter.class, "init", e);
     }
 
     /**

@@ -373,7 +373,7 @@ public class LegacyServicesReader {
             value = Integer.valueOf(ReaderUtils.getIntAttribute(valueElement, "value", true, -1));
 
         } else if (Double.class.equals(clazz)) {
-            value = new Double(ReaderUtils.getDoubleAttribute(valueElement, "value", true));
+            value = Double.valueOf(ReaderUtils.getDoubleAttribute(valueElement, "value", true));
         } else {
             value = ReaderUtils.getAttribute(valueElement, "value", true);
         }

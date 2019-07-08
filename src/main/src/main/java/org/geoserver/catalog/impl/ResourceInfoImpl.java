@@ -140,10 +140,6 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this.namespace = namespace;
     }
 
-    public String getPrefixedName() {
-        return prefixedName();
-    }
-
     public String prefixedName() {
         return getNamespace().getPrefix() + ":" + getName();
     }

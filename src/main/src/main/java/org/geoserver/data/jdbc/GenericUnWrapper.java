@@ -158,6 +158,9 @@ public class GenericUnWrapper implements UnWrapper {
      * @param conn
      * @param methods
      */
+    @SuppressWarnings(
+            "deprecation") // Method.isAccessible is deprecated but replacement not available in
+    // Java 8
     private <T> T unwrapInternal(Class<T> target, T conn, Map<Class<?>, Method> methods) {
         Class<?> implementation = conn.getClass();
         // Check if we have a known method to use

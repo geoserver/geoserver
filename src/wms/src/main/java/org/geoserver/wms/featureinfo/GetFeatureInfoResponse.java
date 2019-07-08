@@ -65,7 +65,7 @@ public class GetFeatureInfoResponse extends Response {
                 (GetFeatureInfoRequest)
                         OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
 
-        Assert.notNull(request);
+        Assert.notNull(request, "request");
 
         GetFeatureInfoOutputFormat outputFormat = getRequestedOutputFormat(request);
 
@@ -89,7 +89,8 @@ public class GetFeatureInfoResponse extends Response {
         Assert.isTrue(
                 operation.getParameters() != null
                         && operation.getParameters().length == 1
-                        && operation.getParameters()[0] instanceof GetFeatureInfoRequest);
+                        && operation.getParameters()[0] instanceof GetFeatureInfoRequest,
+                "Operation parameters should be a single GetFeatureInfoRequest");
 
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) operation.getParameters()[0];
         FeatureCollectionType results = (FeatureCollectionType) value;

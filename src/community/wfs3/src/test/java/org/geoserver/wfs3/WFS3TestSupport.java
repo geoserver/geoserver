@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonContext;
@@ -94,5 +96,14 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
     protected byte[] getAsByteArray(String url) throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
         return response.getContentAsByteArray();
+    }
+
+    protected JsonContext convertYamlToJsonPath(String yaml) throws Exception {
+        ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
+        Object obj = yamlReader.readValue(yaml, Object.class);
+
+        ObjectMapper jsonWriter = new ObjectMapper();
+        JsonContext json = (JsonContext) JsonPath.parse(jsonWriter.writeValueAsString(obj));
+        return json;
     }
 }

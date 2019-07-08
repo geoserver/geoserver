@@ -76,9 +76,6 @@ public interface ResourceInfo extends CatalogInfo {
     /** Sets the native name of the resource. */
     void setNativeName(String nativeName);
 
-    /** @deprecated use {@link #prefixedName()} */
-    String getPrefixedName();
-
     /**
      * Returns the prefixed name for the resource.
      *

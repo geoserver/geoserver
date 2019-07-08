@@ -83,7 +83,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                                         addFeedbackPanels(target);
                                         return;
                                     }
-                                    ids.add(config.getId());
+                                    ids.add(config.getName());
                                 }
 
                                 for (TileLayer layer : GWC.get().getTileLayers()) {

@@ -27,6 +27,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -153,6 +154,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         System.out.println(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
@@ -184,6 +186,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces", json, "text/json");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
 
@@ -397,6 +400,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
 
@@ -430,6 +434,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces", output, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));
     }
@@ -443,6 +448,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces", json, "application/json");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
 
@@ -469,6 +475,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces", output, "application/json");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));
     }
@@ -485,6 +492,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces.xml", xmlPost, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         // check hat the created workspace is isolated
         WorkspaceInfo workspace = getCatalog().getWorkspaceByName("isolated_workspace");
         assertThat(workspace, notNullValue());

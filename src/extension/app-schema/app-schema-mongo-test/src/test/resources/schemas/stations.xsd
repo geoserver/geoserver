@@ -48,9 +48,12 @@
         <xs:sequence>
           <xs:element name="id" minOccurs="1" maxOccurs="1" type="xs:string"/>
           <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
+          <xs:element name="inferredAttribute" minOccurs="0" maxOccurs="1" type="xs:string"/>
+          <xs:element name="inferredAttribute2" minOccurs="0" maxOccurs="1" type="xs:string"/>
           <xs:element name="contact" minOccurs="0" maxOccurs="1" type="st:ContactType"/>
           <xs:element name="measurement" minOccurs="0" maxOccurs="unbounded" type="st:MeasurementPropertyType"/>
           <xs:element name="geometry" type="gml:GeometryPropertyType" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="nullableField" minOccurs="0" maxOccurs="1" type="xs:string"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

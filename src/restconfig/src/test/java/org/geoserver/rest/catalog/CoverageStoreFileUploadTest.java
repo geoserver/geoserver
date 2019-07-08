@@ -36,7 +36,6 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -47,6 +46,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -91,6 +91,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         String content = response.getContentAsString();
         Document d = dom(new ByteArrayInputStream(content.getBytes()));
@@ -132,6 +133,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -160,6 +162,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -184,15 +187,9 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     public byte[] getBytes(URL zip) throws IOException {
-        InputStream is = null;
-        byte[] bytes;
-        try {
-            is = zip.openStream();
-            bytes = IOUtils.toByteArray(is);
-        } finally {
-            IOUtils.closeQuietly(is);
+        try (InputStream is = zip.openStream()) {
+            return IOUtils.toByteArray(is);
         }
-        return bytes;
     }
 
     @Test
@@ -200,7 +197,6 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Upload of the Mosaic via REST
         URL zip = MockData.class.getResource("watertemp.zip");
         byte[] bytes = getBytes(zip);
-        InputStream is;
 
         MockHttpServletResponse response =
                 putAsServletResponse(
@@ -209,6 +205,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -227,12 +224,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Harvesting of the Mosaic
         URL zipHarvest = MockData.class.getResource("harvesting.zip");
         // Extract a Byte array from the zip file
-        is = null;
-        try {
-            is = zipHarvest.openStream();
+        try (InputStream is = zipHarvest.openStream()) {
             bytes = IOUtils.toByteArray(is);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
         // Create the POST request
         MockHttpServletRequest request =
@@ -293,6 +286,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -373,7 +367,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         try {
             // Selection of the reader to use for the mosaic
-            reader = imageMosaicFormat.getReader(DataUtilities.fileToURL(Resources.find(mosaic)));
+            reader = imageMosaicFormat.getReader(URLs.fileToUrl(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);
@@ -464,7 +458,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         try {
             // Selection of the reader to use for the mosaic
-            reader = imageMosaicFormat.getReader(DataUtilities.fileToURL(Resources.find(mosaic)));
+            reader = imageMosaicFormat.getReader(URLs.fileToUrl(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);

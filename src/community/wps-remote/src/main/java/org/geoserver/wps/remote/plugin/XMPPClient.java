@@ -36,7 +36,6 @@ import org.apache.http.ssl.SSLContexts;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -584,7 +583,7 @@ public class XMPPClient extends RemoteProcessClient {
 
         try {
             if (baseURL == null) {
-                baseURL = RequestUtils.baseURL(request.getHttpRequest());
+                baseURL = ResponseUtils.baseURL(request.getHttpRequest());
             }
 
             baseURL = ResponseUtils.buildURL(baseURL, "/", null, URLType.SERVICE);

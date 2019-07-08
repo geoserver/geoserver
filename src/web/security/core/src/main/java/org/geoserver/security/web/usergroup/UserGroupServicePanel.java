@@ -57,7 +57,10 @@ public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig>
         SecurityUserGroupServiceConfig config = model.getObject();
         try {
             GeoServerUserGroupService s =
-                    (GeoServerUserGroupService) Class.forName(config.getClassName()).newInstance();
+                    (GeoServerUserGroupService)
+                            Class.forName(config.getClassName())
+                                    .getDeclaredConstructor()
+                                    .newInstance();
             canCreateStore = s.canCreateStore();
         } catch (Exception e) {
             // do nothing

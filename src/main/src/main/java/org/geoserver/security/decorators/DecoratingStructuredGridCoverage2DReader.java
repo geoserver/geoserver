@@ -107,22 +107,6 @@ public abstract class DecoratingStructuredGridCoverage2DReader
         return delegate.getMetadataValue(coverageName, name);
     }
 
-    public String[] listSubNames() throws IOException {
-        return delegate.listSubNames();
-    }
-
-    public String getCurrentSubname() throws IOException {
-        return delegate.getCurrentSubname();
-    }
-
-    public boolean hasMoreGridCoverages() throws IOException {
-        return delegate.hasMoreGridCoverages();
-    }
-
-    public void skip() throws IOException {
-        delegate.skip();
-    }
-
     public void dispose() throws IOException {
         delegate.dispose();
     }
@@ -153,14 +137,6 @@ public abstract class DecoratingStructuredGridCoverage2DReader
 
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
-    }
-
-    public int getNumOverviews() {
-        return delegate.getNumOverviews();
-    }
-
-    public int getNumOverviews(String coverageName) {
-        return delegate.getNumOverviews(coverageName);
     }
 
     public ImageLayout getImageLayout() throws IOException {
@@ -194,12 +170,6 @@ public abstract class DecoratingStructuredGridCoverage2DReader
     public void createCoverage(String coverageName, SimpleFeatureType schema)
             throws IOException, UnsupportedOperationException {
         delegate.createCoverage(coverageName, schema);
-    }
-
-    @Override
-    public boolean removeCoverage(String coverageName)
-            throws IOException, UnsupportedOperationException {
-        return delegate.removeCoverage(coverageName);
     }
 
     @Override

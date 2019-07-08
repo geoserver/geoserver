@@ -110,6 +110,72 @@ In addition to the parameters listed above, the following additional parameter w
      - JNDI name used to locate the database connection.
 
 
+Add new LDAP user/group service
+-------------------------------
+
+To add a new LDAP user/group service, click the :guilabel:`Add new` link, and then the :guilabel:`LDAP` option at the top of the following form. The following figure shows the configuration options for a LDAP user/group service.
+
+.. figure:: images/ldap_group_service.png
+   :align: center
+
+   *Adding a user/group service via LDAP*
+
+.. list-table::
+   :widths: 40 60
+   :header-rows: 1
+
+   * - Option
+     - Description
+   * - Name
+     - Name of the LDAP role service in GeoServer
+   * - Password encryption
+     - The method to used to :ref:`encrypt user passwords <security_passwd_encryption>`
+   * - Password policy
+     - The :ref:`policy <security_passwd_policy>` to use to enforce constraints on user passwords
+   * - Server URL
+     - URL for the LDAP server connection. It must include the protocol, host, and port, as well as the “distinguished name” (DN) for the root of the LDAP tree.
+   * - TLS
+     - Enables a STARTTLS connection. (See the section on :ref:`security_auth_provider_ldap_secure`.)
+   * - Group search base
+     - Relative name of the node in the tree to use as the base for LDAP groups. Example: ``ou=groups``. The root DN specified as port of the *Server URL* is automatically appended.
+   * - Filter to search all groups
+     - Sets the LDAP filter for search all groups available. Leave blank to derive from attribute.
+   * - Filter to search group by name
+     - Sets the LDAP filter for search a group by its name. Leave blank to derive from attribute.
+   * - Attribute which contains the name of the group
+     - Sets attribute containing the group name.  Leave blank to derive from name filter.
+   * - Query format to retrieve the user/group mapping
+     - Query format used for mapping user/group memberships.  Leave blank to derive from attribute.  This may contain some placeholder values:
+     
+       ``{0}``, the ``username`` of the user, for example ``bob``.
+       
+       ``{1}``, the  full DN of the user, for example ``uid=bob,ou=users``.
+       
+   * - Attribute name to retrieve the user/group mapping
+     - Attribute name used for mapping user/group memberships.  Leave blank to derive from filter.
+   * - User search base
+     - LDAP search base for users.
+   * - Filter to search all users
+     - Sets the filter for search all available users.  Leave blank to derive from attribute.
+   * - Filter to search user by name
+     - Sets the filter format for search a user by its name.  Leave blank to derive from attribute.
+   * - Attribute which contains the name of the user
+     - Sets the attribute containing the name for users. Leave blank to derive from name filter.
+   * - List of attributes to populate
+     - Sets a comma separated list of attributes to populate on users.
+   * - Authenticated onto the LDAP before querying
+     - When checked all LDAP searches will be done in authenticated mode, using the credentials given with the *Username* and *Password* options
+   * - Username
+     - Username to use when connecting to the LDAP server. Only applicable when the *Authenticated onto the LDAP before querying* parameter is **checked**.
+   * - Password
+     - Password to use when connecting to the LDAP server. Only applicable when the *Authenticated onto the LDAP before querying* parameter is **checked**.
+   * - Enable Hierarchical groups search
+     - When checked all LDAP group searches will use hierarchical mode, retrieving LDAP parent groups too.
+   * - Max depth for hierarchical groups search
+     - Max depth number for hierarchical LDAP groups search, use -1 for infinite depth. Only applicable when the *Enable Hierarchical groups search* parameter is **checked**.
+   * - Nested group search filter
+     - LDAP search pattern for searching parent groups. Only applicable when the *Enable Hierarchical groups search* parameter is **checked**.
+
 Edit user/group service
 -----------------------
 
@@ -302,7 +368,7 @@ Add new LDAP role service
 
 To add a new LDAP role service, click the :guilabel:`Add new` link, and then the :guilabel:`LDAP` option at the top of the following form. The following figure shows the configuration options for a LDAP role service.
 
-.. figure:: images/ugr_roleldapsettings.png
+.. figure:: images/ldap_role_empty.png
    :align: center
 
    *Adding a role service via LDAP*
@@ -341,6 +407,13 @@ To add a new LDAP role service, click the :guilabel:`Add new` link, and then the
      - Username to use when connecting to the LDAP server. Only applicable when the *Authenticate to extract roles* parameter is **checked**.
    * - Password
      - Password to use when connecting to the LDAP server. Only applicable when the *Authenticate to extract roles* parameter is **checked**.
+	 
+   * - Enable Hierarchical groups search
+     - When checked all LDAP group searches will use hierarchical mode, retrieving LDAP parent groups too.
+   * - Max depth for hierarchical groups search
+     - Max depth number for hierarchical LDAP groups search, use -1 for infinite depth. Only applicable when the *Enable Hierarchical groups search* parameter is **checked**.
+   * - Nested group search filter
+     - LDAP search pattern for searching parent groups. Only applicable when the *Enable Hierarchical groups search* parameter is **checked**.
 
 Edit role service
 -----------------

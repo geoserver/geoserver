@@ -49,7 +49,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         contactInfo.setAddressCountry("United States");
         contactInfo.setAddressState("DC");
         contactInfo.setAddressDeliveryPoint("The White House");
-        contactInfo.setAddressElectronicMailAddress("info@whitehouse.gov");
+        contactInfo.setContactEmail("info@whitehouse.gov");
 
         GeoServerInfo geoServerInfo = geoServer.getGlobal();
         SettingsInfo settingsInfo = geoServerInfo.getSettings();
@@ -66,6 +66,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
     public void testGetContactAsJSON() throws Exception {
         initContact();
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/settings/contact.json");
+        print(json);
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject contactInfo = jsonObject.getJSONObject("contact");
@@ -76,8 +77,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals("DC", contactInfo.get("addressState"));
         assertEquals("20001", contactInfo.get("addressPostalCode").toString());
         assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
-        assertEquals(
-                "info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
+        assertEquals("info@whitehouse.gov", contactInfo.get("contactEmail").toString());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("DC", "/contact/addressState", dom);
         assertXpathEvaluatesTo("20001", "/contact/addressPostalCode", dom);
         assertXpathEvaluatesTo("The White House", "/contact/addressDeliveryPoint", dom);
-        assertXpathEvaluatesTo("info@whitehouse.gov", "/contact/addressElectronicMailAddress", dom);
+        assertXpathEvaluatesTo("info@whitehouse.gov", "/contact/contactEmail", dom);
     }
 
     @Test
@@ -126,8 +126,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals("PA", contactInfo.get("addressState"));
         assertEquals("19106", contactInfo.get("addressPostalCode").toString());
         assertEquals("The White House", contactInfo.get("addressDeliveryPoint").toString());
-        assertEquals(
-                "info@whitehouse.gov", contactInfo.get("addressElectronicMailAddress").toString());
+        assertEquals("info@whitehouse.gov", contactInfo.get("contactEmail").toString());
     }
 
     @Test
@@ -161,8 +160,7 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Chief Geographer", "/contact/contactPosition", dom);
         assertXpathEvaluatesTo("ContactPerson", "/contact/contactPerson", dom);
         assertXpathEvaluatesTo("The White House", "/contact/addressDeliveryPoint", dom);
-        assertXpathEvaluatesTo(
-                "chief.geographer@mail.com", "/contact/addressElectronicMailAddress", dom);
+        assertXpathEvaluatesTo("chief.geographer@mail.com", "/contact/contactEmail", dom);
     }
 
     @Test

@@ -8,8 +8,6 @@
 
 package org.geoserver.mapml.xml;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -40,7 +38,7 @@ import org.w3c.dom.Element;
 @XmlSeeAlso({PropertyContent.class})
 public class AnyContent {
 
-    @XmlAnyElement(ArbitraryHandler.class) 
+    @XmlAnyElement(ArbitraryHandler.class)
     protected String anyElement;
 
     /**

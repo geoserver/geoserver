@@ -26,19 +26,19 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private static final QName _MultiPoint_QNAME = new QName("", "MultiPoint");
-    private static final QName _GeometryContent_QNAME = new QName("", "GeometryContent");
-    private static final QName _MultiLineString_QNAME = new QName("", "MultiLineString");
+    private static final QName _MultiPoint_QNAME = new QName("", "multipoint");
+    private static final QName _GeometryContent_QNAME = new QName("", "geometrycontent");
+    private static final QName _MultiLineString_QNAME = new QName("", "multilinestring");
     private static final QName _Bbox_QNAME = new QName("", "bbox");
-    private static final QName _Point_QNAME = new QName("", "Point");
+    private static final QName _Point_QNAME = new QName("", "point");
     private static final QName _Title_QNAME = new QName("", "title");
     private static final QName _Body_QNAME = new QName("", "body");
     private static final QName _Head_QNAME = new QName("", "head");
-    private static final QName _GeometryCollection_QNAME = new QName("", "GeometryCollection");
-    private static final QName _LineString_QNAME = new QName("", "LineString");
-    private static final QName _MultiPolygon_QNAME = new QName("", "MultiPolygon");
+    private static final QName _GeometryCollection_QNAME = new QName("", "geometrycollection");
+    private static final QName _LineString_QNAME = new QName("", "linestring");
+    private static final QName _MultiPolygon_QNAME = new QName("", "multipolygon");
     private static final QName _Geometry_QNAME = new QName("", "geometry");
-    private static final QName _Polygon_QNAME = new QName("", "Polygon");
+    private static final QName _Polygon_QNAME = new QName("", "polygon");
     private static final QName _Properties_QNAME = new QName("", "properties");
     private static final QName _MultiPointCoordinates_QNAME = new QName("", "coordinates");
 
@@ -176,7 +176,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPoint }{@code >}} */
     @XmlElementDecl(
         namespace = "",
-        name = "MultiPoint",
+        name = "multipoint",
         substitutionHeadNamespace = "",
         substitutionHeadName = "GeometryContent"
     )
@@ -193,7 +193,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiLineString }{@code >}} */
     @XmlElementDecl(
         namespace = "",
-        name = "MultiLineString",
+        name = "multilinestring",
         substitutionHeadNamespace = "",
         substitutionHeadName = "GeometryContent"
     )
@@ -215,7 +215,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link Point }{@code >}} */
     @XmlElementDecl(
         namespace = "",
-        name = "Point",
+        name = "point",
         substitutionHeadNamespace = "",
         substitutionHeadName = "GeometryContent"
     )
@@ -256,7 +256,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link LineString }{@code >}} */
     @XmlElementDecl(
         namespace = "",
-        name = "LineString",
+        name = "linestring",
         substitutionHeadNamespace = "",
         substitutionHeadName = "GeometryContent"
     )
@@ -267,7 +267,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >}} */
     @XmlElementDecl(
         namespace = "",
-        name = "MultiPolygon",
+        name = "multipolygon",
         substitutionHeadNamespace = "",
         substitutionHeadName = "GeometryContent"
     )
@@ -285,7 +285,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link Polygon }{@code >}} */
     @XmlElementDecl(
         namespace = "",
-        name = "Polygon",
+        name = "polygon",
         substitutionHeadNamespace = "",
         substitutionHeadName = "GeometryContent"
     )

@@ -6,8 +6,7 @@
 package org.geoserver.wps.gs;
 
 import com.google.common.base.Splitter;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.IndexColorModel;
@@ -46,7 +45,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.factory.DescribeResults;
-import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -65,7 +63,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
     title = "Georectify Coverage",
     description = "Georectifies a raster via Ground Control Points using gdal_warp"
 )
-public class GeorectifyCoverage implements GSProcess {
+public class GeorectifyCoverage implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(GeorectifyCoverage.class);
 
@@ -463,23 +461,16 @@ public class GeorectifyCoverage implements GSProcess {
     }
 
     private static String getError(File logFile) throws IOException {
-        InputStream stream = null;
-        InputStreamReader streamReader = null;
-        BufferedReader reader = null;
         StringBuilder message = new StringBuilder();
-        try {
-            stream = new FileInputStream(logFile);
-            streamReader = new InputStreamReader(stream);
-            reader = new BufferedReader(streamReader);
+        try (InputStream stream = new FileInputStream(logFile);
+                InputStreamReader streamReader = new InputStreamReader(stream);
+                BufferedReader reader = new BufferedReader(streamReader)) {
             String strLine;
             while ((strLine = reader.readLine()) != null) {
                 message.append(strLine);
             }
             return message.toString();
         } finally {
-            IOUtils.closeQuietly(reader);
-            IOUtils.closeQuietly(streamReader);
-            IOUtils.closeQuietly(stream);
             // TODO: look for a better delete
             deleteFile(logFile);
         }
@@ -594,10 +585,8 @@ public class GeorectifyCoverage implements GSProcess {
         }
         builder.redirectErrorStream(true);
 
-        OutputStream log = null;
         int exitValue = 0;
-        try {
-            log = new FileOutputStream(logFile);
+        try (OutputStream log = new FileOutputStream(logFile)) {
             Process p = builder.start();
             IOUtils.copy(p.getInputStream(), log);
 
@@ -632,7 +621,6 @@ public class GeorectifyCoverage implements GSProcess {
             if (logFile != null) {
                 logFile.delete();
             }
-            IOUtils.closeQuietly(log);
         }
     }
 

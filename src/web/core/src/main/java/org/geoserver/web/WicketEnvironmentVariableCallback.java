@@ -44,9 +44,8 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
-        // nothing to do
-    }
+    public void onRequestTargetSet(
+            RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {}
 
     @Override
     public void onRuntimeException(RequestCycle cycle, Exception ex) {

@@ -54,7 +54,8 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testAnimateBmTime() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"));
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 
@@ -102,7 +103,9 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
             props.store(os, null);
         }
         try {
-            String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"));
+            String xml =
+                    IOUtils.toString(
+                            getClass().getResourceAsStream("animateBlueMarble.xml"), "UTF-8");
             Document dom = postAsDOM("wps", xml);
             // print(dom);
             XMLAssert.assertXpathExists("//wps:ProcessFailed", dom);
@@ -121,7 +124,8 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testAnimateDecoration() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("animateDecoration.xml"));
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("animateDecoration.xml"), "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 
@@ -147,7 +151,8 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     public void testAnimateTimestamped() throws Exception {
         String xml =
                 IOUtils.toString(
-                        getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"));
+                        getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"),
+                        "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 

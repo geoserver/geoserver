@@ -7,11 +7,11 @@
 package org.geoserver.ysld;
 
 import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -79,7 +79,7 @@ public class YsldStyleGeneratorTest {
                                         fts.rules().get(3).getDescription().getTitle().toString());
 
                                 for (org.geotools.styling.Rule r : fts.rules()) {
-                                    assertEquals(1, r.getSymbolizers().length);
+                                    assertEquals(1, r.symbolizers().size());
                                 }
 
                                 return null;

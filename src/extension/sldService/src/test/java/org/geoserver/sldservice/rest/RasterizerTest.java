@@ -124,10 +124,10 @@ public class RasterizerTest extends SLDServiceBaseTest {
         Rule[] rules = checkSLD(resultXml);
         assertEquals(1, rules.length);
         Rule rule = rules[0];
-        assertNotNull(rule.getSymbolizers());
-        assertEquals(1, rule.getSymbolizers().length);
-        assertTrue(rule.getSymbolizers()[0] instanceof RasterSymbolizer);
-        RasterSymbolizer symbolizer = (RasterSymbolizer) rule.getSymbolizers()[0];
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer) rule.symbolizers().get(0);
         assertNotNull(symbolizer.getColorMap());
         assertEquals(classes + 1, symbolizer.getColorMap().getColorMapEntries().length);
         ColorMapEntry firstEntry = symbolizer.getColorMap().getColorMapEntries()[0];

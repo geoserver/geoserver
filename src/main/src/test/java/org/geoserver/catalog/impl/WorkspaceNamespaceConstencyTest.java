@@ -5,7 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
 import java.util.HashMap;

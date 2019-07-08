@@ -6,7 +6,6 @@
 
 package org.geoserver.security.file;
 
-import java.io.File;
 import java.io.IOException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
@@ -26,23 +25,8 @@ public class RoleFileWatcher extends FileWatcher implements RoleLoadedListener {
         checkAndConfigure();
     }
 
-    /** @deprecated Use Resource instead of File */
-    public RoleFileWatcher(File file, GeoServerRoleService service) {
-        super(file);
-        this.service = service;
-        checkAndConfigure();
-    }
-
     public RoleFileWatcher(Resource resource, GeoServerRoleService service, long lastModified) {
         super(resource);
-        this.service = service;
-        this.lastModified = lastModified;
-        checkAndConfigure();
-    }
-
-    /** @deprecated Use Resource instead of File */
-    public RoleFileWatcher(File file, GeoServerRoleService service, long lastModified) {
-        super(file);
         this.service = service;
         this.lastModified = lastModified;
         checkAndConfigure();

@@ -90,21 +90,34 @@
   
   <bean id="gwcStorageBroker" class="org.geowebcache.storage.DefaultStorageBroker" destroy-method="destroy">
     <constructor-arg ref="gwcConfigBlobStore" />
+    <constructor-arg>
+      <bean class="org.geowebcache.storage.TransientCache">
+        <constructor-arg index="0" value="100"/>
+        <constructor-arg index="1" value="1024"/>
+        <constructor-arg index="2" value="2000"/>
+      </bean>
+    </constructor-arg>
   </bean>
   
   
   <bean id="gwcGridSetBroker" class="org.geowebcache.grid.GridSetBroker">
-    <!-- Should we used EPSG:900913 instead of EPSG:3857 ? -->
-    <constructor-arg type="boolean" value="TRUE" />
-    <!--
-      Should the default grids be named EPSG:4326 and EPSG:900913 (TRUE),
-      or (FALSE) use the new names similar to what WMTS suggests,
-      GlobalCRS84Geometric and GoogleMapsCompatible ? 
-      
-      If you say FALSE here, you have to manually
-      rename the directories and entries in the H2 database.
-     -->
-     <constructor-arg type="boolean" value="TRUE" />
+    <constructor-arg>
+      <list>
+        <bean id="defaultGridsets" class="org.geowebcache.config.DefaultGridsets">
+          <!-- Should we used EPSG:900913 instead of EPSG:3857 ? -->
+          <constructor-arg type="boolean" value="TRUE" />
+          <!--
+            Should the default grids be named EPSG:4326 and EPSG:900913 (TRUE),
+            or (FALSE) use the new names similar to what WMTS suggests,
+            GlobalCRS84Geometric and GoogleMapsCompatible ? 
+            
+            If you say FALSE here, you have to manually
+            rename the directories and entries in the H2 database.
+           -->
+          <constructor-arg type="boolean" value="TRUE" />
+        </bean>
+      </list>
+    </constructor-arg>
   </bean>
   
   <bean id="gwcRuntimeStats" class="org.geowebcache.stats.RuntimeStats" destroy-method="destroy">
@@ -148,7 +161,7 @@
 	
   <!-- Thread pool for seeding -->
   <bean id="gwcSeederThreadPoolExec" 
-    class="org.geowebcache.seed.SeederThreadPoolExecutor">
+    class="org.geoserver.gwc.seed.SeederThreadLocalTransferExecutor">
     <constructor-arg value="16"/><!-- Size of core pool -->
     <constructor-arg value="32"/><!-- Maximum size of pool -->
   </bean>

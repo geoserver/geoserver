@@ -33,6 +33,10 @@
           <name>data_store_type</name>
           <value>complex</value>
         </Parameter>
+        <Parameter>
+          <name>objs_id_schema</name>
+          <value>58e5889ce4b02461ad5af080,58e5889ce4b02461ad5af081</value>
+        </Parameter>
       </parameters>
     </DataStore>
   </sourceDataStores>
@@ -68,6 +72,18 @@
           </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>
+          <targetAttribute>st:inferredAttribute</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('inferredAttribute')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:inferredAttribute2</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('inferredAttribute2')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
           <targetAttribute>st:contact/st:mail</targetAttribute>
           <sourceExpression>
             <OCQL>jsonSelect('contact.mail')</OCQL>
@@ -86,6 +102,12 @@
           <targetAttribute>st:geometry</targetAttribute>
           <sourceExpression>
             <OCQL>jsonSelect('geometry')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:nullableField</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('nullableField')</OCQL>
           </sourceExpression>
         </AttributeMapping>
       </attributeMappings>

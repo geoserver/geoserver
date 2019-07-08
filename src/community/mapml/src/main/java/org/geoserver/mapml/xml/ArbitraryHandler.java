@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.mapml.xml;
 
 import java.io.StringReader;
@@ -24,5 +28,4 @@ public class ArbitraryHandler implements DomHandler<String, StreamResult> {
     public Source marshal(String str, ValidationEventHandler errorHandler) {
         return new StreamSource(new StringReader(str));
     }
-
 }

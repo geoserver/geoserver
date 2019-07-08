@@ -7,10 +7,10 @@ package org.geoserver.wms.describelayer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wms.DescribeLayer;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.springframework.util.Assert;
@@ -77,11 +77,13 @@ public abstract class DescribeLayerResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
 
-        Assert.notNull(operation.getParameters());
-        Assert.isTrue(operation.getParameters()[0] instanceof DescribeLayerRequest);
+        Assert.notNull(operation.getParameters(), "parameters");
+        Assert.isTrue(
+                operation.getParameters()[0] instanceof DescribeLayerRequest,
+                "The first parameter must be a DescribeLayerRequest");
         final DescribeLayerRequest request = (DescribeLayerRequest) operation.getParameters()[0];
 
-        Assert.isTrue(value instanceof DescribeLayerModel);
+        Assert.isTrue(value instanceof DescribeLayerModel, "Value should be a DescribeLayerModel");
         final DescribeLayerModel results = (DescribeLayerModel) value;
         try {
             write(results, request, output);

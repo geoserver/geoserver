@@ -273,7 +273,8 @@ public class DataStoreFormat extends VectorFormat {
             synchronized (this) {
                 if (dataStoreFactory == null) {
                     try {
-                        dataStoreFactory = dataStoreFactoryClass.newInstance();
+                        dataStoreFactory =
+                                dataStoreFactoryClass.getDeclaredConstructor().newInstance();
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "Unable to create instance of: "

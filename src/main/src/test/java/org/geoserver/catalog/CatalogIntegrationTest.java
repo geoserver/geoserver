@@ -492,7 +492,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                                 .get(0)
                                 .rules()
                                 .get(0)
-                                .getSymbolizers()[0]
+                                .symbolizers()
+                                .get(0)
                         instanceof LineSymbolizer);
         // named layer with user style + named style -> 2 layers
         assertEquals(catalog.getLayerByName((getLayerId(MockData.ROAD_SEGMENTS))), layers.get(1));
@@ -503,7 +504,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                                 .get(0)
                                 .rules()
                                 .get(0)
-                                .getSymbolizers()[0]
+                                .symbolizers()
+                                .get(0)
                         instanceof LineSymbolizer);
         assertEquals(catalog.getLayerByName((getLayerId(MockData.ROAD_SEGMENTS))), layers.get(2));
         assertEquals(catalog.getStyleByName("line").getStyle(), styles.get(2).getStyle());
@@ -529,7 +531,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                                 .get(0)
                                 .rules()
                                 .get(0)
-                                .getSymbolizers()[0]
+                                .symbolizers()
+                                .get(0)
                         instanceof PointSymbolizer);
 
         // Test bounds calculation
@@ -636,5 +639,52 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         final Resource relativeSvg =
                 getDataDirectory().getStyles(secondaryWs, "images", "square16.svg");
         assertEquals(Resource.Type.RESOURCE, relativeSvg.getType());
+    }
+
+    /** Checks MetadataMap storing object for StyleInfo on catalog. */
+    @Test
+    public void testStyleMetadataMap() throws Exception {
+        final Catalog catalog = getCatalog();
+        StyleInfo style = catalog.getStyleByName("Lakes");
+        style.getMetadata().put("timeToLive", "500");
+        catalog.save(style);
+        // check saved value
+        StyleInfo styletoCheck = catalog.getStyleByName("Lakes");
+        assertEquals(1, styletoCheck.getMetadata().size());
+        assertTrue(styletoCheck.getMetadata().get("timeToLive") != null);
+        String timeToLive = (String) styletoCheck.getMetadata().get("timeToLive");
+        assertEquals("500", timeToLive);
+    }
+
+    /** Checks default not null MetadataMap storing object for StyleInfo on catalog. */
+    @Test
+    public void testStyleMetadataMapNotNull() throws Exception {
+        final Catalog catalog = getCatalog();
+        StyleInfo styletoCheck = catalog.getStyleByName("relative");
+        assertTrue(styletoCheck.getMetadata() != null);
+        assertEquals(0, styletoCheck.getMetadata().size());
+    }
+
+    /** Checks MetadataMap storing object updates for StyleInfo on catalog. */
+    @Test
+    public void testStyleMetadataMapUpdates() throws Exception {
+        setupInitialStyleToUpdate();
+        final Catalog catalog = getCatalog();
+        StyleInfo styletoCheck = catalog.getStyleByName("Lakes");
+        assertEquals(2, styletoCheck.getMetadata().size());
+        styletoCheck.getMetadata().remove("timeToLive");
+        catalog.save(styletoCheck);
+        // check updated metadataMap
+        styletoCheck = catalog.getStyleByName("Lakes");
+        assertEquals(1, styletoCheck.getMetadata().size());
+        assertTrue(styletoCheck.getMetadata().get("timeToLive") == null);
+    }
+
+    private void setupInitialStyleToUpdate() {
+        final Catalog catalog = getCatalog();
+        StyleInfo style = catalog.getStyleByName("Lakes");
+        style.getMetadata().put("timeToLive", "500");
+        style.getMetadata().put("maxCacheEntries", "20");
+        catalog.save(style);
     }
 }

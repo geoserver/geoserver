@@ -26,7 +26,7 @@ public class ModificationProxyClonerTest {
 
     @Test
     public void testCloneDouble() {
-        Double source = new Double(12.56);
+        Double source = Double.valueOf(12.56);
         Double copy = ModificationProxyCloner.clone(source);
         assertSame(source, copy);
     }

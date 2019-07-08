@@ -605,10 +605,11 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
             throws Exception {
         assertEquals(String.valueOf(startIndex), kvp.get("STARTINDEX"));
         assertEquals(String.valueOf(count), kvp.get("COUNT"));
-        assertEquals("(" + typeName + ")", URLDecoder.decode((String) kvp.get("TYPENAMES")));
+        assertEquals(
+                "(" + typeName + ")", URLDecoder.decode((String) kvp.get("TYPENAMES"), "UTF-8"));
         assertNotNull(kvp.get("FILTER"));
 
-        assertFilter(filter, URLDecoder.decode((String) kvp.get("FILTER")));
+        assertFilter(filter, URLDecoder.decode((String) kvp.get("FILTER"), "UTF-8"));
     }
 
     void assertFilter(Filter expected, String filter) throws Exception {

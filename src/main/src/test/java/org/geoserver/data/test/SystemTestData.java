@@ -99,6 +99,7 @@ public class SystemTestData extends CiteTestData {
         public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE =
                 new LayerProperty<ReferencedEnvelope>();
         public static LayerProperty<Integer> SRS = new LayerProperty<Integer>();
+        public static LayerProperty<String> STORE = new LayerProperty<String>();
     }
 
     /** Keys for overriding default layer properties */
@@ -592,6 +593,12 @@ public class SystemTestData extends CiteTestData {
         String prefix = qName.getPrefix();
         String name = qName.getLocalPart();
         String uri = qName.getNamespaceURI();
+        String storeName;
+        if (LayerProperty.STORE.get(props, null) != null) {
+            storeName = LayerProperty.STORE.get(props, null);
+        } else {
+            storeName = prefix;
+        }
 
         // configure workspace if it doesn;t already exist
         if (catalog.getWorkspaceByName(prefix) == null) {
@@ -600,12 +607,12 @@ public class SystemTestData extends CiteTestData {
 
         // configure store if it doesn't already exist
 
-        File storeDir = catalog.getResourceLoader().findOrCreateDirectory(prefix);
+        File storeDir = catalog.getResourceLoader().findOrCreateDirectory(storeName);
 
-        DataStoreInfo store = catalog.getDataStoreByName(prefix);
+        DataStoreInfo store = catalog.getDataStoreByName(storeName);
         if (store == null) {
             store = catalog.getFactory().createDataStore();
-            store.setName(prefix);
+            store.setName(storeName);
             store.setWorkspace(catalog.getWorkspaceByName(prefix));
             store.setEnabled(true);
 
@@ -1025,7 +1032,7 @@ public class SystemTestData extends CiteTestData {
         }
         settings.setWorkspace(ws);
         settings.getContact().setContactPerson("Andrea Aime");
-        settings.getContact().setAddressElectronicMailAddress("andrea@geoserver.org");
+        settings.getContact().setContactEmail("andrea@geoserver.org");
         settings.getContact()
                 .setAddressDeliveryPoint(
                         "1600 Pennsylvania Ave NW, Washington DC 20500, United States");

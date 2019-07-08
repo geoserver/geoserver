@@ -5,9 +5,9 @@
  */
 package org.geoserver.security.xml;
 
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.security.xml.XMLSecurityConfigException.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

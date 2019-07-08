@@ -671,31 +671,63 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertThat(renamedSldFile, fileExists());
     }
 
+    protected void addBarStyle() throws Exception {
+        StyleInfo s = catalog.getFactory().createStyle();
+        s.setName("barstyle");
+        s.setFilename("barstyle.sld");
+        catalog.add(s);
+    }
+
     @Test
     public void testRenameStyleWithExistingIncrementedVersion() throws Exception {
-        testAddStyle();
-        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
-        sldFile.createNewFile();
+        addBarStyle();
+        File sldFileOld = new File(testData.getDataDirectoryRoot(), "styles/barstyle.sld");
+        sldFileOld.createNewFile();
+
+        File sldFileNew = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFileNew.createNewFile();
 
         File sldFile1 = new File(testData.getDataDirectoryRoot(), "styles/foostyle1.sld");
         sldFile1.createNewFile();
 
         File xmlFile1 = new File(testData.getDataDirectoryRoot(), "styles/foostyle1.xml");
         xmlFile1.createNewFile();
+        assertThat(sldFileOld, fileExists());
 
         File sldFile2 = new File(testData.getDataDirectoryRoot(), "styles/foostyle2.sld");
 
-        StyleInfo s = catalog.getStyleByName("foostyle");
+        StyleInfo s = catalog.getStyleByName("barstyle");
         s.setName("foostyle");
         catalog.save(s);
 
-        assertThat(sldFile, not(fileExists()));
+        assertThat(sldFileOld, not(fileExists()));
+        assertThat(sldFileNew, fileExists());
         assertThat(sldFile1, fileExists());
         assertThat(xmlFile1, fileExists());
         assertThat(sldFile2, fileExists());
 
         sldFile1.delete();
         xmlFile1.delete();
+    }
+
+    @Test
+    public void testRenameSLDFileOnlyIfNotFound()
+            throws Exception { // GEOS-9229 Rename the resource only if the old name and the new
+        // one are not identical.
+
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("foostyle");
+        catalog.save(s);
+
+        File f = new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml");
+        Document dom = dom(f);
+
+        assertXpathEvaluatesTo("foostyle.sld", "/style/filename", dom);
+        assertThat(sldFile, fileExists());
     }
 
     @Test
@@ -1174,7 +1206,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setAdminUsername("roadRunner");
-        global.setTitle("ACME");
+        global.getSettings().setTitle("ACME");
         getGeoServer().save(global);
 
         File f = new File(testData.getDataDirectoryRoot(), "global.xml");

@@ -15,15 +15,15 @@ import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.util.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-abstract class TestSupport {
+public abstract class TestSupport {
 
     private static final File TEST_DIRECTORY =
             new File(System.getProperty("java.io.tmpdir"), "params-extractor-data-directory");

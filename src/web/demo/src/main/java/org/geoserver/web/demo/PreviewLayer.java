@@ -23,21 +23,22 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wfs.xml.GML32OutputFormat;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geotools.data.util.NullProgressListener;
+import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
-import org.geotools.util.ProgressListener;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.util.ProgressListener;
 
 /**
  * A model class for the UI, hides the difference between simple layers and groups, centralizes the
@@ -312,7 +313,7 @@ public class PreviewLayer {
      * @throws IOException if the underlying datastore instance cannot be retrieved
      */
     String findGmlVersion(FeatureTypeInfo ftInfo) throws IOException {
-        ProgressListener listener = new NullProgressListener();
+        ProgressListener listener = new DefaultProgressListener();
         Name qName = ftInfo.getQualifiedName();
         FeatureType fType = ftInfo.getStore().getDataStore(listener).getSchema(qName);
         return findFeatureTypeGmlVersion(fType);
@@ -342,6 +343,21 @@ public class PreviewLayer {
         // recursively check super types
         AttributeType parent = featureType.getSuper();
         return findFeatureTypeGmlVersion(parent);
+    }
+    /**
+     * Returns true if serviceName is available for resource, otherwise false
+     *
+     * @param serviceName "WFS" or "WMS"
+     */
+    public boolean hasServiceSupport(String serviceName) {
+        LayerInfo linfo = GeoServerApplication.get().getCatalog().getLayerByName(this.getName());
+        if (linfo != null && linfo.getResource() != null && serviceName != null) {
+            List<String> disabledServices =
+                    DisabledServiceResourceFilter.disabledServices(linfo.getResource());
+            return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
+        }
+        // layer group and backward compatibility
+        return true;
     }
 
     private boolean isAbstractFeatureType(AttributeType type) {

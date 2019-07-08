@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.DefaultServiceExceptionHandler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.ows.util.OwsUtils;
@@ -29,7 +28,7 @@ import org.geoserver.platform.ServiceException;
  * <code>ServiceExceptionReport</code> document.
  *
  * <p>This handler is referred to as "legacy" as newer services move to the ows style exception
- * report. See {@link DefaultServiceExceptionHandler}.
+ * report. See {@link org.geoserver.ows.OWS10ServiceExceptionHandler}.
  *
  * <p>
  *

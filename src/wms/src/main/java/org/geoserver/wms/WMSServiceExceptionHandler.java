@@ -333,7 +333,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
         // exception code
         if ((exception.getCode() != null) && !exception.getCode().equals("")) {
-            sb.append(" code=\"" + exception.getCode() + "\"");
+            sb.append(" code=\"" + ResponseUtils.encodeXML(exception.getCode()) + "\"");
         }
 
         // exception locator

@@ -65,6 +65,7 @@ import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Mark;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.RasterSymbolizer;
@@ -455,11 +456,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
         Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
-        assertFilter("foo >= 8 and foo < 25.667", f1);
+        assertFilter("foo >= 8.0 and foo < 25.667", f1);
         Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
         assertFilter("foo >= 25.667 and foo < 43.333", f2);
         Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
-        assertFilter("foo >= 43.333 and foo <= 61", f3);
+        assertFilter("foo >= 43.333 and foo <= 61.0", f3);
     }
 
     @Test
@@ -478,11 +479,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
         Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
-        assertFilter("foo >= 12 and foo < 17.6667", f1);
+        assertFilter("foo >= 12.0 and foo < 17.6667", f1);
         Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
         assertFilter("foo >= 17.6667 and foo < 23.3333", f2);
         Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
-        assertFilter("foo >= 23.3333 and foo <= 29", f3);
+        assertFilter("foo >= 23.3333 and foo <= 29.0", f3);
     }
 
     @Test
@@ -502,11 +503,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
         Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
-        assertFilter("foo >= 4 and foo < 32.667", f1);
+        assertFilter("foo >= 4.0 and foo < 32.667", f1);
         Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
         assertFilter("foo >= 32.667 and foo < 61.333", f2);
         Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
-        assertFilter("foo >= 61.333 and foo <= 90", f3);
+        assertFilter("foo >= 61.333 and foo <= 90.0", f3);
     }
 
     private void assertFilter(String expectedCQL, Filter actual) throws CQLException {
@@ -532,9 +533,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        assertTrue(rules[0].getTitle().contains("20.0"));
-        assertTrue(rules[1].getTitle().contains("20.0"));
-        assertTrue(rules[2].getTitle().contains("61.0"));
+        assertTrue(rules[0].getDescription().getTitle().toString().contains("20.0"));
+        assertTrue(rules[1].getDescription().getTitle().toString().contains("20.0"));
+        assertTrue(rules[2].getDescription().getTitle().toString().contains("61.0"));
     }
 
     @Test
@@ -553,11 +554,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         Rule[] rules = checkRules(response.getContentAsString(), 3);
         Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
-        assertFilter("foo >= 8 and foo < 20", f1);
+        assertFilter("foo >= 8.0 and foo < 20.0", f1);
         Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
-        assertFilter("foo >= 20 and foo < 43", f2);
+        assertFilter("foo >= 20.0 and foo < 43.0", f2);
         Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
-        assertFilter("foo >= 43 and foo <= 61", f3);
+        assertFilter("foo >= 43.0 and foo <= 61.0", f3);
     }
 
     @Test
@@ -650,10 +651,10 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        assertTrue(rules[0].getTitle().contains("12.0"));
-        assertTrue(rules[1].getTitle().contains("12.0"));
-        assertTrue(rules[1].getTitle().contains("29.0"));
-        assertTrue(rules[2].getTitle().contains("29.0"));
+        assertTrue(rules[0].getDescription().getTitle().toString().contains("12.0"));
+        assertTrue(rules[1].getDescription().getTitle().toString().contains("12.0"));
+        assertTrue(rules[1].getDescription().getTitle().toString().contains("29.0"));
+        assertTrue(rules[2].getDescription().getTitle().toString().contains("29.0"));
     }
 
     @Test
@@ -674,10 +675,10 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        assertTrue(rules[0].getTitle().contains("32.6"));
-        assertTrue(rules[1].getTitle().contains("32.6"));
-        assertTrue(rules[1].getTitle().contains("61.3"));
-        assertTrue(rules[2].getTitle().contains("61.3"));
+        assertTrue(rules[0].getDescription().getTitle().toString().contains("32.6"));
+        assertTrue(rules[1].getDescription().getTitle().toString().contains("32.6"));
+        assertTrue(rules[1].getDescription().getTitle().toString().contains("61.3"));
+        assertTrue(rules[2].getDescription().getTitle().toString().contains("61.3"));
     }
 
     @Test
@@ -701,9 +702,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[1], "#B40000", PropertyIsEqualTo.class);
         checkRule(rules[2], "#FF0000", PropertyIsEqualTo.class);
         TreeSet<String> orderedRules = new TreeSet<String>();
-        orderedRules.add(rules[0].getTitle());
-        orderedRules.add(rules[1].getTitle());
-        orderedRules.add(rules[2].getTitle());
+        orderedRules.add(rules[0].getDescription().getTitle().toString());
+        orderedRules.add(rules[1].getDescription().getTitle().toString());
+        orderedRules.add(rules[2].getDescription().getTitle().toString());
         Iterator iter = orderedRules.iterator();
         assertEquals("bar", iter.next());
         assertEquals("foo", iter.next());
@@ -872,30 +873,30 @@ public class ClassifierTest extends SLDServiceBaseTest {
     }
 
     private void checkStroke(Rule rule, String color, String weight) {
-        assertNotNull(rule.getSymbolizers());
-        assertEquals(1, rule.getSymbolizers().length);
-        assertTrue(rule.getSymbolizers()[0] instanceof PointSymbolizer);
-        PointSymbolizer symbolizer = (PointSymbolizer) rule.getSymbolizers()[0];
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof PointSymbolizer);
+        PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().get(0);
         assertNotNull(symbolizer.getGraphic());
-        assertEquals(1, symbolizer.getGraphic().getMarks().length);
-        assertNotNull(symbolizer.getGraphic().getMarks()[0].getStroke());
-        assertEquals(
-                color, symbolizer.getGraphic().getMarks()[0].getStroke().getColor().toString());
-        assertEquals(
-                weight, symbolizer.getGraphic().getMarks()[0].getStroke().getWidth().toString());
+        assertEquals(1, symbolizer.getGraphic().graphicalSymbols().size());
+        Mark mark = (Mark) symbolizer.getGraphic().graphicalSymbols().get(0);
+        assertNotNull(mark.getStroke());
+        assertEquals(color, mark.getStroke().getColor().toString());
+        assertEquals(weight, mark.getStroke().getWidth().toString());
     }
 
     private Filter checkRule(Rule rule, String color, Class<?> filterType) {
         assertNotNull(rule.getFilter());
         assertTrue(filterType.isAssignableFrom(rule.getFilter().getClass()));
-        assertNotNull(rule.getSymbolizers());
-        assertEquals(1, rule.getSymbolizers().length);
-        assertTrue(rule.getSymbolizers()[0] instanceof PointSymbolizer);
-        PointSymbolizer symbolizer = (PointSymbolizer) rule.getSymbolizers()[0];
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof PointSymbolizer);
+        PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().get(0);
         assertNotNull(symbolizer.getGraphic());
-        assertEquals(1, symbolizer.getGraphic().getMarks().length);
-        assertNotNull(symbolizer.getGraphic().getMarks()[0].getFill());
-        assertEquals(color, symbolizer.getGraphic().getMarks()[0].getFill().getColor().toString());
+        assertEquals(1, symbolizer.getGraphic().graphicalSymbols().size());
+        Mark mark = (Mark) symbolizer.getGraphic().graphicalSymbols().get(0);
+        assertNotNull(mark.getFill());
+        assertEquals(color, mark.getFill().getColor().toString());
         return rule.getFilter();
     }
 

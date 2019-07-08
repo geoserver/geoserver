@@ -16,13 +16,13 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Wrapper;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.LegacyServiceLoader;
 import org.geoserver.config.util.LegacyServicesReader;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
 
 public class WMSLoader extends LegacyServiceLoader<WMSInfo> {

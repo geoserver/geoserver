@@ -8,6 +8,7 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.wms.WMSMapContent;
@@ -114,26 +115,16 @@ public class EncodeHTMLImageMap extends WebMap {
 
             final int stylesLength = styles.length;
 
-            int styleRulesLength;
             FeatureTypeStyle style;
-            int u = 0;
-            Rule r;
 
             for (int t = 0; t < stylesLength; t++) // look at each
             // featuretypestyle
             {
                 style = styles[t];
 
-                Rule[] rules = style.getRules();
-                styleRulesLength = rules.length;
-
-                for (u = 0; u < styleRulesLength; u++) // look at each
-                // rule in the
-                // featuretypestyle
-                {
-                    r = rules[u];
+                for (Rule r : style.rules()) {
                     if (r.getFilter() == null) return null; // uh-oh has no filter (want all rows)
-                    if (r.hasElseFilter()) return null; // uh-oh has elseRule
+                    if (r.isElseFilter()) return null; // uh-oh has elseRule
                     filtersToDS.add(r.getFilter());
                 }
             }
@@ -184,28 +175,25 @@ public class EncodeHTMLImageMap extends WebMap {
      */
     protected FeatureTypeStyle[] filterFeatureTypeStyles(
             Style style, SimpleFeatureType featureType) {
-        FeatureTypeStyle[] featureTypeStyles = style.getFeatureTypeStyles();
+        List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
 
-        if ((featureTypeStyles == null) || (featureTypeStyles.length == 0)) {
+        if (featureTypeStyles.isEmpty()) {
             return new FeatureTypeStyle[0];
         }
 
-        List<FeatureTypeStyle> filtered = new ArrayList<FeatureTypeStyle>(featureTypeStyles.length);
+        List<FeatureTypeStyle> filtered = new ArrayList<>(featureTypeStyles.size());
 
-        for (int i = 0; i < featureTypeStyles.length; i++) {
-            FeatureTypeStyle featureTypeStyle = featureTypeStyles[i];
-            String featureTypeName = featureTypeStyle.getFeatureTypeName();
-            Rule[] rules = featureTypeStyle.getRules();
-            if (rules != null) rules = filterRules(rules);
-            // does this style have any rules
-            if (rules == null || rules.length == 0) {
-                continue;
-            }
-            featureTypeStyle.setRules(rules);
+        for (FeatureTypeStyle featureTypeStyle : featureTypeStyles) {
+            Rule[] rules = filterRules(featureTypeStyle.rules());
+            featureTypeStyle.rules().clear();
+            featureTypeStyle.rules().addAll(Arrays.asList(rules));
 
             // does this style apply to the feature collection
-            if (featureType.getTypeName().equalsIgnoreCase(featureTypeName)
-                    || FeatureTypes.isDecendedFrom(featureType, null, featureTypeName)) {
+            if (featureTypeStyle.featureTypeNames().isEmpty()
+                    || featureTypeStyle
+                            .featureTypeNames()
+                            .stream()
+                            .anyMatch(tn -> FeatureTypes.matches(featureType, tn))) {
                 filtered.add(featureTypeStyle);
             }
         }
@@ -230,10 +218,9 @@ public class EncodeHTMLImageMap extends WebMap {
      *
      * @param rules
      */
-    private Rule[] filterRules(Rule[] rules) {
+    private Rule[] filterRules(List<Rule> rules) {
         List<Rule> result = new ArrayList<Rule>();
-        for (int count = 0; count < rules.length; count++) {
-            Rule rule = rules[count];
+        for (Rule rule : rules) {
             double scaleDenominator;
             try {
                 scaleDenominator =

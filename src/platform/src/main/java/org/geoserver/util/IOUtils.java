@@ -9,6 +9,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -529,6 +530,23 @@ public class IOUtils {
             } else {
                 FileUtils.moveFile(source, dest);
             }
+        }
+    }
+
+    /**
+     * Replacement for the now deprecated {@link
+     * org.apache.commons.io.IOUtils#closeQuietly(Closeable)}, to be used only when then "quiet"
+     * behavior bit is really rneeded
+     *
+     * @param closeable
+     */
+    public static void closeQuietly(final Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (final IOException ioe) {
+            // ignore
         }
     }
 }

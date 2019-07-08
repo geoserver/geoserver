@@ -7,9 +7,12 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -68,15 +71,14 @@ public class WFSReprojectionUtilTest {
     @Test
     public void testReprojectFilterWithTargetCrs() throws FactoryException {
         BBOX bbox = filterFactory.bbox(filterFactory.property("geom"), 10, 15, 20, 25, "EPSG:4326");
-        Filter clone =
-                WFSReprojectionUtil.reprojectFilter(bbox, featureType, CRS.decode("EPSG:3857"));
+        CoordinateReferenceSystem webMercator = CRS.decode("EPSG:3857");
+        Filter clone = WFSReprojectionUtil.reprojectFilter(bbox, featureType, webMercator);
         assertNotSame(bbox, clone);
         BBOX clonedBbox = (BBOX) clone;
-        assertEquals(bbox.getPropertyName(), clonedBbox.getPropertyName());
-        assertEquals(1669792.3618991035, clonedBbox.getMinX(), 0.1);
-        assertEquals(1118889.9748579597, clonedBbox.getMinY(), 0.1);
-        assertEquals(2782987.269831839, clonedBbox.getMaxX(), 0.1);
-        assertEquals(2273030.926987689, clonedBbox.getMaxY(), 0.1);
-        assertEquals("EPSG:3857", clonedBbox.getSRS());
+        assertEquals(bbox.getExpression1(), clonedBbox.getExpression1());
+        ReferencedEnvelope expected =
+                new ReferencedEnvelope(
+                        1669792.36, 2782987.269831839, 1118889.97, 2273030.92, webMercator);
+        assertTrue(JTS.equals(expected, clonedBbox.getBounds(), 0.1));
     }
 }

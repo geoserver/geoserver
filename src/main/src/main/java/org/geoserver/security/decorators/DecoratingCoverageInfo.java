@@ -21,8 +21,8 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.Hints;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -175,10 +175,6 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
 
     public Map<String, Serializable> getParameters() {
         return delegate.getParameters();
-    }
-
-    public String getPrefixedName() {
-        return delegate.getPrefixedName();
     }
 
     public String prefixedName() {

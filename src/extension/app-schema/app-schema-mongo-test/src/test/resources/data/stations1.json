@@ -1,6 +1,8 @@
 {
+  "_id": { "$oid" : "58e5889ce4b02461ad5af080"},
   "id": "1",
   "name": "station 1",
+  "inferredAttribute2": "ok",
   "contact": {
     "mail": "station1@mail.com"
   },
@@ -11,6 +13,7 @@
     ],
     "type": "Point"
   },
+  "nullableField": null,
   "measurements": [
     {
       "name": "temp",

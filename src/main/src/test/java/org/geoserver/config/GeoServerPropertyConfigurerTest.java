@@ -32,7 +32,7 @@ public class GeoServerPropertyConfigurerTest {
 
     @After
     public void tearDown() throws Exception {
-        ctx.destroy();
+        ctx.close();
     }
 
     @Test

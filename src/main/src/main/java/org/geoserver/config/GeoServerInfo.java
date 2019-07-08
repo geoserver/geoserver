@@ -21,24 +21,6 @@ public interface GeoServerInfo extends Info {
     String getId();
 
     /**
-     * The contact information.
-     *
-     * @uml.property name="contactInfo"
-     * @uml.associationEnd inverse="geoServer:org.geoserver.config.ContactInfo"
-     * @deprecated use {@link #getSettings()}
-     */
-    ContactInfo getContact();
-
-    /**
-     * Sets the contact information.
-     *
-     * @param contactInfo The contactInfo to set.
-     * @uml.property name="contactInfo"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setContact(ContactInfo contactInfo);
-
-    /**
      * The global settings.
      *
      * <p>Generally client code shoudl not call this method directly, and rather call {@link
@@ -67,22 +49,6 @@ public interface GeoServerInfo extends Info {
     /** Sets the Coverage Access configuration. */
     void setCoverageAccess(CoverageAccessInfo coverageInfo);
 
-    /**
-     * The default character set.
-     *
-     * @uml.property name="charset"
-     * @deprecated use {@link #getSettings()}
-     */
-    String getCharset();
-
-    /**
-     * Sets the default character set.
-     *
-     * @uml.property name="charset"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setCharset(String charset);
-
     /** Sets the administrator username. */
     String getAdminUsername();
 
@@ -96,121 +62,6 @@ public interface GeoServerInfo extends Info {
     void setAdminPassword(String adminPassword);
 
     /**
-     * The title of the GeoServer instance.
-     *
-     * @uml.property name="title"
-     * @deprecated use {@link #getSettings()}
-     */
-    String getTitle();
-
-    /**
-     * Sets the title of the GeoServer instance. .
-     *
-     * @uml.property name="title"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setTitle(String title);
-
-    /**
-     * A global cap on the number of decimals to use when encoding floating point numbers.
-     *
-     * @uml.property name="numDecimals"
-     * @deprecated use {@link #getSettings()}
-     */
-    int getNumDecimals();
-
-    /**
-     * Sets the global cap on the number of decimals to use when encoding floating point numbers.
-     *
-     * @uml.property name="numDecimals"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setNumDecimals(int numDecimals);
-
-    /**
-     * Provider web site (used for default contact information, or service provider information if
-     * user has not filled in contact details.
-     *
-     * @deprecated use {@link #getSettings()}
-     */
-    String getOnlineResource();
-
-    /**
-     * Provider web site (used for default contact information, or service provider information if
-     * user has not filled in contact details.
-     *
-     * @param onlineResource Provider website
-     */
-    void setOnlineResource(String onlineResource);
-
-    /**
-     * The url of a proxy in front of the GeoServer instance.
-     *
-     * <p>This value is used when a reference back to the GeoServer instance must be made in a
-     * response.
-     *
-     * @uml.property name="proxyBaseUrl"
-     * @deprecated use {@link #getSettings()}
-     */
-    String getProxyBaseUrl();
-
-    /**
-     * Sets The url of a proxy in front of the GeoServer instance.
-     *
-     * @uml.property name="proxyBaseUrl"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setProxyBaseUrl(String proxyBaseUrl);
-
-    /**
-     * The base url to use when including a reference to an xml schema document in a response.
-     *
-     * @uml.property name="schemaBaseUrl"
-     * @deprecated use {@link #getSettings()}
-     */
-    String getSchemaBaseUrl();
-
-    /**
-     * Sets the base url to use when including a reference to an xml schema document in a response.
-     *
-     * @uml.property name="schemaBaseUrl"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setSchemaBaseUrl(String schemaBaseUrl);
-
-    /**
-     * Sets indent level for XML output, causing output to be more verbose.
-     *
-     * <p>Then set to false GeoServer will also take step so to strip out some formating and produce
-     * more condensed output.
-     *
-     * @uml.property name="verbose"
-     * @deprecated use {@link #getSettings()}
-     */
-    boolean isVerbose();
-
-    /**
-     * Sets indent level for XML output, causing output to be more verbose.
-     *
-     * <p>Then set to false GeoServer will also take step so to strip out some formating and produce
-     * more condensed output.
-     *
-     * @uml.property name="verbose"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setVerbose(boolean verbose);
-
-    /**
-     * Verbosity flag for exceptions.
-     *
-     * <p>When set GeoServer will include full stack traces for exceptions.
-     *
-     * @uml.property name="verboseExceptions"
-     * @deprecated use {@link #getSettings()}
-     */
-    boolean isVerboseExceptions();
-
-    /**
      * Set the XML error handling mode for the server.
      *
      * @see ResourceErrorHandling
@@ -219,14 +70,6 @@ public interface GeoServerInfo extends Info {
 
     /** Get the XML error handling mode for the server. */
     ResourceErrorHandling getResourceErrorHandling();
-
-    /**
-     * Sets verbosity flag for exceptions.
-     *
-     * @uml.property name="verboseExceptions"
-     * @deprecated use {@link #getSettings()}
-     */
-    void setVerboseExceptions(boolean verboseExceptions);
 
     /**
      * The update sequence.

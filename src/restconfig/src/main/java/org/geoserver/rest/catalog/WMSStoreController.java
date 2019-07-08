@@ -136,6 +136,7 @@ public class WMSStoreController extends AbstractCatalogController {
                         .buildAndExpand(workspaceName, storeName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(storeName, headers, HttpStatus.CREATED);
     }
 

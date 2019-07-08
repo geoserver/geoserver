@@ -124,6 +124,8 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
                         request.setVersion(version);
                     } else if (atts.getLocalName(i).equals("updateSequence")) {
                         request.setUpdateSequence(atts.getValue(i));
+                    } else if (atts.getLocalName(i).equals("rootLayer")) {
+                        request.setRootLayerEnabled(Boolean.valueOf(atts.getValue(i)));
                     }
                 }
             }

@@ -67,7 +67,6 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
 import org.geoserver.security.auth.GuavaAuthenticationCacheImpl;
@@ -750,54 +749,14 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return get("security");
     }
 
-    /**
-     * Security configuration root directory.
-     *
-     * @deprecated Use {@link #get(String)}}
-     */
-    public File getSecurityRoot() throws IOException {
-        return get("security").dir();
-    }
-
     /** Role configuration root directory. */
     public Resource role() {
         return get("security/role");
     }
 
-    /**
-     * Role configuration root directory.
-     *
-     * @deprecated Use {@link #role()}
-     */
-    public File getRoleRoot() throws IOException {
-        return get("security/role").dir();
-    }
-
-    /**
-     * Role configuration root directory.
-     *
-     * @deprecated Use {@link #role()}
-     */
-    public File getRoleRoot(boolean create) throws IOException {
-        Resource directory = get("security/role");
-        if (create) {
-            return directory.dir();
-        } else {
-            return Resources.directory(directory);
-        }
-    }
-
     /** Password policy configuration root directory */
     public Resource passwordPolicy() {
         return get("security/pwpolicy");
-    }
-    /**
-     * Password policy configuration root directory
-     *
-     * @deprecated Use {@link #passwordPolicy()}
-     */
-    public File getPasswordPolicyRoot() throws IOException {
-        return get("security/pwpolicy").dir();
     }
 
     /** User/group configuration root directory. */
@@ -805,27 +764,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return get("security/usergroup");
     }
 
-    /**
-     * User/group configuration root directory.
-     *
-     * @deprecated Use {@link #userGroup()}
-     */
-    public File getUserGroupRoot() throws IOException {
-        return get("security/usergroup").dir();
-    }
-
     /** Authentication configuration root directory. */
     public Resource auth() throws IOException {
         return get("security/auth");
-    }
-
-    /**
-     * Authentication configuration root directory.
-     *
-     * @deprecated use {@link #auth()}
-     */
-    public File getAuthRoot() throws IOException {
-        return get("security/auth").dir();
     }
 
     /** Authentication filter root directory. */
@@ -833,26 +774,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return get("security/filter");
     }
 
-    /**
-     * Authentication filter root directory.
-     *
-     * @deprecated Use {@link #auth()}
-     */
-    public File getFilterRoot() throws IOException {
-        return get("security/filter").dir();
-    }
-
     /** Master password provider root */
     public Resource masterPasswordProvider() throws IOException {
         return get("security/masterpw");
-    }
-    /**
-     * Master password provider root
-     *
-     * @deprecated Use {@link #masterPasswordProvider()}
-     */
-    public File getMasterPasswordProviderRoot() throws IOException {
-        return get("security/masterpw").dir();
     }
 
     /** Lists all available role service configurations. */
@@ -1773,7 +1697,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         if (pwDigestFile.getType() == Type.RESOURCE) {
             InputStream fin = pwDigestFile.in();
             try {
-                return IOUtils.toString(fin);
+                return IOUtils.toString(fin, "UTF-8");
             } finally {
                 fin.close();
             }
@@ -1791,7 +1715,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     void saveMasterPasswordDigest(String masterPasswdDigest) throws IOException {
         OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out();
         try {
-            IOUtils.write(masterPasswdDigest, fout);
+            IOUtils.write(masterPasswdDigest, fout, "UTF-8");
         } finally {
             fout.close();
         }
@@ -2024,15 +1948,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             w.write("This file should be removed after reading !!!.");
             w.newLine();
         }
-    }
-
-    /**
-     * @param file
-     * @throws IOException
-     * @deprecated Use {@link #dumpMasterPassword(Resource)}
-     */
-    public boolean dumpMasterPassword(File file) throws IOException {
-        return dumpMasterPassword(Files.asResource(file));
     }
 
     /**

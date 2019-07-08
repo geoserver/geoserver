@@ -17,6 +17,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
@@ -52,7 +54,12 @@ public class GeoserverDataDirectoryTest extends GeoServerSystemTestSupport {
     @Test
     public void testFindDataFile() throws IOException {
         GeoServerResourceLoader loader = getResourceLoader();
-        final File file = loader.url("file:" + RAIN_DATA_PATH);
+        final File file =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()),
+                                "file:" + RAIN_DATA_PATH),
+                        true);
         assertNotNull(file);
     }
 
@@ -61,14 +68,23 @@ public class GeoserverDataDirectoryTest extends GeoServerSystemTestSupport {
         GeoServerResourceLoader loader = getResourceLoader();
         final File dataDir = loader.getBaseDirectory();
         final String absolutePath = dataDir.getCanonicalPath() + SEPARATOR_CHAR + RAIN_DATA_PATH;
-        final File file = loader.url(absolutePath);
+        final File file =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()), absolutePath),
+                        true);
         assertNotNull(file);
     }
 
     @Test
     public void testFindDataFileForCustomUrl() throws IOException {
         GeoServerResourceLoader loader = getResourceLoader();
-        final File file = loader.url("sde://user:password@server:port");
+        final File file =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()),
+                                "sde://user:password@server:port"),
+                        true);
         assertNull(file); // Before GEOS-5931 it would have been returned a file again
     }
 

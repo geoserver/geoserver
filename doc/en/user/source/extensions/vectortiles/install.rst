@@ -22,7 +22,7 @@ To verify that the extension was installed successfully
 
    * ``application/json;type=geojson``
    * ``application/json;type=topojson``
-   * ``application/x-protobuf;type=mapbox-vector``
+   * ``application/vnd.mapbox-vector-tile``
 
    .. figure:: img/vectortiles_tileformats.png
 

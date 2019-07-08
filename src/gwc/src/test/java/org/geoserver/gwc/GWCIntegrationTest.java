@@ -518,20 +518,21 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final String qualifiedName = super.getLayerId(BASIC_POLYGONS);
         final GeoServerTileLayer tileLayer =
                 (GeoServerTileLayer) gwc.getTileLayerByName(qualifiedName);
-        tileLayer
-                .getLayerInfo()
+        ((LayerInfo) tileLayer.getPublishedInfo())
                 .getResource()
                 .getMetadata()
                 .put(ResourceInfo.CACHING_ENABLED, "true");
-        tileLayer.getLayerInfo().getResource().getMetadata().put(ResourceInfo.CACHE_AGE_MAX, 3456);
+        ((LayerInfo) tileLayer.getPublishedInfo())
+                .getResource()
+                .getMetadata()
+                .put(ResourceInfo.CACHE_AGE_MAX, 3456);
 
         MockHttpServletResponse response = getAsServletResponse(path);
         String cacheControl = response.getHeader("Cache-Control");
         assertEquals("max-age=3456", cacheControl);
         assertNotNull(response.getHeader("Last-Modified"));
 
-        tileLayer
-                .getLayerInfo()
+        ((LayerInfo) tileLayer.getPublishedInfo())
                 .getResource()
                 .getMetadata()
                 .put(ResourceInfo.CACHING_ENABLED, "false");
@@ -540,8 +541,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("no-cache", cacheControl);
 
         // make sure a boolean is handled, too - see comment in CachingWebMapService
-        tileLayer
-                .getLayerInfo()
+        ((LayerInfo) tileLayer.getPublishedInfo())
                 .getResource()
                 .getMetadata()
                 .put(ResourceInfo.CACHING_ENABLED, Boolean.FALSE);
@@ -899,6 +899,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         MockHttpServletResponse response = getAsServletResponse(request);
+
+        // make sure deletion is not still underway (works in a background thread)
+        waitTileBreederCompletion();
 
         // First request should be a MISS
         assertEquals(200, response.getStatus());
@@ -1574,7 +1577,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         testGridSet,
                         new BoundingBox(-180, 0, 0, 90),
                         0,
-                        testGridSet.getGridLevels().length - 1);
+                        testGridSet.getNumLevels() - 1);
         GeoServerTileLayer tileLayer =
                 (GeoServerTileLayer)
                         GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS_NO_CRS));

@@ -322,7 +322,7 @@ public class RasterLayerIdentifier implements LayerIdentifier {
 
         Double[] values = new Double[pixelValues.length];
         for (int i = 0; i < values.length; i++) {
-            values[i] = new Double(pixelValues[i]);
+            values[i] = Double.valueOf(pixelValues[i]);
         }
         return DataUtilities.collection(SimpleFeatureBuilder.build(gridType, values, ""));
     }

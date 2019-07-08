@@ -32,7 +32,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.easymock.Capture;
-import org.easymock.classextension.EasyMock;
+import org.easymock.CaptureType;
+import org.easymock.EasyMock;
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -48,6 +49,7 @@ import org.geoserver.test.SystemTest;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.data.DataAccess;
@@ -62,6 +64,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
@@ -86,6 +89,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.sort.SortBy;
+import org.opengis.geometry.Envelope;
 import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -342,6 +346,37 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         getGeoServer().reload();
     }
 
+    @Test
+    public void testNativeCoverageName() throws Exception { // GEOS-9236
+        // build the store
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        CoverageStoreInfo store = cb.buildCoverageStore("geotiff");
+
+        store.setURL(
+                MockData.class
+                        .getResource("/org/geoserver/data/test/tazdem.tiff")
+                        .toExternalForm());
+        store.setType("GeoTIFF");
+        cat.add(store);
+
+        // build the coverage
+        cb.setStore(store);
+        CoverageInfo ci = cb.buildCoverage();
+        ci.setNativeCoverageName("geotiff_coverage");
+        cat.add(ci);
+
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+
+        Envelope envelop = reader.getOriginalEnvelope();
+
+        assertNotNull(ci);
+        assertTrue(reader.getFormat() instanceof GeoTiffFormat);
+        assertNotNull(envelop);
+        assertEquals("tazdem", ci.getNativeCoverageName());
+    }
+
     @RunTestSetup
     @Test
     public void testGeoServerReload() throws Exception {
@@ -352,7 +387,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertFalse("foo".equals(lakes.getTitle()));
 
         GeoServerDataDirectory dd = new GeoServerDataDirectory(getResourceLoader());
-        File info = dd.findResourceFile(lakes);
+        File info = dd.config(lakes).file();
         // File info = getResourceLoader().find("featureTypes", "cite_Lakes", "info.xml");
 
         FileReader in = new FileReader(info);
@@ -741,7 +776,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 createNiceMock("theReader", AbstractGridCoverage2DReader.class);
         replay(reader);
         AbstractGridFormat format = createNiceMock("theFormat", AbstractGridFormat.class);
-        Capture<Hints> capturedHints = new Capture<>();
+        Capture<Hints> capturedHints = Capture.newInstance(CaptureType.LAST);
         expect(format.getReader(EasyMock.eq(url), capture(capturedHints)))
                 .andReturn(reader)
                 .anyTimes();

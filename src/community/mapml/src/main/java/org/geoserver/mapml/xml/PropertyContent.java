@@ -33,7 +33,7 @@ import javax.xml.namespace.QName;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PropertyContent")
+@XmlType(name = "propertyContent")
 public class PropertyContent extends AnyContent {
 
     @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();

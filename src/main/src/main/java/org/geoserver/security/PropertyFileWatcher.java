@@ -5,7 +5,6 @@
  */
 package org.geoserver.security;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -29,10 +28,6 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         super(resource);
     }
 
-    @Deprecated
-    public PropertyFileWatcher(File file) {
-        super(file);
-    }
     /**
      * Read properties from file.
      *

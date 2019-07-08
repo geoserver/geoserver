@@ -40,23 +40,28 @@ public class MBStyleHandler extends StyleHandler {
             TEMPLATES.put(
                     StyleType.GENERIC,
                     IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_generic.json")));
+                            MBStyleHandler.class.getResourceAsStream("template_generic.json"),
+                            "UTF-8"));
             TEMPLATES.put(
                     StyleType.POINT,
                     IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_point.json")));
+                            MBStyleHandler.class.getResourceAsStream("template_point.json"),
+                            "UTF-8"));
             TEMPLATES.put(
                     StyleType.POLYGON,
                     IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_polygon.json")));
+                            MBStyleHandler.class.getResourceAsStream("template_polygon.json"),
+                            "UTF-8"));
             TEMPLATES.put(
                     StyleType.LINE,
                     IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_line.json")));
+                            MBStyleHandler.class.getResourceAsStream("template_line.json"),
+                            "UTF-8"));
             TEMPLATES.put(
                     StyleType.RASTER,
                     IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_raster.json")));
+                            MBStyleHandler.class.getResourceAsStream("template_raster.json"),
+                            "UTF-8"));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }

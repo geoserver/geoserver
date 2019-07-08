@@ -513,7 +513,7 @@ public class GetFeature {
                                                     + " is "
                                                     + "not available "
                                                     + "for "
-                                                    + meta.getPrefixedName()
+                                                    + meta.prefixedName()
                                                     + ".  ";
 
                                     if (meta.getFeatureType() instanceof SimpleFeatureType) {
@@ -1459,12 +1459,10 @@ public class GetFeature {
             // check for a full typename prefix
             for (int j = 0; j < featureTypes.size(); j++) {
                 FeatureTypeInfo featureType = featureTypes.get(j);
-                if (propName.startsWith(featureType.getPrefixedName() + "/")) {
+                if (propName.startsWith(featureType.prefixedName() + "/")) {
                     propNames
                             .get(j)
-                            .add(
-                                    propName.substring(
-                                            (featureType.getPrefixedName() + "/").length()));
+                            .add(propName.substring((featureType.prefixedName() + "/").length()));
                     continue O;
                 }
                 if (propName.startsWith(featureType.getName() + "/")) {
@@ -1574,68 +1572,7 @@ public class GetFeature {
 
             if (query.getSrsName() != null) {
                 final Query fquery = query;
-                fvisitor =
-                        new AbstractFilterVisitor() {
-                            public Object visit(BBOX filter, Object data) {
-                                if (filter.getSRS() != null
-                                        && !fquery.getSrsName()
-                                                .toString()
-                                                .equals(filter.getSRS())) {
-
-                                    // back project bounding box into geographic coordinates
-                                    CoordinateReferenceSystem geo = DefaultGeographicCRS.WGS84;
-
-                                    GeneralEnvelope e =
-                                            new GeneralEnvelope(
-                                                    new double[] {
-                                                        filter.getMinX(), filter.getMinY()
-                                                    },
-                                                    new double[] {
-                                                        filter.getMaxX(), filter.getMaxY()
-                                                    });
-                                    CoordinateReferenceSystem crs = null;
-                                    try {
-                                        crs = CRS.decode(filter.getSRS());
-                                        e.setCoordinateReferenceSystem(crs);
-                                        e = CRS.transform(e, geo);
-                                    } catch (Exception ex) {
-                                        throw new WFSException(request, ex);
-                                    }
-
-                                    // ensure within bounds defined by srs specified on
-                                    // query
-                                    try {
-                                        crs = CRS.decode(fquery.getSrsName().toString());
-                                    } catch (Exception ex) {
-                                        throw new WFSException(request, ex);
-                                    }
-
-                                    GeographicBoundingBox valid =
-                                            (GeographicBoundingBox)
-                                                    crs.getDomainOfValidity()
-                                                            .getGeographicElements()
-                                                            .iterator()
-                                                            .next();
-
-                                    if (e.getMinimum(0) < valid.getWestBoundLongitude()
-                                            || e.getMinimum(0) > valid.getEastBoundLongitude()
-                                            || e.getMaximum(0) < valid.getWestBoundLongitude()
-                                            || e.getMaximum(0) > valid.getEastBoundLongitude()
-                                            || e.getMinimum(1) < valid.getSouthBoundLatitude()
-                                            || e.getMinimum(1) > valid.getNorthBoundLatitude()
-                                            || e.getMaximum(1) < valid.getSouthBoundLatitude()
-                                            || e.getMaximum(1) > valid.getNorthBoundLatitude()) {
-
-                                        throw new WFSException(
-                                                request,
-                                                "bounding box out of valid range of crs",
-                                                "InvalidParameterValue");
-                                    }
-                                }
-
-                                return data;
-                            }
-                        };
+                fvisitor = new CiteBBOXValidator(fquery, request);
 
                 filter.accept(fvisitor, null);
             }
@@ -1742,5 +1679,62 @@ public class GetFeature {
         }
 
         return properties;
+    }
+
+    private static class CiteBBOXValidator extends AbstractFilterVisitor {
+        private final Query fquery;
+        private final GetFeatureRequest request;
+
+        public CiteBBOXValidator(Query fquery, GetFeatureRequest request) {
+            this.fquery = fquery;
+            this.request = request;
+        }
+
+        public Object visit(BBOX filter, Object data) {
+            ReferencedEnvelope ex2Envelope =
+                    filter.getExpression2().evaluate(null, ReferencedEnvelope.class);
+            try {
+                CoordinateReferenceSystem queryCrs = CRS.decode(fquery.getSrsName().toString());
+                if (ex2Envelope != null
+                        && ex2Envelope.getCoordinateReferenceSystem() != null
+                        && !queryCrs.equals(ex2Envelope.getCoordinateReferenceSystem())) {
+                    // back project bounding box into geographic coordinates
+                    CoordinateReferenceSystem geo = DefaultGeographicCRS.WGS84;
+
+                    GeneralEnvelope e = new GeneralEnvelope(filter.getBounds());
+                    e = CRS.transform(e, geo);
+
+                    // ensure within bounds defined by srs specified on
+                    // query
+                    CoordinateReferenceSystem crs = queryCrs;
+
+                    GeographicBoundingBox valid =
+                            (GeographicBoundingBox)
+                                    crs.getDomainOfValidity()
+                                            .getGeographicElements()
+                                            .iterator()
+                                            .next();
+
+                    if (e.getMinimum(0) < valid.getWestBoundLongitude()
+                            || e.getMinimum(0) > valid.getEastBoundLongitude()
+                            || e.getMaximum(0) < valid.getWestBoundLongitude()
+                            || e.getMaximum(0) > valid.getEastBoundLongitude()
+                            || e.getMinimum(1) < valid.getSouthBoundLatitude()
+                            || e.getMinimum(1) > valid.getNorthBoundLatitude()
+                            || e.getMaximum(1) < valid.getSouthBoundLatitude()
+                            || e.getMaximum(1) > valid.getNorthBoundLatitude()) {
+
+                        throw new WFSException(
+                                request,
+                                "bounding box out of valid range of crs",
+                                "InvalidParameterValue");
+                    }
+                }
+            } catch (Exception e) {
+                throw new WFSException(request, e);
+            }
+
+            return data;
+        }
     }
 }

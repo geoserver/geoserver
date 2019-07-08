@@ -6,7 +6,7 @@ package org.geoserver.wms.vector;
 
 import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableSet;

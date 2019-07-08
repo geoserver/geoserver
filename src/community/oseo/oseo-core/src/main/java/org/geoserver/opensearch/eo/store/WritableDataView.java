@@ -16,7 +16,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.identity.FeatureId;
@@ -67,24 +66,10 @@ class WritableDataView extends DefaultView implements SimpleFeatureStore {
     }
 
     @Override
-    public void modifyFeatures(AttributeDescriptor[] type, Object[] value, Filter filter)
-            throws IOException {
-        Filter mixedFilter = mixFilter(filter);
-        delegate.modifyFeatures(type, value, mixedFilter);
-    }
-
-    @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
         Filter mixedFilter = mixFilter(filter);
         delegate.modifyFeatures(attributeName, attributeValue, mixedFilter);
-    }
-
-    @Override
-    public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
-            throws IOException {
-        Filter mixedFilter = mixFilter(filter);
-        delegate.modifyFeatures(type, value, mixedFilter);
     }
 
     @Override

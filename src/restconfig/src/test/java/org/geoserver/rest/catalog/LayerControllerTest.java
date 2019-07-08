@@ -20,8 +20,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -110,6 +112,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
         assertEquals(404, response.getStatus());
+        assertEquals("text/plain", response.getContentType());
         assertTrue(response.getContentAsString().contains(exception));
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
@@ -283,6 +286,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
         System.out.println(response.getContentAsString());
         assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
         xml =
@@ -322,6 +326,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
         assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
         xml =

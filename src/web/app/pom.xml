@@ -148,11 +148,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-mapml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.security</groupId>
       <artifactId>gs-sec-ldap</artifactId>
       <version>${project.version}</version>
@@ -314,6 +309,9 @@
               <maxIdleTime>10000</maxIdleTime>
             </connector>
           </connectors>
+          <supportedPackagings>
+            <supportedPackaging>jar</supportedPackaging>
+          </supportedPackagings>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
           <daemon>false</daemon>
@@ -835,7 +833,7 @@
       <id>authkey</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-authkey</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1306,7 +1304,7 @@
         </dependency>
       </dependencies>
    </profile>
-    <profile>
+   <profile>
       <id>gwc-s3</id>
       <dependencies>
         <dependency>
@@ -1316,6 +1314,17 @@
         </dependency>
       </dependencies>
    </profile>
+   <profile>
+      <id>gwc-azure-blob</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gwc-azure</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    
    <profile>
       <id>geogig</id>
       <dependencies>
@@ -1512,11 +1521,11 @@
       </dependencies>
     </profile>
     <profile>
-      <id>onelogin</id>
+      <id>saml</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-onelogin</artifactId>
+          <artifactId>gs-saml</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1672,5 +1681,36 @@
         </dependency>
       </dependencies>
     </profile>
- </profiles>
+    <profile>
+      <id>mapml</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-mapml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geostyler</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-geostyler</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>ogcapi</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+  </profiles>
 </project>

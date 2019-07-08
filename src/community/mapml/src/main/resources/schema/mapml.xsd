@@ -295,47 +295,47 @@
       <xs:element ref="GeometryContent"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="Point" substitutionGroup="GeometryContent">
+  <xs:element name="point" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:group ref="coordinatePair"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="LineString" substitutionGroup="GeometryContent">
+  <xs:element name="linestring" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:group ref="twoOrMoreCoordinatePairs"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="Polygon" substitutionGroup="GeometryContent">
+  <xs:element name="polygon" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:group maxOccurs="unbounded" ref="threeOrMoreCoordinatePairs"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="MultiPoint" substitutionGroup="GeometryContent">
+  <xs:element name="multipoint" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:group maxOccurs="unbounded" ref="coordinatePair"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="MultiLineString" substitutionGroup="GeometryContent">
+  <xs:element name="multilinestring" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:group maxOccurs="unbounded" ref="twoOrMoreCoordinatePairs"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="MultiPolygon" substitutionGroup="GeometryContent">
+  <xs:element name="multipolygon" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="Polygon"/>
+        <xs:element maxOccurs="unbounded" ref="polygon"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GeometryCollection" substitutionGroup="GeometryContent">
+  <xs:element name="geometrycollection" substitutionGroup="GeometryContent">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="Point"/>
-        <xs:element ref="LineString"/>
-        <xs:element ref="Polygon"/>
-        <xs:element ref="MultiPoint"/>
-        <xs:element ref="MultiLineString"/>
-        <xs:element ref="MultiPolygon"/>
+        <xs:element ref="point"/>
+        <xs:element ref="linestring"/>
+        <xs:element ref="polygon"/>
+        <xs:element ref="multipoint"/>
+        <xs:element ref="multilinestring"/>
+        <xs:element ref="multipolygon"/>
       </xs:choice>
     </xs:complexType>
   </xs:element>

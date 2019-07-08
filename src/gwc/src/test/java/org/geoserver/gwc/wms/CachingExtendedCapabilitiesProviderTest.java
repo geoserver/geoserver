@@ -5,12 +5,12 @@
  */
 package org.geoserver.gwc.wms;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.geoserver.catalog.LayerInfo;
@@ -31,7 +31,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         super.onSetUp(testData);
 
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("../wms/src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("../wms/src/test/resources/geoserver");
         getGeoServer().save(global);
     }
 

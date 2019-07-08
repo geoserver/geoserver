@@ -154,7 +154,7 @@ public class ApplicationSchemaXSD extends XSD {
         } else {
             StringBuffer sb = new StringBuffer("typeName=");
             for (FeatureTypeInfo type : types) {
-                sb.append(type.getPrefixedName()).append(",");
+                sb.append(type.prefixedName()).append(",");
             }
             sb.setLength(sb.length() - 1);
             schemaLocation = ResponseUtils.appendQueryString(schemaLocation, sb.toString());

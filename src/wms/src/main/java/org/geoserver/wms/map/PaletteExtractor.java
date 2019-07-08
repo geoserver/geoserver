@@ -51,6 +51,7 @@ import org.geotools.styling.UserLayer;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.opengis.style.GraphicalSymbol;
 
 /**
  * A style visitor whose purpose is to extract a minimal palette for the provided style. This is to
@@ -171,11 +172,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Style) */
     public void visit(Style style) {
-        FeatureTypeStyle[] ftStyles = style.getFeatureTypeStyles();
-
-        for (int i = 0; i < ftStyles.length; i++) {
-            ftStyles[i].accept(this);
-        }
+        style.featureTypeStyles().forEach(ft -> ft.accept(this));
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Rule) */
@@ -186,24 +183,12 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
             filter.accept(this, null);
         }
 
-        Symbolizer[] symbolizers = rule.getSymbolizers();
-
-        if (symbolizers != null) {
-            for (int i = 0; i < symbolizers.length; i++) {
-                Symbolizer symbolizer = symbolizers[i];
-                symbolizer.accept(this);
-            }
-        }
+        rule.symbolizers().forEach(s -> s.accept(this));
     }
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.FeatureTypeStyle) */
     public void visit(FeatureTypeStyle fts) {
-        Rule[] rules = fts.getRules();
-
-        for (int i = 0; i < rules.length; i++) {
-            Rule rule = rules[i];
-            rule.accept(this);
-        }
+        fts.rules().forEach(r -> r.accept(this));
     }
 
     public void visit(StyledLayerDescriptor sld) {
@@ -263,8 +248,6 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Fill) */
     public void visit(Fill fill) {
-        handleColor(fill.getBackgroundColor());
-
         handleColor(fill.getColor());
 
         if (fill.getGraphicFill() != null) fill.getGraphicFill().accept(this);
@@ -334,12 +317,11 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
     /** @see org.geotools.styling.StyleVisitor#visit(org.geotools.styling.Graphic) */
     public void visit(Graphic gr) {
-        if (gr.getSymbols() != null) {
-            Symbol[] symbols = gr.getSymbols();
-
-            for (int i = 0; i < symbols.length; i++) {
-                Symbol symbol = symbols[i];
-                symbol.accept(this);
+        for (GraphicalSymbol symbol : gr.graphicalSymbols()) {
+            if (symbol instanceof Symbol) {
+                ((Symbol) symbol).accept(this);
+            } else {
+                throw new RuntimeException("Don't know how to copy " + symbol);
             }
         }
 

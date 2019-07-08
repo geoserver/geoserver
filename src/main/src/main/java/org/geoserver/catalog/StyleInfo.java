@@ -51,20 +51,6 @@ public interface StyleInfo extends CatalogInfo {
     /** Sets the workspace the style is part of. */
     void setWorkspace(WorkspaceInfo workspace);
 
-    /**
-     * The sld version of the style.
-     *
-     * @deprecated use {@link #getFormatVersion()}
-     */
-    Version getSLDVersion();
-
-    /**
-     * Sets the sld version of the style.
-     *
-     * @deprecated use {@link #setFormatVersion(Version)}
-     */
-    void setSLDVersion(Version v);
-
     /** The styling language/format for the style, for example: "sld" */
     String getFormat();
 
@@ -109,4 +95,12 @@ public interface StyleInfo extends CatalogInfo {
      * <pre>getName()</pre>
      */
     String prefixedName();
+
+    /**
+     * A persistent map of metadata.
+     *
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services
+     * associate various bits of data with a particular style.
+     */
+    MetadataMap getMetadata();
 }

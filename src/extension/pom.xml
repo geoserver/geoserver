@@ -356,6 +356,12 @@
           <module>geofence-server</module>
         </modules>
     </profile>
+    <profile>      
+      <id>authkey</id>
+      <modules>
+        <module>authkey</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -400,6 +406,7 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
+        <module>authkey</module>
       </modules>
     </profile>
 
@@ -446,6 +453,7 @@
         <module>sldService</module>
         <module>geofence</module>
         <module>geofence-server</module>
+        <module>authkey</module>
       </modules>
     </profile>
   </profiles>

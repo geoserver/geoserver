@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
@@ -47,12 +46,9 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
             throw new IOException("Unable to write an empty feature info array.");
         }
         // prepare to write out
-        OutputStreamWriter osw = null;
-        Writer outWriter = null;
-        try {
-            osw = new OutputStreamWriter(output, gs.getSettings().getCharset());
-            outWriter = new BufferedWriter(osw);
-
+        try (OutputStreamWriter osw =
+                        new OutputStreamWriter(output, gs.getSettings().getCharset());
+                Writer outWriter = new BufferedWriter(osw)) {
             // jsonp?
             final boolean jsonp =
                     JSONType.useJsonp(getMimeType(featureTypeInfos, describeFeatureType));
@@ -99,9 +95,6 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
                 outWriter.write(")");
             }
             outWriter.flush();
-        } finally {
-            IOUtils.closeQuietly(osw);
-            IOUtils.closeQuietly(outWriter);
         }
     }
 
@@ -156,6 +149,6 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return getOutputFormat();
+        return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
     }
 }

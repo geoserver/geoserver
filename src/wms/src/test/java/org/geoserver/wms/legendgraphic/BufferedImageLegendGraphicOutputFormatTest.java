@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +30,6 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
-import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -86,7 +86,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
         assertNotNull(multipleRulesStyle);
 
-        Rule rule = multipleRulesStyle.getFeatureTypeStyles()[0].getRules()[0];
+        Rule rule = multipleRulesStyle.featureTypeStyles().get(0).rules().get(0);
         LOGGER.info(
                 "testing single rule "
                         + rule.getName()
@@ -223,7 +223,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
+        LegendRequest legend = new LegendRequest(ftInfo.getFeatureType());
         legend.setStyle(
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
@@ -286,7 +286,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), WMS.get());
+        LegendRequest legend = new LegendRequest(ftInfo.getFeatureType());
         legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
 
@@ -332,16 +332,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
         List<FeatureType> layers = new ArrayList<FeatureType>();
         layers.add(ftInfo.getFeatureType());
         layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
+        layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-        List<Style> styles = new ArrayList<Style>();
         Style style1 =
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        styles.add(style1);
+        req.getLegends().get(0).setStyle(style1);
 
         Style style2 = getCatalog().getStyleByName(MockData.LAKES.getLocalPart()).getStyle();
-        styles.add(style2);
-        req.setStyles(styles);
+        req.getLegends().get(1).setStyle(style2);
 
         this.legendProducer.buildLegendGraphic(req);
 
@@ -385,16 +383,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
             feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             layers.add(feature.getSchema());
 
-            req.setLayers(layers);
+            layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-            List<Style> styles = new ArrayList<Style>();
             Style style1 =
                     getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-            styles.add(style1);
+            req.getLegends().get(0).setStyle(style1);
 
             Style style2 = getCatalog().getStyleByName("rainfall").getStyle();
-            styles.add(style2);
-            req.setStyles(styles);
+            req.getLegends().get(1).setStyle(style2);
 
             this.legendProducer.buildLegendGraphic(req);
 
@@ -447,16 +443,12 @@ public class BufferedImageLegendGraphicOutputFormatTest
             feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             layers.add(feature.getSchema());
 
-            req.setLayers(layers);
+            layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-            List<Style> styles = new ArrayList<Style>();
             Style style1 =
                     getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-            styles.add(style1);
-
-            styles.add(readSLD("InvisibleRaster.sld"));
-
-            req.setStyles(styles);
+            req.getLegends().get(0).setStyle(style1);
+            req.getLegends().get(1).setStyle(readSLD("InvisibleRaster.sld"));
 
             this.legendProducer.buildLegendGraphic(req);
 
@@ -500,7 +492,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         List<FeatureType> layers = new ArrayList<FeatureType>();
         layers.add(ftInfo.getFeatureType());
         layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
+        layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
         List<Style> styles = new ArrayList<Style>();
         final StyleInfo roadStyle =
@@ -508,7 +500,13 @@ public class BufferedImageLegendGraphicOutputFormatTest
         styles.add(roadStyle.getStyle());
         styles.add(readSLD("InvisibleLine.sld"));
 
-        req.setStyles(styles);
+        Iterator<Style> stylesIterator = styles.iterator();
+        for (LegendRequest legend : req.getLegends()) {
+            if (!stylesIterator.hasNext()) {
+                break; // no more styles
+            }
+            legend.setStyle(stylesIterator.next());
+        }
 
         this.legendProducer.buildLegendGraphic(req);
 
@@ -1077,7 +1075,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            LegendRequest legend = req.new LegendRequest();
+            LegendRequest legend = new LegendRequest();
             legend.setStyle(externalGraphicStyle);
 
             req.getLegends().add(legend);

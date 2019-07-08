@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.zip.ZipOutputStream;
 import org.geoserver.config.GeoServer;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.FormatConverter;
 import org.geoserver.ogr.core.OutputType;
@@ -29,6 +28,7 @@ import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -41,6 +41,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml.producer.FeatureTransformer;
+import org.geotools.util.URLs;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
@@ -249,8 +250,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
         // create the first temp directory, used for dumping gs generated
         // content
-        File tempGS = org.geoserver.data.util.IOUtils.createTempDirectory("ogrtmpin");
-        File tempOGR = org.geoserver.data.util.IOUtils.createTempDirectory("ogrtmpout");
+        File tempGS = IOUtils.createTempDirectory("ogrtmpin");
+        File tempOGR = IOUtils.createTempDirectory("ogrtmpout");
 
         // build the ogr wrapper used to run the ogr2ogr commands
         ToolWrapper wrapper = new OGRWrapper(ogrExecutable, environment);
@@ -279,24 +280,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
             // was is a single file output?
             if (format.isSingleFile() && featureCollection.getFeature().size() == 1) {
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(outputFile);
+                try (FileInputStream fis = new FileInputStream(outputFile)) {
                     org.apache.commons.io.IOUtils.copy(fis, output);
-                } finally {
-                    if (fis != null) {
-                        fis.close();
-                    }
                 }
             } else {
                 // scan the output directory and zip it all
-                ZipOutputStream zipOut = null;
-                try {
-                    zipOut = new ZipOutputStream(output);
+                try (ZipOutputStream zipOut = new ZipOutputStream(output)) {
                     IOUtils.zipDirectory(tempOGR, zipOut, null);
                     zipOut.finish();
-                } finally {
-                    org.apache.commons.io.IOUtils.closeQuietly(zipOut);
                 }
             }
 
@@ -384,7 +375,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         File file = null;
         try {
             file = new File(tempDir, schema.getTypeName() + ".shp");
-            dstore = new ShapefileDataStore(file.toURL());
+            dstore = new ShapefileDataStore(URLs.fileToUrl(file));
             dstore.createSchema(schema);
 
             fstore = (SimpleFeatureStore) dstore.getFeatureSource(schema.getTypeName());

@@ -8,7 +8,7 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Throwables.propagate;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 import static com.google.common.collect.Maps.newConcurrentMap;
 
 import com.google.common.base.Objects;
@@ -154,21 +154,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return "GeoServer Catalog Configuration";
     }
 
-    /**
-     * Returns the list of {@link GeoServerTileLayer} objects matching the GeoServer ones.
-     *
-     * <p>The list is built dynamically on each call.
-     *
-     * @see TileLayerConfiguration#getTileLayers()
-     * @deprecated
-     */
-    @Deprecated
-    @Override
-    public List<TileLayer> getTileLayers() {
-        Iterable<TileLayer> layers = getLayers();
-        return Lists.newArrayList(layers);
-    }
-
     /** @see TileLayerConfiguration#getLayers() */
     @Override
     public Collection<TileLayer> getLayers() {
@@ -236,17 +221,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         }
     }
 
-    /**
-     * Returns a dynamic list of cached layer names out of the GeoServer {@link Catalog}
-     *
-     * @see TileLayerConfiguration#getTileLayerNames()
-     */
-    @Deprecated
-    @Override
-    public Set<String> getTileLayerNames() {
-        return getLayerNames();
-    }
-
     @Override
     public boolean containsLayer(String layerName) {
         checkNotNull(layerName, "layer id is null");
@@ -263,9 +237,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         }
     }
 
-    @Deprecated
-    @Override
-    public GeoServerTileLayer getTileLayerById(final String layerId) {
+    private GeoServerTileLayer getTileLayerById(final String layerId) {
         checkNotNull(layerId, "layer id is null");
 
         GeoServerTileLayer layer;
@@ -319,9 +291,11 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                 }
             }
         } catch (ExecutionException e) {
-            throw propagate(e.getCause());
+            throw new RuntimeException(e.getCause());
         } catch (UncheckedExecutionException e) {
-            throw propagate(e.getCause());
+            throwIfUnchecked(e.getCause());
+            // just to make it compile....
+            throw e;
         } finally {
             lock.releaseReadLock();
         }
@@ -346,13 +320,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             lock.releaseReadLock();
         }
         return Optional.ofNullable(getTileLayerById(layerId));
-    }
-
-    /** @see TileLayerConfiguration#getTileLayer(String) */
-    @Deprecated
-    @Override
-    public GeoServerTileLayer getTileLayer(final String layerName) {
-        return getTileLayerById(layerName);
     }
 
     private String getLayerId(final String layerName) {
@@ -434,13 +401,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return count;
     }
 
-    /** @see TileLayerConfiguration#getTileLayerCount() */
-    @Deprecated
-    @Override
-    public int getTileLayerCount() {
-        return getLayerCount();
-    }
-
     @Override
     public void afterPropertiesSet() {
         lock.acquireWriteLock();
@@ -478,11 +438,11 @@ public class CatalogConfiguration implements TileLayerConfiguration {
 
         GeoServerTileLayerInfo info = tileLayer.getInfo();
 
-        LayerInfo layerInfo = tileLayer.getLayerInfo();
-        if (layerInfo != null && !isLayerExposable(layerInfo)) {
+        PublishedInfo publishedInfo = tileLayer.getPublishedInfo();
+        if (publishedInfo instanceof LayerInfo && !isLayerExposable((LayerInfo) publishedInfo)) {
             LOGGER.warning(
                     "Requested layer "
-                            + layerInfo.getName()
+                            + publishedInfo.getName()
                             + " has no geometry. Won't create TileLayer");
             return;
         }

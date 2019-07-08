@@ -6,15 +6,34 @@
 package org.geoserver.catalog;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -29,7 +48,11 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
-import org.geoserver.catalog.event.*;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -40,15 +63,25 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.*;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.DataAccessFinder;
+import org.geotools.data.DataSourceException;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Join;
+import org.geotools.data.Repository;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -59,6 +92,7 @@ import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
@@ -70,6 +104,7 @@ import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.xml.WMSSchema;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.model.WMTSCapabilities;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleImpl;
@@ -88,7 +123,11 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.*;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
@@ -97,6 +136,7 @@ import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
+import org.vfny.geoserver.global.GeoServerFeatureSource;
 import org.vfny.geoserver.util.DataStoreUtils;
 import org.xml.sax.EntityResolver;
 import si.uom.NonSI;
@@ -674,13 +714,22 @@ public class ResourcePool {
                 String path = (String) value;
 
                 if (path.startsWith("file:")) {
-                    File fixedPath = loader.url(path);
+                    File fixedPath =
+                            Resources.find(
+                                    Resources.fromURL(
+                                            Files.asResource(loader.getBaseDirectory()), path),
+                                    true);
                     URL url = URLs.fileToUrl(fixedPath);
                     entry.setValue((V) url.toExternalForm());
                 }
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
                 URL url = (URL) value;
-                File fixedPath = loader.url(url.toString());
+                File fixedPath =
+                        Resources.find(
+                                Resources.fromURL(
+                                        Files.asResource(loader.getBaseDirectory()),
+                                        url.toString()),
+                                true);
                 entry.setValue((V) URLs.fileToUrl(fixedPath));
             } else if ((key != null)
                     && (key.equals("directory") || key.equals("database"))
@@ -689,7 +738,11 @@ public class ResourcePool {
                 // if a url is used for a directory (for example property store), convert it to path
 
                 if (path.startsWith("file:")) {
-                    File fixedPath = loader.url(path);
+                    File fixedPath =
+                            Resources.find(
+                                    Resources.fromURL(
+                                            Files.asResource(loader.getBaseDirectory()), path),
+                                    true);
                     entry.setValue((V) fixedPath.toString());
                 }
             }
@@ -773,34 +826,24 @@ public class ResourcePool {
 
     void handleSchemaOverride(List<AttributeTypeInfo> atts, FeatureTypeInfo ft) throws IOException {
         GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
-        File schemaFile = dd.findSuppResourceFile(ft, "schema.xsd");
+        File schemaFile = Resources.file(dd.get(ft, "schema.xsd"));
         if (schemaFile == null) {
-            schemaFile = dd.findSuppLegacyResourceFile(ft, "schema.xsd");
-            if (schemaFile == null) {
-                // check for the old style schema.xml
-                File oldSchemaFile = dd.findSuppResourceFile(ft, "schema.xml");
-                if (oldSchemaFile == null) {
-                    oldSchemaFile = dd.findSuppLegacyResourceFile(ft, "schema.xml");
+            // check for the old style schema.xml
+            File oldSchemaFile = Resources.file(dd.get(ft, "schema.xml"));
+            if (oldSchemaFile != null) {
+                schemaFile = new File(oldSchemaFile.getParentFile(), "schema.xsd");
+                BufferedWriter out =
+                        new BufferedWriter(
+                                new OutputStreamWriter(new FileOutputStream(schemaFile)));
+                out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
+                out.write(" xmlns:gml='http://www.opengis.net/gml'");
+                out.write(">");
+                try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
+                    IOUtils.copy(fis, out, "UTF-8");
                 }
-                if (oldSchemaFile != null) {
-                    schemaFile = new File(oldSchemaFile.getParentFile(), "schema.xsd");
-                    BufferedWriter out =
-                            new BufferedWriter(
-                                    new OutputStreamWriter(new FileOutputStream(schemaFile)));
-                    out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
-                    out.write(" xmlns:gml='http://www.opengis.net/gml'");
-                    out.write(">");
-                    FileInputStream fis = null;
-                    try {
-                        fis = new FileInputStream(oldSchemaFile);
-                        IOUtils.copy(fis, out);
-                    } finally {
-                        IOUtils.closeQuietly(fis);
-                    }
-                    out.write("</xs:schema>");
-                    out.flush();
-                    out.close();
-                }
+                out.write("</xs:schema>");
+                out.flush();
+                out.close();
             }
         }
 
@@ -1053,7 +1096,7 @@ public class ResourcePool {
                     if (pd == null || !(pd instanceof AttributeDescriptor)) {
                         throw new IOException(
                                 "the SimpleFeatureType "
-                                        + info.getPrefixedName()
+                                        + info.prefixedName()
                                         + " does not contains the configured attribute "
                                         + attName
                                         + ". Check your schema configuration");
@@ -1202,7 +1245,7 @@ public class ResourcePool {
 
         // TODO: support aliasing (renaming), reprojection, versioning, and locking for DataAccess
         if (!(dataAccess instanceof DataStore)) {
-            return dataAccess.getFeatureSource(info.getQualifiedName());
+            return getFeatureSource(dataAccess, info);
         }
 
         DataStore dataStore = (DataStore) dataAccess;
@@ -1329,12 +1372,35 @@ public class ResourcePool {
             // return a normal
             return GeoServerFeatureLocking.create(
                     fs,
-                    schema,
-                    info.filter(),
-                    resultCRS,
-                    info.getProjectionPolicy().getCode(),
-                    getTolerance(info),
-                    info.getMetadata());
+                    new GeoServerFeatureSource.Settings(
+                            schema,
+                            info.filter(),
+                            resultCRS,
+                            info.getProjectionPolicy().getCode(),
+                            getTolerance(info),
+                            info.getMetadata()));
+        }
+    }
+
+    /**
+     * Helper method that will search for the feature source corresponding to the provided feature
+     * type info on the provided data access. We will first search based on the published name
+     * (layer name) and only if this search fails we will search based on the native name.
+     */
+    private FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, FeatureTypeInfo info)
+            throws IOException {
+        try {
+            // first try to search based on the published name, to avoid any unexpected aliasing
+            return dataAccess.getFeatureSource(info.getQualifiedName());
+        } catch (Exception exception) {
+            LOGGER.log(
+                    Level.FINE,
+                    String.format(
+                            "Error retrieving feature type using published name '%s'.",
+                            info.getQualifiedName()));
+            // let's try now to search based on the native name
+            return dataAccess.getFeatureSource(info.getQualifiedNativeName());
         }
     }
 
@@ -1523,6 +1589,13 @@ public class ResourcePool {
             // GeoServer does not need to be updated to the multicoverage stuff
             // (we might want to introduce a hint later for code that really wants to get the
             // multi-coverage reader)
+
+            if (reader.getFormat() instanceof GeoTiffFormat) { //  GEOS-9236
+                if ("geotiff_coverage".equalsIgnoreCase(coverageInfo.getNativeCoverageName())) {
+                    coverageInfo.setNativeCoverageName(reader.getGridCoverageNames()[0]);
+                }
+            }
+
             return CoverageDimensionCustomizerReader.wrap(
                     (GridCoverage2DReader) reader, coverageName, coverageInfo);
         } else {
@@ -1575,7 +1648,11 @@ public class ResourcePool {
 
         if (isFile) {
             GeoServerResourceLoader loader = catalog.getResourceLoader();
-            final File readerFile = loader.url(urlString);
+            final File readerFile =
+                    Resources.find(
+                            Resources.fromURL(
+                                    Files.asResource(loader.getBaseDirectory()), urlString),
+                            true);
             if (readerFile != null) {
                 readObject = readerFile;
             }
@@ -1906,7 +1983,7 @@ public class ResourcePool {
      * @param info
      * @throws IOException
      */
-    public Layer getWMTSLayer(WMTSLayerInfo info) throws IOException {
+    public WMTSLayer getWMTSLayer(WMTSLayerInfo info) throws IOException {
 
         String name = info.getName();
         if (info.getNativeName() != null) {
@@ -1917,7 +1994,7 @@ public class ResourcePool {
 
         caps = info.getStore().getWebMapTileServer(null).getCapabilities();
 
-        for (Layer layer : caps.getLayerList()) {
+        for (WMTSLayer layer : caps.getLayerList()) {
             if (layer != null && name.equals(layer.getName())) {
                 return layer;
             }
@@ -2146,7 +2223,7 @@ public class ResourcePool {
     public void deleteStyle(StyleInfo style, boolean purgeFile) throws IOException {
         synchronized (styleCache) {
             if (purgeFile) {
-                File styleFile = dataDir().findStyleSldFile(style);
+                File styleFile = Resources.file(dataDir().style(style));
                 if (styleFile != null && styleFile.exists()) {
                     styleFile.delete();
                 }
@@ -2425,7 +2502,12 @@ public class ResourcePool {
         public void handleModifyEvent(CatalogModifyEvent event) {}
 
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
-            event.getSource().accept(this);
+            CatalogInfo source = event.getSource();
+            source.accept(this);
+
+            if (source instanceof FeatureTypeInfo) {
+                flushDataStore((FeatureTypeInfo) source);
+            }
         }
 
         public void handleRemoveEvent(CatalogRemoveEvent event) {

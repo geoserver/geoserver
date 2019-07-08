@@ -11,6 +11,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 
 /**
  * The default implementation for GeneralizationInfosProvider, reading the info from an XML file.
@@ -32,7 +34,10 @@ public class GeneralizationInfosProviderImpl
 
             GeoServerResourceLoader loader =
                     GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            File f = loader.url(path);
+            File f =
+                    Resources.find(
+                            Resources.fromURL(Files.asResource(loader.getBaseDirectory()), path),
+                            true);
             URL url = null;
             if (f != null && f.exists()) {
                 url = f.toURI().toURL();

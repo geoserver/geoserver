@@ -5,7 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.opengis.util.ProgressListener;
 
 public interface WMTSLayerInfo extends ResourceInfo {
@@ -13,5 +13,5 @@ public interface WMTSLayerInfo extends ResourceInfo {
     public WMTSStoreInfo getStore();
 
     /** Returns the raw WMTS layer associated to this resource */
-    public Layer getWMTSLayer(ProgressListener listener) throws IOException;
+    public WMTSLayer getWMTSLayer(ProgressListener listener) throws IOException;
 }

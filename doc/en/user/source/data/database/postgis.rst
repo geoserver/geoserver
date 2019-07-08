@@ -15,16 +15,18 @@ Using default connection
 
 To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG`.
 
-.. figure:: images/postgis.png
-   :align: center
+Fill in the *Basic Store Info* used to identify the database when managing layers.
 
+.. figure:: images/postgis-basic-info.png
+   
    *Adding a PostGIS database*
 
 .. list-table::
    :widths: 20 80
-
-   * - **Option**
-     - **Description**
+   :header-rows: 1
+   
+   * - Basic Store Info
+     - Description
    * - :guilabel:`Workspace`
      - Name of the workspace to contain the database.  This will also be the prefix of any layer names created from tables in the database.
    * - :guilabel:`Data Source Name`
@@ -33,8 +35,35 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG`
      - Description of the database/store. 
    * - :guilabel:`Enabled`
      - Enables the store.  If disabled, no data in the database will be served.
+
+Move on to the connection parameters used to connect and interact with the database.
+
+.. figure:: images/postgis.png
+   :align: center
+
+   *PostGIS connection parameters*
+
+The ``dbtype`` and ``namespace`` connection parameters are not directly editable. The :guilabel:`dbtype` parameter is for internal use only (and only accessable via the REST API).
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Connection Parameter
+     - Description
    * - :guilabel:`dbtype`
-     - Type of database.  Leave this value as the default.
+     - Type of database.  Internal value, leave this value as the default.
+   * - :guilabel:`namespace`
+     - Namespace to be associated with the database.  This field is altered by changing the workspace name.
+
+Connection parameters establishing a database connection (see :doc:`connection-pooling`):
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Connection Parameter
+     - Description
    * - :guilabel:`host`
      - Host name where the database exists.
    * - :guilabel:`port`
@@ -47,8 +76,6 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG`
      - User name to connect to the database.
    * - :guilabel:`passwd`
      - Password associated with the above user.
-   * - :guilabel:`namespace`
-     - Namespace to be associated with the database.  This field is altered by changing the workspace name.
    * - :guilabel:`max connections`
      - Maximum amount of open connections to the database. 
    * - :guilabel:`min connections`
@@ -59,10 +86,63 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG`
      - Time (in seconds) the connection pool will wait before timing out.
    * - :guilabel:`validate connections`
      - Checks the connection is alive before using it.
+   * - :guilabel:`Evictor run periodicity`
+     - Number of seconds between idle object evictor runs.
+   * - :guilabel:`Max connection idle time`
+     - Number of seconds a connection needs to stay idle before the evictor starts to consider closing it.
+   * - :guilabel:`Evictor tests per run`
+     - Number of connections checked by the idle connection evictor for each of its runs.
+
+Connection parameters managing SQL generation:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Connection Parameter
+     - Description
+   * - :guilabel:`Expose primary keys`
+     - Expose primary key columns as values suitable for filtering.
+   * - :guilabel:`Primary key metadata table`
+     - Provide table defining how primary keys values are generated (see :doc:`primarykey`)     
+   * - :guilabel:`Session startup SQL`
+     - SQL applied to connection before use (see :doc:`sqlsession`)
+   * - :guilabel:`Session close-up SQL`
+     - SQL applied to connection after use (see :doc:`sqlsession`)
+   * - :guilabel:`preparedStatements`
+     - Enables prepared statements for SQL generation, rather than text substitution.
+   * - :guilabel:`Max open prepared statements`
+     - Number of prepared statements available.
+
+Connection parameters managing database interaction:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Connection Parameter
+     - Description
    * - :guilabel:`Loose bbox`
      - Performs only the primary filter on the bounding box.  See the section on :ref:`postgis_loose_bbox` for details.
-   * - :guilabel:`preparedStatements`
-     - Enables prepared statements.
+   * - :guilabel:`Estimated extends`
+     - Use spatial index to quickly estimate bounds, rather than check every row.
+   * - :guilabel:`Encode functions`
+     - Generate supported filter functions into their SQL equivalent.
+   * - :guilabel:`Support on the fly geometry simplification`
+     - Enables use of PostGIS geometry simplification
+
+Connection parameters supporting initial database creation:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Connection Parameter
+     - Description
+   * - :guilabel:`create database`
+     - Enable to define a new database on connection
+   * - :guilabel:`create database params`
+     - Additional CREATE DATABASE definition, example :kbd:`WITH TEMPLATE=postgis`
 
 When finished, click :guilabel:`Save`.
 
@@ -80,9 +160,10 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG 
 
 .. list-table::
    :widths: 20 80
-
-   * - **Option**
-     - **Description**
+   :header-rows: 1
+   
+   * - Option
+     - Description
    * - :guilabel:`Workspace`
      - Name of the workspace to contain the store.  This will also be the prefix of all of the layer names created from the store.
    * - :guilabel:`Data Source Name`
@@ -163,5 +244,5 @@ To insert multi-line text (for use with labeling) remember to use escaped text::
    
    INSERT INTO place VALUES (ST_GeomFromText('POINT(-71.060316 48.432044)', 4326), E'Westfield\nTower');
 
-   
-   
+
+

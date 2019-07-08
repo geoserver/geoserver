@@ -327,3 +327,33 @@ An example request:
 
 .. note::  
   Currently this parameter can only be used to request WMS 1.1.1 capabilities documents encoded in ``text/xml``, if used with other WMS versions or other formats it will have no effect.
+
+  
+rootLayer
+---------
+
+The ``rootLayer`` parameter can be used to request capabilities documents to include or not a top level root Layer container.
+By default this top level root is always included as a parent of the configured layers and groups. The default can be changed at the service (WMS) level,
+or at the layer / group level.
+
+Using this parameter it is possible to exclude the default root when the resulting document has a single top element (e.g. a single group with nested children).
+To do that, use the **false** value.
+
+The parameter can also be used to override what is defined at the WMS or layer / group level. For example if the service is configure to exclude the Root element, we can force it
+with **rootLayer=true**.
+
+
+
+An example request:
+
+  http://localhost:8080/geoserver/ows?service=wms&version=1.1.1&request=GetCapabilities&rootLayer=false
+
+An example with XML POST:
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <ogc:GetCapabilities xmlns:ogc="http://www.opengis.net/ows"
+               xmlns:gml="http://www.opengis.net/gml"
+      version="1.1.1" service="WMS" rootLayer="false">
+   </ogc:GetCapabilities>

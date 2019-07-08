@@ -286,6 +286,12 @@
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.HTTPLayerConfig" />
   </bean>
+  
+  <bean id="rootLayerConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="http" />
+    <property name="titleKey" value="publish.layer.config.rootLayer" />
+    <property name="componentClass" value="org.geoserver.web.publish.RootLayerConfig" />
+  </bean>
 
   <!-- Data store panels. Used to set up custom icons for the different vector 
     or raster store types -->

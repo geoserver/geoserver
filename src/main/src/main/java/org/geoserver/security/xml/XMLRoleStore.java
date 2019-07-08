@@ -37,7 +37,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.file.LockFile;
@@ -150,12 +149,9 @@ public class XMLRoleStore extends AbstractRoleStore {
             tx.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
-            OutputStream out = new BufferedOutputStream(roleResource.out());
-            try {
+            try (OutputStream out = new BufferedOutputStream(roleResource.out())) {
                 tx.transform(new DOMSource(doc), new StreamResult(out));
                 out.flush();
-            } finally {
-                IOUtils.closeQuietly(out);
             }
 
             /* standard java, but there is no possibility to set

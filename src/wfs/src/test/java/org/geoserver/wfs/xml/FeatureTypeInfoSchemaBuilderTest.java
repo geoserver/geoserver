@@ -55,12 +55,12 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
 
         XSDTypeDefinition lineStringPropertyType = lineStringProperty.getType();
         assertEquals(GML.NAMESPACE, lineStringPropertyType.getTargetNamespace());
-        assertEquals(GML.LINESTRINGPROPERTYTYPE.getLocalPart(), lineStringPropertyType.getName());
+        assertEquals(GML.LineStringPropertyType.getLocalPart(), lineStringPropertyType.getName());
 
         XSDTypeDefinition geometryAssociationType = lineStringPropertyType.getBaseType();
         assertNotNull(geometryAssociationType);
         assertEquals(GML.NAMESPACE, geometryAssociationType.getTargetNamespace());
-        assertEquals(GML.GEOMETRYASSOCIATIONTYPE.getLocalPart(), geometryAssociationType.getName());
+        assertEquals(GML.GeometryAssociationType.getLocalPart(), geometryAssociationType.getName());
     }
 
     @Override

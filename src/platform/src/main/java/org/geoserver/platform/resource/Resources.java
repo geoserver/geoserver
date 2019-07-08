@@ -122,6 +122,40 @@ public class Resources {
     }
 
     /**
+     * Checks {@link Resource#getType()} and returns existing file() or dir() as appropriate, or
+     * null for {@link Resource.Type#UNDEFINED}.
+     *
+     * <p>This approach is a reproduction of GeoServerResourceLoader find logic.
+     *
+     * @see Resource#dir()
+     * @see Resource#file()
+     * @param resource Resource indicated
+     * @param force false to return null for {@link Resource.Type#UNDEFINED}, true to force a File
+     *     to be created.
+     * @return The file if exists, null if {@link Resource.Type#UNDEFINED} and force is false, a
+     *     File with the resource path otherwise
+     */
+    public static File find(Resource resource, boolean force) {
+        if (resource == null) {
+            return null;
+        }
+        switch (resource.getType()) {
+            case DIRECTORY:
+                return resource.dir();
+
+            case RESOURCE:
+                return resource.file();
+
+            default:
+                if (force) {
+                    return new File(resource.path());
+                } else {
+                    return null;
+                }
+        }
+    }
+
+    /**
      * Checks {@link Resource#getType()} and returns existing dir() if available, or null for {@link
      * Resource.Type#UNDEFINED} or {@link Resource.Type#RESOURCE}.
      *

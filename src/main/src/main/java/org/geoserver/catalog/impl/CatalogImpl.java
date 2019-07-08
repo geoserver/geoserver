@@ -1989,7 +1989,11 @@ public class CatalogImpl implements Catalog {
                             + sortOrder.getPropertyName()
                             + " in-process sorting is pending implementation");
         }
-        return facade.list(of, filter, offset, count, sortOrder);
+        if (sortOrder != null) {
+            return facade.list(of, filter, offset, count, sortOrder);
+        } else {
+            return facade.list(of, filter, offset, count);
+        }
     }
 
     @Override

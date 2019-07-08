@@ -5,7 +5,8 @@
  */
 package org.geoserver.security.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +52,12 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
 
-        assertTrue(labelTextForRemovedObjects().matches(getRemoveableObjectRegExp()));
+        assertTrue(
+                "Expected "
+                        + getRemoveableObjectRegExp()
+                        + " to match "
+                        + labelTextForRemovedObjects(),
+                labelTextForRemovedObjects().matches(getRemoveableObjectRegExp()));
 
         tester.assertVisible("form:panel:removedObjects");
         tester.assertInvisible("form:panel:problematicObjects");

@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.ResultTypeType;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
@@ -103,7 +104,13 @@ public class HitsOutputFormat extends WFSResponse {
 
     protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs)
             throws IOException {
-        Encoder encoder = new Encoder(configuration, configuration.schema());
+        XSDSchema result;
+        try {
+            result = configuration.getXSD().getSchema();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Encoder encoder = new Encoder(configuration, result);
         encoder.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
         encoder.setSchemaLocation(
                 org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,

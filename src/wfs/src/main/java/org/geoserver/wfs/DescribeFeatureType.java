@@ -119,7 +119,7 @@ public class DescribeFeatureType {
                             LOGGER.log(
                                     Level.WARNING,
                                     "Skipping DescribeFeature for "
-                                            + ftInfo.getPrefixedName()
+                                            + ftInfo.prefixedName()
                                             + " because we couldn't connect",
                                     ioe);
                         } else {

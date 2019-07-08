@@ -155,7 +155,7 @@ public class SpatialFile extends FileData {
             }
             if (epsgCrs != null) {
                 String epsgWKT = epsgCrs.toWKT();
-                FileUtils.writeStringToFile(getPrjFile(), epsgWKT);
+                FileUtils.writeStringToFile(getPrjFile(), epsgWKT, "UTF-8");
             }
         } catch (FactoryException e) {
             throw (IOException) new IOException().initCause(e);
@@ -168,7 +168,7 @@ public class SpatialFile extends FileData {
             return null;
         }
 
-        String wkt = FileUtils.readFileToString(prj);
+        String wkt = FileUtils.readFileToString(prj, "UTF-8");
         try {
             return CRS.parseWKT(wkt);
         } catch (Exception e) {

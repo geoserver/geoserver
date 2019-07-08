@@ -787,7 +787,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             throws IllegalArgumentException {
 
         final Integer count = Integer.valueOf(2);
-        CloseableIterator<T> it = list(type, filter, null, count, (SortBy[]) null);
+        CloseableIterator<T> it = list(type, filter, null, count);
         T result = null;
         try {
             if (it.hasNext()) {
@@ -816,12 +816,6 @@ public class JDBCCatalogFacade implements CatalogFacade {
     public boolean canSort(Class<? extends CatalogInfo> type, String propertyName) {
         boolean canSort = db.canSort(type, propertyName);
         return canSort;
-    }
-
-    @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(
-            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortOrder) {
-        return list(of, filter, offset, count, sortOrder != null ? new SortBy[] {sortOrder} : null);
     }
 
     /**
@@ -899,7 +893,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     private <T extends CatalogInfo> T addInternal(T info) {
-        Assert.notNull(info);
+        Assert.notNull(info, "Info object cannot be null");
 
         Class<T> clazz = ClassMappings.fromImpl(info.getClass()).getInterface();
 

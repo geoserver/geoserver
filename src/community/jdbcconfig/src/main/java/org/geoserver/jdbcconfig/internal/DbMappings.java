@@ -262,7 +262,7 @@ public class DbMappings {
                 Closeables.close(in, true);
             }
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e.getCause());
         }
         return properties;
     }
@@ -340,7 +340,8 @@ public class DbMappings {
                 try {
                     clazz = Class.forName(typeName);
                 } catch (ClassNotFoundException e) {
-                    throw Throwables.propagate(e);
+                    Throwables.throwIfUnchecked(e);
+                    throw new RuntimeException(e);
                 }
                 types.put(oid.intValue(), clazz);
             } while (rowSet.next());

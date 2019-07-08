@@ -267,7 +267,14 @@ public class StatusPanel extends Panel {
 
     private String checkRenderer() {
         try {
-            String renderer = sun.java2d.pipe.RenderingEngine.getInstance().getClass().getName();
+            // static access to sun.java2d.pipe.RenderingEngine gives a warning that cannot be
+            // suppressed
+            String renderer =
+                    Class.forName("sun.java2d.pipe.RenderingEngine")
+                            .getMethod("getInstance")
+                            .invoke(null)
+                            .getClass()
+                            .getName();
             return renderer;
         } catch (Throwable e) {
             return "Unknown";

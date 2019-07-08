@@ -20,7 +20,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.config.GeoServer;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,102 +49,6 @@ public final class Requests {
     ( See GEOS-598 for more information
     */
     public static final String PROXY_PARAM = "PROXY_BASE_URL";
-
-    /**
-     * Get base url used - it is not any more assumed to be http://server:port/geoserver
-     *
-     * <p>GRR: it is not any more assumed the context path is /geoserver. If a proxyBaseUrl was
-     * provided, then that's the full context path and thus the proxyBaseUrl is returned as is,
-     * instead of appending /geosverver to it.
-     *
-     * <p>Removed the hardcoded "http://" and replaced it with httpServletRequest.getScheme()
-     * because the https case was not being handled.
-     *
-     * @param httpServletRequest
-     * @return http://server:port/path-defined-context
-     * @deprecated use {@link RequestUtils#proxifiedBaseURL(String, String)} instead
-     */
-    public static String getBaseUrl(HttpServletRequest httpServletRequest, GeoServer geoserver) {
-        // try with the web interface configuration, if it fails, look into
-        // web.xml just to keep compatibility (should be removed next version)
-        // and finally, if nothing is found, give up and return the default base URL
-        String url = ((geoserver != null) ? geoserver.getSettings().getProxyBaseUrl() : null);
-
-        // if ((geoserver != null) && (url != null)) {
-        //    url = appendContextPath(url, httpServletRequest.getContextPath());
-        // }
-
-        if ((url == null) || (url.trim().length() == 0)) {
-            if (httpServletRequest != null) {
-                url =
-                        httpServletRequest
-                                .getSession()
-                                .getServletContext()
-                                .getInitParameter(PROXY_PARAM);
-
-                if ((url == null) || (url.trim().length() == 0)) {
-                    url =
-                            httpServletRequest.getScheme()
-                                    + "://"
-                                    + httpServletRequest.getServerName()
-                                    + ":"
-                                    + httpServletRequest.getServerPort()
-                                    + httpServletRequest.getContextPath()
-                                    + "/";
-                } else {
-                    url = appendContextPath(url, httpServletRequest.getContextPath());
-                }
-            }
-        }
-
-        // take care of incompletely setup path
-        if (!url.endsWith("/")) {
-            url = url + "/";
-        }
-
-        return url;
-    }
-
-    /** @deprecated of no use */
-    public static String getBaseJspUrl(HttpServletRequest httpServletRequest, GeoServer geoserver) {
-        // try with the web interface configuration, if it fails, look into
-        // web.xml just to keep compatibility (should be removed next version)
-        // and finally, if nothing is found, give up and return the default base URL
-        String url = geoserver.getSettings().getProxyBaseUrl();
-
-        if ((geoserver != null) && (url != null)) {
-            url = appendContextPath(url, httpServletRequest.getRequestURI());
-        }
-
-        if ((url == null) || (url.trim().length() == 0)) {
-            if (httpServletRequest != null) {
-                url =
-                        httpServletRequest
-                                .getSession()
-                                .getServletContext()
-                                .getInitParameter(PROXY_PARAM);
-
-                if (((url == null) || (url.trim().length() == 0))) {
-                    url =
-                            httpServletRequest.getScheme()
-                                    + "://"
-                                    + httpServletRequest.getServerName()
-                                    + ":"
-                                    + httpServletRequest.getServerPort()
-                                    + httpServletRequest.getRequestURI()
-                                    + "/";
-                } else {
-                    url = appendContextPath(url, httpServletRequest.getRequestURI());
-                }
-            }
-        }
-
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
-
-        return url;
-    }
 
     /**
      * Appends a context path to a base url.
@@ -189,17 +92,6 @@ public final class Requests {
         }
 
         return url + "?" + queryString;
-    }
-
-    /**
-     * Get capabilities base url used
-     *
-     * @param httpServletRequest
-     * @return http://server:port/path-defined-context/data/capabilities
-     */
-    public static String getSchemaBaseUrl(
-            HttpServletRequest httpServletRequest, GeoServer geoserver) {
-        return getBaseUrl(httpServletRequest, geoserver) + "schemas/";
     }
 
     /**

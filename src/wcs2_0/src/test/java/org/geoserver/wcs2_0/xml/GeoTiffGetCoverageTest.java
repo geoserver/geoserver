@@ -29,7 +29,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/geotiff/geotiffExtensionCompressionJPEGWrongQuality1.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -42,7 +42,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/geotiff/geotiffExtensionCompressionJPEGWrongQuality2.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -54,7 +54,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     public void testGeotiffExtensionCompressionLZW() throws Exception {
         final File xml =
                 new File("./src/test/resources/geotiff/geotiffExtensionCompressionLZW.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -100,7 +100,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     public void testGeotiffExtensionCompressionDeflate() throws Exception {
         final File xml =
                 new File("./src/test/resources/geotiff/geotiffExtensionCompressionDeflate.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -149,7 +149,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     public void testGeotiffExtensionCompressionHuffman() throws Exception {
         final File xml =
                 new File("./src/test/resources/geotiff/geotiffExtensionCompressionHuffman.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -198,7 +198,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     public void testGeotiffExtensionCompressionPackBits() throws Exception {
         final File xml =
                 new File("./src/test/resources/geotiff/geotiffExtensionCompressionPackBits.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -247,7 +247,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/geotiff/geotiffExtensionCompressionWrongCompression.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         checkOws20Exception(response, 404, WcsExceptionCode.CompressionInvalid.toString(), "OUCH");
@@ -257,7 +257,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     public void testGeotiffExtensionCompressionJPEG() throws Exception {
         final File xml =
                 new File("./src/test/resources/geotiff/geotiffExtensionCompressionJPEG.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -299,7 +299,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGeotiffExtensionTilingDefault() throws Exception {
         final File xml = new File("./src/test/resources/geotiff/geotiffExtensionTilingDefault.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -332,7 +332,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGeotiffExtensionTilingWrong1() throws Exception {
         final File xml = new File("./src/test/resources/geotiff/geotiffExtensionTilingWrong1.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "13");
     }
@@ -340,7 +340,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGeotiffExtensionTilingWrong2() throws Exception {
         final File xml = new File("./src/test/resources/geotiff/geotiffExtensionTilingWrong2.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "25");
     }
@@ -348,7 +348,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGeotiffExtensionTiling() throws Exception {
         final File xml = new File("./src/test/resources/geotiff/geotiffExtensionTiling.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());

@@ -7,9 +7,9 @@
 package org.geoserver.wfs.xml;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -19,10 +19,11 @@ import static org.junit.Assert.*;
 import java.net.NetworkInterface;
 import java.util.Collection;
 import java.util.Collections;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.eclipse.emf.common.util.URI;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.util.PropertyRule;
 import org.geoserver.wfs.xml.WFSURIHandler.InitStrategy;
 import org.junit.After;
@@ -42,6 +43,7 @@ public class WFSURIHandlerTest {
     private GeoServer gs;
 
     private GeoServerInfo config;
+    private SettingsInfo settings;
 
     @SuppressWarnings("deprecation")
     @Before
@@ -59,9 +61,11 @@ public class WFSURIHandlerTest {
 
         gs = EasyMock.createMock(GeoServer.class);
         config = EasyMock.createMock(GeoServerInfo.class);
+        settings = EasyMock.createMock(SettingsInfo.class);
         expect(gs.getGlobal()).andStubReturn(config);
-        expect(config.getProxyBaseUrl()).andStubReturn(null);
-        replay(gs, config);
+        expect(settings.getProxyBaseUrl()).andStubReturn(null);
+        expect(config.getSettings()).andStubReturn(settings);
+        replay(gs, settings, config);
     }
 
     @After
@@ -106,13 +110,10 @@ public class WFSURIHandlerTest {
         assertThat(WFSURIHandler.ADDITIONAL_HOSTNAMES, containsInAnyOrder("foo", "bar", "baz"));
     }
 
-    @SuppressWarnings("deprecation")
     protected void setProxyBase(String url) {
-        reset(config);
-        {
-            expect(config.getProxyBaseUrl()).andStubReturn(url);
-        }
-        replay(config);
+        reset(settings);
+        expect(settings.getProxyBaseUrl()).andStubReturn(url);
+        replay(settings);
     }
 
     @Test

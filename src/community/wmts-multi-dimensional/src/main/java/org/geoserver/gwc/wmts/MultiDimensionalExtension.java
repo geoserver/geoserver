@@ -37,6 +37,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionFilterBuilder;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.SchemaException;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -53,8 +54,10 @@ import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -63,6 +66,8 @@ import org.springframework.http.HttpStatus;
  * requests.
  */
 public final class MultiDimensionalExtension extends WMTSExtensionImpl {
+
+    private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
 
     private static final Logger LOGGER = Logging.getLogger(MultiDimensionalExtension.class);
     public static final String SPACE_DIMENSION = "bbox";
@@ -221,7 +226,6 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         List<Dimension> dimensions =
                 DimensionsUtils.extractDimensions(wms, layerInfo, requestedDomains);
         ReferencedEnvelope boundingBox = getRequestedBoundingBox(conveyor, tileLayer);
-
         // add any domain provided restriction and set the bounding box
         ResourceInfo resource = layerInfo.getResource();
         Filter filter = getDomainRestrictions(conveyor, dimensions, boundingBox, resource);
@@ -328,7 +332,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             SimpleConveyor conveyor,
             List<Dimension> dimensions,
             ReferencedEnvelope boundingBox,
-            ResourceInfo resource) {
+            ResourceInfo resource)
+            throws IOException, TransformException, SchemaException, FactoryException {
         Filter filter = DimensionsUtils.getBoundingBoxFilter(resource, boundingBox, filterFactory);
         for (Dimension dimension : dimensions) {
             Object restriction = conveyor.getParameter(dimension.getDimensionName(), false);
@@ -340,6 +345,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                                 filter, attributes.first, attributes.second, restriction);
             }
         }
+
         return filter;
     }
 
@@ -348,7 +354,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // let's see if we have a spatial limitation
         ReferencedEnvelope boundingBox = (ReferencedEnvelope) conveyor.getParameter("bbox", false);
         // if we have a bounding box we need to set the crs based on the tile matrix set
-        if (boundingBox != null) {
+        if (boundingBox != null && boundingBox.getCoordinateReferenceSystem() == null) {
             String providedTileMatrixSet = (String) conveyor.getParameter("tileMatrixSet", true);
             // getting the layer grid set corresponding to the provided tile matrix set
             GridSubset gridSubset = tileLayer.getGridSubset(providedTileMatrixSet);
@@ -540,7 +546,9 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                 // dimensions are not supported for layers groups
                 return null;
             }
-            return (LayerInfo) publishedInfo;
+            // go through the catalog to make sure we get all the wrapping necessary, including
+            // security
+            return catalog.getLayer(publishedInfo.getId());
         }
         // let's see if we are in the context of a virtual service
         WorkspaceInfo localWorkspace = LocalWorkspace.get();

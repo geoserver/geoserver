@@ -33,10 +33,13 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -261,6 +264,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         xml,
                         "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")
@@ -340,6 +344,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         "text/json");
 
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")
@@ -465,6 +470,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         "application/zip");
         // Store is created
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
 
         Document dom =
                 getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/empty.xml");
@@ -531,6 +537,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         "application/zip");
         // Store is created
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         Document dom =
                 getAsDOM(
@@ -540,7 +547,12 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
-        final File storeDir = loader.url("data/wcs/mosaicfordelete");
+        final File storeDir =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()),
+                                "data/wcs/mosaicfordelete"),
+                        true);
         File[] content = storeDir.listFiles();
         assertThat(content.length, anyOf(equalTo(9), equalTo(10), equalTo(11)));
 

@@ -28,6 +28,7 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
         super.setStatus(sc);
     }
 
+    @SuppressWarnings("deprecation")
     public void setStatus(int sc, String sm) {
         myErrorCode = sc;
         super.setStatus(sc, sm);

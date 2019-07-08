@@ -283,7 +283,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
                 ResourceInfo.TIME,
                 "time",
                 DimensionPresentation.DISCRETE_INTERVAL,
-                new Double(1000 * 60 * 60 * 24),
+                Double.valueOf(1000 * 60 * 60 * 24),
                 null,
                 null);
 

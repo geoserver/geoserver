@@ -304,11 +304,14 @@ For more than one property from a single feature, use a comma-separated list of 
 
 While the above permutations for a GetFeature request focused on non-spatial parameters, it is also possible to query for features based on geometry. While there are limited options available in a GET request for spatial queries (more are available in POST requests using filters), filtering by bounding box (BBOX) is supported.
 
-The BBOX parameter allows you to search for features that are contained (or partially contained) inside a box of user-defined coordinates. The format of the BBOX parameter is ``bbox=a1,b1,a2,b2``where ``a1``, ``b1``, ``a2``, and ``b2`` represent the coordinate values. The order of coordinates passed to the BBOX parameter depends on the coordinate system used. (This is why the coordinate syntax isn't represented with ``x`` or ``y``.) To specify the coordinate system, append ``srsName=CRS`` to the WFS request, where ``CRS`` is the Coordinate Reference System you wish to use.
+The BBOX parameter allows you to search for features that are contained (or partially contained) inside a box of user-defined coordinates. The format of the BBOX parameter is ``bbox=a1,b1,a2,b2,[crs]`` where ``a1``, ``b1``, ``a2``, and ``b2`` represent the coordinate values. The optional ``crs`` parameter is used to name the CRS for the bbox coordinates (if they are different to the featureTypes native CRS.) The order of coordinates passed to the BBOX parameter depends on the coordinate system used
+(this is why the coordinate syntax isn't represented with ``x`` or ``y``.)
+
+To specify the coordinate system for the returned features, append ``srsName=CRS`` to the WFS request, where ``CRS`` is the Coordinate Reference System you wish to use.
 
 As for which corners of the bounding box to specify, the only requirement is for a bottom corner (left or right) to be provided first. For example, bottom left and top right, or bottom right and top left.
 
-An example request involving returning features based on bounding box would be in the following format::  
+An example request returning features based on a bounding box (using the featureTypes native CRS)::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -318,6 +321,15 @@ An example request involving returning features based on bounding box would be i
      srsName=CRS
      bbox=a1,b1,a2,b2
 
+To request features using a bounding box with CRS different from featureTypes native CRS::
+
+   http://example.com/geoserver/wfs?
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeNames=namespace:featuretype&
+     srsName=CRS
+     bbox=a1,b1,a2,b2,CRS
 
 LockFeature
 ~~~~~~~~~~~

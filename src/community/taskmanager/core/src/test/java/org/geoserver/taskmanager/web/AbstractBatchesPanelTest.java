@@ -25,6 +25,7 @@ import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.web.model.BatchesModel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +39,12 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
     public void before() {
         fac = TaskManagerBeans.get().getFac();
         dao = TaskManagerBeans.get().getDao();
+        login();
+    }
+
+    @After
+    public void after() {
+        logout();
     }
 
     protected abstract Configuration getConfiguration();

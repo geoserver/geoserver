@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import net.opengis.ows11.ExceptionReportType;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.ows.v1_1.OWS;
@@ -31,6 +32,9 @@ import org.geotools.xsd.Encoder;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
+
+    private static String CONTENT_TYPE =
+            System.getProperty("ows11.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
     /**
      * verbose exception flag controlling whether the exception stack trace will be included in the
      * encoded ows exception report
@@ -76,13 +80,19 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
         HttpServletResponse response = request.getHttpResponse();
         if (!request.isSOAP()) {
             // there will already be a SOAP mime type
-            response.setContentType("application/xml");
+            response.setContentType(CONTENT_TYPE);
         }
 
         // response.setCharacterEncoding( "UTF-8" );
         OWSConfiguration configuration = new OWSConfiguration();
 
-        Encoder encoder = new Encoder(configuration, configuration.schema());
+        XSDSchema result;
+        try {
+            result = configuration.getXSD().getSchema();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Encoder encoder = new Encoder(configuration, result);
         encoder.setIndenting(true);
         encoder.setIndentSize(2);
         encoder.setLineWidth(60);

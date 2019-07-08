@@ -34,8 +34,8 @@ abstract class AbstractVectorLayerIdentifier implements LayerIdentifier {
             for (Rule r : fts.rules()) {
                 if ((r.getMinScaleDenominator() - TOLERANCE <= scaleDenominator)
                         && (r.getMaxScaleDenominator() + TOLERANCE > scaleDenominator)
-                        && r.getSymbolizers() != null
-                        && r.getSymbolizers().length > 0) {
+                        && r.symbolizers() != null
+                        && r.symbolizers().size() > 0) {
                     result.add(r);
                 }
             }

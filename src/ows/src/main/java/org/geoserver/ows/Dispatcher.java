@@ -46,6 +46,7 @@ import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -730,7 +731,8 @@ public class Dispatcher extends AbstractController {
                         OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
                 if (setBaseUrl != null) {
                     setBaseUrl.invoke(
-                            requestBean, new String[] {RequestUtils.baseURL(req.getHttpRequest())});
+                            requestBean,
+                            new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
                 }
 
                 // another couple of thos of those lovley cite things, version+service has to
@@ -1537,11 +1539,6 @@ public class Dispatcher extends AbstractController {
         KvpRequestReader kvpReader = findKvpRequestReader(type);
 
         if (kvpReader != null) {
-            // check for http request awareness
-            if (kvpReader instanceof HttpServletRequestAware) {
-                ((HttpServletRequestAware) kvpReader).setHttpRequest(request.getHttpRequest());
-            }
-
             Object requestBean = kvpReader.createRequest();
 
             if (requestBean != null) {
@@ -1596,10 +1593,6 @@ public class Dispatcher extends AbstractController {
         if (xmlReader == null) {
             // no xml reader, just return object passed in
             return requestBean;
-        }
-
-        if (xmlReader instanceof HttpServletRequestAware) {
-            ((HttpServletRequestAware) xmlReader).setHttpRequest(request.getHttpRequest());
         }
 
         // return xmlReader.read(input);
@@ -1777,7 +1770,7 @@ public class Dispatcher extends AbstractController {
 
         if (handler == null) {
             // none found, fall back on default
-            handler = new DefaultServiceExceptionHandler();
+            handler = new OWS10ServiceExceptionHandler();
         }
 
         // if SOAP request use special SOAP exception handler, but only for OWS requests because

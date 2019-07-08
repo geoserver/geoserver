@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
@@ -47,14 +46,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "feature")
 public class Feature {
 
-//    @XmlElementRefs({
-//        @XmlElementRef(name = "geometry", type = JAXBElement.class, required = false),
-//        @XmlElementRef(name = "bbox", type = JAXBElement.class, required = false),
-//        @XmlElementRef(name = "image", type = Image.class, required = false),
-//        @XmlElementRef(name = "properties", type = JAXBElement.class, required = false)
-//    })
-//    protected List<Object> bboxOrImageOrGeometry;
-//
+    //    @XmlElementRefs({
+    //        @XmlElementRef(name = "geometry", type = JAXBElement.class, required = false),
+    //        @XmlElementRef(name = "bbox", type = JAXBElement.class, required = false),
+    //        @XmlElementRef(name = "image", type = Image.class, required = false),
+    //        @XmlElementRef(name = "properties", type = JAXBElement.class, required = false)
+    //    })
+    //    protected List<Object> bboxOrImageOrGeometry;
+    //
     @XmlElement(name = "geometry", required = false)
     protected GeometryContent geometry;
 
@@ -74,38 +73,46 @@ public class Feature {
     @XmlAttribute(name = "class")
     @XmlSchemaType(name = "anySimpleType")
     protected String clazz;
-//
-//    /**
-//     * Gets the value of the bboxOrImageOrGeometry property.
-//     *
-//     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-//     * modification you make to the returned list will be present inside the JAXB object. This is
-//     * why there is not a <CODE>set</CODE> method for the bboxOrImageOrGeometry property.
-//     *
-//     * <p>For example, to add a new item, do as follows:
-//     *
-//     * <pre>
-//     *    getBboxOrImageOrGeometry().add(newItem);
-//     * </pre>
-//     *
-//     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
-//     * <}{@link GeometryContent }{@code >} {@link Image } {@link JAXBElement }{@code <}{@link List
-//     * }{@code <}{@link String }{@code >}{@code >} {@link JAXBElement }{@code <}{@link
-//     * PropertyContent }{@code >}
-//     */
-//    public List<Object> getBboxOrImageOrGeometry() {
-//        if (bboxOrImageOrGeometry == null) {
-//            bboxOrImageOrGeometry = new ArrayList<Object>();
-//        }
-//        return this.bboxOrImageOrGeometry;
-//    }
+    //
+    //    /**
+    //     * Gets the value of the bboxOrImageOrGeometry property.
+    //     *
+    //     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore
+    // any
+    //     * modification you make to the returned list will be present inside the JAXB object. This
+    // is
+    //     * why there is not a <CODE>set</CODE> method for the bboxOrImageOrGeometry property.
+    //     *
+    //     * <p>For example, to add a new item, do as follows:
+    //     *
+    //     * <pre>
+    //     *    getBboxOrImageOrGeometry().add(newItem);
+    //     * </pre>
+    //     *
+    //     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
+    //     * <}{@link GeometryContent }{@code >} {@link Image } {@link JAXBElement }{@code <}{@link
+    // List
+    //     * }{@code <}{@link String }{@code >}{@code >} {@link JAXBElement }{@code <}{@link
+    //     * PropertyContent }{@code >}
+    //     */
+    //    public List<Object> getBboxOrImageOrGeometry() {
+    //        if (bboxOrImageOrGeometry == null) {
+    //            bboxOrImageOrGeometry = new ArrayList<Object>();
+    //        }
+    //        return this.bboxOrImageOrGeometry;
+    //    }
 
     public GeometryContent getGeometry() {
         return geometry;
     }
 
     public void setGeometry(GeometryContent geometry) {
-        this.geometry = geometry;
+        // fixes NPE, allows MapML feature to have no <geometry> element if
+        // there is no geometry associated to the feature, a situation that
+        // comes up when querying an image for RGB values for example
+        if (geometry.getGeometryContent() != null) {
+            this.geometry = geometry;
+        }
     }
 
     public JAXBElement getBbox() {

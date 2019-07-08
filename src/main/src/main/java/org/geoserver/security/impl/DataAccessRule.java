@@ -80,20 +80,6 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
         this.root = root;
     }
 
-    /**
-     * @deprecated Use getRoot(), the rule root can now be a workspace or a global layer group name
-     */
-    public String getWorkspace() {
-        return root;
-    }
-
-    /**
-     * @deprecated Use setRoot(), the rule root can now be a workspace or a global layer group name
-     */
-    public void setWorkspace(String workspace) {
-        this.root = workspace;
-    }
-
     public String getLayer() {
         return layer;
     }

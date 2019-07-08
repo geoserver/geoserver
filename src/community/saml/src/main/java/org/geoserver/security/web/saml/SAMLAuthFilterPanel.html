@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/">
+<body>
+	<wicket:head>
+		<style type="text/css">
+ul.horizontal div {
+	display: inline;
+}
+</style>
+	</wicket:head>
+	<wicket:extend>
+		<ul>
+			<li>
+				<fieldset>
+					<legend>
+						<span><wicket:message key="samlParameters"></wicket:message></span>
+						<a href="#" wicket:id="samlParametersHelp" class="help-link"></a>
+					</legend>
+					<ul>
+						<li><label for="entityId"><wicket:message
+									key="entityId"></wicket:message></label> <input id="entityId"
+							wicket:id="entityId" type="text" class="text"></input></li>
+					</ul>
+					<ul>
+						<li><label for="metadataURL"><wicket:message
+									key="metadataURL"></wicket:message></label> <input id="metadataURL"
+							wicket:id="metadataURL" type="text" class="text"></input></li>
+					</ul>
+					<ul>
+                        <li><label for="metadata"><wicket:message
+                                    key="metadata"></wicket:message></label> <textarea id="metadata"
+                            wicket:id="metadata" type="text" class="textarea"></textarea></li>
+                    </ul>
+                    <ul>
+                        <li><label for="signing"><wicket:message
+                                    key="signing"></wicket:message><input type="checkbox" id="signing"
+                            wicket:id="signing"/></label>
+                        </li>
+                        <li><label for="keyStorePath"><wicket:message
+                                    key="keyStorePath"></wicket:message></label> <input id="keyStorePath"
+                            wicket:id="keyStorePath" type="text" class="text"></input></li>
+                        <li><label for="keyStorePassword"><wicket:message
+                                    key="keyStorePassword"></wicket:message></label> <input id="keyStorePassword"
+                            wicket:id="keyStorePassword" type="password" class="text"></input></li>
+                        <li><label for="keyStoreId"><wicket:message
+                                    key="keyStoreId"></wicket:message></label> <input id="keyStoreId"
+                            wicket:id="keyStoreId" type="text" class="text"></input></li>
+                        <li><label for="keyStoreIdPassword"><wicket:message
+                                    key="keyStoreIdPassword"></wicket:message></label> <input id="keyStoreIdPassword"
+                            wicket:id="keyStoreIdPassword" type="password" class="text"></input></li>
+                    </ul>
+				</fieldset>
+			</li>
+		</ul>
+	</wicket:extend>
+</body>
+</html>

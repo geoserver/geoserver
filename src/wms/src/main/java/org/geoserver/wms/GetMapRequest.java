@@ -218,16 +218,6 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Gets a list of the the filters that will be applied to each layer before rendering
      *
-     * @return -
-     * @deprecated use {@link #getFilter()}.
-     */
-    public List getFilters() {
-        return this.optionalParams.filters;
-    }
-
-    /**
-     * Gets a list of the the filters that will be applied to each layer before rendering
-     *
      * @return A list of {@link Filter}.
      */
     public List getFilter() {
@@ -432,16 +422,6 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /** Sets the flag to validate the "SLD" parameter or not. //TODO */
     public void setValidateSchema(Boolean validateSLD) {
         this.optionalParams.validateSLD = validateSLD;
-    }
-
-    /**
-     * Sets a list of filters, one for each layer
-     *
-     * @param filters A list of {@link Filter}.
-     * @deprecated use {@link #setFilter(List)}.
-     */
-    public void setFilters(List filters) {
-        setFilter(filters);
     }
 
     /**

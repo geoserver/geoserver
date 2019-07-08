@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.directory.DirectoryDataStore;
@@ -136,12 +135,8 @@ public class MosaicIndex {
         indexer.put(Utils.Prop.NAME, mosaic.getName());
         indexer.put(Utils.Prop.INDEX_NAME, mosaic.getName());
         indexer.put(Utils.Prop.USE_EXISTING_SCHEMA, "true");
-        FileOutputStream ifos = null;
-        try {
-            ifos = new FileOutputStream(indexerFile);
+        try (FileOutputStream ifos = new FileOutputStream(indexerFile)) {
             indexer.store(ifos, null);
-        } finally {
-            IOUtils.closeQuietly(ifos);
         }
 
         // create a new shapefile feature store
@@ -192,19 +187,13 @@ public class MosaicIndex {
         // if we have to add the time, do so now
         if (mosaic.getTimeMode() != TimeMode.NONE) {
             File propertyFile = new File(mosaic.getFile(), mosaic.getName() + ".properties");
-            FileInputStream fis = null;
-            FileOutputStream fos = null;
-            try {
-                fis = new FileInputStream(propertyFile);
-                Properties props = new Properties();
+            Properties props = new Properties();
+            try (FileInputStream fis = new FileInputStream(propertyFile)) {
                 props.load(fis);
-                fis.close();
-                props.setProperty("TimeAttribute", "time");
-                fos = new FileOutputStream(propertyFile);
+            }
+            props.setProperty("TimeAttribute", "time");
+            try (FileOutputStream fos = new FileOutputStream(propertyFile)) {
                 props.store(fos, null);
-            } finally {
-                IOUtils.closeQuietly(fis);
-                IOUtils.closeQuietly(fos);
             }
         }
     }

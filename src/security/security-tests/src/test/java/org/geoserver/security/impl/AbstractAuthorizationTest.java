@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.*;
 
 import java.util.*;
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.*;
@@ -297,7 +298,6 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         ResourceInfo resource = createNiceMock(resourceClass);
         expect(resource.getStore()).andReturn(store).anyTimes();
         expect(resource.getName()).andReturn(name).anyTimes();
-        expect(resource.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(resource.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
@@ -314,7 +314,6 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         LayerInfo layer = createNiceMock(LayerInfo.class);
         expect(layer.getName()).andReturn(name).anyTimes();
-        expect(layer.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(layer.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(layer.getResource()).andReturn(resource).anyTimes();
         expect(layer.getId()).andReturn(name + "-lid").anyTimes();
@@ -564,7 +563,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     }
 
     <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
-        final Capture<Filter> cap = new Capture<Filter>();
+        final Capture<Filter> cap = Capture.newInstance(CaptureType.LAST);
         expect(catalog.list(eq(clazz), capture(cap)))
                 .andStubAnswer(
                         new IAnswer<CloseableIterator<T>>() {

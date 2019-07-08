@@ -334,6 +334,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     GeoServerSecurityFilterChainProxy.class);
                         }
 
+                        @SuppressWarnings("deprecation")
                         HttpServletRequest getHttpRequest() {
                             return new HttpServletRequest() {
                                 public void setCharacterEncoding(String env)

@@ -6,10 +6,15 @@ package org.geoserver.gwc.web.blob;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Radio;
+import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.geowebcache.s3.Access;
 import org.geowebcache.s3.S3BlobStoreInfo;
 
 /**
@@ -84,5 +89,20 @@ public class S3BlobStorePanel extends Panel {
         add(
                 new CheckBox("useGzip")
                         .add(new AttributeModifier("title", new ResourceModel("useGzip.title"))));
+
+        IModel<Access> accessModel = new PropertyModel<Access>(configModel, "access");
+
+        RadioGroup<Access> accessType = new RadioGroup<Access>("accessType", accessModel);
+        add(accessType);
+
+        IModel<Access> accessPublicModel = new Model<Access>(Access.PUBLIC);
+        IModel<Access> accessPrivateModel = new Model<Access>(Access.PRIVATE);
+
+        Radio<Access> accessTypePublic = new Radio<Access>("accessTypePublic", accessPublicModel);
+        Radio<Access> accessTypePrivate =
+                new Radio<Access>("accessTypePrivate", accessPrivateModel);
+
+        accessType.add(accessTypePublic);
+        accessType.add(accessTypePrivate);
     }
 }

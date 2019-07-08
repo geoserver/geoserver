@@ -34,7 +34,7 @@ public class CDataEncoderDelegate implements EncoderDelegate {
 
     public void encode(ContentHandler output) throws Exception {
         ((LexicalHandler) output).startCDATA();
-        try (OutputStream os = new WriterOutputStream(new ContentHandlerWriter(output))) {
+        try (OutputStream os = new WriterOutputStream(new ContentHandlerWriter(output), "UTF-8")) {
             ppio.encode(object, os);
         }
         ((LexicalHandler) output).endCDATA();

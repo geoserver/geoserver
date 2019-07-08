@@ -55,7 +55,7 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
             Class<? extends AvailableResources> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
-                "AvailableResourceConverter does not support deserialization");
+                "AvailableResourceConverter does not support deserialization", inputMessage);
     }
 
     @Override

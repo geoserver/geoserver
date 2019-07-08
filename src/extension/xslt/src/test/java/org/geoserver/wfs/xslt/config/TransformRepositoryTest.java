@@ -107,7 +107,7 @@ public class TransformRepositoryTest {
 
         testRoot.mkdirs();
         File file = new File(testRoot, "test.xml");
-        FileUtils.writeStringToFile(file, xml);
+        FileUtils.writeStringToFile(file, xml, "UTF-8");
 
         TransformInfo info = repo.getTransformInfo("test");
         assertNotNull(info);
@@ -131,7 +131,7 @@ public class TransformRepositoryTest {
 
         testRoot.mkdirs();
         File file = new File(testRoot, "test.xml");
-        FileUtils.writeStringToFile(file, xml1);
+        FileUtils.writeStringToFile(file, xml1, "UTF-8");
 
         TransformInfo info1 = repo.getTransformInfo("test");
         assertNotNull(info1);
@@ -147,7 +147,7 @@ public class TransformRepositoryTest {
                         + "  <fileExtension>json</fileExtension>\n" //
                         + "  <xslt>json-tx.xslt</xslt>\n" //
                         + "</transform>";
-        FileUtils.writeStringToFile(file, xml2);
+        FileUtils.writeStringToFile(file, xml2, "UTF-8");
 
         // reload and check
         TransformInfo info2 = repo.getTransformInfo("test");
@@ -172,7 +172,7 @@ public class TransformRepositoryTest {
 
         testRoot.mkdirs();
         File file = new File(testRoot, "test.xml");
-        FileUtils.writeStringToFile(file, xml1);
+        FileUtils.writeStringToFile(file, xml1, "UTF-8");
 
         TransformInfo info1 = repo.getTransformInfo("test");
         assertNotNull(info1);
@@ -208,7 +208,7 @@ public class TransformRepositoryTest {
         assertEquals(original, reloaded);
 
         // check the file on disk
-        Document doc = XMLUnit.buildTestDocument(FileUtils.readFileToString(configFile));
+        Document doc = XMLUnit.buildTestDocument(FileUtils.readFileToString(configFile, "UTF-8"));
         XMLAssert.assertXpathEvaluatesTo("ft1-id", "/transform/featureType/id", doc);
     }
 
@@ -265,8 +265,8 @@ public class TransformRepositoryTest {
         File xslt = new File(testRoot, "test-tx.xslt");
         assertTrue(xslt.exists());
 
-        String expected = IOUtils.toString(getClass().getResourceAsStream("test.xslt"));
-        String actual = FileUtils.readFileToString(xslt);
+        String expected = IOUtils.toString(getClass().getResourceAsStream("test.xslt"), "UTF-8");
+        String actual = FileUtils.readFileToString(xslt, "UTF-8");
         assertEquals(expected, actual);
 
         repo.removeTransformInfo(original);
@@ -360,6 +360,6 @@ public class TransformRepositoryTest {
         ti.setFeatureType(ft);
         String xml = repo.xs.toXML(ti);
 
-        FileUtils.writeStringToFile(new File(testRoot, name + ".xml"), xml);
+        FileUtils.writeStringToFile(new File(testRoot, name + ".xml"), xml, "UTF-8");
     }
 }

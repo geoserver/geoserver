@@ -38,6 +38,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import net.opengis.wfs.FeatureCollectionType;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -279,7 +280,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                             encoder.setSchemaLocation(namespace, schemaURIs.get(namespace));
                         }
                     } else {
-                        typeNames.append(meta.getPrefixedName());
+                        typeNames.append(meta.prefixedName());
                         if (m.hasNext()) {
                             typeNames.append(",");
                         }
@@ -358,7 +359,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         schema.setResources(resources);
         if (schema.getFeatureTypes().isEmpty()) {
             // no feature types so let's use the base WFS schema
-            return new Encoder(configuration, configuration.schema());
+            XSDSchema result;
+            try {
+                result = configuration.getXSD().getSchema();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return new Encoder(configuration, result);
         }
         try {
             // let's just instantiate the encoder

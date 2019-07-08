@@ -108,6 +108,10 @@
    <artifactId>gt-wms</artifactId>
   </dependency>
   <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-wmts</artifactId>
+  </dependency>
+  <dependency>
    <groupId>org.geotools.xsd</groupId>
    <artifactId>gt-xsd-sld</artifactId>
   </dependency>
@@ -157,11 +161,6 @@
    <scope>test</scope>
   </dependency>
   <dependency>
-   <groupId>org.easymock</groupId>
-   <artifactId>easymockclassextension</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
    <groupId>cglib</groupId>
    <artifactId>cglib-nodep</artifactId>
    <scope>test</scope>
@@ -179,7 +178,6 @@
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-geotiff</artifactId>
-   <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>

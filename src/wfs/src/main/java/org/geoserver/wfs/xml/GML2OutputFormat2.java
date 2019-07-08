@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -65,7 +65,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
         List featureCollections = results.getFeature();
 
         // round up the info objects for each feature collection
-        MultiHashMap ns2metas = new MultiHashMap();
+        MultiValueMap ns2metas = new MultiValueMap();
 
         for (Iterator fc = featureCollections.iterator(); fc.hasNext(); ) {
             SimpleFeatureCollection features = (SimpleFeatureCollection) fc.next();
@@ -124,7 +124,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
 
             for (Iterator m = metas.iterator(); m.hasNext(); ) {
                 FeatureTypeInfo meta = (FeatureTypeInfo) m.next();
-                typeNames.append(meta.getPrefixedName());
+                typeNames.append(meta.prefixedName());
 
                 if (m.hasNext()) {
                     typeNames.append(",");

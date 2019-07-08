@@ -116,11 +116,6 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         modifyFeatures(names, values, filter);
     }
 
-    public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
-            throws IOException {
-        modifyFeatures(new AttributeDescriptor[] {type}, new Object[] {value}, filter);
-    }
-
     public void modifyFeatures(Name[] names, Object[] values, Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);

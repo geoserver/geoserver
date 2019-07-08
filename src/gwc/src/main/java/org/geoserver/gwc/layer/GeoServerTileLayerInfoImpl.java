@@ -6,7 +6,6 @@
 package org.geoserver.gwc.layer;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Throwables.propagate;
 
 import com.google.common.collect.ImmutableSet;
 import java.io.Serializable;
@@ -166,7 +165,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         try {
             clone = (GeoServerTileLayerInfoImpl) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw propagate(e);
+            throw new RuntimeException(e);
         }
         clone.metaWidthHeight = metaWidthHeight.clone();
         clone.gridSubsets = nonNull((Set<XMLGridSubset>) null);
@@ -354,10 +353,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
                 && ((StyleParameterFilter) filter).getStyles() == null;
     }
 
-    /**
-     * @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#setAutoCacheStyles(boolean)
-     * @deprecated
-     */
+    /** @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#setAutoCacheStyles(boolean) */
     @Override
     public void setAutoCacheStyles(boolean autoCacheStyles) {
         if (autoCacheStyles) {

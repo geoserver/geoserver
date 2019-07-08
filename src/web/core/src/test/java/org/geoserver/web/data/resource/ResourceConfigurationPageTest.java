@@ -9,6 +9,7 @@ import static org.geotools.coverage.grid.io.AbstractGridFormat.BACKGROUND_COLOR;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.FOOTPRINT_BEHAVIOR;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.INPUT_TRANSPARENT_COLOR;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.OVERVIEW_POLICY;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.RESCALE_PIXELS;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.USE_JAI_IMAGEREAD;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ACCURATE_RESOLUTION;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ALLOW_MULTITHREADING;
@@ -77,7 +78,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
-        tester.assertLabel("publishedinfoname", layer.getResource().getPrefixedName());
+        tester.assertLabel("publishedinfoname", layer.getResource().prefixedName());
         tester.assertComponent(
                 "publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
     }
@@ -198,7 +199,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                     String parameterKey = mapModel.getExpression();
                     if (USE_JAI_IMAGEREAD.getName().getCode().equals(parameterKey)
                             || ACCURATE_RESOLUTION.getName().getCode().equals(parameterKey)
-                            || ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)) {
+                            || ALLOW_MULTITHREADING.getName().getCode().equals(parameterKey)
+                            || RESCALE_PIXELS.getName().getCode().equals(parameterKey)) {
                         assertThat(
                                 parameterKey, c, CoreMatchers.instanceOf(CheckBoxParamPanel.class));
                     } else if (EXCESS_GRANULE_REMOVAL.getName().getCode().equals(parameterKey)

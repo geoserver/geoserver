@@ -29,11 +29,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.appschema.resolver.xml.AppSchemaXSDRegistry;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
@@ -66,7 +66,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
     @SuppressWarnings("deprecation")
     protected void onTearDown(SystemTestData testData) throws Exception {
         super.onTearDown(testData);
-        DataAccessRegistry.unregisterAll();
+        DataAccessRegistry.getInstance().disposeAndUnregisterAll();
         AppSchemaDataAccessRegistry.clearAppSchemaProperties();
         AppSchemaXSDRegistry.getInstance().dispose();
     }

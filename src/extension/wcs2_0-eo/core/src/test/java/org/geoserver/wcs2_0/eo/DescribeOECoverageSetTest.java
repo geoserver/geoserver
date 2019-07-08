@@ -245,7 +245,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         Document dom =
                 getAsDOM(
                         "wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__spatio-temporal_dss");
-        // print(dom);
+        print(dom);
 
         // this one has 16 granules
         assertEquals(
@@ -578,7 +578,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
     @Test
     public void testMixedTrimPost() throws Exception {
         final File xml = new File("./src/test/resources/describeEOCoverageSetTrims.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         Document dom = postAsDOM("wcs?", request);
         print(dom);
         assertEquals(

@@ -6,7 +6,7 @@
 package org.geoserver.gwc.web.layer;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         when(gwc.getConfig()).thenReturn(defaults);
 
         FeatureTypeInfo resource = mock(FeatureTypeInfo.class);
-        when(resource.getPrefixedName()).thenReturn("topp:states");
+        when(resource.prefixedName()).thenReturn("topp:states");
 
         layer = mock(LayerInfo.class);
         when(layer.getResource()).thenReturn(resource);

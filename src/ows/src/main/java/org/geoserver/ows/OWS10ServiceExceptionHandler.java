@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
 import net.opengis.ows10.Ows10Factory;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.xml.v1_0.OWSConfiguration;
 import org.geoserver.platform.ServiceException;
@@ -32,6 +33,10 @@ import org.geotools.xsd.Encoder;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
+
+    private static String CONTENT_TYPE =
+            System.getProperty("ows10.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+
     protected boolean verboseExceptions = false;
 
     /** Constructor to be called if the exception is not for a particular service. */
@@ -84,13 +89,19 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
 
         if (!request.isSOAP()) {
             // there will already be a SOAP mime type
-            request.getHttpResponse().setContentType("application/xml");
+            request.getHttpResponse().setContentType(CONTENT_TYPE);
         }
 
         // response.setCharacterEncoding( "UTF-8" );
         OWSConfiguration configuration = new OWSConfiguration();
 
-        Encoder encoder = new Encoder(configuration, configuration.schema());
+        XSDSchema result;
+        try {
+            result = configuration.getXSD().getSchema();
+        } catch (IOException e1) {
+            throw new RuntimeException(e1);
+        }
+        Encoder encoder = new Encoder(configuration, result);
         encoder.setIndenting(true);
         encoder.setIndentSize(2);
         encoder.setLineWidth(60);

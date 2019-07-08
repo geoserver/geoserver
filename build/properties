@@ -2,6 +2,7 @@
 # as environment variables
 
 # constants
+GS_GIT_URL=git://github.com/geoserver/geoserver.git
 GT_GIT_URL=git://github.com/geotools/geotools.git
 GWC_GIT_URL=git://github.com/GeoWebCache/geowebcache.git
 JIRA_REST=https://osgeo-org.atlassian.net/rest/api/latest
@@ -17,10 +18,17 @@ SKIP_INSTALLERS=true
 #MAC_JENKINS_USER=
 #MAC_JENKINS_KEY=
 
+# maven environment
+MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
+
+# Use settings.xml override if provided
+if [ -n "$MAVEN_SETTINGS" ]; then
+  MAVEN_FLAGS="-s $MAVEN_SETTINGS $MAVEN_FLAGS"
+fi
 
 # parameter defaults
 if [ -z $branch ]; then
-  branch="trunk"
+  branch="master"
 fi
 
 if [ -z $rev ]; then
@@ -58,3 +66,4 @@ fi
 if [ -z $SF_PK ]; then
   SF_PK=$HOME/.ssh/id_dsa_${SF_USER}_frs.sourceforge.net
 fi
+

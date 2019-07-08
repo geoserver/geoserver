@@ -22,6 +22,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -109,6 +110,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/namespaces/ian"));
 
@@ -178,6 +180,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/namespaces/foo"));
 
@@ -206,6 +209,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/namespaces", json, "text/json");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/namespaces/foo"));
 
@@ -327,6 +331,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/namespaces.xml", xmlPost, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         // check that the created namespace is isolated
         NamespaceInfo namespace = getCatalog().getNamespaceByPrefix("isolated_prefix");
         assertThat(namespace, notNullValue());

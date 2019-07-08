@@ -27,9 +27,7 @@ public interface GMLInfo extends Serializable {
      *   <li>{@link #URN} : urn:x-ogc:def:crs:EPSG:XXXX
      * </ul>
      *
-     * <p>
-     *
-     * @deprecated use {@link SrsSyntax}
+     * <p>Use {@link SrsSyntax} whenever possible
      */
     public static enum SrsNameStyle {
         NORMAL {

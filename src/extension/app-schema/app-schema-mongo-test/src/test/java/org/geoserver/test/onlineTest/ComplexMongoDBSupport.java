@@ -4,6 +4,10 @@
  */
 package org.geoserver.test.onlineTest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -43,11 +47,8 @@ import org.geoserver.util.IOUtils;
 import org.geotools.feature.NameImpl;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
-import static org.hamcrest.CoreMatchers.is;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -63,18 +64,19 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(ComplexMongoDBSupport.class);
 
-    private static final Path ROOT_DIRECTORY = createTempDir();
+    protected static final Path ROOT_DIRECTORY = createTempDir();
 
     private static File APP_SCHEMA_MAPPINGS;
 
+    protected static final String STATIONS_STORE_NAME = UUID.randomUUID().toString();
     private static final String STATIONS_DATA_BASE_NAME = UUID.randomUUID().toString();
     private static final String STATIONS_COLLECTION_NAME = "stations";
 
     private static MongoClient MONGO_CLIENT;
 
     // xpath engines used to check WFS responses
-    private XpathEngine WFS11_XPATH_ENGINE;
-    private XpathEngine WFS20_XPATH_ENGINE;
+    protected XpathEngine WFS11_XPATH_ENGINE;
+    protected XpathEngine WFS20_XPATH_ENGINE;
 
     @Before
     public void beforeTest() {
@@ -140,7 +142,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         params.put("dbtype", "app-schema");
         params.put("url", "file:" + APP_SCHEMA_MAPPINGS.getAbsolutePath());
         DataStoreInfoImpl dataStore = new DataStoreInfoImpl(getCatalog());
-        dataStore.setName(UUID.randomUUID().toString());
+        dataStore.setName(STATIONS_STORE_NAME);
         dataStore.setType("app-schema");
         dataStore.setConnectionParameters(params);
         dataStore.setWorkspace(workspace);

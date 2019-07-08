@@ -151,7 +151,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             ResourceInfo resource = ((LayerInfo) info).getResource();
             // we need the _current_ name, regardless of it's name is being changed
             resource = ModificationProxy.unwrap(resource);
-            originalLayerName = resource.getPrefixedName();
+            originalLayerName = resource.prefixedName();
         } else if (info instanceof LayerGroupInfo) {
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayerGroup");
             // we need the _current_ name, regardless of if it's name is being changed
@@ -365,7 +365,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     private List<String> getBlobStoreIds() {
         List<String> blobStoreIds = new ArrayList<String>();
         for (BlobStoreInfo blobStore : GWC.get().getBlobStores()) {
-            blobStoreIds.add(blobStore.getId());
+            blobStoreIds.add(blobStore.getName());
         }
         return blobStoreIds;
     }
@@ -375,7 +375,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             return true;
         }
         for (BlobStoreInfo blobStore : GWC.get().getBlobStores()) {
-            if (blobStore.getId().equals(blobStoreId)) {
+            if (blobStore.getName().equals(blobStoreId)) {
                 return blobStore.isEnabled();
             }
         }
@@ -389,7 +389,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
     private String getDefaultBlobStoreId() {
         BlobStoreInfo defaultBlobStore = GWC.get().getDefaultBlobStore();
-        return defaultBlobStore == null ? null : defaultBlobStore.getId();
+        return defaultBlobStore == null ? null : defaultBlobStore.getName();
     }
 
     public void save() {

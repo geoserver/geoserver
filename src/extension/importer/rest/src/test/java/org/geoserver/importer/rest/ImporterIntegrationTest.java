@@ -306,7 +306,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 "--AaB03x\r\nContent-Disposition: form-data; name=filedata; filename=data.csv\r\n"
                         + "Content-Type: text/plain\n"
                         + "\r\n\r\n"
-                        + FileUtils.readFileToString(locations)
+                        + FileUtils.readFileToString(locations, "UTF-8")
                         + "\r\n\r\n--AaB03x--";
 
         post("/rest/imports/" + importId + "/tasks", body, "multipart/form-data; boundary=AaB03x");
@@ -553,7 +553,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 }
             }
         } else {
-            json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+            MockHttpServletResponse response = getAsServletResponse("/rest/imports/" + importId);
+            assertEquals("application/json", response.getContentType());
+            json = (JSONObject) json(response);
             state = json.getJSONObject("import").getString("state");
         }
         Thread.sleep(500);
@@ -797,7 +799,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
         File script = new File(scripts, "test.sh");
-        FileUtils.writeStringToFile(script, "touch test.properties\n");
+        FileUtils.writeStringToFile(script, "touch test.properties\n", "UTF-8");
         script.setExecutable(true, true);
 
         // create context with default name
@@ -847,7 +849,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
         File script = new File(scripts, "test.sh");
-        FileUtils.writeStringToFile(script, "touch $1\n");
+        FileUtils.writeStringToFile(script, "touch $1\n", "UTF-8");
         script.setExecutable(true, true);
 
         // create context with default name

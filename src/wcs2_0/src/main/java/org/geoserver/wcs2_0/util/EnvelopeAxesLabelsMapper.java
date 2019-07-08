@@ -71,9 +71,13 @@ public class EnvelopeAxesLabelsMapper {
     private String getAxisLabel(CoordinateSystemAxis axis) {
         // some default axis have weird abbreviations (greek letters), handle them separately
         String label = axis.getAbbreviation();
-        if (label.equals(DefaultCoordinateSystemAxis.LONGITUDE.getAbbreviation())) {
+        // in EPSG 9.6 axis label can be also be Long and Lon
+        if (label.equals(DefaultCoordinateSystemAxis.LONGITUDE.getAbbreviation())
+                || label.equals("Lon")
+                || label.equals("Long")) {
             return "Long";
-        } else if (label.equals(DefaultCoordinateSystemAxis.LATITUDE.getAbbreviation())) {
+        } else if (label.equals(DefaultCoordinateSystemAxis.LATITUDE.getAbbreviation())
+                || label.equals("Lat")) {
             return "Lat";
         } else {
 

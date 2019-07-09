@@ -17,7 +17,7 @@ Configuring the S3 BlobStore plugin
 -----------------------------------
 
 Once the plugin has been installed, one or more S3 BlobStores may be configured through :ref:`gwc_webadmin_blobstores`.
-Afterwards, cached layers can be explicitely assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
+Afterwards, cached layers can be explicitly assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
 
 .. figure:: img/s3blobstore.png
    :align: center

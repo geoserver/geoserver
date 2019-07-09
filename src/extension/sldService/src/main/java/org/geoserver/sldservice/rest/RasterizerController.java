@@ -38,6 +38,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,7 +115,8 @@ public class RasterizerController extends BaseSLDServiceController {
             @RequestParam(value = "midColor", required = false) String midColor,
             @RequestParam(value = "ramp", required = false) String ramp,
             @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
-            final HttpServletResponse response) {
+            final HttpServletResponse response)
+            throws IOException {
         if (cachingTime > 0) {
             response.setHeader(
                     "cache-control",
@@ -148,7 +150,11 @@ public class RasterizerController extends BaseSLDServiceController {
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
                 RasterSymbolizer rasterSymbolizer = getRasterSymbolizer(defaultStyle);
 
-                if (rasterSymbolizer == null) {
+                DuplicatingStyleVisitor cloner = new DuplicatingStyleVisitor();
+                rasterSymbolizer.accept(cloner);
+                RasterSymbolizer rasterSymbolizer1 = (RasterSymbolizer) cloner.getCopy();
+
+                if (rasterSymbolizer == null || rasterSymbolizer1 == null) {
                     throw new InvalidSymbolizer();
                 }
 
@@ -157,7 +163,7 @@ public class RasterizerController extends BaseSLDServiceController {
                     rasterized =
                             remapStyle(
                                     defaultStyle,
-                                    rasterSymbolizer,
+                                    rasterSymbolizer1,
                                     min,
                                     max,
                                     classes,
@@ -168,6 +174,7 @@ public class RasterizerController extends BaseSLDServiceController {
                                     startColor,
                                     endColor,
                                     midColor);
+
                 } catch (Exception e) {
                     throw new InvalidSymbolizer();
                 }

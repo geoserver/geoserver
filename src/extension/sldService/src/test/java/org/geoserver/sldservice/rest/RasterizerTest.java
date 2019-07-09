@@ -18,6 +18,7 @@ import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
 import org.junit.Test;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -82,6 +83,7 @@ public class RasterizerTest extends SLDServiceBaseTest {
     public void testRasterizeOptions() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("wcs:World");
         assertEquals("raster", l.getDefaultStyle().getName());
+        Style defaultStyle1 = l.getDefaultStyle().getStyle();
         final String restPath =
                 RestBaseController.ROOT_PATH
                         + "/sldservice/wcs:World/"
@@ -97,12 +99,15 @@ public class RasterizerTest extends SLDServiceBaseTest {
         ColorMap map = checkColorMap(baos.toString(), 5);
         checkColorEntry(map.getColorMapEntries()[1], "#FF0000", "10.0", "1.0");
         checkColorEntry(map.getColorMapEntries()[5], "#0000FF", "50.0", "1.0");
+        Style defaultStyle2 = l.getDefaultStyle().getStyle();
+        assertEquals(defaultStyle1, defaultStyle2);
     }
 
     @Test
     public void testRasterizeOptions2() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("wcs:World");
         assertEquals("raster", l.getDefaultStyle().getName());
+        Style defaultStyle1 = l.getDefaultStyle().getStyle();
         final String restPath =
                 RestBaseController.ROOT_PATH
                         + "/sldservice/wcs:World/"
@@ -118,6 +123,8 @@ public class RasterizerTest extends SLDServiceBaseTest {
         ColorMap map = checkColorMap(baos.toString(), 5);
         checkColorEntry(map.getColorMapEntries()[1], "#FF0000", "10.00", "1.0");
         checkColorEntry(map.getColorMapEntries()[5], "#0000FF", "50.00", "1.0");
+        Style defaultStyle2 = l.getDefaultStyle().getStyle();
+        assertEquals(defaultStyle1, defaultStyle2);
     }
 
     private ColorMap checkColorMap(String resultXml, int classes) {

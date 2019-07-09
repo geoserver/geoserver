@@ -52,7 +52,10 @@ NTv2
    4122,4617,NB7783v2.gsb,New Brunswick Geographic Information Corporation land and water information standards manual.
    4122,4617,NS778301.gsb,Nova Scotia Geomatics Centre -  Contact aflemmin@linux1.nsgc.gov.ns.ca or telephone 902-667-6409
    4122,4617,PE7783V2.gsb,PEI Department of Transportation & Public Works
-   4149,4150,CHENYX06.gsb,Bundesamt für Landestopographie; www.swisstopo.ch
+   4149,4150,CHENyx06a.gsb,Bundesamt für Landestopografie swisstopo; www.swisstopo.ch
+   4149,4151,CHENyx06_ETRS.gsb,Bundesamt für Landestopografie swisstopo; www.swisstopo.ch
+   4149,4258,CHENyx06_ETRS.gsb,Bundesamt für Landestopografie swisstopo; www.swisstopo.ch
+   4149,4326,CHENyx06_ETRS.gsb,IOGP
    4171,4275,rgf93_ntf.gsb,ESRI
    4202,4283,A66 National (13.09.01).gsb,GDA Technical Manual. http://www.icsm.gov.au/gda
    4202,4283,SEAust_21_06_00.gsb,Office of Surveyor General Victoria; http://www.land.vic.gov.au/
@@ -61,21 +64,21 @@ NTv2
    4202,4283,vic_0799.gsb,Office of Surveyor General Victoria; http://www.land.vic.gov.au/
    4202,4326,A66 National (13.09.01).gsb,OGP
    4203,4283,National 84 (02.07.01).gsb,GDA Technical Manual. http://www.icsm.gov.au/gda
-   4203,4283,wa_0400.gsb,http://www.dola.wa.gov.au/lotl/survey_geodesy/gda1994/download.html
    4203,4283,wa_0700.gsb,"Department of Land Information, Government of Western Australia; http://www.dola.wa.gov.au/"
    4203,4326,National 84 (02.07.01).gsb,OGP
+   4207,4258,DLx_ETRS89_geo.gsb,Instituto Geografico Portugues; http://www.igeo.pt
    4225,4326,CA7072_003.gsb,OGP
    4225,4674,CA7072_003.gsb,IBGE.
+   4230,4258,"100800401.gsb","Geodesy Unit, Cartographic Institute of Catalonia (ICC);  http://www.icc.cat"
    4230,4258,SPED2ETV2.gsb,"Instituto Geográfico Nacional, www.cnig.es"
-   4230,4258,sped2et.gsb,"Instituto Geográfico Nacional, www.cnig.es"
    4230,4326,SPED2ETV2.gsb,OGP
-   4230,4326,sped2et.gsb,OGP
    4258,4275,rgf93_ntf.gsb,OGP
-   4267,4269,NTv2_0.gsb,https://open.canada.ca/data/en/dataset/b3534942-31ea-59cf-bcc3-f8dc4875081a
+   4267,4269,NTv2_0.gsb,http://www.geod.nrcan.gc.ca/products/html-public/GSDapps/English/NTv2_Fact_Sheet.html
    4267,4269,QUE27-83.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
    4267,4326,NTv2_0.gsb,OGP
    4267,4326,QUE27-98.gsb,OGP
    4267,4326,SK27-98.gsb,OGP
+   4267,4617,NB2783v2.gsb,"""Generation of a NAD27-NAD83(CSRS) NTv2-type Grid Shift File for New Brunswick"", Marcelo C. Santos and Carlos A. Garcia, Department of Geodesy and Geomatics Engineering, University of New Brunswick, October, 2011 via Service New Brunswick."
    4267,4617,QUE27-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
    4267,4617,SK27-98.gsb,Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.
    4269,4326,AB_CSRS.DAC,OGP
@@ -86,18 +89,34 @@ NTv2
    4269,4617,SK83-98.gsb,Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.
    4272,4167,nzgd2kgrid0005.gsb,Land Information New Zealand: LINZS25000 Standard for New Zealand Geodetic Datum 2000; 16 November 2007.
    4272,4326,nzgd2kgrid0005.gsb,OGP
+   4274,4258,D73_ETRS89_geo.gsb,Instituto Geografico Portugues; http://www.igeo.pt
    4277,4258,OSTN02_NTv2.gsb,"Ordnance Survey of Great Britain, http://www.gps.gov.uk"
+   4277,4258,OSTN15_NTv2_OSGBtoETRS.gsb,Ordnance Survey of Great Britain.
    4277,4326,OSTN02_NTv2.gsb,OGP
+   4277,4326,OSTN15_NTv2_OSGBtoETRS.gsb,IOGP
+   4283,7844,COCOS_C_V1.gsb,GDA2020 Technical Manual (http://www.icsm.gov.au)
+   4283,7844,GDA94_GDA2020_conformal.gsb,GDA2020 Technical Manual and ICSM Datum Technical Fact Sheet TN1 (http://www.icsm.gov.au).
+   4283,7844,GDA94_GDA2020_conformal_and_distortion.gsb,GDA2020 Technical Manual and ICSM Datum Technical Fact Sheet TN1 (http://www.icsm.gov.au).
+   4283,7844,XMAS_C_V1.gsb,GDA2020 Technical Manual (http://www.icsm.gov.au).
+   4289,4258,rdtrans2008.gsb,"Kadaster and Rijkswaterstaat CIV, working together under the name RDNAP."
+   4300,4258,tm75_etrs89.gsb,ESRI Ireland.
+   4300,4326,tm75_etrs89.gsb,OGP
+   4301,4612,tky2jgd.gsb,ESRI
+   4301,6668,tky2jgd.gsb,OGP
+   4312,4258,AT_GIS_GRID.gsb,Federal Office of Metrology and Surveying (BEV); http://www.bev.gv.at
+   4313,4258,bd72lb72_etrs89lb08.gsb,IGN Brussels www.ngi.be
    4314,4258,BETA2007.gsb,BKG via EuroGeographics http://crs.bkg.bund.de/crs-eu/
    4314,4326,BETA2007.gsb,OGP
    4326,4275,rgf93_ntf.gsb,OGP
-   4608,4269,May76v20.gsb,Geodetic Survey of Canada Natural Resources Canada; https://www.geod.nrcan.gc.ca/
+   4608,4269,May76v20.gsb,Geodetic Survey of Canada  http://www.geod.nrcan.gc.ca/
    4608,4326,May76v20.gsb,OGP
    4609,4269,CGQ77-83.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
    4609,4326,CGQ77-98.gsb,OGP
    4609,4617,CGQ77-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
+   4612,6668,touhokutaiheiyouoki2011.gsb,ESRI
    4618,4326,SAD69_003.gsb,OGP
    4618,4674,SAD69_003.gsb,IBGE.
+   4745,4258,NTv2_SN.gsb,Saxony State Spatial Data and Land Survey Corporation (GeoSN).
    4745,4326,BETA2007.gsb,OGP
    4746,4326,BETA2007.gsb,OGP
    4749,4644,RGNC1991_NEA74Noumea.gsb,ESRI
@@ -175,6 +194,9 @@ NADCON
    4269,4152,NGS-Usa WV,wvhpgn.las,wvhpgn.los
    4269,4152,NGS-Usa WY,wyhpgn.las,wyhpgn.los
    4675,4152,NGS-Gum,guhpgn.las,guhpgn.los
+   8351,4156,UGKK-Svk,Slovakia_JTSK03_to_JTSK.LAS.las,Slovakia_JTSK03_to_JTSK.LAS.los
+   8351,4156,UGKK-Svk,Slovakia_JTSK03_to_JTSK.LOS.las,Slovakia_JTSK03_to_JTSK.LOS.los
+
 
 .. The SQL statement::
    SELECT DISTINCT source_crs_code SOURCE_CRS, target_crs_code TARGET_CRS, coord_tfm_version VERSION, REPLACE ( REPLACE (val.param_value_file_ref, '.las'), '.los') + '.las' GRID_FILE_NAME_1, REPLACE ( REPLACE (val.param_value_file_ref, '.las'), '.los') + '.los' GRID_FILE_NAME_2

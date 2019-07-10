@@ -5,14 +5,19 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
@@ -23,9 +28,12 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
+import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.postgresql.jdbc.SslMode;
 
 public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
 
@@ -232,5 +240,40 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         } finally {
             catalog.remove(ds);
         }
+    }
+
+    @Test
+    public void testDataStoreEditEnum() throws Exception {
+        final Catalog catalog = getCatalog();
+        DataStoreInfo ds = catalog.getFactory().createDataStore();
+        ds.setType("PostGIS");
+        ds.getConnectionParameters().put(PostgisNGDataStoreFactory.SSL_MODE.key, "DISABLE");
+        new CatalogBuilder(catalog).updateDataStore(ds, store);
+
+        assertNull(ds.getId());
+
+        tester.startPage(new DataAccessEditPage(ds));
+        tester.assertNoErrorMessage();
+        print(tester.getLastRenderedPage(), true, true);
+
+        // look for the dropdown.. we cannot "identify" it but we can check there is a dropdown
+        // with the properly converted enum value
+        MarkupContainer container =
+                (MarkupContainer)
+                        tester.getLastRenderedPage()
+                                .get("dataStoreForm:parametersPanel:parameters");
+        DropDownChoiceParamPanel dropDown = null;
+        for (Component component : container) {
+            if (component instanceof ListItem
+                    && ((ListItem) component).get("parameterPanel")
+                            instanceof DropDownChoiceParamPanel) {
+                DropDownChoiceParamPanel panel =
+                        (DropDownChoiceParamPanel) ((ListItem) component).get("parameterPanel");
+                if (panel.getDefaultModelObject() == SslMode.DISABLE) {
+                    dropDown = panel;
+                }
+            }
+        }
+        assertNotNull(dropDown);
     }
 }

@@ -38,6 +38,7 @@ import org.geoserver.web.data.store.panel.ParamPanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
 import org.geoserver.web.data.store.panel.TextAreaParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
+import org.geoserver.web.util.EnumAdapterModel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geotools.data.DataAccessFactory;
@@ -167,6 +168,9 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         } else if (options != null && options.size() > 0) {
 
             IModel<Serializable> valueModel = new MapModel(paramsModel, paramName);
+            if (binding.isEnum()) {
+                valueModel = new EnumAdapterModel(valueModel, binding);
+            }
             IModel<String> labelModel = new ResourceModel(paramLabel, paramLabel);
             parameterPanel =
                     new DropDownChoiceParamPanel(

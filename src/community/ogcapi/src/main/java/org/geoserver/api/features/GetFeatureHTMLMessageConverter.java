@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractHTMLMessageConverter;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;

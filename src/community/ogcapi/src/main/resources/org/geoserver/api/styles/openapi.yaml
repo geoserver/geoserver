@@ -1,0 +1,1353 @@
+openapi: 3.0.1
+# Revisions:
+# 2019-04-28 initial version
+# 2019-05-01 added support for symbols/sprites
+# 2019-05-02 added support for style validation
+# 2019-05-03 updated API definition based on the discussion in 
+#            the weekly call
+# 2019-05-09 updates to align queryables and style-set with the
+#            Feature/Tile API extensions; use SwaggerHub domains
+# 2019-05-11 add PATCH semantics
+# 2019-06-07 add validate parameter on PUT /styles/{styleId}
+# 2019-07-05 add descriptions how clients interact with the APIs
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/cportele/opf-style-api/1.0.0
+info:
+  title: |-
+    Open Portrayal Framework Style API (DRAFT)
+  description: |-
+    # Overview
+
+    This is a draft of the OGC Testbed-15 Style API in the Open 
+    Portrayal Framework task. The Style API is a Web API for 
+    fetching and managing styles. 
+
+    The main consumers of this API in Testbed-15 are the 
+    following components.
+
+    * **Visual style editors** create, update and delete styles 
+    for datasets that are shared by other Web APIs implementing 
+    OGC API Features, OGC API Coverages or OGC API Tiles;
+    * **Web APIs implementing OGC API Maps** fetch styles and 
+    render spatial data (features or coverages) on the server;
+    * **Map clients** fetch styles and render spatial data 
+    (features or coverages) on the client.
+
+    Feature data is either accessed directly or organised in 
+    spatial partitions ("vector tiles").
+
+    This API uses the following style-related terms and concepts.
+
+    * **Styles** organize a sequence of rules of symbolizing 
+    instructions to be applied by a rendering engine on one 
+    or more features and/or coverages.
+    * **Style encodings** are specifications to express a style
+    as one or more files. In Testbed-15 Mapbox Styles, OGC SLD
+    versions 1.0 and 1.1 are used.
+    * **Stylesheets** are representations of a style in a style 
+    encoding.
+    * **Style metadata** is essential information about a style
+    in order to support users to discover and select styles for
+    rendering their data and for visual style editors to create
+    user interfaces for editing a style.
+
+    Stylesheets often reference external resources, especially 
+    symbols and fonts to be used in the rendering process.
+
+    Symbols are either managed as a single file for each symbol
+    or they are organised in a sprite - all symbols combined in
+    a single bitmap image to reduce memory and the number of 
+    http requests. Single symbols and sprites are supported
+    by this API and they may be stored on this server, for example,
+    to avoid issues with cross-origin requests. Of course,
+    existing external symbol libraries may also be referenced 
+    from stylesheets.
+
+    This API does not support font resources and if you want to
+    reference fonts / glyphs from a stylesheet, please reference
+    an existing font library.
+
+    Currently no media types have been registered for Mapbox 
+    Styles or OGC SLD. Temporary media types in the vnd-branch
+    are used for now.
+
+    For more background information see [the Vector Tiles Pilot Extension 
+    Engineering Report](http://docs.opengeospatial.org/per/18-101.html#StylesAPI).
+
+    The API is consistent with the emerging OGC API family of 
+    standards and could be a starting point for a future 
+    "OGC API - Styles" standard. API components that are used
+    by more than one of the draft API specifications are not
+    defined in this document, but are defined in a 
+    [domain for OGC API building blocks on Swaggerhub](https://app.swaggerhub.com/domains/cportele/ogc-api/1.0.0) 
+    and are referenced.
+
+    This document is also available in [GitHub](https://github.com/cportele/t15-opf/blob/master/style-api.yaml).
+
+    # Conformance classes
+
+    The Style API specifies the following conformance classes.
+
+    * **'core'** supports the basic GET operations on `/`, `/conformance`, `/styles`, `/styles/{styleId}`, and `/styles/{styleId}/metadata`
+    * **'json'** supports `application/json` as a response to the GET operations on `/`, `/conformance`, `/styles`, and `/styles/{styleId}/metadata`
+    * **'html'** supports `text/html` as a response to the GET operations on `/`, `/conformance`, `/styles`, and `/styles/{styleId}/metadata`
+    * **'manage-styles'** adds POST/PUT/DELETE/PATCH methods on `/styles`, `/styles/{styleId}`, and `/styles/{styleId}/metadata`
+    * **'style-validation'** adds the `validate` parameter on POST requests to `/styles`
+    * **'resources'** adds the basic GET operations on `/resources`, and `/resources/{resourceId}`
+    * **'manage-resources'** adds POST/PUT/DELETE/PATCH methods on `/resources`, and `/resources/{resourceId}`
+    * **'mapbox-styles'** supports Mapbox Styles as a style encoding on `/styles` and `/styles/{styleId}`
+    * **'sld-10'** supports SLD 1.0 as a style encoding on `/styles` and `/styles/{styleId}`
+    * **'sld-11'** supports SLD 1.1 as a style encoding on `/styles` and `/styles/{styleId}`
+
+    # Examples how clients are expected to interact with the API
+
+    A dataset with topographic data according to the TDS specification 
+    is avaiable via an API that implements the OGC API Features and Tiles specification 
+    ([landing page of the dataset](`https://services.interactive-instruments.de/t15/daraa`)).
+    The dataset covers the region of Daraa, Syria. The URI of the landing page is used as 
+    `{data}` in the descriptions below.
+
+    In addition, a style repository is avaiable via an API that implements the Styles API 
+    specified in Testbed-15 
+    ([landing page of the repository](`https://services.interactive-instruments.de/t15/daraa`)).
+    The URI of the landing page is used as `{styles}` in the descriptions below.
+
+
+    NOTE: The referenced API does not yet implement the specifications
+    drafted in Testbed-15. This is work in progress. A template 
+    for the updated specification of the Feature API is available
+    [here](https://app.swaggerhub.com/apis/cportele/opf-features-api/1.0.0). 
+    **TODO: update URIs once Testbed-15 implementations are available.**
+
+    Roads are included in the data in the collection `transportationgroundcrv`
+    as [features with a property `f_code` with a value of `AP030`](https://services.interactive-instruments.de/t15/daraa/collections/transportationgroundcrv/items?f_code=AP030).
+
+    ## A visual style editor creating a new style
+
+    A user wants to create a new style for TDS roads using her visual style editor. 
+    She knows the Daraa dataset and the data access API.
+
+    After creating a new style, selecting the native stylesheet language for the style  
+    and identifying the `transportationgroundcrv` collection
+    in the Daraa dataset as a sample data source, the visual style editor executes a request
+    to `{data}/conformance` of the data access API to determine the API capabilities. Note that
+    alternatively also the API definition may be inspected, but for a client that
+    supports the OGC API standards in general, using the conformance declaration is simpler 
+    and, therefore, used in this example.
+
+    If the editor supports both styling of GeoJSON features or Mapbox Vector Tile data,
+    the editor requires support for at least one of the two following sets of conformance 
+    classes:
+
+    * `http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core` and `http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson` 
+    or 
+    * `http://www.opengis.net/t15/ogcapi-tiles-1/1.0/conf/core` and `http://www.opengis.net/t15/ogcapi-tiles-1/1.0/conf/mvt`.
+
+    The first one provides access to GeoJSON features via `{data}/collections/transportationgroundcrv/items`,
+    the second one provides access to MVT tiles via `{data}/collections/transportationgroundcrv/tiles`.
+
+    NOTE: For conformance classes that have not yet been specified hypothetical URIs with "t15" 
+    instead of "spec" are used.
+
+    In addition, the visual style editor will look for the following conformance classes:
+
+    * `http://www.opengis.net/t15/ogcapi-features-n/1.0/conf/queryables`: If this conformance 
+    class is supported, the visual style editor can specify styling rules that make use of
+    feature properties. Otherwise all styling rules will apply to all features in each 
+    collection.
+    * `http://www.opengis.net/t15/ogcapi-features-m/1.0/conf/style-links`: If this conformance 
+    class is supported, the visual style editor will be able to create a link from the collection 
+    to the newly created style.
+
+    The editor will also request information about the features in the collection via a 
+    request to `{data}/collections/transportationgroundcrv`.
+
+    If `http://www.opengis.net/t15/ogcapi-features-n/1.0/conf/queryables` is supported 
+    the queryables are retrieved via a request to `{data}/collections/transportationgroundcrv/queryables`.
+
+    Based on this information, the visual style editor is able to configure its user interface
+    and guide the user through the creation of the style for road features and visualize 
+    the draft style using the Daraa data. Once she has finished the style, the style will be
+    published on a Style repository that supports the Style API.
+
+    If the user request the use of a Style repository that the editor interacts with for the 
+    first time, the editor will again inspect the capabilities of the repository by fetching 
+    the conformance declaration at `{styles}/conformance`. 
+
+    At least the following conformance classes must be supported in order for sharing 
+    the new style via the repository.
+
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/core`
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/json`
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/manage-styles`
+
+    In addition, if the style includes symbols or sprites, the repository also has to 
+    support the following conformance classes:
+
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/resources`
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/manage-resources`
+
+    Finally, the repository has to support the native stylesheet language that the user 
+    has selected for the style definition, i.e. one of:
+
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/mapbox-styles`
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/sld-10`
+    * `http://www.opengis.net/t15/opf-styles-1/1.0/conf/sld-11`
+
+    The visual style editor will ask the user for her credentials (username and password)
+    in the style repository and use the credentials in any of the following POST/PUT/PATCH 
+    requests.  
+
+    If `http://www.opengis.net/t15/opf-styles-1/1.0/conf/style-validation` is supported,
+    the visual style editor can also offer validation of the draft style any time during the 
+    drafting process using POST requests with the draft stylesheet to `{styles}/styles?validate=only`.
+
+    To create the new style either a POST request with the stylesheet to `{styles}/styles`
+    or a PUT request to `{styles}/styles/{stylename}` (where `{stylename}` is the name of 
+    the style specified by the user) is sent. `?validate=true` may be added to the request 
+    URI to trigger validation in this step, too, if the style validation conformance class 
+    is supported. If PUT is used, the visual style editor should check that no existing 
+    style `{stylename}` exists.
+
+    After a succesful creation of the style (in case of a POST request, the URI of the 
+    new style `{styles}/styles/{stylename}` is returned in a HTTP header `Location`), 
+    the visual style editor will update the style metadata using a PUT or PATCH request to 
+    `{styles}/styles/{stylename}/metadata`. 
+
+    If the data access API supports the conformance class 
+    `http://www.opengis.net/t15/ogcapi-features-m/1.0/conf/style-links`, the visual style editor 
+    will add a link to the new style using a PATCH request to `{data}/collections/transportationgroundcrv`.
+
+    ## A visual style editor updating an existing style
+
+    The process is quite similar to the previous example with the following changes:
+
+    * The user will start from an existing style, not with a new style. I.e., the user 
+    will open/load the style from the style repository and the editor will fetch it 
+    from `{styles}/styles/{stylename}` (using the stylesheet language of choice) 
+    and its metadata from `{styles}/styles/{stylename}/metadata`.
+    * If the style metadata includes links to sample data 
+    (e.g., `{data}/collections/transportationgroundcrv`), the editor may use that data for 
+    sample visualizations and perhaps to determine changes to queryables. 
+    The user may also select other data sources for these purposes.
+    * Since an existing style is updated, the style definition will always be updated with 
+    a PUT request to `{styles}/styles/{stylename}` (no POST request to `{styles}/styles`, which
+    would create a new style).
+
+    ## A map client
+
+    A map client that wants to visualize data for features or vector tiles for the collection
+    `{data}/collections/transportationgroundcrv` will look for a `styles` member in the 
+    response. It will probably select one of the styles from the list taking the media types
+    of the supported stylesheets into account and provide a capability so that users 
+    can change the style. The stylesheet returned based on the `href` member of the link 
+    will be used to render the data.
+
+
+
+
+  version: "1.0.0"
+  contact:
+    name: Clemens Portele
+    email: portele@interactive-instruments.de
+  license:
+    name: OGC License
+    url: 'https://raw.githubusercontent.com/opengeospatial/WFS_FES/master/LICENSE'
+tags:
+  - name: Capabilities
+    description: |-
+      Information about this API
+  - name: Use styles
+    description: |-
+      Discover and fetch styles
+  - name: Manage styles
+    description: |-
+      Create, update and delete styles; only for style authors
+  - name: Fetch resources
+    description: |-
+      Fetch symbols/sprites
+  - name: Manage resources
+    description: |-
+      Create, update and delete symbols/sprites; only for style authors
+paths:
+  '/':
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition, 
+        the Conformance statements and the available styles.
+      operationId: getLandingPage
+      parameters:
+        - $ref: '#/components/parameters/f-html-json'
+      responses:
+        '200':
+          description: |-
+            Links to the API capabilities and the style set 
+            shared by this API.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/landing-page'
+              example:
+                - href: 'https://example.org/catalog/1.0/?f=json'
+                  rel: self
+                  type: application/json
+                  title: this document
+                - href: 'https://example.org/catalog/1.0/?f=html'
+                  rel: alternate
+                  type: text/html
+                  title: this document
+                - href: 'https://example.org/catalog/1.0/api?f=json'
+                  rel: service
+                  type: application/vnd.oai.openapi+json;version=3.0
+                  title: the API definition in JSON
+                - href: 'https://example.org/catalog/1.0/api?f=html'
+                  rel: service
+                  type: text/html
+                  title: the API definition in HTML
+                - href: 'https://example.org/catalog/1.0/conformance'
+                  rel: conformance
+                  type: application/json
+                  title: list of conformance classes implemented by this API
+                - href: 'https://example.org/catalog/1.0/styles'
+                  rel: data
+                  type: application/json
+                  title: the set of styles shared via this API
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not 
+            supported for this resource
+  '/conformance':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        information about conformance classes that this API 
+        conforms to
+      description: |-
+        List of all conformance classes specified in a specification 
+        that the server conforms to.
+      operationId: getConformanceClasses
+      parameters:
+        - $ref: '#/components/parameters/f-json'
+      responses:
+        '200':
+          description: |-
+            the URIs of all conformance classes supported by 
+            this API
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/conf-classes'
+              example:
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/core'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/html'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/json'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/manage-styles'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/style-validation'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/resources'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/manage-resources'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/mapbox-styles'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/sld-10'
+                - 'http://www.opengis.net/t15/opf-styles-1/1.0/conf/sld-11'
+
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not 
+            supported for this resource
+  '/styles':
+    get:
+      tags:
+        - Use styles
+      summary: |-
+        information about the available styles
+      operationId: getStyleSet
+      description: |-
+        This operation fetches the set of styles available. For
+        each style the id, a title, links to the stylesheet of
+        the style in each supported encoding, and the link to the 
+        metadata is provided.
+
+        Testbed-15 only requires support for a small number of the
+        styles. Therefore, the currently simple approach is sufficient,
+        but in general the operation should support paging (using a 
+        parameter `limit` and links to the `next` page in responses).
+      parameters:
+        - $ref: '#/components/parameters/f-json'
+      responses:
+        '200':
+          description: the set of available styles
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/style-set'
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not 
+            supported for this resource
+    post:
+      tags:
+        - Manage styles
+      summary: |-
+        adds a new style
+      operationId: addStyle
+      description: |-
+        Adds a style to the style repository or just validates
+        a style.
+
+        If the parameter `validate` is set to `yes`, the
+        style will be validated before adding the style to
+        the server. If the parameter `validate` is set to 
+        `only`, the server will not be changed and only the
+        validation result will be returned.
+
+        In case, a new style is created, the following rules
+        apply.
+
+        If the style submitted in the request body includes an
+        identifier (this depends on the style encoding), that 
+        identifier will be used. If a style with that identifier 
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted 
+        style, the server will assign a new identifier to the 
+        style.
+
+        A minimal style metadata resource is created at 
+        `/styles/{styleId}/metadata`. Please update the metadata 
+        using a PUT request to keep the style metadata consistent 
+        with the style definition.
+
+        The URI of the new style is returned in the header 
+        `Location`.
+
+        This operation is only available to registered style 
+        authors.
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/validate'
+      responses:
+        '201':
+          description: |-
+            style created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new style
+        '204':
+          description: |-
+            style validated successfully, no style has been created
+        '400':
+          description: |-
+            invalid input, the style is invalid
+        '401':
+          description: |-
+            unauthorized access
+        '409':
+          description: |-
+            a style with that id already exists
+      requestBody:
+        description: |-
+          Stylesheet to be added
+        content:
+          application/vnd.mapbox.style+json:
+            schema:
+              $ref: '#/components/schemas/mb-style'
+          application/vnd.ogc.sld+xml;version=1.0:
+            schema:
+              $ref: '#/components/schemas/sld-10'
+          application/vnd.ogc.sld+xml;version=1.1:
+            schema:
+              $ref: '#/components/schemas/sld-11'
+  '/styles/{styleId}':
+    get:
+      tags:
+        - Use styles
+      summary: |-
+        fetch a style by id
+      description: |-
+        Fetches the style with identifier `styleId`. The set of 
+        available styles can be retrieved at `/styles`.
+
+        Not all styles are available in all style encodings.
+      operationId: getStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-style'
+      responses:
+        '200':
+          description: |-
+            The style
+          content:
+            application/vnd.mapbox.style+json:
+              schema:
+                $ref: '#/components/schemas/mb-style'
+            application/vnd.ogc.sld+xml;version=1.0:
+              schema:
+                $ref: '#/components/schemas/sld-10'
+            application/vnd.ogc.sld+xml;version=1.1:
+              schema:
+                $ref: '#/components/schemas/sld-11'
+        '404':
+          description: |-
+            style not found
+        '406':
+          description: |-
+            The requested style encoding is not supported 
+            for this style
+    put:
+      tags:
+        - Manage styles
+      summary: |-
+        replace a style or add a new style
+      description: |-
+        Replace an existing style with the id `styleId`. If no 
+        such style exists, a new style with that id is added.
+
+        If the parameter `validate` is set to `yes`, the
+        style will be validated before adding/updating the 
+        style. If the parameter `validate` is set to 
+        `only`, the server will not be changed and only the
+        validation result will be returned.
+
+        For updated styles, the style metadata resource at 
+        `/styles/{styleId}/metadata` is not updated. 
+        For new styles a minimal style metadata resource is 
+        created, too. Please update the metadata using a PUT 
+        request to keep the style metadata consistent with 
+        the style definition.
+
+        This operation is only available to registered style 
+        authors.
+      operationId: updateStyle
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/validate'
+      requestBody:
+        description: |-
+          A single style in one of the supported style encodings.
+        content:
+          application/vnd.mapbox.style+json:
+            schema:
+              $ref: '#/components/schemas/mb-style'
+          application/vnd.ogc.sld+xml;version=1.0:
+            schema:
+              $ref: '#/components/schemas/sld-10'
+          application/vnd.ogc.sld+xml;version=1.1:
+            schema:
+              $ref: '#/components/schemas/sld-11'
+      responses:
+        '204':
+          description: |-
+            style updated, created or validated successfully
+        '400':
+          description: |-
+            invalid input, the style is invalid
+        '401':
+          description: |-
+            unauthorized access
+    delete:
+      tags:
+        - Manage styles
+      summary: |-
+        delete a style
+      description: |-
+        Delete an existing style with the id `styleId`. If no 
+        such style exists, an error is returned.
+
+        Deleting a style also deletes the subordinate resources,
+        i.e., the style metadata.
+
+        This operation is only available to registered style 
+        authors.
+      operationId: deleteStyle
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '204':
+          description: |-
+            style deleted
+        '401':
+          description: |-
+            unauthorized access
+        '404':
+          description: |-
+            style not found
+  '/styles/{styleId}/metadata':
+    get:
+      tags:
+        - Use styles
+      summary: |-
+        fetch the metadata about a style
+      description: |-
+        Style metadata is essential information about a style
+        in order to support users to discover and select styles
+        for rendering their data and for visual style editors 
+        to create user interfaces for editing a style.
+
+        This operations returns the metadata for the requested
+        style as a single document.
+
+        The stylesheet of the style will typically include some
+        the metadata, too.
+      operationId: getStyleMetadata
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/f-json'
+      responses:
+        '200':
+          description: |-
+            The metdata for the style.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/style-metadata'
+        '404':
+          description: |-
+            style not found
+    put:
+      tags:
+        - Manage styles
+      summary: |-
+        update the metadata document of a style
+      description: |-
+        Update the style metadata for the style with the 
+        id `styleId`. This operation updates the complete
+        metadata document.
+
+        This operation is only available to registered style 
+        authors.
+      operationId: updateStyleMetadata
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      requestBody:
+        description: |-
+          The metadata of a style.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/style-metadata'
+      responses:
+        '204':
+          description: |-
+            style metadata updated
+        '401':
+          description: |-
+            unauthorized access
+        '404':
+          description: |-
+            style not found
+    patch:
+      tags:
+        - Manage styles
+      summary: |-
+        update parts of the style metadata
+      description: |-
+        Update selected elements of the style metadata for 
+        the style with the id `styleId`.
+
+        The PATCH semantics in this operation are defined by 
+        RFC 7396 (JSON Merge Patch). From the specification:
+
+        _"A JSON merge patch document describes changes to be 
+        made to a target JSON document using a syntax that 
+        closely mimics the document being modified. Recipients
+        of a merge patch document determine the exact set of 
+        changes being requested by comparing the content of 
+        the provided patch against the current content of the 
+        target document. If the provided merge patch contains 
+        members that do not appear within the target, those 
+        members are added. If the target does contain the 
+        member, the value is replaced. Null values in the 
+        merge patch are given special meaning to indicate 
+        the removal of existing values in the target."_
+
+        Some examples:
+
+        To add or update the point of contact, the access
+        constraint and the revision date, just send
+
+        ```
+        {
+          "pointOfContact": "Jane Doe"
+          "accessConstraints": "restricted"
+          "dates": {
+            "revision": "2019-05-17T11:46:12Z"
+          }
+        }
+        ```
+
+        To remove the point of contact, the access 
+        constraint and the revision date, send 
+
+        ```
+        {
+          "pointOfContact": null
+          "accessConstraints": null
+          "dates": {
+            "revision": null
+          }
+        }
+        ```
+
+        For arrays the complete array needs to be sent.
+        To add a keyword to the example style metadata object, send
+
+        ```
+        {
+          "keywords": [ "basemap", "TDS", "TDS 6.1", "OGC API", "new keyword" ]
+        }
+        ```
+
+        To remove the "TDS" keyword, send
+
+        ```
+        {
+          "keywords": [ "basemap", "TDS 6.1", "OGC API", "new keyword" ]
+        }
+        ```
+
+        To remove the keywords, send
+
+        ```
+        {
+          "keywords": null
+        }
+        ```
+
+        The same applies to `stylesheets` and `layers`. To update 
+        these members, you have to send the complete new array value.
+
+        This operation is only available to registered style 
+        authors.
+      operationId: patchStyleMetadata
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      requestBody:
+        description: |-
+          The members of the style metadata object that are updated.
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/style-metadata'
+      responses:
+        '204':
+          description: |-
+            style metadata updated
+        '400':
+          description: |-
+            malformed patch document
+        '401':
+          description: |-
+            unauthorized access
+        '404':
+          description: |-
+            style not found
+        '415':
+          description: |-
+            unsupported patch document
+          headers:
+            Accept-Patch:
+              description: |-
+                supported patch document media types
+              schema:
+                type: string
+        '422':
+          description: |-
+            unprocessable request, the patch document appears 
+            to be valid, but the server is incapable of processing 
+            the request
+  '/resources':
+    get:
+      tags:
+        - Fetch resources
+      summary: |-
+        information about the available resources (symbols, sprites)
+      operationId: getResources
+      description: |-
+        This operation fetches the set of resources that have been
+        created and that may be used by reference in stylesheets. 
+        Resources in this Style API are symbols and sprites.
+
+        For each resource the id and a link to the resource is provided.
+
+        Testbed-15 only requires support for a limited number of the
+        resources. Therefore, the currently simple approach is sufficient,
+        but in general the operation should support paging (using a 
+        parameter `limit` and links to the `next` page in responses).
+      parameters:
+        - $ref: '#/components/parameters/f-json'
+      responses:
+        '200':
+          description: the set of available resources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resource-set'
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not 
+            supported for this resource
+  '/resources/{resourceId}':
+    get:
+      tags:
+        - Fetch resources
+      summary: |-
+        fetch a symbol resource by id
+      description: |-
+        Fetches the resource with identifier `resourceId`. The set of 
+        available resources can be retrieved at `/resources`.
+      operationId: getResource
+      parameters:
+        - $ref: '#/components/parameters/resourceId'
+      responses:
+        '200':
+          description: |-
+            The symbol resource
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/bitmap'
+            image/svg+xml:
+              schema:
+                $ref: '#/components/schemas/svg'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mb-sprite-index'
+        '404':
+          description: |-
+            resource not found
+        '406':
+          description: |-
+            The requested style encoding is not supported 
+            for this style
+    put:
+      tags:
+        - Manage resources
+      summary: |-
+        replace a symbol resource or add a new one
+      description: |-
+        Replace an existing resource with the id `resourceId`. If no 
+        such resource exists, a new resource with that id is added.
+
+        A sprite used in a Mapbox Style stylesheet consists of
+        three resources. Each of the resources needs to be created 
+        (and eventually deleted) separately.
+        The PNG bitmap image (resourceId ends in '.png'), the JSON 
+        index file (resourceId of the same name, but ends in '.json' 
+        instead of '.png') and the PNG  bitmap image for 
+        high-resolution displays (the file ends in '.@2x.png').
+
+        The resource will only by available in the native format in 
+        which the resource is posted. There is no support for
+        automated conversions to other representations.
+
+        This operation is only available to registered style 
+        authors.
+      operationId: updateResource
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/resourceId'
+      requestBody:
+        description: |-
+          A single symbol or sprite resource.
+        content:
+          image/png:
+            schema:
+              $ref: '#/components/schemas/bitmap'
+          image/svg+xml:
+            schema:
+              $ref: '#/components/schemas/svg'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mb-sprite-index'
+      responses:
+        '204':
+          description: |-
+            symbol resource updated or created
+        '401':
+          description: |-
+            unauthorized access
+    delete:
+      tags:
+        - Manage resources
+      summary: |-
+        delete a symbol resource
+      description: |-
+        Delete an existing resource with the id `resourceId`. If no 
+        such resource exists, an error is returned.
+
+        This operation is only available to registered style 
+        authors.
+      operationId: deleteResource
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/resourceId'
+      responses:
+        '204':
+          description: |-
+            symbol resource deleted
+        '401':
+          description: |-
+            unauthorized access
+        '404':
+          description: |-
+            resource not found
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  parameters:
+    f-html-json:
+      name: f
+      in: query
+      description: |-
+        (informative) \
+        The content type of the response. If no value is provided, 
+        the standard http rules apply, i.e., the accept header 
+        will be used to determine the format.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - json
+          - html
+      example: json
+    f-json:
+      name: f
+      in: query
+      description: |-
+        (informative) \
+        The content type of the response. If no value is provided, 
+        the standard http rules apply, i.e., the accept header 
+        will be used to determine the format.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - json
+      example: json
+    f-style:
+      name: f
+      in: query
+      description: |-
+        (informative) \
+        The content type of the response. If no value is provided, 
+        the standard http rules apply, i.e., the accept header 
+        will be used to determine the format.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - mapbox
+          - sld10
+          - sld11
+      example: mapbox
+    validate:
+      name: validate
+      in: query
+      description: |-
+        (part of conformance class 'style-validation') \
+        'yes' creates a new style after successful validation
+        and returns 400, if validation fails,
+        ’no' creates the style without validation and 
+        'only' just validates the style without creating a
+        new style and returns 400, if validation fails,
+        otherwise 204.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - 'yes'
+          - 'no'
+          - 'only'
+      example: 'only'
+    styleId:
+      name: styleId
+      in: path
+      description: |-
+        Local identifier of a style. \
+        A list of all available styles can be found 
+        under the /styles path.
+      required: true
+      schema:
+        type: string
+    resourceId:
+      name: resourceId
+      in: path
+      description: |-
+        Local identifier of a symbol resource. \
+        A list of all available resource can be found 
+        under the /resources path.
+      required: true
+      schema:
+        type: string
+  schemas:
+    mb-style:
+      required:
+        - layers
+        - sources
+        - version
+      type: object
+      properties:
+        version:
+          type: number
+          example: 8
+        name:
+          type: string
+          example: night
+        sources:
+          type: object
+          properties:
+            daraa:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: vector
+                url:
+                  type: string
+                  example: 'https://services.interactive-instruments.de/vtp/daraa/tiles/default/{z}/{y}/{x}?f=mvt'
+        sprite:
+          type: string
+          example: 'http://vtp2018.s3-eu-west-1.amazonaws.com/static/mapstorestyle/sprites/sprites'
+        glyphs:
+          type: string
+          example: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/layers-array'
+    layers-array:
+      required:
+        - id
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1'
+        type:
+          type: string
+          example: fill
+          enum:
+            - fill
+            - line
+            - symbol
+            - circle
+            - heatmap
+            - fill-extrusion
+            - raster
+            - hillshade
+            - background
+        source:
+          type: string
+          example: daraa
+        source-layer:
+          type: string
+          example: vegetationsrf
+        layout:
+          type: object
+        paint:
+          type: object
+          properties:
+            fill-color:
+              type: string
+              example: '#11083b'
+    mb-sprite-index:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/mb-sprite-index-symbol'
+    mb-sprite-index-symbol:
+      type: object
+      required:
+        - width
+        - height
+        - x
+        - y
+        - pixelRatio
+      properties:
+        width:
+          type: integer
+          example: 32
+        height:
+          type: integer
+          example: 32
+        x:
+          type: integer
+          example: 0
+        y:
+          type: integer
+          example: 0
+        pixelRatio:
+          type: number
+          example: 1
+    sld-10:
+      type: string
+    sld-11:
+      type: string
+    svg:
+      type: string
+    bitmap:
+      type: string
+      format: binary
+      example: 'M-^IPNG^M^Z^@^@^@^MIHDR^@^@^@^C^@^@^@^C^H^B^@^@^@?J"?^@^@^@  pHYs^@^@^K^R^@^@^K^R^A??~?^@^@^@^PIDATxM-^\cM-^X??^OA^LXX^@?^O1M-^K??A^@^@^@^@IEND?B`M-^B'
+    resource-set:
+      required:
+        - resources
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/resource-set-entry'
+          example:
+            - id: 'sprite.json'
+              link:
+                href: 'sprite.json'
+                type: 'application/json'
+                rel: '???'
+            - id: 'sprite.png'
+              link:
+                href: 'sprite.png'
+                type: 'image/png'
+                rel: '???'
+            - id: 'sprite.@2x.png'
+              link:
+                href: 'sprite.@2x.png'
+                type: 'image/png'
+                rel: '???'
+            - id: 'mosque.svg'
+              link:
+                href: 'mosque.svg'
+                type: 'image/svg+xml'
+                rel: '???'
+    resource-set-entry:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+        link:
+          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/link'
+    style-metadata:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          example: night
+        title:
+          type: string
+          nullable: true
+          example: Topographic night style
+        description:
+          type: string
+          nullable: true
+          example: |-
+            This topographic basemap style is designed to be 
+            used in situations with low ambient light. 
+
+            The style supports datasets based on the TDS 6.1
+            specification.
+        keywords:
+          type: array
+          nullable: true
+          items:
+            type: string
+          example:
+            - basemap
+            - TDS
+            - TDS 6.1
+            - OGC API
+        pointOfContact:
+          type: string
+          nullable: true
+          example: John Doe
+        accessConstraints:
+          type: string
+          nullable: true
+          example: unclassified
+          enum:
+            - unclassified
+            - confidential
+            - restricted
+            - secret
+            - topSecret
+        dates:
+          $ref: '#/components/schemas/dates'
+        scope:
+          type: string
+          nullable: true
+          example: style
+          enum:
+            - style
+        version:
+          type: string
+          nullable: true
+          example: 1.0.0
+        stylesheets:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/stylesheet'
+          example:
+            - title: 'Mapbox Style'
+              version: '8'
+              specification: 'https://docs.mapbox.com/mapbox-gl-js/style-spec/'
+              native: true
+              tilingScheme: 'GoogleMapsCompatible'
+              link:
+                href: 'https://example.org/catalog/1.0/styles/night?f=mapbox'
+                rel: 'stylesheet'
+                type: 'application/vnd.mapbox.style+json'
+            - title: 'OGC SLD'
+              version: '1.0'
+              native: false
+              link:
+                href: 'https://example.org/catalog/1.0/styles/night?f=sld10'
+                rel: 'stylesheet'
+                type: 'application/vnd.ogc.sld+xml;version=1.0'
+        layers:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/style-layer'
+          example:
+            - id: 'vegetationsrf'
+              type: 'polygon'
+              sampleData:
+                href: 'https://services.interactive-instruments.de/vtp/daraa/collections/vegetationsrf/items?f=json&limit=100'
+                rel: 'data'
+                type: 'application/geo+json'
+            - id: 'hydrographycrv'
+              type: 'line'
+              sampleData:
+                href: 'https://services.interactive-instruments.de/vtp/daraa/collections/hydrographycrv/items?f=json&limit=100'
+                rel: 'data'
+                type: 'application/geo+json'
+              attributes:
+                - id: 'f_code'
+                  type: 'string'
+    dates:
+      type: object
+      nullable: true
+      properties:
+        creation:
+          type: string
+          format: date-time
+          nullable: true
+        publication:
+          type: string
+          format: date-time
+          nullable: true
+        revision:
+          type: string
+          format: date-time
+          nullable: true
+        validTill:
+          type: string
+          format: date-time
+          nullable: true
+        receivedOn:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        creation: "2019-01-01T10:05:00Z"
+        publication: "2019-01-01T11:05:00Z"
+        revision: "2019-02-01T11:05:00Z"
+        validTill: "2019-02-01T11:05:00Z"
+        receivedOn: "2019-02-01T11:05:00Z"
+    stylesheet:
+      type: object
+      nullable: true
+      required:
+        - link
+      properties:
+        title:
+          type: string
+          nullable: true
+        version:
+          type: string
+          nullable: true
+        specification:
+          type: string
+          format: url
+          nullable: true
+        native:
+          type: boolean
+          nullable: true
+        tilingScheme:
+          type: string
+          nullable: true
+        link:
+          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/link'
+    style-layer:
+      type: object
+      nullable: true
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          example: vegetationsrf
+        description:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+          example: polygon
+          enum:
+            - point
+            - line
+            - polygon
+            - geometry
+            - raster
+        attributes:
+          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/queryables'
+        sampleData:
+          $ref: 'https://api.swaggerhub.com/domains/cportele/ogc-api/1.0.0#/components/schemas/link'

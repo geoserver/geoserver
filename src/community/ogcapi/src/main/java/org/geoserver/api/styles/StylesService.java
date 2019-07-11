@@ -4,14 +4,17 @@
  */
 package org.geoserver.api.styles;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,10 +57,14 @@ public class StylesService {
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public StylesLandingPage getLandingPage() {
-        StylesServiceInfo styles = geoServer.getService(StylesServiceInfo.class);
+        StylesServiceInfo styles = getService();
         return new StylesLandingPage(
                 (styles.getTitle() == null) ? "Styles server" : styles.getTitle(),
                 (styles.getAbstract() == null) ? "" : styles.getAbstract());
+    }
+
+    public StylesServiceInfo getService() {
+        return geoServer.getService(StylesServiceInfo.class);
     }
 
     @GetMapping(path = "conformance", name = "conformance")
@@ -65,5 +72,20 @@ public class StylesService {
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
         return new ConformanceDocument(classes);
+    }
+
+    @GetMapping(
+        path = "api",
+        name = "api",
+        produces = {
+            OpenAPIMessageConverter.OPEN_API_VALUE,
+            "application/x-yaml",
+            MediaType.TEXT_XML_VALUE
+        }
+    )
+    @ResponseBody
+    @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
+    public OpenAPI api() {
+        return new StylesAPIBuilder().build(getService());
     }
 }

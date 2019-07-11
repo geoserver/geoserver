@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;

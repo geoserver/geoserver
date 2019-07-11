@@ -24,6 +24,7 @@ import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -112,7 +113,7 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() {
-        return new OpenAPIBuilder().build(getService());
+        return new FeaturesAPIBuilder().build(getService());
     }
 
     @GetMapping(path = "collections", name = "collections")

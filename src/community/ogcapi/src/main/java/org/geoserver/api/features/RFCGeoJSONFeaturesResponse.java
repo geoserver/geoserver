@@ -19,6 +19,7 @@ import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;

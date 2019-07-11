@@ -2,11 +2,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api.styles;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,20 +16,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.geoserver.api.NCNameResourceCodec;
-import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,11 +32,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class ApiTest extends FeaturesTestSupport {
+public class ApiTest extends StylesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/api", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/styles/api", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith("application/openapi+json;version=3.0"));
@@ -56,7 +51,7 @@ public class ApiTest extends FeaturesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/styles/api?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -86,7 +81,7 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/features/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/styles/api?f=application/x-yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -96,7 +91,7 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/features/api");
+        MockHttpServletRequest request = createRequest("ogc/styles/api");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -114,8 +109,7 @@ public class ApiTest extends FeaturesTestSupport {
         // only one server
         List<Server> servers = api.getServers();
         assertThat(servers, hasSize(1));
-        assertThat(
-                servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/features"));
+        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/styles"));
 
         // paths
         Paths paths = api.getPaths();
@@ -128,64 +122,36 @@ public class ApiTest extends FeaturesTestSupport {
         // ... conformance
         PathItem conformance = paths.get("/conformance");
         assertNotNull(conformance);
-        assertThat(conformance.getGet().getOperationId(), equalTo("getRequirementsClasses"));
+        assertThat(conformance.getGet().getOperationId(), equalTo("getConformanceClasses"));
 
-        // ... collections
-        PathItem collections = paths.get("/collections");
+        // ... styles
+        PathItem collections = paths.get("/styles");
         assertNotNull(collections);
-        assertThat(collections.getGet().getOperationId(), equalTo("describeCollections"));
+        assertThat(collections.getGet().getOperationId(), equalTo("getStyleSet"));
 
-        // ... collection
-        PathItem collection = paths.get("/collections/{collectionId}");
+        // ... style
+        PathItem collection = paths.get("/styles/{styleId}");
         assertNotNull(collection);
-        assertThat(collection.getGet().getOperationId(), equalTo("describeCollection"));
+        assertThat(collection.getGet().getOperationId(), equalTo("getStyle"));
 
-        // ... features
-        PathItem items = paths.get("/collections/{collectionId}/items");
-        assertNotNull(items);
-        Operation itemsGet = items.getGet();
-        assertThat(itemsGet.getOperationId(), equalTo("getFeatures"));
-        List<Parameter> parameters = itemsGet.getParameters();
-        List<String> itemGetParamNames =
-                parameters.stream().map(p -> p.get$ref()).collect(Collectors.toList());
+        // check the styleId parameter contains actual style names from this server
+        Parameter styleId = api.getComponents().getParameters().get("styleId");
         assertThat(
-                itemGetParamNames,
-                contains(
-                        "#/components/parameters/collectionId",
-                        "#/components/parameters/limit",
-                        "#/components/parameters/bbox",
-                        "#/components/parameters/time"));
-
-        // ... feature
-        PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");
-        assertNotNull(item);
-        assertThat(item.getGet().getOperationId(), equalTo("getFeature"));
-
-        // check collectionId parameter
-        Map<String, Parameter> params = api.getComponents().getParameters();
-        Parameter collectionId = params.get("collectionId");
-        List<String> collectionIdValues = collectionId.getSchema().getEnum();
-        List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypes()
-                        .stream()
-                        .map(ft -> NCNameResourceCodec.encode(ft))
-                        .collect(Collectors.toList());
-        assertThat(collectionIdValues, equalTo(expectedCollectionIds));
-
-        // check the limit parameter
-        Parameter limit = params.get("limit");
-        Schema limitSchema = limit.getSchema();
-        assertEquals(BigDecimal.valueOf(1), limitSchema.getMinimum());
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        assertEquals(wfs.getMaxFeatures(), limitSchema.getMaximum().intValue());
-        assertEquals(wfs.getMaxFeatures(), ((Number) limitSchema.getDefault()).intValue());
+                (List<String>) styleId.getSchema().getEnum(),
+                containsInAnyOrder(
+                        "generic",
+                        "polygon",
+                        "line",
+                        "point",
+                        "raster",
+                        "Default",
+                        "ws__NamedPlaces"));
     }
 
     @Test
     @Ignore // workspace specific services not working yet
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/features/api");
+        MockHttpServletRequest request = createRequest("cdf/ogc/styles/api");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");

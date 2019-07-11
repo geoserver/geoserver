@@ -7,6 +7,7 @@ package org.geoserver.api.styles;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractLandingPageDocument;
 
+/** Landing page for the styles service */
 public class StylesLandingPage extends AbstractLandingPageDocument {
 
     public static final String STYLES_SERVICE_BASE = "ogc/styles";

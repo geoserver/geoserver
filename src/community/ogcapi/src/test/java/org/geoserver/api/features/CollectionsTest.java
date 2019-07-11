@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.api.APIDispatcher;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;

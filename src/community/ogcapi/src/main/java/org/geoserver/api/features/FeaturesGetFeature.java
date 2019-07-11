@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.geoserver.api.APIRequestInfo;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler.URLType;

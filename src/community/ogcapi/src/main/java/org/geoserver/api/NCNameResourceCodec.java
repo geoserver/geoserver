@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.MapEntry;
@@ -28,13 +29,20 @@ public class NCNameResourceCodec {
 
     private static final String DELIMITER = "__";
 
+    public static String encode(StyleInfo style) {
+        return encode(
+                style.getWorkspace() != null ? style.getWorkspace().getName() : null,
+                style.getName());
+    }
+
     public static String encode(ResourceInfo resource) {
         return encode(resource.getNamespace().getPrefix(), resource.getName());
     }
 
     public static String encode(String workspaceName, String resourceName) {
         final WorkspaceInfo workspace = LocalWorkspace.get();
-        if (workspace != null && workspace.getName().equalsIgnoreCase(workspaceName)) {
+        if (workspaceName == null
+                || (workspace != null && workspace.getName().equalsIgnoreCase(workspaceName))) {
             return resourceName;
         }
         return workspaceName + DELIMITER + resourceName;

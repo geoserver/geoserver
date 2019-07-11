@@ -13,6 +13,7 @@ import java.util.List;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;

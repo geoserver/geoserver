@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
+import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.Link;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;

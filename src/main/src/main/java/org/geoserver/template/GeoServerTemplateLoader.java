@@ -290,7 +290,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      *
      * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
      */
-    static class ClassTemplateSource {
+    protected static class ClassTemplateSource {
         /** The path used to load the template. */
         String path;
 

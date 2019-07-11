@@ -21,9 +21,8 @@
   <!-- <mvc:annotation-driven/> -->
   <context:component-scan base-package="org.geoserver.api"/>
   <context:component-scan base-package="org.geoserver.api.features"/>
+  <context:component-scan base-package="org.geoserver.api.styles"/>
   
-  
-
   <!-- 
   <bean id="wfs3ExceptionHandler" class="org.geoserver.wfs3.WFS3ExceptionHandler">
     <constructor-arg>

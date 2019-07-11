@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.api.APIRequestInfo;
+import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.Link;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
@@ -25,7 +27,7 @@ import org.springframework.http.MediaType;
  * JSON/YAML (and can be used as a Freemarker template model)
  */
 @JacksonXmlRootElement(localName = "Collections", namespace = "http://www.opengis.net/wfs/3.0")
-@JsonPropertyOrder({"links", "links", "collections"})
+@JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
 
     private final FeatureTypeInfo featureType;
@@ -49,7 +51,7 @@ public class CollectionsDocument extends AbstractDocument {
         for (MediaType format :
                 requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
             String path =
-                    "wfs3/collections/"
+                    "ogc/features/collections/"
                             + (featureType != null ? NCNameResourceCodec.encode(featureType) : "");
             String apiUrl =
                     ResponseUtils.buildURL(

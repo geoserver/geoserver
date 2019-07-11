@@ -93,8 +93,8 @@ public class FeatureService {
     @GetMapping(name = "landingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
-    public LandingPageDocument getLandingPage() {
-        return new LandingPageDocument(getService(), getCatalog(), "ogc/features");
+    public FeaturesLandingPage getLandingPage() {
+        return new FeaturesLandingPage(getService(), getCatalog(), "ogc/features");
     }
 
     @GetMapping(

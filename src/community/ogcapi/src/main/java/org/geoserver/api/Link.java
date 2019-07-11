@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -17,7 +17,7 @@ public class Link {
     public static final String REL_ITEM = "item";
     public static final String REL_DESCRIBEDBY = "describedBy";
     public static final String REL_COLLECTION = "collection";
-    static final String ATOM_NS = "http://www.w3.org/2005/Atom";
+    public static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 
     String href;
     String rel;

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.util.function.BiConsumer;
 import org.geoserver.api.features.CollectionsDocument;
-import org.geoserver.api.features.ConformanceDocument;
 import org.springframework.http.MediaType;
 
 /**

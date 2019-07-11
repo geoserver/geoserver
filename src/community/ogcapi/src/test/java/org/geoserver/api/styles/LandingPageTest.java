@@ -1,8 +1,6 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
- *
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.api.styles;
 
@@ -11,12 +9,11 @@ import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
-import org.geoserver.api.OGCApiTestSupport;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class LandingPageTest extends OGCApiTestSupport {
+public class LandingPageTest extends StylesTestSupport {
 
     @Test
     public void testLandingPageNoSlash() throws Exception {

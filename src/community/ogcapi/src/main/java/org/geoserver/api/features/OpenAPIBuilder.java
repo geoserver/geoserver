@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.ManifestLoader;
 import org.geoserver.api.APIRequestInfo;
+import org.geoserver.api.ConformanceDocument;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.ows.URLMangler;

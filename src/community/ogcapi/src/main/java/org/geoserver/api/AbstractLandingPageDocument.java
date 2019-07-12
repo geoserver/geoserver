@@ -37,9 +37,9 @@ public class AbstractLandingPageDocument extends AbstractDocument {
 
                     @Override
                     public void accept(MediaType mediaType, Link link) {
-                        if ((requestInfo.isAnyMediaTypeAccepted()
-                                        && MediaType.APPLICATION_JSON.equals(mediaType))
-                                || (first && requestInfo.isFormatRequested(mediaType))) {
+                        if ((first
+                                && requestInfo.isFormatRequested(
+                                        mediaType, MediaType.APPLICATION_JSON))) {
                             link.setRel(Link.REL_SELF);
                             link.setTitle("This document");
                             first = false;

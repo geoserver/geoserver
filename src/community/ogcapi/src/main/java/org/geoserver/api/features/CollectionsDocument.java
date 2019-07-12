@@ -10,18 +10,14 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
 import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.URLMangler;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.opengis.filter.Filter;
-import org.springframework.http.MediaType;
 
 /**
  * A class representing the WFS3 server "collections" in a way that Jackson can easily translate to
@@ -45,29 +41,11 @@ public class CollectionsDocument extends AbstractDocument {
         this.featureType = featureType;
         /* this.extensions = extensions; */
 
-        // build the links
-        APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
-        boolean firstSelf = true;
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String path =
-                    "ogc/features/collections/"
-                            + (featureType != null ? NCNameResourceCodec.encode(featureType) : "");
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            path,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_ALTERNATE;
-            String linkTitle = "This document " + " as " + format;
-            if (firstSelf && requestInfo.isFormatRequested(format)) {
-                linkType = Link.REL_SELF;
-                linkTitle = "This document";
-            }
-            links.add(new Link(apiUrl, linkType, format.toString(), linkTitle));
-        }
+        // build the self links
+        String path =
+                "ogc/features/collections/"
+                        + (featureType != null ? NCNameResourceCodec.encode(featureType) : "");
+        addSelfLinks(path);
     }
 
     @JacksonXmlProperty(localName = "Links")

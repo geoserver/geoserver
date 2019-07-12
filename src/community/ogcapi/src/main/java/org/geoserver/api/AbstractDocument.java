@@ -7,6 +7,7 @@ package org.geoserver.api;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
 
 /** Base OGC API document class with shared link generation facilities */
@@ -34,6 +36,7 @@ public class AbstractDocument {
 
     @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
     @JacksonXmlElementWrapper(useWrapping = false)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY) // do not list links if empty
     public List<Link> getLinks() {
         return links;
     }
@@ -80,6 +83,44 @@ public class AbstractDocument {
                 linkUpdater.accept(mediaType, link);
             }
             addLink(link);
+        }
+    }
+
+    /**
+     * Same as {@link #addSelfLinks(String, MediaType)} using {@link MediaType#APPLICATION_JSON} as
+     * the default media type
+     *
+     * @param path
+     */
+    protected void addSelfLinks(String path) {
+        addSelfLinks(path, MediaType.APPLICATION_JSON);
+    }
+
+    /**
+     * Builds the links back to this document, in its various formats
+     *
+     * @param path The backlink path
+     * @param defaultFormat The default format (will be used to create a "self" link instead of
+     *     "alternate"
+     */
+    protected void addSelfLinks(String path, MediaType defaultFormat) {
+        APIRequestInfo requestInfo = APIRequestInfo.get();
+        String baseUrl = requestInfo.getBaseURL();
+        boolean firstSelf = true;
+        for (MediaType format : requestInfo.getProducibleMediaTypes(getClass(), true)) {
+            String apiUrl =
+                    ResponseUtils.buildURL(
+                            baseUrl,
+                            path,
+                            Collections.singletonMap("f", format.toString()),
+                            URLMangler.URLType.SERVICE);
+            String linkType = Link.REL_ALTERNATE;
+            String linkTitle = "This document as " + format;
+            if (firstSelf && requestInfo.isFormatRequested(format, defaultFormat)) {
+                linkType = Link.REL_SELF;
+                linkTitle = "This document";
+            }
+            links.add(new Link(apiUrl, linkType, format.toString(), linkTitle));
         }
     }
 }

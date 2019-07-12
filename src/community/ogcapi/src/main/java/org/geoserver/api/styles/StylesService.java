@@ -12,7 +12,6 @@ import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,14 +45,12 @@ public class StylesService {
     public static final String CSS = "http://www.geoserver.org/opf-styles-1/1.0/conf/geocss";
 
     private final GeoServer geoServer;
-    private final Catalog catalog;
 
-    public StylesService(GeoServer geoServer, Catalog catalog) {
-        this.catalog = catalog;
+    public StylesService(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
 
-    @GetMapping(name = "landingPage")
+    @GetMapping(name = "getLandingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public StylesLandingPage getLandingPage() {
@@ -67,7 +64,7 @@ public class StylesService {
         return geoServer.getService(StylesServiceInfo.class);
     }
 
-    @GetMapping(path = "conformance", name = "conformance")
+    @GetMapping(path = "conformance", name = "getConformanceClasses")
     @ResponseBody
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
@@ -87,5 +84,12 @@ public class StylesService {
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() {
         return new StylesAPIBuilder().build(getService());
+    }
+
+    @GetMapping(path = "styles", name = "getStyleSet")
+    @ResponseBody
+    public StylesDocument getStyles() {
+        List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
+        return new StylesDocument(geoServer.getCatalog());
     }
 }

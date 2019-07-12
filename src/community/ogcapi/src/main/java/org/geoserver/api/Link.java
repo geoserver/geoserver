@@ -5,9 +5,11 @@
 package org.geoserver.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /** Represents a JSON/XML link */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Link {
 
     public static final String REL_SERVICE = "service";

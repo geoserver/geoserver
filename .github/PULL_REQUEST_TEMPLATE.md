@@ -1,4 +1,4 @@
-<Include a few sentences describing the overall goals for this PR (pull request).>
+<Include a few sentences describing the overall goals for this Pull Request>
 
 ## Checklist
 

@@ -141,4 +141,9 @@ public class YsldHandler extends StyleHandler {
     public String mimeType(Version version) {
         return MIMETYPE;
     }
+
+    @Override
+    public boolean supportsEncoding() {
+        return true;
+    }
 }

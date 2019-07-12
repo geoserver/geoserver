@@ -92,4 +92,9 @@ public class SLDPackageHandler extends StyleHandler {
 
         return files[0];
     }
+
+    @Override
+    public boolean supportsEncoding() {
+        return true;
+    }
 }

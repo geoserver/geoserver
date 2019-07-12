@@ -150,4 +150,9 @@ public class PropertyStyleHandler extends StyleHandler {
             throws IOException {
         return Collections.emptyList();
     }
+
+    @Override
+    public boolean supportsEncoding() {
+        return true;
+    }
 }

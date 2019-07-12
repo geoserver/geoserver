@@ -108,6 +108,11 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
+    public boolean supportsEncoding() {
+        return true;
+    }
+
+    @Override
     public String getStyle(StyleType type, Color color, String colorName, String layerName) {
         String template = TEMPLATES.get(type);
         String colorCode = Integer.toHexString(color.getRGB());

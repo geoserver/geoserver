@@ -55,7 +55,7 @@ public class NotificationTransactionListener extends NotificationListener
                         return new HashMap<String, Map<String, Object>>();
                     }
                 };
-        return null;
+        return request;
     }
 
     @Override

@@ -1120,4 +1120,60 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 polygon.getId(),
                 catalog.getLayerByName(basicPolygonsName).getDefaultStyle().getId());
     }
+    // GEOS-9073
+    @Test
+    public void testCharsetEncodingOption() throws Exception {
+        File dir = unpack("shape/bad_char_shp.zip");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        File locations = new File(dir, "bad_char.shp");
+
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + jsonSafePath(locations)
+                        + "\",\n"
+                        + "    \"charsetEncoding\":\"UTF-8\"\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+
+        JSONObject json =
+                (JSONObject)
+                        json(
+                                postAsServletResponse(
+                                        "/rest/imports", contextDefinition, "application/json"));
+        int importId = json.getJSONObject("import").getInt("id");
+
+        ImportContext context = importer.getContext(importId);
+        assertEquals(ImportContext.State.PENDING, context.getState());
+
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+
+        assertEquals(1, context.getTasks().size());
+        ImportTask task = context.getTasks().get(0);
+        LayerInfo layer = task.getLayer();
+        ResourceInfo resource = layer.getResource();
+        resource.setSRS("EPSG:4326");
+        importer.changed(task);
+        assertEquals(ImportTask.State.READY, task.getState());
+        context.updated();
+        assertEquals(ImportContext.State.PENDING, context.getState());
+        importer.run(context);
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+        assertTrue(context.getState() == ImportContext.State.COMPLETE);
+
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+    }
 }

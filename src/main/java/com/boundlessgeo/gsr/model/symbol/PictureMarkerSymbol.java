@@ -75,7 +75,7 @@ public class PictureMarkerSymbol extends MarkerSymbol {
 
     public PictureMarkerSymbol(byte[] rawData, String url, String contentType, int[] color,
             double width, double height, double angle, int xoffset, int yoffset) {
-        super("PMS", angle, xoffset, yoffset);
+        super("esriPMS", angle, xoffset, yoffset);
         this.url = url;
         this.contentType = contentType;
         this.color = color;

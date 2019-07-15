@@ -7,6 +7,7 @@ package org.geoserver.security.impl;
 import static org.junit.Assert.assertEquals;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -32,6 +33,9 @@ public class RuleSyncedNameChangeTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         catalog = getCatalog();
+        // add a layer group
+        addLayerGroup();
+        // create RULE
         setRules();
         dao = DataAccessRuleDAO.get();
         securedResourceNameChangeListener = new SecuredResourceNameChangeListener(catalog, dao);
@@ -46,13 +50,13 @@ public class RuleSyncedNameChangeTest extends GeoServerSystemTestSupport {
         wp1.setName(newWorkspaceName);
         // save to invoke listner
         catalog.save(wp1);
-        // should update 2 rules which were previously named cgf
+        // should update 3 rules which were previously named cgf
         int countOfRulesUpdated = 0;
         for (DataAccessRule rule : dao.getRules()) {
             if (rule.getRoot().equalsIgnoreCase(newWorkspaceName)) countOfRulesUpdated++;
         }
 
-        assertEquals(2, countOfRulesUpdated);
+        assertEquals(3, countOfRulesUpdated);
     }
 
     @Test
@@ -78,10 +82,41 @@ public class RuleSyncedNameChangeTest extends GeoServerSystemTestSupport {
         assertEquals(1, countOfRulesUpdated);
     }
 
+    @Test
+    public void testChangLayerGroupNameWithDataSecurityRule() throws Exception {
+
+        String newLayerName = "lyr_group_modified";
+
+        LayerGroupInfo layerGrpInfo = catalog.getLayerGroupByName("cgf:lyr_group");
+        layerGrpInfo.setName(newLayerName);
+        // save to invoke listner
+        catalog.save(layerGrpInfo);
+        // should update 1 rule
+        String workspaceName = layerGrpInfo.getWorkspace().getName();
+        int countOfRulesUpdated = 0;
+        for (DataAccessRule rule : dao.getRules()) {
+            if (rule.getRoot().equalsIgnoreCase(workspaceName)
+                    && rule.getLayer().equalsIgnoreCase(newLayerName)) countOfRulesUpdated++;
+        }
+        // only one should change
+        assertEquals(1, countOfRulesUpdated);
+    }
+
     private void setRules() throws Exception {
 
         addLayerAccessRule("cgf", "*", AccessMode.WRITE, "*");
         addLayerAccessRule("cgf", "Lines", AccessMode.WRITE, "*");
         addLayerAccessRule("wp2", "Lines", AccessMode.WRITE, "*");
+        addLayerAccessRule("cgf", "lyr_group", AccessMode.WRITE, "*");
+    }
+
+    private void addLayerGroup() throws Exception {
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName("lyr_group");
+        lg.setWorkspace(catalog.getWorkspaceByName("cgf"));
+        lg.getLayers().add(catalog.getLayerByName("Lines"));
+        lg.getLayers().add(catalog.getLayerByName("MLines"));
+        catalog.add(lg);
     }
 }

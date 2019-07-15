@@ -36,21 +36,21 @@ public enum GeometryTypeEnum {
     }
 
     public static GeometryTypeEnum forJTSClass(Class<?> jtsClass) {
-        if (jtsClass.equals(com.vividsolutions.jts.geom.Point.class)) {
+        if (jtsClass.equals(org.locationtech.jts.geom.Point.class)) {
             return POINT;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiPoint.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.MultiPoint.class)) {
             return MULTIPOINT;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.LineString.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.LineString.class)) {
             return POLYLINE;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiLineString.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.MultiLineString.class)) {
             return POLYLINE;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.Polygon.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.Polygon.class)) {
             return POLYGON;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiPolygon.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.MultiPolygon.class)) {
             return POLYGON;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.Geometry.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.Geometry.class)) {
             return POLYGON;
-        } else if (jtsClass.equals(com.vividsolutions.jts.geom.Envelope.class)) {
+        } else if (jtsClass.equals(org.locationtech.jts.geom.Envelope.class)) {
             return ENVELOPE;
         } else {
             throw new NoSuchElementException("No GeoServices Geometry equivalent known for " + jtsClass);

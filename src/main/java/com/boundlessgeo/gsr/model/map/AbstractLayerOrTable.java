@@ -14,9 +14,10 @@ import com.boundlessgeo.gsr.model.renderer.Renderer;
 import com.boundlessgeo.gsr.model.GSRModel;
 import com.boundlessgeo.gsr.translate.renderer.StyleEncoder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vividsolutions.jts.geom.Geometry;
+
 import org.geoserver.catalog.*;
 import org.geotools.data.FeatureStore;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;

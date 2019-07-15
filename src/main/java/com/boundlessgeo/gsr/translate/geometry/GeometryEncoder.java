@@ -9,7 +9,7 @@ package com.boundlessgeo.gsr.translate.geometry;
  */
 public final class GeometryEncoder extends AbstractGeometryEncoder<Double> {
 
-    protected Double[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {
+    protected Double[] embeddedCoordinate(org.locationtech.jts.geom.Coordinate coord) {
         return new Double[] {coord.x, coord.y};
     }
 

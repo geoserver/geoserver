@@ -63,6 +63,7 @@ public class MapServiceControllerTest extends ControllerTest {
                 + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
                 + "62.927282&tolerance=10 ");
         assertFalse(result.has("error"));
+        print(result);
 
         assertEquals(2, result.getJSONArray("results").size());
         assertEquals("4326", result.getJSONArray("results").getJSONObject(0)
@@ -74,7 +75,11 @@ public class MapServiceControllerTest extends ControllerTest {
                 + "62.927282&tolerance=10 ");
         assertFalse(result.has("error"));
 
-        assertEquals(99, result.getJSONArray("results").size());
+        // upgrading from 2.13.x to 2.16.x made the count go down from 99 to 98
+        // checking, it was a bug in 2.13.x, for some reason the default geometry in Nulls was not
+        // respected and it was picking the bound polygon as the geom instead of the point, which is null
+        // (yes, weird dataset)
+        assertEquals(98, result.getJSONArray("results").size());
         assertEquals("32615", result.getJSONArray("results").getJSONObject(0)
                 .getJSONObject("geometry").getJSONObject("spatialReference").getString("wkid"));
     }

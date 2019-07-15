@@ -14,108 +14,108 @@ import org.opengis.filter.FilterFactory2;
 public enum SpatialRelationship {
     INTERSECTS("esriSpatialRelIntersects") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return filters.intersects(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.intersects(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
 
     CONTAINS("esriSpatialRelContains") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return filters.contains(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.contains(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
 
     CROSSES("esriSpatialRelCrosses") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return filters.crosses(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.crosses(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
 
     ENVELOPE_INTERSECTS("esriSpatialRelEnvelopeIntersects") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return filters.bbox(geometryProperty, envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY(), null);
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return createEnvelopeFilter(geometryProperty, JTS.toEnvelope(geometry), relationParam);
         }
     },
 
     INDEX_INTERSECTS("esriSpatialRelIndexIntersects") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return ENVELOPE_INTERSECTS.createEnvelopeFilter(geometryProperty, envelope, relationParam);
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return ENVELOPE_INTERSECTS.createGeometryFilter(geometryProperty, geometry, relationParam);
         }
     },
 
     OVERLAPS("esriSpatialRelOverlaps") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return filters.overlaps(filters.property(geometryProperty), filters.literal(JTS.toGeometry(envelope)));
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.overlaps(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
 
     TOUCHES("esriSpatialRelTouches") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return createGeometryFilter(geometryProperty, JTS.toGeometry(envelope), relationParam);
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.touches(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
 
     WITHIN("esriSpatialRelWithin") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return createGeometryFilter(geometryProperty, JTS.toGeometry(envelope), relationParam);
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.within(filters.property(geometryProperty), filters.literal(geometry));
         }
     },
 
     RELATION("esriSpatialRelRelation") {
         @Override
-        public Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam) {
+        public Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam) {
             return createGeometryFilter(geometryProperty, JTS.toGeometry(envelope), relationParam);
         }
 
         @Override
-        public Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam) {
+        public Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam) {
             return filters.equals(filters.literal(true),
                     filters.function("relatePattern", filters.property(geometryProperty), filters.literal(geometry), filters.literal(relationParam)));
         }
@@ -142,7 +142,7 @@ public enum SpatialRelationship {
         throw new NoSuchElementException(requestString + " is not a recognized type of spatial relationship");
     }
 
-    public abstract Filter createEnvelopeFilter(String geometryProperty, com.vividsolutions.jts.geom.Envelope envelope, String relationParam);
+    public abstract Filter createEnvelopeFilter(String geometryProperty, org.locationtech.jts.geom.Envelope envelope, String relationParam);
 
-    public abstract Filter createGeometryFilter(String geometryProperty, com.vividsolutions.jts.geom.Geometry geometry, String relationParam);
+    public abstract Filter createGeometryFilter(String geometryProperty, org.locationtech.jts.geom.Geometry geometry, String relationParam);
 }

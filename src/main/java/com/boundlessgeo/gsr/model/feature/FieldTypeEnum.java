@@ -4,11 +4,12 @@
  */
 package com.boundlessgeo.gsr.model.feature;
 
+import org.locationtech.jts.geom.Geometry;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
-import com.vividsolutions.jts.geom.Geometry;
 
 /**
  *

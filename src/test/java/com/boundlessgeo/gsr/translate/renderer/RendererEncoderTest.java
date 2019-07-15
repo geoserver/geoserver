@@ -18,8 +18,8 @@ import net.sf.json.util.JSONStringer;
 
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.StyleFactory;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 import org.opengis.style.Style;
 

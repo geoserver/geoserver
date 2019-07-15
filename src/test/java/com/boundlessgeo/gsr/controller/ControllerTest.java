@@ -16,11 +16,12 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import com.boundlessgeo.gsr.validation.JSONValidator;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ControllerTest extends CatalogRESTTestSupport {
+public class ControllerTest extends GeoServerSystemTestSupport {
 
     private Catalog catalog;
 

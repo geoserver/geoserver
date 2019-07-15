@@ -22,9 +22,9 @@ import org.opengis.temporal.Period;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -90,14 +90,14 @@ public class Utils {
                 return spatialRel.createEnvelopeFilter(geometryProperty, e, relationPattern);
             }
         } else if ("esriGeometryPoint".equals(geometryType)) {
-            com.vividsolutions.jts.geom.Point p = parseShortPoint(geometryText);
+            org.locationtech.jts.geom.Point p = parseShortPoint(geometryText);
             if (p == null) {
                 p = parseJsonPoint(geometryText);
             }
             if (p != null) {
                 if (mathTx != null) {
                     try {
-                        p = (com.vividsolutions.jts.geom.Point) JTS.transform(p, mathTx);
+                        p = (org.locationtech.jts.geom.Point) JTS.transform(p, mathTx);
                     } catch (TransformException e) {
                         throw new IllegalArgumentException(
                             "Error while converting point from input to native coordinate system", e);
@@ -108,7 +108,7 @@ public class Utils {
         } else {
             try {
                 net.sf.json.JSON json = JSONSerializer.toJSON(geometryText);
-                com.vividsolutions.jts.geom.Geometry g = GeometryEncoder.jsonToJtsGeometry(json);
+                org.locationtech.jts.geom.Geometry g = GeometryEncoder.jsonToJtsGeometry(json);
                 if (mathTx != null) {
                     g = JTS.transform(g, mathTx);
                 }
@@ -154,7 +154,7 @@ public class Utils {
         }
     }
 
-    private static com.vividsolutions.jts.geom.Point parseShortPoint(String text) {
+    private static org.locationtech.jts.geom.Point parseShortPoint(String text) {
         String[] parts = text.split(",");
         if (parts.length != 2)
             return null;
@@ -173,12 +173,12 @@ public class Utils {
         return factory.createPoint(new Coordinate(coords[0], coords[1]));
     }
 
-    private static com.vividsolutions.jts.geom.Point parseJsonPoint(String text) {
+    private static org.locationtech.jts.geom.Point parseJsonPoint(String text) {
         net.sf.json.JSON json = JSONSerializer.toJSON(text);
         try {
-            com.vividsolutions.jts.geom.Geometry geometry = GeometryEncoder.jsonToJtsGeometry(json);
-            if (geometry instanceof com.vividsolutions.jts.geom.Point) {
-                return (com.vividsolutions.jts.geom.Point) geometry;
+            org.locationtech.jts.geom.Geometry geometry = GeometryEncoder.jsonToJtsGeometry(json);
+            if (geometry instanceof org.locationtech.jts.geom.Point) {
+                return (org.locationtech.jts.geom.Point) geometry;
             } else {
                 return null;
             }

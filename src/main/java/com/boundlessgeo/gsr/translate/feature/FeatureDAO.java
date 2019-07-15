@@ -14,7 +14,7 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;

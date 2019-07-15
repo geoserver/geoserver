@@ -79,7 +79,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.5.3</version>
+      <version>${jackson2.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -155,9 +155,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>org/geoserver/uploader/**</exclude>
-          </excludes>
+          <runOrder>alphabetical</runOrder>
+          <source>1.8</source>
+          <target>1.8</target>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <forkMode>once</forkMode>
+          <enableAssertions>true</enableAssertions>
+          <printSummary>true</printSummary>
         </configuration>
       </plugin>
       <plugin>
@@ -212,9 +218,10 @@
   </build>
 
   <properties>
-    <gs.version>2.13-SNAPSHOT</gs.version>
-    <gt.version>19-SNAPSHOT</gt.version>
-    <spring.version>4.3.7.RELEASE</spring.version>
+    <gs.version>2.16-SNAPSHOT</gs.version>
+    <gt.version>22-SNAPSHOT</gt.version>
+    <spring.version>5.1.1.RELEASE</spring.version>
+    <jackson2.version>2.9.9</jackson2.version>
   </properties>
 
 </project>

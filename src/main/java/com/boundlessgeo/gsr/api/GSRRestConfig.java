@@ -2,9 +2,9 @@ package com.boundlessgeo.gsr.api;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration public class GSRRestConfig extends WebMvcConfigurerAdapter {
+@Configuration public class GSRRestConfig implements WebMvcConfigurer {
 
     public GSRRestConfig() {
         super();
@@ -12,7 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
         registry.addResourceHandler("/gsr-demos/**").addResourceLocations("/demos/");
     }
 }

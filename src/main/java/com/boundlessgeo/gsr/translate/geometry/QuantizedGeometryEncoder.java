@@ -1,8 +1,8 @@
 package com.boundlessgeo.gsr.translate.geometry;
 
 import com.boundlessgeo.gsr.model.geometry.SpatialReference;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -36,13 +36,13 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
      *                       property value. Defaults to {@link OriginPosition#upperLeft}
      * @param tolerance The tolerance is the size of one pixel in the units of the output geometry, as described in the
      *                  spatialReference parameter of
-     *                  {@link #toRepresentation(com.vividsolutions.jts.geom.Geometry, SpatialReference)}.
+     *                  {@link #toRepresentation(org.locationtech.jts.geom.Geometry, SpatialReference)}.
      *                  This number is used to convert the coordinates to integers by building a grid with resolution
      *                  matching the tolerance. Each coordinate is then snapped to one pixel on the grid. Consecutive
      *                  coordinates snapped to the same pixel are removed to reduce the overall response size.
      * @param envelope An extent defining the quantization grid bounds. Its SpatialReference matches the output geometry
      *                 spatial reference, as supplied to
-     *                 {@link #toRepresentation(com.vividsolutions.jts.geom.Geometry, SpatialReference)}.
+     *                 {@link #toRepresentation(org.locationtech.jts.geom.Geometry, SpatialReference)}.
      */
     public QuantizedGeometryEncoder(Mode mode, OriginPosition originPosition, double tolerance, Envelope envelope) {
         super();
@@ -66,7 +66,7 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
 
     @Override
     public com.boundlessgeo.gsr.model.geometry.Geometry toRepresentation(
-            com.vividsolutions.jts.geom.Geometry geom, SpatialReference spatialReference) {
+            org.locationtech.jts.geom.Geometry geom, SpatialReference spatialReference) {
         try {
             outCrs = SpatialReferences.fromSpatialReference(spatialReference);
         } catch (FactoryException e) {
@@ -106,10 +106,10 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
     }
 
     @Override
-    protected Long[][] embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
+    protected Long[][] embeddedLineString(org.locationtech.jts.geom.LineString line) {
         List<Long[]> points = new ArrayList<>();
         startFeature();
-        for (com.vividsolutions.jts.geom.Coordinate c : line.getCoordinates()) {
+        for (org.locationtech.jts.geom.Coordinate c : line.getCoordinates()) {
             Long[] point = embeddedCoordinate(c);
             //eliminate duplicated points
             if (points.size() == 0 || !Arrays.equals(new Long[]{0L,0L}, point)) {

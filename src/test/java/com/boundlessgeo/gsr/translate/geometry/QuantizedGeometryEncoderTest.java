@@ -3,7 +3,7 @@ package com.boundlessgeo.gsr.translate.geometry;
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.model.geometry.Geometry;
 import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class QuantizedGeometryEncoderTest {
         File jsonFile = new File(getClass().getResource("sample_geometry.json").toURI());
         net.sf.json.JSON json = JSONSerializer.toJSON(FileUtils.readFileToString(jsonFile, "UTF-8"));
 
-        com.vividsolutions.jts.geom.Geometry inputGeometry = GeometryEncoder.jsonToJtsGeometry(json);
+        org.locationtech.jts.geom.Geometry inputGeometry = GeometryEncoder.jsonToJtsGeometry(json);
 
         QuantizedGeometryEncoder geometryEncoder = new QuantizedGeometryEncoder(
                 QuantizedGeometryEncoder.Mode.view,

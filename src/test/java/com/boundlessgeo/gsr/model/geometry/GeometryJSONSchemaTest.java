@@ -12,8 +12,9 @@ import org.junit.Test;
 import com.boundlessgeo.gsr.JsonSchemaTest;
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 /**
  * JSON Schema validation class. Validation is possible with local files, with the following modifications: - All $ref elements need to point to a
@@ -32,7 +33,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
 
     @Test
     public void testPointSchema() throws Exception {
-        com.vividsolutions.jts.geom.Point point = geometries.createPoint(new Coordinate(77, 39.5));
+        org.locationtech.jts.geom.Point point = geometries.createPoint(new Coordinate(77, 39.5));
         String json = representationToJson(new GeometryEncoder().toRepresentation(point, null));
         assertTrue(validateJSON(json, "gsr/1.0/point.json"));
     }
@@ -44,7 +45,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         Coordinate c3 = new Coordinate(-97.06124, 32.834);
         Coordinate c4 = new Coordinate(-97.06127, 32.832);
         Coordinate[] coords = { c1, c2, c3, c4 };
-        com.vividsolutions.jts.geom.MultiPoint mpoint = geometries.createMultiPoint(coords);
+        org.locationtech.jts.geom.MultiPoint mpoint = geometries.createMultiPoint(new CoordinateArraySequence(coords));
         String json = representationToJson(new GeometryEncoder().toRepresentation(mpoint, null));
         assertTrue(validateJSON(json, "gsr/1.0/multipoint.json"));
     }
@@ -60,12 +61,12 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         Coordinate[] path1 = { c1, c2, c3 };
         Coordinate[] path2 = { c3, c4, c5 };
 
-        com.vividsolutions.jts.geom.LineString[] lineStrings = new com.vividsolutions.jts.geom.LineString[] {
+        org.locationtech.jts.geom.LineString[] lineStrings = new org.locationtech.jts.geom.LineString[] {
             geometries.createLineString(path1),
             geometries.createLineString(path2)
         };
 
-        com.vividsolutions.jts.geom.MultiLineString polyline = geometries.createMultiLineString(lineStrings);
+        org.locationtech.jts.geom.MultiLineString polyline = geometries.createMultiLineString(lineStrings);
 
         String json = representationToJson(new GeometryEncoder().toRepresentation(polyline, null));
         assertTrue(validateJSON(json, "gsr/1.0/polyline.json"));
@@ -83,29 +84,29 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
 
         Coordinate[] ring2 = { c2, c3, c4, c2 };
 
-        com.vividsolutions.jts.geom.LinearRing shell = geometries.createLinearRing(ring1);
-        com.vividsolutions.jts.geom.LinearRing hole = geometries.createLinearRing(ring2);
-        com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[] { hole };
+        org.locationtech.jts.geom.LinearRing shell = geometries.createLinearRing(ring1);
+        org.locationtech.jts.geom.LinearRing hole = geometries.createLinearRing(ring2);
+        org.locationtech.jts.geom.LinearRing[] holes = new org.locationtech.jts.geom.LinearRing[] { hole };
 
         // double[][][] rings = { ring1, ring2 };
         // Polygon polygon = new Polygon(rings, spatialReference);
-        com.vividsolutions.jts.geom.Polygon polygon = geometries.createPolygon(shell, holes);
+        org.locationtech.jts.geom.Polygon polygon = geometries.createPolygon(shell, holes);
         String json = representationToJson(new GeometryEncoder().toRepresentation(polygon, null));
         assertTrue(validateJSON(json, "gsr/1.0/polygon.json"));
     }
 
     @Test
     public void testEnvelopeSchema() throws Exception {
-        com.vividsolutions.jts.geom.Envelope envelope = new com.vividsolutions.jts.geom.Envelope(-77, 39.0, -78, 40.0);
+        org.locationtech.jts.geom.Envelope envelope = new org.locationtech.jts.geom.Envelope(-77, 39.0, -78, 40.0);
         String json = GeometryEncoder.toJson(envelope);
         assertTrue(validateJSON(json, "gsr/1.0/envelope.json"));
     }
 
     @Test
     public void testGeometryArraySchema() throws Exception {
-        com.vividsolutions.jts.geom.Point point = geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(-77, 39.5));
-        com.vividsolutions.jts.geom.Point point2 = geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(-77.4, 40.5));
-        com.vividsolutions.jts.geom.GeometryCollection collection = geometries.createGeometryCollection(new com.vividsolutions.jts.geom.Geometry [] { point, point2 });
+        org.locationtech.jts.geom.Point point = geometries.createPoint(new org.locationtech.jts.geom.Coordinate(-77, 39.5));
+        org.locationtech.jts.geom.Point point2 = geometries.createPoint(new org.locationtech.jts.geom.Coordinate(-77.4, 40.5));
+        org.locationtech.jts.geom.GeometryCollection collection = geometries.createGeometryCollection(new org.locationtech.jts.geom.Geometry [] { point, point2 });
         String json = representationToJson(new GeometryEncoder().toRepresentation(collection, null));
         assertTrue(validateJSON(json, "gsr/1.0/geometries.json"));
     }

@@ -2,12 +2,9 @@ package com.boundlessgeo.gsr.model.feature;
 
 import com.boundlessgeo.gsr.model.map.AbstractLayerOrTable;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
-import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geotools.data.FeatureStore;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
 
 import java.io.IOException;
 import java.util.ArrayList;

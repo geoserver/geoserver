@@ -11,9 +11,9 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -118,33 +118,33 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         // doesn't distinguish between a linestring and a multilinestring) and
         // generality.
 
-        if (geom instanceof com.vividsolutions.jts.geom.Point) {
-            com.vividsolutions.jts.geom.Point p = (com.vividsolutions.jts.geom.Point) geom;
+        if (geom instanceof org.locationtech.jts.geom.Point) {
+            org.locationtech.jts.geom.Point p = (org.locationtech.jts.geom.Point) geom;
             T[] coords = embeddedPoint(p);
 
             return new Point(coords[0], coords[1], spatialReference);
-        } else if (geom instanceof com.vividsolutions.jts.geom.MultiPoint) {
-            com.vividsolutions.jts.geom.MultiPoint mpoint = (com.vividsolutions.jts.geom.MultiPoint) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiPoint) {
+            org.locationtech.jts.geom.MultiPoint mpoint = (org.locationtech.jts.geom.MultiPoint) geom;
             List<T[]> points = new ArrayList<>();
             for (int i = 0; i < mpoint.getNumPoints(); i++) {
-                points.add(embeddedPoint((com.vividsolutions.jts.geom.Point) mpoint.getGeometryN(i)));
+                points.add(embeddedPoint((org.locationtech.jts.geom.Point) mpoint.getGeometryN(i)));
             }
             return new Multipoint(points.toArray(new Number[points.size()][]), spatialReference);
-        } else if (geom instanceof com.vividsolutions.jts.geom.LineString) {
-            com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.LineString) {
+            org.locationtech.jts.geom.LineString line = (org.locationtech.jts.geom.LineString) geom;
             return new Polyline(new Number[][][]{embeddedLineString(line)}, spatialReference);
-        } else if (geom instanceof com.vividsolutions.jts.geom.MultiLineString) {
-            com.vividsolutions.jts.geom.MultiLineString mline = (com.vividsolutions.jts.geom.MultiLineString) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiLineString) {
+            org.locationtech.jts.geom.MultiLineString mline = (org.locationtech.jts.geom.MultiLineString) geom;
             List<T[][]> paths = new ArrayList<>();
 
             for (int i = 0; i < mline.getNumGeometries(); i++) {
-                com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) mline.getGeometryN(i);
+                org.locationtech.jts.geom.LineString line = (org.locationtech.jts.geom.LineString) mline.getGeometryN(i);
                 paths.add(embeddedLineString(line));
             }
             return new Polyline(paths.toArray(new Number[paths.size()][][]), spatialReference);
 
-        } else if (geom instanceof com.vividsolutions.jts.geom.Polygon) {
-            com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.Polygon) {
+            org.locationtech.jts.geom.Polygon polygon = (org.locationtech.jts.geom.Polygon) geom;
             List<T[][]> rings = new ArrayList<>();
             rings.add(embeddedLineString(polygon.getExteriorRing()));
 
@@ -152,14 +152,14 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 rings.add(embeddedLineString(polygon.getInteriorRingN(i)));
             }
             return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
-        } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
-            com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.MultiPolygon) {
+            org.locationtech.jts.geom.MultiPolygon mpoly = (org.locationtech.jts.geom.MultiPolygon) geom;
 
             com.boundlessgeo.gsr.model.geometry.Geometry[] polygons = new com.boundlessgeo.gsr.model.geometry.Geometry[mpoly.getNumGeometries()];
 
             for (int i = 0; i < mpoly.getNumGeometries(); i++) {
                 //for now, assume these are all polygons. that SHOULD be the case anyway
-                com.vividsolutions.jts.geom.Polygon geometryN = (com.vividsolutions.jts.geom.Polygon) mpoly
+                org.locationtech.jts.geom.Polygon geometryN = (org.locationtech.jts.geom.Polygon) mpoly
                     .getGeometryN(i);
 
                 List<T[][]> rings = new ArrayList<>();
@@ -176,8 +176,8 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
 
             return new GeometryArray(GeometryTypeEnum.POLYGON, polygons, spatialReference);
 
-        } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
-            com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
+        } else if (geom instanceof org.locationtech.jts.geom.GeometryCollection) {
+            org.locationtech.jts.geom.GeometryCollection collection = (org.locationtech.jts.geom.GeometryCollection) geom;
             GeometryTypeEnum geometryType = determineGeometryType(collection);
             List<com.boundlessgeo.gsr.model.geometry.Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < collection.getNumGeometries(); i++) {
@@ -198,7 +198,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param coord The Coordinate to encode
      * @return The coordinate as an array.
      */
-    protected abstract T[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord);
+    protected abstract T[] embeddedCoordinate(org.locationtech.jts.geom.Coordinate coord);
 
     /**
      * Called immediately before a new feature is encoded.
@@ -218,7 +218,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param point the point to encode.
      * @return the encoded point
      */
-    protected T[] embeddedPoint(com.vividsolutions.jts.geom.Point point) {
+    protected T[] embeddedPoint(org.locationtech.jts.geom.Point point) {
         startFeature();
         T [] p = embeddedCoordinate(point.getCoordinate());
         endFeature();
@@ -231,10 +231,10 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param line the linestring to encode
      * @return the encoded linestring
      */
-    protected T[][] embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
+    protected T[][] embeddedLineString(org.locationtech.jts.geom.LineString line) {
         List<T[]> points = new ArrayList<>();
         startFeature();
-        for (com.vividsolutions.jts.geom.Coordinate c : line.getCoordinates()) {
+        for (org.locationtech.jts.geom.Coordinate c : line.getCoordinates()) {
             points.add(embeddedCoordinate(c));
         }
         endFeature();
@@ -249,7 +249,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      *         empty.
      * @throws IllegalArgumentException if the gemetry collection contains multiple geometry types
      */
-    protected static GeometryTypeEnum determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {
+    protected static GeometryTypeEnum determineGeometryType(org.locationtech.jts.geom.GeometryCollection collection) {
         if (collection.getNumGeometries() == 0) {
             return GeometryTypeEnum.POINT;
         } else {
@@ -309,30 +309,30 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         return lines;
     }
 
-    protected static com.vividsolutions.jts.geom.Coordinate jsonArrayToCoordinate(JSONArray array) {
+    protected static org.locationtech.jts.geom.Coordinate jsonArrayToCoordinate(JSONArray array) {
         if (array.size() != 2) {
             throw new JSONException("Coordinate JSON must be an array with exactly two elements");
         }
-        return new com.vividsolutions.jts.geom.Coordinate(array.getDouble(0), array.getDouble(1));
+        return new org.locationtech.jts.geom.Coordinate(array.getDouble(0), array.getDouble(1));
     }
 
-    protected static com.vividsolutions.jts.geom.Coordinate[] jsonArrayToCoordinates(JSONArray array) {
-        com.vividsolutions.jts.geom.Coordinate[] coordinates = new com.vividsolutions.jts.geom.Coordinate[array.size()];
+    protected static org.locationtech.jts.geom.Coordinate[] jsonArrayToCoordinates(JSONArray array) {
+        org.locationtech.jts.geom.Coordinate[] coordinates = new org.locationtech.jts.geom.Coordinate[array.size()];
         for (int i = 0; i < array.size(); i++) {
             coordinates[i] = jsonArrayToCoordinate(array.getJSONArray(i));
         }
         return coordinates;
     }
 
-    protected static com.vividsolutions.jts.geom.Coordinate arrayToCoordinate(Number[] array) {
+    protected static org.locationtech.jts.geom.Coordinate arrayToCoordinate(Number[] array) {
         if (array.length != 2) {
             throw new JSONException("Coordinate must be an array with exactly two elements");
         }
-        return new com.vividsolutions.jts.geom.Coordinate(array[0].doubleValue(), array[1].doubleValue());
+        return new org.locationtech.jts.geom.Coordinate(array[0].doubleValue(), array[1].doubleValue());
     }
 
-    protected static com.vividsolutions.jts.geom.Coordinate[] arrayToCoordinates(Number[][] array) {
-        com.vividsolutions.jts.geom.Coordinate[] coordinates = new com.vividsolutions.jts.geom.Coordinate[array.length];
+    protected static org.locationtech.jts.geom.Coordinate[] arrayToCoordinates(Number[][] array) {
+        org.locationtech.jts.geom.Coordinate[] coordinates = new org.locationtech.jts.geom.Coordinate[array.length];
         for (int i = 0; i < array.length; i++) {
             coordinates[i] = arrayToCoordinate(array[i]);
         }
@@ -426,7 +426,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
 
             double x = p.getX().doubleValue();
             double y = p.getY().doubleValue();
-            return geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(x, y));
+            return geometries.createPoint(new org.locationtech.jts.geom.Coordinate(x, y));
         } else if (geometry instanceof Multipoint) {
             Multipoint mp = (Multipoint)geometry;
 
@@ -438,9 +438,9 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
 
             Number[][][] paths = pl.getPaths();
 
-            com.vividsolutions.jts.geom.LineString[] lines = new com.vividsolutions.jts.geom.LineString[paths.length];
+            org.locationtech.jts.geom.LineString[] lines = new org.locationtech.jts.geom.LineString[paths.length];
             for (int i = 0; i < paths.length; i++) {
-                com.vividsolutions.jts.geom.Coordinate[] coords = arrayToCoordinates(paths[i]);
+                org.locationtech.jts.geom.Coordinate[] coords = arrayToCoordinates(paths[i]);
                 lines[i] = geometries.createLineString(coords);
             }
             return geometries.createMultiLineString(lines);
@@ -452,9 +452,9 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             if (rings.length < 1) {
                 throw new JSONException("Polygon must have at least one ring");
             }
-            com.vividsolutions.jts.geom.LinearRing shell =
+            org.locationtech.jts.geom.LinearRing shell =
                     geometries.createLinearRing(arrayToCoordinates(rings[0]));
-            com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[rings.length - 1];
+            org.locationtech.jts.geom.LinearRing[] holes = new org.locationtech.jts.geom.LinearRing[rings.length - 1];
             for (int i = 1; i < rings.length; i++) {
                 holes[i - 1] = geometries.createLinearRing(arrayToCoordinates(rings[i]));
             }

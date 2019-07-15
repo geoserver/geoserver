@@ -6,10 +6,10 @@ package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 import org.geoserver.catalog.Catalog;
@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+import org.locationtech.jts.geom.LineString;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;

@@ -93,7 +93,7 @@ public class FeatureEncoder {
         Map<String, Object> attributes = FeatureEncoder.attributeList(feature, objectIdFieldName);
         if (returnGeometry) {
             return new Feature(geometryEncoder.toRepresentation(
-                    (com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue(),spatialReference), attributes);
+                    (org.locationtech.jts.geom.Geometry) geometryAttribute.getValue(),spatialReference), attributes);
         } else {
             return new Feature(null, attributes);
         }

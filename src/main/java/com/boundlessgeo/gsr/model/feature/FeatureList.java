@@ -11,7 +11,7 @@ import com.boundlessgeo.gsr.translate.geometry.AbstractGeometryEncoder;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.translate.geometry.QuantizedGeometryEncoder;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.lang.StringUtils;

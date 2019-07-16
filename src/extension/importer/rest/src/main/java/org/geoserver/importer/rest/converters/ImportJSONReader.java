@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -420,7 +421,16 @@ public class ImportJSONReader {
         if (json.has("file")) {
             // TODO: find out if spatial or not
             String file = json.getString("file");
-            return FileData.createFromFile(new File(file));
+            FileData importFileData = FileData.createFromFile(new File(file));
+            // check if charsetEncoding configured (Geos-9073)
+            if (json.has("charsetEncoding")) {
+                // check if charsetEncoding is supported
+                // dont upload a charset which not supported
+                Charset.isSupported(json.getString("charsetEncoding"));
+                importFileData.setCharsetEncoding(json.getString("charsetEncoding"));
+            }
+            return importFileData;
+            // return FileData.createFromFile(new File(file));
             // return new FileData(new File(file));
         } else {
             throw new IOException(

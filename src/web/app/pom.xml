@@ -1319,7 +1319,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-gwc-azure</artifactId>
+          <artifactId>gs-gwc-azure-blob</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

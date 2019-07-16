@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.geoserver.jdbcstore.internal.JDBCDirectoryStructure.Entry;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
@@ -78,9 +79,9 @@ public class JDBCDirectoryStructure {
         private final ArrayList<String> path;
         private EntryMetaData md;
 
-        protected Entry(List<String> path, EntryMetaData md) {
+        protected Entry(ArrayList<String> path) {
             this.path = new ArrayList<String>(path);
-            this.md = md;
+            this.md = getMetadata(path);
         }
 
         @SuppressWarnings("unchecked")
@@ -97,7 +98,7 @@ public class JDBCDirectoryStructure {
         public Entry getParent() {
             return path.isEmpty()
                     ? null
-                    : createEntry(new ArrayList<>(path.subList(0, path.size() - 1)));
+                    : new Entry(new ArrayList<>(path.subList(0, path.size() - 1)));
         }
 
         public Boolean isDirectory() {
@@ -113,6 +114,7 @@ public class JDBCDirectoryStructure {
         }
 
         public Timestamp getLastModified() {
+            this.md = getMetadata(path);
             return md.lastModified;
         }
 
@@ -397,52 +399,43 @@ public class JDBCDirectoryStructure {
         return entryCache;
     }
 
-    protected Entry createEntry(ArrayList<String> path) {
+    private EntryMetaData getMetadata(ArrayList<String> path) {
         try {
-            return new Entry(
-                    path,
-                    entryCache()
-                            .get(
-                                    path,
-                                    new Callable<EntryMetaData>() {
-                                        @Override
-                                        public EntryMetaData call() throws Exception {
-                                            EntryMetaData md = new EntryMetaData();
-                                            Map<String, Object> record =
-                                                    helper.selectQuery(
-                                                            TABLE_RESOURCES,
-                                                            new PathSelector(path),
-                                                            OID,
-                                                            DIRECTORY,
-                                                            LAST_MODIFIED);
-                                            if (record != null) {
-                                                md.oid = (Integer) record.get(OID.getFieldName());
-                                                md.dir =
-                                                        (Boolean)
-                                                                record.get(
-                                                                        DIRECTORY.getFieldName());
-                                                md.lastModified =
-                                                        (Timestamp)
-                                                                record.get(
-                                                                        LAST_MODIFIED
-                                                                                .getFieldName());
-                                            }
-                                            resourceNotificationDispatcher.addListener(
-                                                    mergePath(path),
-                                                    new ResourceListener() {
+            return entryCache()
+                    .get(
+                            path,
+                            new Callable<EntryMetaData>() {
+                                @Override
+                                public EntryMetaData call() throws Exception {
+                                    EntryMetaData md = new EntryMetaData();
+                                    Map<String, Object> record =
+                                            helper.selectQuery(
+                                                    TABLE_RESOURCES,
+                                                    new PathSelector(path),
+                                                    OID,
+                                                    DIRECTORY,
+                                                    LAST_MODIFIED);
+                                    if (record != null) {
+                                        md.oid = (Integer) record.get(OID.getFieldName());
+                                        md.dir = (Boolean) record.get(DIRECTORY.getFieldName());
+                                        md.lastModified =
+                                                (Timestamp)
+                                                        record.get(LAST_MODIFIED.getFieldName());
+                                    }
+                                    resourceNotificationDispatcher.addListener(
+                                            mergePath(path),
+                                            new ResourceListener() {
 
-                                                        @Override
-                                                        public void changed(
-                                                                ResourceNotification notify) {
-                                                            entryCache().invalidate(path);
-                                                            resourceNotificationDispatcher
-                                                                    .removeListener(
-                                                                            md.toString(), this);
-                                                        }
-                                                    });
-                                            return md;
-                                        }
-                                    }));
+                                                @Override
+                                                public void changed(ResourceNotification notify) {
+                                                    entryCache().invalidate(path);
+                                                    resourceNotificationDispatcher.removeListener(
+                                                            md.toString(), this);
+                                                }
+                                            });
+                                    return md;
+                                }
+                            });
         } catch (ExecutionException e) {
             throw new IllegalStateException(e);
         }
@@ -451,11 +444,11 @@ public class JDBCDirectoryStructure {
     protected Entry createEntry(List<String> parent, String child) {
         ArrayList<String> path = new ArrayList<String>(parent);
         path.add(child);
-        return createEntry(path);
+        return new Entry(path);
     }
 
     public Entry createEntry(String pathStr) {
-        return createEntry(new ArrayList<String>(Paths.names(pathStr)));
+        return new Entry(new ArrayList<String>(Paths.names(pathStr)));
     }
 
     public JDBCResourceStoreProperties getConfig() {

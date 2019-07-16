@@ -19,14 +19,16 @@ public class ScaleRange {
 
     public static ScaleRange extract(Style style) {
         Double minScale = null, maxScale = null;
+        // find at which scales there is something visible, so we get the
+        // max of max scales and min of min scales
         for (FeatureTypeStyle ft : style.featureTypeStyles()) {
             for (Rule r : ft.rules()) {
                 double minS = r.getMinScaleDenominator();
                 double maxS = r.getMaxScaleDenominator();
-                if (minScale == null || minS > minScale) {
+                if (minScale == null || minS < minScale) {
                     minScale = minS;
                 }
-                if (maxScale == null || maxS < maxScale) {
+                if (maxScale == null || maxS > maxScale) {
                     maxScale = maxS;
                 }
             }

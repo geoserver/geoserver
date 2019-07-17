@@ -66,7 +66,10 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
     private void exportMapImage(String workspaceName, HttpServletRequest request, HttpServletResponse response)
         throws Exception {
 
-        String layers = getAllLayersInEsriFormat(workspaceName);
+        String layers = request.getParameter("layers");
+        if (layers == null) {
+            layers = getAllLayersInEsriFormat(workspaceName);
+        }
         exportMapImageForLayers(workspaceName, request, response, layers);
     }
 

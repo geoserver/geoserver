@@ -70,15 +70,13 @@ public class NCNameResourceCodec {
 
         List<LayerInfo> ret = new ArrayList<LayerInfo>();
 
-        LOGGER.info(" Examining encoded name " + encodedResourceId);
-
         for (MapEntry<String, String> mapEntry : decodedList) {
 
             String namespace = mapEntry.getKey();
             String localName = mapEntry.getValue();
 
             if (namespace == null || namespace.isEmpty()) {
-                LOGGER.log(Level.FINE, " Checking coverage name {0}", localName);
+                LOGGER.log(Level.FINE, " Checking layer name {0}", localName);
 
                 LayerInfo layer = catalog.getLayerByName(localName);
                 if (layer != null) {
@@ -100,6 +98,65 @@ public class NCNameResourceCodec {
                         ret.add(layer);
                     } else {
                         LOGGER.log(Level.FINE, " - Ignoring layer {0} " + fullName);
+                    }
+                } else {
+                    LOGGER.info(" - Namespace not found " + namespace);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Search in the catalog the Styles matching the encoded id.
+     *
+     * <p>
+     *
+     * @return A possibly empty list of the matching styles, or null if the encoded id could not be
+     *     decoded.
+     */
+    public static List<StyleInfo> getStyles(Catalog catalog, String encodedStyleId) {
+        final WorkspaceInfo workspace = LocalWorkspace.get();
+        if (workspace != null) {
+            encodedStyleId = workspace.getName() + DELIMITER + encodedStyleId;
+        }
+
+        List<MapEntry<String, String>> decodedList = decode(encodedStyleId);
+        if (decodedList.isEmpty()) {
+            LOGGER.info("Could not decode id '" + encodedStyleId + "'");
+            return null;
+        }
+
+        List<StyleInfo> ret = new ArrayList<>();
+        for (MapEntry<String, String> mapEntry : decodedList) {
+
+            String namespace = mapEntry.getKey();
+            String localName = mapEntry.getValue();
+
+            if (namespace == null || namespace.isEmpty()) {
+                LOGGER.log(Level.FINE, " Checking style name {0}", localName);
+
+                StyleInfo style = catalog.getStyleByName(localName);
+                if (style != null) {
+                    LOGGER.log(Level.FINE, " - Collecting style {0}", style.prefixedName());
+                    ret.add(style);
+                } else {
+                    LOGGER.log(Level.FINE, " - Ignoring style {0}", localName);
+                }
+            } else {
+                LOGGER.info(" Checking pair " + namespace + " : " + localName);
+
+                String fullName = namespace + ":" + localName;
+                NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
+                if (nsInfo != null) {
+                    LOGGER.log(Level.FINE, " - Namespace found {0}", namespace);
+                    StyleInfo style = catalog.getStyleByName(fullName);
+                    if (style != null) {
+                        LOGGER.log(Level.FINE, " - Collecting style {0} ", style.prefixedName());
+                        ret.add(style);
+                    } else {
+                        LOGGER.log(Level.FINE, " - Ignoring style {0} " + fullName);
                     }
                 } else {
                     LOGGER.info(" - Namespace not found " + namespace);

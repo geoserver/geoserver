@@ -66,7 +66,9 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
             // optimization, if the requested format is the same as the native format
             // of the style, stream the file directly from the disk, otherwise encode
             // the style in the requested format
-            if (handler.getFormat().equalsIgnoreCase(style.getFormat())) {
+            if (handler.getFormat().equalsIgnoreCase(style.getFormat())
+                    && (style.getFormatVersion() == null
+                            || style.getFormatVersion().equals(version))) {
                 copyDefinition(style, outputMessage.getBody());
                 return;
             }
@@ -90,5 +92,13 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
     @Override
     public String toString() {
         return "StyleWriterConverter [version=" + version + ", handler=" + handler + "]";
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public StyleHandler getHandler() {
+        return handler;
     }
 }

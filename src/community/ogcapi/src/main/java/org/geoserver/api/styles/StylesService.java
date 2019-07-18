@@ -5,18 +5,43 @@
 package org.geoserver.api.styles;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.api.APIContentNegotiationManager;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.RestException;
+import org.geoserver.rest.converters.StyleWriterConverter;
+import org.geotools.util.Version;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.NativeWebRequest;
 
 @APIService(
     service = "Style",
@@ -45,9 +70,26 @@ public class StylesService {
     public static final String CSS = "http://www.geoserver.org/opf-styles-1/1.0/conf/geocss";
 
     private final GeoServer geoServer;
+    private final GeoServerDataDirectory dataDirectory;
+    Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
+    List<MediaType> mediaTypes = new ArrayList<>();
+    APIContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
 
-    public StylesService(GeoServer geoServer) {
+    public StylesService(
+            GeoServer geoServer,
+            GeoServerExtensions extensions,
+            GeoServerDataDirectory dataDirectory) {
         this.geoServer = geoServer;
+        this.dataDirectory = dataDirectory;
+        List<StyleHandler> handlers = extensions.extensions(StyleHandler.class);
+        for (StyleHandler sh : handlers) {
+            for (Version ver : sh.getVersions()) {
+                String mimeType = sh.mimeType(ver);
+                MediaType mediaType = MediaType.valueOf(mimeType);
+                writers.put(mediaType, new StyleWriterConverter(mimeType, ver, sh));
+                mediaTypes.add(mediaType);
+            }
+        }
     }
 
     @GetMapping(name = "getLandingPage")
@@ -91,5 +133,98 @@ public class StylesService {
     public StylesDocument getStyles() {
         List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
         return new StylesDocument(geoServer.getCatalog());
+    }
+
+    @GetMapping(path = "styles/{styleId}")
+    public void getStyle(
+            @PathVariable(name = "styleId") String styleId,
+            NativeWebRequest request,
+            HttpServletResponse response)
+            throws HttpMediaTypeNotAcceptableException, IOException {
+        List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
+        if (styles == null || styles.isEmpty()) {
+            throw new RestException("Could not locate style " + styleId, HttpStatus.NOT_FOUND);
+        }
+        if (styles.size() > 1) {
+            throw new RestException(
+                    "More than one style can be matched to "
+                            + styleId
+                            + " please contact the service administrator about this",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        StyleInfo styleInfo = styles.get(0);
+
+        // check the requested media types, if none specific was requested, just copy over the
+        // native style
+        MediaType nativeMediaType = getNativeMediaType(styleInfo);
+        List<MediaType> requestedMediaTypes = contentNegotiationManager.resolveMediaTypes(request);
+        if (requestedMediaTypes == null
+                || ContentNegotiationStrategy.MEDIA_TYPE_ALL_LIST.equals(requestedMediaTypes)) {
+            writeNativeToResponse(response, styleInfo, nativeMediaType);
+            return;
+        }
+
+        // loop over the requested media
+        for (MediaType requestedMediaType : requestedMediaTypes) {
+            if (requestedMediaType.isCompatibleWith(nativeMediaType)) {
+                writeNativeToResponse(response, styleInfo, nativeMediaType);
+                return;
+            }
+
+            Optional<StyleWriterConverter> osh = getWriter(requestedMediaType);
+            if (osh.isPresent()) {
+                StyleWriterConverter writer = osh.get();
+                writer.write(
+                        styleInfo,
+                        MediaType.valueOf(writer.getHandler().mimeType(writer.getVersion())),
+                        new ServletServerHttpResponse(response));
+                return;
+            }
+        }
+
+        throw new RestException(
+                "Could not find a stle encoder for requested media types " + requestedMediaTypes,
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    public void writeNativeToResponse(
+            HttpServletResponse response, StyleInfo styleInfo, MediaType nativeMediaType)
+            throws IOException {
+        response.setContentType(nativeMediaType.toString());
+        response.setStatus(200);
+        Resource resource = dataDirectory.style(styleInfo);
+        try (InputStream in = resource.in()) {
+            IOUtils.copy(in, response.getOutputStream());
+        }
+    }
+
+    private MediaType getNativeMediaType(StyleInfo styleInfo) {
+        String format = styleInfo.getFormat();
+        if (format == null) {
+            return MediaType.valueOf(SLDHandler.MIMETYPE_10);
+        }
+        StyleHandler handler =
+                writers.values()
+                        .stream()
+                        .map(sw -> sw.getHandler())
+                        .filter(sh -> styleInfo.getFormat().equals(sh.getFormat()))
+                        .findFirst()
+                        .orElseThrow(
+                                () ->
+                                        new RestException(
+                                                "Could not find style handler for style "
+                                                        + styleInfo.prefixedName(),
+                                                HttpStatus.INTERNAL_SERVER_ERROR));
+        Version version = styleInfo.getFormatVersion();
+        if (version == null) version = handler.getVersions().get(0);
+        return MediaType.valueOf(handler.mimeType(version));
+    }
+
+    private Optional<StyleWriterConverter> getWriter(MediaType mediaType) {
+        return writers.entrySet()
+                .stream()
+                .filter(e -> e.getKey().isCompatibleWith(mediaType))
+                .map(e -> e.getValue())
+                .findFirst();
     }
 }

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -39,7 +38,8 @@ public class StylesTest extends StylesTestSupport {
                         "raster",
                         "generic",
                         "Default",
-                        "ws__NamedPlaces"));
+                        "ws__NamedPlaces",
+                        "PolygonComment"));
 
         // concentrate on one and check title and links
         assertEquals("Default Styler", getSingle(json, "styles[?(@.id == 'Default')].title"));
@@ -59,10 +59,6 @@ public class StylesTest extends StylesTestSupport {
                 exists(
                         json,
                         "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.geoserver.geocss+css')]"));
-    }
-
-    protected DocumentContext getSubContext(DocumentContext json, String path) {
-        return JsonPath.parse((Object) json.read(path));
     }
 
     Object getSingle(DocumentContext json, String path) {

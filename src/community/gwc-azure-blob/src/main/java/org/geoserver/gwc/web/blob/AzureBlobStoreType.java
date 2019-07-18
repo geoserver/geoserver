@@ -20,7 +20,8 @@ public class AzureBlobStoreType implements BlobStoreType<AzureBlobStoreInfo> {
     public AzureBlobStoreInfo newConfigObject() {
         AzureBlobStoreInfo config = new AzureBlobStoreInfo();
         config.setEnabled(true);
-        config.setMaxConnections(AzureBlobStoreInfo.DEFAULT_CONNECTIONS);
+        config.setMaxConnections(
+                Integer.valueOf(AzureBlobStoreInfo.DEFAULT_CONNECTIONS).toString());
         return config;
     }
 

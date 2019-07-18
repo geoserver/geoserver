@@ -93,7 +93,8 @@ public class AzureBlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("myAccountName", azureConfig.getAccountName());
         assertEquals("myAccountKey", azureConfig.getAccountKey());
         assertEquals(
-                AzureBlobStoreInfo.DEFAULT_CONNECTIONS, azureConfig.getMaxConnections().intValue());
+                String.valueOf(AzureBlobStoreInfo.DEFAULT_CONNECTIONS),
+                azureConfig.getMaxConnections());
 
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
     }
@@ -104,7 +105,7 @@ public class AzureBlobStorePageTest extends GeoServerWicketTestSupport {
         Field id = BlobStoreInfo.class.getDeclaredField("name");
         id.setAccessible(true);
         id.set(sconfig, "myblobstore");
-        sconfig.setMaxConnections(50);
+        sconfig.setMaxConnections("50");
         sconfig.setContainer("myContainer");
         sconfig.setAccountName("myAccountName");
         sconfig.setAccountKey("myAccountKey");

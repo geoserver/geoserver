@@ -145,7 +145,7 @@ public class YsldHandler extends StyleHandler {
     }
 
     @Override
-    public boolean supportsEncoding() {
+    public boolean supportsEncoding(Version version) {
         return true;
     }
 

@@ -14,6 +14,7 @@
         <include>jackson-dataformat-*.jar</include>
         <include>jackson-databind-*.jar</include>
         <include>jackson-annotation*.jar</include>
+        <include>jackson-module-jaxb*.jar</include>
         <include>swagger-models-*.jar</include>
         <include>snakeyaml-*.jar</include>
         <include>commons-lang3*.jar</include>

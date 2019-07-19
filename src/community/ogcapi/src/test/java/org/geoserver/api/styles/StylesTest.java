@@ -46,12 +46,12 @@ public class StylesTest extends StylesTestSupport {
         assertEquals("Default Styler", getSingle(json, "styles[?(@.id == 'Default')].title"));
         // can encode sld 1.0 and 1.1
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/Default?f=application%2Fvnd.ogc.sld%2Bxml",
+                "http://localhost:8080/geoserver/ogc/styles/styles/Default?f=application%2Fvnd.ogc.sld%2Bxml",
                 getSingle(
                         json,
                         "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.ogc.sld+xml')].href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/Default?f=application%2Fvnd.ogc.se%2Bxml",
+                "http://localhost:8080/geoserver/ogc/styles/styles/Default?f=application%2Fvnd.ogc.se%2Bxml",
                 getSingle(
                         json,
                         "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.ogc.se+xml')].href"));

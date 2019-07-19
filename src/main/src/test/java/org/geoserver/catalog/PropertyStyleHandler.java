@@ -152,7 +152,7 @@ public class PropertyStyleHandler extends StyleHandler {
     }
 
     @Override
-    public boolean supportsEncoding() {
+    public boolean supportsEncoding(Version version) {
         return true;
     }
 }

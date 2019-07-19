@@ -226,7 +226,7 @@ public abstract class StyleHandler {
      *
      * @return
      */
-    public boolean supportsEncoding() {
+    public boolean supportsEncoding(Version version) {
         return false;
     }
 

@@ -66,7 +66,7 @@ public class StyleMetadataDocument extends AbstractDocument {
         for (StyleHandler handler : Styles.handlers()) {
             for (Version version : handler.getVersions()) {
                 Stylesheet ss = new Stylesheet(si, handler, version);
-                if (ss.isNative() || handler.supportsEncoding()) {
+                if (ss.isNative() || handler.supportsEncoding(version)) {
                     stylesheets.add(ss);
                 }
             }

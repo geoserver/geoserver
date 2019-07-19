@@ -96,11 +96,6 @@ public class SLDPackageHandler extends StyleHandler {
     }
 
     @Override
-    public boolean supportsEncoding() {
-        return true;
-    }
-
-    @Override
     public URL getSpecification(Version version) throws MalformedURLException {
         return sldHandler.getSpecification(version);
     }

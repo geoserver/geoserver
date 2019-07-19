@@ -69,7 +69,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     public void testMetadataSerialization() throws Exception {
         Resource styleResource = getDataDirectory().getStyles("polygon.xml");
         Document dom = dom(styleResource.in(), true);
-        // print(dom);
+        print(dom);
         String metadataPath =
                 "//metadata/entry[@key='" + StyleMetadataInfo.METADATA_KEY + "']/styleMetadata";
         assertXpathExists(metadataPath, dom);
@@ -107,9 +107,8 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertThat(
                 json.read("stylesheets.size()", Integer.class), Matchers.greaterThanOrEqualTo(3));
 
-        // sld 1.0 and 1.1 are not native, CSS is
+        // sld 1.is not native, CSS is
         assertEquals(false, getSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
-        assertEquals(false, getSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.1.*/)].native"));
         assertEquals(true, getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
 
         // some checks on the CSS one

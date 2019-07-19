@@ -110,8 +110,8 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
-    public boolean supportsEncoding() {
-        return true;
+    public boolean supportsEncoding(Version version) {
+        return version == null || VERSION_10.equals(version);
     }
 
     @Override

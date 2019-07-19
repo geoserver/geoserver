@@ -4,6 +4,7 @@
  */
 package org.geoserver.api;
 
+import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.IOException;
@@ -26,6 +27,8 @@ public class FreemarkerTemplateSupport {
 
     private final GeoServerResourceLoader resoureLoader;
 
+    ClassTemplateLoader rootLoader = new ClassTemplateLoader(FreemarkerTemplateSupport.class, "");
+
     static DirectTemplateFeatureCollectionFactory FC_FACTORY =
             new DirectTemplateFeatureCollectionFactory();
 
@@ -46,7 +49,24 @@ public class FreemarkerTemplateSupport {
      */
     public Template getTemplate(ResourceInfo resource, String templateName, Class<?> clazz)
             throws IOException {
-        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(clazz, resoureLoader);
+        GeoServerTemplateLoader templateLoader =
+                new GeoServerTemplateLoader(clazz, resoureLoader) {
+                    @Override
+                    public Object findTemplateSource(String path) throws IOException {
+                        Object source = super.findTemplateSource(path);
+                        if (source == null) {
+                            source = rootLoader.findTemplateSource(path);
+
+                            // wrap the source in a source that maintains the orignial path
+                            if (source != null) {
+                                return new ClassTemplateSource(path, source);
+                            }
+                        }
+
+                        return source;
+                    }
+                };
+
         if (resource != null) {
             templateLoader.setResource(resource);
         } else {

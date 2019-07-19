@@ -5,7 +5,7 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -215,5 +216,25 @@ public abstract class StyleHandler {
 
     public String insertImageCode(String imageFileName, String styleContent) {
         return imageFileName;
+    }
+
+    /**
+     * Returns true if the handler in question supports encoding (that is, calling {@link
+     * #encode(StyledLayerDescriptor, Version, boolean, OutputStream)} won't throw an
+     * UnsupportedOperationException. By default returns "false", subclasses implementing encoding
+     * should override.
+     *
+     * @return
+     */
+    public boolean supportsEncoding(Version version) {
+        return false;
+    }
+
+    /**
+     * Returns a URL where the style specification can be found, or null if no specification is
+     * available
+     */
+    public URL getSpecification(Version version) throws MalformedURLException {
+        return null;
     }
 }

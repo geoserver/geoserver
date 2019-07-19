@@ -27,6 +27,7 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
         // first use the f parameter
         strategies.add(new FormatContentNegotiationStrategy());
         strategies.add(new HeaderContentNegotiationStrategy());
+        this.getStrategies().clear();
         this.getStrategies().addAll(strategies);
     }
 

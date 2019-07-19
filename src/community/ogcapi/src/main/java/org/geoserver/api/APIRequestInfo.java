@@ -6,6 +6,7 @@
 package org.geoserver.api;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,8 @@ import org.springframework.web.context.request.RequestContextHolder;
  * API one, it can be retrieved using the {@link APIRequestInfo#get()} method
  */
 public class APIRequestInfo {
+
+    List<MediaType> MEDIA_TYPE_ALL_LIST = Collections.singletonList(MediaType.ALL);
 
     /** key to reference this object by */
     public static final String KEY = "APIRequestInfo";
@@ -145,9 +148,14 @@ public class APIRequestInfo {
      * @param mediaType
      * @return
      */
-    public boolean isFormatRequested(MediaType mediaType) {
+    public boolean isFormatRequested(MediaType mediaType, MediaType defaultMediaType) {
         if (requestedMediaTypes == null) {
             return false;
+        }
+
+        if ((MEDIA_TYPE_ALL_LIST.equals(requestedMediaTypes))
+                && (defaultMediaType != null && defaultMediaType.isCompatibleWith(mediaType))) {
+            return true;
         }
 
         return requestedMediaTypes

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -172,5 +174,10 @@ public class CssHandler extends StyleHandler {
     @Override
     public String getCodeMirrorEditMode() {
         return "text/geocss";
+    }
+
+    @Override
+    public URL getSpecification(Version version) throws MalformedURLException {
+        return new URL("https://docs.geoserver.org/latest/en/user/styling/css/index.html");
     }
 }

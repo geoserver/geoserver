@@ -6,6 +6,8 @@ package org.geoserver.catalog;
 
 import com.google.common.io.Files;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -91,5 +93,10 @@ public class SLDPackageHandler extends StyleHandler {
         }
 
         return files[0];
+    }
+
+    @Override
+    public URL getSpecification(Version version) throws MalformedURLException {
+        return sldHandler.getSpecification(version);
     }
 }

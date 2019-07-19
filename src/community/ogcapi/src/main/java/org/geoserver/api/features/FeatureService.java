@@ -4,11 +4,6 @@
  */
 package org.geoserver.api.features;
 
-import static org.geoserver.api.features.ConformanceDocument.CORE;
-import static org.geoserver.api.features.ConformanceDocument.GEOJSON;
-import static org.geoserver.api.features.ConformanceDocument.GMLSF0;
-import static org.geoserver.api.features.ConformanceDocument.OAS30;
-
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -26,8 +21,10 @@ import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
+import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -66,6 +63,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
+    public static final String CORE = "http://www.opengis.net/spec/wfs-1/3.0/req/core";
+    public static final String HTML = "http://www.opengis.net/spec/wfs-1/3.0/req/html";
+    public static final String GEOJSON = "http://www.opengis.net/spec/wfs-1/3.0/req/geojson";
+    public static final String GMLSF0 = "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf0";
+    public static final String GMLSF2 = "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf2";
+    public static final String OAS30 = "http://www.opengis.net/spec/wfs-1/3.0/req/oas30";
+
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -93,8 +97,8 @@ public class FeatureService {
     @GetMapping(name = "landingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
-    public LandingPageDocument getLandingPage() {
-        return new LandingPageDocument(getService(), getCatalog(), "ogc/features");
+    public FeaturesLandingPage getLandingPage() {
+        return new FeaturesLandingPage(getService(), getCatalog(), "ogc/features");
     }
 
     @GetMapping(
@@ -109,7 +113,7 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() {
-        return new OpenAPIBuilder().build(getService());
+        return new FeaturesAPIBuilder().build(getService());
     }
 
     @GetMapping(path = "collections", name = "collections")

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.MapEntry;
@@ -28,13 +29,20 @@ public class NCNameResourceCodec {
 
     private static final String DELIMITER = "__";
 
+    public static String encode(StyleInfo style) {
+        return encode(
+                style.getWorkspace() != null ? style.getWorkspace().getName() : null,
+                style.getName());
+    }
+
     public static String encode(ResourceInfo resource) {
         return encode(resource.getNamespace().getPrefix(), resource.getName());
     }
 
     public static String encode(String workspaceName, String resourceName) {
         final WorkspaceInfo workspace = LocalWorkspace.get();
-        if (workspace != null && workspace.getName().equalsIgnoreCase(workspaceName)) {
+        if (workspaceName == null
+                || (workspace != null && workspace.getName().equalsIgnoreCase(workspaceName))) {
             return resourceName;
         }
         return workspaceName + DELIMITER + resourceName;
@@ -62,15 +70,13 @@ public class NCNameResourceCodec {
 
         List<LayerInfo> ret = new ArrayList<LayerInfo>();
 
-        LOGGER.info(" Examining encoded name " + encodedResourceId);
-
         for (MapEntry<String, String> mapEntry : decodedList) {
 
             String namespace = mapEntry.getKey();
             String localName = mapEntry.getValue();
 
             if (namespace == null || namespace.isEmpty()) {
-                LOGGER.log(Level.FINE, " Checking coverage name {0}", localName);
+                LOGGER.log(Level.FINE, " Checking layer name {0}", localName);
 
                 LayerInfo layer = catalog.getLayerByName(localName);
                 if (layer != null) {
@@ -92,6 +98,65 @@ public class NCNameResourceCodec {
                         ret.add(layer);
                     } else {
                         LOGGER.log(Level.FINE, " - Ignoring layer {0} " + fullName);
+                    }
+                } else {
+                    LOGGER.info(" - Namespace not found " + namespace);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Search in the catalog the Styles matching the encoded id.
+     *
+     * <p>
+     *
+     * @return A possibly empty list of the matching styles, or null if the encoded id could not be
+     *     decoded.
+     */
+    public static List<StyleInfo> getStyles(Catalog catalog, String encodedStyleId) {
+        final WorkspaceInfo workspace = LocalWorkspace.get();
+        if (workspace != null) {
+            encodedStyleId = workspace.getName() + DELIMITER + encodedStyleId;
+        }
+
+        List<MapEntry<String, String>> decodedList = decode(encodedStyleId);
+        if (decodedList.isEmpty()) {
+            LOGGER.info("Could not decode id '" + encodedStyleId + "'");
+            return null;
+        }
+
+        List<StyleInfo> ret = new ArrayList<>();
+        for (MapEntry<String, String> mapEntry : decodedList) {
+
+            String namespace = mapEntry.getKey();
+            String localName = mapEntry.getValue();
+
+            if (namespace == null || namespace.isEmpty()) {
+                LOGGER.log(Level.FINE, " Checking style name {0}", localName);
+
+                StyleInfo style = catalog.getStyleByName(localName);
+                if (style != null) {
+                    LOGGER.log(Level.FINE, " - Collecting style {0}", style.prefixedName());
+                    ret.add(style);
+                } else {
+                    LOGGER.log(Level.FINE, " - Ignoring style {0}", localName);
+                }
+            } else {
+                LOGGER.info(" Checking pair " + namespace + " : " + localName);
+
+                String fullName = namespace + ":" + localName;
+                NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
+                if (nsInfo != null) {
+                    LOGGER.log(Level.FINE, " - Namespace found {0}", namespace);
+                    StyleInfo style = catalog.getStyleByName(fullName);
+                    if (style != null) {
+                        LOGGER.log(Level.FINE, " - Collecting style {0} ", style.prefixedName());
+                        ret.add(style);
+                    } else {
+                        LOGGER.log(Level.FINE, " - Ignoring style {0} " + fullName);
                     }
                 } else {
                     LOGGER.info(" - Namespace not found " + namespace);

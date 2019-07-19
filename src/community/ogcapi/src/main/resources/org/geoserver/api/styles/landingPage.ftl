@@ -1,8 +1,8 @@
 <#include "common-header.ftl">
    <div id="content">
-       <h2>${service.title!"GeoServer Features 1.0 Service"}</h2>
+       <h2>${service.title!"GeoServer Styles 1.0 Service"}</h2>
        <p>${service.abstract!""}<br/>
-       This is the landing page of the Features 1.0 service, providing links to the service API and its contents.
+       This is the landing page of the Styles 1.0 service, providing links to the service API and its contents.
        <br/> 
        This document is also available as
        <#list model.getLinksExcept("landingPage", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
@@ -15,11 +15,11 @@
        <#list model.getLinksExcept("api", "application/json") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
        </p>
        
-       <h2>Collections</h2>
-       <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('collections', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service. 
+       <h2>Styles</h2>
+       <p>The <a id="htmlStylesLink" href="${model.getLinkUrl('styles', 'text/html')!}"> styles page</a> provides a list of all the styles available in this service. 
        <br/> 
-       This collection page is also available as
-       <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+       This styles page is also available as
+       <#list model.getLinksExcept("styles", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
        </p>
        
        <h2>Contact information</h2>

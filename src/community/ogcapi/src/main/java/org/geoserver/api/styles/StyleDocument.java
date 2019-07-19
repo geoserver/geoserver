@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
@@ -21,21 +23,30 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.styling.Description;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.MediaType;
 
 @JsonPropertyOrder({"id", "title", "styles", "links"})
 public class StyleDocument extends AbstractDocument {
+
+    static final Logger LOGGER = Logging.getLogger(StyleDocument.class);
 
     String id;
     String title;
 
     public StyleDocument(StyleInfo style) throws IOException {
         this.id = NCNameResourceCodec.encode(style);
-        this.title =
-                Optional.ofNullable(style.getStyle().getDescription())
-                        .map(Description::getTitle)
-                        .map(Object::toString)
-                        .orElse(null);
+        try {
+            this.title =
+                    Optional.ofNullable(style.getStyle().getDescription())
+                            .map(Description::getTitle)
+                            .map(Object::toString)
+                            .orElse(null);
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.WARNING, "Could not get description from style, setting it to null", e);
+            this.title = null;
+        }
 
         APIRequestInfo info = APIRequestInfo.get();
 

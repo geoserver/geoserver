@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -390,5 +392,14 @@ public class SLDHandler extends StyleHandler {
                 .append("</Format>\\n")
                 .append("</ExternalGraphic>\\n")
                 .toString();
+    }
+
+    @Override
+    public URL getSpecification(Version version) throws MalformedURLException {
+        if (version != null && VERSION_11.compareTo(version) == 0) {
+            return new URL("http://portal.opengeospatial.org/files/?artifact_id=22364");
+        } else {
+            return new URL("http://portal.opengeospatial.org/files/?artifact_id=1188");
+        }
     }
 }

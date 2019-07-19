@@ -39,7 +39,8 @@ public class StylesTest extends StylesTestSupport {
                         "generic",
                         "Default",
                         "ws__NamedPlaces",
-                        "PolygonComment"));
+                        "PolygonComment",
+                        "cssSample"));
 
         // concentrate on one and check title and links
         assertEquals("Default Styler", getSingle(json, "styles[?(@.id == 'Default')].title"));
@@ -59,16 +60,5 @@ public class StylesTest extends StylesTestSupport {
                 exists(
                         json,
                         "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.geoserver.geocss+css')]"));
-    }
-
-    Object getSingle(DocumentContext json, String path) {
-        List items = json.read(path);
-        assertEquals(1, items.size());
-        return items.get(0);
-    }
-
-    boolean exists(DocumentContext json, String path) {
-        List items = json.read(path);
-        return items.size() > 0;
     }
 }

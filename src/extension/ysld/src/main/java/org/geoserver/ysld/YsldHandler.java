@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -145,5 +147,10 @@ public class YsldHandler extends StyleHandler {
     @Override
     public boolean supportsEncoding() {
         return true;
+    }
+
+    @Override
+    public URL getSpecification(Version version) throws MalformedURLException {
+        return new URL("https://docs.geoserver.org/latest/en/user/styling/ysld/index.html");
     }
 }

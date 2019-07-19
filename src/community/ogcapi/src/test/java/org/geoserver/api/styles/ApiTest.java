@@ -146,7 +146,8 @@ public class ApiTest extends StylesTestSupport {
                         "raster",
                         "Default",
                         "ws__NamedPlaces",
-                        "PolygonComment"));
+                        "PolygonComment",
+                        "cssSample"));
     }
 
     @Test

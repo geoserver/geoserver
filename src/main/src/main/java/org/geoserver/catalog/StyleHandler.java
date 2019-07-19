@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -227,5 +228,13 @@ public abstract class StyleHandler {
      */
     public boolean supportsEncoding() {
         return false;
+    }
+
+    /**
+     * Returns a URL where the style specification can be found, or null if no specification is
+     * available
+     */
+    public URL getSpecification(Version version) throws MalformedURLException {
+        return null;
     }
 }

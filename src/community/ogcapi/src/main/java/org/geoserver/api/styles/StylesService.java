@@ -141,18 +141,7 @@ public class StylesService {
             NativeWebRequest request,
             HttpServletResponse response)
             throws HttpMediaTypeNotAcceptableException, IOException {
-        List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
-        if (styles == null || styles.isEmpty()) {
-            throw new RestException("Could not locate style " + styleId, HttpStatus.NOT_FOUND);
-        }
-        if (styles.size() > 1) {
-            throw new RestException(
-                    "More than one style can be matched to "
-                            + styleId
-                            + " please contact the service administrator about this",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        StyleInfo styleInfo = styles.get(0);
+        StyleInfo styleInfo = getStyleInfo(styleId);
 
         // check the requested media types, if none specific was requested, just copy over the
         // native style
@@ -185,6 +174,21 @@ public class StylesService {
         throw new RestException(
                 "Could not find a stle encoder for requested media types " + requestedMediaTypes,
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    private StyleInfo getStyleInfo(String styleId) {
+        List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
+        if (styles == null || styles.isEmpty()) {
+            throw new RestException("Could not locate style " + styleId, HttpStatus.NOT_FOUND);
+        }
+        if (styles.size() > 1) {
+            throw new RestException(
+                    "More than one style can be matched to "
+                            + styleId
+                            + " please contact the service administrator about this",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return styles.get(0);
     }
 
     public void writeNativeToResponse(
@@ -226,5 +230,13 @@ public class StylesService {
                 .filter(e -> e.getKey().isCompatibleWith(mediaType))
                 .map(e -> e.getValue())
                 .findFirst();
+    }
+
+    @GetMapping(path = "styles/{styleId}/metadata")
+    @ResponseBody
+    public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
+            throws IOException {
+        StyleInfo styleInfo = getStyleInfo(styleId);
+        return new StyleMetadataDocument(styleInfo, geoServer);
     }
 }

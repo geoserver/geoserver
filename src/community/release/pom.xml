@@ -32,22 +32,22 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
-   </dependency>   
-   <dependency>
+   </dependency> 
+   <!--dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
      <version>${project.version}</version>
-   </dependency>
-   <dependency>
+   </dependency-->
+   <!--dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-js</artifactId>
      <version>${project.version}</version>
-   </dependency>
-   <dependency>
+   </dependency-->
+   <!--dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-groovy</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency-->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>

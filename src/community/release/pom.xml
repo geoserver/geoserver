@@ -309,7 +309,7 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.geoserver.extension</groupId>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
      <version>${project.version}</version>
    </dependency>

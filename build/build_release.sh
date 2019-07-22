@@ -20,6 +20,7 @@ function usage() {
   echo
   echo "Environment variables:"
   echo " SKIP_BUILD : Skips main release build"
+  echo " SKIP_COMMUNITY : Skips community release build"
   echo " SKIP_TAG : Skips tag on release branch"
   echo " SKIP_INSTALLERS : Skips building of mac and windows installers"
   echo " SKIP_GT : Skips the GeoTools build, as used to build revision"
@@ -279,8 +280,20 @@ if [ -z $SKIP_BUILD ]; then
   ant developer -Dproject.version=$tag
 
   popd > /dev/null
-
+else
+   echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release"
 fi
+
+if [ -z $SKIP_COMMUNITY ]; then
+   pushd community > /dev/null
+   set +e
+   mvn clean install -P communityRelease -DskipTests $MAVEN_FLAGS || true
+   set -e
+   popd > /dev/null
+else
+   echo "Skipping mvn clean install -P communityRelease -DskipTests"
+fi
+
 
 mvn assembly:attached $MAVEN_FLAGS
 

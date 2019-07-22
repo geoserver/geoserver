@@ -12,6 +12,7 @@ function usage() {
   echo "Environment variables:"
   echo " MAVEN_SETTINGS : settings.xml override"
   echo " SKIP_DEPLOY : Skips deploy to maven repository"
+  echo " SKIP_COMMUNITY : Skips deploy of community modules"
   echo " SKIP_UPLOAD : Skips upload to source forge"
 }
 
@@ -71,15 +72,18 @@ git checkout -b rel_$tag $tag
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
    mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
+else
+   echo "Skipping mvn clean install deploy -P allExtensions -DskipTests"
+fi
 
-   # deploy released community modules
+if [ -z $SKIP_COMMUNITY ]; then
    pushd community > /dev/null
    set +e
-   mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 
+   mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS || true
    set -e
    popd > /dev/null
 else
-   echo "Skipping mvn clean install deploy -P allExtensions -DskipTests"
+   echo "Skipping mvn clean install deploy -P communityRelease -DskipTests"
 fi
 
 popd > /dev/null

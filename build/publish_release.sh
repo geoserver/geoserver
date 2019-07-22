@@ -72,7 +72,7 @@ pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
    mvn deploy -P allExtensions -DskipTests $MAVEN_FLAGS 
 
-   deploy released community modules
+   # deploy released community modules
    pushd community > /dev/null
    set +e
    mvn clean install deploy -P communityRelease -DskipTests $MAVEN_FLAGS 

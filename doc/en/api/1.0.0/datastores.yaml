@@ -284,7 +284,120 @@ paths:
       responses:
         405:
           description: Method Not Allowed
-
+  /workspaces/{workspaceName}/appschemastores/{storeName}/cleanSchemas:
+    post:
+      operationId: cleanAllMongoSchemas
+      summary: Cleans all MongoDB internal stores Schemas for an App-Schema store. 
+      description: Cleans all MongoDB internal stores Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/appschemastores/{storeName}/datastores/{internalStoreId}/cleanSchemas:
+    post:
+      operationId: cleanMongoSchema
+      summary: Cleans a MongoDB internal store Schemas for an App-Schema store. 
+      description: Cleans a MongoDB internal store Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+        - name: internalStoreId
+          in: path
+          required: true
+          description: The store ID for the internal MongoDB store as specified on App-Schema Mappings.
+          type: string
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/appschemastores/{storeName}/rebuildMongoSchemas:
+    post:
+      operationId: rebuildAllMongoSchemas
+      summary: Rebuilds all MongoDB internal stores Schemas for an App-Schema store. 
+      description: Rebuilds all MongoDB internal stores Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+        - name: ids
+          in: query
+          required: false
+          description: Comma separated MongoDB object IDs for use in new generated schema.
+          type: string
+        - name: max
+          in: query
+          required: false
+          description: Max number of objects for use in new generated schema.
+          type: integer
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/appschemastores/{storeName}/datastores/{internalStoreId}/rebuildMongoSchemas:
+    post:
+      operationId: rebuildMongoSchema
+      summary: Rebuilds a MongoDB internal store Schemas for an App-Schema store. 
+      description: Rebuilds a MongoDB internal store Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+        - name: internalStoreId
+          in: path
+          required: true
+          description: The store ID for the internal MongoDB store as specified on App-Schema Mappings.
+          type: string
+        - name: ids
+          in: query
+          required: false
+          description: Comma separated MongoDB object IDs for use in new generated schema.
+          type: string
+        - name: max
+          in: query
+          required: false
+          description: Max number of objects for use in new generated schema.
+          type: integer
+      responses:
+        200:
+          description: OK		
 parameters:
   dataStorePost:
     name: dataStoreBody

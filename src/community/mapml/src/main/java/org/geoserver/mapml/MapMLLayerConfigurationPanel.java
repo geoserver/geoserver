@@ -22,12 +22,12 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 
 /** Resource configuration panel for MapML */
-public class MapMLConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
+public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
 
     private static final long serialVersionUID = 1L;
 
     /** Adds MapML configuration panel */
-    public MapMLConfigurationPanel(final String panelId, final IModel<LayerInfo> model) {
+    public MapMLLayerConfigurationPanel(final String panelId, final IModel<LayerInfo> model) {
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =

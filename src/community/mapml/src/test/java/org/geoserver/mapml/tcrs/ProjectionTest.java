@@ -27,6 +27,38 @@ public class ProjectionTest {
     public ProjectionTest() {}
 
     @Test
+    public void testWGS84() {
+        proj = new Projection("urn:ogc:def:crs:OGC:1.3:CRS84");
+
+        // a location
+        LatLng latlng = new LatLng(45.398043, -75.70683);
+
+        Point expected = new Point(-75.70683D, 45.398043D);
+
+        // the location calculated
+        Point actual = null;
+        try {
+
+            actual = proj.project(latlng);
+        } catch (MismatchedDimensionException | TransformException ex) {
+            fail("Exception during project operation");
+        }
+
+        assertEquals(expected.x, actual.x, 0.0001);
+        assertEquals(expected.y, actual.y, 0.0001);
+
+        // reverse the process
+        LatLng unprojected = null;
+        try {
+            unprojected = proj.unproject(actual);
+        } catch (MismatchedDimensionException | TransformException ex) {
+            fail("Exception during unproject operation");
+        }
+        assertEquals(latlng.lat, unprojected.lat, 0.00000001);
+        assertEquals(latlng.lng, unprojected.lng, 0.00000001);
+    }
+
+    @Test
     public void testWebMercator() {
         // Spherical/Web Mercator
         proj = new Projection("urn:x-ogc:def:crs:EPSG:3857");

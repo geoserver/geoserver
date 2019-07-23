@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,9 +56,10 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.resource.FileSystemResourceReference;
+import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.util.io.IOUtils;
+import org.apache.wicket.util.resource.AbstractResourceStream;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
@@ -190,37 +189,31 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     new DropDownChoice<String>(
                             "image", imageModel, new ArrayList<String>(imageSet));
 
-            URI stylesDir = dd.getStyles(ws).dir().toURI();
-
             Image display =
                     new Image(
                             "display",
-                            new IModel<ResourceReference>() {
+                            new ResourceStreamResource(
+                                    new AbstractResourceStream() {
+                                        InputStream is;
 
-                                @Override
-                                public ResourceReference getObject() {
-                                    if (imageModel.getObject() != null) {
-                                        try {
-                                            return new FileSystemResourceReference(
-                                                    imageModel.getObject(),
-                                                    FileSystemResourceReference.getPath(
-                                                            stylesDir.resolve(
-                                                                    imageModel.getObject())));
-                                        } catch (IOException | URISyntaxException e) {
-                                            LOGGER.log(Level.WARNING, e.getMessage(), e);
-                                            return null;
+                                        @Override
+                                        public InputStream getInputStream()
+                                                throws ResourceStreamNotFoundException {
+                                            GeoServerDataDirectory dd =
+                                                    GeoServerApplication.get()
+                                                            .getBeanOfType(
+                                                                    GeoServerDataDirectory.class);
+                                            is = dd.getStyles(ws).get(imageModel.getObject()).in();
+                                            return is;
                                         }
-                                    } else {
-                                        return null;
-                                    }
-                                }
 
-                                @Override
-                                public void setObject(ResourceReference object) {}
-
-                                @Override
-                                public void detach() {}
-                            });
+                                        @Override
+                                        public void close() throws IOException {
+                                            if (is != null) {
+                                                is.close();
+                                            }
+                                        }
+                                    }));
             display.setOutputMarkupPlaceholderTag(true).setVisible(false);
 
             image.setNullValid(true)

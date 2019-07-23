@@ -28,7 +28,6 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.apache.wicket.util.tester.WicketTesterHelper;
@@ -234,14 +233,6 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         tester.executeAjaxEvent("dialog:dialog:content:form:userPanel:image", "change");
         tester.assertVisible("dialog:dialog:content:form:userPanel:display");
-        assertTrue(
-                ((ResourceReference)
-                                ((org.apache.wicket.markup.html.image.Image)
-                                                tester.getComponentFromLastRenderedPage(
-                                                        "dialog:dialog:content:form:userPanel:display"))
-                                        .getDefaultModelObject())
-                        .getName()
-                        .equals("somepicture.png"));
 
         formTester.submit("submit");
 

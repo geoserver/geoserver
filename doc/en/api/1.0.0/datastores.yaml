@@ -395,6 +395,11 @@ paths:
           required: false
           description: Max number of objects for use in new generated schema.
           type: integer
+        - name: schema
+          in: query
+          required: false
+          description: Name of schema to re-build.
+          type: string
       responses:
         200:
           description: OK		

@@ -5,8 +5,10 @@
 package org.geoserver.rest.service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,13 +157,7 @@ public class MongoStoreRestController extends AbstractGeoServerController {
         // check for internal datastore
         List<Name> names = appSchemaStore.getNames();
         final Set<MongoDataStore> mongoStores = new HashSet<>();
-        for (Name ename : names) {
-            FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
-            DataAccess internalStore = mapping.getSource().getDataStore();
-            if (internalStore instanceof MongoDataStore) {
-                mongoStores.add((MongoDataStore) internalStore);
-            }
-        }
+        fillMongoStoresSet(appSchemaStore, names, mongoStores);
         if (mongoStores.isEmpty()) {
             throw new RestException(
                     "Internal MongoDB Datastores not found.", HttpStatus.BAD_REQUEST);
@@ -199,17 +195,11 @@ public class MongoStoreRestController extends AbstractGeoServerController {
         if (!(store instanceof AppSchemaDataAccess)) {
             throw new RestException("Datastore is not an App-Schema one.", HttpStatus.BAD_REQUEST);
         }
-        AppSchemaDataAccess appSchemaStore = (AppSchemaDataAccess) store;
+        final AppSchemaDataAccess appSchemaStore = (AppSchemaDataAccess) store;
         // check for internal datastore
         List<Name> names = appSchemaStore.getNames();
         final Set<MongoDataStore> mongoStores = new HashSet<>();
-        for (Name ename : names) {
-            FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
-            DataAccess internalStore = mapping.getSource().getDataStore();
-            if (internalStore instanceof MongoDataStore) {
-                mongoStores.add((MongoDataStore) internalStore);
-            }
-        }
+        fillMongoStoresSet(appSchemaStore, names, mongoStores);
         if (mongoStores.isEmpty()) {
             throw new RestException(
                     "Internal MongoDB Datastores not found.", HttpStatus.BAD_REQUEST);
@@ -221,17 +211,22 @@ public class MongoStoreRestController extends AbstractGeoServerController {
                             .maxObjects(max != null ? max : 1)
                             .ids(StringUtils.isNotBlank(ids) ? ids.split(",") : new String[] {})
                             .build();
-            st.setSchemaInitParams(schemaInitParams);
+            String storeId = getStoreId(appSchemaStore, st);
+            if (storeId == null) {
+                LOGGER.warning("Error retrieving an internal store id.");
+                continue;
+            }
+            final Set<String> usedSchemas = extractUsedSchemas(appSchemaStore, storeId);
             List<String> typeNames = st.getSchemaStore().typeNames();
-            String[] storeTypeNames = st.getTypeNames();
             LOGGER.log(Level.INFO, "Found {0} schemas for deleting.", typeNames.size());
             for (String et : typeNames) {
                 LOGGER.log(Level.INFO, "Deleting schema: {0}", et);
                 st.getSchemaStore().deleteSchema(new NameImpl(et));
             }
             st.cleanEntries();
+            st.setSchemaInitParams(schemaInitParams);
             // rebuild schemas
-            for (String et : storeTypeNames) {
+            for (String et : usedSchemas) {
                 LOGGER.log(Level.INFO, "Rebuilding store schema: {0}", et);
                 ContentFeatureSource featureSource = st.getFeatureSource(et);
                 SimpleFeatureType simpleFeatureType = featureSource.getFeatures().getSchema();
@@ -240,6 +235,30 @@ public class MongoStoreRestController extends AbstractGeoServerController {
         }
         geoServer.getCatalog().save(appSchemaStoreInfo);
         return ResponseEntity.ok().build();
+    }
+
+    private String getStoreId(AppSchemaDataAccess appSchemaStore, MongoDataStore mongoStore)
+            throws IOException {
+        for (Name etn : appSchemaStore.getNames()) {
+            FeatureTypeMapping featureTypeMapping = appSchemaStore.getMappingByName(etn);
+            if (Objects.equals(mongoStore, featureTypeMapping.getSource().getDataStore()))
+                return featureTypeMapping.getSourceDatastoreId().orElse(null);
+        }
+        return null;
+    }
+
+    private void fillMongoStoresSet(
+            final AppSchemaDataAccess appSchemaStore,
+            List<Name> names,
+            final Set<MongoDataStore> mongoStores)
+            throws IOException {
+        for (Name ename : names) {
+            FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
+            DataAccess internalStore = mapping.getSource().getDataStore();
+            if (internalStore instanceof MongoDataStore) {
+                mongoStores.add((MongoDataStore) internalStore);
+            }
+        }
     }
 
     /** Clears schema files and entries for the provided MongoDB store. */
@@ -251,7 +270,8 @@ public class MongoStoreRestController extends AbstractGeoServerController {
             @PathVariable String appschemaStoreName,
             @PathVariable String storeId,
             @RequestParam(required = false) String ids,
-            @RequestParam(required = false) Integer max)
+            @RequestParam(required = false) Integer max,
+            @RequestParam(required = false) String schema)
             throws IOException {
         LOGGER.info("Executing mongoDB clear schema endpoint.");
         // check all parameters required
@@ -268,8 +288,58 @@ public class MongoStoreRestController extends AbstractGeoServerController {
         if (!(store instanceof AppSchemaDataAccess)) {
             throw new RestException("Datastore is not an App-Schema one.", HttpStatus.BAD_REQUEST);
         }
-        AppSchemaDataAccess appSchemaStore = (AppSchemaDataAccess) store;
+        final AppSchemaDataAccess appSchemaStore = (AppSchemaDataAccess) store;
         // check for internal datastore
+        final MongoDataStore mongoStore = getMongoStoreById(storeId, appSchemaStore);
+        MongoSchemaInitParams schemaInitParams =
+                MongoSchemaInitParams.builder()
+                        .maxObjects(max != null ? max : 1)
+                        .ids(StringUtils.isNotBlank(ids) ? ids.split(",") : new String[] {})
+                        .build();
+        final Set<String> usedSchemas = extractUsedSchemas(appSchemaStore, storeId);
+        List<String> typeNames = mongoStore.getSchemaStore().typeNames();
+        LOGGER.log(Level.INFO, "Found {0} schemas for deleting.", typeNames.size());
+        for (String et : typeNames) {
+            LOGGER.log(Level.INFO, "Deleting schema: {0}", et);
+            mongoStore.getSchemaStore().deleteSchema(new NameImpl(et));
+        }
+        mongoStore.cleanEntries();
+        mongoStore.setSchemaInitParams(schemaInitParams);
+        // if a schema name is provided, build it only
+        if (StringUtils.isNotBlank(schema)) {
+            ContentFeatureSource featureSource = mongoStore.getFeatureSource(schema);
+            SimpleFeatureType simpleFeatureType = featureSource.getFeatures().getSchema();
+            mongoStore.getSchemaStore().storeSchema(simpleFeatureType);
+        } else {
+            // extract schemas used in featureMappings and rebuild only them
+            for (String name : usedSchemas) {
+                LOGGER.log(Level.INFO, "Rebuilding store schema: {0}", name);
+                ContentFeatureSource featureSource = mongoStore.getFeatureSource(name);
+                SimpleFeatureType simpleFeatureType = featureSource.getFeatures().getSchema();
+                mongoStore.getSchemaStore().storeSchema(simpleFeatureType);
+            }
+        }
+        geoServer.getCatalog().save(appSchemaStoreInfo);
+        return ResponseEntity.ok().build();
+    }
+
+    private Set<String> extractUsedSchemas(AppSchemaDataAccess appSchemaStore, String storeId)
+            throws IOException {
+        final List<Name> names = appSchemaStore.getNames();
+        final Set<String> schemas = new HashSet<>();
+        for (Name en : names) {
+            FeatureTypeMapping mapping = appSchemaStore.getMappingByName(en);
+            String eid = mapping.getSourceDatastoreId().orElse(null);
+            if (Objects.equals(storeId, eid)) {
+                Name schemaName = mapping.getSource().getSchema().getName();
+                schemas.add(schemaName.getLocalPart());
+            }
+        }
+        return Collections.unmodifiableSet(schemas);
+    }
+
+    private MongoDataStore getMongoStoreById(
+            String storeId, final AppSchemaDataAccess appSchemaStore) throws IOException {
         MongoDataStore mongoStore = null;
         List<Name> names = appSchemaStore.getNames();
         for (Name ename : names) {
@@ -287,28 +357,7 @@ public class MongoStoreRestController extends AbstractGeoServerController {
         if (mongoStore == null) {
             throw new RestException("Internal Datastore not found.", HttpStatus.BAD_REQUEST);
         }
-        MongoSchemaInitParams schemaInitParams =
-                MongoSchemaInitParams.builder()
-                        .maxObjects(max != null ? max : 1)
-                        .ids(StringUtils.isNotBlank(ids) ? ids.split(",") : new String[] {})
-                        .build();
-        mongoStore.setSchemaInitParams(schemaInitParams);
-        List<String> typeNames = mongoStore.getSchemaStore().typeNames();
-        String[] storeTypeNames = mongoStore.getTypeNames();
-        LOGGER.log(Level.INFO, "Found {0} schemas for deleting.", typeNames.size());
-        for (String et : typeNames) {
-            LOGGER.log(Level.INFO, "Deleting schema: {0}", et);
-            mongoStore.getSchemaStore().deleteSchema(new NameImpl(et));
-        }
-        mongoStore.cleanEntries();
-        for (String name : storeTypeNames) {
-            LOGGER.log(Level.INFO, "Rebuilding store schema: {0}", name);
-            ContentFeatureSource featureSource = mongoStore.getFeatureSource(name);
-            SimpleFeatureType simpleFeatureType = featureSource.getFeatures().getSchema();
-            mongoStore.getSchemaStore().storeSchema(simpleFeatureType);
-        }
-        geoServer.getCatalog().save(appSchemaStoreInfo);
-        return ResponseEntity.ok().build();
+        return mongoStore;
     }
 
     private void checkSchemaGenerationParameters(String ids, Integer max) {

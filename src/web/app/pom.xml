@@ -1591,16 +1591,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>status-monitoring</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-status-monitoring</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>nsg-wfs-profile</id>
       <dependencies>
         <dependency>

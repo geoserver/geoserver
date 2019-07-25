@@ -472,5 +472,7 @@
 		<property name="titleKey" value="publish.layer.config"/>
 		<property name="componentClass" value="org.geoserver.web.publish.ServiceLayerConfigurationPanel"/>
 	</bean>
+	
+	<bean id="systemStatusMonitorTab" class="org.geoserver.web.system.status.SystemStatusTab"/>
  
 </beans>

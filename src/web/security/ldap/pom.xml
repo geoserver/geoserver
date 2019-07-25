@@ -53,6 +53,11 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-all</artifactId>
+        <scope>test</scope>
+    </dependency>
     <!--
       bcprov-jdk15 must be before spring-ldap-test because the latter depends
       on apacheds-all, which repackages an unsigned bcprov-jdk5 security

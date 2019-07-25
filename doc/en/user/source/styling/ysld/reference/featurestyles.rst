@@ -90,7 +90,7 @@ The following is the basic syntax of a feature style. Note that the contents of 
        ...
      rules:
      - ...
-     x-firstMatch: <boolean>
+     x-ruleEvaluation: <text>
      x-composite: <text>
      x-composite-base: <boolean>
 
@@ -139,10 +139,10 @@ The following properties are equivalent to SLD "vendor options".
      - Required?
      - Description
      - Default value
-   * - ``x-FirstMatch``
+   * - ``x-ruleEvaluation``
      - No
-     - Stops rule evaluation after the first match. Can make the rendering more efficient by reducing the number of rules that need to be traversed by features, as well as simplyfing the rule filters.
-     - ``false``
+     - When equals to ``first`` - stops rule evaluation after the first match. Can make the rendering more efficient by reducing the number of rules that need to be traversed by features, as well as simplyfing the rule filters.
+     - ``all``
    * - ``x-composite``
      - No
      - Allows for both alpha compositing and color blending options between buffers. There are many options; :ref:`see below <ysld_reference_featurestyles_composite>`.
@@ -388,7 +388,7 @@ When drawn, the outer line has a width of 8 pixels and the inner line has a widt
 First match
 ~~~~~~~~~~~
 
-Given a style that has many rules with distinct outcomes, it may be advantageous to employ ``x-firstMatch`` so as to improve rendering efficiency and simplify those rules.
+Given a style that has many rules with distinct outcomes, it may be advantageous to employ ``x-ruleEvaluation: first`` so as to improve rendering efficiency and simplify those rules.
 
 This first example shows the standard way of creating rules for a dataset. There are villages, towns, and cities (``type = 'village'``, ``type = 'town'`` or ``type = 'city'``) and they have an ``industry`` which could be either ``fishing`` or other values.
 
@@ -422,7 +422,7 @@ This first example shows the standard way of creating rules for a dataset. There
        - point:
            <<: *allotherplaces
 
-Using the ``x-firstMatch: true`` parameter, the style is simplified:
+Using the ``x-ruleEvaluation: first`` parameter, the style is simplified:
 
 .. code-block:: yaml
    :linenos:
@@ -430,7 +430,7 @@ Using the ``x-firstMatch: true`` parameter, the style is simplified:
 
    feature-styles:
    - name: with_first_match
-     x-firstMatch: true
+     x-ruleEvaluation: first
      rules:
      - name: fishing_town
        filter: ${type = 'town' AND industry = 'fishing'}

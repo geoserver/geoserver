@@ -24,16 +24,19 @@ This may cause difficulties when switching between servers with different WFS ve
      - longitude/latitude (x/y)
    * - ``urn:x-ogc:def:crs:EPSG:xxxx``
      - latitude/longitude (y/x) 
+   * - ``urn:ogc:def:crs:EPSG::4326``
+     - latitude/longitude (y/x) 
+
 
 To compare the spatial reference system definition for ``EPSG:4326`` navigate :menuselection:`Demos --> SRS List` page and search for :kbd`4326`:
 
 .. figure:: img/wgs84-epsg-description.png
    
-   WGS EPSG definition
+   WGS84 EPSG definition
 
 .. figure:: img/wgs84-internal-description.png
    
-   WGS Internal definition
+   WGS84 Internal definition
 
 The default data directory includes the following dataset illustrating this challenge:
 
@@ -85,6 +88,7 @@ WFS 1.0 output format GML3
 ``````````````````````````
 
 * GML3.1 (default ``EPSG:4326``):
+  
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml3
 
   GML3 output uses ``http://www.opengis.net/gml/srs/epsg.xml#4326`` reference, with data in x/y order:
@@ -100,6 +104,7 @@ WFS 1.0 output format GML3
                  -88.071564 37.51099 -88.087883 37.476273
 
 * GML3.1 reproject to ``EPSG:4326``
+  
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml3&srsName=urn:x-ogc:def:crs:EPSG:4326
   
   GML3 output uses ``http://www.opengis.net/gml/srs/epsg.xml#4326`` reference, with data in x/y order:
@@ -115,6 +120,7 @@ WFS 1.0 output format GML3
                  -88.071564 37.51099 -88.087883
   
 * GML 3.1 reproject to ``urn:x-ogc:def:crs:EPSG:4326``
+  
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml3&srsName=urn:x-ogc:def:crs:EPSG:4326
   
   GML3.1 output using ``urn:x-ogc:def:crs:EPSG:4326`` reference and data in y/x order:
@@ -132,7 +138,9 @@ WFS 1.0 output format GML3
 WFS 1.0 output format GML32
 ```````````````````````````````
 
-* GML3.2: http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml32
+* GML3.2: 
+  
+  http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml32
 
   The GML32 output uses ``http://www.opengis.net/gml/srs/epsg.xml#4326`` reference, with data in x/y order:
   
@@ -149,6 +157,7 @@ WFS 1.0 output format GML32
 
 
 * GML3.2 reproject to ``EPSG:4326``:
+  
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml32&srsName=EPSG:4326
 
   The GML32 output uses ``http://www.opengis.net/gml/srs/epsg.xml#4326`` reference, with data in x/y order:
@@ -166,6 +175,7 @@ WFS 1.0 output format GML32
   .. warning:: This combination is inconsistent with ``srsName`` definition and may confuse client applications.
 
 * GML3.2 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
+  
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml32&srsName=urn:x-ogc:def:crs:EPSG:4326
   
   GML3.2 output using ``urn:x-ogc:def:crs:EPSG:4326`` reference and data in y/x order:
@@ -239,9 +249,9 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default ``EPSG:432
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
    
-   .. warning:: This output combination of ``srsName`` and x/y order is technically inconsistent and may confuse applications expecting a valid GML3 document.
-      
-      This approach can be used to force x/y order.
+  .. warning:: This output combination of ``srsName`` and x/y order is technically inconsistent and may confuse applications expecting a valid GML3 document.
+     
+     This approach can be used to force x/y order.
 
 
 * WFS 1.1 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
@@ -296,9 +306,9 @@ WFS 1.1 output format GML2
                <gml:coordinates decimal="." cs="," ts=" ">
                  -88.071564,37.51099 -88.087883,37.476273
 
-   .. warning:: The output combination of ``srsName`` and coordinates x/y order is technically inconsistent and may confuse applications expecting a valid GML2 document.
-      
-      This approach can be used to force x/y order.
+  .. warning:: The output combination of ``srsName`` and coordinates x/y order is technically inconsistent and may confuse applications expecting a valid GML2 document.
+    
+     This approach can be used to force x/y order.
 
 WFS 1.1 output format GML3
 ````````````````````````````
@@ -336,9 +346,9 @@ WFS 1.1 output format GML3
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
    
-   .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
-      
-      This approach can be used to force x/y order.
+  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
+     
+     This approach can be used to force x/y order.
    
 * GML3 reproject to ``urn:x-ogc:def:crs:EPSG:4326``
   
@@ -356,9 +366,9 @@ WFS 1.1 output format GML3
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
    
-   .. warning:: This combination is inconsistent and may confuse applications expecting a valid GML3 document.
-      
-      This approach can be used to force x/y order.
+  .. warning:: This combination is inconsistent and may confuse applications expecting a valid GML3 document.
+     
+     This approach can be used to force x/y order.
 
 WFS 1.1 output format GML32
 ````````````````````````````
@@ -517,9 +527,9 @@ WFS 2.0 output format GML2
                <gml:coordinates decimal="." cs="," ts=" ">
                  -88.071564,37.51099 -88.087883,37.476273
 
-   .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML2 document.
-      
-      This approach can be used to force x/y order.
+  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML2 document.
+     
+     This approach can be used to force x/y order.
 
 * GML2 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
   
@@ -566,9 +576,9 @@ WFS 2.0 output format GML3
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
 
-   .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
-   
-      This approach can be used to force x/y order.
+  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
+  
+     This approach can be used to force x/y order.
       
 * GML3 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
   
@@ -613,9 +623,9 @@ WFS 2.0 output format GML32
              <gml:posList>
                -88.071564 37.51099 -88.087883 37.476273
                
-   .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
+  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
    
-      This approach can be used to force x/y order.
+     This approach can be used to force x/y order.
       
 * GML32 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
   

@@ -83,7 +83,7 @@ The use of the ``Forwarded`` header is a tad more complex, as its components hav
 Multiple templates can be put into the "Proxy Base URL". These templates provide fall-backs, since only the first one that is fully matched is used. 
 For instance, a Proxy Base URL of ``http://${X-Forwarded-Host}/geoserver http://www.foo.org/geoserver`` (Templates are space-separated.) can result in either: ``http://www.example.com/geoserver`` (if ``X-Forwarded-Host`` is set to ``www.example.com``.)  or ``http://www.foo.org/geoserver``  (if ``X-Forwarded-Host`` is not set.)
 
-Header names in templates are case-insensitive.
+Both header names and the appended path (e.g. ``/geoserver``) in templates are case-insensitive.
 
 
 Logging Profile

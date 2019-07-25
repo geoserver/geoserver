@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -139,6 +140,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
     private Collection<ExtendedCapabilitiesProvider> extCapsProviders;
 
+    /** if true, forces always including a root Layer element * */
+    private Boolean includeRootLayer = null;
+
     /**
      * Creates a new WMSCapsTransformer object.
      *
@@ -148,6 +152,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      * @param getMapFormats the list of supported output formats to state for the GetMap request
      * @param getLegendGraphicFormats the list of supported output formats to state for the
      *     GetLegendGraphic request
+     * @param extCapsProviders collection of providers of extended capabilities content
      * @throws NullPointerException if <code>schemaBaseUrl</code> is null;
      */
     public GetCapabilitiesTransformer(
@@ -174,10 +179,25 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         setEncoding(encoding);
     }
 
+    /**
+     * Optional root layer include / exclude flag
+     *
+     * @param includeRootLayer whether to always include root Layer element , also if there is a
+     *     already single top Layer element
+     */
+    public void setIncludeRootLayer(Boolean includeRootLayer) {
+        this.includeRootLayer = includeRootLayer;
+    }
+
     @Override
     public Translator createTranslator(ContentHandler handler) {
         return new CapabilitiesTranslator(
-                handler, wmsConfig, getMapFormats, getLegendGraphicFormats, extCapsProviders);
+                handler,
+                wmsConfig,
+                getMapFormats,
+                getLegendGraphicFormats,
+                extCapsProviders,
+                includeRootLayer);
     }
 
     /**
@@ -246,6 +266,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         private WMSInfo serviceInfo;
 
+        private Boolean includeRootLayer;
+
         /**
          * Creates a new CapabilitiesTranslator object.
          *
@@ -257,7 +279,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 WMS wmsConfig,
                 Set<String> getMapFormats,
                 Set<String> getLegendGraphicFormats,
-                Collection<ExtendedCapabilitiesProvider> extCapsProviders) {
+                Collection<ExtendedCapabilitiesProvider> extCapsProviders,
+                Boolean includeRootlayer) {
             super(handler, null, null);
             this.wmsConfig = wmsConfig;
             this.getMapFormats = getMapFormats;
@@ -282,6 +305,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             this.skipping =
                     ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                             wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
+            this.includeRootLayer = includeRootlayer;
         }
 
         /**
@@ -670,21 +694,111 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          *     nested layers, gridcoverages, etc)
          */
         private void handleLayers() {
-            start("Layer");
             // get filtered and ordered layers:
             final List<LayerInfo> layers = getOrderedLayers();
+            final List<LayerGroupInfo> layerGroups = getOrderedLayerGroups();
+            Set<LayerInfo> layersAlreadyProcessed =
+                    getLayersInGroups(new ArrayList<LayerGroupInfo>(layerGroups));
 
-            // WMSInfo serviceInfo = wmsConfig.getServiceInfo();
-            if (StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
-                element("Title", serviceInfo.getTitle());
+            if (includeRootLayer(layers, layerGroups, layersAlreadyProcessed)) {
+                start("Layer");
+
+                // WMSInfo serviceInfo = wmsConfig.getServiceInfo();
+                if (StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
+                    element("Title", serviceInfo.getTitle());
+                } else {
+                    element("Title", serviceInfo.getRootLayerTitle());
+                }
+                if (StringUtils.isBlank(serviceInfo.getRootLayerAbstract())) {
+                    element("Abstract", serviceInfo.getAbstract());
+                } else {
+                    element("Abstract", serviceInfo.getRootLayerAbstract());
+                }
+                Set<String> srs = getServiceSRSList();
+                handleRootCrsList(srs);
+
+                handleRootBbox(layers);
+
+                // handle AuthorityURL
+                handleAuthorityURL(serviceInfo.getAuthorityURLs());
+
+                // handle identifiers
+                handleLayerIdentifiers(serviceInfo.getIdentifiers());
+
+                // encode layer groups
+                try {
+                    handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups), false);
+                } catch (Exception e) {
+                    throw new RuntimeException(
+                            "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
+                }
+
+                // now encode each layer individually
+                LayerTree featuresLayerTree = new LayerTree(layers);
+                handleLayerTree(featuresLayerTree, layersAlreadyProcessed, false);
+
+                end("Layer");
             } else {
-                element("Title", serviceInfo.getRootLayerTitle());
+                if (layerGroups.size() > 0) {
+                    try {
+                        handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups), true);
+                    } catch (Exception e) {
+                        throw new RuntimeException(
+                                "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
+                    }
+                } else {
+                    // now encode the single layer
+                    LayerTree featuresLayerTree = new LayerTree(layers);
+                    handleLayerTree(featuresLayerTree, layersAlreadyProcessed, true);
+                }
             }
-            if (StringUtils.isBlank(serviceInfo.getRootLayerAbstract())) {
-                element("Abstract", serviceInfo.getAbstract());
-            } else {
-                element("Abstract", serviceInfo.getRootLayerAbstract());
+        }
+
+        private boolean includeRootLayer(
+                List<LayerInfo> layers,
+                List<LayerGroupInfo> layerGroups,
+                Set<LayerInfo> layersAlreadyProcessed) {
+            final PublishedInfo singleRoot =
+                    getSingleRoot(layers, layerGroups, layersAlreadyProcessed);
+            // is there a single top element? if not, we have to include root
+            if (singleRoot != null) {
+                // first we check if the user has specified a rootLayer param
+                if (includeRootLayer != null) {
+                    return includeRootLayer.booleanValue();
+                }
+                // then we check for layer / group level setting
+                Boolean layerIncludeRoot =
+                        singleRoot
+                                .getMetadata()
+                                .get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class);
+                if (layerIncludeRoot != null) {
+                    return layerIncludeRoot.booleanValue();
+                }
+                // finally we return global WMS setting
+                return wmsConfig.isRootLayerInCapabilitesEnabled();
             }
+            return true;
+        }
+
+        private PublishedInfo getSingleRoot(
+                List<LayerInfo> layers,
+                List<LayerGroupInfo> layerGroups,
+                Set<LayerInfo> layersAlreadyProcessed) {
+            List<LayerInfo> rootLayers =
+                    layers.stream()
+                            .filter(layer -> includeLayer(layersAlreadyProcessed, layer))
+                            .collect(Collectors.toList());
+            List<LayerGroupInfo> rootGroups = filterNestedGroups(layerGroups);
+            if (rootLayers.size() == 1 && rootGroups.size() == 0) {
+                return rootLayers.get(0);
+            }
+            if (rootLayers.size() == 0 && rootGroups.size() == 1) {
+                return rootGroups.get(0);
+            }
+            return null;
+        }
+
+        private Set<String> getServiceSRSList() {
             List<String> srsList = serviceInfo.getSRS();
             Set<String> srs = new LinkedHashSet<String>();
             if (srsList != null) {
@@ -693,33 +807,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
                 provider.customizeRootCrsList(srs);
             }
-            handleRootCrsList(srs);
-
-            handleRootBbox(layers);
-
-            // handle AuthorityURL
-            handleAuthorityURL(serviceInfo.getAuthorityURLs());
-
-            // handle identifiers
-            handleLayerIdentifiers(serviceInfo.getIdentifiers());
-
-            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
-
-            // encode layer groups
-            try {
-                List<LayerGroupInfo> layerGroups = getOrderedLayerGroups();
-                layersAlreadyProcessed =
-                        handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
-            }
-
-            // now encode each layer individually
-            LayerTree featuresLayerTree = new LayerTree(layers);
-            handleLayerTree(featuresLayerTree, layersAlreadyProcessed);
-
-            end("Layer");
+            return srs;
         }
 
         /**
@@ -854,7 +942,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         /** @param layerTree */
         private void handleLayerTree(
-                final LayerTree layerTree, Set<LayerInfo> layersAlreadyProcessed) {
+                final LayerTree layerTree, Set<LayerInfo> layersAlreadyProcessed, boolean isRoot) {
             final List<LayerInfo> data = new ArrayList<LayerInfo>(layerTree.getData());
             final Collection<LayerTree> children = layerTree.getChildrens();
 
@@ -869,12 +957,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             for (LayerInfo layer : data) {
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
                 // don't expose a geometryless layer through wms
-                if (layer.enabled()
-                        && !layersAlreadyProcessed.contains(layer)
-                        && isExposable(layer)) {
+                if (includeLayer(layersAlreadyProcessed, layer)) {
                     try {
                         mark();
-                        handleLayer(layer);
+                        handleLayer(layer, isRoot);
                         commit();
                     } catch (Exception e) {
                         if (skipping) {
@@ -898,9 +984,13 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 start("Layer");
                 element("Name", childLayerTree.getName());
                 element("Title", childLayerTree.getName());
-                handleLayerTree(childLayerTree, layersAlreadyProcessed);
+                handleLayerTree(childLayerTree, layersAlreadyProcessed, false);
                 end("Layer");
             }
+        }
+
+        private boolean includeLayer(Set<LayerInfo> layersAlreadyProcessed, LayerInfo layer) {
+            return layer.enabled() && !layersAlreadyProcessed.contains(layer) && isExposable(layer);
         }
 
         /**
@@ -913,7 +1003,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * @task TODO: write wms specific elements.
          */
         @SuppressWarnings("deprecation")
-        protected void handleLayer(final LayerInfo layer) throws IOException {
+        protected void handleLayer(final LayerInfo layer, boolean isRoot) throws IOException {
             // HACK: by now all our layers are queryable, since they reference
             // only featuretypes managed by this server
             AttributesImpl qatts = new AttributesImpl();
@@ -938,7 +1028,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
              *     set of <SRS>EPSG:#</SRS>...
              */
             final String srs = layer.getResource().getSRS();
-            element("SRS", srs);
+            if (isRoot) {
+                Set<String> srsList = getServiceSRSList();
+                handleRootCrsList(srsList);
+            } else {
+                element("SRS", srs);
+            }
 
             ReferencedEnvelope bbox;
             try {
@@ -969,6 +1064,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleAttribution(layer);
 
             // handle AuthorityURL
+            if (isRoot) {
+                handleAuthorityURL(serviceInfo.getAuthorityURLs());
+            }
             handleAuthorityURL(layer.getAuthorityURLs());
 
             // handle identifiers
@@ -1111,8 +1209,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             return srs;
         }
 
-        protected void handleLayerGroup(
-                LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed)
+        protected void handleLayerGroup(LayerGroupInfo layerGroup, boolean isRoot)
                 throws TransformException, FactoryException, IOException {
             // String layerName = layerGroup.getName();
             String layerName = layerGroup.prefixedName();
@@ -1153,8 +1250,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                             .getIdentifiers()
                             .toArray()[0]
                             .toString();
-
-            element("SRS", authority);
+            if (isRoot) {
+                Set<String> srsList = getServiceSRSList();
+                handleRootCrsList(srsList);
+            } else {
+                element("SRS", authority);
+            }
 
             handleLatLonBBox(latLonBounds);
             handleBBox(layerGroupBounds, authority);
@@ -1169,14 +1270,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 } else if (rootLayer.getType() == PublishedType.RASTER) {
                     dimensionHelper.handleRasterLayerDimensions(rootLayer);
                 }
-
-                layersAlreadyProcessed.add(layerGroup.getRootLayer());
             }
 
             // handle data attribution
             handleAttribution(layerGroup);
 
             // handle AuthorityURL
+            if (isRoot) {
+                handleAuthorityURL(serviceInfo.getAuthorityURLs());
+            }
             handleAuthorityURL(layerGroup.getAuthorityURLs());
 
             // handle identifiers
@@ -1198,19 +1300,16 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleMetadataList(metadataLinks);
 
             // handle children layers and groups
-            if (LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())) {
-                // just hide the layers in the group
-                layersAlreadyProcessed.addAll(layerGroup.layers());
-            } else if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
+            if (!LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())
+                    && !LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
                     if (child instanceof LayerInfo) {
                         LayerInfo layer = (LayerInfo) child;
                         if (isExposable(layer)) {
-                            handleLayer((LayerInfo) child);
-                            layersAlreadyProcessed.add((LayerInfo) child);
+                            handleLayer((LayerInfo) child, false);
                         }
                     } else {
-                        handleLayerGroup((LayerGroupInfo) child, layersAlreadyProcessed);
+                        handleLayerGroup((LayerGroupInfo) child, false);
                     }
                 }
             }
@@ -1224,49 +1323,84 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             end("Layer");
         }
 
-        protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups)
-                throws FactoryException, TransformException, IOException {
+        protected Set<LayerInfo> getLayersInGroups(List<LayerGroupInfo> layerGroups) {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
 
             if (layerGroups == null || layerGroups.size() == 0) {
                 return layersAlreadyProcessed;
             }
 
-            List<LayerGroupInfo> topLevelGropus = filterNestedGroups(layerGroups);
+            List<LayerGroupInfo> topLevelGroups = filterNestedGroups(layerGroups);
 
-            for (LayerGroupInfo layerGroup : topLevelGropus) {
-                try {
-                    mark();
-                    handleLayerGroup(layerGroup, layersAlreadyProcessed);
-                    commit();
-                } catch (Exception e) {
-                    // report what layer we failed on to help the admin locate and fix it
-                    if (skipping) {
-                        if (layerGroup != null) {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Skipping layer group "
-                                            + layerGroup.getName()
-                                            + " as its caps document element failed to generate",
-                                    e);
-                        } else {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Skipping a null layer group during caps document generation",
-                                    e);
-                        }
-
-                        reset();
-                    } else {
-                        throw new ServiceException(
-                                "Error occurred trying to write out metadata for layer group: "
-                                        + layerGroup.getName(),
-                                e);
-                    }
-                }
+            for (LayerGroupInfo layerGroup : topLevelGroups) {
+                getLayersInGroup(layerGroup, layersAlreadyProcessed);
             }
 
             return layersAlreadyProcessed;
+        }
+
+        private void getLayersInGroup(
+                LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) {
+
+            if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
+                layersAlreadyProcessed.add(layerGroup.getRootLayer());
+            }
+
+            // handle children layers and groups
+            if (LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())) {
+                // just hide the layers in the group
+                layersAlreadyProcessed.addAll(layerGroup.layers());
+            } else if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
+                for (PublishedInfo child : layerGroup.getLayers()) {
+                    if (child instanceof LayerInfo) {
+                        LayerInfo layer = (LayerInfo) child;
+                        if (isExposable(layer)) {
+                            layersAlreadyProcessed.add((LayerInfo) child);
+                        }
+                    } else {
+                        getLayersInGroup((LayerGroupInfo) child, layersAlreadyProcessed);
+                    }
+                }
+            }
+        }
+
+        protected void handleLayerGroups(List<LayerGroupInfo> layerGroups, boolean isRoot)
+                throws FactoryException, TransformException, IOException {
+            if (layerGroups != null) {
+                List<LayerGroupInfo> topLevelGropus = filterNestedGroups(layerGroups);
+
+                for (LayerGroupInfo layerGroup : topLevelGropus) {
+                    try {
+                        mark();
+                        handleLayerGroup(layerGroup, isRoot);
+                        commit();
+                    } catch (Exception e) {
+                        // report what layer we failed on to help the admin locate and fix it
+                        if (skipping) {
+                            if (layerGroup != null) {
+                                LOGGER.log(
+                                        Level.WARNING,
+                                        "Skipping layer group "
+                                                + layerGroup.getName()
+                                                + " as its caps document element failed to generate",
+                                        e);
+                            } else {
+                                LOGGER.log(
+                                        Level.WARNING,
+                                        "Skipping a null layer group during caps document generation",
+                                        e);
+                            }
+
+                            reset();
+                        } else {
+                            throw new ServiceException(
+                                    "Error occurred trying to write out metadata for layer group: "
+                                            + layerGroup.getName(),
+                                    e);
+                        }
+                    }
+                }
+            }
         }
 
         /**

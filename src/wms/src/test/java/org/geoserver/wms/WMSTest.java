@@ -220,4 +220,14 @@ public class WMSTest extends WMSTestSupport {
         getGeoServer().save(info);
         assertTrue(wms.isDateLineWrappingHeuristicDisabled());
     }
+
+    @Test
+    public void testRootLayerInCapabilitiesEanbled() {
+        assertTrue(wms.isRootLayerInCapabilitesEnabled());
+
+        WMSInfo info = wms.getServiceInfo();
+        info.getMetadata().put(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY, false);
+        getGeoServer().save(info);
+        assertFalse(wms.isRootLayerInCapabilitesEnabled());
+    }
 }

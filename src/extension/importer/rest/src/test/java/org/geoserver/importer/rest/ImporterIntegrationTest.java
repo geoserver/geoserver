@@ -1174,6 +1174,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.COMPLETE, context.getState());
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
 
-        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+        assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.shp").exists());
+        assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.dbf").exists());
     }
 }

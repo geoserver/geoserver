@@ -30,29 +30,3 @@ The major differences between the WFS versions are:
 
 .. note:: There are also two changes to parameter names which can cause confusion. WFS 2.0.0 uses the ``count`` parameter to limit the number of features returned rather than the ``maxFeatures`` parameter used in previous versions. It also changed ``typeName`` to ``typeNames`` although GeoServer will accept either.
 
-.. _wfs_basics_axis:
-
-Axis ordering
--------------
-
-WFS 1.0.0 servers return geographic coordinates in longitude/latitude (x/y) order, the most common way to distribute data. For example, most shapefiles adopt this order by default. 
-
-However, the traditional axis order for geographic and cartographic systems is the opposite—latitude/longitude (y/x)—and the later WFS specifications respect this. The default axis ordering support is: 
-
-* Latitude/longitude—WFS 1.1.0 and WFS 2.0.0
-* Longitude/latitude—WFS 1.0.0 
-
-This may cause difficulties when switching between servers with different WFS versions, or when upgrading your WFS. To minimize confusion and increase interoperability, GeoServer has adopted the following assumptions when specifying projections in the following formats: 
-
-.. list-table::
-   :widths: 75 25
-   :header-rows: 1
-
-   * - Representation
-     - Assumed axis order
-   * - ``EPSG:xxxx``
-     - longitude/latitude (x/y)
-   * - ``http://www.opengis.net/gml/srs/epsg.xml#xxxx``
-     - longitude/latitude (x/y)
-   * - ``urn:x-ogc:def:crs:EPSG:xxxx``
-     - latitude/longitude (y/x) 

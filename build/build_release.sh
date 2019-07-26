@@ -364,13 +364,13 @@ unlink readme
 
 popd > /dev/null
 
+mv $artifacts/../../../doc/en/$usertarget/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
 echo "copying artifacts to $dist"
 cp $artifacts/*-plugin.zip $dist/plugins
 for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
 
-cp $artifacts/../../../doc/en/$usertarget/latex/manual.pdf $dist/geoserver-$tag-user-manual.pdf
 
 # git commit changes on the release branch
 pushd .. > /dev/null

@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.14-SNAPSHOT</version>
+ <version>2.14.5</version>
  <name>GeoServer</name>
 
  <scm>
@@ -1539,7 +1539,7 @@
       <descriptor>release/ext-vectortiles.xml</descriptor>
       <descriptor>release/ext-ysld.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.14-SNAPSHOT</finalName>
+     <finalName>geoserver-2.14.5</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1899,9 +1899,9 @@
  </modules>
 
  <properties>
-  <gs.version>2.14-SNAPSHOT</gs.version>
-  <gt.version>20-SNAPSHOT</gt.version>
-  <gwc.version>1.14-SNAPSHOT</gwc.version>
+  <gs.version>2.14.5</gs.version>
+  <gt.version>20.5</gt.version>
+  <gwc.version>1.14.5</gwc.version>
   <jts.version>1.16.0</jts.version>
   <spring.version>4.3.18.RELEASE</spring.version>
   <spring.security.version>4.2.7.RELEASE</spring.security.version>

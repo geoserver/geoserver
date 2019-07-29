@@ -1,0 +1,164 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS JavaScript Tutorials: Create a Starter App</title>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.11/"></script>
+
+  <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend"
+      ], function(Map, MapView, FeatureLayer, Legend) {
+
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-103.8112979,44.2236474],
+        zoom: 2
+      });
+
+
+      var layer0 = new FeatureLayer({
+        url: "/geoserver/gsr/services/tiger/FeatureServer",
+        layerId: 1
+      });
+
+      var layer1 = new FeatureLayer({
+        url: "/geoserver/gsr/services/tiger/FeatureServer",
+        layerId: 2
+      });
+
+      var layer2 = new FeatureLayer({
+        url: "/geoserver/gsr/services/tiger/FeatureServer",
+        layerId: 3
+      });
+      var layer3 = new FeatureLayer({
+        url: "/geoserver/gsr/services/sf/FeatureServer",
+        layerId: 3
+      });
+
+      var layer4 = new FeatureLayer({
+        url: "/geoserver/gsr/services/sf/FeatureServer",
+        layerId: 4
+      });
+
+      map.add(layer0);
+      map.add(layer1);
+      map.add(layer2);
+/*
+      map.add(layer3);
+      map.add(layer4);
+*/
+/*
+      var legend = new Legend({
+        view: view,
+        layerInfos: [
+          {
+            layer: layer0,
+            title: "Point 1"
+          },
+          {
+            layer: layer1,
+            title: "Point 2"
+          },
+          ,
+          {
+            layer: layer3,
+            title: "Line 1"
+          },
+          ,
+          {
+            layer: layer4,
+            title: "Line 2"
+          }
+        ]
+      });
+
+      // Add widget to the bottom right corner of the view
+      view.ui.add(legend, "bottom-right");*/
+
+/*
+      var lineSimple = new FeatureLayer({
+        url: "/geoserver/gsr/services/topp/FeatureServer",
+        layerId: 0
+      });
+      map.add(lineSimple);
+
+      var lineUniqueValue = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 1
+      });
+      //map.add(lineUniqueValue);
+
+      var pointAttribute = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 2
+      });
+      //map.add(pointAttribute);
+
+      var pointAttributeGraphic = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 3
+      });
+      //map.add(pointAttributeGraphic);
+
+      var pointAsGraphic = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 4
+      });
+      //map.add(pointAsGraphic);
+
+      var pointSimple = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 5
+      });
+      //map.add(pointSimple);
+
+      var pointUniqueValues = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 6
+      });
+      //map.add(pointUniqueValues);
+
+      var polygonAttribute = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 7
+      });
+      //map.add(polygonAttribute);
+
+      var polygonSimple = new FeatureLayer({
+        url: "/geoserver/gsr/services/cookbook/FeatureServer",
+        layerId: 8
+      });
+      //map.add(polygonSimple);
+
+      //var polygonEsri = new FeatureLayer({
+      //  url: "/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Administrative_Divisions/FeatureServer",
+      //  layerId: 0
+      //});
+      //map.add(polygonEsri);
+*/
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

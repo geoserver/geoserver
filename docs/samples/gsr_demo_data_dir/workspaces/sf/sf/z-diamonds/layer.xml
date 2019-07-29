@@ -1,0 +1,15 @@
+<layer>
+  <name>z-diamonds</name>
+  <id>LayerInfoImpl--150091ce:16c3e79f427:-7ff9</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--150091ce:16c3e79f427:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--150091ce:16c3e79f427:-7ffa</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

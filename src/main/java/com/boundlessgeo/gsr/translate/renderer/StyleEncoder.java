@@ -380,7 +380,7 @@ public class StyleEncoder {
 
     private static Renderer defaultMarkRenderer() {
         Outline outline = new Outline(new int[]{0, 0, 0, 255}, 1);
-        SimpleMarkerSymbol marker = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.SQUARE,
+        SimpleMarkerSymbol marker = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.esriSMSSquare,
                 new int[]{255, 0, 0, 255}, 24, 0, 0, 0, outline);
         return new SimpleRenderer(marker, "Marker", "Default marker renderer");
     }
@@ -789,18 +789,19 @@ public class StyleEncoder {
 
     private static SimpleMarkerSymbolEnum equivalentSMS(String markName) {
         if ("circle".equals(markName)) {
-            return SimpleMarkerSymbolEnum.CIRCLE;
+            return SimpleMarkerSymbolEnum.esriSMSCircle;
         } else if ("x".equals(markName)) {
-            return SimpleMarkerSymbolEnum.X;
+            return SimpleMarkerSymbolEnum.esriSMSX;
         } else if ("cross".equals(markName)) {
-            return SimpleMarkerSymbolEnum.CROSS;
+            return SimpleMarkerSymbolEnum.esriSMSCross;
         } else if ("square".equals(markName)) {
-            return SimpleMarkerSymbolEnum.SQUARE;
-//          SLD does not define a diamond mark (you can always just rotate the square.)
-//        } else if ("diamond".equals(markName)) {
-//            return SimpleMarkerSymbolEnum.DIAMOND
+            return SimpleMarkerSymbolEnum.esriSMSSquare;
+        } else if ("triangle".equals(markName)) {
+            return SimpleMarkerSymbolEnum.esriSMSTriangle;
+        } else if ("qgis://diamond".equals(markName)) {
+            return SimpleMarkerSymbolEnum.esriSMSDiamond;
         } else {
-            return SimpleMarkerSymbolEnum.CIRCLE;
+            return SimpleMarkerSymbolEnum.esriSMSCircle;
         }
     }
 

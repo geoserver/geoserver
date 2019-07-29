@@ -105,9 +105,9 @@ class LegendEntry {
 
     private static Shape shapeForStyle(SimpleMarkerSymbolEnum style) {
         switch (style) {
-            case CIRCLE:
+            case esriSMSCircle:
                 return new Ellipse2D.Double(0, 0, MARKER_SIZE, MARKER_SIZE);
-            case CROSS:
+            case esriSMSCross:
                 GeneralPath cross = new GeneralPath();
                 cross.moveTo(0, HALF_SIZE - OFFSET);
                 cross.lineTo(HALF_SIZE - OFFSET, HALF_SIZE - OFFSET);
@@ -123,7 +123,7 @@ class LegendEntry {
                 cross.lineTo(0, HALF_SIZE + OFFSET);
                 cross.lineTo(0, HALF_SIZE - OFFSET);
                 return cross;
-            case DIAMOND:
+            case esriSMSDiamond:
                 GeneralPath diamond = new GeneralPath();
                 diamond.moveTo(0, HALF_SIZE);
                 diamond.lineTo(HALF_SIZE, 0);
@@ -131,9 +131,9 @@ class LegendEntry {
                 diamond.lineTo(HALF_SIZE, MARKER_SIZE);
                 diamond.lineTo(0, HALF_SIZE);
                 return diamond;
-            case SQUARE:
+            case esriSMSSquare:
                 return new Rectangle2D.Double(0, 0, MARKER_SIZE, MARKER_SIZE);
-            case X:
+            case esriSMSX:
                 GeneralPath x = new GeneralPath();
                 x.moveTo(0, OFFSET);
                 x.lineTo(OFFSET, 0);

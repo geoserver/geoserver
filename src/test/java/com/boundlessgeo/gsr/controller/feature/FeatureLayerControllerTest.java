@@ -6,6 +6,7 @@ package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
 
+import org.geoserver.data.test.SystemTestData;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
@@ -21,10 +22,11 @@ import org.junit.Test;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.locationtech.jts.geom.LineString;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -33,6 +35,21 @@ import static org.junit.Assert.*;
  * @author Jody Garnett (Boundless)
  */
 public class FeatureLayerControllerTest extends ControllerTest {
+    
+    static final String RENDER = "render";
+    static final String RENDER_PREFIX = "ren";
+    static final QName TRIANGLES = new QName(RENDER, "Triangles", RENDER_PREFIX);
+    static final QName DIAMONDS = new QName(RENDER, "Diamonds", RENDER_PREFIX);
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        testData.addStyle("triangle", "triangle.sld", FeatureLayerControllerTest.class, getCatalog());
+        testData.addVectorLayer(TRIANGLES, Collections.singletonMap(SystemTestData.LayerProperty.STYLE, "triangle"), "Points.properties", SystemTestData.class, getCatalog());
+        testData.addStyle("diamond", "diamond.sld", FeatureLayerControllerTest.class, getCatalog());
+        testData.addVectorLayer(DIAMONDS, Collections.singletonMap(SystemTestData.LayerProperty.STYLE, "diamond"), "Points.properties", SystemTestData.class, getCatalog());
+    }
 
     private String query(String service, String layer, String params) {
         return getBaseURL() + service + "/FeatureServer/" + layer + params;
@@ -967,4 +984,27 @@ public class FeatureLayerControllerTest extends ControllerTest {
     }
 
 
+    @Test
+    public void testTriangle() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(query(TRIANGLES.getPrefix(), "1", ""));
+        print(json);
+        JSONObject renderer = json.getJSONObject("drawingInfo").getJSONObject("renderer");
+        assertEquals("simple", renderer.getString("type"));
+        JSONObject symbol = renderer.getJSONObject("symbol");
+        assertEquals("esriSMS", symbol.getString("type"));
+        assertEquals("esriSMSTriangle", symbol.getString("style"));
+        assertEquals(12, symbol.getInt("size"));
+    }
+
+    @Test
+    public void testDiamond() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(query(DIAMONDS.getPrefix(), "0", ""));
+        print(json);
+        JSONObject renderer = json.getJSONObject("drawingInfo").getJSONObject("renderer");
+        assertEquals("simple", renderer.getString("type"));
+        JSONObject symbol = renderer.getJSONObject("symbol");
+        assertEquals("esriSMS", symbol.getString("type"));
+        assertEquals("esriSMSDiamond", symbol.getString("style"));
+        assertEquals(12, symbol.getInt("size"));
+    }
 }

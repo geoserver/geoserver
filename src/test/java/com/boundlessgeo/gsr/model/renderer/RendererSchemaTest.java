@@ -28,7 +28,7 @@ public class RendererSchemaTest extends JsonSchemaTest {
         int[] color = { 255, 0, 0, 255 };
         int[] outlinecolor = { 0, 0, 0, 255 };
         Outline outline = new Outline(outlinecolor, 1);
-        SimpleMarkerSymbol sms = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.CIRCLE, color, 5, 0,
+        SimpleMarkerSymbol sms = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.esriSMSCircle, color, 5, 0,
                 0, 0, outline);
         SimpleRenderer renderer = new SimpleRenderer(sms, "", "");
         String json = getJson(renderer);

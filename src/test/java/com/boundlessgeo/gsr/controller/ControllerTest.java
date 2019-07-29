@@ -32,7 +32,7 @@ public class ControllerTest extends GeoServerSystemTestSupport {
         testData.setUpDefault();
     }
 
-    public void onSetUp(SystemTestData testData) {
+    public void onSetUp(SystemTestData testData) throws Exception {
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();
 

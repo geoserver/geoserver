@@ -11,7 +11,8 @@ package com.boundlessgeo.gsr.model.symbol;
  */
 public enum SimpleMarkerSymbolEnum {
 
-    CIRCLE("esriSMSCircle"), SQUARE("esriSMSSquare"), CROSS("esriSMSCross"), X("esriSMSX"), DIAMOND("esriSMSDiamond");
+    esriSMSCircle("esriSMSCircle"), esriSMSSquare("esriSMSSquare"), esriSMSCross("esriSMSCross"), esriSMSX("esriSMSX"), esriSMSDiamond("esriSMSDiamond"),
+    esriSMSTriangle("esriSMSTriangle");
     private final String style;
 
     public String getStyle() {
@@ -20,5 +21,10 @@ public enum SimpleMarkerSymbolEnum {
 
     SimpleMarkerSymbolEnum(String style) {
         this.style = style;
+    }
+
+    @Override
+    public String toString() {
+        return style;
     }
 }

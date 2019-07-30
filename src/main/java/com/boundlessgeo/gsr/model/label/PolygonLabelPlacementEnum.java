@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.label;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -14,6 +16,7 @@ public enum PolygonLabelPlacementEnum {
     ALWAYS_HORIZONTAL("always-horizontal");
     private final String placement;
 
+    @JsonValue
     public String getPlacement() {
         return placement;
     }

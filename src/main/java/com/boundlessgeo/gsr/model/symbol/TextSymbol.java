@@ -5,12 +5,14 @@
 package com.boundlessgeo.gsr.model.symbol;
 
 import com.boundlessgeo.gsr.model.font.Font;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  *
  * @author Juan Marin, OpenGeo
  *
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TextSymbol extends MarkerSymbol {
 
     private int[] color;
@@ -18,6 +20,10 @@ public class TextSymbol extends MarkerSymbol {
     private int[] backgroundColor;
 
     private int[] borderLineColor;
+    
+    private Integer haloSize;
+    
+    private int[] haloColor;
 
     private VerticalAlignmentEnum verticalAlignment;
 
@@ -83,10 +89,26 @@ public class TextSymbol extends MarkerSymbol {
         this.font = font;
     }
 
+    public Integer getHaloSize() {
+        return haloSize;
+    }
+
+    public void setHaloSize(Integer haloSize) {
+        this.haloSize = haloSize;
+    }
+
+    public int[] getHaloColor() {
+        return haloColor;
+    }
+
+    public void setHaloColor(int[] haloColor) {
+        this.haloColor = haloColor;
+    }
+
     public TextSymbol(double angle, int xoffset, int yoffset, int[] color, int[] backgroundColor,
-            int[] borderLineColor, VerticalAlignmentEnum verticalAlignment,
-            HorizontalAlignmentEnum horizontalAlignment, boolean rightToLeft, Font font) {
-        super("TS", angle, xoffset, yoffset);
+                      int[] borderLineColor, VerticalAlignmentEnum verticalAlignment,
+                      HorizontalAlignmentEnum horizontalAlignment, boolean rightToLeft, Font font) {
+        super("esriTS", angle, xoffset, yoffset);
         this.color = color;
         this.backgroundColor = backgroundColor;
         this.borderLineColor = borderLineColor;

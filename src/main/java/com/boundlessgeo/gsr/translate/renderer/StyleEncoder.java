@@ -5,6 +5,7 @@
 package com.boundlessgeo.gsr.translate.renderer;
 
 import com.boundlessgeo.gsr.model.geometry.GeometryTypeEnum;
+import com.boundlessgeo.gsr.model.label.Label;
 import com.boundlessgeo.gsr.model.renderer.ClassBreakInfo;
 import com.boundlessgeo.gsr.model.renderer.ClassBreaksRenderer;
 import com.boundlessgeo.gsr.model.renderer.Renderer;
@@ -36,6 +37,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.geotools.util.NumberRange;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -62,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class StyleEncoder {
     private static List<PropertyRangeExtractor> propertyRangeExtractors =
@@ -145,6 +148,12 @@ public class StyleEncoder {
 //        json.array().value(r).value(g).value(b).value(a).endArray();
 //    }
 
+    public static List<Label> styleToLabel(Style style) {
+        LabelInfoVisitor visitor = new LabelInfoVisitor();
+        style.accept(visitor);
+        return visitor.getLabelInfo();
+    }
+    
     public static Renderer styleToRenderer(Style style) {
 
         List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
@@ -156,6 +165,12 @@ public class StyleEncoder {
         List<Rule> rules = featureTypeStyle.rules();
         if (rules == null || rules.size() == 0) return null;
 
+        // filter out the rules with just text symbolization, they are handled elsewhere
+        rules = rules.stream()
+                .filter(r -> r.symbolizers().stream().
+                        anyMatch(s -> (!(s instanceof TextSymbolizer))))
+                .collect(Collectors.toList());
+        
         Renderer render = rulesToUniqueValueRenderer(rules);
         if (render != null) return render;
 
@@ -424,6 +439,20 @@ public class StyleEncoder {
         }
 
         return renderer;
+    }
+
+    public static List<Label> labelingInfo(LayerInfo layer) throws IOException {
+        List<Label> labels = null;
+
+        StyleInfo styleInfo = layer.getDefaultStyle();
+        if (styleInfo != null) {
+            Style style = styleInfo.getStyle();
+            if (style != null) {
+                labels = styleToLabel(style);
+            }
+        }
+
+        return labels;
     }
 
     private static Symbol symbolizerToSymbol(Symbolizer sym) {

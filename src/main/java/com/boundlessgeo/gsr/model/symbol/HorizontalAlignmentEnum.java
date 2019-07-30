@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.symbol;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -14,6 +16,7 @@ public enum HorizontalAlignmentEnum {
     LEFT("left"), RIGHT("right"), CENTER("center"), JUSTIFY("justify");
     private final String alignment;
 
+    @JsonValue
     public String getAlignment() {
         return alignment;
     }

@@ -109,4 +109,6 @@ public class FeatureLayer extends AbstractLayerOrTable {
     public Field getGeometryField() {
         return geometryField;
     }
+
+  
 }

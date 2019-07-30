@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.font;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -14,6 +16,7 @@ public enum FontStyleEnum {
     ITALIC("italic"), NORMAL("normal"), OBLIQUE("oblique");
     private final String style;
 
+    @JsonValue
     public String getStyle() {
         return style;
     }

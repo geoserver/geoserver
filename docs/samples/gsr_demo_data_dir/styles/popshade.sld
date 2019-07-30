@@ -72,15 +72,48 @@
               <CssParameter name="stroke-width">0.2</CssParameter>
             </Stroke>
           </LineSymbolizer>
+        </Rule>
+        <Rule>
+          <MinScaleDenominator>15000000</MinScaleDenominator>
           <TextSymbolizer>
             <Label>
               <ogc:PropertyName>STATE_ABBR</ogc:PropertyName>
             </Label>
             <Font>
               <CssParameter name="font-family">Times New Roman</CssParameter>
-              <CssParameter name="font-style">Normal</CssParameter>
               <CssParameter name="font-size">14</CssParameter>
             </Font>
+            <LabelPlacement>
+              <PointPlacement>
+                <AnchorPoint>
+                  <AnchorPointX>0.5</AnchorPointX>
+                  <AnchorPointY>0.5</AnchorPointY>
+                </AnchorPoint>
+              </PointPlacement>
+            </LabelPlacement>
+          </TextSymbolizer>
+        </Rule>
+        <Rule>
+          <MaxScaleDenominator>15000000</MaxScaleDenominator>
+          <TextSymbolizer>
+            <Label>
+              <ogc:PropertyName>STATE_NAME</ogc:PropertyName>
+            </Label>
+            <Font>
+              <CssParameter name="font-family">Arial</CssParameter>
+              <CssParameter name="font-style">Italic</CssParameter>
+              <CssParameter name="font-weight">Bold</CssParameter>
+              <CssParameter name="font-size">18</CssParameter>
+            </Font>
+            <Fill>
+              <CssParameter name="fill">0x444444</CssParameter>
+            </Fill>
+            <Halo>
+              <Fill>
+                <CssParameter name="fill">0xFFFFFF</CssParameter>
+              </Fill>
+              <Radius>2</Radius>
+            </Halo>
             <LabelPlacement>
               <PointPlacement>
                 <AnchorPoint>

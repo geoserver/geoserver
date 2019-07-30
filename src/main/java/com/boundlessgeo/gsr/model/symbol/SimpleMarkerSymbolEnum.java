@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.symbol;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -15,6 +17,7 @@ public enum SimpleMarkerSymbolEnum {
     esriSMSTriangle("esriSMSTriangle");
     private final String style;
 
+    @JsonValue
     public String getStyle() {
         return style;
     }

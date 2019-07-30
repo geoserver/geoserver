@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.font;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -14,6 +16,7 @@ public enum FontWeightEnum {
     BOLD("bold"), BOLDER("bolder"), LIGHTER("lighter"), NORMAL("normal");
     private final String weight;
 
+    @JsonValue
     public String getWeight() {
         return weight;
     }

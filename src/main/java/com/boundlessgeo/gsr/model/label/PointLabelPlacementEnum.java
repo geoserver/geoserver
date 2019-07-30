@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.label;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -16,6 +18,7 @@ public enum PointLabelPlacementEnum {
             "center-center"), CENTER_LEFT("center-left"), CENTER_RIGHT("center-right");
     private final String placement;
 
+    @JsonValue
     public String getPlacement() {
         return placement;
     }

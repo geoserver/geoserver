@@ -4,6 +4,8 @@
  */
 package com.boundlessgeo.gsr.model.label;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  *
  * @author Juan Marin, OpenGeo
@@ -18,6 +20,7 @@ public enum LineLabelPlacementEnum {
             "center-before"), CENTER_END("center-end"), CENTER_START("center-start");
     private final String placement;
 
+    @JsonValue
     public String getPlacement() {
         return placement;
     }

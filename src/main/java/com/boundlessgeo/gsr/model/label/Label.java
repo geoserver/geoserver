@@ -5,12 +5,14 @@
 package com.boundlessgeo.gsr.model.label;
 
 import com.boundlessgeo.gsr.model.symbol.TextSymbol;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  *
  * @author Juan Marin, OpenGeo
  *
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Label {
 
     private String labelExpression;
@@ -22,6 +24,8 @@ public class Label {
     private int minScale;
 
     private int maxScale;
+    
+    private String where;
 
     public String getLabelExpression() {
         return labelExpression;
@@ -63,8 +67,16 @@ public class Label {
         this.maxScale = maxScale;
     }
 
+    public String getWhere() {
+        return where;
+    }
+
+    public void setWhere(String where) {
+        this.where = where;
+    }
+
     public Label(String labelExpression, boolean useCodedValues, TextSymbol symbol, int minScale,
-            int maxScale) {
+                 int maxScale) {
         super();
         this.labelExpression = labelExpression;
         this.useCodedValues = useCodedValues;
@@ -72,5 +84,4 @@ public class Label {
         this.minScale = minScale;
         this.maxScale = maxScale;
     }
-
 }

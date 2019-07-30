@@ -4,11 +4,14 @@
  */
 package com.boundlessgeo.gsr.model.font;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  *
  * @author Juan Marin, OpenGeo
  *
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Font {
 
     private String family;

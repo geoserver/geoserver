@@ -4,6 +4,7 @@
  */
  package com.boundlessgeo.gsr.model.map;
 
+import com.boundlessgeo.gsr.model.label.Label;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
 import com.boundlessgeo.gsr.model.feature.Field;
 import com.boundlessgeo.gsr.model.feature.FieldTypeEnum;
@@ -78,18 +79,19 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
     private List<Field> fields = new ArrayList<>();
 
     private String capabilities = "Query,Time,Data";
-
+    
     public AbstractLayerOrTable(LayerInfo layer, int id) throws IOException {
-        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer));
+        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer), StyleEncoder.labelingInfo(layer));
     }
 
     protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable) throws IOException {
         this(layerOrTable.layer, layerOrTable.getId(), layerOrTable.getExtent(),
-                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().renderer));
+                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().renderer),
+                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().labelingInfo));
     }
 
 
-    AbstractLayerOrTable(LayerInfo layer, int id, Envelope extent, Renderer renderer) throws IOException {
+    AbstractLayerOrTable(LayerInfo layer, int id, Envelope extent, Renderer renderer, List<Label> labelingInfo) throws IOException {
         this.layer = layer;
         this.id = id;
         this.name = layer.getName();
@@ -109,6 +111,13 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
             this.drawingInfo = null;
         } else {
             this.drawingInfo = new DrawingInfo(renderer);
+        }
+        
+        if (labelingInfo != null) {
+            if (renderer == null) {
+                this.drawingInfo = new DrawingInfo(null);    
+            }
+            this.drawingInfo.setLabelingInfo(labelingInfo);
         }
 
         DimensionInfo timeDimensionInfo = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME);
@@ -336,4 +345,5 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
     public Boolean getHasZ() {
         return hasZ;
     }
+
 }

@@ -129,3 +129,22 @@ Is possible to associate a layer group with some keywords that will be used to a
    Layer groups keywords editor
 
 Layer groups keywords will no be merged with contained layers keywords but keywords of a layer group should be logically inherited by contained layers.
+
+Root Layer in Capabilities
+--------------------------
+Capabilities documents in GeoServer always have a top level (root) Layer element that works as a container of all the available layers and groups.
+
+When a layer group is the only top level element in the Capabilities document, it is possible to remove this root Layer and return
+a hierarchy where the layer group is the root instead.
+
+To enable this functionality, choose the **No** option from the Root Layer in Capabilities section.
+
+By default this behaviour is inherited from the global WMS service settings (**WMS Global Settings** option).
+Finally, it is possible to override the service settings and force a **Yes** to always include the GeoServer root element.
+ 
+.. figure:: img/data_layers_root_in_capabilities.png
+  
+   Layer groups root layer in capabilities options
+
+
+

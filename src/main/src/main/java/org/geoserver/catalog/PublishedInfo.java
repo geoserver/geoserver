@@ -14,6 +14,9 @@ import java.util.List;
  */
 public interface PublishedInfo extends CatalogInfo {
 
+    /** Use the entity as capabilities root element if it's the only top level element */
+    public static final String ROOT_IN_CAPABILITIES = "rootInCapabilities";
+
     /** Returns the name. */
     String getName();
 

@@ -37,6 +37,8 @@ import org.geotools.feature.type.DateUtil;
 public class DimensionDefaultValueSelectionStrategyFactoryImpl
         implements DimensionDefaultValueSelectionStrategyFactory {
 
+    private static final String VECTOR_CUSTOM_DIMENSION_PREFIX = "dim_";
+
     // Initialized in the applicationContext:
     private DimensionDefaultValueSelectionStrategy featureTimeMinimumStrategy;
 
@@ -101,7 +103,8 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
             } else if (resource instanceof CoverageInfo) {
                 retval = coverageElevationMinimumStrategy;
             }
-        } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
+        } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)
+                || dimensionName.startsWith(VECTOR_CUSTOM_DIMENSION_PREFIX)) {
             if (resource instanceof FeatureTypeInfo) {
                 retval = featureCustomDimensionMinimumStrategy;
             } else if (resource instanceof CoverageInfo) {
@@ -294,7 +297,8 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
                 retval = getDefaultTimeStrategy(resource, setting);
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
                 retval = getDefaultElevationStrategy(resource, setting);
-            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
+            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)
+                    || dimensionName.startsWith(ResourceInfo.VECTOR_CUSTOM_DIMENSION_PREFIX)) {
                 retval = getDefaultCustomDimensionStrategy(resource, setting);
             }
         }

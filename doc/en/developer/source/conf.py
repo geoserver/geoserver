@@ -12,11 +12,14 @@
 # serve to show the default value.
 
 import sys, os, string
+import datetime
 
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #sys.path.append(os.path.abspath('some/directory'))
+
+now = datetime.datetime.now()
 
 # General configuration
 # ---------------------
@@ -39,7 +42,7 @@ master_doc = 'index'
 # General substitutions.
 project = u'GeoServer'
 manual = u'Developer Manual'
-copyright = u'2018, Open Source Geospatial Foundation'
+copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -161,7 +164,10 @@ html_use_index = False
 #html_split_index = False
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
-#html_copy_source = True
+html_copy_source = False
+
+# If true, links to the page source are added to each page.
+html_show_sourcelink = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -173,6 +179,14 @@ html_use_index = False
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'GeoServerDeveloperManual'
+
+html_context = {
+  'display_github': True,
+  'github_user': 'geoserver',
+  'github_repo': 'geoserver',
+  'github_version': 'master',
+  'conf_py_path': 'doc/en/developer/source'
+}
 
 
 # Options for LaTeX output

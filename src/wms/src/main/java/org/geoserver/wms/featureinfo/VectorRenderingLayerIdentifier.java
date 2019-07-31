@@ -359,8 +359,13 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         List<Object> elevations = params.getElevations();
         Filter layerFilter = params.getFilter();
         MapLayerInfo layer = params.getLayer();
-        Filter dimensionFilter =
+        Filter staticDimensionFilter =
                 wms.getTimeElevationToFilter(times, elevations, layer.getFeature());
+        Filter customDimensionsFilter =
+                wms.getDimensionsToFilter(
+                        params.getGetMapRequest().getRawKvp(), layer.getFeature());
+        final Filter dimensionFilter =
+                FF.and(Arrays.asList(staticDimensionFilter, customDimensionsFilter));
         Filter filter;
         if (layerFilter == null) {
             filter = dimensionFilter;

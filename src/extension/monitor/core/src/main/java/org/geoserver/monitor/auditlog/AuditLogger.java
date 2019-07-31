@@ -62,7 +62,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     MonitorConfig config;
 
-    RequestDumper dumper;
+    volatile RequestDumper dumper;
 
     int rollLimit;
 
@@ -80,8 +80,8 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
         templateConfig.setTemplateLoader(new AuditTemplateLoader(loader));
     }
 
-    void initDumper() throws IOException {
-        if (getProperty("enabled", Boolean.class, false)) {
+    synchronized void initDumper() throws IOException {
+        if (this.dumper == null && getProperty("enabled", Boolean.class, false)) {
             // prepare the config
             rollLimit = getProperty("roll_limit", Integer.class, DEFAULT_ROLLING_LIMIT);
             path = System.getProperty("GEOSERVER_AUDIT_PATH");

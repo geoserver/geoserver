@@ -29,6 +29,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Graphic;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
@@ -468,12 +469,39 @@ public class StyleEncoder {
     private static Symbol polygonSymbolizerToFillSymbol(PolygonSymbolizer sym) {
         final Fill fill = sym.getFill();
         final Stroke stroke = sym.getStroke();
-        final Color color;
-        final double opacity;
+        Color color;
+        double opacity;
         final SimpleLineSymbol outline;
+        SimpleFillSymbolEnum fillStyle = SimpleFillSymbolEnum.SOLID;
         if (fill != null) {
             color = evaluateWithDefault(fill.getColor(), Color.GRAY);
             opacity = evaluateWithDefault(fill.getOpacity(), 1d);
+            Graphic graphicFill = sym.getFill().getGraphicFill();
+            if (graphicFill != null && graphicFill.graphicalSymbols().get(0) instanceof Mark) {
+                Mark mark = (Mark) graphicFill.graphicalSymbols().get(0);
+                if (mark.getWellKnownName() != null) {
+                    String markName = mark.getWellKnownName().evaluate(null, String.class);
+                    if ("shape://vertline".equals(markName)) {
+                        fillStyle = SimpleFillSymbolEnum.VERTICAL;
+                    } else if ("shape://horline".equals(markName)) {
+                        fillStyle = SimpleFillSymbolEnum.HORIZONTAL;
+                    } else if ("shape://slash".equals(markName)) {
+                        fillStyle = SimpleFillSymbolEnum.FORWARD_DIAGONAL;
+                    } else if ("shape://backslash".equals(markName)) {
+                        fillStyle = SimpleFillSymbolEnum.BACKWARD_DIAGONAL;
+                    } else if ("shape://plus".equals(markName)) {
+                        fillStyle = SimpleFillSymbolEnum.CROSS;
+                    } else if ("shape://times".equals(markName)) {
+                        fillStyle = SimpleFillSymbolEnum.DIAGONAL_CROSS;
+                    }
+
+                    Stroke markStroke = mark.getStroke();
+                    if (fillStyle != SimpleFillSymbolEnum.SOLID && markStroke != null) {
+                        color = evaluateWithDefault(markStroke.getColor(), Color.GRAY);
+                        opacity = evaluateWithDefault(markStroke.getOpacity(), 1d);
+                    }
+                }
+            }
         } else {
             color = Color.GRAY;
             opacity = 1d;
@@ -491,7 +519,9 @@ public class StyleEncoder {
                     1);
         }
 
-        return new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, components(color, opacity),
+
+        
+        return new SimpleFillSymbol(fillStyle, components(color, opacity),
                 outline);
     }
 

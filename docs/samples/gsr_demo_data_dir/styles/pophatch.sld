@@ -26,7 +26,7 @@
                   <Mark>
                     <WellKnownName>shape://slash</WellKnownName>
                     <Stroke>
-                      <CssParameter name="stroke">0xAAAAAA</CssParameter>
+                      <CssParameter name="stroke">#4DFF4D</CssParameter>
                     </Stroke>
                   </Mark>
                   <Size>16</Size>
@@ -53,9 +53,9 @@
               <GraphicFill>
                 <Graphic>
                   <Mark>
-                    <WellKnownName>shape://slash</WellKnownName>
+                    <WellKnownName>shape://plus</WellKnownName>
                     <Stroke>
-                      <CssParameter name="stroke">0xAAAAAA</CssParameter>
+                      <CssParameter name="stroke">#FF4D4D</CssParameter>
                     </Stroke>
                   </Mark>
                   <Size>8</Size>
@@ -78,9 +78,9 @@
               <GraphicFill>
                 <Graphic>
                   <Mark>
-                    <WellKnownName>shape://slash</WellKnownName>
+                    <WellKnownName>shape://times</WellKnownName>
                     <Stroke>
-                      <CssParameter name="stroke">0xAAAAAA</CssParameter>
+                      <CssParameter name="stroke">#4D4DFF</CssParameter>
                     </Stroke>
                   </Mark>
                   <Size>4</Size>

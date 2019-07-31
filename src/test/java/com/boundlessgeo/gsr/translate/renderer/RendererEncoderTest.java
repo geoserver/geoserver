@@ -14,6 +14,8 @@ import com.boundlessgeo.gsr.model.renderer.ClassBreaksRenderer;
 import com.boundlessgeo.gsr.model.renderer.Renderer;
 import com.boundlessgeo.gsr.model.renderer.UniqueValueRenderer;
 import com.boundlessgeo.gsr.model.symbol.HorizontalAlignmentEnum;
+import com.boundlessgeo.gsr.model.symbol.SimpleFillSymbol;
+import com.boundlessgeo.gsr.model.symbol.SimpleFillSymbolEnum;
 import com.boundlessgeo.gsr.model.symbol.TextSymbol;
 import com.boundlessgeo.gsr.model.symbol.VerticalAlignmentEnum;
 import net.sf.json.JSONObject;
@@ -136,13 +138,48 @@ public class RendererEncoderTest extends ControllerTest {
         ClassBreakInfo break1 = breaks.get(0);
         assertEquals(-Double.MAX_VALUE, break1.getClassMinValue(), 0d);
         assertEquals(2000000, break1.getClassMaxValue(), 0d);
+        SimpleFillSymbol symbol1 = (SimpleFillSymbol) break1.getSymbol();
+        assertEquals(SimpleFillSymbolEnum.SOLID, symbol1.getStyle());
         ClassBreakInfo break2 = breaks.get(1);
         assertEquals(2000000, break2.getClassMinValue(), 0d);
         assertEquals(4000000, break2.getClassMaxValue(), 0d);
+        SimpleFillSymbol symbol2 = (SimpleFillSymbol) break2.getSymbol();
+        assertEquals(SimpleFillSymbolEnum.SOLID, symbol2.getStyle());
         ClassBreakInfo break3 = breaks.get(2);
         assertEquals(4000000, break3.getClassMinValue(), 0d);
         assertEquals(Double.MAX_VALUE, break3.getClassMaxValue(), 0d);
+        SimpleFillSymbol symbol3 = (SimpleFillSymbol) break3.getSymbol();
+        assertEquals(SimpleFillSymbolEnum.SOLID, symbol3.getStyle());
     }
+
+    @Test
+    public void testPopHatch() throws Exception {
+        // this one has lower, between and greater
+        Renderer renderer = parseAndConvertToRenderer("pophatch.sld");
+        assertTrue(renderer.toString(), renderer instanceof ClassBreaksRenderer);
+
+        ClassBreaksRenderer cbr = (ClassBreaksRenderer) renderer;
+        assertEquals("PERSONS", cbr.getField());
+        assertEquals(-Double.MAX_VALUE, cbr.getMinValue(), 0d);
+        List<ClassBreakInfo> breaks = cbr.getClassBreakInfos();
+        assertEquals(3, breaks.size());
+        ClassBreakInfo break1 = breaks.get(0);
+        assertEquals(-Double.MAX_VALUE, break1.getClassMinValue(), 0d);
+        assertEquals(2000000, break1.getClassMaxValue(), 0d);
+        SimpleFillSymbol symbol1 = (SimpleFillSymbol) break1.getSymbol();
+        assertEquals(SimpleFillSymbolEnum.FORWARD_DIAGONAL, symbol1.getStyle());
+        ClassBreakInfo break2 = breaks.get(1);
+        assertEquals(2000000, break2.getClassMinValue(), 0d);
+        assertEquals(4000000, break2.getClassMaxValue(), 0d);
+        SimpleFillSymbol symbol2 = (SimpleFillSymbol) break2.getSymbol();
+        assertEquals(SimpleFillSymbolEnum.CROSS, symbol2.getStyle());
+        ClassBreakInfo break3 = breaks.get(2);
+        assertEquals(4000000, break3.getClassMinValue(), 0d);
+        assertEquals(Double.MAX_VALUE, break3.getClassMaxValue(), 0d);
+        SimpleFillSymbol symbol3 = (SimpleFillSymbol) break3.getSymbol();
+        assertEquals(SimpleFillSymbolEnum.DIAGONAL_CROSS, symbol3.getStyle());
+    }
+
 
     @Test
     public void testPopShadeLabels() throws Exception {

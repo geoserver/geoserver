@@ -15,7 +15,7 @@ public enum SimpleFillSymbolEnum {
 
     SOLID("esriSFSSolid"), //
     NULL("esriSFSNull"), //
-    HOLLOW("esriSFSHollow"), //
+    HORIZONTAL("esriSFSHorizontal"), //
     VERTICAL("esriSFSVertical"), //
     FORWARD_DIAGONAL("esriSFSForwardDiagonal"), //
     BACKWARD_DIAGONAL("esriSFSBackwardDiagonal"), //

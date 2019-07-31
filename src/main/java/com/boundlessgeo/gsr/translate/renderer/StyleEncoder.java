@@ -68,6 +68,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StyleEncoder {
+
+    /**
+     * Max length of a dasharray line to be considered a dot instead of a dash
+     */
+    static final int DOT_THRESHOLD = 2;
+    
     private static List<PropertyRangeExtractor> propertyRangeExtractors =
             Arrays.asList(new BetweenExtractor(), new LowerExtractor(), new GreaterExtractor(),
                     new LowerGreaterExtractor());
@@ -659,7 +665,7 @@ public class StyleEncoder {
             width = 1d;
             dashArray = null;
         }
-        if (dashArray == null || dashArray.size() == 1) {
+        if (dashArray == null || dashArray.size() == 0) {
             lineStyle = SimpleLineSymbolEnum.SOLID;
         } else {
             Set<Float> uniqueValues = new java.util.HashSet<>();
@@ -667,9 +673,20 @@ public class StyleEncoder {
                 uniqueValues.add(f);
             }
             if (uniqueValues.size() == 1) {
-                lineStyle = SimpleLineSymbolEnum.DASH;
+                if (uniqueValues.iterator().next() <= DOT_THRESHOLD) {
+                    lineStyle = SimpleLineSymbolEnum.DOT;
+                } else {
+                    lineStyle = SimpleLineSymbolEnum.DASH;
+                }
+            } else if (uniqueValues.size() <= 3) {
+                if (dashArray.size() <= 4) {
+                    lineStyle = SimpleLineSymbolEnum.DASH_DOT;
+                } else {
+                    lineStyle = SimpleLineSymbolEnum.DASH_DOT_DOT;
+                }
             } else {
-                lineStyle = SimpleLineSymbolEnum.DASH_DOT;
+                // no direct equivalent
+                lineStyle = SimpleLineSymbolEnum.DASH;
             }
         }
         return new SimpleLineSymbol(lineStyle, components(color, opacity), width);

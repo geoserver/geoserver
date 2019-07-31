@@ -16,6 +16,8 @@ import com.boundlessgeo.gsr.model.renderer.UniqueValueRenderer;
 import com.boundlessgeo.gsr.model.symbol.HorizontalAlignmentEnum;
 import com.boundlessgeo.gsr.model.symbol.SimpleFillSymbol;
 import com.boundlessgeo.gsr.model.symbol.SimpleFillSymbolEnum;
+import com.boundlessgeo.gsr.model.symbol.SimpleLineSymbol;
+import com.boundlessgeo.gsr.model.symbol.SimpleLineSymbolEnum;
 import com.boundlessgeo.gsr.model.symbol.TextSymbol;
 import com.boundlessgeo.gsr.model.symbol.VerticalAlignmentEnum;
 import net.sf.json.JSONObject;
@@ -221,6 +223,36 @@ public class RendererEncoderTest extends ControllerTest {
         assertEquals(18, font1.getSize());
         assertEquals(FontStyleEnum.ITALIC, font1.getStyle());
         assertEquals(FontWeightEnum.BOLD, font1.getWeight());
+    }
+    
+    @Test
+    public void testDashArray() throws Exception {
+        Renderer renderer = parseAndConvertToRenderer("dasharray.sld");
+        UniqueValueRenderer uvr = (UniqueValueRenderer) renderer;
+        
+        // first is solid
+        SimpleLineSymbol line0 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(0).getSymbol();
+        assertEquals(SimpleLineSymbolEnum.SOLID, line0.getStyle());
+        
+        // second recognized as dash
+        SimpleLineSymbol line1 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(1).getSymbol();
+        assertEquals(SimpleLineSymbolEnum.DASH, line1.getStyle());
+
+        // third recognized as dot
+        SimpleLineSymbol line2 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(2).getSymbol();
+        assertEquals(SimpleLineSymbolEnum.DOT, line2.getStyle());
+
+        // fourth recognized as dash dot
+        SimpleLineSymbol line3  = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(3).getSymbol();
+        assertEquals(SimpleLineSymbolEnum.DASH_DOT, line3.getStyle());
+
+        // fourth recognized as dash dot dot
+        SimpleLineSymbol line4  = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(4).getSymbol();
+        assertEquals(SimpleLineSymbolEnum.DASH_DOT_DOT, line4.getStyle());
+
+        // fifth not recognized, assigned as a dash as default
+        SimpleLineSymbol line5  = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(5).getSymbol();
+        assertEquals(SimpleLineSymbolEnum.DASH, line5.getStyle());
     }
 
 }

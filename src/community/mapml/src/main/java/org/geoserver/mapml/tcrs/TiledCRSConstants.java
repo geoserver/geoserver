@@ -12,6 +12,47 @@ public class TiledCRSConstants {
     public static final HashMap<String, TiledCRSParams> tiledCRSDefinitions = new HashMap<>();
 
     static {
+        final String WGS84_NAME = "WGS84";
+        final String WGS84_CODE = "urn:ogc:def:crs:OGC:1.3:CRS84";
+        final Bounds WGS84_BOUNDS =
+                new Bounds(new Point(-180.0D, -90.0D), new Point(180.0D, 90.0D));
+        final int WGS84_TILE_SIZE = 256;
+        final double[] WGS84_SCALES = {
+            /* "scale" is the reciprocal of "resolution", per Proj4Leaflet.js */
+            1 / 0.703125D,
+            1 / 0.3515625D,
+            1 / 0.17578125D,
+            1 / 0.087890625D,
+            1 / 0.0439453125D,
+            1 / 0.02197265625D,
+            1 / 0.010986328125D,
+            1 / 0.0054931640625D,
+            1 / 0.00274658203125D,
+            1 / 0.001373291015625D,
+            1 / 0.0006866455078125D,
+            1 / 0.0003433227539062D,
+            1 / 0.0001716613769531D,
+            1 / 0.0000858306884766D,
+            1 / 0.0000429153442383D,
+            1 / 0.0000214576721191D,
+            1 / 0.0000107288360596D,
+            1 / 0.0000053644180298D,
+            1 / 0.0000026822090149D,
+            1 / 0.0000013411045074D,
+            1 / 0.0000006705522537D,
+            1 / 0.0000003352761269D
+        };
+        final Point WGS84_TILE_ORIGIN = new Point(-180.0D, 90.0D);
+        tiledCRSDefinitions.put(
+                WGS84_NAME,
+                new TiledCRSParams(
+                        WGS84_NAME,
+                        WGS84_CODE,
+                        WGS84_BOUNDS,
+                        WGS84_TILE_SIZE,
+                        WGS84_TILE_ORIGIN,
+                        WGS84_SCALES));
+
         final String OSMTILE_NAME = "OSMTILE";
         final String OSMTILE_CODE = "urn:x-ogc:def:crs:EPSG:3857";
         Projection proj = new Projection(OSMTILE_CODE);
@@ -61,9 +102,7 @@ public class TiledCRSConstants {
         final String CBMTILE_NAME = "CBMTILE";
         final String CBMTILE_CODE = "urn:x-ogc:def:crs:EPSG:3978";
         final Bounds CBMTILE_BOUNDS =
-                new Bounds(
-                        new Point(-7786476.885838887, -5153821.09213678),
-                        new Point(7148753.233541353, 7928343.534071138));
+                new Bounds(new Point(-3.46558E7D, -3.9E7D), new Point(1.0E7D, 3.931E7D));
         //                new Bounds(new Point(-4282638.06150141,-5153821.09213678),new
         // Point(4852210.1755664,4659267.000000001));
         final int CBMTILE_TILE_SIZE = 256;

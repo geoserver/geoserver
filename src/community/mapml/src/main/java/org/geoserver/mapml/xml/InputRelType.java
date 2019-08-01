@@ -32,9 +32,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum InputRelType {
     @XmlEnumValue("map")
-    MAP("map"),
+    IMAGE("image"),
     @XmlEnumValue("tile")
-    TILE("tile");
+    TILE("tile"),
+    @XmlEnumValue("pixel")
+    PIXEL("pixel");
     private final String value;
 
     InputRelType(String v) {

@@ -31,6 +31,32 @@ public class TiledCRSTest {
     }
 
     @Test
+    public void testWGS84Projection() {
+        TiledCRS wgs84 = new TiledCRS("WGS84");
+
+        // a location
+        LatLng latlng = new LatLng(45.398043D, -75.70683D);
+
+        // the location in pixels
+        Point projected = null;
+        try {
+            projected = wgs84.latLngToPoint(latlng, 17);
+        } catch (MismatchedDimensionException | TransformException ex) {
+            fail("Exception during project operation");
+        }
+
+        // reverse the process
+        LatLng unprojected = null;
+        try {
+            unprojected = wgs84.pointToLatLng(projected, 17);
+        } catch (MismatchedDimensionException | TransformException ex) {
+            fail("Exception during unproject operation");
+        }
+        assertEquals(latlng.lng, unprojected.lng, 0.00000001);
+        assertEquals(latlng.lat, unprojected.lat, 0.00000001);
+    }
+
+    @Test
     public void testOSMTTILEProjection() {
         TiledCRS osmtile = new TiledCRS("OSMTILE");
 
@@ -237,6 +263,8 @@ public class TiledCRSTest {
         tcrs = new TiledCRS("CBMTILE");
         boundsTest(tcrs);
         tcrs = new TiledCRS("APSTILE");
+        boundsTest(tcrs);
+        tcrs = new TiledCRS("WGS84");
         boundsTest(tcrs);
     }
 

@@ -21,7 +21,7 @@ Installation
 Configuration
 -------------
 
-Configuration can be done using the Geoserver administrator GUI. The MapML configuration is accessible in the *MapML Settings* section under the *Publishing* tab of the Layer Configuration page for the layer being configured. Here is the MapML Settings section, with some example values filled in:
+Configuration can be done using the Geoserver administrator GUI. The MapML configuration is accessible in the *MapML Settings* section under the *Publishing* tab of the Layer or Layer Group Configuration page for the layer or layer group being configured. Here is the MapML Settings section, with some example values filled in:
 
 .. figure:: images/mapml_config_ui.png
 
@@ -42,11 +42,17 @@ Together these two attributes all the administrator to define the contents of th
 Tile Settings
 ^^^^^^^^^^^^^
 
-Using tiles to access the WMS layer can increase the perceived performance of the web map. This is especially true if there is some kind of tile cache mechanism in use, either at the Geoserver datastore level, or at the web server level.
+Using tiles to access the layer can increase the performance of your web map. This is especially true if there is a tile cache mechanism in use between GeoServer and the browser client.
 
 **Use Tiles**
-  If the Use Tiles checkbox is checked, the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.
+  If the "Use Tiles" checkbox is checked, by default the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.  If one or more of the MapML-defined GridSets is referenced by the layer or layer group in its "Tile Caching" profile, GeoServer will generate tile references instead of generating WMS GetMap URLs in the MapML document body.
 
+Tile Caching
+^^^^^^^^^^^^
+
+In the Tile Caching tab panel of the Edit Layer or Edit Layer Group page, at the bottom of the page you will see the table of GridSets that are assigned to the layer or layer group.  The values "WGS84" and "OSMTILE" are equivalent to the EPSG:4326 and EPSG:900913 built in GeoWebCache GridSets. However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is "WGS84" (equivalent to EPSG:4326), "OSMTILE" (equivalent to EPSG:900913), "CBMTILE" (Canada Base Map) and "APSTILE" (Alaska Polar Stereographic).
+
+.. figure:: images/mapml_tile_caching_panel_ui.png
 
 Sharding Config
 ^^^^^^^^^^^^^^^^

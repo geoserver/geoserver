@@ -28,7 +28,10 @@ public class Projection {
     public Projection(String code) {
         try {
             this.crs = CRS.decode(code);
-            this.baseCRS = CRS.getProjectedCRS(crs).getBaseCRS();
+            this.baseCRS =
+                    CRS.getProjectedCRS(crs) != null
+                            ? CRS.getProjectedCRS(crs).getBaseCRS()
+                            : this.crs;
             this.toProjected = CRS.findMathTransform(this.baseCRS, crs);
             this.toLatLng = this.toProjected.inverse();
         } catch (FactoryException ex) {
@@ -39,6 +42,9 @@ public class Projection {
     }
 
     public Point project(LatLng latlng) throws MismatchedDimensionException, TransformException {
+        if (toProjected.isIdentity()) {
+            return new Point(latlng.lng, latlng.lat);
+        }
         DirectPosition2D projected = new DirectPosition2D(crs);
         toProjected.transform(
                 new DirectPosition2D(this.baseCRS, latlng.lat, latlng.lng), projected);
@@ -46,8 +52,15 @@ public class Projection {
     }
 
     public LatLng unproject(Point p) throws MismatchedDimensionException, TransformException {
+        if (toLatLng.isIdentity()) {
+            return new LatLng(p.y, p.x);
+        }
         DirectPosition2D unprojected = new DirectPosition2D(this.baseCRS);
         toLatLng.transform(new DirectPosition2D(this.crs, p.x, p.y), unprojected);
         return new LatLng(unprojected.getOrdinate(0), unprojected.getOrdinate(1));
+    }
+
+    public CoordinateReferenceSystem getCRS() {
+        return this.crs;
     }
 }

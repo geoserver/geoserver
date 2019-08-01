@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.geoserver.mapml.MapMLConstants;
 import org.geotools.util.logging.Logging;
 import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 public class TiledCRS {
@@ -26,6 +27,7 @@ public class TiledCRS {
     private final int TILESIZE = 256;
     private final Point TILE_ORIGIN;
     private int pageSize = MapMLConstants.PAGESIZE;
+    private final String code;
 
     // the max.x,max.y of the Bounds member are integer numbers (though the defn of Bounds.* are
     // double)
@@ -56,8 +58,18 @@ public class TiledCRS {
         // the name is the name of the TiledCRS, which is equal to the name of
         // the 'projection' in the MapML projection registry*.
         this.name = name;
+
+        this.code = parameters.getCode();
         // calculate the maximum tile coordinates on a per-zoom-level basis.
         init();
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public CoordinateReferenceSystem getCRS() {
+        return this.projection.getCRS();
     }
 
     private void init() {

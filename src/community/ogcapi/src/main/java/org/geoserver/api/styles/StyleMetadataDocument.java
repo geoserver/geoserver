@@ -21,6 +21,8 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServer;
 import org.geotools.styling.Description;
 import org.geotools.styling.NamedLayer;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
 import org.geotools.util.Version;
@@ -38,6 +40,7 @@ public class StyleMetadataDocument extends AbstractDocument {
     StyleDates dates;
     String scope = "style";
     List<Stylesheet> stylesheets = new ArrayList<>();
+    List<StyleLayer> layers = new ArrayList<>();
     /* Missing stylesheets, layers and links */
 
     public StyleMetadataDocument(StyleInfo si, GeoServer gs) throws IOException {
@@ -70,6 +73,31 @@ public class StyleMetadataDocument extends AbstractDocument {
                     stylesheets.add(ss);
                 }
             }
+        }
+
+        // layers links
+        StyledLayer[] styledLayers = sld.getStyledLayers();
+        // common GeoServer case, there is a single layer referenced and we use only the style
+        // portion, not the layer one
+        if (styledLayers.length == 1) {
+            StyleLayer sl = new StyleLayer(si, styledLayers[0], gs.getCatalog());
+            layers.add(sl);
+        } else {
+            throw new UnsupportedOperationException("Cannot do multi-layer styles yet");
+        }
+    }
+
+    private Style getStyle(StyleInfo si, StyledLayer styledLayer) {
+        if (styledLayer instanceof UserLayer) {
+            return ((UserLayer) styledLayer).getUserStyles()[0];
+        } else if (styledLayer instanceof NamedLayer) {
+            return ((NamedLayer) styledLayer).getStyles()[0];
+        } else {
+            throw new IllegalArgumentException(
+                    "Do not recognize styled layer "
+                            + styledLayer
+                            + " inside "
+                            + si.prefixedName());
         }
     }
 
@@ -172,5 +200,9 @@ public class StyleMetadataDocument extends AbstractDocument {
 
     public List<Stylesheet> getStylesheets() {
         return stylesheets;
+    }
+
+    public List<StyleLayer> getLayers() {
+        return layers;
     }
 }

@@ -29,6 +29,7 @@ public class StyleMetadataTest extends StylesTestSupport {
             new QName(BUILDINGS.getNamespaceURI(), "BuildingsLabels", BUILDINGS.getPrefix());
     public static final String BUILDINGS_LABEL_ASSOCIATED_STYLE = "BuildingsLabelAssociated";
     public static final String BUILDINGS_LABEL_STYLE = "BuildingsLabel";
+    public static final String TASMANIA = "tasmania";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -63,6 +64,9 @@ public class StyleMetadataTest extends StylesTestSupport {
                 },
                 StyleMetadataTest.class,
                 getCatalog());
+
+        // a multi-layer style
+        testData.addStyle(TASMANIA, "tasmania.sld", StyleMetadataTest.class, getCatalog());
     }
 
     @Test
@@ -140,6 +144,36 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals("dateTime", json.read("layers[0].attributes[2].type"));
         assertEquals("YESNO", json.read("layers[0].attributes[3].id"));
         assertEquals("boolean", json.read("layers[0].attributes[3].type"));
+    }
+
+    @Test
+    public void testGetMetadataMultilayer() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/styles/styles/" + TASMANIA + "/metadata", 200);
+        assertEquals("tasmania", json.read("id"));
+        assertEquals(Integer.valueOf(4), (Integer) json.read("layers.size()"));
+
+        // Water Bodies
+        assertEquals("WaterBodies", json.read("layers[0].id"));
+        assertEquals("polygon", json.read("layers[0].type"));
+        // need to improve heuristics for attribues used in filters, right now we get no info
+        // about the potential target type, but in a binary comparison against a numerical literal
+        // we could guess that info
+        assertEquals("PERIMETER", json.read("layers[0].attributes[0].id"));
+        assertEquals("string", json.read("layers[0].attributes[0].type"));
+        assertEquals("AREA", json.read("layers[0].attributes[1].id"));
+        assertEquals("string", json.read("layers[0].attributes[1].type"));
+        assertEquals("name", json.read("layers[0].attributes[2].id"));
+        assertEquals("string", json.read("layers[0].attributes[2].type"));
+        assertEquals("WATER_TYPE", json.read("layers[0].attributes[3].id"));
+        assertEquals("string", json.read("layers[0].attributes[3].type"));
+
+        // other layers are using no attributes
+        assertEquals("Roads", json.read("layers[1].id"));
+        assertEquals("line", json.read("layers[1].type"));
+        assertEquals("Cities", json.read("layers[2].id"));
+        assertEquals("point", json.read("layers[2].type"));
+        assertEquals("Land", json.read("layers[3].id"));
+        assertEquals("polygon", json.read("layers[3].type"));
     }
 
     @Test

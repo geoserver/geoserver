@@ -244,6 +244,7 @@ public class StyleLayer {
         return sampleData;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public List<StyleAttribute> getAttributes() {
         return attributes;
     }

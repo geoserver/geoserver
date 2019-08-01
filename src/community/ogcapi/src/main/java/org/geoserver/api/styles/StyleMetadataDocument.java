@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.NCNameResourceCodec;
@@ -77,13 +78,19 @@ public class StyleMetadataDocument extends AbstractDocument {
 
         // layers links
         StyledLayer[] styledLayers = sld.getStyledLayers();
-        // common GeoServer case, there is a single layer referenced and we use only the style
-        // portion, not the layer one
+
         if (styledLayers.length == 1) {
+            // common GeoServer case, there is a single layer referenced and we use only the style
+            // portion, not the layer one, we allow both userlayer and namedlayer
             StyleLayer sl = new StyleLayer(si, styledLayers[0], gs.getCatalog());
             layers.add(sl);
         } else {
-            throw new UnsupportedOperationException("Cannot do multi-layer styles yet");
+            // here we skip the UserLayer, as they should contain data inline, so they get skipped
+            layers =
+                    Arrays.stream(styledLayers)
+                            .filter(sl -> sl instanceof NamedLayer)
+                            .map(nl -> new StyleLayer(si, nl, gs.getCatalog()))
+                            .collect(Collectors.toList());
         }
     }
 

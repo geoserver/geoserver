@@ -120,12 +120,14 @@ Sections
 
 Use sections to break up long pages and to help Sphinx generate tables of contents.
 
-The top of the page (i.e. the title) should have a double underline::
+The top of the page (i.e. the title) should have a double underline, using an
+equals sign (``=``)::
 
    Camel Spotting
    ==============
    
-Subsequent section headers should have a single underline::
+Subsection headers should have a single underline, using a dash character
+(``-``)::
 
    Camel Spotting
    ==============
@@ -139,7 +141,7 @@ Subsequent section headers should have a single underline::
    Recording its Serial Number
    ---------------------------
    
-Should these sections require subsections, use the back quote::
+Should these subsections require subsubsections, use the back quote (`````)::
 
    Intro to the Camel
    ------------------

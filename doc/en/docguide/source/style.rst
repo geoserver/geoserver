@@ -119,7 +119,7 @@ For example, Java and XML make no distinction between a single space and multipl
    <namespace:tagname attributename="attributevalue" attribute2="attributevalue"
       nextattribute="this is on another line"/>
 
-For shell scripts, new lines can be escaped with a backslash character (\). It is also recommended to use a simple {{$ }} prompt to save space. For example::
+For shell scripts, new lines can be escaped with a backslash character (\\). It is also recommended to use a simple ``$`` prompt to save space. For example::
 
    $ /org/jdk1.5.0*/bin/java \
       -cp /home/user/.m2/repository/org/geoserver/*/*.jar \

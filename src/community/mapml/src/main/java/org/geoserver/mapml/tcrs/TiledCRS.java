@@ -103,6 +103,26 @@ public class TiledCRS {
                 new Bounds(pb.min.divideBy(TILESIZE).floor(), pb.max.divideBy(TILESIZE).floor());
         return tb;
     }
+    /**
+     * Transforms the point (in projected units) into a bounds centred on that point, in projected
+     * units, matching the size of the display bounds
+     *
+     * @param zoom the zoom at which the bounds will be calculated
+     * @param projectedCentre the projected coordinates of the centre of the new bounds
+     * @param displayBounds a rectangle with origin at 0,0 of the size of display in px
+     * @return
+     */
+    public Bounds getProjectedBoundsForDisplayBounds(
+            int zoom, Point projectedCentre, Bounds displayBounds) {
+        Point tcrsCentre = transform(projectedCentre, zoom);
+        Point tcrsMin =
+                tcrsCentre.subtract(
+                        new Point(displayBounds.getWidth() / 2, displayBounds.getHeight() / 2));
+        Point tcrsMax =
+                tcrsCentre.add(
+                        new Point(displayBounds.getWidth() / 2, displayBounds.getHeight() / 2));
+        return new Bounds(untransform(tcrsMin, zoom), untransform(tcrsMax, zoom));
+    }
 
     public int getMaxZoom() {
         return Collections.max(tileBounds.keySet());
@@ -136,6 +156,26 @@ public class TiledCRS {
         return zoom;
     }
 
+    /**
+     * Returns a zoom at which the projected bounds when rendered at the specified display width and
+     * height will fit, when centered on bounds' centre point.
+     *
+     * @param prjb - the (projected) bounds to find a zoom that fits for
+     * @param dsplyb - the pixel bounds which the projected bounds must fit within
+     * @return zoom
+     */
+    public int fitProjectedBoundsToDisplay(Bounds prjb, Bounds dsplyb) {
+        int zoom = 0;
+        for (int i = 0; i < this.getMaxZoom(); i++) {
+            zoom = i;
+            Bounds pxb = this.getPixelBounds(prjb, i);
+            if (!(dsplyb.getWidth() >= pxb.getWidth() && dsplyb.getHeight() >= pxb.getHeight())) {
+                zoom = i - 1;
+                break;
+            }
+        }
+        return zoom;
+    }
     /**
      * For testing purposes need to be able to set the pagesize.
      *

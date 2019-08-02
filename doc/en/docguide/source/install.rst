@@ -41,7 +41,7 @@ Ubuntu
 
 #. Install Sphinx using :command:`pip`::
   
-      pip install sphinx
+      pip install --user sphinx
   
 #. To test for a successful installation, navigate to your GeoServer source checkout, go into the :file:`doc/en` directory and run::
   
@@ -49,10 +49,6 @@ Ubuntu
   
    This should generate HTML pages in the :file:`doc/en/target/user/html` directory.
    
-#. If you want to generate PDF files this command should get you the necessary tools::
-  
-      sudo apt-get install texlive texlive-latex-extra
-
 Mac OS X
 --------
 

@@ -244,7 +244,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 wmsServer.createGetLegendGraphicRequest();
         // setting up remote request
         remoteLegendGraphicRequest.setLayer(wmsLayerInfo.getNativeName());
-
+        
         CascadedLegendRequest legend = new CascadedLegendRequest(request);
 
         legend.setRemoteLegendGraphicRequest(remoteLegendGraphicRequest);

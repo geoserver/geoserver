@@ -19,18 +19,13 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
 
-/** @author ImranR */
-// GetLegendGraphicRequest
+final public class  CascadedLegendRequest extends LegendRequest {
 
-public class CascadedLegendRequest extends LegendRequest {
+    private static final Logger LOGGER = Logger.getLogger(CascadedLegendRequest.class.getName());
 
-    Logger LOGGER = Logger.getLogger(CascadedLegendRequest.class.getName());
+    private final GetLegendGraphicRequest request;
 
-    GetLegendGraphicRequest request;
-
-    org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest;
-
-    JSONObject jsonLegend;
+    private org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest;
 
     public CascadedLegendRequest(GetLegendGraphicRequest request) {
         this.request = request;
@@ -48,7 +43,7 @@ public class CascadedLegendRequest extends LegendRequest {
     }
 
     public void setRemoteLegendGraphicRequest(
-            org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest) {
+             org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest) {
         // copying params to remote request
         this.remoteLegendGraphicRequest = remoteLegendGraphicRequest;
         Map<String, String> params = request.getRawKvp();
@@ -66,18 +61,11 @@ public class CascadedLegendRequest extends LegendRequest {
 
         super.getLegendInfo()
                 .setOnlineResource(this.remoteLegendGraphicRequest.getFinalURL().toExternalForm());
-        LOGGER.fine(
-                String.format(
-                        "Cascaded GetLegend Request URL:%s",
-                        super.getLegendInfo().getOnlineResource()));
+        LOGGER.fine("Cascaded GetLegend Request URL: "+super.getLegendInfo().getOnlineResource());
     }
 
     public GetLegendGraphicRequest getDelegate() {
         return request;
-    }
-
-    public void setDelegate(GetLegendGraphicRequest delegate) {
-        this.request = delegate;
     }
 
     public JSONArray getCascadedJSONRules() {
@@ -94,7 +82,7 @@ public class CascadedLegendRequest extends LegendRequest {
                 sb.append((char) cp);
             }
             String jsonText = sb.toString();
-            LOGGER.fine(String.format("Cascaded GetLegend Request JSON Response:%s", jsonText));
+            LOGGER.fine("Cascaded GetLegend Request JSON Response: "+jsonText);
             JSONObject jsonLegend = JSONObject.fromObject(jsonText);
             JSONArray layerLegends = jsonLegend.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
             JSONArray cascadedRules =

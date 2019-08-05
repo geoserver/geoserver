@@ -8,10 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.geoserver.api.APIService;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +27,14 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 /**
  * Handles ArcGIS ExportMap requests
  */
-@RestController public class ExportMapController extends AbstractGSRController {
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
+@RestController
+public class ExportMapController extends AbstractGSRController {
 
     @Autowired
     public ExportMapController(GeoServer geoServer) {

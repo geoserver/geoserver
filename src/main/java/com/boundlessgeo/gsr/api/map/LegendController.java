@@ -8,10 +8,12 @@ import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.model.map.LayerLegend;
 import com.boundlessgeo.gsr.model.map.LayerNameComparator;
 import com.boundlessgeo.gsr.model.map.Legends;
+import org.geoserver.api.APIService;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -28,6 +30,12 @@ import java.util.NoSuchElementException;
 /**
  * Controller for the Map Service legend endpoint
  */
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LegendController extends AbstractGSRController {

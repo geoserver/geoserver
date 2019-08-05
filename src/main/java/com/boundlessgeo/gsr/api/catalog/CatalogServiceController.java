@@ -6,8 +6,11 @@ package com.boundlessgeo.gsr.api.catalog;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.model.service.*;
+import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -27,6 +30,12 @@ import static com.boundlessgeo.gsr.GSRConfig.SPEC_VERSION;
 /**
  * Controller for the root Catalog service endpoint.
  */
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
 @RestController
 @RequestMapping(path = "/gsr/services", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CatalogServiceController extends AbstractGSRController {
@@ -37,6 +46,7 @@ public class CatalogServiceController extends AbstractGSRController {
     }
 
     @GetMapping(path = {"", "/{folder}"})
+    @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
     public CatalogService catalogGet(@PathVariable(required = false) String folder) {
         List<AbstractService> services = new ArrayList<>();
         for (WorkspaceInfo ws : catalog.getWorkspaces()) {

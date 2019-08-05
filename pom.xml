@@ -53,8 +53,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-ogcapi</artifactId>
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -147,6 +147,12 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <scope>test</scope>
+      <version>1.10.2</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -156,8 +162,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <runOrder>alphabetical</runOrder>
-          <source>1.8</source>
-          <target>1.8</target>
           <includes>
             <include>**/*Test.java</include>
           </includes>

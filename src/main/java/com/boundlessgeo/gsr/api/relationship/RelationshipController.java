@@ -3,6 +3,9 @@ package com.boundlessgeo.gsr.api.relationship;
 import com.boundlessgeo.gsr.model.relationship.RelationshipClass;
 import com.boundlessgeo.gsr.model.relationship.RelationshipClassErrorMessage;
 import com.boundlessgeo.gsr.translate.relationship.RelationshipDAO;
+import org.geoserver.api.APIService;
+import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,12 @@ import java.util.logging.Logger;
 /**
  * Controller for the Relationship Service
  */
+@APIService(
+        service = "Relationships",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WFSInfo.class
+)
 @RestController
 @RequestMapping(path = "/gsr/relationships/{workspaceName}", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RelationshipController {

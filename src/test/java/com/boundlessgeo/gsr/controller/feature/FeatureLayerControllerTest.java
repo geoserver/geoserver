@@ -627,6 +627,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
+        print(json);
 
         assertTrue(json.has("error"));
         assertEquals("Operation rolled back.", json.getJSONObject("error").getString("message"));

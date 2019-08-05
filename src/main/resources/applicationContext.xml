@@ -29,7 +29,22 @@
     <context:component-scan base-package="com.boundlessgeo.gsr.api" />
     <context:component-scan base-package="com.boundlessgeo.gsr.translate.relationship" />
 
-    <mvc:interceptors>
-        <bean class="com.boundlessgeo.gsr.api.FormatParameterInterceptor"/>
-    </mvc:interceptors>
+    <!-- The GRS dispatcher (same as OGC API dispatcher for the moment, but allows for customization/subclassing later -->
+    <bean id="gsrDispatcher" class="com.boundlessgeo.gsr.GSRDispatcher"/>
+    <bean id="gsrExceptionHandler" class="com.boundlessgeo.gsr.GSRExceptionHandler"/>
+
+    <!-- api http url mapping -->
+    <bean id="gsrURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+        <constructor-arg ref="catalog"/>
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="useTrailingSlashMatch" value="true"/>
+        <property name="order" value="0"/>
+    
+        <property name="mappings">
+            <props>
+                <prop key="/gsr">gsrDispatcher</prop>
+                <prop key="/gsr/**">gsrDispatcher</prop>
+            </props>
+        </property>
+    </bean>
 </beans>

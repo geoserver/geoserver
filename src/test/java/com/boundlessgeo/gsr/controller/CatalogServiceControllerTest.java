@@ -7,10 +7,16 @@ package com.boundlessgeo.gsr.controller;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CatalogServiceControllerTest extends ControllerTest {
+
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
 
     @Test
     public void testServiceException() throws Exception {
@@ -49,6 +55,16 @@ public class CatalogServiceControllerTest extends ControllerTest {
         JSONObject geometryService = services.getJSONObject(services.size() - 1);
         assertEquals("Geometry", geometryService.get("name"));
         assertEquals("GeometryServer", geometryService.get("type"));
+    }
+
+    /**
+     * A.1.1 catalog/request, catalog/parameters
+     * @throws Exception
+     */
+    @Test
+    public void testHtmlCatalogResponse() throws Exception {
+        Document doc = getAsJSoup(getBaseURL() + "?f=html");
+        
     }
 
     @Test

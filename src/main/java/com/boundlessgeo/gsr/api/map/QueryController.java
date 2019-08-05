@@ -8,7 +8,10 @@ import java.io.IOException;
 
 import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
+import org.geoserver.api.APIService;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wms.WMSInfo;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -30,6 +33,12 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 /**
  * Controller for the Map Service query endpoint
  */
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
 @RestController @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType
     .APPLICATION_JSON_VALUE) public class QueryController
     extends AbstractGSRController {

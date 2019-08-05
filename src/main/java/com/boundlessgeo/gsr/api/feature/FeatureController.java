@@ -11,8 +11,11 @@ import com.boundlessgeo.gsr.model.geometry.SpatialReference;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
+import org.geoserver.api.APIService;
+import org.geoserver.api.styles.StylesServiceInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.filter.Filter;
@@ -33,6 +36,12 @@ import com.boundlessgeo.gsr.model.map.LayerOrTable;
 /**
  * Controller for the Feature Service feature list endpoint
  */
+@APIService(
+        service = "Feature",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WFSInfo.class
+)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureController extends AbstractGSRController {

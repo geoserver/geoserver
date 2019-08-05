@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 
 import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
+import org.geoserver.api.APIService;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -34,6 +35,12 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
  *
  * Also includes all endpoints from {@link QueryController}
  */
+@APIService(
+        service = "Feature",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WFSInfo.class
+)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureServiceController extends QueryController {

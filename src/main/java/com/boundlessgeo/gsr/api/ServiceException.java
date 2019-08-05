@@ -5,7 +5,7 @@ import com.boundlessgeo.gsr.model.exception.ServiceError;
 /**
  * Exception containing a {@link ServiceError}, for handling error responses
  */
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
     ServiceError error;
 
     public ServiceException(ServiceError error) {
@@ -26,5 +26,9 @@ public class ServiceException extends Exception {
     public ServiceException(String message, ServiceError error) {
         super(message);
         this.error = error;
+    }
+
+    public ServiceError getError() {
+        return error;
     }
 }

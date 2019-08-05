@@ -7,7 +7,9 @@ package com.boundlessgeo.gsr.api.map;
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
+import org.geoserver.api.APIService;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -19,6 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for the Map Service layers list endpoint
  */
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LayerListController extends AbstractGSRController {

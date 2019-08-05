@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.apache.commons.lang.StringUtils;
+import org.geoserver.api.APIService;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -47,7 +48,14 @@ import com.boundlessgeo.gsr.model.map.MapServiceRoot;
 /**
  * Controller for the root Map Service endpoint
  */
-@RestController @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
+@RestController
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType
     .APPLICATION_JSON_VALUE)
 public class MapServiceController extends AbstractGSRController {
 

@@ -24,9 +24,11 @@ import com.boundlessgeo.gsr.translate.feature.LayerEditsEncoder;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.*;
+import org.geoserver.api.APIService;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,13 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 /**
  * Controller for the Feature Service layer endpoint
  */
+@APIService(
+        service = "Feature",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WFSInfo.class
+)
+
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureLayerController extends AbstractGSRController {

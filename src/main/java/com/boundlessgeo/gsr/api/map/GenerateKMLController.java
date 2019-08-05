@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.geoserver.api.APIService;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.wms.WMSInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,14 +22,21 @@ import com.boundlessgeo.gsr.MutableRequestProxy;
 /**
  * Simple Generate KML end point. Just redirect to GS KML service
  */
-@RestController @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer/generateKml") public class
+@APIService(
+        service = "MapServer",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WMSInfo.class
+)
+@RestController
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer/generateKml") public class
 GenerateKMLController {
 
     @Autowired
     private Dispatcher dispatcher;
 
     @GetMapping
-    public void generateKml(@RequestParam String layers, @PathVariable String workspaceName, HttpServletRequest request,
+    public void generateKml(@RequestParam(name = "layers") String layers, @PathVariable (name = "workspaceName") String workspaceName, HttpServletRequest request,
         HttpServletResponse response) throws Exception {
         if (StringUtils.isNotEmpty(layers)) {
             String workspacedLayers = Arrays.stream(layers.split(",")).map(l -> workspaceName + ":" + l)

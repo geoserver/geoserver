@@ -5,6 +5,7 @@
 package com.boundlessgeo.gsr.controller;
 
 import java.io.File;
+import java.util.logging.Level;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
@@ -17,7 +18,10 @@ import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import com.boundlessgeo.gsr.validation.JSONValidator;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.Assert.*;
 
@@ -94,5 +98,24 @@ public class ControllerTest extends GeoServerSystemTestSupport {
 
     public String getBaseURL() {
         return baseURL;
+    }
+
+    protected MockHttpServletResponse getAsMockHttpServletResponse(
+            String path, int expectedHttpCode) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+
+        assertEquals(expectedHttpCode, response.getStatus());
+        return response;
+    }
+
+    protected Document getAsJSoup(String url) throws Exception {
+        MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
+        assertEquals("text/html", response.getContentType());
+
+        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+
+        // parse the HTML
+        Document document = Jsoup.parse(response.getContentAsString());
+        return document;
     }
 }

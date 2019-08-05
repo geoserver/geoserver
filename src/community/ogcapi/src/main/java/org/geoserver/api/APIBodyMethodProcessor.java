@@ -206,7 +206,11 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             }
             // we want to check if HTML is the first producible without using converters, adding it
             // to the mix
-            producibleTypes.add(MediaType.TEXT_HTML);
+            HTMLResponseBody htmlResponseBody =
+                    returnType.getMethodAnnotation(HTMLResponseBody.class);
+            if (htmlResponseBody != null) {
+                producibleTypes.add(MediaType.TEXT_HTML);
+            }
 
             if (body != null && producibleTypes.isEmpty()) {
                 throw new HttpMessageNotWritableException(

@@ -43,6 +43,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -85,7 +86,7 @@ public class APIDispatcher extends AbstractController {
 
     protected RequestMappingHandlerAdapter handlerAdapter;
     protected HandlerMethodReturnValueHandlerComposite returnValueHandlers;
-    protected APIContentNegotiationManager contentNegotiationManager =
+    protected ContentNegotiationManager contentNegotiationManager =
             new APIContentNegotiationManager();
     private List<HttpMessageConverter<?>> messageConverters;
     private List<APIExceptionHandler> exceptionHandlers;
@@ -156,6 +157,7 @@ public class APIDispatcher extends AbstractController {
                                         // negotiation
                                         return new APIBodyMethodProcessor(
                                                 handlerAdapter.getMessageConverters(),
+                                                contentNegotiationManager,
                                                 GeoServerExtensions.bean(
                                                         GeoServerResourceLoader.class),
                                                 GeoServerExtensions.bean(GeoServer.class),

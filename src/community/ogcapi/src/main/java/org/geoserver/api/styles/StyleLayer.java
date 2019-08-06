@@ -50,6 +50,7 @@ import org.opengis.filter.MultiValuedFilter;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.geometry.coordinate.Polygon;
 import org.opengis.style.Symbolizer;
+import org.springframework.http.MediaType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StyleLayer {
@@ -92,11 +93,11 @@ public class StyleLayer {
                         String href =
                                 ResponseUtils.buildURL(
                                         APIRequestInfo.get().getBaseURL(),
-                                        "ogc/features/collections/" + resourceId + "/items",
+                                        "ogc/features/collections/" + resourceId,
                                         null,
                                         URLMangler.URLType.SERVICE);
                         this.sampleData =
-                                new Link(href, "data", RFCGeoJSONFeaturesResponse.MIME, null);
+                                new Link(href, "data", MediaType.APPLICATION_JSON_VALUE, null);
 
                         this.attributes = getAttributes(source, featureType);
                     } else if (resource instanceof CoverageInfo) {
@@ -115,7 +116,7 @@ public class StyleLayer {
                                 new Link(
                                         href,
                                         "data",
-                                        RFCGeoJSONFeaturesResponse.MIME,
+                                        MediaType.APPLICATION_JSON_VALUE,
                                         "Coveages API not yet implemented, this is just a sample URL sorry!");
                     }
 

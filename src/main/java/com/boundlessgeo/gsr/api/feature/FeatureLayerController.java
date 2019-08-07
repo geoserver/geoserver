@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.boundlessgeo.gsr.api.GeoServicesExceptionResolver;
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.api.ServiceException;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.feature.*;
 
 
@@ -25,6 +26,7 @@ import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.*;
 import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
@@ -67,10 +69,11 @@ public class FeatureLayerController extends AbstractGSRController {
 
     @ResponseBody
     @GetMapping(path = "/{layerId}")
+    @HTMLResponseBody(templateName = "featurelayer.ftl", fileName = "featurelayer.html")
     public FeatureLayer featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable entry;
         try {
-            entry = LayerDAO.find(catalog, workspaceName, layerId);
+            entry = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
         } catch (IOException e) {
             throw new NoSuchElementException("Unavailable table or layer in workspace \"" + workspaceName + "\" for id " + layerId + ":" + e);
         }
@@ -78,7 +81,11 @@ public class FeatureLayerController extends AbstractGSRController {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
 
-        return new FeatureLayer(entry);
+        return new FeatureLayer(entry, Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
+                new Link(workspaceName + "/" + "FeatureServer/" + layerId, entry.getName())
+        ), Collections.singletonList(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "?f=json&pretty=true", "REST")));
     }
 
     /**
@@ -131,7 +138,7 @@ public class FeatureLayerController extends AbstractGSRController {
         List<EditResult> editResults;
         Long id;
 
-        entry = LayerDAO.find(catalog, workspaceName, layerId);
+        entry = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
         if (entry == null) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }

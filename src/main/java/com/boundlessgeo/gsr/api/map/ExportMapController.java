@@ -1,6 +1,7 @@
 package com.boundlessgeo.gsr.api.map;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -169,7 +170,7 @@ public class ExportMapController extends AbstractGSRController {
             //We look up each layer individually to get its name. This has the potential to be slow in non FS based
             // catalogs
             return Arrays.stream(layersSpecAndLayers[1].split(","))
-                .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
+                .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName, Collections.emptyList()))
                 .collect(Collectors.joining(","));
         } else {
             return null;

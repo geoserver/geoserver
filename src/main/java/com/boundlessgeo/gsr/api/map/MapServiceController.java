@@ -19,6 +19,7 @@ import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
 import com.boundlessgeo.gsr.model.map.LayerNameComparator;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
@@ -67,6 +69,7 @@ public class MapServiceController extends AbstractGSRController {
     }
 
     @GetMapping
+    @HTMLResponseBody(templateName = "map.ftl", fileName = "map.html")
     public MapServiceRoot mapServiceGet(@PathVariable String workspaceName) throws IOException {
         WorkspaceInfo workspace = geoServer.getCatalog().getWorkspaceByName(workspaceName);
         if (workspace == null) {
@@ -84,12 +87,20 @@ public class MapServiceController extends AbstractGSRController {
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
 
-        return new MapServiceRoot(service, Collections.unmodifiableList(layersInWorkspace));
+        return new MapServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace), Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "MapServer", "MapServer")
+        ), Collections.singletonList(new Link(workspaceName + "/" + "MapServer?f=json&pretty=true", "REST")));
     }
 
     @GetMapping(path = {"/{layerId}"})
+    @HTMLResponseBody(templateName = "maplayer.ftl", fileName = "maplayer.html")
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
-        return LayerDAO.find(catalog, workspaceName, layerId);
+        return LayerDAO.find(catalog, workspaceName, layerId, Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "MapServer", "MapServer"),
+                new Link(workspaceName + "/" + "MapServer/" + layerId, layerId + "")
+        ), Collections.singletonList(new Link(workspaceName + "/MapServer/" + layerId + "?f=json&pretty=true", "REST")));
     }
 
     @GetMapping(path = "/identify")
@@ -102,7 +113,7 @@ public class MapServiceController extends AbstractGSRController {
 
         IdentifyServiceResult result = new IdentifyServiceResult();
 
-        LayerDAO.find(catalog, workspaceName).layers.forEach(layer -> {
+        LayerDAO.find(catalog, workspaceName, Collections.emptyList(), Collections.emptyList()).layers.forEach(layer -> {
             try {
                 FeatureCollection collection = FeatureDAO
                     .getFeatureCollectionForLayer(workspaceName, layer.getId(), geometryTypeName, geometryText,
@@ -135,7 +146,7 @@ public class MapServiceController extends AbstractGSRController {
         for (String s : layers.split(",")) {
             Integer layerId = Integer.parseInt(s);
             try {
-                LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, layerId);
+                LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
                 if (layerOrTable != null && layerOrTable.layer != null) {
                     FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerOrTable.layer.getResource();
                     FeatureType featureType = featureTypeInfo.getFeatureType();

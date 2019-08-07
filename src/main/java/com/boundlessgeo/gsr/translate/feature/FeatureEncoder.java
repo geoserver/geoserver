@@ -75,7 +75,7 @@ public class FeatureEncoder {
             attributes.put((String) key, jsonAttributes.get(key));
         }
 
-        return new Feature(geometry, attributes);
+        return new Feature(geometry, attributes, json.get("id"));
     }
 
     public static Feature feature(org.opengis.feature.Feature feature, boolean returnGeometry,
@@ -93,9 +93,9 @@ public class FeatureEncoder {
         Map<String, Object> attributes = FeatureEncoder.attributeList(feature, objectIdFieldName);
         if (returnGeometry) {
             return new Feature(geometryEncoder.toRepresentation(
-                    (org.locationtech.jts.geom.Geometry) geometryAttribute.getValue(),spatialReference), attributes);
+                    (org.locationtech.jts.geom.Geometry) geometryAttribute.getValue(),spatialReference), attributes, feature.getIdentifier().getID());
         } else {
-            return new Feature(null, attributes);
+            return new Feature(null, attributes, feature.getIdentifier().getID());
         }
     }
 

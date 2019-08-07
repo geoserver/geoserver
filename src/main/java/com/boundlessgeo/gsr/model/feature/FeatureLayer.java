@@ -1,5 +1,6 @@
 package com.boundlessgeo.gsr.model.feature;
 
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.map.AbstractLayerOrTable;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -52,8 +53,8 @@ public class FeatureLayer extends AbstractLayerOrTable {
     // templates - we can list one template based on schema default values
     protected List templates = new ArrayList();
 
-    public FeatureLayer(AbstractLayerOrTable entry) throws IOException {
-        super(entry);
+    public FeatureLayer(AbstractLayerOrTable entry, List<Link> path, List<Link> interfaces) throws IOException {
+        super(entry, path, interfaces);
         defaultVisibility = true;
 
         if (layer.getResource() instanceof FeatureTypeInfo) {

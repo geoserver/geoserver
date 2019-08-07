@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.api.map;
 
 import java.io.IOException;
-
+import java.util.Collections;
 import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.api.APIService;
@@ -69,7 +69,7 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
     ) throws IOException {
 
-        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
+        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName, Collections.emptyList(), Collections.emptyList());
 
         FeatureCollection<? extends FeatureType, ? extends Feature> features = FeatureDAO
             .getFeatureCollectionForLayerWithId(workspaceName, layerId, geometryTypeName, geometryText, inSRText,

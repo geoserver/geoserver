@@ -33,8 +33,8 @@ public class ScaleRange {
                 }
             }
         }
-        minScale = Double.isInfinite(minScale) ? null : minScale;
-        maxScale = Double.isInfinite(maxScale) ? null : maxScale;
+        minScale = Double.isInfinite(minScale) ? 0 : minScale;
+        maxScale = Double.isInfinite(maxScale) ? 0 : maxScale;
         return new ScaleRange(minScale, maxScale);
     }
 }

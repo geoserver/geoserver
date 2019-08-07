@@ -4,8 +4,14 @@
  */
 package com.boundlessgeo.gsr.api.catalog;
 
-import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.model.service.*;
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
+import static com.boundlessgeo.gsr.GSRConfig.PRODUCT_NAME;
+import static com.boundlessgeo.gsr.GSRConfig.SPEC_VERSION;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.geoserver.api.APIService;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -18,14 +24,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
-import static com.boundlessgeo.gsr.GSRConfig.PRODUCT_NAME;
-import static com.boundlessgeo.gsr.GSRConfig.SPEC_VERSION;
+import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
+import com.boundlessgeo.gsr.model.service.AbstractService;
+import com.boundlessgeo.gsr.model.service.CatalogService;
+import com.boundlessgeo.gsr.model.service.FeatureService;
+import com.boundlessgeo.gsr.model.service.GeometryService;
+import com.boundlessgeo.gsr.model.service.MapService;
 
 /**
  * Controller for the root Catalog service endpoint.
@@ -45,17 +50,38 @@ public class CatalogServiceController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping(path = {"", "/{folder}"})
+    @GetMapping(path = {""})
     @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
-    public CatalogService catalogGet(@PathVariable(required = false) String folder) {
+    public CatalogService catalogGet() {
         List<AbstractService> services = new ArrayList<>();
+        List<String> folders = new ArrayList<>();
         for (WorkspaceInfo ws : catalog.getWorkspaces()) {
-            MapService ms = new MapService(ws.getName());
-            FeatureService fs = new FeatureService(ws.getName());
-            services.add(ms);
-            services.add(fs);
+            folders.add(ws.getName());
+            fillServices(services, ws);
         }
         services.add(new GeometryService("Geometry"));
-        return new CatalogService("services", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.emptyList(), services);
+        return new CatalogService("/", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, folders,
+                services, Collections.emptyList(), Collections.singletonList(new Link("?f=json&pretty=true", "REST")));
+    }
+    
+    @GetMapping(path = {"/{folder:.*}"})
+    @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
+    public CatalogService catalogGet(@PathVariable(required = true) String folder) {
+        List<AbstractService> services = new ArrayList<>();
+        WorkspaceInfo ws = catalog.getWorkspaceByName(folder);
+        if (ws == null) {
+            throw new NoSuchElementException("Workspace name " + folder + " does not correspond to any workspace.");
+        }
+        fillServices(services, ws);
+
+        return new CatalogService(folder, SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.emptyList(),
+                services, Collections.singletonList(new Link(folder, folder)), Collections.singletonList(new Link(folder + "?f=json&pretty=true", "REST")));
+    }
+
+    private void fillServices(List<AbstractService> services, WorkspaceInfo ws) {
+        MapService ms = new MapService(ws.getName());
+        FeatureService fs = new FeatureService(ws.getName());
+        services.add(ms);
+        services.add(fs);
     }
 }

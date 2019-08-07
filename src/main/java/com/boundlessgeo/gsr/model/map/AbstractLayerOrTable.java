@@ -4,38 +4,43 @@
  */
  package com.boundlessgeo.gsr.model.map;
 
-import com.boundlessgeo.gsr.model.label.Label;
-import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.model.feature.Field;
-import com.boundlessgeo.gsr.model.feature.FieldTypeEnum;
-import com.boundlessgeo.gsr.model.geometry.Envelope;
-import com.boundlessgeo.gsr.model.geometry.GeometryTypeEnum;
-import com.boundlessgeo.gsr.model.renderer.DrawingInfo;
-import com.boundlessgeo.gsr.model.renderer.Renderer;
-import com.boundlessgeo.gsr.model.GSRModel;
-import com.boundlessgeo.gsr.translate.renderer.StyleEncoder;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.geoserver.catalog.*;
+import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geotools.data.FeatureStore;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
+import com.boundlessgeo.gsr.model.AbstractGSRModel;
+import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
+import com.boundlessgeo.gsr.model.feature.Field;
+import com.boundlessgeo.gsr.model.feature.FieldTypeEnum;
+import com.boundlessgeo.gsr.model.geometry.Envelope;
+import com.boundlessgeo.gsr.model.geometry.GeometryTypeEnum;
+import com.boundlessgeo.gsr.model.label.Label;
+import com.boundlessgeo.gsr.model.renderer.DrawingInfo;
+import com.boundlessgeo.gsr.model.renderer.Renderer;
+import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.translate.renderer.StyleEncoder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Abstract layer model used by both {@link com.boundlessgeo.gsr.model.feature.FeatureLayer} and {@link LayerOrTable}
  */
-public abstract class AbstractLayerOrTable  implements GSRModel {
+public abstract class AbstractLayerOrTable extends AbstractGSRModel implements GSRModel {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(AbstractLayerOrTable.class);
 
@@ -80,18 +85,19 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
 
     private String capabilities = "Query,Time,Data";
     
-    public AbstractLayerOrTable(LayerInfo layer, int id) throws IOException {
-        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer), StyleEncoder.labelingInfo(layer));
+    public AbstractLayerOrTable(LayerInfo layer, int id, List<Link> path, List<Link> interfaces) throws IOException {
+        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer), StyleEncoder.labelingInfo(layer), path, interfaces);
     }
 
-    protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable) throws IOException {
+    protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable, List<Link> path, List<Link> interfaces) throws IOException {
         this(layerOrTable.layer, layerOrTable.getId(), layerOrTable.getExtent(),
                 (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().renderer),
-                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().labelingInfo));
+                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().labelingInfo), path, interfaces);
     }
 
 
-    AbstractLayerOrTable(LayerInfo layer, int id, Envelope extent, Renderer renderer, List<Label> labelingInfo) throws IOException {
+    AbstractLayerOrTable(LayerInfo layer, int id, Envelope extent, Renderer renderer, List<Label> labelingInfo, List<Link> path, List<Link> interfaces) throws IOException {
+        super(path, interfaces);
         this.layer = layer;
         this.id = id;
         this.name = layer.getName();

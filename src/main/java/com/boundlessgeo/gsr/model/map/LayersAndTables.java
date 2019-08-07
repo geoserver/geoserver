@@ -5,22 +5,15 @@
 package com.boundlessgeo.gsr.model.map;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
-
-import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
-import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
-
+import com.boundlessgeo.gsr.model.AbstractGSRModel;
 import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -29,14 +22,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Also provides a number of static utility methods for interacting with this list.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LayersAndTables implements GSRModel {
+public class LayersAndTables extends AbstractGSRModel implements GSRModel {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
 
     public final ArrayList<LayerOrTable> layers;
 
     public final ArrayList<LayerOrTable> tables;
 
-    public LayersAndTables(ArrayList<LayerOrTable> layers, ArrayList<LayerOrTable> tables) {
+    public LayersAndTables(ArrayList<LayerOrTable> layers, ArrayList<LayerOrTable> tables, List<Link> path, List<Link> interfaces) {
+        super(path, interfaces);
         this.layers = layers;
         this.tables = tables;
     }
@@ -57,10 +51,10 @@ public class LayersAndTables implements GSRModel {
      * @param workspaceName
      * @return
      */
-    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName) {
+    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName, List<Link> path) {
         String name = layerName;
         try {
-            LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, Integer.parseInt(layerName));
+            LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, Integer.parseInt(layerName), path, Collections.emptyList());
             name = layerOrTable.getName();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
@@ -69,4 +63,14 @@ public class LayersAndTables implements GSRModel {
         }
         return workspaceName + ":" + name;
     }
+
+    public ArrayList<LayerOrTable> getLayers() {
+        return layers;
+    }
+
+    public ArrayList<LayerOrTable> getTables() {
+        return tables;
+    }
+    
+    
 }

@@ -26,7 +26,7 @@ public class JSONValidator {
 
     public static boolean isValidSchema(String json, File schemaFile) {
         boolean isValid = false;
-        final String baseURI = "file:///" + schemaFile.getAbsolutePath();
+        final String baseURI = "file:///" + schemaFile.getAbsolutePath().replace(File.separator, "/");
 
         JsonSchema schema;
         try {

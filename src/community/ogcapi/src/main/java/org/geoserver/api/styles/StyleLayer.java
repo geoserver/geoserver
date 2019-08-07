@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
 import org.geoserver.api.NCNameResourceCodec;
-import org.geoserver.api.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;

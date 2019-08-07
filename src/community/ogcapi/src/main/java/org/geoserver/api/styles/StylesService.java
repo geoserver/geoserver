@@ -4,7 +4,11 @@
  */
 package org.geoserver.api.styles;
 
+import static org.geoserver.api.styles.StylesService.ValidationMode.only;
+import static org.geoserver.api.styles.StylesService.ValidationMode.yes;
+
 import io.swagger.v3.oas.models.OpenAPI;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,16 +21,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.api.APIContentNegotiationManager;
 import org.geoserver.api.APIDispatcher;
+import org.geoserver.api.APIException;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestException;
@@ -39,9 +47,14 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.xml.sax.EntityResolver;
 
 @APIService(
     service = "Style",
@@ -51,6 +64,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 )
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/styles")
 public class StylesService {
+
+    static enum ValidationMode {
+        yes,
+        no,
+        only
+    }
 
     public static final String CORE = "http://www.opengis.net/t15/opf-styles-1/1.0/conf/core";
     public static final String HTML = "http://www.opengis.net/t15/opf-styles-1/1.0/conf/html";
@@ -141,7 +160,7 @@ public class StylesService {
             NativeWebRequest request,
             HttpServletResponse response)
             throws HttpMediaTypeNotAcceptableException, IOException {
-        StyleInfo styleInfo = getStyleInfo(styleId);
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
 
         // check the requested media types, if none specific was requested, just copy over the
         // native style
@@ -176,10 +195,14 @@ public class StylesService {
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
-    private StyleInfo getStyleInfo(String styleId) {
+    private StyleInfo getStyleInfo(String styleId, boolean failIfNotFound) {
         List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
         if (styles == null || styles.isEmpty()) {
-            throw new RestException("Could not locate style " + styleId, HttpStatus.NOT_FOUND);
+            if (failIfNotFound) {
+                throw new RestException("Could not locate style " + styleId, HttpStatus.NOT_FOUND);
+            } else {
+                return null;
+            }
         }
         if (styles.size() > 1) {
             throw new RestException(
@@ -236,7 +259,86 @@ public class StylesService {
     @ResponseBody
     public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
             throws IOException {
-        StyleInfo styleInfo = getStyleInfo(styleId);
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
         return new StyleMetadataDocument(styleInfo, geoServer);
+    }
+
+    @PutMapping(
+        path = "styles/{styleId}",
+        consumes = {MediaType.ALL_VALUE}
+    )
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void putStyle(
+            InputStream inputStream,
+            @PathVariable String styleId,
+            @RequestParam(name = "validate", required = false, defaultValue = "no")
+                    ValidationMode validate,
+            @RequestHeader("Content-Type") String contentType)
+            throws IOException {
+        Catalog catalog = geoServer.getCatalog();
+
+        // Extracting mimeType and charset
+        MediaType mediaType = MediaType.parseMediaType(contentType);
+        String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
+        String charset = mediaType.getCharset().toString();
+
+        byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
+        String content = new String(rawData, charset);
+        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+
+        // checking the style format is supported
+        StyleHandler handler;
+        Version version;
+        try {
+            handler = Styles.handler(mimeType);
+            version = handler.versionForMimeType(mimeType);
+        } catch (Exception e) {
+            throw new APIException(
+                    "Illegal input media type",
+                    "Failed to lookup style support for media type " + mimeType,
+                    HttpStatus.BAD_REQUEST,
+                    e);
+        }
+
+        // validation
+        if (validate == only || validate == yes) {
+            try {
+                List<Exception> errors = handler.validate(content, version, entityResolver);
+                if (errors != null && !errors.isEmpty()) {
+                    throw new APIException(
+                            "InvalidStyle", "Invalid style:" + errors, HttpStatus.BAD_REQUEST);
+                }
+            } catch (Exception invalid) {
+                throw new APIException(
+                        "InvalidStyle",
+                        "Invalid style:" + invalid.getMessage(),
+                        HttpStatus.BAD_REQUEST,
+                        invalid);
+            }
+        }
+
+        // if not just validation was requested, save the file and its configuration
+        if (validate != only) {
+            StyleInfo styleInfo = getStyleInfo(styleId, false);
+            if (styleInfo == null) {
+                styleInfo = catalog.getFactory().createStyle();
+                styleInfo.setName(styleId); // assuming global styles?
+                styleInfo.setFilename(styleId + "." + handler.getFileExtension());
+                styleInfo.setFormat(handler.getFormat());
+                styleInfo.setFormatVersion(version);
+                if (LocalWorkspace.get() != null) {
+                    styleInfo.setWorkspace(
+                            catalog.getWorkspaceByName(LocalWorkspace.get().getName()));
+                }
+                catalog.add(styleInfo);
+            } else {
+                // the style could be in a different language now
+                styleInfo.setFormat(handler.getFormat());
+                styleInfo.setFormatVersion(handler.versionForMimeType(mimeType));
+                catalog.save(styleInfo);
+            }
+            // write out the style body
+            catalog.getResourcePool().writeStyle(styleInfo, new ByteArrayInputStream(rawData));
+        }
     }
 }

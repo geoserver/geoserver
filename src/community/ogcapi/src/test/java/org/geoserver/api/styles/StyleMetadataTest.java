@@ -135,7 +135,9 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals("Buildings", json.read("layers[0].id"));
         assertEquals("polygon", json.read("layers[0].type"));
         assertEquals("data", json.read("layers[0].sampleData.rel"));
-        assertEquals("http://localhost:8080/geoserver/ogc/features/collections/cite__BuildingsLabels", json.read("layers[0].sampleData.href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/collections/cite__BuildingsLabels",
+                json.read("layers[0].sampleData.href"));
         assertEquals("application/json", json.read("layers[0].sampleData.type"));
 
         // attributes

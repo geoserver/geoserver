@@ -16,6 +16,7 @@ API
 The following links provide direct access to the GeoServer REST API documentation, including definitions and examples of each endpoint:
 
 * :api:`/about/manifests <manifests.yaml>`
+* :api:`/about/system-status <system-status.yaml>`
 * :api:`/datastores <datastores.yaml>`
 * :api:`/coverages <coverages.yaml>`
 * :api:`/coveragestores <coveragestores.yaml>`

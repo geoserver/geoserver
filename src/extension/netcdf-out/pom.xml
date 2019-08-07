@@ -162,4 +162,19 @@
   	<scope>test</scope>
   </dependency>
  </dependencies>
+ <build>
+  <plugins>
+   <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <configuration>
+      <systemPropertyVariables>
+            <!-- settings these properties on Test's code won't work due to order of initialization -->
+       <org.geotools.coverage.io.netcdf.convertAxis.km>false</org.geotools.coverage.io.netcdf.convertAxis.km>
+       <buildDirectory>${project.build.directory}</buildDirectory>
+      </systemPropertyVariables>
+    </configuration>
+   </plugin>
+  </plugins>
+ </build>
 </project>

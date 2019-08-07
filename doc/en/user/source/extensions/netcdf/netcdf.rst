@@ -141,7 +141,7 @@ A sample entry in that property file could look like this:
 
 .. note:: Note the "unknown" names for GEOGCS, DATUM and SPHEROID elements. This is how the underlying NetCDF machinery will name custom elements.
 .. note:: Note the number that precedes the WKT. This will determine the EPSG code.  So in this example, the EPSG code is 971835.
-.. note:: When dealing with records indexing based on PostGIS, make sure the custom code isn't greater than 998999. (It tooks us a while to understand why we had some issues with custom codes using PostGIS as granules index. Some more details, `here <http://gis.stackexchange.com/questions/145017/why-is-there-an-upper-limit-to-the-srid-value-in-the-spatial-ref-sys-table-in-po>`_)
+.. note:: When dealing with records indexing based on PostGIS, make sure the custom code isn't greater than 998999. (It took us a while to understand why we had some issues with custom codes using PostGIS as granules index. Some more details, `here <http://gis.stackexchange.com/questions/145017/why-is-there-an-upper-limit-to-the-srid-value-in-the-spatial-ref-sys-table-in-po>`_)
 .. note:: If a parameter like "central_meridian" or "longitude_of_origin" or other longitude related value is outside the range [-180,180], make sure you adjust this value to belong to the standard range. As an instance a Central Meridian of 265 should be set as -95.
  
 You may specify further custom NetCDF EPSG references by adding more lines to that file. 
@@ -175,6 +175,43 @@ You may specify further custom NetCDF EPSG references by adding more lines to th
 #. Verify that the CRS has been properly parsed by navigating to the :ref:`srs_list` page in the :ref:`web_admin`.
 
 #. If the projection wasn't listed, examine the logs for any errors.
+
+Projected Coordinates with axis in km
+"""""""""""""""""""""""""""""""""""""
+For GeoServer < 2.16.x, Projected Coordinates with axis units in km are automatically converted to meters and associated ProjectedCRS has Unit in meters too. Therefore, polygons stored in the geometry table have coordinates in meters.
+
+Starting with GeoServer 2.16.x, automatic conversion km-to-m is disabled by default in order to support km coordinates, directly. 
+Therefore, make sure to define a proper custom CRS with km unit if you want to support it. (That is also needed if you want to publish the index as a vector layer).
+
+For example::
+     
+      971815=PROJCS["albers_conical_equal_area", \
+        GEOGCS["unknown", \
+          DATUM["unknown", \
+            SPHEROID["unknown", 6378137.0, 298.2572221010042]],  \
+          PRIMEM["Greenwich", 0.0], \
+          UNIT["degree", 0.017453292519943295], \
+          AXIS["Geodetic longitude", EAST], \
+          AXIS["Geodetic latitude", NORTH]], \
+        PROJECTION["Albers_Conic_Equal_Area"], \
+        PARAMETER["central_meridian", -126.0], \
+        PARAMETER["latitude_of_origin", 45.0], \
+        PARAMETER["standard_parallel_1", 50.0], \
+        PARAMETER["false_easting", 1000000.0], \
+        PARAMETER["false_northing", 0.0], \
+        PARAMETER["standard_parallel_2", 58.5], \
+        UNIT["km", 1000.0], \
+        AXIS["Easting", EAST], \
+        AXIS["Northing", NORTH], \
+        AUTHORITY["EPSG","971815"]]
+
+Note::
+     
+         UNIT["km", 1000.0], \
+
+Set :file:`-Dorg.geotools.coverage.io.netcdf.convertAxis.km` to `true` to activate the automatic conversion or `false` to deactivate it.
+
+.. note:: that is a global JVM setting: Any dataset with coordinates in km being configured before swapping the conversion behavior will need to be reconfigured to set the new Geometries and CRS.
 
 Specify an external file through system properties
 """"""""""""""""""""""""""""""""""""""""""""""""""

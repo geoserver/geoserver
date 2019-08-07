@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
@@ -26,6 +28,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
 import org.geoserver.web.netcdf.DataPacking;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
+import org.geotools.imageio.netcdf.utilities.NetCDFCRSUtilities;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import ucar.ma2.DataType;
@@ -55,10 +58,26 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                     CiteTestData.WCS_URI,
                     "Snow_depth_water_equivalent_surface",
                     CiteTestData.WCS_PREFIX);
+    public static QName SAMPLEKM =
+            new QName(CiteTestData.WCS_URI, "samplekm", CiteTestData.WCS_PREFIX);
 
     /** Only setup coverages */
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
+    }
+
+    private void setFinalStaticField(String fieldName, boolean value)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+                    IllegalAccessException {
+        // Playing with System.Properties and Static boolean fields can raises issues
+        // when running Junit tests via Maven, due to initialization orders.
+        // So let's change the fields via reflections for these tests
+        Field field = NetCDFCRSUtilities.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(null, value);
     }
 
     @SuppressWarnings("unchecked")
@@ -96,6 +115,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                 getCatalog());
         testData.addRasterLayer(
                 SNOW_DEPTH_GRIB, "cosmo-eu.grib2", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(SAMPLEKM, "samplekm.nc", null, null, this.getClass(), getCatalog());
     }
 
     /**
@@ -506,6 +526,38 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             info = getCatalog().getCoverageByName(getLayerId(O3));
             info.getMetadata().remove(key);
             getCatalog().save(info);
+        }
+    }
+
+    @Test
+    public void testKmAxisUnitSupport() throws Exception {
+        setFinalStaticField("CONVERT_AXIS_KM", false);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageid=wcs__samplekm&format=application/x-netcdf");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/x-netcdf", response.getContentType());
+        byte[] responseBytes = getBinary(response);
+        File file = File.createTempFile("output", "samplekm.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, responseBytes);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            assertNotNull(dataset);
+            // check coordinate variables
+            Variable xCoord = dataset.findVariable("x");
+            assertNotNull(xCoord);
+            assertEquals(
+                    "projection_x_coordinate",
+                    xCoord.findAttribute("standard_name").getStringValue());
+            assertEquals("km", xCoord.getUnitsString());
+            Variable yCoord = dataset.findVariable("y");
+            assertNotNull(yCoord);
+            assertEquals(
+                    "projection_y_coordinate",
+                    yCoord.findAttribute("standard_name").getStringValue());
+            assertEquals("km", yCoord.getUnitsString());
+        } finally {
+            FileUtils.deleteQuietly(file);
         }
     }
 }

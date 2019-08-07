@@ -267,7 +267,6 @@
         <module>oseo</module>
         <module>mbstyle</module>
         <module>s3-geotiff</module>
-        <module>status-monitoring</module>
         <module>nsg-profiles</module>
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
@@ -570,12 +569,6 @@
       <id>s3-geotiff</id>
       <modules>
         <module>s3-geotiff</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>status-monitoring</id>
-      <modules>
-        <module>status-monitoring</module>
       </modules>
     </profile>
     <profile>

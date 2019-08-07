@@ -44,7 +44,6 @@ officially part of the GeoServer releases. They are however built along with the
    notification/index
    opensearch-eo/index
    s3-geotiff/index
-   status-monitoring/index
    nsg-profile/index
    netcdf-ghrsst/index
    monitor-hibernate/index

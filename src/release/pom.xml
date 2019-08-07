@@ -368,7 +368,6 @@
      <artifactId>gs-authkey</artifactId>
      <version>${project.version}</version>
    </dependency>
-   
  </dependencies>
  <build>
   <plugins>

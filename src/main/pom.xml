@@ -143,6 +143,10 @@
    <groupId>javax.activation</groupId>
    <artifactId>activation</artifactId>
   </dependency>
+  <dependency>
+	<groupId>com.github.oshi</groupId>
+	<artifactId>oshi-core</artifactId>
+  </dependency>
 
 
   <dependency>

@@ -792,7 +792,7 @@ public abstract class GeoServerLoader {
         // add listeners now as a converter which will convert from the old style
         // data directory to the new
         GeoServerConfigPersister cp = new GeoServerConfigPersister(resourceLoader, xp);
-        GeoServerResourcePersister rp = new GeoServerResourcePersister(resourceLoader);
+        GeoServerResourcePersister rp = new GeoServerResourcePersister(catalog2);
         if (!legacy) {
             catalog2.addListener(cp);
             catalog2.addListener(rp);

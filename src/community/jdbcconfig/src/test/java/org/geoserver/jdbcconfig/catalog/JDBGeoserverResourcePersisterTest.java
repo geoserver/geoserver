@@ -57,7 +57,8 @@ public class JDBGeoserverResourcePersisterTest {
         facade = new JDBCCatalogFacade(configDb);
         CatalogImpl catalogImpl = new CatalogImpl();
         catalogImpl.setFacade(facade);
-        catalogImpl.addListener(new GeoServerResourcePersister(testSupport.getResourceLoader()));
+        catalogImpl.setResourceLoader(testSupport.getResourceLoader());
+        catalogImpl.addListener(new GeoServerResourcePersister(catalogImpl));
 
         WorkspaceInfo gs = new WorkspaceInfoImpl();
         gs.setName("gs");
@@ -171,24 +172,30 @@ public class JDBGeoserverResourcePersisterTest {
     @Test
     public void testRenameStyleWithExistingIncrementedVersion() throws Exception {
         addStyle();
+
         File sldFile =
                 new File(testSupport.getResourceLoader().getBaseDirectory(), "styles/foostyle.sld");
         sldFile.createNewFile();
 
+        File sldFile0 =
+                new File(testSupport.getResourceLoader().getBaseDirectory(), "styles/boostyle.sld");
+        sldFile0.createNewFile();
+
         File sldFile1 =
                 new File(
-                        testSupport.getResourceLoader().getBaseDirectory(), "styles/foostyle1.sld");
+                        testSupport.getResourceLoader().getBaseDirectory(), "styles/boostyle1.sld");
         sldFile1.createNewFile();
 
         File sldFile2 =
                 new File(
-                        testSupport.getResourceLoader().getBaseDirectory(), "styles/foostyle2.sld");
+                        testSupport.getResourceLoader().getBaseDirectory(), "styles/boostyle2.sld");
 
         StyleInfo s = catalog.getStyleByName("foostyle");
-        s.setName("foostyle");
+        s.setName("boostyle");
         catalog.save(s);
 
         assertThat(sldFile, not(fileExists()));
+        assertThat(sldFile0, fileExists());
         assertThat(sldFile1, fileExists());
         assertThat(sldFile2, fileExists());
 

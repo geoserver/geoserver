@@ -71,6 +71,8 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
@@ -81,7 +83,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.sort.SortBy;
 
-public class CatalogImplTest {
+public class CatalogImplTest extends GeoServerSystemTestSupport {
 
     protected Catalog catalog;
 
@@ -112,6 +114,7 @@ public class CatalogImplTest {
     @Before
     public void setUp() throws Exception {
         catalog = createCatalog();
+        catalog.setResourceLoader(new GeoServerResourceLoader());
 
         CatalogFactory factory = catalog.getFactory();
 
@@ -1818,14 +1821,15 @@ public class CatalogImplTest {
         } catch (Exception e) {
         }
 
-        s2.setName("s2Name");
+        s2.setName(s.getName());
         try {
             catalog.save(s2);
             fail("setting filename to null should fail");
         } catch (Exception e) {
         }
 
-        s2.setFilename("s2Filename");
+        s2.setName("s2Name");
+        s2.setFilename("s2Name.sld");
         catalog.save(s2);
 
         s3 = catalog.getStyleByName("styleName");

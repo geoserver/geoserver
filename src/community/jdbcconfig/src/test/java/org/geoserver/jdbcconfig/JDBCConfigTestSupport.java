@@ -229,31 +229,10 @@ public class JDBCConfigTestSupport {
         this.dbConfig = dbConfig;
     }
 
-    public void setUp() throws Exception {
+    public void setUpWithoutAppContext() throws Exception {
         ConfigDatabase.LOGGER.setLevel(Level.FINER);
 
         resourceLoader = new GeoServerResourceLoader(createTempDir());
-
-        // just to avoid hundreds of warnings in the logs about extension lookups with no app
-        // context set
-        appContext = createNiceMock(WebApplicationContext.class);
-        configureAppContext(appContext);
-
-        replay(appContext);
-
-        GeoServerExtensionsHelper.init(appContext);
-        GeoServerExtensionsHelper.singleton(
-                "configurationLock",
-                new GeoServerConfigurationLock(),
-                GeoServerConfigurationLock.class);
-        GeoServerExtensionsHelper.singleton(
-                "JDBCConfigXStreamPersisterInitializer",
-                new JDBCConfigXStreamPersisterInitializer(),
-                XStreamPersisterInitializer.class);
-
-        //        final File testDbDir = new File("target", "jdbcconfig");
-        //        FileUtils.deleteDirectory(testDbDir);
-        //        testDbDir.mkdirs();
 
         dataSource = dbConfig.dataSource();
 
@@ -272,6 +251,29 @@ public class JDBCConfigTestSupport {
         catalog.setFacade(facade = new JDBCCatalogFacade(configDb));
         configDb.setCatalog(catalog);
         configDb.initDb(null);
+    }
+
+    public void setUp() throws Exception {
+        ConfigDatabase.LOGGER.setLevel(Level.FINER);
+
+        // just to avoid hundreds of warnings in the logs about extension lookups with no app
+        // context set
+        appContext = createNiceMock(WebApplicationContext.class);
+        configureAppContext(appContext);
+
+        replay(appContext);
+
+        GeoServerExtensionsHelper.init(appContext);
+        GeoServerExtensionsHelper.singleton(
+                "configurationLock",
+                new GeoServerConfigurationLock(),
+                GeoServerConfigurationLock.class);
+        GeoServerExtensionsHelper.singleton(
+                "JDBCConfigXStreamPersisterInitializer",
+                new JDBCConfigXStreamPersisterInitializer(),
+                XStreamPersisterInitializer.class);
+
+        setUpWithoutAppContext();
     }
 
     protected void configureAppContext(WebApplicationContext appContext) {

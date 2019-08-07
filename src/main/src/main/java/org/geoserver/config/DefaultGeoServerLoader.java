@@ -36,7 +36,7 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
         if (!legacy) {
             // add the listener which will persist changes
             catalog.addListener(new GeoServerConfigPersister(resourceLoader, xp));
-            catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
+            catalog.addListener(new GeoServerResourcePersister(catalog));
         }
     }
 
@@ -73,7 +73,7 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
     protected void initializeStyles(Catalog catalog, XStreamPersister xp) throws IOException {
         // add a persister temporarily in case the styles don't exist on disk
         GeoServerConfigPersister cp = new GeoServerConfigPersister(resourceLoader, xp);
-        GeoServerResourcePersister rp = new GeoServerResourcePersister(resourceLoader);
+        GeoServerResourcePersister rp = new GeoServerResourcePersister(catalog);
         catalog.addListener(cp);
         catalog.addListener(rp);
 

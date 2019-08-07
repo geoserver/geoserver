@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.config.FileExistsMatcher.fileExists;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -648,6 +649,19 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         File renamedSldFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle.sld");
         assertThat(sldFile, not(fileExists()));
         assertThat(renamedSldFile, fileExists());
+    }
+
+    @Test
+    public void testRenameStyleNotUnnecessarily() throws Exception {
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("foostyle");
+        catalog.save(s);
+
+        assertEquals("foostyle.sld", s.getFilename());
     }
 
     @Test

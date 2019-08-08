@@ -5,8 +5,9 @@
 package org.geoserver.api.styles;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.io.Serializable;
 
-public class StyleAttribute {
+public class StyleAttribute implements Serializable {
 
     enum AttributeType {
         string,

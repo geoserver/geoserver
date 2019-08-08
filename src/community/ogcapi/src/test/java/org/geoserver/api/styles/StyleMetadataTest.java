@@ -5,18 +5,25 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.BUILDINGS;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.IOUtils;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class StyleMetadataTest extends StylesTestSupport {
@@ -31,10 +38,9 @@ public class StyleMetadataTest extends StylesTestSupport {
     public static final String BUILDINGS_LABEL_STYLE = "BuildingsLabel";
     public static final String TASMANIA = "tasmania";
 
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-
+    @Before
+    public void clearMetadata() {
+        StyleInfo si = getCatalog().getStyleByName("polygon");
         StyleInfo polygon = getCatalog().getStyleByName("polygon");
         StyleMetadataInfo metadata = new StyleMetadataInfo();
         metadata.setTitle(POLYGON_TITLE);
@@ -45,6 +51,11 @@ public class StyleMetadataTest extends StylesTestSupport {
         metadata.setPointOfContact(POLYGON_POC);
         polygon.getMetadata().put(StyleMetadataInfo.METADATA_KEY, metadata);
         getCatalog().save(polygon);
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
         // Extra styles and layers to play with metadata and attributes
         testData.addStyle(
@@ -241,5 +252,65 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals(
                 "application/vnd.geoserver.geocss+css",
                 getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.type"));
+    }
+
+    @Test
+    public void testPutStyleMetadata() throws Exception {
+        String metadataJson =
+                IOUtils.toString(StyleTest.class.getResourceAsStream("polygonStyleMetadata.json"));
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "ogc/styles/styles/polygon/metadata",
+                        metadataJson,
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(204, response.getStatus());
+
+        StyleInfo polygon = getCatalog().getStyleByName("polygon");
+        StyleMetadataInfo metadata =
+                polygon.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
+        assertEquals("A polygon style with a twist", metadata.getTitle());
+        assertEquals(
+                "Draws polygons with gray fill. Gray is the new black!", metadata.getAbstract());
+        assertEquals(Arrays.asList("polygon", "test", "hip"), metadata.getKeywords());
+        // check dates
+        StyleDates dates = metadata.getDates();
+
+        assertEquals(parseDate("2019-01-01T10:05:00Z"), dates.getCreation());
+        assertEquals(parseDate("2019-01-01T11:05:00Z"), dates.getPublication());
+        assertEquals(parseDate("2019-02-01T11:05:00Z"), dates.getRevision());
+        assertEquals(parseDate("2019-05-01T11:05:00Z"), dates.getValidTill());
+        assertEquals(parseDate("2019-02-01T11:05:00Z"), dates.getReceivedOn());
+    }
+
+    public Date parseDate(String date) {
+        return DatatypeConverter.parseDate(date).getTime();
+    }
+
+    @Test
+    public void testPatchStyleMetadata() throws Exception {
+        // init with some custom metadata
+        testPutStyleMetadata();
+
+        String jsonPatch =
+                IOUtils.toString(StyleTest.class.getResourceAsStream("metadataPatch.json"));
+        MockHttpServletResponse response =
+                patchAsServletResponse(
+                        "ogc/styles/styles/polygon/metadata",
+                        jsonPatch,
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(204, response.getStatus());
+
+        StyleInfo polygon = getCatalog().getStyleByName("polygon");
+        StyleMetadataInfo metadata =
+                polygon.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
+        assertEquals("A polygon style with a twist", metadata.getTitle()); // not modified
+        assertNull(metadata.getAbstract()); // explicitly set to null
+        assertEquals("Jane Doe", metadata.getPointOfContact()); // modified
+        // array modified
+        assertEquals(Arrays.asList("polygon", "test", "hip"), metadata.getKeywords());
+        // sub-object modified
+        StyleDates dates = metadata.getDates();
+        assertEquals(parseDate("2019-05-17T11:46:12Z"), dates.getRevision());
+        assertNull(dates.getValidTill());
     }
 }

@@ -6,6 +6,7 @@ package org.geoserver.api.styles;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
@@ -52,7 +53,7 @@ import org.opengis.style.Symbolizer;
 import org.springframework.http.MediaType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StyleLayer {
+public class StyleLayer implements Serializable {
 
     static final Logger LOGGER = Logging.getLogger(StyleLayer.class);
 

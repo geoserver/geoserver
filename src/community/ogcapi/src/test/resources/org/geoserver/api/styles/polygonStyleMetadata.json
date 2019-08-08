@@ -1,0 +1,20 @@
+{
+  "id": "polygon",
+  "title": "A polygon style with a twist",
+  "description": "Draws polygons with gray fill. Gray is the new black!",
+  "keywords": [
+    "polygon",
+    "test",
+    "hip"
+  ],
+  "pointOfContact": "GeoServer",
+  "accessConstraints": "public",
+  "scope": "style",
+  "dates": {
+    "creation": "2019-01-01T10:05:00Z",
+    "publication": "2019-01-01T11:05:00Z",
+    "revision": "2019-02-01T11:05:00Z",
+    "validTill": "2019-05-01T11:05:00Z",
+    "receivedOn": "2019-02-01T11:05:00Z"
+  }
+}

@@ -8,6 +8,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,19 +31,28 @@ import org.geotools.util.Version;
 
 /** Style metadadata information */
 @JsonInclude(NON_NULL)
-public class StyleMetadataDocument extends AbstractDocument {
+public class StyleMetadataDocument extends AbstractDocument implements Serializable {
 
     String id;
     String title;
+    boolean titleSet;
     String description;
+    boolean descriptionSet;
     List<String> keywords;
+    boolean keywordsSet;
     String pointOfContact;
+    boolean pointOfContactSet;
     String accessConstraints;
+    boolean accessConstraintsSet;
     StyleDates dates;
+    boolean datesSet;
     String scope = "style";
     List<Stylesheet> stylesheets = new ArrayList<>();
     List<StyleLayer> layers = new ArrayList<>();
-    /* Missing stylesheets, layers and links */
+
+    public StyleMetadataDocument() {
+        // empty constructor for Jackson usage
+    }
 
     public StyleMetadataDocument(StyleInfo si, GeoServer gs) throws IOException {
         this.id = NCNameResourceCodec.encode(si);
@@ -211,5 +221,62 @@ public class StyleMetadataDocument extends AbstractDocument {
 
     public List<StyleLayer> getLayers() {
         return layers;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.titleSet = true;
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.descriptionSet = true;
+        this.description = description;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywordsSet = true;
+        this.keywords = keywords;
+    }
+
+    public void setPointOfContact(String pointOfContact) {
+        this.pointOfContactSet = true;
+        this.pointOfContact = pointOfContact;
+    }
+
+    public void setAccessConstraints(String accessConstraints) {
+        this.accessConstraintsSet = true;
+        this.accessConstraints = accessConstraints;
+    }
+
+    public void setDates(StyleDates dates) {
+        this.dates = dates;
+    }
+
+    public boolean isTitleSet() {
+        return titleSet;
+    }
+
+    public boolean isDescriptionSet() {
+        return descriptionSet;
+    }
+
+    public boolean isKeywordsSet() {
+        return keywordsSet;
+    }
+
+    public boolean isPointOfContactSet() {
+        return pointOfContactSet;
+    }
+
+    public boolean isAccessConstraintsSet() {
+        return accessConstraintsSet;
+    }
+
+    public boolean isDatesSet() {
+        return datesSet;
     }
 }

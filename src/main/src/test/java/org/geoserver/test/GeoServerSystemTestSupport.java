@@ -1128,6 +1128,23 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return dispatch(request);
     }
 
+    protected MockHttpServletResponse patchAsServletResponse(
+            String path, String body, String contentType) throws Exception {
+        return patchAsServletResponse(
+                path, body != null ? body.getBytes() : (byte[]) null, contentType);
+    }
+
+    protected MockHttpServletResponse patchAsServletResponse(
+            String path, byte[] body, String contentType) throws Exception {
+
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("PATCH");
+        request.setContentType(contentType);
+        request.setContent(body);
+
+        return dispatch(request);
+    }
+
     /**
      * Executes an ows request using the POST method.
      *

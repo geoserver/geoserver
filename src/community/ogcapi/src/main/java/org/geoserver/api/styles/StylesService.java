@@ -55,9 +55,11 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -438,5 +440,94 @@ public class StylesService {
     public void deleteStyle(@PathVariable(name = "styleId") String styleId) {
         StyleInfo styleInfo = getStyleInfo(styleId, true);
         geoServer.getCatalog().remove(styleInfo);
+    }
+
+    @PutMapping(path = "styles/{styleId}/metadata")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void putStyleMetadata(
+            @PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata)
+            throws IOException {
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
+        StyleMetadataInfo metadataInfo =
+                Optional.ofNullable(
+                                styleInfo
+                                        .getMetadata()
+                                        .get(
+                                                StyleMetadataInfo.METADATA_KEY,
+                                                StyleMetadataInfo.class))
+                        .orElse(new StyleMetadataInfo());
+
+        if (metadata.getId() != null && !styleId.equals(metadata.getId())) {
+            throw new APIException(
+                    "InvalidMetadata", "Style id must be " + styleId, HttpStatus.BAD_REQUEST);
+        }
+
+        // can only update the descriptive metadata, the rest is derived from the style contents
+        // and the associations with layers (e.g., sample data)
+        metadataInfo.setAbstract(metadata.getDescription());
+        metadataInfo.setAccessConstraints(metadata.getAccessConstraints());
+        metadataInfo.setKeywords(metadata.getKeywords());
+        metadataInfo.setPointOfContact(metadata.getPointOfContact());
+        metadataInfo.setTitle(metadata.getTitle());
+        metadataInfo.setDates(metadata.getDates());
+        styleInfo.getMetadata().put(StyleMetadataInfo.METADATA_KEY, metadataInfo);
+
+        geoServer.getCatalog().save(styleInfo);
+    }
+
+    @PatchMapping(path = "styles/{styleId}/metadata", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void patchMetadata(
+            @PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata) {
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
+        StyleMetadataInfo metadataInfo =
+                Optional.ofNullable(
+                                styleInfo
+                                        .getMetadata()
+                                        .get(
+                                                StyleMetadataInfo.METADATA_KEY,
+                                                StyleMetadataInfo.class))
+                        .orElse(new StyleMetadataInfo());
+
+        if (metadata.isDescriptionSet()) {
+            metadataInfo.setAbstract(metadata.getDescription());
+        }
+        if (metadata.isAccessConstraintsSet()) {
+            metadataInfo.setAccessConstraints(metadata.getAccessConstraints());
+        }
+        if (metadata.isKeywordsSet()) {
+            metadataInfo.setKeywords(metadata.getKeywords());
+        }
+        if (metadata.isPointOfContactSet()) {
+            metadataInfo.setPointOfContact(metadata.getPointOfContact());
+        }
+        if (metadata.isTitleSet()) {
+            metadataInfo.setTitle(metadata.getTitle());
+        }
+        if (metadata.isDatesSet() || metadata.getDates() != null) {
+            StyleDates inputDates = metadata.getDates();
+            StyleDates dates =
+                    Optional.ofNullable(metadataInfo.getDates()).orElse(new StyleDates());
+            if (inputDates.isCreationSet()) {
+                dates.setCreation(inputDates.getCreation());
+            }
+            if (inputDates.isPublicationSet()) {
+                dates.setPublication(inputDates.getPublication());
+            }
+            if (inputDates.isReceivedOnSet()) {
+                dates.setReceivedOn(inputDates.getReceivedOn());
+            }
+            if (inputDates.isRevisionSet()) {
+                dates.setRevision(inputDates.getRevision());
+            }
+            if (inputDates.isValidTillSet()) {
+                dates.setValidTill(inputDates.getValidTill());
+            }
+
+            metadataInfo.setDates(dates);
+        }
+
+        styleInfo.getMetadata().put(StyleMetadataInfo.METADATA_KEY, metadataInfo);
+        geoServer.getCatalog().save(styleInfo);
     }
 }

@@ -73,19 +73,21 @@ public class FeatureLayerController extends AbstractGSRController {
     public FeatureLayer featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable entry;
         try {
-            entry = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
+            entry = LayerDAO.find(catalog, workspaceName, layerId);
         } catch (IOException e) {
             throw new NoSuchElementException("Unavailable table or layer in workspace \"" + workspaceName + "\" for id " + layerId + ":" + e);
         }
         if (entry == null) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
-
-        return new FeatureLayer(entry, Arrays.asList(
+        FeatureLayer layer = new FeatureLayer(entry);
+        layer.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),
                 new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
                 new Link(workspaceName + "/" + "FeatureServer/" + layerId, entry.getName())
-        ), Collections.singletonList(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "?f=json&pretty=true", "REST")));
+        ));
+        layer.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "?f=json&pretty=true", "REST"));
+        return layer;
     }
 
     /**
@@ -138,7 +140,7 @@ public class FeatureLayerController extends AbstractGSRController {
         List<EditResult> editResults;
         Long id;
 
-        entry = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
+        entry = LayerDAO.find(catalog, workspaceName, layerId);
         if (entry == null) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }

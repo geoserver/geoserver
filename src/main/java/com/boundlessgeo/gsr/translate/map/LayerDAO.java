@@ -25,7 +25,7 @@ public class LayerDAO {
      * @return LayerOrTable from workspaceName identified by layerId
      * @throws IOException
      */
-    public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id, List<Link> path, List<Link> interfaces) throws IOException {
+    public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id) throws IOException {
         // short list all layers
         List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
@@ -40,7 +40,7 @@ public class LayerDAO {
         // retrieve indicated layer as LayerOrTable
         if (id < layersInWorkspace.size()) {
             LayerInfo resource = layersInWorkspace.get(id);
-            return entry(resource, id, path, interfaces);
+            return entry(resource, id);
         }
         return null; // not found
     }
@@ -55,11 +55,11 @@ public class LayerDAO {
      * @param idCounter
      * @return LayerOrTable, or null if layer could not be represented
      */
-    public static LayerOrTable entry(LayerInfo layer, int idCounter, List<Link> path, List<Link> interfaces) throws IOException {
+    public static LayerOrTable entry(LayerInfo layer, int idCounter) throws IOException {
         ResourceInfo resource = layer.getResource();
 
         if (resource instanceof CoverageInfo || resource instanceof FeatureTypeInfo) {
-            return new LayerOrTable(layer, idCounter, path, interfaces);
+            return new LayerOrTable(layer, idCounter);
         }
         return null; // Skipping layer
     }
@@ -71,7 +71,7 @@ public class LayerDAO {
      * @param workspaceName
      * @return GeoServer Layers gathered into GSR layers (with at least one geometry column) or tables.
      */
-    public static LayersAndTables find(Catalog catalog, String workspaceName, List<Link> path, List<Link> interfaces) {
+    public static LayersAndTables find(Catalog catalog, String workspaceName) {
         List<LayerOrTable> layers = new ArrayList<>();
         List<LayerOrTable> tables = new ArrayList<>();
         int idCounter = 0;
@@ -85,7 +85,7 @@ public class LayerDAO {
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
         for (LayerInfo l : layersInWorkspace) {
             try {
-                LayerOrTable entry = entry(l, idCounter, path, Collections.emptyList());
+                LayerOrTable entry = entry(l, idCounter);
                 if (entry != null) {
                     if (entry.getGeometryType() != null) {
                         layers.add(entry);
@@ -98,6 +98,6 @@ public class LayerDAO {
             }
             idCounter++;
         }
-        return new LayersAndTables(new ArrayList<>(layers), new ArrayList<>(tables), path, interfaces);
+        return new LayersAndTables(new ArrayList<>(layers), new ArrayList<>(tables));
     }
 }

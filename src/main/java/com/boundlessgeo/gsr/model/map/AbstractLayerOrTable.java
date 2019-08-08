@@ -85,19 +85,18 @@ public abstract class AbstractLayerOrTable extends AbstractGSRModel implements G
 
     private String capabilities = "Query,Time,Data";
     
-    public AbstractLayerOrTable(LayerInfo layer, int id, List<Link> path, List<Link> interfaces) throws IOException {
-        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer), StyleEncoder.labelingInfo(layer), path, interfaces);
+    public AbstractLayerOrTable(LayerInfo layer, int id) throws IOException {
+        this(layer, id, new Envelope(layer.getResource().getLatLonBoundingBox()), StyleEncoder.effectiveRenderer(layer), StyleEncoder.labelingInfo(layer));
     }
 
-    protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable, List<Link> path, List<Link> interfaces) throws IOException {
+    protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable) throws IOException {
         this(layerOrTable.layer, layerOrTable.getId(), layerOrTable.getExtent(),
                 (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().renderer),
-                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().labelingInfo), path, interfaces);
+                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().labelingInfo));
     }
 
 
-    AbstractLayerOrTable(LayerInfo layer, int id, Envelope extent, Renderer renderer, List<Label> labelingInfo, List<Link> path, List<Link> interfaces) throws IOException {
-        super(path, interfaces);
+    AbstractLayerOrTable(LayerInfo layer, int id, Envelope extent, Renderer renderer, List<Label> labelingInfo) throws IOException {
         this.layer = layer;
         this.id = id;
         this.name = layer.getName();

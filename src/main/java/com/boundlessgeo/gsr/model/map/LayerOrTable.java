@@ -9,7 +9,7 @@ import org.geoserver.catalog.LayerInfo;
  * Layer model for maps, used in the {@link LayersAndTables} listing.
  */
 public class LayerOrTable extends AbstractLayerOrTable {
-    public LayerOrTable(LayerInfo layer, int id, List<Link> path, List<Link> interfaces) throws IOException {
-        super(layer, id, path, interfaces);
+    public LayerOrTable(LayerInfo layer, int id) throws IOException {
+        super(layer, id);
     }
 }

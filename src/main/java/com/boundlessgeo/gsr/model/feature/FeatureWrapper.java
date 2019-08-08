@@ -12,8 +12,7 @@ import com.boundlessgeo.gsr.model.GSRModel;
 public class FeatureWrapper extends AbstractGSRModel implements GSRModel {
     public Feature feature;
 
-    public FeatureWrapper(Feature feature, List<Link> path, List<Link> interfaces) {
-        super(path, interfaces);
+    public FeatureWrapper(Feature feature) {
         this.feature = feature;
     }
 

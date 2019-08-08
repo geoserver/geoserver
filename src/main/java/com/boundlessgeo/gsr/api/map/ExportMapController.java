@@ -170,7 +170,7 @@ public class ExportMapController extends AbstractGSRController {
             //We look up each layer individually to get its name. This has the potential to be slow in non FS based
             // catalogs
             return Arrays.stream(layersSpecAndLayers[1].split(","))
-                .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName, Collections.emptyList()))
+                .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
                 .collect(Collectors.joining(","));
         } else {
             return null;

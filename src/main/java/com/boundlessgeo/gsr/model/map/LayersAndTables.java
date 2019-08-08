@@ -29,8 +29,7 @@ public class LayersAndTables extends AbstractGSRModel implements GSRModel {
 
     public final ArrayList<LayerOrTable> tables;
 
-    public LayersAndTables(ArrayList<LayerOrTable> layers, ArrayList<LayerOrTable> tables, List<Link> path, List<Link> interfaces) {
-        super(path, interfaces);
+    public LayersAndTables(ArrayList<LayerOrTable> layers, ArrayList<LayerOrTable> tables) {
         this.layers = layers;
         this.tables = tables;
     }
@@ -51,10 +50,10 @@ public class LayersAndTables extends AbstractGSRModel implements GSRModel {
      * @param workspaceName
      * @return
      */
-    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName, List<Link> path) {
+    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName) {
         String name = layerName;
         try {
-            LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, Integer.parseInt(layerName), path, Collections.emptyList());
+            LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, Integer.parseInt(layerName));
             name = layerOrTable.getName();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

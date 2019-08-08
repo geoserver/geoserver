@@ -42,8 +42,7 @@ public class MapServiceRoot extends AbstractGSRModel implements GSRModel {
     
     private String workspace;
 
-    public MapServiceRoot(WMSInfo service, String workspace, List<LayerInfo> layers, List<Link> path, List<Link> interfaces) throws IOException {
-        super(path, interfaces);
+    public MapServiceRoot(WMSInfo service, String workspace, List<LayerInfo> layers) throws IOException {
         this.mapName = service.getTitle() != null ? service.getTitle() : service.getName();
         this.workspace = workspace;
         int count = 0;

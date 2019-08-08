@@ -34,11 +34,9 @@ public class AbstractGSRModel implements GSRModel {
     private List<Link> path = new ArrayList<>();
     private List<Link> interfaces = new ArrayList<>();
     
-    public AbstractGSRModel(List<Link> path, List<Link> interfaces) {
+    public AbstractGSRModel() {
         super();
         this.path.add(new Link("", "Home"));
-        this.path.addAll(path);
-        this.interfaces.addAll(interfaces);
     }
 
     @JsonIgnore

@@ -26,8 +26,7 @@ public class FeatureServiceRoot extends AbstractGSRModel implements GSRModel {
     public final List<LayerEntry> layers = new ArrayList<>();
     public final List<LayerEntry> tables = new ArrayList<>();
 
-    public FeatureServiceRoot(WFSInfo service, String workspace, List<LayerInfo> layers, List<Link> path, List<Link> interfaces) {
-        super(path, interfaces);
+    public FeatureServiceRoot(WFSInfo service, String workspace, List<LayerInfo> layers) {
         this.workspace = workspace;
         serviceDescription = service.getTitle() != null ? service.getTitle() : service.getName();
         for (int i = 0; i < layers.size(); i++) {

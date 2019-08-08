@@ -86,21 +86,26 @@ public class MapServiceController extends AbstractGSRController {
             }
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
-
-        return new MapServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace), Arrays.asList(
+        MapServiceRoot root = new MapServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
+        root.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),
                 new Link(workspaceName + "/" + "MapServer", "MapServer")
-        ), Collections.singletonList(new Link(workspaceName + "/" + "MapServer?f=json&pretty=true", "REST")));
+        ));
+        root.getInterfaces().add(new Link(workspaceName + "/" + "MapServer?f=json&pretty=true", "REST"));
+        return root;
     }
 
     @GetMapping(path = {"/{layerId}"})
     @HTMLResponseBody(templateName = "maplayer.ftl", fileName = "maplayer.html")
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
-        return LayerDAO.find(catalog, workspaceName, layerId, Arrays.asList(
+        LayerOrTable layer = LayerDAO.find(catalog, workspaceName, layerId);
+        layer.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),
                 new Link(workspaceName + "/" + "MapServer", "MapServer"),
                 new Link(workspaceName + "/" + "MapServer/" + layerId, layerId + "")
-        ), Collections.singletonList(new Link(workspaceName + "/MapServer/" + layerId + "?f=json&pretty=true", "REST")));
+        ));
+        layer.getInterfaces().add(new Link(workspaceName + "/MapServer/" + layerId + "?f=json&pretty=true", "REST"));
+        return layer;
     }
 
     @GetMapping(path = "/identify")
@@ -113,7 +118,7 @@ public class MapServiceController extends AbstractGSRController {
 
         IdentifyServiceResult result = new IdentifyServiceResult();
 
-        LayerDAO.find(catalog, workspaceName, Collections.emptyList(), Collections.emptyList()).layers.forEach(layer -> {
+        LayerDAO.find(catalog, workspaceName).layers.forEach(layer -> {
             try {
                 FeatureCollection collection = FeatureDAO
                     .getFeatureCollectionForLayer(workspaceName, layer.getId(), geometryTypeName, geometryText,
@@ -146,7 +151,7 @@ public class MapServiceController extends AbstractGSRController {
         for (String s : layers.split(",")) {
             Integer layerId = Integer.parseInt(s);
             try {
-                LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
+                LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, layerId);
                 if (layerOrTable != null && layerOrTable.layer != null) {
                     FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerOrTable.layer.getResource();
                     FeatureType featureType = featureTypeInfo.getFeatureType();

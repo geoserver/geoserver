@@ -58,7 +58,7 @@ public class FeatureController extends AbstractGSRController {
     @GetMapping(path = "/{layerId}/{featureId}")
     @HTMLResponseBody(templateName = "featureitem.ftl", fileName = "featureitem.html")
     public FeatureWrapper featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException, FactoryException {
-        LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId, Collections.emptyList(), Collections.emptyList());
+        LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId);
 
         if (null == l) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
@@ -79,11 +79,13 @@ public class FeatureController extends AbstractGSRController {
             throw new NoSuchElementException("No feature in layer or table " + layerId + " with id " + featureId);
         }
         SpatialReference spatialReference = SpatialReferences.fromCRS(featureArr[0].getDefaultGeometryProperty().getDescriptor().getCoordinateReferenceSystem());
-        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference), Arrays.asList(
+        FeatureWrapper feature = new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference));
+        feature.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),
                 new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
                 new Link(workspaceName + "/" + "FeatureServer/" + layerId, l.getName()),
-                new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId, featureId)),
-                Collections.singletonList(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId + "?f=json&pretty=true", "REST")));
+                new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId, featureId)));
+        feature.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId + "?f=json&pretty=true", "REST"));
+        return feature;
     }
 }

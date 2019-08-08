@@ -70,10 +70,12 @@ public class FeatureServiceController extends QueryController {
             }
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
-        return new FeatureServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace), Arrays.asList(
+        FeatureServiceRoot root = new FeatureServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
+        root.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),
-                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")
-        ), Collections.singletonList(new Link(workspaceName + "/" + "FeatureServer?f=json&pretty=true", "REST")));
+                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")));
+        root.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer?f=json&pretty=true", "REST"));
+        return root;
     }
 
     @GetMapping(path = { "/query" })
@@ -94,7 +96,7 @@ public class FeatureServiceController extends QueryController {
         @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
         @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly)
         throws IOException {
-        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName, Collections.emptyList(), Collections.emptyList());
+        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
 
         FeatureServiceQueryResult queryResult = new FeatureServiceQueryResult(layersAndTables);
 

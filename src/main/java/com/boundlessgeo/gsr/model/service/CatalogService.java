@@ -94,8 +94,7 @@ public class CatalogService extends AbstractGSRModel implements AbstractService 
     }
     
     public CatalogService(String name, double specVersion, String productName,
-            double currentVersion, List<String> folders, List<AbstractService> services, List<Link> path, List<Link> interfaces) {
-        super(path, interfaces);
+            double currentVersion, List<String> folders, List<AbstractService> services) {
         this.name = name;
         this.type = ServiceType.CatalogServer;
         this.specVersion = specVersion;

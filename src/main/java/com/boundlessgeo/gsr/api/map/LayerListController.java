@@ -43,9 +43,12 @@ public class LayerListController extends AbstractGSRController {
     @GetMapping(path = "/layers")
     @HTMLResponseBody(templateName = "maplayers.ftl", fileName = "maplayers.html")
     public LayersAndTables layersGet(@PathVariable String workspaceName) {
-        return LayerDAO.find(catalog, workspaceName, Arrays.asList(
+        LayersAndTables layers = LayerDAO.find(catalog, workspaceName);
+        layers.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),
                 new Link(workspaceName + "/" + "MapServer", "MapServer")
-        ), Collections.singletonList(new Link(workspaceName + "/" + "MapServer/layers?f=json&pretty=true", "REST")));
+        ));
+        layers.getInterfaces().add(new Link(workspaceName + "/" + "MapServer/layers?f=json&pretty=true", "REST"));
+        return layers;
     }
 }

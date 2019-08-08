@@ -60,8 +60,10 @@ public class CatalogServiceController extends AbstractGSRController {
             fillServices(services, ws);
         }
         services.add(new GeometryService("Geometry"));
-        return new CatalogService("/", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, folders,
-                services, Collections.emptyList(), Collections.singletonList(new Link("?f=json&pretty=true", "REST")));
+        CatalogService catalog = new CatalogService("/", SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, folders,
+                services);
+        catalog.getInterfaces().add(new Link("?f=json&pretty=true", "REST"));
+        return catalog;
     }
     
     @GetMapping(path = {"/{folder:.*}"})
@@ -73,9 +75,11 @@ public class CatalogServiceController extends AbstractGSRController {
             throw new NoSuchElementException("Workspace name " + folder + " does not correspond to any workspace.");
         }
         fillServices(services, ws);
-
-        return new CatalogService(folder, SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.emptyList(),
-                services, Collections.singletonList(new Link(folder, folder)), Collections.singletonList(new Link(folder + "?f=json&pretty=true", "REST")));
+        CatalogService catalog = new CatalogService(folder, SPEC_VERSION, PRODUCT_NAME, CURRENT_VERSION, Collections.emptyList(),
+                services);
+        catalog.getPath().add(new Link(folder, folder));
+        catalog.getInterfaces().add(new Link(folder + "?f=json&pretty=true", "REST"));
+        return catalog;
     }
 
     private void fillServices(List<AbstractService> services, WorkspaceInfo ws) {

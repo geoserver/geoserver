@@ -9,6 +9,9 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 
 import java.io.IOException;
 import org.geoserver.catalog.SLDHandler;
@@ -18,16 +21,23 @@ import org.geoserver.util.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StyleTest extends StylesTestSupport {
 
     public static final String MY_NEW_STYLE = "myNewStyle";
+    public static final String SIMPLE_POINT = "SimplePoint";
 
     @Before
     public void addPondsStyle() throws IOException {
         getTestData().addStyle(SystemTestData.PONDS.getLocalPart(), getCatalog());
-        StyleInfo myNewStyle = getCatalog().getStyleByName(MY_NEW_STYLE);
+        cleanupStyle(MY_NEW_STYLE);
+        cleanupStyle(SIMPLE_POINT);
+    }
+
+    public void cleanupStyle(String styleName) {
+        StyleInfo myNewStyle = getCatalog().getStyleByName(styleName);
         if (myNewStyle != null) {
             getCatalog().remove(myNewStyle);
         }
@@ -124,6 +134,63 @@ public class StyleTest extends StylesTestSupport {
         MockHttpServletResponse response =
                 putAsServletResponse(
                         "ogc/styles/styles/Ponds?validate=only", sld, SLDHandler.MIMETYPE_10);
+        assertEquals(400, response.getStatus());
+        assertThat(response.getContentAsString(), CoreMatchers.containsString("Mark"));
+    }
+
+    @Test
+    public void testPostNewStyle() throws Exception {
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/styles/styles", sld, SLDHandler.MIMETYPE_10);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/styles/styles/SimplePoint",
+                response.getHeader(HttpHeaders.LOCATION));
+
+        // check the style got created
+        StyleInfo myNewStyle = getCatalog().getStyleByName(SIMPLE_POINT);
+        assertNotNull(myNewStyle);
+        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+    }
+
+    @Test
+    public void testPostConflict() throws Exception {
+        // create first
+        testPostNewStyle();
+
+        // try again, should fail with conflict
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/styles/styles", sld, SLDHandler.MIMETYPE_10);
+        assertEquals(409, response.getStatus());
+    }
+
+    @Test
+    public void testPostAutoGenerateName() throws Exception {
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointNoName.sld"));
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/styles/styles", sld, SLDHandler.MIMETYPE_10);
+        assertEquals(201, response.getStatus());
+        String location = response.getHeader(HttpHeaders.LOCATION);
+        String urlBase = "http://localhost:8080/geoserver/ogc/styles/styles/";
+        assertThat(
+                location, allOf(startsWith(urlBase + "style-"), not(equalTo(urlBase + "style-"))));
+
+        // check the style got created with the indicated name
+        String styleName = location.substring(urlBase.length());
+        StyleInfo myNewStyle = getCatalog().getStyleByName(styleName);
+        assertNotNull(myNewStyle);
+        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+    }
+
+    @Test
+    public void testPostValidateInvalid() throws Exception {
+        String sld =
+                IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointInvalid.sld"));
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "ogc/styles/styles?validate=only", sld, SLDHandler.MIMETYPE_10);
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), CoreMatchers.containsString("Mark"));
     }

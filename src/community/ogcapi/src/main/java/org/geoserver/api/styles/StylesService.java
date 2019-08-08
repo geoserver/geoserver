@@ -17,11 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.api.APIContentNegotiationManager;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
@@ -35,18 +37,25 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.StyleWriterConverter;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -263,6 +272,80 @@ public class StylesService {
         return new StyleMetadataDocument(styleInfo, geoServer);
     }
 
+    @PostMapping(
+        path = "styles",
+        consumes = {MediaType.ALL_VALUE}
+    )
+    @ResponseBody
+    public ResponseEntity postStyle(
+            InputStream inputStream,
+            @RequestParam(name = "validate", required = false, defaultValue = "no")
+                    ValidationMode validate,
+            @RequestHeader("Content-Type") String contentType)
+            throws IOException {
+        // Extracting mimeType and charset
+        MediaType mediaType = MediaType.parseMediaType(contentType);
+        String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
+
+        byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
+        String content = new String(rawData, mediaType.getCharset().toString());
+        StyleHandler handler = getHandler(mimeType);
+
+        // validation
+        if (validate == only || validate == yes) {
+            validate(mimeType, content, handler);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } else {
+            String styleId = getStyleId(mimeType, handler, content);
+            StyleInfo styleInfo = getStyleInfo(styleId, false);
+            if (styleInfo != null) {
+                throw new APIException(
+                        "StyleExists",
+                        "Style with id " + styleId + " already exists",
+                        HttpStatus.CONFLICT);
+            }
+            Catalog catalog = geoServer.getCatalog();
+            styleInfo = catalog.getFactory().createStyle();
+            styleInfo.setName(styleId); // assuming global styles?
+            styleInfo.setFilename(styleId + "." + handler.getFileExtension());
+            styleInfo.setFormat(handler.getFormat());
+            styleInfo.setFormatVersion(handler.versionForMimeType(mimeType));
+            if (LocalWorkspace.get() != null) {
+                styleInfo.setWorkspace(catalog.getWorkspaceByName(LocalWorkspace.get().getName()));
+            }
+            catalog.add(styleInfo);
+            // write out the style body
+            catalog.getResourcePool().writeStyle(styleInfo, new ByteArrayInputStream(rawData));
+
+            MultiValueMap headers = new HttpHeaders();
+            String href =
+                    ResponseUtils.buildURL(
+                            APIRequestInfo.get().getBaseURL(),
+                            "ogc/styles/styles/" + styleId,
+                            null,
+                            URLMangler.URLType.SERVICE);
+            headers.set(HttpHeaders.LOCATION, href);
+            return new ResponseEntity(headers, HttpStatus.CREATED);
+        }
+    }
+
+    /**
+     * Tries to get a style identifier from the style name itself, if not found, generates a random
+     * one
+     */
+    private String getStyleId(String mimeType, StyleHandler handler, String content)
+            throws IOException {
+        Catalog catalog = geoServer.getCatalog();
+        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+        StyledLayerDescriptor sld =
+                handler.parse(content, handler.versionForMimeType(mimeType), null, entityResolver);
+        String name = sld.getName();
+        if (name != null && !name.isEmpty()) {
+            return name;
+        }
+        return "style-" + UUID.randomUUID();
+    }
+
     @PutMapping(
         path = "styles/{styleId}",
         consumes = {MediaType.ALL_VALUE}
@@ -275,57 +358,29 @@ public class StylesService {
                     ValidationMode validate,
             @RequestHeader("Content-Type") String contentType)
             throws IOException {
-        Catalog catalog = geoServer.getCatalog();
-
         // Extracting mimeType and charset
         MediaType mediaType = MediaType.parseMediaType(contentType);
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
-        String charset = mediaType.getCharset().toString();
 
         byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
-        String content = new String(rawData, charset);
-        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
-
-        // checking the style format is supported
-        StyleHandler handler;
-        Version version;
-        try {
-            handler = Styles.handler(mimeType);
-            version = handler.versionForMimeType(mimeType);
-        } catch (Exception e) {
-            throw new APIException(
-                    "Illegal input media type",
-                    "Failed to lookup style support for media type " + mimeType,
-                    HttpStatus.BAD_REQUEST,
-                    e);
-        }
+        String content = new String(rawData, mediaType.getCharset().toString());
+        StyleHandler handler = getHandler(mimeType);
 
         // validation
         if (validate == only || validate == yes) {
-            try {
-                List<Exception> errors = handler.validate(content, version, entityResolver);
-                if (errors != null && !errors.isEmpty()) {
-                    throw new APIException(
-                            "InvalidStyle", "Invalid style:" + errors, HttpStatus.BAD_REQUEST);
-                }
-            } catch (Exception invalid) {
-                throw new APIException(
-                        "InvalidStyle",
-                        "Invalid style:" + invalid.getMessage(),
-                        HttpStatus.BAD_REQUEST,
-                        invalid);
-            }
+            validate(mimeType, content, handler);
         }
 
         // if not just validation was requested, save the file and its configuration
         if (validate != only) {
             StyleInfo styleInfo = getStyleInfo(styleId, false);
+            Catalog catalog = geoServer.getCatalog();
             if (styleInfo == null) {
                 styleInfo = catalog.getFactory().createStyle();
                 styleInfo.setName(styleId); // assuming global styles?
                 styleInfo.setFilename(styleId + "." + handler.getFileExtension());
                 styleInfo.setFormat(handler.getFormat());
-                styleInfo.setFormatVersion(version);
+                styleInfo.setFormatVersion(handler.versionForMimeType(mimeType));
                 if (LocalWorkspace.get() != null) {
                     styleInfo.setWorkspace(
                             catalog.getWorkspaceByName(LocalWorkspace.get().getName()));
@@ -340,5 +395,39 @@ public class StylesService {
             // write out the style body
             catalog.getResourcePool().writeStyle(styleInfo, new ByteArrayInputStream(rawData));
         }
+    }
+
+    public void validate(String mimeType, String content, StyleHandler handler) {
+        try {
+            Catalog catalog = geoServer.getCatalog();
+            EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+            List<Exception> errors =
+                    handler.validate(content, handler.versionForMimeType(mimeType), entityResolver);
+            if (errors != null && !errors.isEmpty()) {
+                throw new APIException(
+                        "InvalidStyle", "Invalid style:" + errors, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception invalid) {
+            throw new APIException(
+                    "InvalidStyle",
+                    "Invalid style:" + invalid.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    invalid);
+        }
+    }
+
+    public StyleHandler getHandler(String mimeType) {
+        // checking the style format is supported
+        StyleHandler handler;
+        try {
+            handler = Styles.handler(mimeType);
+        } catch (Exception e) {
+            throw new APIException(
+                    "Illegal input media type",
+                    "Failed to lookup style support for media type " + mimeType,
+                    HttpStatus.BAD_REQUEST,
+                    e);
+        }
+        return handler;
     }
 }

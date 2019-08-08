@@ -5,7 +5,7 @@
                        xmlns:ogc="http://www.opengis.net/ogc"
                        xmlns:xlink="http://www.w3.org/1999/xlink"
                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Name>SimplePoint</Name>
+    <!--Name>SimplePoint</Name-->  <!-- Name removed to force the API into generating a new name -->
     <NamedLayer>
         <Name>CookbookSimplePoint</Name>
         <UserStyle>

@@ -194,4 +194,19 @@ public class StyleTest extends StylesTestSupport {
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), CoreMatchers.containsString("Mark"));
     }
+
+    @Test
+    public void testStyleDelete() throws Exception {
+        // create first
+        testPostNewStyle();
+
+        // now delete
+        MockHttpServletResponse response =
+                deleteAsServletResponse("ogc/styles/styles/" + SIMPLE_POINT);
+        assertEquals(204, response.getStatus());
+
+        // try again, this time it should be a 404
+        response = deleteAsServletResponse("ogc/styles/styles/" + SIMPLE_POINT);
+        assertEquals(404, response.getStatus());
+    }
 }

@@ -53,6 +53,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -208,7 +209,8 @@ public class StylesService {
         List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
         if (styles == null || styles.isEmpty()) {
             if (failIfNotFound) {
-                throw new RestException("Could not locate style " + styleId, HttpStatus.NOT_FOUND);
+                throw new APIException(
+                        "StyleNotFound", "Could not locate style " + styleId, HttpStatus.NOT_FOUND);
             } else {
                 return null;
             }
@@ -429,5 +431,12 @@ public class StylesService {
                     e);
         }
         return handler;
+    }
+
+    @DeleteMapping(path = "styles/{styleId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStyle(@PathVariable(name = "styleId") String styleId) {
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
+        geoServer.getCatalog().remove(styleInfo);
     }
 }

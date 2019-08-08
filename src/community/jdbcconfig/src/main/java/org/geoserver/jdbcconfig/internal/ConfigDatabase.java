@@ -1787,6 +1787,22 @@ public class ConfigDatabase {
                                             PublishedInfo.class));
                 }
             }
+            if (layerGroup.getRootLayer() != null) {
+                layerGroup.setRootLayer(
+                        getById(layerGroup.getRootLayer().getId(), LayerInfo.class));
+            }
+            if (layerGroup.getRootLayerStyle() != null) {
+                layerGroup.setRootLayerStyle(
+                        getById(layerGroup.getRootLayerStyle().getId(), StyleInfo.class));
+            }
+            Set<StyleInfo> newStyles = new HashSet<>();
+            for (StyleInfo style : layerGroup.getStyles()) {
+                if (style != null) {
+                    newStyles.add(getById(style.getId(), StyleInfo.class));
+                }
+            }
+            layerGroup.getStyles().clear();
+            layerGroup.getStyles().addAll(newStyles);
         }
 
         @Override

@@ -161,8 +161,8 @@ public class StylesService {
 
     @GetMapping(path = "styles", name = "getStyleSet")
     @ResponseBody
+    @HTMLResponseBody(templateName = "styles.ftl", fileName = "styles.html")
     public StylesDocument getStyles() {
-        List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
         return new StylesDocument(geoServer.getCatalog());
     }
 
@@ -194,6 +194,8 @@ public class StylesService {
             Optional<StyleWriterConverter> osh = getWriter(requestedMediaType);
             if (osh.isPresent()) {
                 StyleWriterConverter writer = osh.get();
+                String fileName = styleId + "." + writer.getHandler().getFileExtension();
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + fileName);
                 writer.write(
                         styleInfo,
                         MediaType.valueOf(writer.getHandler().mimeType(writer.getVersion())),
@@ -270,6 +272,7 @@ public class StylesService {
 
     @GetMapping(path = "styles/{styleId}/metadata", name = "getStyleMetadata")
     @ResponseBody
+    @HTMLResponseBody(templateName = "styleMetadata.ftl", fileName = "styleMetadata.html")
     public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
             throws IOException {
         StyleInfo styleInfo = getStyleInfo(styleId, true);

@@ -6,6 +6,7 @@ package org.geoserver.api.styles;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
 import java.io.Serializable;
@@ -256,26 +257,32 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
         this.dates = dates;
     }
 
+    @JsonIgnore
     public boolean isTitleSet() {
         return titleSet;
     }
 
+    @JsonIgnore
     public boolean isDescriptionSet() {
         return descriptionSet;
     }
 
+    @JsonIgnore
     public boolean isKeywordsSet() {
         return keywordsSet;
     }
 
+    @JsonIgnore
     public boolean isPointOfContactSet() {
         return pointOfContactSet;
     }
 
+    @JsonIgnore
     public boolean isAccessConstraintsSet() {
         return accessConstraintsSet;
     }
 
+    @JsonIgnore
     public boolean isDatesSet() {
         return datesSet;
     }

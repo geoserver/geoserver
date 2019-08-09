@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.styles;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -68,22 +69,27 @@ public class StyleDates implements Serializable {
         this.receivedOn = receivedOn;
     }
 
+    @JsonIgnore
     public boolean isCreationSet() {
         return creationSet;
     }
 
+    @JsonIgnore
     public boolean isPublicationSet() {
         return publicationSet;
     }
 
+    @JsonIgnore
     public boolean isRevisionSet() {
         return revisionSet;
     }
 
+    @JsonIgnore
     public boolean isValidTillSet() {
         return validTillSet;
     }
 
+    @JsonIgnore
     public boolean isReceivedOnSet() {
         return receivedOnSet;
     }

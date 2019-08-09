@@ -180,4 +180,9 @@ public class CssHandler extends StyleHandler {
     public URL getSpecification(Version version) throws MalformedURLException {
         return new URL("https://docs.geoserver.org/latest/en/user/styling/css/index.html");
     }
+
+    @Override
+    public String getFileExtension() {
+        return "css";
+    }
 }

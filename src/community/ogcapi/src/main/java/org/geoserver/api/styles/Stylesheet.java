@@ -51,7 +51,7 @@ public class Stylesheet extends AbstractDocument implements Serializable {
         String url =
                 ResponseUtils.buildURL(
                         baseURL,
-                        "ogc/styles/" + ResponseUtils.urlEncode(styleId),
+                        "ogc/styles/styles/" + ResponseUtils.urlEncode(styleId),
                         Collections.singletonMap("f", mimeType),
                         URLMangler.URLType.SERVICE);
         this.link = new Link(url, "stylesheet", mimeType, null);

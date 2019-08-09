@@ -11,9 +11,15 @@ import static org.junit.Assert.assertThat;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.hamcrest.Matchers;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class StylesTest extends StylesTestSupport {
+
+    @Test
+    public void testStylesHTML() throws Exception {
+        Document document = getAsJSoup("ogc/styles/styles?f=html");
+    }
 
     @Test
     public void testStylesJson() throws Exception {

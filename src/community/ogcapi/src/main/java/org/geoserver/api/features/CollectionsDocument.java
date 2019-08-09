@@ -104,15 +104,4 @@ public class CollectionsDocument extends AbstractDocument {
             }
         };
     }
-
-    /*
-    private void decorateWithExtensions(CollectionDocument collection) {
-        if (extensions != null) {
-            for (WFS3Extension extension : extensions) {
-                extension.extendCollection(collection, request);
-            }
-        }
-    }
-    */
-
 }

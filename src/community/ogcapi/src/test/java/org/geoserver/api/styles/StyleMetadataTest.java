@@ -247,7 +247,7 @@ public class StyleMetadataTest extends StylesTestSupport {
                 "https://docs.geoserver.org/latest/en/user/styling/css/index.html",
                 getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].specification"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/cssSample?f=application%2Fvnd.geoserver.geocss%2Bcss",
+                "http://localhost:8080/geoserver/ogc/styles/styles/cssSample?f=application%2Fvnd.geoserver.geocss%2Bcss",
                 getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.href"));
         assertEquals(
                 "application/vnd.geoserver.geocss+css",

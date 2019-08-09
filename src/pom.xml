@@ -1576,6 +1576,7 @@
       <descriptor>release/ext-geofence.xml</descriptor>
       <descriptor>release/ext-geofence-server.xml</descriptor>
       <descriptor>release/ext-system-status.xml</descriptor>
+      <descriptor>release/ext-authkey.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.15-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

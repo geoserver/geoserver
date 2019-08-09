@@ -55,7 +55,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 /** Implementation of OGC Features API service */
 @APIService(
-    service = "Feature",
+    service = "Features",
     version = "1.0",
     landingPage = "ogc/features",
     serviceClass = WFSInfo.class
@@ -94,7 +94,7 @@ public class FeatureService {
         return geoServer.getCatalog();
     }
 
-    @GetMapping(name = "landingPage")
+    @GetMapping(name = "getLandingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public FeaturesLandingPage getLandingPage() {
@@ -103,7 +103,7 @@ public class FeatureService {
 
     @GetMapping(
         path = "api",
-        name = "api",
+        name = "getApi",
         produces = {
             OpenAPIMessageConverter.OPEN_API_VALUE,
             "application/x-yaml",
@@ -116,14 +116,14 @@ public class FeatureService {
         return new FeaturesAPIBuilder().build(getService());
     }
 
-    @GetMapping(path = "collections", name = "collections")
+    @GetMapping(path = "collections", name = "getCollections")
     @ResponseBody
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
     public CollectionsDocument getCollections() {
         return new CollectionsDocument(geoServer);
     }
 
-    @GetMapping(path = "collections/{collectionId}", name = "collection")
+    @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
@@ -151,17 +151,29 @@ public class FeatureService {
         return featureType.get();
     }
 
-    @GetMapping(path = "conformance", name = "conformance")
+    @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, OAS30, GEOJSON, GMLSF0);
         return new ConformanceDocument(classes);
     }
 
-    @GetMapping(
-        path = {"collections/{collectionId}/items", "collections/{collectionId}/items/{itemId:.+}"},
-        name = "items"
-    )
+    @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getFeature")
+    @ResponseBody
+    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    public FeaturesResponse item(
+            @PathVariable(name = "collectionId") String collectionId,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
+                    BigInteger startIndex,
+            @RequestParam(name = "limit", required = false) BigInteger limit,
+            @RequestParam(name = "bbox", required = false) String bbox,
+            @RequestParam(name = "time", required = false) String time,
+            @PathVariable(name = "itemId") String itemId)
+            throws Exception {
+        return items(collectionId, startIndex, limit, bbox, time, itemId);
+    }
+
+    @GetMapping(path = "collections/{collectionId}/items", name = "getFeatures")
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     public FeaturesResponse items(
@@ -171,7 +183,7 @@ public class FeatureService {
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "time", required = false) String time,
-            @PathVariable(name = "itemId", required = false) String itemId)
+            String itemId)
             throws Exception {
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);

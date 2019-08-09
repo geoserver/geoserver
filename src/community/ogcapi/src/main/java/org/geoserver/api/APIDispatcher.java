@@ -8,6 +8,8 @@ package org.geoserver.api;
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -285,14 +287,7 @@ public class APIDispatcher extends AbstractController {
         APIService annotation = handler.getBeanType().getAnnotation(APIService.class);
         dr.setService(annotation.service());
         dr.setVersion(annotation.version());
-        RequestMapping requestMapping = handler.getMethod().getAnnotation(RequestMapping.class);
-        if (requestMapping != null) {
-            dr.setRequest(requestMapping.name());
-        }
-        // if not request name was found fall back on the method name
-        if (dr.getRequest() == null) {
-            dr.setRequest(handler.getMethod().getName());
-        }
+        dr.setRequest(getOperationName(handler.getMethod()));
 
         // comply with DispatcherCallback and fire a service dispatched callback
         Service service =
@@ -536,5 +531,42 @@ public class APIDispatcher extends AbstractController {
                 .filter(mt -> mt.isConcrete())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the name of a given handler method, using the name found in {@link RequestMapping} or
+     * one of its method specific sub-annotations. If not found, falls back on the method name.
+     */
+    public static String getOperationName(Method m) {
+        return Arrays.stream(m.getAnnotations())
+                .filter(a -> isRequestMapping(a))
+                .map(
+                        a -> {
+                            try {
+                                return (String) a.getClass().getMethod("name").invoke(a);
+                            } catch (Exception e) {
+                                LOGGER.log(
+                                        Level.WARNING,
+                                        "Failed to get name from request mapping annotation, unexpected",
+                                        e);
+                            }
+                            return "";
+                        })
+                .filter(name -> name != null && !name.isEmpty())
+                .findFirst()
+                .orElse(m.getName()); // fallback on the method name if needs be
+    }
+
+    /**
+     * Returns true if the method in question is a service method, annotated with a {@link
+     * RequestMapping} or one of its method specific sub-annotations
+     */
+    public static boolean hasRequestMapping(Method m) {
+        return Arrays.stream(m.getAnnotations()).anyMatch(a -> isRequestMapping(a));
+    }
+
+    private static boolean isRequestMapping(Annotation a) {
+        return a instanceof RequestMapping
+                || a.annotationType().getAnnotation(RequestMapping.class) != null;
     }
 }

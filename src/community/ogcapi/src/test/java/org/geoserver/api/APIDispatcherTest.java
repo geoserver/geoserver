@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Request;
@@ -144,6 +145,30 @@ public class APIDispatcherTest {
         assertEquals(200, response.getStatus());
         assertEquals("{\"message\":\"hello\"}", response.getContentAsString());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback.dispatcherStatus.get());
+    }
+
+    @Test
+    public void testDispatcherCallbackOperationName() throws Exception {
+        APIDispatcher dispatcher = getDispatcher();
+        AtomicReference<Request> requestReference = new AtomicReference<>();
+        TestDispatcherCallback callback =
+                new TestDispatcherCallback() {
+                    @Override
+                    public Operation operationDispatched(Request request, Operation operation) {
+                        requestReference.set(request);
+                        return operation;
+                    }
+                };
+
+        MockHttpServletRequest request = setupHelloRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        dispatcher.callbacks.add(callback);
+
+        dispatcher.handleRequest(request, response);
+        assertEquals(200, response.getStatus());
+        assertEquals("Hello", requestReference.get().getService());
+        assertEquals("1.0", requestReference.get().getVersion());
+        assertEquals("sayHello", requestReference.get().getRequest());
     }
 
     @Test

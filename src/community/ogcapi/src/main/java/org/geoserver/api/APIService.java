@@ -27,6 +27,13 @@ public @interface APIService {
     public String version();
 
     /**
+     * Set the flag false to indicate this bean provides and extension instead of the core of the
+     * service. This is going to be used to set the "service object" in the legacy OWS service data
+     * model.
+     */
+    public boolean core() default true;
+
+    /**
      * Path of the landing page for this service (from a "/api" base path? or freeform? what about
      * ws specific services?)
      */

@@ -5,16 +5,39 @@
 package org.geoserver.api.features;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import org.geoserver.platform.Service;
+import org.geotools.util.Version;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class LandingPageTest extends FeaturesTestSupport {
+
+    @Test
+    public void testServiceDescriptor() {
+        Service service = getService("Features", new Version("1.0"));
+        assertNotNull(service);
+        assertEquals("Features", service.getId());
+        assertEquals(new Version("1.0"), service.getVersion());
+        assertThat(service.getService(), CoreMatchers.instanceOf(FeatureService.class));
+        assertThat(
+                service.getOperations(),
+                Matchers.containsInAnyOrder(
+                        "getApi",
+                        "describeCollection",
+                        "getCollections",
+                        "getConformanceDeclaration",
+                        "getFeature",
+                        "getFeatures",
+                        "getLandingPage"));
+    }
 
     @Test
     public void testLandingPageNoSlash() throws Exception {

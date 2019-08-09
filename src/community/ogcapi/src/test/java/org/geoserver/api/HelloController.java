@@ -35,7 +35,7 @@ public class HelloController {
 
     String defaultValue = "hello";
 
-    @GetMapping(path = "hello")
+    @GetMapping(path = "hello", name = "sayHello")
     @ResponseBody
     public Message hello(@RequestParam(name = "message", required = false) String message) {
         return new Message(message != null ? message : defaultValue);

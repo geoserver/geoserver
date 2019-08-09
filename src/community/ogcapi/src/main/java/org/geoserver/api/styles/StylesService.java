@@ -69,7 +69,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.xml.sax.EntityResolver;
 
 @APIService(
-    service = "Style",
+    service = "Styles",
     version = "1.0",
     landingPage = "ogc/styles",
     serviceClass = StylesServiceInfo.class
@@ -137,7 +137,7 @@ public class StylesService {
         return geoServer.getService(StylesServiceInfo.class);
     }
 
-    @GetMapping(path = "conformance", name = "getConformanceClasses")
+    @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, HTML, JSON, MAPBOX, SLD10, SLD11);
@@ -146,7 +146,7 @@ public class StylesService {
 
     @GetMapping(
         path = "api",
-        name = "api",
+        name = "getApi",
         produces = {
             OpenAPIMessageConverter.OPEN_API_VALUE,
             "application/x-yaml",
@@ -166,7 +166,7 @@ public class StylesService {
         return new StylesDocument(geoServer.getCatalog());
     }
 
-    @GetMapping(path = "styles/{styleId}")
+    @GetMapping(path = "styles/{styleId}", name = "getStyle")
     public void getStyle(
             @PathVariable(name = "styleId") String styleId,
             NativeWebRequest request,
@@ -268,7 +268,7 @@ public class StylesService {
                 .findFirst();
     }
 
-    @GetMapping(path = "styles/{styleId}/metadata")
+    @GetMapping(path = "styles/{styleId}/metadata", name = "getStyleMetadata")
     @ResponseBody
     public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
             throws IOException {
@@ -278,6 +278,7 @@ public class StylesService {
 
     @PostMapping(
         path = "styles",
+        name = "addStyle",
         consumes = {MediaType.ALL_VALUE}
     )
     @ResponseBody
@@ -352,7 +353,8 @@ public class StylesService {
 
     @PutMapping(
         path = "styles/{styleId}",
-        consumes = {MediaType.ALL_VALUE}
+        consumes = {MediaType.ALL_VALUE},
+        name = "updateStyle"
     )
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void putStyle(
@@ -435,14 +437,14 @@ public class StylesService {
         return handler;
     }
 
-    @DeleteMapping(path = "styles/{styleId}")
+    @DeleteMapping(path = "styles/{styleId}", name = "deleteStyle")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStyle(@PathVariable(name = "styleId") String styleId) {
         StyleInfo styleInfo = getStyleInfo(styleId, true);
         geoServer.getCatalog().remove(styleInfo);
     }
 
-    @PutMapping(path = "styles/{styleId}/metadata")
+    @PutMapping(path = "styles/{styleId}/metadata", name = "updateStyleMetadata")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void putStyleMetadata(
             @PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata)
@@ -475,7 +477,11 @@ public class StylesService {
         geoServer.getCatalog().save(styleInfo);
     }
 
-    @PatchMapping(path = "styles/{styleId}/metadata", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(
+        path = "styles/{styleId}/metadata",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        name = "patchStyleMetadata"
+    )
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void patchMetadata(
             @PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata) {

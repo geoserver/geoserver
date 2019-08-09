@@ -5,11 +5,16 @@
  */
 package org.geoserver.test;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.geoserver.data.test.TestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.Service;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.junit.*;
@@ -238,5 +243,25 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         if (!equalsIgnoringNewlineStyle(expected, actual)) {
             throw new ComparisonFailure("", expected, actual);
         }
+    }
+
+    /**
+     * Returns the {@link Service} matching the given service id and version, null if not found, an
+     * exception if multiple are found (should not happen)
+     */
+    protected Service getService(String id, Version version) {
+        List<Service> services =
+                GeoServerExtensions.extensions(Service.class)
+                        .stream()
+                        .filter(s -> id.equals(s.getId()) && version.equals(s.getVersion()))
+                        .collect(Collectors.toList());
+        if (services.isEmpty()) {
+            return null;
+        }
+        if (services.size() > 1) {
+            throw new RuntimeException(
+                    "Found more than one service with the required id and version: " + services);
+        }
+        return services.get(0);
     }
 }

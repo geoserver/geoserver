@@ -4,11 +4,11 @@
  */
 package com.boundlessgeo.gsr.model.map;
 
-import com.boundlessgeo.gsr.model.GSRModel;
-import com.boundlessgeo.gsr.model.geometry.SpatialReference;
-import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
-
-import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -22,16 +22,16 @@ import org.geotools.feature.visitor.MinVisitor;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.boundlessgeo.gsr.model.AbstractGSRModel;
+import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.model.geometry.SpatialReference;
+import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
 
 /**
  * Detailed model of a MapService
  */
-public class MapServiceRoot implements GSRModel {
+public class MapServiceRoot extends AbstractGSRModel implements GSRModel {
 
     public final String mapName;
     public final List<LayerEntry> layers = new ArrayList<>();
@@ -39,10 +39,12 @@ public class MapServiceRoot implements GSRModel {
     public final Boolean singleFusedMapCache;
     public final String capabilities;
     private SpatialReference spatialReference;
+    
+    private String workspace;
 
-    public MapServiceRoot(WMSInfo service, List<LayerInfo> layers) throws IOException {
+    public MapServiceRoot(WMSInfo service, String workspace, List<LayerInfo> layers) throws IOException {
         this.mapName = service.getTitle() != null ? service.getTitle() : service.getName();
-
+        this.workspace = workspace;
         int count = 0;
         for (LayerInfo l : layers) {
             this.layers.add(new LayerEntry(count, l.getName()));
@@ -108,4 +110,38 @@ public class MapServiceRoot implements GSRModel {
     public SpatialReference getSpatialReference() {
         return spatialReference;
     }
+
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public List<LayerEntry> getLayers() {
+        return layers;
+    }
+
+    public DateRange getTimeInfo() {
+        return timeInfo;
+    }
+
+    public Boolean getSingleFusedMapCache() {
+        return singleFusedMapCache;
+    }
+
+    public String getCapabilities() {
+        return capabilities;
+    }
+
+    public void setSpatialReference(SpatialReference spatialReference) {
+        this.spatialReference = spatialReference;
+    }
+    
+    
 }

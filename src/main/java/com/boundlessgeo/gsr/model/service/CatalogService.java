@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.model.service;
 
 import java.util.List;
-
+import com.boundlessgeo.gsr.model.AbstractGSRModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -17,8 +17,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 
 @XStreamAlias(value = "")
-public class CatalogService implements AbstractService {
-
+public class CatalogService extends AbstractGSRModel implements AbstractService {
+    
     private String name;
 
     private ServiceType type;
@@ -92,7 +92,7 @@ public class CatalogService implements AbstractService {
     public void setServices(List<AbstractService> services) {
         this.services = services;
     }
-
+    
     public CatalogService(String name, double specVersion, String productName,
             double currentVersion, List<String> folders, List<AbstractService> services) {
         this.name = name;

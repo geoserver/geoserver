@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.api.map;
 
 import java.io.IOException;
-
+import java.util.Collections;
 import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.api.APIService;

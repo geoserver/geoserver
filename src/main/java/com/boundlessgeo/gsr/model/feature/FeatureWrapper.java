@@ -4,12 +4,21 @@
  */
 package com.boundlessgeo.gsr.model.feature;
 
+import java.util.Collections;
+import java.util.List;
+import com.boundlessgeo.gsr.model.AbstractGSRModel;
 import com.boundlessgeo.gsr.model.GSRModel;
 
-public class FeatureWrapper implements GSRModel {
+public class FeatureWrapper extends AbstractGSRModel implements GSRModel {
     public Feature feature;
 
     public FeatureWrapper(Feature feature) {
         this.feature = feature;
     }
+
+    public Feature getFeature() {
+        return feature;
+    }
+    
+    
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.boundlessgeo.gsr.api.GeoServicesExceptionResolver;
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.api.ServiceException;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.feature.*;
 
 
@@ -25,6 +26,7 @@ import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.*;
 import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
@@ -67,6 +69,7 @@ public class FeatureLayerController extends AbstractGSRController {
 
     @ResponseBody
     @GetMapping(path = "/{layerId}")
+    @HTMLResponseBody(templateName = "featurelayer.ftl", fileName = "featurelayer.html")
     public FeatureLayer featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable entry;
         try {
@@ -77,8 +80,14 @@ public class FeatureLayerController extends AbstractGSRController {
         if (entry == null) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
-
-        return new FeatureLayer(entry);
+        FeatureLayer layer = new FeatureLayer(entry);
+        layer.getPath().addAll(Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
+                new Link(workspaceName + "/" + "FeatureServer/" + layerId, entry.getName())
+        ));
+        layer.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "?f=json&pretty=true", "REST"));
+        return layer;
     }
 
     /**

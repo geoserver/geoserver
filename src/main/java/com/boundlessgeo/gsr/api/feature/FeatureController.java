@@ -5,6 +5,8 @@
 package com.boundlessgeo.gsr.api.feature;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 
 import com.boundlessgeo.gsr.model.geometry.SpatialReference;
@@ -12,6 +14,7 @@ import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.styles.StylesServiceInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.feature.FeatureWrapper;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
 
@@ -52,6 +56,7 @@ public class FeatureController extends AbstractGSRController {
     }
 
     @GetMapping(path = "/{layerId}/{featureId}")
+    @HTMLResponseBody(templateName = "featureitem.ftl", fileName = "featureitem.html")
     public FeatureWrapper featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException, FactoryException {
         LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId);
 
@@ -74,6 +79,13 @@ public class FeatureController extends AbstractGSRController {
             throw new NoSuchElementException("No feature in layer or table " + layerId + " with id " + featureId);
         }
         SpatialReference spatialReference = SpatialReferences.fromCRS(featureArr[0].getDefaultGeometryProperty().getDescriptor().getCoordinateReferenceSystem());
-        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference));
+        FeatureWrapper feature = new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference));
+        feature.getPath().addAll(Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
+                new Link(workspaceName + "/" + "FeatureServer/" + layerId, l.getName()),
+                new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId, featureId)));
+        feature.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId + "?f=json&pretty=true", "REST"));
+        return feature;
     }
 }

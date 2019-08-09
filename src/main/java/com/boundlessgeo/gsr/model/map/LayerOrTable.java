@@ -1,8 +1,9 @@
 package com.boundlessgeo.gsr.model.map;
 
-import org.geoserver.catalog.LayerInfo;
-
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import org.geoserver.catalog.LayerInfo;
 
 /**
  * Layer model for maps, used in the {@link LayersAndTables} listing.

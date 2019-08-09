@@ -22,6 +22,8 @@ public class Feature {
     private Geometry geometry;
 
     private Map<String, Object> attributes;
+    
+    private Object id;
 
     public Geometry getGeometry() {
         return geometry;
@@ -31,9 +33,10 @@ public class Feature {
         this.geometry = geometry;
     }
 
-    public Feature(Geometry geometry, Map<String, Object> attributes) {
+    public Feature(Geometry geometry, Map<String, Object> attributes, Object id) {
 
         super();
+        this.id = id;
         this.geometry = geometry;
         this.attributes = attributes;
     }
@@ -45,4 +48,14 @@ public class Feature {
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
+
+    public Object getId() {
+        return id;
+    }
+
+    public void setId(Object id) {
+        this.id = id;
+    }
+    
+    
 }

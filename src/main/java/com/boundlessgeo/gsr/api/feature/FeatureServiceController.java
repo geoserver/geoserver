@@ -2,13 +2,12 @@ package com.boundlessgeo.gsr.api.feature;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
-import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -22,13 +21,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.boundlessgeo.gsr.api.map.QueryController;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.feature.FeatureList;
 import com.boundlessgeo.gsr.model.feature.FeatureServiceRoot;
 import com.boundlessgeo.gsr.model.map.LayerNameComparator;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
+import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 
 /**
  * Controller for the root Feature Service endpoint
@@ -42,7 +43,7 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
         serviceClass = WFSInfo.class
 )
 @RestController
-@RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName:.*}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureServiceController extends QueryController {
 
     @Autowired
@@ -51,6 +52,7 @@ public class FeatureServiceController extends QueryController {
     }
 
     @GetMapping
+    @HTMLResponseBody(templateName = "feature.ftl", fileName = "feature.html")
     public FeatureServiceRoot featureServiceGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo workspace = geoServer.getCatalog().getWorkspaceByName(workspaceName);
@@ -68,7 +70,12 @@ public class FeatureServiceController extends QueryController {
             }
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
-        return new FeatureServiceRoot(service, Collections.unmodifiableList(layersInWorkspace));
+        FeatureServiceRoot root = new FeatureServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
+        root.getPath().addAll(Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")));
+        root.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer?f=json&pretty=true", "REST"));
+        return root;
     }
 
     @GetMapping(path = { "/query" })

@@ -1,5 +1,6 @@
 package com.boundlessgeo.gsr.model.feature;
 
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.map.AbstractLayerOrTable;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
 import org.geoserver.catalog.FeatureTypeInfo;

@@ -1,5 +1,6 @@
 package com.boundlessgeo.gsr.translate.map;
 
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.map.LayerNameComparator;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
@@ -7,6 +8,7 @@ import org.geoserver.catalog.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

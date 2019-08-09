@@ -19,6 +19,7 @@ import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.api.APIService;
+import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
 import com.boundlessgeo.gsr.model.map.LayerNameComparator;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
@@ -67,6 +69,7 @@ public class MapServiceController extends AbstractGSRController {
     }
 
     @GetMapping
+    @HTMLResponseBody(templateName = "map.ftl", fileName = "map.html")
     public MapServiceRoot mapServiceGet(@PathVariable String workspaceName) throws IOException {
         WorkspaceInfo workspace = geoServer.getCatalog().getWorkspaceByName(workspaceName);
         if (workspace == null) {
@@ -83,13 +86,26 @@ public class MapServiceController extends AbstractGSRController {
             }
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
-
-        return new MapServiceRoot(service, Collections.unmodifiableList(layersInWorkspace));
+        MapServiceRoot root = new MapServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
+        root.getPath().addAll(Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "MapServer", "MapServer")
+        ));
+        root.getInterfaces().add(new Link(workspaceName + "/" + "MapServer?f=json&pretty=true", "REST"));
+        return root;
     }
 
     @GetMapping(path = {"/{layerId}"})
+    @HTMLResponseBody(templateName = "maplayer.ftl", fileName = "maplayer.html")
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
-        return LayerDAO.find(catalog, workspaceName, layerId);
+        LayerOrTable layer = LayerDAO.find(catalog, workspaceName, layerId);
+        layer.getPath().addAll(Arrays.asList(
+                new Link(workspaceName, workspaceName),
+                new Link(workspaceName + "/" + "MapServer", "MapServer"),
+                new Link(workspaceName + "/" + "MapServer/" + layerId, layerId + "")
+        ));
+        layer.getInterfaces().add(new Link(workspaceName + "/MapServer/" + layerId + "?f=json&pretty=true", "REST"));
+        return layer;
     }
 
     @GetMapping(path = "/identify")

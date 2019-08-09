@@ -50,7 +50,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("id", "t0002");
-        Feature feature = new Feature(geom, attributes);
+        Feature feature = new Feature(geom, attributes, "1");
 
         EditResult result = FeatureDAO.createFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
@@ -85,7 +85,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("id", "t0002");
-        Feature feature = new Feature(geom, attributes);
+        Feature feature = new Feature(geom, attributes, "1");
 
         EditResult result = FeatureDAO.createFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
@@ -120,7 +120,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("id", "t0002");
-        Feature feature = new Feature(geom, attributes);
+        Feature feature = new Feature(geom, attributes, "1");
 
         EditResult result = FeatureDAO.createFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
@@ -155,7 +155,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(FeatureEncoder.OBJECTID_FIELD_NAME, 0L);
         attributes.put("id", "t0001");
-        Feature feature = new Feature(geom, attributes);
+        Feature feature = new Feature(geom, attributes, "1");
 
         EditResult result = FeatureDAO.updateFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertNull(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getError());
@@ -185,7 +185,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(FeatureEncoder.OBJECTID_FIELD_NAME, 1L);
-        Feature feature = new Feature(geom, attributes);
+        Feature feature = new Feature(geom, attributes, "1");
 
         EditResult result = FeatureDAO.updateFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertFalse(result.getSuccess());

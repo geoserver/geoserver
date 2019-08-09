@@ -1,6 +1,7 @@
 package com.boundlessgeo.gsr.api.map;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 

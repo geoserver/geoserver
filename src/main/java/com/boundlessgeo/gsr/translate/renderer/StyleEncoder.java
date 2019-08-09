@@ -41,6 +41,7 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.util.NumberRange;
 import org.opengis.filter.Filter;
+import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
@@ -304,7 +305,7 @@ public class StyleEncoder {
                         null, // default symbol (set later)
                         null, // default label (set later)
                         new LinkedList<>()));
-                renderer.getUniqueValueInfos().add(meta.uniqueValueInfo);
+                renderer.getUniqueValueInfos().addAll(meta.uniqueValueInfo);
             } else {
                 rulesOther.add(rule);
             }
@@ -332,9 +333,9 @@ public class StyleEncoder {
 
     private static class UniqueValueInfoMeta {
         final String propertyName;
-        final UniqueValueInfo uniqueValueInfo;
+        final List<UniqueValueInfo> uniqueValueInfo;
 
-        public UniqueValueInfoMeta(String propertyName, UniqueValueInfo uniqueValueInfo) {
+        public UniqueValueInfoMeta(String propertyName, List<UniqueValueInfo> uniqueValueInfo) {
             this.propertyName = propertyName;
             this.uniqueValueInfo = uniqueValueInfo;
         }
@@ -348,36 +349,74 @@ public class StyleEncoder {
         if (symbolizer == null) return null;
 
         Filter filter = rule.getFilter();
-        if (!(filter instanceof PropertyIsEqualTo)) return null;
+        List<String> values = new ArrayList<>();
+        String propertyName = null;
+        if (filter instanceof PropertyIsEqualTo) {
 
-        PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) filter;
-
-        Expression expression1 = uniqueValueFilter.getExpression1();
-        String propertyName = expression1 instanceof PropertyName ?
-                ((PropertyName) expression1).getPropertyName() : null;
-        if (propertyName == null) return null;
-
-        Expression expression2 = uniqueValueFilter.getExpression2();
-        String valueAsString = expression2 instanceof Literal ?
-                ((Literal) expression2).getValue().toString() : null;
-        if (valueAsString == null) return null;
-
-        String title = null;
-        String description = null;
-        if (rule.getDescription() != null) {
-            if (rule.getDescription().getTitle() != null) {
-                title = rule.getDescription().getTitle().toString();
-            }
-            if (rule.getDescription().getAbstract() != null) {
-                description = rule.getDescription().getAbstract().toString();
+            PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) filter;
+    
+            Expression expression1 = uniqueValueFilter.getExpression1();
+            propertyName = expression1 instanceof PropertyName ?
+                    ((PropertyName) expression1).getPropertyName() : null;
+            if (propertyName == null) return null;
+    
+            Expression expression2 = uniqueValueFilter.getExpression2();
+            String valueAsString = expression2 instanceof Literal ?
+                    ((Literal) expression2).getValue().toString() : null;
+            if (valueAsString == null) return null;
+            values.add(valueAsString);
+        } else if (filter instanceof Or) {
+            Or orFilter = (Or) filter;
+            List<Filter> children = flattenOr(orFilter.getChildren());
+            if (children == null) return null;
+            for (Filter internal : children) {
+                if (!(internal instanceof PropertyIsEqualTo)) return null;
+                
+                PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) internal;
+                
+                Expression expression1 = uniqueValueFilter.getExpression1();
+                String internalPropertyName = expression1 instanceof PropertyName ?
+                        ((PropertyName) expression1).getPropertyName() : null;
+                if (internalPropertyName == null) return null;
+                
+                if (propertyName == null) {
+                    propertyName = internalPropertyName;
+                } else if (!propertyName.equals(internalPropertyName)) {
+                    return null;
+                }
+        
+                Expression expression2 = uniqueValueFilter.getExpression2();
+                String valueAsString = expression2 instanceof Literal ?
+                        ((Literal) expression2).getValue().toString() : null;
+                
+                values.add(valueAsString);
             }
         }
-        if (title == null) title = "";
-        if (description == null) description = "";
-
+        if (propertyName == null) return null;
+        final String title = rule.getDescription() != null && rule.getDescription().getTitle() != null ? rule.getDescription().getTitle().toString() : "";
+        final String description = rule.getDescription() != null && rule.getDescription().getAbstract() != null ? rule.getDescription().getAbstract().toString() : "";
+        List<UniqueValueInfo> uniqueValues = new ArrayList<>();
+        values.forEach(v -> uniqueValues.add(new UniqueValueInfo(v, title, description,
+                symbolizerToSymbol(symbolizer))));
+        
         return new UniqueValueInfoMeta(propertyName,
-                new UniqueValueInfo(valueAsString, title, description,
-                        symbolizerToSymbol(symbolizer)));
+                uniqueValues);
+    }
+
+    private static List<Filter> flattenOr(List<Filter> filters) {
+        List<Filter> flat = new ArrayList<>();
+        for (Filter filter : filters) {
+            if (filter instanceof PropertyIsEqualTo) {
+                flat.add(filter);
+            } else if (filter instanceof Or) {
+                List<Filter> children = flattenOr(((Or) filter).getChildren());
+                if (children == null) return null;
+                flat.addAll(children);
+            } else {
+                return null;
+            }
+        }
+        return flat;
     }
 
     private static Renderer defaultPolyRenderer() {

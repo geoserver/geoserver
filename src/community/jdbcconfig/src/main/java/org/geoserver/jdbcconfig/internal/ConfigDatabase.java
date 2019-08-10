@@ -78,6 +78,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
@@ -1705,47 +1707,60 @@ public class ConfigDatabase {
 
         @Override
         public void visit(NamespaceInfo workspace) {}
+        
+        public void visitStore(StoreInfo store) {
+            if (store.getWorkspace() != null) {
+                store.setWorkspace(
+                        getById(store.getWorkspace().getId(), WorkspaceInfo.class));
+            }
+        }
 
         @Override
         public void visit(DataStoreInfo dataStore) {
-            if (dataStore.getWorkspace() != null) {
-                dataStore.setWorkspace(
-                        getById(dataStore.getWorkspace().getId(), WorkspaceInfo.class));
-            }
+            visitStore(dataStore);
         }
 
         @Override
         public void visit(CoverageStoreInfo coverageStore) {
-            if (coverageStore.getWorkspace() != null) {
-                coverageStore.setWorkspace(
-                        getById(coverageStore.getWorkspace().getId(), WorkspaceInfo.class));
-            }
+            visitStore(coverageStore);
         }
 
         @Override
         public void visit(WMSStoreInfo wmsStore) {
-            if (wmsStore.getWorkspace() != null) {
-                wmsStore.setWorkspace(
-                        getById(wmsStore.getWorkspace().getId(), WorkspaceInfo.class));
+            visitStore(wmsStore);
+        }
+
+        @Override
+        public void visit(WMTSStoreInfo wmsStore) {
+            visitStore(wmsStore);
+        }
+        
+        public void visitResource(ResourceInfo resourceInfo) {
+            if (resourceInfo.getNamespace() != null) {
+                resourceInfo.setNamespace(
+                        getById(resourceInfo.getNamespace().getId(), NamespaceInfo.class));
             }
+            resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
         }
 
         @Override
         public void visit(FeatureTypeInfo featureType) {
-            if (featureType.getNamespace() != null) {
-                featureType.setNamespace(
-                        getById(featureType.getNamespace().getId(), NamespaceInfo.class));
-            }
-            featureType.setStore(getById(featureType.getStore().getId(), StoreInfo.class));
+            visitResource(featureType);
         }
 
         @Override
         public void visit(CoverageInfo coverage) {
-            if (coverage.getNamespace() != null) {
-                coverage.setNamespace(
-                        getById(coverage.getNamespace().getId(), NamespaceInfo.class));
-            }
-            coverage.setStore(getById(coverage.getStore().getId(), StoreInfo.class));
+            visitResource(coverage);
+        }
+
+        @Override
+        public void visit(WMSLayerInfo wmsLayer) {
+            visitResource(wmsLayer);
+        }
+
+        @Override
+        public void visit(WMTSLayerInfo wmtsLayer) {
+            visitResource(wmtsLayer);
         }
 
         @Override
@@ -1806,15 +1821,6 @@ public class ConfigDatabase {
                                             StyleInfo.class));
                 }
             }
-        }
-
-        @Override
-        public void visit(WMSLayerInfo wmsLayer) {
-            if (wmsLayer.getNamespace() != null) {
-                wmsLayer.setNamespace(
-                        getById(wmsLayer.getNamespace().getId(), NamespaceInfo.class));
-            }
-            wmsLayer.setStore(getById(wmsLayer.getStore().getId(), StoreInfo.class));
         }
     }
 }

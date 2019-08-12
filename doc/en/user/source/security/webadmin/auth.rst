@@ -238,10 +238,12 @@ The following illustration shows the configuration options for the LDAP authenti
    * - Max depth for hierarchical groups search 
      - Specifies the max group search depth level to use with Hierarchical LDAP groups search. Use ``-1`` for no limit. Only applicable when the *Enable Hierarchical groups search( parameter is **checked**.
    * - Nested group search filter
-     - - Search pattern for locating parent LDAP groups a group belongs to. This may contain two placeholder values:
+     - Search pattern for locating parent LDAP groups a group belongs to. This may contain two placeholder values:
+     
        ``{0}``, the full DN of the user, for example ``cn=it,ou=groups,dc=acme,dc=com``
+       
        ``{1}``, the ``cn`` portion of the full DN, for example ``it``.
-	   Only applicable when the *Enable Hierarchical groups search( parameter is **checked**.
+       Only applicable when the *Enable Hierarchical groups search( parameter is **checked**.
 
 Authentication chain
 --------------------

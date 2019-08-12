@@ -139,7 +139,8 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
     }
 
     private Class<?> getServiceClass(MethodParameter returnType) {
-        APIService apiService = returnType.getContainingClass().getAnnotation(APIService.class);
+        APIService apiService =
+                APIDispatcher.getApiServiceAnnotation(returnType.getContainingClass());
         if (apiService != null) {
             return apiService.serviceClass();
         }

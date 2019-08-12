@@ -52,7 +52,7 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
                         .filter(
                                 bean -> {
                                     APIService annotation =
-                                            bean.getClass().getAnnotation(APIService.class);
+                                            APIDispatcher.getApiServiceAnnotation(bean.getClass());
                                     return serviceName.equalsIgnoreCase(annotation.service())
                                             && version.equals(new Version(annotation.version()));
                                 })
@@ -62,8 +62,9 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
             throw new RuntimeException(
                     "Was expecting a service bean marked with service name '"
                             + serviceName
-                            + "' but found "
-                            + serviceBeans.size());
+                            + " and version "
+                            + version
+                            + "' but found none");
         }
 
         List<Object> coreBeans =
@@ -72,7 +73,7 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
                         .filter(
                                 bean -> {
                                     APIService annotation =
-                                            bean.getClass().getAnnotation(APIService.class);
+                                            APIDispatcher.getApiServiceAnnotation(bean.getClass());
                                     return annotation.core();
                                 })
                         .collect(Collectors.toList());

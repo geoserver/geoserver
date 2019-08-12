@@ -284,7 +284,7 @@ public class APIDispatcher extends AbstractController {
 
     private void dispatchService(Request dr, HandlerMethod handler) {
         // get the annotations and set service, version and request
-        APIService annotation = handler.getBeanType().getAnnotation(APIService.class);
+        APIService annotation = getApiServiceAnnotation(handler.getBeanType());
         dr.setService(annotation.service());
         dr.setVersion(annotation.version());
         dr.setRequest(getOperationName(handler.getMethod()));
@@ -300,6 +300,25 @@ public class APIDispatcher extends AbstractController {
         service = fireServiceDispatchedCallback(dr, service);
         // replace in case callbacks have replaced it
         dr.setServiceDescriptor(service);
+    }
+
+    /**
+     * Returns the {@link APIService} annotation from the class, or if not found, from a superclass
+     *
+     * @param clazz The class to look {@link APIService} on
+     * @return The first {@link APIService} found walking up the inheritance hierarchy, or null if
+     *     not found
+     */
+    static APIService getApiServiceAnnotation(Class clazz) {
+        APIService annotation = null;
+        while (annotation == null && clazz != null) {
+            annotation = (APIService) clazz.getAnnotation(APIService.class);
+            if (annotation == null) {
+                clazz = clazz.getSuperclass();
+            }
+        }
+
+        return annotation;
     }
 
     private HandlerMethod getHandlerMethod(HttpServletRequest httpRequest, Request dr)

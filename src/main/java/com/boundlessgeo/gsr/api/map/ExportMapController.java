@@ -28,12 +28,6 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 /**
  * Handles ArcGIS ExportMap requests
  */
-@APIService(
-        service = "MapServer",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WMSInfo.class
-)
 @RestController
 public class ExportMapController extends AbstractGSRController {
 
@@ -42,7 +36,7 @@ public class ExportMapController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping(produces = "application/json", path = "/gsr/services/{workspaceName}/MapServer/export")
+    @GetMapping(produces = "application/json", path = "/gsr/services/{workspaceName}/MapServer/export", name = "MapServerExportMap")
     @ResponseBody
     public ExportMap exportMap(@PathVariable String workspaceName, HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
@@ -52,13 +46,13 @@ public class ExportMapController extends AbstractGSRController {
         return new ExportMap(requestURL + updatedRequestParameters);
     }
 
-    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/export")
+    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/export", name = "MapServerExportMapImage")
     public void exportMap(@PathVariable String workspaceName, HttpServletRequest request, HttpServletResponse response)
         throws Exception {
         this.exportMapImage(workspaceName, request, response);
     }
 
-    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export")
+    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export", name = "MapServerExportLayerMap")
     public void exportMapOfLayer(@PathVariable String workspaceName, @PathVariable String layerId,
         HttpServletRequest request, HttpServletResponse response) throws Exception {
         this.exportMapImageForLayers(workspaceName, request, response, "show:" + layerId);

@@ -33,6 +33,11 @@
     <bean id="gsrDispatcher" class="com.boundlessgeo.gsr.GSRDispatcher"/>
     <bean id="gsrExceptionHandler" class="com.boundlessgeo.gsr.GSRExceptionHandler"/>
 
+    <bean id="gsrServiceFactory" class="org.geoserver.api.APIServiceFactoryBean">
+        <constructor-arg index="0" value="GSR"/>
+        <constructor-arg index="1" value="10.51"/>
+    </bean>
+
     <!-- api http url mapping -->
     <bean id="gsrURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
         <constructor-arg ref="catalog"/>
@@ -47,4 +52,6 @@
             </props>
         </property>
     </bean>
+    
+    
 </beans>

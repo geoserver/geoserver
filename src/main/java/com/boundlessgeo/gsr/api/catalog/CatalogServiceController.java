@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import com.boundlessgeo.gsr.GSRServiceInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -36,10 +38,11 @@ import com.boundlessgeo.gsr.model.service.MapService;
  * Controller for the root Catalog service endpoint.
  */
 @APIService(
-        service = "MapServer",
-        version = "1.0",
+        service = "GSR",
+        version = "10.51",
         landingPage = "/gsr/services",
-        serviceClass = WMSInfo.class
+        core = true,
+        serviceClass = GSRServiceInfo.class
 )
 @RestController
 @RequestMapping(path = "/gsr/services", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,7 +53,7 @@ public class CatalogServiceController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping(path = {""})
+    @GetMapping(path = {""}, name = "GetServices")
     @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
     public CatalogService catalogGet() {
         List<AbstractService> services = new ArrayList<>();
@@ -66,7 +69,7 @@ public class CatalogServiceController extends AbstractGSRController {
         return catalog;
     }
     
-    @GetMapping(path = {"/{folder:.*}"})
+    @GetMapping(path = {"/{folder:.*}"}, name = "GetServices")
     @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
     public CatalogService catalogGet(@PathVariable(required = true) String folder) {
         List<AbstractService> services = new ArrayList<>();

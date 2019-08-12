@@ -49,13 +49,6 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 /**
  * Controller for the Feature Service layer endpoint
  */
-@APIService(
-        service = "Feature",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WFSInfo.class
-)
-
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureLayerController extends AbstractGSRController {
@@ -68,7 +61,7 @@ public class FeatureLayerController extends AbstractGSRController {
     }
 
     @ResponseBody
-    @GetMapping(path = "/{layerId}")
+    @GetMapping(path = "/{layerId}", name = "FeatureServerGetFeature")
     @HTMLResponseBody(templateName = "featurelayer.ftl", fileName = "featurelayer.html")
     public FeatureLayer featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable entry;
@@ -116,7 +109,7 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return
      */
     @ResponseBody
-    @PostMapping(path = "/{layerId}/deleteFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path = "/{layerId}/deleteFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE, name = "FeatureServerDeleteFeatures")
     public EditResults featureDelete(
             @PathVariable String workspaceName, @PathVariable Integer layerId,
             @RequestParam(name = "objectIds", required = false) String objectIdsText,
@@ -183,7 +176,7 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return Results of the update
      * @throws IOException
      */
-    @PostMapping(path = "/{layerId}/updateFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path = "/{layerId}/updateFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE, name = "FeatureServerUpdateFeatures")
     public EditResults updateFeaturesPost(
             @PathVariable String workspaceName, @PathVariable Integer layerId,
             @RequestParam String features,
@@ -231,7 +224,7 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return Results of the update
      * @throws IOException
      */
-    @PostMapping(path = "/{layerId}/addFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path = "/{layerId}/addFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE, name = "FeatureServerAddFeatures")
     public EditResults addFeaturesPost(
             @PathVariable String workspaceName,
             @PathVariable Integer layerId,
@@ -292,7 +285,7 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return Results of adds, updates, and/or deletes
      * @throws IOException
      */
-    @PostMapping(path="/{layerId}/applyEdits", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path="/{layerId}/applyEdits", consumes = APPLICATION_FORM_URLENCODED_VALUE, name = "FeatureServesApplyEdits")
     public EditResults applyEditsByLayer(@PathVariable String workspaceName,
                                          @PathVariable Integer layerId,
                                          @RequestParam(name="adds", required=false) String adds,
@@ -397,7 +390,7 @@ public class FeatureLayerController extends AbstractGSRController {
      * @throws IOException
      * @throws ServiceException
      */
-    @PostMapping(path="/applyEdits", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path="/applyEdits", consumes = APPLICATION_FORM_URLENCODED_VALUE, name = "FeatureServerApplyEdits")
     public List<EditResults> applyEditsByService(
                                          @PathVariable String workspaceName,
                                          @RequestParam String edits,

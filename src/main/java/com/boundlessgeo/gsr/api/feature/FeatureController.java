@@ -40,12 +40,6 @@ import com.boundlessgeo.gsr.model.map.LayerOrTable;
 /**
  * Controller for the Feature Service feature list endpoint
  */
-@APIService(
-        service = "Feature",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WFSInfo.class
-)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureController extends AbstractGSRController {
@@ -55,9 +49,9 @@ public class FeatureController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping(path = "/{layerId}/{featureId}")
+    @GetMapping(path = "/{layerId}/{featureId}", name = "MapServerGetLegend")
     @HTMLResponseBody(templateName = "featureitem.ftl", fileName = "featureitem.html")
-    public FeatureWrapper featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException, FactoryException {
+    public FeatureWrapper getFeature(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException, FactoryException {
         LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId);
 
         if (null == l) {

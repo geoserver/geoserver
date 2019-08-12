@@ -50,12 +50,6 @@ import com.boundlessgeo.gsr.model.map.MapServiceRoot;
 /**
  * Controller for the root Map Service endpoint
  */
-@APIService(
-        service = "MapServer",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WMSInfo.class
-)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType
     .APPLICATION_JSON_VALUE)
@@ -68,7 +62,7 @@ public class MapServiceController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping
+    @GetMapping(name = "MapServerGetService")
     @HTMLResponseBody(templateName = "map.ftl", fileName = "map.html")
     public MapServiceRoot mapServiceGet(@PathVariable String workspaceName) throws IOException {
         WorkspaceInfo workspace = geoServer.getCatalog().getWorkspaceByName(workspaceName);
@@ -95,7 +89,7 @@ public class MapServiceController extends AbstractGSRController {
         return root;
     }
 
-    @GetMapping(path = {"/{layerId}"})
+    @GetMapping(path = {"/{layerId}"}, name = "MapServerGetLayer")
     @HTMLResponseBody(templateName = "maplayer.ftl", fileName = "maplayer.html")
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable layer = LayerDAO.find(catalog, workspaceName, layerId);
@@ -108,7 +102,7 @@ public class MapServiceController extends AbstractGSRController {
         return layer;
     }
 
-    @GetMapping(path = "/identify")
+    @GetMapping(path = "/identify", name = "MapServerIdentify")
     public IdentifyServiceResult identify(@PathVariable String workspaceName,
         @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryPoint") String
             geometryTypeName,
@@ -135,7 +129,7 @@ public class MapServiceController extends AbstractGSRController {
         return result;
     }
 
-    @GetMapping(path = "/find")
+    @GetMapping(path = "/find", name = "MapServerFind")
     public IdentifyServiceResult search(@PathVariable String workspaceName, @RequestParam String searchText,
         @RequestParam(required = false, defaultValue = "true") boolean contains,
         @RequestParam(required = false) String searchField,

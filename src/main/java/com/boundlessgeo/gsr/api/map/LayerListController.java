@@ -25,12 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for the Map Service layers list endpoint
  */
-@APIService(
-        service = "MapServer",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WMSInfo.class
-)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LayerListController extends AbstractGSRController {
@@ -40,9 +34,9 @@ public class LayerListController extends AbstractGSRController {
         super(geoServer);
     }
 
-    @GetMapping(path = "/layers")
+    @GetMapping(path = "/layers", name = "MapServerGetLayers")
     @HTMLResponseBody(templateName = "maplayers.ftl", fileName = "maplayers.html")
-    public LayersAndTables layersGet(@PathVariable String workspaceName) {
+    public LayersAndTables getLayers(@PathVariable String workspaceName) {
         LayersAndTables layers = LayerDAO.find(catalog, workspaceName);
         layers.getPath().addAll(Arrays.asList(
                 new Link(workspaceName, workspaceName),

@@ -13,11 +13,6 @@ import static org.junit.Assert.*;
 
 public class CatalogServiceControllerTest extends ControllerTest {
 
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-
     @Test
     public void testServiceException() throws Exception {
         if (getBaseURL() != null) {

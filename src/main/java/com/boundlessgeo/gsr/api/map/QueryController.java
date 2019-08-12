@@ -33,12 +33,6 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 /**
  * Controller for the Map Service query endpoint
  */
-@APIService(
-        service = "MapServer",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WMSInfo.class
-)
 @RestController @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType
     .APPLICATION_JSON_VALUE) public class QueryController
     extends AbstractGSRController {
@@ -48,8 +42,8 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
         super(geoServer);
     }
 
-    @GetMapping(path = "/{layerId}/query")
-    public GSRModel queryGet(@PathVariable String workspaceName, @PathVariable Integer layerId,
+    @GetMapping(path = "/{layerId}/query", name = "MapServerQuery")
+    public GSRModel query(@PathVariable String workspaceName, @PathVariable Integer layerId,
         @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryEnvelope") String
             geometryTypeName,
         @RequestParam(name = "geometry", required = false) String geometryText,

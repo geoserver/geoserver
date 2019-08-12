@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  ~  
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+	     http://www.springframework.org/schema/beans             
+	     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd         
+	     http://www.springframework.org/schema/context
+	     http://www.springframework.org/schema/context/spring-context-3.0.xsd          
+	     http://www.springframework.org/schema/aop         
+	     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+>
+
+  <!-- <mvc:annotation-driven/> -->
+  <context:component-scan base-package="org.geoserver.api"/>
+
+  <bean id="apiClasspathPublisherMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
+        <prop key="/apicss/**">classpathPublisher</prop>
+        <prop key="/swagger-ui/**">classpathPublisher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="apiLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+    <constructor-arg value="api"/>
+  </bean>
+  
+  <!-- The api dispatcher -->
+  <bean id="apiDispatcher" class="org.geoserver.api.APIDispatcher"/>
+  
+  <!-- api http url mapping -->
+  <bean id="apiURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+    <constructor-arg ref="catalog"/>
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="useTrailingSlashMatch" value="true"/>
+    <property name="order" value="0"/>
+
+    <property name="mappings">
+      <props>
+        <prop key="/ogc">apiDispatcher</prop>
+        <prop key="/ogc/**">apiDispatcher</prop>
+      </props>
+    </property>
+  </bean>
+  
+</beans>

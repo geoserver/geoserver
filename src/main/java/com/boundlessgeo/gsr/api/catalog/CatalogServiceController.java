@@ -40,7 +40,7 @@ import com.boundlessgeo.gsr.model.service.MapService;
 @APIService(
         service = "GSR",
         version = "10.51",
-        landingPage = "/gsr/services",
+        landingPage = "gsr/services",
         core = true,
         serviceClass = GSRServiceInfo.class
 )

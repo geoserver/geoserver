@@ -3,7 +3,6 @@ package com.boundlessgeo.gsr;
 import com.boundlessgeo.gsr.api.ServiceException;
 import com.boundlessgeo.gsr.model.exception.ServiceError;
 import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.kml.KMZMapOutputFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -73,7 +72,7 @@ public class GSRDispatcher extends APIDispatcher {
                 if ("json".equals(f)) {
                     return Collections.singletonList(MediaType.APPLICATION_JSON);
                 } else if ("geojson".equals(f)) {
-                    return Collections.singletonList(MediaType.parseMediaType(RFCGeoJSONFeaturesResponse.MIME));
+                    return Collections.singletonList(MediaType.parseMediaType("application/geo+json"));
                 } else if ("kmz".equals(f)) {
                     return Collections.singletonList(MediaType.parseMediaType(KMZMapOutputFormat.MIME_TYPE));
                 } else if ("xml".equals(f)) {

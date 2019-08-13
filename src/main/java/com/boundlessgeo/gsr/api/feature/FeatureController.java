@@ -4,21 +4,17 @@
  */
 package com.boundlessgeo.gsr.api.feature;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.NoSuchElementException;
-
+import com.boundlessgeo.gsr.api.AbstractGSRController;
+import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
+import com.boundlessgeo.gsr.model.feature.FeatureWrapper;
 import com.boundlessgeo.gsr.model.geometry.SpatialReference;
-import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
-import org.geoserver.api.APIService;
 import org.geoserver.api.HTMLResponseBody;
-import org.geoserver.api.styles.StylesServiceInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.filter.Filter;
@@ -31,11 +27,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.model.AbstractGSRModel.Link;
-import com.boundlessgeo.gsr.model.feature.FeatureWrapper;
-import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /**
  * Controller for the Feature Service feature list endpoint

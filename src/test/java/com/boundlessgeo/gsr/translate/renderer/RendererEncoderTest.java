@@ -12,12 +12,14 @@ import com.boundlessgeo.gsr.model.label.Label;
 import com.boundlessgeo.gsr.model.renderer.ClassBreakInfo;
 import com.boundlessgeo.gsr.model.renderer.ClassBreaksRenderer;
 import com.boundlessgeo.gsr.model.renderer.Renderer;
+import com.boundlessgeo.gsr.model.renderer.UniqueValueInfo;
 import com.boundlessgeo.gsr.model.renderer.UniqueValueRenderer;
 import com.boundlessgeo.gsr.model.symbol.HorizontalAlignmentEnum;
 import com.boundlessgeo.gsr.model.symbol.SimpleFillSymbol;
 import com.boundlessgeo.gsr.model.symbol.SimpleFillSymbolEnum;
 import com.boundlessgeo.gsr.model.symbol.SimpleLineSymbol;
 import com.boundlessgeo.gsr.model.symbol.SimpleLineSymbolEnum;
+import com.boundlessgeo.gsr.model.symbol.Symbol;
 import com.boundlessgeo.gsr.model.symbol.TextSymbol;
 import com.boundlessgeo.gsr.model.symbol.VerticalAlignmentEnum;
 import net.sf.json.JSONObject;
@@ -27,15 +29,18 @@ import org.geoserver.catalog.StyleInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.opengis.style.Style;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class RendererEncoderTest extends ControllerTest {
@@ -189,7 +194,7 @@ public class RendererEncoderTest extends ControllerTest {
         List<Label> labels = parseAndConvertToLabelInfo("popshade.sld");
         assertNotNull(labels);
         assertEquals(2, labels.size());
-        
+
         // first label (lower scales)
         Label label0 = labels.get(0);
         assertEquals("[STATE_ABBR]", label0.getLabelExpression());
@@ -198,13 +203,13 @@ public class RendererEncoderTest extends ControllerTest {
         assertNull(label0.getWhere());
 
         TextSymbol ts0 = label0.getSymbol();
-        assertArrayEquals(new int[] {0, 0, 0, 255}, ts0.getColor());
+        assertArrayEquals(new int[]{0, 0, 0, 255}, ts0.getColor());
         assertEquals(HorizontalAlignmentEnum.CENTER, ts0.getHorizontalAlignment());
         assertEquals(VerticalAlignmentEnum.MIDDLE, ts0.getVerticalAlignment());
         Font font0 = ts0.getFont();
         assertEquals("Times New Roman", font0.getFamily());
         assertEquals(14, font0.getSize());
-        
+
         // second label (higher scales)
         Label label1 = labels.get(1);
         assertEquals("[STATE_NAME]", label1.getLabelExpression());
@@ -213,10 +218,10 @@ public class RendererEncoderTest extends ControllerTest {
         assertNull(label1.getWhere());
 
         TextSymbol ts1 = label1.getSymbol();
-        assertArrayEquals(new int[] {68, 68, 68, 255}, ts1.getColor());
+        assertArrayEquals(new int[]{68, 68, 68, 255}, ts1.getColor());
         assertEquals(HorizontalAlignmentEnum.CENTER, ts1.getHorizontalAlignment());
         assertEquals(VerticalAlignmentEnum.MIDDLE, ts1.getVerticalAlignment());
-        assertArrayEquals(new int[] {255, 255, 255, 255}, ts1.getHaloColor());
+        assertArrayEquals(new int[]{255, 255, 255, 255}, ts1.getHaloColor());
         assertEquals(Integer.valueOf(2), ts1.getHaloSize());
         Font font1 = ts1.getFont();
         assertEquals("Arial", font1.getFamily());
@@ -224,16 +229,16 @@ public class RendererEncoderTest extends ControllerTest {
         assertEquals(FontStyleEnum.ITALIC, font1.getStyle());
         assertEquals(FontWeightEnum.BOLD, font1.getWeight());
     }
-    
+
     @Test
     public void testDashArray() throws Exception {
         Renderer renderer = parseAndConvertToRenderer("dasharray.sld");
         UniqueValueRenderer uvr = (UniqueValueRenderer) renderer;
-        
+
         // first is solid
         SimpleLineSymbol line0 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(0).getSymbol();
         assertEquals(SimpleLineSymbolEnum.SOLID, line0.getStyle());
-        
+
         // second recognized as dash
         SimpleLineSymbol line1 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(1).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH, line1.getStyle());
@@ -243,16 +248,92 @@ public class RendererEncoderTest extends ControllerTest {
         assertEquals(SimpleLineSymbolEnum.DOT, line2.getStyle());
 
         // fourth recognized as dash dot
-        SimpleLineSymbol line3  = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(3).getSymbol();
+        SimpleLineSymbol line3 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(3).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH_DOT, line3.getStyle());
 
         // fourth recognized as dash dot dot
-        SimpleLineSymbol line4  = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(4).getSymbol();
+        SimpleLineSymbol line4 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(4).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH_DOT_DOT, line4.getStyle());
 
         // fifth not recognized, assigned as a dash as default
-        SimpleLineSymbol line5  = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(5).getSymbol();
+        SimpleLineSymbol line5 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(5).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH, line5.getStyle());
+    }
+
+    @Test
+    public void testRecodeFill() throws Exception {
+        Renderer renderer = parseAndConvertToRenderer("states_recode_fill.sld");
+        assertThat(renderer, CoreMatchers.instanceOf(UniqueValueRenderer.class));
+        UniqueValueRenderer uvr = (UniqueValueRenderer) renderer;
+        
+        assertEquals("SUB_REGION", uvr.getField1());
+        List<UniqueValueInfo> values = uvr.getUniqueValueInfos();
+        assertEquals(9, values.size());
+        
+        // first value
+        UniqueValueInfo v0 = values.get(0);
+        assertEquals("N Eng", v0.getValue());
+        SimpleFillSymbol fill0 = (SimpleFillSymbol) v0.getSymbol();
+        assertArrayEquals(new int[] {100, 149, 237, 255}, fill0.getColor());
+        assertArrayEquals(new int[] {170, 170, 170, 255}, fill0.getOutline().getColor());
+
+        // mid value
+        UniqueValueInfo v3 = values.get(3);
+        assertEquals("E N Cen", v3.getValue());
+        SimpleFillSymbol fill3 = (SimpleFillSymbol) v3.getSymbol();
+        assertArrayEquals(new int[] {154, 205, 50, 255}, fill3.getColor());
+        assertArrayEquals(new int[] {170, 170, 170, 255}, fill3.getOutline().getColor());
+
+        // last value
+        UniqueValueInfo v8 = values.get(8);
+        assertEquals("Pacific", v8.getValue());
+        SimpleFillSymbol fill8 = (SimpleFillSymbol) v8.getSymbol();
+        assertArrayEquals(new int[] {135, 206, 235, 255}, fill8.getColor());
+        assertArrayEquals(new int[] {170, 170, 170, 255}, fill8.getOutline().getColor());
+    }
+
+    @Test
+    public void testRecodeFillStroke() throws Exception {
+        Renderer renderer = parseAndConvertToRenderer("states_recode_fill_stroke.sld");
+        assertThat(renderer, CoreMatchers.instanceOf(UniqueValueRenderer.class));
+        UniqueValueRenderer uvr = (UniqueValueRenderer) renderer;
+
+        assertEquals("SUB_REGION", uvr.getField1());
+        List<UniqueValueInfo> values = uvr.getUniqueValueInfos();
+        assertEquals(9, values.size());
+
+        // first value
+        UniqueValueInfo v0 = values.get(0);
+        assertEquals("N Eng", v0.getValue());
+        SimpleFillSymbol fill0 = (SimpleFillSymbol) v0.getSymbol();
+        assertArrayEquals(new int[] {100, 149, 237, 255}, fill0.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill0.getOutline().getColor());
+        assertEquals(0, fill0.getOutline().getWidth(), 0d);
+
+        // mid value
+        UniqueValueInfo v3 = values.get(3);
+        assertEquals("E N Cen", v3.getValue());
+        SimpleFillSymbol fill3 = (SimpleFillSymbol) v3.getSymbol();
+        assertArrayEquals(new int[] {154, 205, 50, 255}, fill3.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill3.getOutline().getColor());
+        assertEquals(3, fill3.getOutline().getWidth(), 0d);
+
+        // last value
+        UniqueValueInfo v8 = values.get(8);
+        assertEquals("Pacific", v8.getValue());
+        SimpleFillSymbol fill8 = (SimpleFillSymbol) v8.getSymbol();
+        System.out.println(Arrays.toString(fill8.getColor()));
+        assertArrayEquals(new int[] {135, 206, 235, 255}, fill8.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill8.getOutline().getColor());
+        assertEquals(8, fill8.getOutline().getWidth(), 0d);
+
+    }
+
+    @Test
+    public void testRecodeFillStrokeMisaligned() throws Exception {
+        // two recodes but using different key values, cannot be translated 
+        Renderer renderer = parseAndConvertToRenderer("states_recode_misaligned.sld");
+        assertNull(renderer);
     }
 
 }

@@ -40,6 +40,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.util.NumberRange;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -66,15 +67,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class StyleEncoder {
+
+    static final Logger LOGGER = Logging.getLogger(StyleEncoder.class);
 
     /**
      * Max length of a dasharray line to be considered a dot instead of a dash
      */
     static final int DOT_THRESHOLD = 2;
-    
+
     private static List<PropertyRangeExtractor> propertyRangeExtractors =
             Arrays.asList(new BetweenExtractor(), new LowerExtractor(), new GreaterExtractor(),
                     new LowerGreaterExtractor());
@@ -161,7 +166,7 @@ public class StyleEncoder {
         style.accept(visitor);
         return visitor.getLabelInfo();
     }
-    
+
     public static Renderer styleToRenderer(Style style) {
 
         List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
@@ -178,7 +183,7 @@ public class StyleEncoder {
                 .filter(r -> r.symbolizers().stream().
                         anyMatch(s -> (!(s instanceof TextSymbolizer))))
                 .collect(Collectors.toList());
-        
+
         Renderer render = rulesToUniqueValueRenderer(rules);
         if (render != null) return render;
 
@@ -235,7 +240,8 @@ public class StyleEncoder {
                 if (title == null) title = "";
                 // no default label/value in the model yet
                 // classBreaksRenderer.setDefaultLabel(title);
-                // classBreaksRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
+                // classBreaksRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get
+                // (0)));
             }
             return classBreaksRenderer;
         }
@@ -281,8 +287,9 @@ public class StyleEncoder {
         if (description == null) description = "";
         PropertyRange propertyRange = range.get();
         NumberRange minMax = propertyRange.getRange();
-        return new ClassBreakInfoMeta(propertyRange.getPropertyName(), new ClassBreakInfo(minMax.getMinimum(), minMax.getMaximum(),
-                title, description, symbolizerToSymbol(symbolizer)));
+        return new ClassBreakInfoMeta(propertyRange.getPropertyName(),
+                new ClassBreakInfo(minMax.getMinimum(), minMax.getMaximum(),
+                        title, description, symbolizerToSymbol(symbolizer)));
     }
 
     private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
@@ -291,20 +298,15 @@ public class StyleEncoder {
         for (Rule rule : rules) {
             UniqueValueInfoMeta meta = ruleToUniqueValueInfoMeta(rule);
             if (meta != null) {
-                // field 2
-// field 3
-// delimiter, required even with single field
-// default symbol (set later)
-// default label (set later)
                 UniqueValueRenderer renderer = map.computeIfAbsent(meta.propertyName,
                         k -> new UniqueValueRenderer(
-                        meta.propertyName,
-                        null, // field 2
-                        null, // field 3
-                        ", ", // delimiter, required even with single field
-                        null, // default symbol (set later)
-                        null, // default label (set later)
-                        new LinkedList<>()));
+                                meta.propertyName,
+                                null, // field 2
+                                null, // field 3
+                                ", ", // delimiter, required even with single field
+                                null, // default symbol (set later)
+                                null, // default label (set later)
+                                new LinkedList<>()));
                 renderer.getUniqueValueInfos().addAll(meta.uniqueValueInfo);
             } else {
                 rulesOther.add(rule);
@@ -327,6 +329,41 @@ public class StyleEncoder {
                 uniqueValueRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
             }
             return uniqueValueRenderer;
+        } else if (map.size() == 0 && rules.size() == 1) {
+            try {
+                // still a possibility for unique value renderer if there is a single rule that
+                // has a recode function call
+                ClassificationFunctionsVisitor visitor = new ClassificationFunctionsVisitor();
+                Rule rule = rules.get(0);
+                rule.accept(visitor);
+                if (visitor.hasRecode() && !visitor.hasCategorize() && !visitor.hasOtherFunctions()) {
+                    Set<List<Object>> keySets = visitor.getRecodeKeys();
+                    Set<String> properties = visitor.getClassificationProperty();
+                    // only if the same set of keys is applied everywhere, then we can use a unique 
+                    // renderer
+                    if (keySets.size() == 1 && properties.size() == 1) {
+                        List<Object> keys = keySets.iterator().next();
+                        String property = properties.iterator().next();
+                        List<UniqueValueInfo> uniqueValueInfos = new ArrayList<>();
+                        Symbolizer symbolizer = rule.getSymbolizers()[0];
+                        for (Object key : keys) {
+                            Symbolizer erased = ClassificationFunctionEraser.erase(symbolizer,
+                                    property, key);
+                            UniqueValueInfo vi = new UniqueValueInfo(String.valueOf(key),
+                                    String.valueOf(key), "", symbolizerToSymbol(erased));
+                            uniqueValueInfos.add(vi);
+                        }
+                        return new UniqueValueRenderer(property, null, null, ", ", null, null,
+                                uniqueValueInfos);
+
+                    }
+
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, "Could not turn style into unique value renderer, " +
+                        "exception occured while attempting to discover eventual recode " +
+                        "functions", e);
+            }
         }
         return null;
     }
@@ -354,12 +391,12 @@ public class StyleEncoder {
         if (filter instanceof PropertyIsEqualTo) {
 
             PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) filter;
-    
+
             Expression expression1 = uniqueValueFilter.getExpression1();
             propertyName = expression1 instanceof PropertyName ?
                     ((PropertyName) expression1).getPropertyName() : null;
             if (propertyName == null) return null;
-    
+
             Expression expression2 = uniqueValueFilter.getExpression2();
             String valueAsString = expression2 instanceof Literal ?
                     ((Literal) expression2).getValue().toString() : null;
@@ -371,34 +408,38 @@ public class StyleEncoder {
             if (children == null) return null;
             for (Filter internal : children) {
                 if (!(internal instanceof PropertyIsEqualTo)) return null;
-                
+
                 PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) internal;
-                
+
                 Expression expression1 = uniqueValueFilter.getExpression1();
                 String internalPropertyName = expression1 instanceof PropertyName ?
                         ((PropertyName) expression1).getPropertyName() : null;
                 if (internalPropertyName == null) return null;
-                
+
                 if (propertyName == null) {
                     propertyName = internalPropertyName;
                 } else if (!propertyName.equals(internalPropertyName)) {
                     return null;
                 }
-        
+
                 Expression expression2 = uniqueValueFilter.getExpression2();
                 String valueAsString = expression2 instanceof Literal ?
                         ((Literal) expression2).getValue().toString() : null;
-                
+
                 values.add(valueAsString);
             }
         }
         if (propertyName == null) return null;
-        final String title = rule.getDescription() != null && rule.getDescription().getTitle() != null ? rule.getDescription().getTitle().toString() : "";
-        final String description = rule.getDescription() != null && rule.getDescription().getAbstract() != null ? rule.getDescription().getAbstract().toString() : "";
+        final String title =
+                rule.getDescription() != null && rule.getDescription().getTitle() != null ?
+                        rule.getDescription().getTitle().toString() : "";
+        final String description =
+                rule.getDescription() != null && rule.getDescription().getAbstract() != null ?
+                        rule.getDescription().getAbstract().toString() : "";
         List<UniqueValueInfo> uniqueValues = new ArrayList<>();
         values.forEach(v -> uniqueValues.add(new UniqueValueInfo(v, title, description,
                 symbolizerToSymbol(symbolizer))));
-        
+
         return new UniqueValueInfoMeta(propertyName,
                 uniqueValues);
     }
@@ -565,7 +606,6 @@ public class StyleEncoder {
         }
 
 
-        
         return new SimpleFillSymbol(fillStyle, components(color, opacity),
                 outline);
     }

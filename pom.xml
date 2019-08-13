@@ -53,10 +53,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-ogcapi</artifactId>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-rest</artifactId>
       <version>${gs.version}</version>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-ogcapi-core</artifactId>
+      <version>${gs.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

@@ -39,6 +39,7 @@ import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
+import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -244,6 +245,51 @@ public class StyleEncoder {
                 // (0)));
             }
             return classBreaksRenderer;
+        } else if (map.size() == 0 && rules.size() == 1) {
+            try {
+                // still a possibility for unique value renderer if there is a single rule that
+                // has a categorize function call
+                ClassificationFunctionsVisitor visitor = new ClassificationFunctionsVisitor();
+                Rule rule = rules.get(0);
+                rule.accept(visitor);
+                if (visitor.hasCategorize() && !visitor.hasRecode() && !visitor.hasOtherFunctions()) {
+                    Set<List<Object>> keySets = visitor.getCategorizeKeys();
+                    Set<String> properties = visitor.getClassificationProperty();
+                    // only if the same set of keys is applied everywhere, then we can use a unique 
+                    // renderer
+                    if (keySets.size() == 1 && properties.size() == 1) {
+                        List<Double> keys = keySets.iterator().next().stream().map(k -> {
+                            Double v = Converters.convert(k, Double.class);
+                            if (v == null)
+                                throw new RuntimeException("Key value was not a number, cannot " +
+                                        "use class breaks: " + v);
+                            return v;
+                        }).collect(Collectors.toList());
+                        String property = properties.iterator().next();
+                        List<ClassBreakInfo> breaks = new ArrayList<>();
+                        Symbolizer symbolizer = rule.getSymbolizers()[0];
+                        for (Double key : keys) {
+                            Symbolizer erased = ClassificationFunctionEraser.erase(symbolizer,
+                                    property, key - 1);
+                            ClassBreakInfo cb = new ClassBreakInfo(null, key, "", "",
+                                    symbolizerToSymbol(erased));
+                            breaks.add(cb);
+                        }
+                        // "above" last value
+                        Double lastKey = keys.get(keys.size() - 1);
+                        Symbolizer erased = ClassificationFunctionEraser.erase(symbolizer,
+                                property, lastKey + 1);
+                        ClassBreakInfo cb = new ClassBreakInfo(null, Double.MAX_VALUE, "", "",
+                                symbolizerToSymbol(erased));
+                        breaks.add(cb);
+                        return new ClassBreaksRenderer(property, -Double.MAX_VALUE, breaks);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, "Could not turn style into unique value renderer, " +
+                        "exception occured while attempting to discover eventual recode " +
+                        "functions", e);
+            }
         }
 
         return null;
@@ -360,7 +406,7 @@ public class StyleEncoder {
 
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Could not turn style into unique value renderer, " +
+                LOGGER.log(Level.INFO, "Could not turn style into unique value renderer, " +
                         "exception occured while attempting to discover eventual recode " +
                         "functions", e);
             }

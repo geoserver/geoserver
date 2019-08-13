@@ -2,7 +2,6 @@ package com.boundlessgeo.gsr.translate.renderer;
 
 import org.geotools.filter.function.CategorizeFunction;
 import org.geotools.filter.function.RecodeFunction;
-import org.geotools.filter.visitor.Recode;
 import org.geotools.renderer.style.StyleAttributeExtractor;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
@@ -66,7 +65,7 @@ class ClassificationFunctionsVisitor extends StyleAttributeExtractor {
     }
 
     /**
-     * Extracts all recode keys. If there are non recode functions, or the keys are not literals,
+     * Extracts all recode keys. If there are no recode functions, or the keys are not literals,
      * exceptions will be thrown
      *
      * @return
@@ -74,9 +73,31 @@ class ClassificationFunctionsVisitor extends StyleAttributeExtractor {
     public Set<List<Object>> getRecodeKeys() {
         Set<List<Object>> result = new HashSet<>();
         for (Function function : classificationFunctions) {
-            List<Expression> parameters = ((RecodeFunction) function).getParameters();
+            List<Expression> parameters = function.getParameters();
             List<Object> values = new ArrayList<>();
             for (int i = 1; i < parameters.size(); i += 2) {
+                Literal literal = (Literal) parameters.get(i);
+                values.add(literal.evaluate(null));
+            }
+            result.add(values);
+        }
+
+        return result;
+    }
+
+    /**
+     * Extracts all categorize keys. If there are no categorize functions, or the keys are not 
+     * literals,
+     * exceptions will be thrown
+     *
+     * @return
+     */
+    public Set<List<Object>> getCategorizeKeys() {
+        Set<List<Object>> result = new HashSet<>();
+        for (Function function : classificationFunctions) {
+            List<Expression> parameters = function.getParameters();
+            List<Object> values = new ArrayList<>();
+            for (int i = 2; i < parameters.size(); i += 2) {
                 Literal literal = (Literal) parameters.get(i);
                 values.add(literal.evaluate(null));
             }

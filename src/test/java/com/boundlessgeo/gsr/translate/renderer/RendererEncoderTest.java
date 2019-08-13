@@ -336,4 +336,84 @@ public class RendererEncoderTest extends ControllerTest {
         assertNull(renderer);
     }
 
+    @Test
+    public void testCategorizeFill() throws Exception {
+        Renderer renderer = parseAndConvertToRenderer("states_categorize_fill.sld");
+        assertThat(renderer, CoreMatchers.instanceOf(ClassBreaksRenderer.class));
+        ClassBreaksRenderer cbr = (ClassBreaksRenderer) renderer;
+
+        assertEquals("LAND_KM", cbr.getField());
+        assertEquals(-Double.MAX_VALUE, cbr.getMinValue(), 0d);
+        List<ClassBreakInfo> breaks = cbr.getClassBreakInfos();
+        assertEquals(3, breaks.size());
+
+        // first
+        ClassBreakInfo cb0 = breaks.get(0);
+        assertEquals(100000, cb0.getClassMaxValue(), 0d);
+        SimpleFillSymbol fill0 = (SimpleFillSymbol) cb0.getSymbol();
+        assertArrayEquals(new int[] {135, 206, 235, 255}, fill0.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill0.getOutline().getColor());
+        assertEquals(1, fill0.getOutline().getWidth(), 0d);
+
+        // mid 
+        ClassBreakInfo cb1 = breaks.get(1);
+        assertEquals(200000, cb1.getClassMaxValue(), 0d);
+        SimpleFillSymbol fill1 = (SimpleFillSymbol) cb1.getSymbol();
+        assertArrayEquals(new int[] {255, 250, 205, 255}, fill1.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill1.getOutline().getColor());
+        assertEquals(1, fill0.getOutline().getWidth(), 0d);
+
+        // last 
+        ClassBreakInfo cb2 = breaks.get(2);
+        assertEquals(Double.MAX_VALUE, cb2.getClassMaxValue(), 0d);
+        SimpleFillSymbol fill2 = (SimpleFillSymbol) cb2.getSymbol();
+        assertArrayEquals(new int[] {240, 128, 128, 255}, fill2.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill2.getOutline().getColor());
+        assertEquals(1, fill0.getOutline().getWidth(), 0d);
+    }
+
+    @Test
+    public void testCategorizeFillStroke() throws Exception {
+        Renderer renderer = parseAndConvertToRenderer("states_categorize_fill.sld");
+        assertThat(renderer, CoreMatchers.instanceOf(ClassBreaksRenderer.class));
+        ClassBreaksRenderer cbr = (ClassBreaksRenderer) renderer;
+
+        assertEquals("LAND_KM", cbr.getField());
+        assertEquals(-Double.MAX_VALUE, cbr.getMinValue(), 0d);
+        List<ClassBreakInfo> breaks = cbr.getClassBreakInfos();
+        assertEquals(3, breaks.size());
+
+        // first
+        ClassBreakInfo cb0 = breaks.get(0);
+        assertEquals(100000, cb0.getClassMaxValue(), 0d);
+        SimpleFillSymbol fill0 = (SimpleFillSymbol) cb0.getSymbol();
+        assertArrayEquals(new int[] {135, 206, 235, 255}, fill0.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill0.getOutline().getColor());
+        assertEquals(1, fill0.getOutline().getWidth(), 0d);
+
+        // mid 
+        ClassBreakInfo cb1 = breaks.get(1);
+        assertEquals(200000, cb1.getClassMaxValue(), 0d);
+        SimpleFillSymbol fill1 = (SimpleFillSymbol) cb1.getSymbol();
+        assertArrayEquals(new int[] {255, 250, 205, 255}, fill1.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill1.getOutline().getColor());
+        assertEquals(1, fill1.getOutline().getWidth(), 0d);
+
+        // last 
+        ClassBreakInfo cb2 = breaks.get(2);
+        assertEquals(Double.MAX_VALUE, cb2.getClassMaxValue(), 0d);
+        SimpleFillSymbol fill2 = (SimpleFillSymbol) cb2.getSymbol();
+        assertArrayEquals(new int[] {240, 128, 128, 255}, fill2.getColor());
+        assertArrayEquals(new int[] {0, 0, 0, 255}, fill2.getOutline().getColor());
+        assertEquals(1, fill2.getOutline().getWidth(), 0d);
+    }
+
+    @Test
+    public void testCategorizeFillStrokeMisaligned() throws Exception {
+        // two recodes but using different key values, cannot be translated 
+        Renderer renderer = parseAndConvertToRenderer("states_categorize_misaligned.sld");
+        assertNull(renderer);
+    }
+
+
 }

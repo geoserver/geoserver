@@ -1707,11 +1707,10 @@ public class ConfigDatabase {
 
         @Override
         public void visit(NamespaceInfo workspace) {}
-        
+
         public void visitStore(StoreInfo store) {
             if (store.getWorkspace() != null) {
-                store.setWorkspace(
-                        getById(store.getWorkspace().getId(), WorkspaceInfo.class));
+                store.setWorkspace(getById(store.getWorkspace().getId(), WorkspaceInfo.class));
             }
         }
 
@@ -1734,7 +1733,7 @@ public class ConfigDatabase {
         public void visit(WMTSStoreInfo wmsStore) {
             visitStore(wmsStore);
         }
-        
+
         public void visitResource(ResourceInfo resourceInfo) {
             if (resourceInfo.getNamespace() != null) {
                 resourceInfo.setNamespace(

@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,15 +59,27 @@ import javax.sql.DataSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.wicket.util.string.Strings;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
@@ -1131,6 +1144,9 @@ public class ConfigDatabase {
         // objects)
         resolveTransient(real);
 
+        // if this came from the cache, force update references
+        real.accept(new CatalogReferenceUpdater());
+
         return real;
     }
 
@@ -1468,7 +1484,7 @@ public class ConfigDatabase {
         return !propertyTypes.isEmpty();
     }
 
-    void clearCache(Info info) {
+    public void clearCache(Info info) {
         if (info instanceof ServiceInfo) {
             // need to figure out how to remove only the relevant cache
             // entries for the service info, like with InfoIdenties below,
@@ -1479,7 +1495,7 @@ public class ConfigDatabase {
         cache.invalidate(info.getId());
     }
 
-    void clearCacheIfPresent(String id) {
+    public void clearCacheIfPresent(String id) {
         Info info = cache.getIfPresent(id);
         if (info != null) {
             clearCache(info);
@@ -1676,6 +1692,134 @@ public class ConfigDatabase {
         @Override
         public void handleSettingsAdded(SettingsInfo settings) {
             updateCache(settings);
+        }
+    }
+
+    public class CatalogReferenceUpdater implements CatalogVisitor {
+
+        private CatalogReferenceUpdater() {}
+
+        @Override
+        public void visit(Catalog catalog) {}
+
+        @Override
+        public void visit(WorkspaceInfo workspace) {}
+
+        @Override
+        public void visit(NamespaceInfo workspace) {}
+
+        public void visitStore(StoreInfo store) {
+            if (store.getWorkspace() != null) {
+                store.setWorkspace(getById(store.getWorkspace().getId(), WorkspaceInfo.class));
+            }
+        }
+
+        @Override
+        public void visit(DataStoreInfo dataStore) {
+            visitStore(dataStore);
+        }
+
+        @Override
+        public void visit(CoverageStoreInfo coverageStore) {
+            visitStore(coverageStore);
+        }
+
+        @Override
+        public void visit(WMSStoreInfo wmsStore) {
+            visitStore(wmsStore);
+        }
+
+        @Override
+        public void visit(WMTSStoreInfo wmsStore) {
+            visitStore(wmsStore);
+        }
+
+        public void visitResource(ResourceInfo resourceInfo) {
+            if (resourceInfo.getNamespace() != null) {
+                resourceInfo.setNamespace(
+                        getById(resourceInfo.getNamespace().getId(), NamespaceInfo.class));
+            }
+            resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
+        }
+
+        @Override
+        public void visit(FeatureTypeInfo featureType) {
+            visitResource(featureType);
+        }
+
+        @Override
+        public void visit(CoverageInfo coverage) {
+            visitResource(coverage);
+        }
+
+        @Override
+        public void visit(WMSLayerInfo wmsLayer) {
+            visitResource(wmsLayer);
+        }
+
+        @Override
+        public void visit(WMTSLayerInfo wmtsLayer) {
+            visitResource(wmtsLayer);
+        }
+
+        @Override
+        public void visit(LayerInfo layer) {
+            if (layer.getDefaultStyle() != null) {
+                layer.setDefaultStyle(getById(layer.getDefaultStyle().getId(), StyleInfo.class));
+            }
+            Set<StyleInfo> newStyles = new HashSet<>();
+            for (StyleInfo style : layer.getStyles()) {
+                if (style != null) {
+                    newStyles.add(getById(style.getId(), StyleInfo.class));
+                }
+            }
+            layer.getStyles().clear();
+            layer.getStyles().addAll(newStyles);
+        }
+
+        @Override
+        public void visit(StyleInfo style) {
+            if (style.getWorkspace() != null) {
+                style.setWorkspace(getById(style.getWorkspace().getId(), WorkspaceInfo.class));
+            }
+        }
+
+        @Override
+        public void visit(LayerGroupInfo layerGroup) {
+            if (layerGroup.getWorkspace() != null) {
+                layerGroup.setWorkspace(
+                        getById(layerGroup.getWorkspace().getId(), WorkspaceInfo.class));
+            }
+            for (int i = 0; i < layerGroup.getLayers().size(); i++) {
+                if (layerGroup.getLayers().get(i) != null) {
+                    layerGroup
+                            .getLayers()
+                            .set(
+                                    i,
+                                    getById(
+                                            layerGroup.getLayers().get(i).getId(),
+                                            PublishedInfo.class));
+                }
+            }
+            if (layerGroup.getRootLayer() != null) {
+                layerGroup.setRootLayer(
+                        getById(layerGroup.getRootLayer().getId(), LayerInfo.class));
+            }
+            if (layerGroup.getRootLayerStyle() != null) {
+                layerGroup.setRootLayerStyle(
+                        getById(layerGroup.getRootLayerStyle().getId(), StyleInfo.class));
+            }
+            for (int i = 0; i < layerGroup.getStyles().size(); i++) {
+                if (layerGroup.getStyles().get(i) != null) {
+                    layerGroup
+                            .getStyles()
+                            .set(
+                                    i,
+                                    getById(
+                                            layerGroup.getStyles().get(i).getId(),
+                                            StyleInfo.class));
+                }
+            }
         }
     }
 }

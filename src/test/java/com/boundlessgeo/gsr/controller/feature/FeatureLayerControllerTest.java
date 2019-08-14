@@ -6,7 +6,9 @@ package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
+import org.jsoup.nodes.Document;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
@@ -25,6 +27,7 @@ import net.sf.json.JSONObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import javax.xml.namespace.QName;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -40,6 +43,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
     static final String RENDER_PREFIX = "ren";
     static final QName TRIANGLES = new QName(RENDER, "Triangles", RENDER_PREFIX);
     static final QName DIAMONDS = new QName(RENDER, "Diamonds", RENDER_PREFIX);
+    static final QName POI = new QName(RENDER, "poi", RENDER_PREFIX);
 
     @Override
     public void onSetUp(SystemTestData testData) throws Exception {
@@ -49,6 +53,14 @@ public class FeatureLayerControllerTest extends ControllerTest {
         testData.addVectorLayer(TRIANGLES, Collections.singletonMap(SystemTestData.LayerProperty.STYLE, "triangle"), "Points.properties", SystemTestData.class, getCatalog());
         testData.addStyle("diamond", "diamond.sld", FeatureLayerControllerTest.class, getCatalog());
         testData.addVectorLayer(DIAMONDS, Collections.singletonMap(SystemTestData.LayerProperty.STYLE, "diamond"), "Points.properties", SystemTestData.class, getCatalog());
+        testData.addStyle("poi-picture", "poi-picture.sld", FeatureLayerControllerTest.class, getCatalog());
+        testData.addVectorLayer(POI, Collections.singletonMap(SystemTestData.LayerProperty.STYLE, "poi-picture"), "poi.properties",FeatureLayerControllerTest.class, getCatalog());
+        
+        // copy the symbol images
+        File[] icons = new File("src/test/resources/com/boundlessgeo/gsr/controller/feature/").listFiles(f -> f.getName().endsWith(".png"));
+        for (File icon : icons) {
+            FileUtils.copyFile(icon, new File(getDataDirectory().getStyles().dir(), icon.getName()));
+        }
     }
 
     private String query(String service, String layer, String params) {
@@ -998,6 +1010,12 @@ public class FeatureLayerControllerTest extends ControllerTest {
     }
 
     @Test
+    public void testTriangleHTML() throws Exception {
+        Document document = getAsJSoup(query(TRIANGLES.getPrefix(), "1", "?f=html"));
+        // TODO: actually test contents, so far it's just a smoke test
+    }
+
+    @Test
     public void testDiamond() throws Exception {
         JSONObject json = (JSONObject) getAsJSON(query(DIAMONDS.getPrefix(), "0", ""));
         print(json);
@@ -1007,5 +1025,24 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertEquals("esriSMS", symbol.getString("type"));
         assertEquals("esriSMSDiamond", symbol.getString("style"));
         assertEquals(12, symbol.getInt("size"));
+    }
+
+    @Test
+    public void testSimpleFillHTML() throws Exception {
+        Document document = getAsJSoup(query("cite", "2", "?f=html"));
+        // TODO: actually test contents, so far it's just a smoke test
+    }
+    
+    @Test
+    public void testPictureMarkerHTML() throws Exception {
+        Document document = getAsJSoup(query(POI.getPrefix(), "2", "?f=html"));
+        // TODO: actually test contents, so far it's just a smoke test
+    }
+
+    @Test
+    public void testSimpleLineHTML() throws Exception {
+        // mlines
+        Document document = getAsJSoup(query("cgf", "1", "?f=html"));
+        // TODO: actually test contents, so far it's just a smoke test
     }
 }

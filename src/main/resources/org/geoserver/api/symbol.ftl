@@ -1,14 +1,17 @@
+<#macro color(c)>[${c[0]}, ${c[1]}, ${c[2]}, ${c[3]}]</#macro>
+<#macro outline(o)>Outline:
+   <ul>
+       <li><i>Simple Line Symbol:</i></li>
+       <li>Color: <#call color(o.color)>, Width: ${o.width}</li>
+   </ul>
+</#macro> 
 <#macro symbol(symbol)>
 <li>Symbol:
     <ul>
         <#if symbol.type == "esriSFS">
             <li><i>Simple Fill Symbol:</i></li>
             <li>Style: ${symbol.style}, Color: [${symbol.color[0]}, ${symbol.color[1]}, ${symbol.color[2]}, ${symbol.color[3]}]</li>
-            <li>Outline:
-                <ul>
-                    <li><i>Simple Line Symbol:</i></li>
-                    <li>Style: ${symbol.style}, Color: [${symbol.outline.color[0]}, ${symbol.outline.color[1]}, ${symbol.outline.color[2]}, ${symbol.outline.color[3]}], Width: ${symbol.outline.width}</li>
-                </ul>
+            <li><#call outline(symbol.outline)>
             </li>
         </#if>
         <#if symbol.type == "esriTS">
@@ -28,6 +31,22 @@
                 <li>Font Weight: ${symbol.font.weight}</li>
                 <#if symbol.font.decoration??><li>Font Decoration: ${symbol.font.decoration}</li></#if>
             </#if>
+        </#if>
+        <#if symbol.type == "esriSMS">
+            <li><i>Simple Marker Symbol:</i></li>
+            <li>Style: ${symbol.style}, Color: <#call color(symbol.color)>, Size: ${symbol.size}, Angle: ${symbol.angle}
+            <li><#call outline(symbol.outline)>
+            </li>
+        </#if>
+        <#if symbol.type == "esriPMS">
+            <li><i>Picture Marker Symbol:</i><br>
+                <img src="data:${symbol.contentType};base64,${symbol.imageData}"/>
+            </li>
+        </#if>
+        <#if symbol.type == "esriSLS">
+            <li><i>Simple Line Symbol:</i><br>
+                <li>Style: ${symbol.style.style}, Color: <#call color(symbol.color)>, Width: ${symbol.width}</li>
+            </li>
         </#if>
     </ul>
 </li>

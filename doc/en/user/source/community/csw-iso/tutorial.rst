@@ -1,9 +1,9 @@
-.. _csw_tutorial:
+.. _csw_iso_tutorial:
 
-Catalog Services for the Web (CSW) tutorial
-===========================================
+Catalog Services for the Web (CSW) ISO Metadata tutorial
+========================================================
 
-This tutorial will show how to use the CSW module. It assumes a fresh installation of GeoServer with the :ref:`CSW module installed <csw_installing>`.
+This tutorial will show how to use the CSW module with the ISO Metadata Profile scheme. It assumes a fresh installation of GeoServer with the :ref:`CSW ISO Metadata Profile module installed <csw_installing>`.
 
 Configuration
 -------------

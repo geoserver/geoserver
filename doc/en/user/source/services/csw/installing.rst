@@ -7,7 +7,7 @@ To install the CSW extension:
 
 #. Visit the GeoServer `Download <http://geoserver.org/download>`_ and navigate to the download page for the version od GeoServer your are using. The **csw** download is listed under extensions. The file name is called :file:`geoserver-*-csw-plugin.zip`, where ``*`` matches the version number of GeoServer you are using.
 
-#. Extract this file and place the JARs in ``WEB-INF/lib``.
+#. Extract this this file and place the JARs in ``WEB-INF/lib``.
 
 #. Perform any configuration required by your servlet container, and then restart.
 

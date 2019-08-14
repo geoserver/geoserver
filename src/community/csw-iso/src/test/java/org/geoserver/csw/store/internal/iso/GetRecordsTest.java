@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.csw.records.iso;
+package org.geoserver.csw.store.internal.iso;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
@@ -354,6 +354,19 @@ public class GetRecordsTest extends MDTestSupport {
                         + "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/"
                         + "gmd:onLine/gmd:CI_OnlineResource/gmd:name/gco:CharacterString[.='Lines'])",
                 doc);
+    }
+
+    @Test
+    public void testTitleFilterMetaDataRecordWithDCOutput() throws Exception {
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&namespace=xmlns(gmd=http://www.isotc211.org/2005/gmd)&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=brief&constraint=Title='Forests'&outputSchema=http://www.opengis.net/cat/csw/2.0.2";
+        Document d = getAsDOM(request);
+        // print(d);
+
+        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("1", "count(//csw:SearchResults/*)", d);
+        assertXpathEvaluatesTo("Forests", "//csw:BriefRecord/dc:title", d);
     }
 
     private void enableCWSOnLinesLayer() {

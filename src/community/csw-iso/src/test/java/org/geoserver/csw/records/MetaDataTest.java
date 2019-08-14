@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.List;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
+import org.geoserver.csw.store.internal.iso.MDTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -22,7 +23,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.geometry.MismatchedDimensionException;
 
-public class MetaDataTest {
+public class MetaDataTest extends MDTestSupport {
 
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 

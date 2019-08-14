@@ -5,11 +5,14 @@
  */
 package org.geoserver.csw.response;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.geoserver.csw.CSWException;
+import org.geoserver.csw.records.RecordDescriptor;
+import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.ows.XmlObjectEncodingResponse;
-import org.geoserver.ows.xml.v1_0.OWS;
-import org.geotools.filter.v1_1.OGC;
+import org.geotools.gml3.GML;
 import org.geotools.xlink.XLINK;
 import org.geotools.xsd.Encoder;
 
@@ -20,9 +23,15 @@ import org.geotools.xsd.Encoder;
  */
 public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
 
+    private CatalogStore catalogStore;
+
     public CSWObjectEncodingResponse(
-            Class<?> binding, String elementName, Class<?> xmlConfiguration) {
+            CatalogStore catalogStore,
+            Class<?> binding,
+            String elementName,
+            Class<?> xmlConfiguration) {
         super(binding, elementName, xmlConfiguration);
+        this.catalogStore = catalogStore;
     }
 
     @Override
@@ -38,10 +47,19 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
     protected void configureEncoder(
             Encoder encoder, String elementName, Class<?> xmlConfiguration) {
         encoder.setNamespaceAware(true);
-        encoder.getNamespaces().declarePrefix("ows", OWS.NAMESPACE);
-        encoder.getNamespaces().declarePrefix("ogc", OGC.NAMESPACE);
-        encoder.getNamespaces().declarePrefix("gml", "http://www.opengis.net/gml");
-        encoder.getNamespaces().declarePrefix("gmd", "http://www.isotc211.org/2005/gmd");
+        encoder.getNamespaces().declarePrefix("gml", GML.NAMESPACE);
         encoder.getNamespaces().declarePrefix("xlink", XLINK.NAMESPACE);
+        try {
+            for (RecordDescriptor rd : catalogStore.getRecordDescriptors()) {
+                java.util.Enumeration<?> declared = rd.getNamespaceSupport().getDeclaredPrefixes();
+                while (declared.hasMoreElements()) {
+                    String prefix1 = declared.nextElement().toString();
+                    encoder.getNamespaces()
+                            .declarePrefix(prefix1, rd.getNamespaceSupport().getURI(prefix1));
+                }
+            }
+        } catch (IOException e) {
+            throw new CSWException(e.getMessage(), e);
+        }
     }
 }

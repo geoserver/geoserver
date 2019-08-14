@@ -16,7 +16,6 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geotools.filter.v1_1.OGC;
-import org.geotools.xlink.XLINK;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,9 +28,6 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         Map<String, String> prefixMap = new HashMap<String, String>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
-        prefixMap.put("gml", "http://www.opengis.net/gml");
-        prefixMap.put("gmd", "http://www.isotc211.org/2005/gmd");
-        prefixMap.put("xlink", XLINK.NAMESPACE);
         NamespaceContext nameSpaceContext = new SimpleNamespaceContext(prefixMap);
         xpath.setNamespaceContext(nameSpaceContext);
     }
@@ -67,22 +63,10 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
                 "count(//ows:Operation[@name='GetRecords']/ows:Constraint[@name='SupportedDublinCoreQueryables' and ows:Value = 'csw:AnyText'])",
                 dom);
 
-        // check we have BoundingBox among the queriables
-        assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:Operation[@name='GetRecords']/ows:Constraint[@name='SupportedISOQueryables' and ows:Value = 'BoundingBox'])",
-                dom);
-
         // check we have dc:subject among the domain property names
         assertXpathEvaluatesTo(
                 "1",
                 "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'dc:title'])",
-                dom);
-
-        // check we have Abstract among the domain property names
-        assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'Abstract'])",
                 dom);
     }
 

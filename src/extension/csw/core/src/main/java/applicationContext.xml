@@ -153,9 +153,10 @@
     </bean>
     
 	<bean id="cswCapabilitiesResponse-2.0.2" class="org.geoserver.csw.response.CSWObjectEncodingResponse">
-      <constructor-arg index="0" value="net.opengis.cat.csw20.CapabilitiesType"/>
-      <constructor-arg index="1" value="Capabilities"/>
-      <constructor-arg index="2" value="org.geoserver.csw.xml.CSWConfiguration"/> 
+      <constructor-arg index="0" ref="gsInternalCatalogStore"/>
+      <constructor-arg index="1" value="net.opengis.cat.csw20.CapabilitiesType"/>
+      <constructor-arg index="2" value="Capabilities"/>
+      <constructor-arg index="3" value="org.geoserver.csw.xml.CSWConfiguration"/> 
     </bean>
     
     <bean id="cswDublinCoreResponse-2.0.2" class="org.geoserver.csw.response.CSWRecordsResponse">
@@ -170,10 +171,6 @@
       <constructor-arg index="0" ref="geoServer"/>
     </bean>
     
-    <bean id="cswMetaDataResponse-2.0.2" class="org.geoserver.csw.response.MetaDataResponse">
-      <constructor-arg index="0" ref="geoServer"/>
-    </bean>
-    
     <!-- SchemaComponent delegates -->
     <bean id="cswRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">
         <constructor-arg index="0" ref="geoServer"/>
@@ -182,16 +179,8 @@
         <constructor-arg index="3" value="CSWRecordSchemaComponent.xml"/>
     </bean>   
     
-    <bean id="msRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">
-        <constructor-arg index="0" ref="geoServer"/>
-        <constructor-arg index="1" value="http://www.isotc211.org/2005/gmd"/>
-        <constructor-arg index="2" value="MD_Metadata"/>
-        <constructor-arg index="3" value="MDRecordSchemaComponent.xml"/>
-    </bean>   
-    
     <!-- The record descriptors -->
     <bean id="cswRecordDescriptor" class="org.geoserver.csw.records.CSWRecordDescriptor"/>
-    <bean id="mdRecordDescriptor" class="org.geoserver.csw.records.iso.MetaDataDescriptor"/>
     
     <!-- http url mapping -->
     <bean id="cswURLMapping" 
@@ -218,22 +207,15 @@
     </bean>
     
     <!--  Store -->
-    <bean id="gsInternalCatalogStore" class="org.geoserver.csw.store.internal.GeoServerInternalCatalogStore">
+    <bean id="gsInternalCatalogStore" class="org.geoserver.csw.store.internal.InternalCatalogStore">
       	<constructor-arg ref="geoServer"/>
     </bean>
       
     <!--  factory extension  -->  
 	<bean id="cswFactoryExtension" class="org.geoserver.csw.CSWFactoryExtension"/>
 
-
     <!--  DirectDownload extensions -->
     <bean id="DownloadLinkHandler" class="org.geoserver.csw.DownloadLinkHandler" />
-
-    <bean id="FeatureCustomizerMetadata" class="org.geoserver.csw.store.internal.MetadataCustomizer" >
-        <property name="downloadLinkHandler">
-            <ref bean="DownloadLinkHandler" />
-        </property>
-    </bean>
 
     <bean id="FeatureCustomizerRecord" class="org.geoserver.csw.store.internal.RecordCustomizer">
         <property name="downloadLinkHandler">

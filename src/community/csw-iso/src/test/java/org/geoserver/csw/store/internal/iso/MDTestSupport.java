@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.csw.records.iso;
+package org.geoserver.csw.store.internal.iso;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,8 +15,10 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.internal.CSWInternalTestSupport;
 import org.geotools.csw.CSW;
+import org.geotools.csw.DC;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.xlink.XLINK;
 import org.geotools.xsd.ows.OWS;
@@ -41,6 +43,8 @@ public class MDTestSupport extends CSWInternalTestSupport {
         namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
         namespaces.put("gmd", MetaDataDescriptor.NAMESPACE_GMD);
         namespaces.put("gco", MetaDataDescriptor.NAMESPACE_GCO);
+        namespaces.put("dc", MetaDataDescriptor.NAMESPACE_GCO);
+        namespaces.put("dc", DC.NAMESPACE);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     };

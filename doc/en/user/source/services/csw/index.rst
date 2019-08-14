@@ -13,4 +13,5 @@ For more information on CSW, please refer to `OGC OpenGIS Implementation Specifi
    installing
    features
    directdownload
-   tutorial
+
+See the :ref:`csw_iso_tutorial` for a tutorial on how to use the CSW Metadata Module.

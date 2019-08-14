@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 import org.geoserver.csw.CSWTestSupport;
 import org.junit.Test;
 
-public class GeoServerInternalCatalogStoreTest extends CSWTestSupport {
+public class InternalCatalogStoreTest extends CSWTestSupport {
 
     @Test
     public void testModifyMappingFiles() throws IOException, InterruptedException {
@@ -26,14 +26,18 @@ public class GeoServerInternalCatalogStoreTest extends CSWTestSupport {
             csw.delete();
         }
 
-        // create new store
-        InternalCatalogStore store = new GeoServerInternalCatalogStore(this.getGeoServer());
+        // get the store
+        InternalCatalogStore store =
+                applicationContext.getBean(
+                        InternalCatalogStore
+                                .class); // new InternalCatalogStore(this.getGeoServer());
+        assertNotNull(store);
 
         // test if we have default mapping
         File record = new File(csw, "Record.properties");
         assertTrue(record.exists());
 
-        assertNotNull(store.getMapping("MD_Metadata").getElement("fileIdentifier.CharacterString"));
+        assertNotNull(store.getMapping("Record"));
         assertNotNull(store.getMapping("Record").getElement("identifier.value"));
 
         assertNull(store.getMapping("Record").getElement("format.value"));

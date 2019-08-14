@@ -67,7 +67,7 @@ GetRecords example
 ^^^^^^^^^^^^^^^^^^
 
 A GetRecords response containing a layer with DirectDownload enabled, may result having a piece
-like this (using ISO Metadata output schema)::
+like this (using :ref:`ISO Metadata output schema<csw_iso>`)::
 
     ...
     <gmd:CI_OnlineResource>

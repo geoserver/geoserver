@@ -142,13 +142,19 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                         String maxx = String.valueOf(wgs84re.getMaxX());
                         String maxy = String.valueOf(wgs84re.getMaxY());
 
-                        AttributesImpl attributes = new AttributesImpl();
-                        addAttribute(attributes, "crs", AbstractRecordDescriptor.DEFAULT_CRS_NAME);
-                        start("gmd:EX_GeographicBoundingBox", attributes);
-                        element("gmd:westBoundLongitude", minx);
-                        element("gmd:southBoundLatitude", miny);
-                        element("gmd:eastBoundLongitude", maxx);
-                        element("gmd:northBoundLatitude", maxy);
+                        start("gmd:EX_GeographicBoundingBox");
+                        start("gmd:westBoundLongitude");
+                        element("gco:Decimal", miny);
+                        end("gmd:westBoundLongitude");
+                        start("gmd:eastBoundLongitude");
+                        element("gco:Decimal", maxy);
+                        end("gmd:eastBoundLongitude");
+                        start("gmd:southBoundLatitude");
+                        element("gco:Decimal", minx);
+                        end("gmd:southBoundLatitude");
+                        start("gmd:northBoundLatitude");
+                        element("gco:Decimal", maxx);
+                        end("gmd:northBoundLatitude");
                         end("gmd:EX_GeographicBoundingBox");
                     } catch (Exception e) {
                         throw new ServiceException("Failed to encode the current record: " + f, e);

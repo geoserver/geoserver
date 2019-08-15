@@ -20,6 +20,7 @@ Below is an example of an ISO Metadata Profile Mapping File::
   $contact.CI_ResponsibleParty.individualName.CharacterString=
   identificationInfo.MD_DataIdentification.resourceConstraints[0].MD_LegalConstraints.accessConstraints.MD_RestrictionCode=
   identificationInfo.MD_DataIdentification.resourceConstraints[1].MD_SecurityConstraints.classification.MD_ClassificationCode=
+  identificationInfo.MD_DataIdentification.citation.CI_Citation.date%.CI_Date.date.Date=lapply("metadata.citation-date", if_then_else(isNull("."), "Expression/NIL", dateFormat('YYYY-MM-dd', ".")))
 
 The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use ``\@`` (for an attribute that is not an identifier) or ``@@`` (for an attribute that is also the identifier) - see the feature catatalog mapping file for an example.
 
@@ -28,6 +29,8 @@ The ``%`` symbol denotes where a multi-valued mapping should be split in to mult
 Indexes with square brackets can be used to avoid merging tags that shouldn't be merged, as demonstrated above for ``resourceConstraints``.
 
 To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contact.CI_ResponsibleParty.individualName.CharacterString`` must be preceded by a ``$`` sign to make sure that they are always included even when using property selection.
+
+The ``lapply`` function can be used to apply expressions to items of lists, which can be handy with multidimensional fields.
 
 For more information on the ISO Metadata standard, please see the `OGC Implementation Specification 07-045 <http://www.opengeospatial.org/standards/specifications/catalog>`_. 
 

@@ -11,16 +11,17 @@ See :ref:`csw_mapping_file` for basic information on the CSW mapping file. The I
 Below is an example of an ISO Metadata Profile Mapping File::
 
   @fileIdentifier.CharacterString=id
-  identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title
-  identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle.CharacterString=list(description,alias,strConcat('##',title)) 
-  identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=keywords 
-  identificationInfo.AbstractMD_Identification.abstract.CharacterString=abstract
+  identificationInfo.MD_DataIdentification.citation.CI_Citation.title.CharacterString=title
+  identificationInfo.MD_DataIdentification.citation.CI_Citation.alternateTitle.CharacterString=list(description,alias,strConcat('##',title)) 
+  identificationInfo.MD_DataIdentification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=keywords 
+  identificationInfo.MD_DataIdentification.abstract.CharacterString=abstract
   $dateStamp.Date= if_then_else ( isNull("metadata.date") , 'Unknown', "metadata.date")
   hierarchyLevel.MD_ScopeCode.@codeListValue='http://purl.org/dc/dcmitype/Dataset'
   $contact.CI_ResponsibleParty.individualName.CharacterString=
   identificationInfo.MD_DataIdentification.resourceConstraints[0].MD_LegalConstraints.accessConstraints.MD_RestrictionCode=
   identificationInfo.MD_DataIdentification.resourceConstraints[1].MD_SecurityConstraints.classification.MD_ClassificationCode=
   identificationInfo.MD_DataIdentification.citation.CI_Citation.date%.CI_Date.date.Date=lapply("metadata.citation-date", if_then_else(isNull("."), "Expression/NIL", dateFormat('YYYY-MM-dd', ".")))
+  identificationInfo.MD_DataIdentification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=list(keywords, if_then_else(equalTo(typeOf("."), 'FeatureTypeInfo'), 'vector', 'raster'))
 
 The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use ``\@`` (for an attribute that is not an identifier) or ``@@`` (for an attribute that is also the identifier) - see the feature catatalog mapping file for an example.
 
@@ -31,6 +32,8 @@ Indexes with square brackets can be used to avoid merging tags that shouldn't be
 To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contact.CI_ResponsibleParty.individualName.CharacterString`` must be preceded by a ``$`` sign to make sure that they are always included even when using property selection.
 
 The ``lapply`` function can be used to apply expressions to items of lists, which can be handy with multidimensional fields.
+
+The ``typeOf`` function (exclusive to CSW-ISO module) returns the type of the catalog item that is being processed (``LayerGroupInfo``, ``FeatureTypeInfo``, ``CoverageInfo``,...), which can be handy if you for example need to handle vector layers differently to raster layers.
 
 For more information on the ISO Metadata standard, please see the `OGC Implementation Specification 07-045 <http://www.opengeospatial.org/standards/specifications/catalog>`_. 
 
@@ -57,4 +60,6 @@ Within the ISO Metadata Profile, there is also support for ``Feature Catalogues`
 
 Only records that have a non-null identifier in the catalog mapping file will have a feature catalogue record. There is no support in the standard Geoserver GUI for user configuration of this information.
 The upcoming metadata community module makes this possible.
+
+
 

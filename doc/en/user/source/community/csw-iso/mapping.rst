@@ -15,6 +15,7 @@ Below is an example of an ISO Metadata Profile Mapping File::
   $dateStamp.Date= if_then_else ( isNull("metadata.date") , 'Unknown', "metadata.date")
   hierarchyLevel.MD_ScopeCode.@codeListValue='http://purl.org/dc/dcmitype/Dataset'
   $contact.CI_ResponsibleParty.individualName.CharacterString=
+  identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=list(keywords, if_then_else(equalTo(typeOf("."), 'FeatureTypeInfo'), 'vector', 'raster'))
 
 The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation.
 
@@ -22,5 +23,6 @@ To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contac
 
 For more information on the ISO Metadata standard, please see the `OGC Implementation Specification 07-045 <http://www.opengeospatial.org/standards/specifications/catalog>`_. 
 
+The ``typeOf`` function (exclusive to CSW-ISO module) returns the type of the catalog item that is being processed (``LayerGroupInfo``, ``FeatureTypeInfo``, ``CoverageInfo``,...), which can be handy if you for example need to handle vector layers differently to raster layers.
 
 

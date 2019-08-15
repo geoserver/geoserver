@@ -17,9 +17,12 @@ Below is an example of an ISO Metadata Profile Mapping File::
   $contact.CI_ResponsibleParty.individualName.CharacterString=
   identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=list(keywords, if_then_else(equalTo(typeOf("."), 'FeatureTypeInfo'), 'vector', 'raster'))
 
+
 The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation.
 
 To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contact.CI_ResponsibleParty.individualName.CharacterString`` must be preceded by a ``$`` sign to make sure that they are always included even when using property selection.
+
+The ``lapply`` function can be used to apply expressions to items of lists, which can be handy with multidimensional fields.
 
 For more information on the ISO Metadata standard, please see the `OGC Implementation Specification 07-045 <http://www.opengeospatial.org/standards/specifications/catalog>`_. 
 

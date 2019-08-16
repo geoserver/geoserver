@@ -6,33 +6,37 @@ package org.geoserver.catalog.impl;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.geotools.jdbc.VirtualTable;
 import org.junit.Test;
 
 public class ModificationProxyClonerTest {
 
     @Test
-    public void testCloneNull() {
+    public void testCloneNull() throws Exception {
         Object copy = ModificationProxyCloner.clone(null);
         assertNull(copy);
     }
 
     @Test
-    public void testCloneString() {
+    public void testCloneString() throws Exception {
         String source = new String("abc");
         String copy = ModificationProxyCloner.clone(source);
         assertSame(source, copy);
     }
 
     @Test
-    public void testCloneDouble() {
+    public void testCloneDouble() throws Exception {
         Double source = Double.valueOf(12.56);
         Double copy = ModificationProxyCloner.clone(source);
         assertSame(source, copy);
     }
 
     @Test
-    public void testCloneCloneable() {
+    public void testCloneCloneable() throws Exception {
         TestCloneable source = new TestCloneable("test");
         TestCloneable copy = ModificationProxyCloner.clone(source);
         assertNotSame(source, copy);
@@ -40,7 +44,7 @@ public class ModificationProxyClonerTest {
     }
 
     @Test
-    public void testByCopyConstructor() {
+    public void testByCopyConstructor() throws Exception {
         VirtualTable source = new VirtualTable("test", "select * from tables");
         VirtualTable copy = ModificationProxyCloner.clone(source);
         assertNotSame(source, copy);
@@ -48,11 +52,32 @@ public class ModificationProxyClonerTest {
     }
 
     @Test
-    public void testNotCloneable() {
+    public void testNotCloneable() throws Exception {
         TestNotCloneable source = new TestNotCloneable("test");
         TestNotCloneable copy = ModificationProxyCloner.clone(source);
         assertNotSame(source, copy);
         assertEquals(source, copy);
+    }
+
+    @Test
+    public void testDeepCopyMap() throws Exception {
+        Map<String, Object> source = new HashMap<>();
+        Map<String, String> subMap = new HashMap<>();
+        subMap.put("a", "b");
+        subMap.put("c", "d");
+        source.put("submap", subMap);
+        List<String> list = new ArrayList<>();
+        list.add("x");
+        list.add("y");
+        list.add("z");
+        source.put("list", list);
+        Map<String, Object> copy = ModificationProxyCloner.clone(source);
+        assertNotSame(source, copy);
+        assertEquals(source, copy);
+        assertNotSame(source.get("submap"), copy.get("submap"));
+        assertEquals(source.get("submap"), copy.get("submap"));
+        assertNotSame(source.get("list"), copy.get("list"));
+        assertEquals(source.get("list"), copy.get("list"));
     }
 
     static class TestNotCloneable {

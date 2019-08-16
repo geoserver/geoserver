@@ -76,6 +76,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
@@ -91,8 +92,6 @@ import org.opengis.filter.sort.SortBy;
  *     contract TODO: move resolve() to dao
  */
 public class CatalogImpl implements Catalog {
-
-    private static final int MAX_RENAME_ATTEMPTS = 100;
 
     /** logger */
     private static final Logger LOGGER = Logging.getLogger(CatalogImpl.class);
@@ -1588,7 +1587,7 @@ public class CatalogImpl implements Catalog {
         Resource style = new GeoServerDataDirectory(resourceLoader).style(s);
         StyleHandler format = Styles.handler(s.getFormat());
 
-        Resource target = uniqueResource(style, newName, format.getFileExtension());
+        Resource target = Resources.uniqueResource(style, newName, format.getFileExtension());
         style.renameTo(target);
         s.setFilename(target.name());
 
@@ -1598,44 +1597,10 @@ public class CatalogImpl implements Catalog {
             if (sld.getType() == Type.RESOURCE) {
                 LOGGER.fine("Renaming style resource " + s.getName() + " to " + newName);
 
-                Resource generated = uniqueResource(sld, newName, "sld");
+                Resource generated = Resources.uniqueResource(sld, newName, "sld");
                 sld.renameTo(generated);
             }
         }
-    }
-
-    /**
-     * Determine unique name of the form <code>newName.extension</code>. newName will have a number
-     * appended as required to produce a unique resource name.
-     *
-     * @param resource Resource being renamed
-     * @param newName proposed name to use as a template
-     * @param extension extension
-     * @return New UNDEFINED resource suitable for use with rename
-     * @throws IOException If unique resource cannot be produced
-     */
-    private Resource uniqueResource(Resource resource, String newName, String extension)
-            throws IOException {
-        Resource target = resource.parent().get(newName + "." + extension);
-
-        int i = 0;
-        while (target.getType() != Type.UNDEFINED && ++i <= MAX_RENAME_ATTEMPTS) {
-            target = resource.parent().get(newName + i + "." + extension);
-        }
-        if (i > MAX_RENAME_ATTEMPTS) {
-            throw new IOException(
-                    "All target files between "
-                            + newName
-                            + "1."
-                            + extension
-                            + " and "
-                            + newName
-                            + MAX_RENAME_ATTEMPTS
-                            + "."
-                            + extension
-                            + " are in use already, giving up");
-        }
-        return target;
     }
 
     public StyleInfo detach(StyleInfo style) {

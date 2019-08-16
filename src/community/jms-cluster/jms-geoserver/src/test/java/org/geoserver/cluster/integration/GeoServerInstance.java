@@ -93,7 +93,7 @@ public final class GeoServerInstance {
         GeoServerConfigPersister geoserverPersister =
                 new GeoServerConfigPersister(loader, xstreamPersister);
         catalog.addListener(geoserverPersister);
-        catalog.addListener(new GeoServerResourcePersister(loader));
+        catalog.addListener(new GeoServerResourcePersister(catalog));
         // create default styles
         createDefaultStyle(catalog, stylesDirectory, "point", "default_point.sld");
         createDefaultStyle(catalog, stylesDirectory, "line", "default_line.sld");

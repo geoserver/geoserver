@@ -12,19 +12,17 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
-import org.geoserver.catalog.SLDHandler;
-import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -37,16 +35,16 @@ import org.geotools.util.logging.Logging;
  */
 public class GeoServerResourcePersister implements CatalogListener {
 
-    private static final int MAX_RENAME_ATTEMPTS = 100;
-
     /** logging instance */
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
 
+    Catalog catalog;
     GeoServerResourceLoader rl;
     GeoServerDataDirectory dd;
 
-    public GeoServerResourcePersister(GeoServerResourceLoader rl) {
-        this.rl = rl;
+    public GeoServerResourcePersister(Catalog catalog) {
+        this.catalog = catalog;
+        this.rl = catalog.getResourceLoader();
         this.dd = new GeoServerDataDirectory(rl);
     }
 
@@ -63,26 +61,14 @@ public class GeoServerResourcePersister implements CatalogListener {
         Object source = event.getSource();
 
         try {
-            // here we handle name changes
-            int i = event.getPropertyNames().indexOf("name");
-            if (i > -1) {
-                String oldName = (String) event.getOldValues().get(i);
-                String newName = (String) event.getNewValues().get(i);
-
-                if (!newName.equals(oldName)) {
-                    /*GEOS-9229 Rename the resource only if the old name and the new one are not identical.*/
-                    if (source instanceof StyleInfo) {
-                        renameStyle((StyleInfo) source, newName);
-                    }
-                }
-            }
-
             // handle the case of a style changing workspace
             if (source instanceof StyleInfo) {
-                i = event.getPropertyNames().indexOf("workspace");
+                int i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
                     WorkspaceInfo oldWorkspace = (WorkspaceInfo) event.getOldValues().get(i);
-                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
+                    WorkspaceInfo newWorkspace =
+                            ResolvingProxy.resolve(
+                                    catalog, (WorkspaceInfo) event.getNewValues().get(i));
                     Resource oldDir = dd.getStyles(oldWorkspace);
                     Resource newDir = dd.getStyles(newWorkspace);
                     URI oldDirURI = new URI(oldDir.path());
@@ -111,27 +97,6 @@ public class GeoServerResourcePersister implements CatalogListener {
         }
     }
 
-    private void renameStyle(StyleInfo s, String newName) throws IOException {
-        // rename style definition file
-        Resource style = dd.style(s);
-        StyleHandler format = Styles.handler(s.getFormat());
-
-        Resource target = uniqueResource(style, newName, format.getFileExtension());
-        renameRes(style, target.name());
-        s.setFilename(target.name());
-
-        // rename generated sld if appropriate
-        if (!SLDHandler.FORMAT.equals(format.getFormat())) {
-            Resource sld = style.parent().get(FilenameUtils.getBaseName(style.name()) + ".sld");
-            if (sld.getType() == Type.RESOURCE) {
-                LOGGER.fine("Renaming style resource " + s.getName() + " to " + newName);
-
-                Resource generated = uniqueResource(sld, newName, "sld");
-                renameRes(sld, generated.name());
-            }
-        }
-    }
-
     public void handleRemoveEvent(CatalogRemoveEvent event) {
         Object source = event.getSource();
         try {
@@ -141,40 +106,6 @@ public class GeoServerResourcePersister implements CatalogListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Determine unique name of the form <code>newName.extension</code>. newName will have a number
-     * appended as required to produce a unique resource name.
-     *
-     * @param resource Resource being renamed
-     * @param newName proposed name to use as a template
-     * @param extension extension
-     * @return New UNDEFINED resource suitable for use with rename
-     * @throws IOException If unique resource cannot be produced
-     */
-    private Resource uniqueResource(Resource resource, String newName, String extension)
-            throws IOException {
-        Resource target = resource.parent().get(newName + "." + extension);
-
-        int i = 0;
-        while (target.getType() != Type.UNDEFINED && ++i <= MAX_RENAME_ATTEMPTS) {
-            target = resource.parent().get(newName + i + "." + extension);
-        }
-        if (i > MAX_RENAME_ATTEMPTS) {
-            throw new IOException(
-                    "All target files between "
-                            + newName
-                            + "1."
-                            + extension
-                            + " and "
-                            + newName
-                            + MAX_RENAME_ATTEMPTS
-                            + "."
-                            + extension
-                            + " are in use already, giving up");
-        }
-        return target;
     }
 
     private void removeStyle(StyleInfo s) throws IOException {
@@ -196,10 +127,6 @@ public class GeoServerResourcePersister implements CatalogListener {
     private List<Resource> baseResources(StyleInfo s) throws IOException {
         List<Resource> list = Arrays.asList(dd.config(s), dd.style(s));
         return list;
-    }
-
-    private void renameRes(Resource r, String newName) {
-        rl.move(r.path(), r.parent().get(newName).path());
     }
 
     private void moveResToDir(Resource r, Resource newDir) {

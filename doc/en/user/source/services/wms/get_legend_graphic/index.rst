@@ -86,6 +86,7 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **bgColor (hex)** background color for the generated legend, values are expressed in ``0xRRGGBB`` format
     - **dpi (integer)** sets the DPI for the current request, in the same way as it is supported by GetMap. Setting a DPI larger than 91 (the default) makes all fonts, symbols and line widths grow without changing the current scale, making it possible to get a high resolution version of the legend suitable for inclusion in printouts 
     - **forceLabels** "on" means labels will always be drawn, even if only one rule is available. "off" means labels will never be drawn, even if multiple rules are available. Off by default.
+    - **forceTitles** "off" means layer titles will not be drawn for layer groups. On by default.    
     - **labelMargin** margin (in pixels) to use between icons and labels.
     - **layout** sets icons layout to be **vertical** (default) or **horizontal**.
     - **columnheight** enables **multicolumn** layout when layout is **vertical**. Each column height is limited by the columnheight value (in pixels).

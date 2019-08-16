@@ -109,7 +109,7 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         tester.assertModelValue(
                 "table:listContainer:items:1:itemProperties:7:component:seedLink",
-                "http://localhost:80/context/gwc/rest/seed/cgf:Polygons");
+                "http://localhost/context/gwc/rest/seed/cgf:Polygons");
     }
 
     @Test
@@ -147,9 +147,7 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             IModel<?> model = (IModel<?>) getReplaceModelMethod.invoke(attr.get(0));
             assertTrue(
                     "Unmangled names fail",
-                    model.getObject()
-                            .toString()
-                            .contains("http://localhost:80/context/gwc/demo/cgf"));
+                    model.getObject().toString().contains("http://localhost/context/gwc/demo/cgf"));
             return;
         } catch (Exception e) {
             throw new RuntimeException(e);

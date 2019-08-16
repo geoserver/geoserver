@@ -216,12 +216,12 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     ExternalLink gmlLink = (ExternalLink) c.get("itemProperties:3:component:gml");
 
                     assertEquals(
-                            "http://localhost:80/context/cite/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=cite%3ALakes%20%2B%20a%20plus&amp;bbox=-180.0%2C-90.0%2C180.0%2C90.0&amp;width=768&amp;height=384&amp;srs=EPSG%3A4326&amp;format=application/openlayers",
+                            "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=cite%3ALakes%20%2B%20a%20plus&amp;bbox=-180.0%2C-90.0%2C180.0%2C90.0&amp;width=768&amp;height=384&amp;srs=EPSG%3A4326&amp;format=application/openlayers",
                             olLink.getDefaultModelObjectAsString());
                     assertThat(
                             gmlLink.getDefaultModelObjectAsString(),
                             containsString(
-                                    "http://localhost:80/context/cite/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite%3ALakes%20%2B%20a%20plus"));
+                                    "http://localhost/context/cite/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite%3ALakes%20%2B%20a%20plus"));
                 }
             }
             assertTrue("Could not find layer with expected name", exists);
@@ -236,11 +236,11 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             assertThat(
                     onchange,
                     containsString(
-                            "http://localhost:80/context/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3ALakes%20%2B%20a%20plus&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&format="));
+                            "http://localhost/context/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3ALakes%20%2B%20a%20plus&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&format="));
             assertThat(
                     onchange,
                     containsString(
-                            "http://localhost:80/context/cite/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cite%3ALakes%20%2B%20a%20plus"));
+                            "http://localhost/context/cite/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cite%3ALakes%20%2B%20a%20plus"));
         } finally {
             ft.setName("Lines");
             catalog.save(ft);

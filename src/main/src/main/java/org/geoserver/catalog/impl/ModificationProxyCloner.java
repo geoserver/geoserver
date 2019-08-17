@@ -63,8 +63,14 @@ class ModificationProxyCloner {
      * copying the catalog, and re-attaching to it, in there)
      *
      * @param source
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
      */
-    static <T> T clone(T source) {
+    static <T> T clone(T source)
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException,
+                    InvocationTargetException {
         // null?
         if (source == null) {
             return null;
@@ -98,6 +104,14 @@ class ModificationProxyCloner {
         // to avoid reflective access warnings
         if (source instanceof TimeZone) {
             return (T) ((TimeZone) source).clone();
+        }
+
+        if (source instanceof Map) {
+            return (T) cloneMap((Map<?, ?>) source, true);
+        }
+
+        if (source instanceof Collection) {
+            return (T) cloneCollection((Collection<?>) source, true);
         }
 
         // is it cloneable?
@@ -204,9 +218,12 @@ class ModificationProxyCloner {
      *     contain the exact same objects as the source
      * @throws InstantiationException
      * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
      */
     public static <T> Collection<T> cloneCollection(Collection<T> source, boolean deepCopy)
-            throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException,
+                    InvocationTargetException {
         if (source == null) {
             // nothing to copy
             return null;

@@ -9,11 +9,14 @@ import static org.geoserver.mapml.MapMLConstants.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.DimensionInfo;
@@ -26,7 +29,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
-import org.geoserver.mapml.tcrs.LatLngBounds;
+import org.geoserver.mapml.tcrs.Bounds;
+import org.geoserver.mapml.tcrs.Point;
 import org.geoserver.mapml.tcrs.TiledCRS;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
@@ -73,11 +77,40 @@ public class MapMLController {
     public static final HashMap<String, TiledCRS> previewTcrsMap = new HashMap<>();
     private static final GWC gwc = GWC.get();
 
+    private static final Bounds DISPLAY_BOUNDS_PHONE_PORTRAIT =
+            new Bounds(new Point(0, 0), new Point(300, 812));
+    private static final Bounds DISPLAY_BOUNDS_PHONE_LANDSCAPE =
+            new Bounds(new Point(0, 0), new Point(812, 300));
+    private static final Bounds DISPLAY_BOUNDS_TABLET_PORTRAIT =
+            new Bounds(new Point(0, 0), new Point(760, 1024));
+    private static final Bounds DISPLAY_BOUNDS_TABLET_LANDSCAPE =
+            new Bounds(new Point(0, 0), new Point(1024, 760));
+    private static final Bounds DISPLAY_BOUNDS_DESKTOP_PORTRAIT =
+            new Bounds(new Point(0, 0), new Point(1024, 768));
+    private static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE =
+            new Bounds(new Point(0, 0), new Point(768, 1024));
+    private static final HashMap<String, List<Bounds>> DISPLAYS = new HashMap<>();
+
     static {
         previewTcrsMap.put("OSMTILE", new TiledCRS("OSMTILE"));
         previewTcrsMap.put("CBMTILE", new TiledCRS("CBMTILE"));
         previewTcrsMap.put("APSTILE", new TiledCRS("APSTILE"));
         previewTcrsMap.put("WGS84", new TiledCRS("WGS84"));
+
+        ArrayList<Bounds> phones = new ArrayList<>();
+        phones.add(DISPLAY_BOUNDS_PHONE_PORTRAIT);
+        phones.add(DISPLAY_BOUNDS_PHONE_LANDSCAPE);
+        DISPLAYS.put("PHONE", phones);
+
+        ArrayList<Bounds> tablets = new ArrayList<>();
+        tablets.add(DISPLAY_BOUNDS_TABLET_PORTRAIT);
+        tablets.add(DISPLAY_BOUNDS_TABLET_LANDSCAPE);
+        DISPLAYS.put("TABLET", tablets);
+
+        ArrayList<Bounds> desktops = new ArrayList<>();
+        desktops.add(DISPLAY_BOUNDS_DESKTOP_PORTRAIT);
+        desktops.add(DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
+        DISPLAYS.put("DESKTOP", desktops);
     }
 
     @RequestMapping(
@@ -96,15 +129,27 @@ public class MapMLController {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
         ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
         ResourceInfo resourceInfo = null;
-        LayerGroupInfo layerGroupInfo;
+        LayerGroupInfo layerGroupInfo = null;
+        MetadataMap layerMeta;
         boolean isLayerGroup = (layerInfo == null);
+        boolean isTransparent = transparent.orElse(true);
         String layerName = "";
+        final String workspace;
+        String styleName = style.orElse("");
+        String imageFormat = format.orElse("image/png");
+        String baseUrl = ResponseUtils.baseURL(request);
+        String baseUrlPattern = baseUrl;
         if (isLayerGroup) {
             layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
             if (layerGroupInfo == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return "Invalid layer or layer group name: " + layer;
             }
+            workspace =
+                    (layerGroupInfo.getWorkspace() != null
+                            ? layerGroupInfo.getWorkspace().getName()
+                            : "");
+            layerMeta = layerGroupInfo.getMetadata();
             for (LayerInfo li : layerGroupInfo.layers()) {
                 bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
             }
@@ -123,6 +168,12 @@ public class MapMLController {
                     resourceInfo.getTitle().isEmpty()
                             ? layerInfo.getName().isEmpty() ? layer : layerInfo.getName()
                             : resourceInfo.getTitle();
+            layerMeta = resourceInfo.getMetadata();
+            workspace =
+                    (resourceInfo.getStore().getWorkspace() != null
+                            ? resourceInfo.getStore().getWorkspace().getName()
+                            : "");
+            isTransparent = transparent.orElse(!layerInfo.isOpaque());
         }
         ProjType projType;
         try {
@@ -131,26 +182,135 @@ public class MapMLController {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "Invalid TCRS name: " + proj;
         }
+        TiledCRS TCRS = previewTcrsMap.get(projType.value());
 
         Double longitude = bbox.centre().getX();
         Double latitude = bbox.centre().getY();
 
-        // convert bbox to projected bounds
+        String dimension = layerMeta.get("mapml.dimension", String.class);
+        boolean timeEnabled = false;
+        boolean elevationEnabled = false;
+        if ("Time".equalsIgnoreCase(dimension)) {
+            if (resourceInfo instanceof FeatureTypeInfo) {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
+                DimensionInfo timeInfo =
+                        typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                if (timeInfo.isEnabled()) {
+                    timeEnabled = true;
+                }
+            }
+        } else if ("Elevation".equalsIgnoreCase(dimension)) {
+            if (resourceInfo instanceof FeatureTypeInfo) {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
+                DimensionInfo elevInfo =
+                        typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+                if (elevInfo.isEnabled()) {
+                    elevationEnabled = true;
+                }
+            }
+        }
 
-        // allowing for the data to be displayed at 1024x768 pixels, figure out
-        // the zoom level at which the projected bounds fits into 1024x768
-        // create a function that accepts a display size e.g. 1024,768 (w,h)
-        // and a lat-long bounds, and a tcrs name and returns a zoom
-        // recommended for display of the bounds on that screen size
+        final boolean te = timeEnabled;
+        final boolean ee = elevationEnabled;
+        final ReferencedEnvelope bbbox;
+        int zoom = 0;
+        final boolean t = isTransparent;
+        Set<String> sources = new HashSet<>();
+        try {
+            ReferencedEnvelope lb =
+                    isLayerGroup
+                            ? layerGroupInfo.getBounds()
+                            : layerInfo.getResource().boundingBox();
+            bbbox = lb.transform(previewTcrsMap.get(projType.value()).getCRS(), true);
+            final Bounds pb =
+                    new Bounds(
+                            new Point(bbbox.getMinX(), bbbox.getMinY()),
+                            new Point(bbbox.getMaxX(), bbbox.getMaxY()));
+            // allowing for the data to be displayed at 1024x768 pixels, figure out
+            // the zoom level at which the projected bounds fits into 1024x768
+            // in both dimensions
+            zoom = TCRS.fitProjectedBoundsToDisplay(pb, DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
 
-        int zoom =
-                previewTcrsMap
-                        .get(projType.value())
-                        .fitLatLngBoundsToDisplay(new LatLngBounds(bbox), 1024, 768);
+            for (String deviceType : DISPLAYS.keySet()) {
+                String source =
+                        "<source media=\"(min-width: "
+                                + new Double(DISPLAYS.get(deviceType).get(0).getWidth()).intValue()
+                                + "px)\" sizes=\"100vw\" srcset=\""
+                                + DISPLAYS.get(deviceType)
+                                        .stream()
+                                        .map(
+                                                b -> {
+                                                    int z = TCRS.fitProjectedBoundsToDisplay(pb, b);
+                                                    Bounds db =
+                                                            TCRS.getProjectedBoundsForDisplayBounds(
+                                                                    z, pb.getCentre(), b);
+                                                    return new StringBuilder()
+                                                            .append(baseUrlPattern)
+                                                            .append(
+                                                                    workspace.isEmpty()
+                                                                            ? ""
+                                                                            : workspace)
+                                                            .append("/")
+                                                            .append(
+                                                                    "wms?version=1.3.0&service=WMS&request=GetMap&crs=")
+                                                            .append(TCRS.getCode())
+                                                            .append("&layers=")
+                                                            .append(layer)
+                                                            .append("&styles=")
+                                                            .append(styleName)
+                                                            .append(te ? "&time={time}" : "")
+                                                            .append(
+                                                                    ee
+                                                                            ? "&elevation={elevation}"
+                                                                            : "")
+                                                            .append("&bbox=")
+                                                            .append(db.getMin().x)
+                                                            .append(",")
+                                                            .append(db.getMin().y)
+                                                            .append(",")
+                                                            .append(db.getMax().x)
+                                                            .append(",")
+                                                            .append(db.getMax().y)
+                                                            .append("&format=")
+                                                            .append(imageFormat)
+                                                            .append("&transparent=")
+                                                            .append(t)
+                                                            .append("&width=")
+                                                            .append(
+                                                                    new Double(b.getWidth())
+                                                                            .intValue())
+                                                            .append("&height=")
+                                                            .append(
+                                                                    new Double(b.getHeight())
+                                                                            .intValue())
+                                                            .append(" ")
+                                                            .append(
+                                                                    new Double(b.getWidth())
+                                                                            .intValue())
+                                                            .append("w")
+                                                            .toString();
+                                                })
+                                        .collect(Collectors.joining(","))
+                                + "\">";
+                sources.add(source);
+            }
+        } catch (Exception e) {
+            // what to do?
+            // log.info("Exception occured retrieving bbox for "+ layer
+            // );
+        }
 
         String viewerPath = request.getContextPath() + request.getServletPath() + "/viewer";
         String title = "GeoServer MapML preview " + layerName;
-
+        String removeImageScript =
+                "function removeAllChildren(element){\n"
+                        + "  while(element.firstChild){\n"
+                        + "    element.removeChild(element.firstChild);\n"
+                        + "  }\n"
+                        + "};\n"
+                        + "document.addEventListener('DOMContentLoaded',function() {  \n"
+                        + "  removeAllChildren(document.getElementById('data-web-map-responsive')); \n"
+                        + "});";
         // figure out JavaScript to make the map responsively fill the
         // browser window. This would be a media query I think... and the
         // map could receive a zoom parameter based on the media query
@@ -163,6 +323,9 @@ public class MapMLController {
                 .append(title)
                 .append("</title>\n")
                 .append("<meta charset='utf-8'>\n")
+                .append("<script>")
+                .append(removeImageScript)
+                .append("</script>")
                 .append("<script src=\"")
                 .append(viewerPath)
                 .append("/bower_components/webcomponentsjs/webcomponents-lite.min.js\"></script>\n")
@@ -171,11 +334,11 @@ public class MapMLController {
                 .append("/bower_components/web-map/web-map.html\">\n")
                 .append("<style>\n")
                 .append("* {margin: 0;padding: 0;}\n")
-                .append("map { display: flexbox; height: 100vh;}\n")
+                .append("map { height: 100vh;}\n") // important map must have a height
                 .append("</style>")
                 .append("</head>\n")
                 .append("<body>\n")
-                .append("<map is=\"web-map\" projection=\"")
+                .append("<map name=\"mappy\" is=\"web-map\" projection=\"")
                 .append(projType.value())
                 .append("\" ")
                 .append("zoom=\"")
@@ -196,7 +359,22 @@ public class MapMLController {
                 .append(layer)
                 .append("/")
                 .append(proj)
-                .append("/\" checked></layer->\n")
+                .append("/")
+                .append(!styleName.isEmpty() ? "?style=" + styleName : "")
+                .append("\" checked></layer->\n")
+                .append("</map>\n")
+                .append("<div id=data-web-map-responsive>")
+                .append("<picture>\n")
+                .append(sources.stream().collect(Collectors.joining()))
+                .append("<img usemap=\"#mappy\" ")
+                .append("src=\"\"")
+                .append(" style=\"object-fit: contain; ")
+                .append("width: 100vw; height: 100vh\" ")
+                .append(" alt=\"Map of ")
+                .append(layerName)
+                .append("\">\n")
+                .append("</picture>\n")
+                .append("</div>")
                 .append("</body>\n")
                 .append("</html>");
         return sb.toString();

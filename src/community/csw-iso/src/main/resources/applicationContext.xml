@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2018 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+   
+    <bean id="cswMetaDataResponse-2.0.2" class="org.geoserver.csw.response.MetaDataResponse">
+      <constructor-arg index="0" ref="geoServer"/>
+    </bean>
+    
+    <!-- SchemaComponent delegate -->    
+    <bean id="msRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">
+        <constructor-arg index="0" ref="geoServer"/>
+        <constructor-arg index="1" value="http://www.isotc211.org/2005/gmd"/>
+        <constructor-arg index="2" value="MD_Metadata"/>
+        <constructor-arg index="3" value="MDRecordSchemaComponent.xml"/>
+    </bean>   
+    
+    <!-- The record descriptor -->
+    <bean id="mdRecordDescriptor" class="org.geoserver.csw.records.iso.MetaDataDescriptor"/>
+    
+    <bean id="FeatureCustomizerMetadata" class="org.geoserver.csw.store.internal.MetadataCustomizer" >
+        <property name="downloadLinkHandler">
+            <ref bean="DownloadLinkHandler" />
+        </property>
+    </bean>
+
+ </beans>

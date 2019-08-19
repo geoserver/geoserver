@@ -1,0 +1,9 @@
+{
+  "pointOfContact": "Jane Doe",
+  "accessConstraints": "restricted",
+  "description": null,
+  "dates": {
+    "revision": "2019-05-17T11:46:12Z",
+    "validTill": null
+  }
+}

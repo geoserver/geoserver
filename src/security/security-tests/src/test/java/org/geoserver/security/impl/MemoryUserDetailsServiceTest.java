@@ -305,7 +305,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         GeoServerConfigPersister cp =
                 new GeoServerConfigPersister(
                         getResourceLoader(), new XStreamPersisterFactory().createXMLPersister());
-        GeoServerResourcePersister rp = new GeoServerResourcePersister(getResourceLoader());
+        GeoServerResourcePersister rp = new GeoServerResourcePersister(cat);
         cat.addListener(cp);
         cat.addListener(rp);
 

@@ -304,7 +304,7 @@ public class SystemTestData extends CiteTestData {
         catalog.addListener(
                 new GeoServerConfigPersister(
                         catalog.getResourceLoader(), createXStreamPersister()));
-        catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
+        catalog.addListener(new GeoServerResourcePersister(catalog));
 
         // workspaces
         addWorkspace(DEFAULT_PREFIX, DEFAULT_URI, catalog);
@@ -325,7 +325,7 @@ public class SystemTestData extends CiteTestData {
         geoServer.addListener(
                 new GeoServerConfigPersister(
                         new GeoServerResourceLoader(data), createXStreamPersister()));
-        catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
+        catalog.addListener(new GeoServerResourcePersister(catalog));
 
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal(global);

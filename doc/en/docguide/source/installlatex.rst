@@ -15,9 +15,11 @@ Windows
 Ubuntu
 ------ 
 
-1. Install the following TeX Live packages::
+#. Install the following TeX Live packages::
 
-    sudo apt-get install texlive-base texlive-bibtex-extra texlive-binaries texlive-common texlive-doc-* texlive-extra-utils texlive-font-utils texlive-fonts-extra texlive-fonts-extra-doc texlive-fonts-recommended texlive-fonts-recommended-doc texlive-formats-extra texlive-full texlive-games texlive-generic-extra texlive-generic-recommended texlive-humanities texlive-humanities-doc texlive-lang-* texlive-latex-base texlive-latex-base-doc texlive-latex-extra texlive-latex-extra-doc texlive-latex-recommended texlive-latex-recommended-doc texlive-latex3 texlive-luatex texlive-math-extra texlive-metapost texlive-metapost-doc texlive-music texlive-omega texlive-pictures texlive-pictures-doc texlive-plain-extra texlive-pstricks texlive-pstricks-doc texlive-publishers texlive-publishers-doc texlive-science texlive-science-doc texlive-xetex
+      sudo apt-get install -y texlive-base texlive-latex-recommended \
+        texlive-science texlive-latex-extra texlive-extra-utils
+
 
 2. As an alternative to (1), you can install the standard `TeX Live <http://tug.org/texlive/acquire-netinstall.html>`_ distribution, then install `texliveonfly <http://www.ctan.org/tex-archive/support/texliveonfly>`_ to install any missing packages as they are needed.
 

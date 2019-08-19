@@ -877,7 +877,22 @@
           <artifactId>gs-csw-core</artifactId>
           <version>${project.version}</version>
         </dependency>
-	<dependency>
+		<dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>gs-web-csw</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>csw-iso</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>gs-csw-iso</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+		<dependency>
           <groupId>org.geoserver.csw</groupId>
           <artifactId>gs-web-csw</artifactId>
           <version>${project.version}</version>
@@ -1591,16 +1606,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>status-monitoring</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-status-monitoring</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>nsg-wfs-profile</id>
       <dependencies>
         <dependency>
@@ -1706,7 +1711,12 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-ogcapi</artifactId>
+          <artifactId>gs-ogcapi-features</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-styles</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

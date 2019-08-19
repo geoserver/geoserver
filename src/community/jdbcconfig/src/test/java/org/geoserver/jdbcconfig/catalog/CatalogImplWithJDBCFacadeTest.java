@@ -54,7 +54,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     public void setUp() throws Exception {
         super.GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 10;
 
-        testSupport.setUp();
+        testSupport.setUpWithoutAppContext();
 
         ConfigDatabase configDb = testSupport.getDatabase();
         facade = new JDBCCatalogFacade(configDb);
@@ -260,6 +260,20 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         assertEquals(LockType.READ, configurationLock.getCurrentLock());
         addNamespace();
         assertEquals(LockType.WRITE, configurationLock.getCurrentLock());
+    }
+
+    @Test
+    public void testUpdateLinkedStyle() {
+        addLayer();
+        LayerInfo layer = catalog.getLayerByName("ftName");
+        testSupport.getDatabase().clearCache(s);
+
+        StyleInfo style = catalog.getStyle(s.getId());
+        style.setName("newStyleName");
+        catalog.save(style);
+
+        layer = catalog.getLayerByName("ftName");
+        assertEquals(style.getName(), layer.getDefaultStyle().getName());
     }
 
     /**

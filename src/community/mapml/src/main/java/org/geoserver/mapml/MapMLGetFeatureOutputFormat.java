@@ -122,8 +122,8 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         input.setName("z");
         input.setType(InputType.ZOOM);
         input.setValue("0");
-        input.setMin(0);
-        input.setMax(0);
+        input.setMin("0");
+        input.setMax("0");
         extentList.add(input);
 
         List<Feature> features = body.getFeatures();

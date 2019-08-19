@@ -1,0 +1,99 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer System Status
+  description: Request provides details about OWS and REST requests that GeoServer has handled 
+
+paths:
+
+  /about/system-status:
+    get:
+      operationId: getMonitorRequests
+      summary: Get a list of requests
+      description: |
+                   Returns a list of system-level information.
+                   Major operating systems (Linux, Windows and MacOX) are supported out of the box.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Metrics"
+	      examples:
+            application/json: |
+              {
+                "metrics": {
+                    "metric": [
+                        {
+                      "available": true,
+                      "category": "FILE_SYSTEM",
+                      "description": "Partition [/dev/nvme0n1p2] total space",
+                      "identifier": "/dev/nvme0n1p2",
+                      "name": "PARTITION_TOTAL",
+                      "priority": 507,
+                      "unit": "bytes",
+                      "value": 99614720
+                  },
+                        (...)
+
+            application/xml: |
+              <metrics>
+                <metric>
+                  <value>99614720</value>
+                  <available>true</available>
+                  <description>Partition [/dev/nvme0n1p2] total space</description>
+                  <name>PARTITION_TOTAL</name>
+                  <unit>bytes</unit>
+                  <category>FILE_SYSTEM</category>
+                  <identifier>/dev/nvme0n1p2</identifier>
+                  <priority>507</priority>
+                </metric>
+                (...)
+
+definitions:
+  Metrics:
+    title: metrics
+    description: Metrics for system status properties
+    type: object
+    properties:
+      metric:
+        title: metric
+        description: Metrics for system status properties
+        type: object
+        properties:
+          metrics:
+            title: metricsArray
+            description: Metrics for system status properties
+            type: array
+            items:
+              type: object
+              title: metricValue
+              properties:
+                value:
+                  type: string
+                  description: System information value
+                category:
+                  type: string
+                  description: Category of this system information
+                name:
+                  type: string
+                  description: Name of the metric
+                available:
+                  type: boolean
+                  description: TRUE if the system information value is available
+                description:
+                  type: string
+                  description: Description of this system information
+                unit:
+                  type: string
+                  description: Unit of the system information, can be empty
+                priority:
+                  type: integer
+                  description: This value can be used to render the metrics in a predefined order
+                identifier:
+                  type: string
+                  description: Identifies the resource associated with the metric, e.g. file partition name

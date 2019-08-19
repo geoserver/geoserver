@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,173 +73,11 @@ import org.xml.sax.helpers.NamespaceSupport;
  *
  * @author Alessio Fabiani - GeoSolutions
  */
-@SuppressWarnings("unchecked")
 public class GetCapabilities {
     private static final String CSW_VERSION = "2.0.2";
-    static final Logger LOGGER = Logging.getLogger(GetCapabilities.class);
-    static Csw20Factory cswf = Csw20Factory.eINSTANCE;
-    static Ows10Factory owsf = Ows10Factory.eINSTANCE;
-
-    private static final String version = CSW_VERSION;
-
-    public static Map<String, List<DomainType>> operationParameters =
-            new HashMap<String, List<DomainType>>();
-    public static Map<String, List<DomainType>> operationConstraints =
-            new HashMap<String, List<DomainType>>();
-
-    static {
-        /** OperationMetadata */
-        operationParameters.put("OperationsMetadata", new LinkedList<DomainType>());
-        operationConstraints.put("OperationsMetadata", new LinkedList<DomainType>());
-
-        // - Parameters
-        DomainType opMetadataParam1 = owsf.createDomainType();
-        DomainType opMetadataParam2 = owsf.createDomainType();
-        opMetadataParam1.setName("service");
-        opMetadataParam1.getValue().add("http://www.opengis.net/cat/csw/2.0.2");
-        opMetadataParam2.setName("version");
-        opMetadataParam2.getValue().add(version);
-        operationParameters.get("OperationsMetadata").add(opMetadataParam1);
-        operationParameters.get("OperationsMetadata").add(opMetadataParam2);
-
-        // - Constraints
-        DomainType opMetadataConstraint1 = owsf.createDomainType();
-        opMetadataConstraint1.setName("PostEncoding");
-        opMetadataConstraint1.getValue().add("XML");
-        operationConstraints.get("OperationsMetadata").add(opMetadataConstraint1);
-
-        /** GetCapabilities */
-        operationParameters.put("GetCapabilities", new LinkedList<DomainType>());
-        operationConstraints.put("GetCapabilities", new LinkedList<DomainType>());
-
-        // - Parameters
-        DomainType getCapabilitiesParam = owsf.createDomainType();
-        getCapabilitiesParam.setName("sections");
-        getCapabilitiesParam.getValue().add("ServiceIdentification");
-        getCapabilitiesParam.getValue().add("ServiceProvider");
-        getCapabilitiesParam.getValue().add("OperationsMetadata");
-        getCapabilitiesParam.getValue().add("Filter_Capabilities");
-        operationParameters.get("GetCapabilities").add(getCapabilitiesParam);
-
-        // - Constraints
-        DomainType getCapabilitiesConstraint = owsf.createDomainType();
-        getCapabilitiesConstraint.setName("PostEncoding");
-        getCapabilitiesConstraint.getValue().add("XML");
-        operationConstraints.get("GetCapabilities").add(getCapabilitiesConstraint);
-
-        /** DescribeRecord */
-        operationParameters.put("DescribeRecord", new LinkedList<DomainType>());
-        operationConstraints.put("DescribeRecord", new LinkedList<DomainType>());
-
-        // - Parameters
-        DomainType describeRecordParam1 = owsf.createDomainType();
-        DomainType describeRecordParam2 = owsf.createDomainType();
-        DomainType describeRecordParam3 = owsf.createDomainType();
-        describeRecordParam1.setName("typeName");
-        describeRecordParam1.getValue().add("csw:Record");
-        describeRecordParam1.getValue().add("gmd:MD_Metadata");
-        describeRecordParam2.setName("outputFormat");
-        describeRecordParam2.getValue().add("application/xml");
-        describeRecordParam3.setName("schemaLanguage");
-        describeRecordParam3.getValue().add("http://www.w3.org/TR/xmlschema-1/");
-        operationParameters.get("DescribeRecord").add(describeRecordParam1);
-        operationParameters.get("DescribeRecord").add(describeRecordParam2);
-        operationParameters.get("DescribeRecord").add(describeRecordParam3);
-
-        // - Constraints
-        DomainType describeRecordConstraint = owsf.createDomainType();
-        describeRecordConstraint.setName("PostEncoding");
-        describeRecordConstraint.getValue().add("XML");
-        operationConstraints.get("DescribeRecord").add(describeRecordConstraint);
-
-        /** GetRecords */
-        operationParameters.put("GetRecords", new LinkedList<DomainType>());
-        operationConstraints.put("GetRecords", new LinkedList<DomainType>());
-
-        // - Parameters
-        DomainType getRecordsParam1 = owsf.createDomainType();
-        DomainType getRecordsParam2 = owsf.createDomainType();
-        DomainType getRecordsParam3 = owsf.createDomainType();
-        DomainType getRecordsParam4 = owsf.createDomainType();
-        DomainType getRecordsParam5 = owsf.createDomainType();
-        getRecordsParam1.setName("resultType");
-        getRecordsParam1.getValue().add("hits");
-        getRecordsParam1.getValue().add("results");
-        getRecordsParam1.getValue().add("validate");
-        getRecordsParam2.setName("outputFormat");
-        getRecordsParam2.getValue().add("application/xml");
-        getRecordsParam3.setName("outputSchema");
-        getRecordsParam3.getValue().add("http://www.opengis.net/cat/csw/2.0.2");
-        getRecordsParam3.getValue().add("http://www.isotc211.org/2005/gmd");
-        getRecordsParam4.setName("typeNames");
-        getRecordsParam4.getValue().add("csw:Record");
-        getRecordsParam4.getValue().add("gmd:MD_Metadata");
-        getRecordsParam5.setName("CONSTRAINTLANGUAGE");
-        getRecordsParam5.getValue().add("FILTER");
-        getRecordsParam5.getValue().add("CQL_TEXT");
-        operationParameters.get("GetRecords").add(getRecordsParam1);
-        operationParameters.get("GetRecords").add(getRecordsParam2);
-        operationParameters.get("GetRecords").add(getRecordsParam3);
-        operationParameters.get("GetRecords").add(getRecordsParam4);
-        operationParameters.get("GetRecords").add(getRecordsParam5);
-
-        // - Constraints
-        DomainType getRecordConstraint1 = owsf.createDomainType();
-        getRecordConstraint1.setName("PostEncoding");
-        getRecordConstraint1.getValue().add("XML");
-        operationConstraints.get("GetRecords").add(getRecordConstraint1);
-
-        /** GetRecordById */
-        operationParameters.put("GetRecordById", new LinkedList<DomainType>());
-        operationConstraints.put("GetRecordById", new LinkedList<DomainType>());
-
-        // - Parameters
-        DomainType getRecordByIdParam1 = owsf.createDomainType();
-        DomainType getRecordByIdParam2 = owsf.createDomainType();
-        DomainType getRecordByIdParam3 = owsf.createDomainType();
-        DomainType getRecordByIdParam4 = owsf.createDomainType();
-        getRecordByIdParam1.setName("resultType");
-        getRecordByIdParam1.getValue().add("hits");
-        getRecordByIdParam1.getValue().add("results");
-        getRecordByIdParam1.getValue().add("validate");
-        getRecordByIdParam2.setName("outputFormat");
-        getRecordByIdParam2.getValue().add("application/xml");
-        getRecordByIdParam3.setName("outputSchema");
-        getRecordByIdParam3.getValue().add("http://www.opengis.net/cat/csw/2.0.2");
-        getRecordByIdParam3.getValue().add("http://www.isotc211.org/2005/gmd");
-        getRecordByIdParam4.setName("ElementSetName");
-        getRecordByIdParam4.getValue().add("brief");
-        getRecordByIdParam4.getValue().add("summary");
-        getRecordByIdParam4.getValue().add("full");
-        operationParameters.get("GetRecordById").add(getRecordByIdParam1);
-        operationParameters.get("GetRecordById").add(getRecordByIdParam2);
-        operationParameters.get("GetRecordById").add(getRecordByIdParam3);
-        operationParameters.get("GetRecordById").add(getRecordByIdParam4);
-
-        // - Constraints
-        DomainType getRecordByIdConstraint1 = owsf.createDomainType();
-        getRecordByIdConstraint1.setName("PostEncoding");
-        getRecordByIdConstraint1.getValue().add("XML");
-        operationConstraints.get("GetRecordById").add(getRecordByIdConstraint1);
-
-        /** GetDomain */
-        operationParameters.put("GetDomain", new LinkedList<DomainType>());
-        operationConstraints.put("GetDomain", new LinkedList<DomainType>());
-
-        // - Parameters
-        DomainType getDomainParam1 = owsf.createDomainType();
-        DomainType getDomainParam2 = owsf.createDomainType();
-        getDomainParam1.setName("parameterName");
-        getDomainParam1.getValue().add("xsd:anyURI");
-        getDomainParam2.setName("propertyName");
-        getDomainParam2.getValue().add("xsd:anyURI");
-        operationParameters.get("GetDomain").add(getDomainParam1);
-        operationParameters.get("GetDomain").add(getDomainParam2);
-
-        /** Transaction */
-        operationParameters.put("Transaction", new LinkedList<DomainType>());
-        operationConstraints.put("Transaction", new LinkedList<DomainType>());
-    }
+    private static final Logger LOGGER = Logging.getLogger(GetCapabilities.class);
+    private static Csw20Factory cswf = Csw20Factory.eINSTANCE;
+    private static Ows10Factory owsf = Ows10Factory.eINSTANCE;
 
     private static final boolean logicalOperators = true;
 
@@ -381,13 +218,15 @@ public class GetCapabilities {
             }
 
             // - Parameters
-            for (DomainType param : operationParameters.get("OperationsMetadata")) {
+            for (DomainType param :
+                    store.getCapabilities().getOperationParameters().get("OperationsMetadata")) {
                 // clone the object, as the caps decorators might want to modify it
                 operationsMetadata.getParameter().add(EcoreUtil.copy(param));
             }
 
             // - Constraints
-            for (DomainType constraint : operationConstraints.get("OperationsMetadata")) {
+            for (DomainType constraint :
+                    store.getCapabilities().getOperationConstraints().get("OperationsMetadata")) {
                 // clone the object, as the caps decorators might want to modify it
                 operationsMetadata.getConstraint().add(EcoreUtil.copy(constraint));
             }
@@ -481,13 +320,15 @@ public class GetCapabilities {
         getCapabilitiesHTTP.getPost().add(getCapabilitiesPost);
 
         // - Parameters
-        for (DomainType param : operationParameters.get("GetCapabilities")) {
+        for (DomainType param :
+                store.getCapabilities().getOperationParameters().get("GetCapabilities")) {
             // clone the object, as the caps decorators might want to modify it
             getCapabilities.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
-        for (DomainType constraint : operationConstraints.get("GetCapabilities")) {
+        for (DomainType constraint :
+                store.getCapabilities().getOperationConstraints().get("GetCapabilities")) {
             // clone the object, as the caps decorators might want to modify it
             getCapabilities.getConstraint().add(EcoreUtil.copy(constraint));
         }
@@ -531,13 +372,15 @@ public class GetCapabilities {
         describeRecordHTTP.getPost().add(describeRecordPost);
 
         // - Parameters
-        for (DomainType param : operationParameters.get("DescribeRecord")) {
+        for (DomainType param :
+                store.getCapabilities().getOperationParameters().get("DescribeRecord")) {
             // clone the object, as the caps decorators might want to modify it
             describeRecord.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
-        for (DomainType constraint : operationConstraints.get("DescribeRecord")) {
+        for (DomainType constraint :
+                store.getCapabilities().getOperationConstraints().get("DescribeRecord")) {
             // clone the object, as the caps decorators might want to modify it
             describeRecord.getConstraint().add(EcoreUtil.copy(constraint));
         }
@@ -581,13 +424,15 @@ public class GetCapabilities {
         getRecordsHTTP.getPost().add(getRecordsPost);
 
         // - Parameters
-        for (DomainType param : operationParameters.get("GetRecords")) {
+        for (DomainType param :
+                store.getCapabilities().getOperationParameters().get("GetRecords")) {
             // clone the object, as the caps decorators might want to modify it
             getRecords.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
-        for (DomainType constraint : operationConstraints.get("GetRecords")) {
+        for (DomainType constraint :
+                store.getCapabilities().getOperationConstraints().get("GetRecords")) {
             // clone the object, as the caps decorators might want to modify it
             getRecords.getConstraint().add(EcoreUtil.copy(constraint));
         }
@@ -662,13 +507,15 @@ public class GetCapabilities {
         getRecordByIdHTTP.getPost().add(getRecordByIdPost);
 
         // - Parameters
-        for (DomainType param : operationParameters.get("GetRecordById")) {
+        for (DomainType param :
+                store.getCapabilities().getOperationParameters().get("GetRecordById")) {
             // clone the object, as the caps decorators might want to modify it
             getRecordById.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
-        for (DomainType constraint : operationConstraints.get("GetRecordById")) {
+        for (DomainType constraint :
+                store.getCapabilities().getOperationConstraints().get("GetRecordById")) {
             // clone the object, as the caps decorators might want to modify it
             getRecordById.getConstraint().add(EcoreUtil.copy(constraint));
         }
@@ -712,7 +559,7 @@ public class GetCapabilities {
         getDomainHTTP.getPost().add(getDomainPost);
 
         // - Fixed Parameters
-        for (DomainType param : operationParameters.get("GetDomain")) {
+        for (DomainType param : store.getCapabilities().getOperationParameters().get("GetDomain")) {
             // clone the object, as the caps decorators might want to modify it
             getDomain.getParameter().add(EcoreUtil.copy(param));
         }
@@ -752,7 +599,8 @@ public class GetCapabilities {
         }
 
         // - Constraints
-        for (DomainType constraint : operationConstraints.get("GetDomain")) {
+        for (DomainType constraint :
+                store.getCapabilities().getOperationConstraints().get("GetDomain")) {
             getDomain.getConstraint().add(EcoreUtil.copy(constraint));
         }
     }
@@ -795,13 +643,15 @@ public class GetCapabilities {
         transactionHTTP.getPost().add(transactionPost);
 
         // - Parameters
-        for (DomainType param : operationParameters.get("Transaction")) {
+        for (DomainType param :
+                store.getCapabilities().getOperationParameters().get("Transaction")) {
             // clone the object, as the caps decorators might want to modify it
             transaction.getParameter().add(EcoreUtil.copy(param));
         }
 
         // - Constraints
-        for (DomainType constraint : operationConstraints.get("Transaction")) {
+        for (DomainType constraint :
+                store.getCapabilities().getOperationConstraints().get("Transaction")) {
             // clone the object, as the caps decorators might want to modify it
             transaction.getConstraint().add(EcoreUtil.copy(constraint));
         }

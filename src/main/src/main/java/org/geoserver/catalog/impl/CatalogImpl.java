@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -44,9 +46,12 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.SLDNamedLayerValidator;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -64,10 +69,14 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
@@ -1556,8 +1565,42 @@ public class CatalogImpl implements Catalog {
     }
 
     public void save(StyleInfo style) {
+        ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(style);
         validate(style, false);
+
+        // here we handle name changes
+        int i = h.getPropertyNames().indexOf("name");
+        if (i > -1 && !h.getNewValues().get(i).equals(h.getOldValues().get(i))) {
+            String newName = (String) h.getNewValues().get(i);
+            try {
+                renameStyle(style, newName);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to rename style file along with name.", e);
+            }
+        }
+
         facade.save(style);
+    }
+
+    private void renameStyle(StyleInfo s, String newName) throws IOException {
+        // rename style definition file
+        Resource style = new GeoServerDataDirectory(resourceLoader).style(s);
+        StyleHandler format = Styles.handler(s.getFormat());
+
+        Resource target = Resources.uniqueResource(style, newName, format.getFileExtension());
+        style.renameTo(target);
+        s.setFilename(target.name());
+
+        // rename generated sld if appropriate
+        if (!SLDHandler.FORMAT.equals(format.getFormat())) {
+            Resource sld = style.parent().get(FilenameUtils.getBaseName(style.name()) + ".sld");
+            if (sld.getType() == Type.RESOURCE) {
+                LOGGER.fine("Renaming style resource " + s.getName() + " to " + newName);
+
+                Resource generated = Resources.uniqueResource(sld, newName, "sld");
+                sld.renameTo(generated);
+            }
+        }
     }
 
     public StyleInfo detach(StyleInfo style) {

@@ -470,16 +470,6 @@ public class StyleController extends AbstractCatalogController {
 
         StyleInfo original = catalog.getStyleByName(workspaceName, styleName);
 
-        // ensure no workspace change
-        if (info.getWorkspace() != null) {
-            if (!info.getWorkspace().equals(original.getWorkspace())) {
-                throw new RestException(
-                        "Can't change the workspace of a style, instead "
-                                + "DELETE from existing workspace and POST to new workspace",
-                        HttpStatus.FORBIDDEN);
-            }
-        }
-
         new CatalogBuilder(catalog).updateStyle(original, info);
         catalog.save(original);
     }

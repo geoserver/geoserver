@@ -82,10 +82,10 @@ public class Input {
     protected Boolean required;
 
     @XmlAttribute(name = "min")
-    protected double min;
+    protected String min;
 
     @XmlAttribute(name = "max")
-    protected double max;
+    protected String max;
 
     @XmlAttribute(name = "step")
     @XmlSchemaType(name = "anySimpleType")
@@ -276,7 +276,7 @@ public class Input {
      *
      * @return the value of the min property
      */
-    public double getMin() {
+    public String getMin() {
         return min;
     }
 
@@ -285,7 +285,7 @@ public class Input {
      *
      * @param value
      */
-    public void setMin(double value) {
+    public void setMin(String value) {
         this.min = value;
     }
 
@@ -294,7 +294,7 @@ public class Input {
      *
      * @return
      */
-    public double getMax() {
+    public String getMax() {
         return max;
     }
 
@@ -303,7 +303,7 @@ public class Input {
      *
      * @param value allowed object is {@link double }
      */
-    public void setMax(double value) {
+    public void setMax(String value) {
         this.max = value;
     }
 

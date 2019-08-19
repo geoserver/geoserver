@@ -219,19 +219,6 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         checkOws10Exception(d);
     }
 
-    @Test
-    public void testTitleFilterMetaDataRecord() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&namespace=xmlns(gmd=http://www.isotc211.org/2005/gmd)&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=brief&constraint=Title='Forests'&outputSchema=http://www.opengis.net/cat/csw/2.0.2";
-        Document d = getAsDOM(request);
-        // print(d);
-
-        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
-        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsReturned", d);
-        assertXpathEvaluatesTo("1", "count(//csw:SearchResults/*)", d);
-        assertXpathEvaluatesTo("Forests", "//csw:BriefRecord/dc:title", d);
-    }
-
     /** From CITE compliance, throw an error the output format is not supported */
     @Test
     public void testUnsupportedOutputFormat() throws Exception {

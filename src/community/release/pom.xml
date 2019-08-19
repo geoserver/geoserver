@@ -285,11 +285,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-status-monitoring</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-nsg-wmts-profile</artifactId>
      <version>${project.version}</version>
    </dependency>
@@ -349,17 +344,22 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-web-ogr</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency>  
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-ogcapi</artifactId>
+     <artifactId>gs-ogcapi-features</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-geostyler</artifactId>
+     <artifactId>gs-ogcapi-styles</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>gs-csw-iso</artifactId>
+     <version>${project.version}</version>
+   </dependency>  
  </dependencies>
  <build>
   <plugins>

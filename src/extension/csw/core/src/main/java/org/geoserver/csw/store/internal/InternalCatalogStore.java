@@ -8,23 +8,33 @@ package org.geoserver.csw.store.internal;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.geoserver.catalog.Catalog;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geoserver.config.GeoServer;
 import org.geoserver.csw.GetRecords;
-import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
-import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.AbstractCatalogStore;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.IOUtils;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.SortByImpl;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.FatalBeanException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Internal Catalog Store Creates a Catalog Store from a GeoServer Catalog instance and a set of
@@ -33,18 +43,20 @@ import org.opengis.filter.sort.SortBy;
  *
  * @author Niels Charlier
  */
-public class InternalCatalogStore extends AbstractCatalogStore {
+public class InternalCatalogStore extends AbstractCatalogStore implements ApplicationContextAware {
 
-    protected Catalog catalog;
+    protected static final Logger LOGGER = Logging.getLogger(InternalCatalogStore.class);
+
+    protected GeoServer geoServer;
 
     protected Map<String, CatalogStoreMapping> mappings =
             new HashMap<String, CatalogStoreMapping>();
 
-    public InternalCatalogStore(Catalog catalog) {
-        support(CSWRecordDescriptor.getInstance());
-        support(MetaDataDescriptor.getInstance());
+    protected Map<String, PropertyFileWatcher> watchers =
+            new HashMap<String, PropertyFileWatcher>();
 
-        this.catalog = catalog;
+    public InternalCatalogStore(GeoServer geoServer) {
+        this.geoServer = geoServer;
     }
 
     /**
@@ -64,6 +76,18 @@ public class InternalCatalogStore extends AbstractCatalogStore {
      * @return the mapping
      */
     public CatalogStoreMapping getMapping(String typeName) {
+        PropertyFileWatcher watcher = watchers.get(typeName);
+
+        if (watcher != null && watcher.isModified()) {
+            try {
+                addMapping(
+                        typeName,
+                        CatalogStoreMapping.parse(
+                                new HashMap<String, String>((Map) watcher.getProperties())));
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e.toString());
+            }
+        }
         return mappings.get(typeName);
     }
 
@@ -131,7 +155,7 @@ public class InternalCatalogStore extends AbstractCatalogStore {
                 q.getMaxFeatures(),
                 unmappedSortBy,
                 unmapped,
-                catalog,
+                geoServer.getCatalog(),
                 outputMapping,
                 rdOutput,
                 interpolationProperties);
@@ -140,5 +164,39 @@ public class InternalCatalogStore extends AbstractCatalogStore {
     @Override
     public PropertyName translateProperty(RecordDescriptor rd, Name name) {
         return rd.translateProperty(name);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext appContext) throws BeansException {
+        // load record descriptors from application context
+        for (RecordDescriptor rd : appContext.getBeansOfType(RecordDescriptor.class).values()) {
+            support(rd);
+        }
+        // load mappings
+        GeoServerResourceLoader loader = geoServer.getCatalog().getResourceLoader();
+        Resource dir = loader.get("csw");
+        try {
+            for (Name name : descriptorByType.keySet()) {
+                String typeName = name.getLocalPart();
+                Resource f = dir.get(typeName + ".properties");
+
+                PropertyFileWatcher watcher = new PropertyFileWatcher(f);
+                watchers.put(typeName, watcher);
+
+                if (!Resources.exists(f)) {
+                    IOUtils.copy(
+                            getClass().getResourceAsStream(typeName + ".default.properties"),
+                            f.out());
+                }
+
+                addMapping(
+                        typeName,
+                        CatalogStoreMapping.parse(
+                                new HashMap<String, String>((Map) watcher.getProperties())));
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new FatalBeanException(e.getMessage(), e);
+        }
     }
 }

@@ -78,7 +78,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         loadCatalogInternal(catalog, xp);
         sw.stop();
 
-        catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
+        catalog.addListener(new GeoServerResourcePersister(catalog));
         // System.err.println("Loaded catalog in " + sw.toString());
     }
 

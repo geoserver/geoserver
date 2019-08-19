@@ -44,6 +44,7 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
     protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         XStreamPersister p = xpf.createXMLPersister();
+        p.setUnwrapNulls(false);
         if (inputMessage instanceof RestHttpInputWrapper) {
             ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
         }

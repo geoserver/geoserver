@@ -221,7 +221,7 @@ MapLayer = Polymer({
             }
         }
         var proj = Polymer.dom(this).parentNode.projection ? Polymer.dom(this).parentNode.projection : "OSMTILE";
-        L.setOptions(this._layer, {zIndex: position, projection: proj, opacity: window.getComputedStyle(this).opacity});
+        L.setOptions(this._layer, {zIndex: position, mapprojection: proj, opacity: window.getComputedStyle(this).opacity});
         // make sure the Leaflet layer has a reference to the map
         this._layer._map = Polymer.dom(this).parentNode._map;
         // notify the layer that it is attached to a map (layer._map)

@@ -2104,6 +2104,7 @@ public class ResourcePool {
      */
     public void clear(StyleInfo info) {
         styleCache.remove(info);
+        sldCache.remove(info);
     }
 
     /**

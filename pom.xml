@@ -205,6 +205,17 @@
         </executions>
       </plugin>
       <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2.1</version>
         <executions>
@@ -215,10 +226,11 @@
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>assembly.xml</descriptor>
+                <descriptor>assembly-plugin.xml</descriptor>
+                <descriptor>assembly-datadir.xml</descriptor>
               </descriptors>
               <attach>false</attach>
-              <appendAssemblyId>false</appendAssemblyId>
+              <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>
         </executions>

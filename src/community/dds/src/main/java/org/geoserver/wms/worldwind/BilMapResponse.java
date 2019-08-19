@@ -29,6 +29,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.TiledImage;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -87,6 +88,25 @@ public final class BilMapResponse extends RenderedImageMapResponse {
      */
     public BilMapResponse(final WMS wms) {
         super(OUTPUT_FORMATS, wms);
+    }
+
+    /**
+     * jing 20190728 支持返回application/bil16 和 application/bil32
+     * @param value
+     * @param operation
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        GetMapRequest request = (GetMapRequest) operation.getParameters()[0];
+        if (request.getFormat().contains("16")) {
+            return OUTPUT_FORMATS[3];
+        } else if (request.getFormat().contains("32")) {
+            return OUTPUT_FORMATS[4];
+        } else {
+            return MIME_TYPE;
+        }
     }
 
     @Override

@@ -3,16 +3,19 @@
 Axis ordering
 =============
 
-WFS 1.0.0 servers return geographic coordinates in longitude/latitude (x/y) order, the most common way to distribute data. For example, many shapefiles adopt this order by default. 
+The definition of a spatial reference system includes an indication of the axis order used to interpret the coordinates. There are a number of projected spatial reference systems defined in `north/east` order in the formal ``EPSG`` definition, but are interpreted as being in ``east/north`` order by earlier versions of the ``WFS`` protocol.
 
-However, the traditional axis order for geographic and cartographic systems in latitude/longitude (y/x) order, and the later WFS specifications respect this.
+* ``WFS 1.0.0``: Provides geographic coordinates in ``east/north`` and may not be trusted to respect the EPSG definition axis order.
 
-The default axis ordering support is:
+* ``WFS 1.1.0``: Respects the axis order defined by the EPSG definition.
 
-* Longitude/latitude—WFS 1.0.0
-* Latitude/longitude—WFS 1.1.0 and WFS 2.0.0
+* ``WFS 2.0.0``: Respects the axis order defined by the EPSG definition.
 
-This may cause difficulties when switching between servers with different WFS versions, or when upgrading your WFS. To minimize confusion and increase interoperability, GeoServer has adopted the following guidelines when specifying projections in the following formats: 
+Forcing content into ``east/north`` order was intended to be easier for developers where computer displays are defined with an `x/y` order. However this decision has introduced no end of confusion, and was corrected in later versions of ``WFS``.
+
+.. note:: Some spatial reference systems, for example polar stereographic, do not have an ``east`` or ``west`` as they have a pole in the middle of the axis.
+
+These differences may cause difficulties when clients switch between different ``WFS`` versions. To minimize confusion and increase interoperability, GeoServer has adopted the following guidelines when specifying spatial reference systems to avoid ambiguity.
 
 .. list-table::
    :widths: 50 25 25
@@ -21,17 +24,17 @@ This may cause difficulties when switching between servers with different WFS ve
    * - Representation
      - Axis order
      - Interpretation
-   * - ``EPSG:xxxx``
-     - longitude/latitude (x/y)
+   * - ``EPSG:4326``
+     - longitude/latitude
      - assumption
    * - ``http://www.opengis.net/gml/srs/epsg.xml#xxxx``
-     - longitude/latitude (x/y)
+     - longitude/latitude
      - strict
    * - ``urn:x-ogc:def:crs:EPSG:xxxx``
-     - latitude/longitude (y/x) 
+     - latitude/longitude
      - strict
    * - ``urn:ogc:def:crs:EPSG::4326``
-     - latitude/longitude (y/x)
+     - latitude/longitude
      - strict
 
 SRSList Axis Order
@@ -54,6 +57,12 @@ To compare the spatial reference system definition for ``EPSG:4326``:
       WGS84 Internal definition
 
 The same approach can be used to check the definition of any spatial reference system supported by GeoServer.
+
+.. note:: The formal ``EPSG`` definition provides the axis-order used to interpret coordinate values. GeoServer uses an internal representation that does not always respect the ``EPSG`` provided axis order.
+
+   In the example above ``EPSG:4326`` is defined with a `north/east` axis order, while the internal representation has ``east/north`` order.
+
+   The startup option ``-Dorg.geotools.referencing.forceXY=true`` is used to configure GeoServer to prefer an internal representation in `east/north` axis order. We recommend the default value of ``true`` to match a wide range of clients that make this assumption.
 
 Layer Axis Order
 ----------------

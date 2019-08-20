@@ -13,22 +13,26 @@ However, the traditional axis order for geographic and cartographic systems is t
 This may cause difficulties when switching between servers with different WFS versions, or when upgrading your WFS. To minimize confusion and increase interoperability, GeoServer has adopted the following assumptions when specifying projections in the following formats: 
 
 .. list-table::
-   :widths: 75 25
+   :widths: 50 25 25
    :header-rows: 1
 
    * - Representation
-     - Assumed axis order
+     - Axis order
+     - Interpretation
    * - ``EPSG:xxxx``
      - longitude/latitude (x/y)
+     - assumption
    * - ``http://www.opengis.net/gml/srs/epsg.xml#xxxx``
      - longitude/latitude (x/y)
+     - strict
    * - ``urn:x-ogc:def:crs:EPSG:xxxx``
      - latitude/longitude (y/x) 
+     - strict
    * - ``urn:ogc:def:crs:EPSG::4326``
-     - latitude/longitude (y/x) 
+     - latitude/longitude (y/x)
+     - strict
 
-
-To compare the spatial reference system definition for ``EPSG:4326`` navigate :menuselection:`Demos --> SRS List` page and search for :kbd`4326`:
+To compare the spatial reference system definition for ``EPSG:4326`` navigate :menuselection:`Demos --> SRS List` page and search for :kbd:`4326`:
 
 .. figure:: img/wgs84-epsg-description.png
    
@@ -153,9 +157,6 @@ WFS 1.0 output format GML32
              <gml:LinearRing>
                <gml:posList>-88.071564 37.51099 -88.087883 37.476273 
 
-  .. warning:: This combination is inconsistent with ``srsName`` definition and may confuse client applications.
-
-
 * GML3.2 reproject to ``EPSG:4326``:
   
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml32&srsName=EPSG:4326
@@ -172,8 +173,6 @@ WFS 1.0 output format GML32
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
                  
-  .. warning:: This combination is inconsistent with ``srsName`` definition and may confuse client applications.
-
 * GML3.2 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
   
   http://localhost:8080/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp%3Astates&featureId=states.1&outputFormat=gml32&srsName=urn:x-ogc:def:crs:EPSG:4326
@@ -213,9 +212,11 @@ http://localhost:8080/geoserver/ows?service=wfs&version=1.1.0&request=GetCapabil
   
 WFS 1.1 describes the ``WGS84BoundingBox`` as a lower and upper corner in x/y order.
 
-.. warning:: This combination is inconsistent with ``DefaultSRS`` definition and may confuse client applications.
+.. warning:: This combination is inconsistent with ``DefaultSRS`` definition and the `LowerCorner` and `UpperCorner` coordinate order and may confuse client applications.
+   
+   The result matches the WFS 1.1.0 Implementation Specification GetCapabilities examples.
 
-WFS 1.1 *GetFeature* request defaults to GML3 output, and the default ``EPSG:4326`` spatial reference system used to publish the layer:
+WFS 1.1 *GetFeature* request defaults to GML3 output, and the default ``urn:x-ogc:def:crs:EPSG:4326`` spatial reference system used to publish the layer:
 
 * WFS 1.1 Default:
   
@@ -248,11 +249,9 @@ WFS 1.1 *GetFeature* request defaults to GML3 output, and the default ``EPSG:432
              <gml:LinearRing>
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
-   
-  .. warning:: This output combination of ``srsName`` and x/y order is technically inconsistent and may confuse applications expecting a valid GML3 document.
-     
+  .. note:: The `srsName` and `posList` coordinate order are consistent.
+  
      This approach can be used to force x/y order.
-
 
 * WFS 1.1 reproject to ``urn:x-ogc:def:crs:EPSG:4326``:
   
@@ -305,9 +304,8 @@ WFS 1.1 output format GML2
              <gml:LinearRing>
                <gml:coordinates decimal="." cs="," ts=" ">
                  -88.071564,37.51099 -88.087883,37.476273
-
-  .. warning:: The output combination of ``srsName`` and coordinates x/y order is technically inconsistent and may confuse applications expecting a valid GML2 document.
-    
+  .. note:: The `srsName` and `posList` coordinate order are consistent.
+  
      This approach can be used to force x/y order.
 
 WFS 1.1 output format GML3
@@ -345,8 +343,7 @@ WFS 1.1 output format GML3
              <gml:LinearRing>
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
-   
-  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
+  .. note:: The `srsName` and `posList` coordinate order are consistent.
      
      This approach can be used to force x/y order.
    
@@ -365,8 +362,7 @@ WFS 1.1 output format GML3
              <gml:LinearRing>
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
-   
-  .. warning:: This combination is inconsistent and may confuse applications expecting a valid GML3 document.
+  .. note:: The `srsName` and `posList` coordinate order are consistent.
      
      This approach can be used to force x/y order.
 
@@ -444,11 +440,11 @@ http://localhost:8080/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabil
    
 WFS 2.0 describes the ``WGS84BoundingBox`` as a lower and upper corner in x/y order.
 
-.. warning:: This combination is inconsistent with ``DefaultSRS`` definition and may confuse client applications.
+.. warning:: This combination is inconsistent with ``DefaultSRS`` definition definition and the `LowerCorner` and `UpperCorner` coordinate order and may confuse client applications.
    
    The result matches the WFS 2.0 GetCapabilities examples.
 
-WFS 2.0 *GetFeature* request defaults to GML3.2 output, and the default ``EPSG:4326`` spatial reference system used to publish the layer:
+WFS 2.0 *GetFeature* request defaults to GML3.2 output, and the default ``urn:ogc:def:crs:EPSG::4326`` spatial reference system used to publish the layer:
 
 * WFS 2.0 Default:
   
@@ -479,8 +475,6 @@ WFS 2.0 *GetFeature* request defaults to GML3.2 output, and the default ``EPSG:4
            <gml:exterior><gml:LinearRing>
              <gml:posList>
                -88.071564 37.51099 -88.087883 37.476273 
-                  
-  .. warning:: This combination is of ``srsName`` definition and ``posList`` coordinate order is inconsistent and may confuse client applications.
 
 * WFS 2.0 reproject to ``urn:ogc:def:crs:EPSG::4326``
   http://localhost:8080/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=topp%3Astates&featureId=states.1&srsName=urn:ogc:def:crs:EPSG::4326
@@ -526,8 +520,7 @@ WFS 2.0 output format GML2
              <gml:LinearRing>
                <gml:coordinates decimal="." cs="," ts=" ">
                  -88.071564,37.51099 -88.087883,37.476273
-
-  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML2 document.
+  .. note:: The `srsName` and `posList` coordinate order are consistent.
      
      This approach can be used to force x/y order.
 
@@ -576,7 +569,7 @@ WFS 2.0 output format GML3
                <gml:posList>
                  -88.071564 37.51099 -88.087883 37.476273
 
-  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
+  .. warning:: This combination is inconsistent between `srsName` and `posList` coordinate order and may confuse applications expecting a valid GML3 document.
   
      This approach can be used to force x/y order.
       
@@ -623,7 +616,7 @@ WFS 2.0 output format GML32
              <gml:posList>
                -88.071564 37.51099 -88.087883 37.476273
                
-  .. warning:: This combination technically inconsistent and may confuse applications expecting a valid GML3 document.
+  .. warning:: This combination is inconsistent between `srsName` and `posList` coordinate order and may confuse applications expecting a valid GML3 document.
    
      This approach can be used to force x/y order.
       

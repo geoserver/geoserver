@@ -5,7 +5,9 @@ Axis ordering
 
 WFS 1.0.0 servers return geographic coordinates in longitude/latitude (x/y) order, the most common way to distribute data. For example, many shapefiles adopt this order by default. 
 
-However, the traditional axis order for geographic and cartographic systems is the opposite—latitude/longitude (y/x) — and the later WFS specifications respect this. The default axis ordering support is:
+However, the traditional axis order for geographic and cartographic systems in latitude/longitude (y/x) order, and the later WFS specifications respect this.
+
+The default axis ordering support is:
 
 * Longitude/latitude—WFS 1.0.0
 * Latitude/longitude—WFS 1.1.0 and WFS 2.0.0
@@ -82,7 +84,7 @@ To review how this layer has been published:
 
 #. Locate :guilabel:`Declared SRS` and click on :guilabel:`EPSG:WGS 84...` link to see the definition used to publish this content.
    
-   This is the internal definition of ``EPSG:4326`` as shown in the SRSList above, which also describes the data in `x/y` order matching our data. This definition provides slightly more readable names along with additional  ``AUTHORY`` information that may be helpful to client applications.
+   This is the internal definition of ``EPSG:4326`` as shown in the SRSList above, which also describes the data in `x/y` order matching our data. This definition provides slightly more readable names along with additional  ``AUTHORITY`` information that may be helpful to client applications.
    
    .. figure:: img/declared_srs.png
       
@@ -252,7 +254,7 @@ http://localhost:8080/geoserver/ows?service=wfs&version=1.1.0&request=GetCapabil
   
 WFS 1.1 describes the ``WGS84BoundingBox`` as a lower and upper corner in x/y order.
 
-.. warning:: This combination is inconsistent with ``DefaultSRS`` definition and the `LowerCorner` and `UpperCorner` coordinate order and may confuse client applications.
+.. warning:: This combination is inconsistent with ``DefaultSRS`` definition and the ``LowerCorner`` and ``UpperCorner`` coordinate order and may confuse client applications.
    
    The result matches the WFS 1.1.0 Implementation Specification GetCapabilities examples.
 
@@ -480,7 +482,7 @@ http://localhost:8080/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabil
    
 WFS 2.0 describes the ``WGS84BoundingBox`` as a lower and upper corner in x/y order.
 
-.. warning:: This combination is inconsistent with ``DefaultSRS`` definition definition and the `LowerCorner` and `UpperCorner` coordinate order and may confuse client applications.
+.. warning:: This combination is inconsistent with ``DefaultSRS`` definition definition and the ``LowerCorner`` and ``UpperCorner`` coordinate order and may confuse client applications.
    
    The result matches the WFS 2.0 GetCapabilities examples.
 

@@ -91,7 +91,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     }
 
     /**
-     * jing 20190728 支持返回application/bil16 和 application/bil32
+     * jing 20190728 support application/bil16 and application/bil32
      * @param value
      * @param operation
      * @return

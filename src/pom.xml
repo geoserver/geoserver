@@ -1162,7 +1162,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.10</version>
+      <version>1.4.11.1</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>

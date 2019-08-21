@@ -5,6 +5,7 @@
 package org.geoserver.wms;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -18,8 +19,13 @@ import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
+import org.geotools.data.ows.HTTPResponse;
+import org.geotools.data.ows.Response;
+import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.request.AbstractGetLegendGraphicRequest;
+import org.geotools.ows.wms.response.GetLegendGraphicResponse;
 
-final public class  CascadedLegendRequest extends LegendRequest {
+public final class CascadedLegendRequest extends LegendRequest {
 
     private static final Logger LOGGER = Logger.getLogger(CascadedLegendRequest.class.getName());
 
@@ -43,7 +49,7 @@ final public class  CascadedLegendRequest extends LegendRequest {
     }
 
     public void setRemoteLegendGraphicRequest(
-             org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest) {
+            org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest) {
         // copying params to remote request
         this.remoteLegendGraphicRequest = remoteLegendGraphicRequest;
         Map<String, String> params = request.getRawKvp();
@@ -58,10 +64,9 @@ final public class  CascadedLegendRequest extends LegendRequest {
                                         k, String.valueOf(params.get(k)));
                         });
         // generating URL
-
         super.getLegendInfo()
                 .setOnlineResource(this.remoteLegendGraphicRequest.getFinalURL().toExternalForm());
-        LOGGER.fine("Cascaded GetLegend Request URL: "+super.getLegendInfo().getOnlineResource());
+        LOGGER.fine("Cascaded GetLegend Request URL: " + super.getLegendInfo().getOnlineResource());
     }
 
     public GetLegendGraphicRequest getDelegate() {
@@ -82,7 +87,7 @@ final public class  CascadedLegendRequest extends LegendRequest {
                 sb.append((char) cp);
             }
             String jsonText = sb.toString();
-            LOGGER.fine("Cascaded GetLegend Request JSON Response: "+jsonText);
+            LOGGER.fine("Cascaded GetLegend Request JSON Response: " + jsonText);
             JSONObject jsonLegend = JSONObject.fromObject(jsonText);
             JSONArray layerLegends = jsonLegend.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
             JSONArray cascadedRules =
@@ -95,5 +100,22 @@ final public class  CascadedLegendRequest extends LegendRequest {
         }
 
         return null;
+    }
+
+    public static class GetLegendGraphicRequestV1_3_0 extends AbstractGetLegendGraphicRequest {
+
+        public GetLegendGraphicRequestV1_3_0(URL onlineResource, String version) {
+            super(onlineResource);
+            setProperty(VERSION, version);
+        }
+
+        protected void initVersion() {
+            setProperty(VERSION, "1.3.0");
+        }
+
+        public Response createResponse(HTTPResponse httpResponse)
+                throws ServiceException, IOException {
+            return new GetLegendGraphicResponse(httpResponse);
+        }
     }
 }

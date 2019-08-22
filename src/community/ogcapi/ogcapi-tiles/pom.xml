@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
-  ~  This code is licensed under the GPL 2.0 license, available at the root
-  ~  application directory.
-  ~  
-  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -16,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-ogcapi-features</artifactId>
+    <artifactId>gs-ogcapi-tiles</artifactId>
 
     <dependencies>
         <dependency>
@@ -24,14 +18,25 @@
             <artifactId>gs-ogcapi-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- TODO: remove this dependency and use an extension point instead -->
+        <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-ogcapi-styles</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>gs-wfs</artifactId>
+            <artifactId>gs-gwc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-vectortiles</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -53,6 +58,18 @@
             <artifactId>gs-wfs</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-css</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-mbstyle</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -93,6 +110,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>wfs-2.0</artifactId>
+            <version>2.0.0-2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>geosciml-3.2</artifactId>
+            <version>3.2.0-1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver.community</groupId>
             <artifactId>gs-ogcapi-core</artifactId>
             <version>${project.version}</version>
@@ -100,5 +129,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
+
 </project>

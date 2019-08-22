@@ -4,11 +4,7 @@
  */
 package org.geoserver.api.styles;
 
-import static org.junit.Assert.assertEquals;
-
-import com.jayway.jsonpath.DocumentContext;
 import java.util.Collections;
-import java.util.List;
 import org.geoserver.api.OGCApiTestSupport;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -40,18 +36,5 @@ public class StylesTestSupport extends OGCApiTestSupport {
                 StylesTestSupport.class,
                 getCatalog(),
                 Collections.singletonMap(StyleProperty.FORMAT, "css"));
-    }
-
-    /** Retuns a single element out of an array, checking that there is just one */
-    protected Object getSingle(DocumentContext json, String path) {
-        List items = json.read(path);
-        assertEquals(1, items.size());
-        return items.get(0);
-    }
-
-    /** Checks the specified jsonpath exists in the document */
-    protected boolean exists(DocumentContext json, String path) {
-        List items = json.read(path);
-        return items.size() > 0;
     }
 }

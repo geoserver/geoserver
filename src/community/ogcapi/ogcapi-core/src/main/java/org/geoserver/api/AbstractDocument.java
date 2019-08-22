@@ -7,6 +7,7 @@ package org.geoserver.api;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -29,6 +30,7 @@ import org.springframework.http.MediaType;
 public class AbstractDocument {
     protected static final Logger LOGGER = Logging.getLogger(AbstractDocument.class);
 
+    protected String id;
     protected final List<Link> links = new ArrayList<>();
 
     /**
@@ -138,5 +140,32 @@ public class AbstractDocument {
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * Returns a URL encoded id (or null if the id is missing), useful to encode links in HTML
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getEncodedId() {
+        if (id == null) {
+            return null;
+        }
+        return ResponseUtils.urlEncode(id);
+    }
+
+    /**
+     * Returns the id where the column is replaced by a double underscore. Mostly used to generate
+     * HTML ids for testing purposes
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getHtmlId() {
+        if (id == null) {
+            return null;
+        }
+        return id.replace(":", "__");
     }
 }

@@ -10,6 +10,7 @@ This section describes most of the extensions available for GeoServer. Other dat
 .. toctree::
    :maxdepth: 1
 
+   authkey/index
    controlflow/index
    dxf/index   
    excel

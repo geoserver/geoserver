@@ -360,6 +360,12 @@
       <id>system-status</id>
       <modules>
         <module>system-status</module>
+        </modules>
+    </profile>
+    <profile>      
+      <id>authkey</id>
+      <modules>
+        <module>authkey</module>
       </modules>
     </profile>
 
@@ -407,6 +413,7 @@
         <module>geofence</module>
         <module>geofence-server</module>
         <module>system-status</module>
+        <module>authkey</module>
       </modules>
     </profile>
 
@@ -454,6 +461,7 @@
         <module>geofence</module>
         <module>geofence-server</module>
         <module>system-status</module>
+        <module>authkey</module>
       </modules>
     </profile>
   </profiles>

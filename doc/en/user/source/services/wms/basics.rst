@@ -40,7 +40,7 @@ Axis Ordering
 
 The WMS 1.3.0 specification mandates using the axis ordering as defined in the EPSG database. For instance, for EPSG:4326 the axis ordering is *latitude/longitude*, or *north/east*. This is contrary to the fact that most spatial data is usually in *longitude/latitude*, or *east/north*. 
 
-The WMS 1.1 always uses *east/north* axis ordering. So when upgrading from WMS 1.1, this requires the coordinate order in the ``BBOX`` parameter to be reversed for ``SRS`` with *north/east* axis ordering.
+The WMS 1.1 always uses *east/north* axis ordering. So when upgrading from WMS 1.1, if the CRS defines *north/east* axis ordering (e.g. EPSG:4326), the coordinate order in the BBOX parameter must be reversed.
 
 For example, consider the WMS 1.1 request using the WGS84 SRS (EPSG:4326): 
 

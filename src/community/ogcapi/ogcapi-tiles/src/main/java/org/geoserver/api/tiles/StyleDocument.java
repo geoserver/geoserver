@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.styles;
+package org.geoserver.api.tiles;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
@@ -17,6 +17,7 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
 import org.geoserver.api.NCNameResourceCodec;
+import org.geoserver.api.styles.StyleMetadataDocument;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
@@ -27,6 +28,15 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.MediaType;
 
+/**
+ * Copy of Style Service StyleDocument. TODO:
+ *
+ * <ul>
+ *   <li>Factor out the id/tile part in ogcapi-core
+ *   <li>Add an extension point adding the links only if the style service is available
+ *   <li>Have the style service used fully qualified names with NCNameResourceCodec
+ * </ul>
+ */
 @JsonPropertyOrder({"id", "title", "styles", "links"})
 public class StyleDocument extends AbstractDocument {
 
@@ -34,6 +44,11 @@ public class StyleDocument extends AbstractDocument {
 
     String id;
     String title;
+
+    public StyleDocument(String id, String title) {
+        this.id = id;
+        this.title = title;
+    }
 
     public StyleDocument(StyleInfo style) throws IOException {
         this.id = NCNameResourceCodec.encode(style);
@@ -56,9 +71,11 @@ public class StyleDocument extends AbstractDocument {
             // different versions have different mime types, create one link for each
             for (Version ver : sh.getVersions()) {
                 // can we encode the style in this format?
-                if ((style.getFormat() != null && sh.getFormat().equals(style.getFormat()))
+                if ((style.getFormat() != null
+                                && sh.getFormat().equals(style.getFormat())
+                                && (ver.equals(style.getFormatVersion())
+                                        || style.getFormatVersion() == null))
                         || sh.supportsEncoding(ver)) {
-
                     String styleURL =
                             buildURL(
                                     info.getBaseURL(),
@@ -83,11 +100,7 @@ public class StyleDocument extends AbstractDocument {
                             Collections.singletonMap("f", format.toString()),
                             URLMangler.URLType.SERVICE);
             Link link =
-                    new Link(
-                            metadataURL,
-                            "describedBy",
-                            format.toString(),
-                            "The style metadata as " + format.toString());
+                    new Link(metadataURL, "describedBy", format.toString(), "The style metadata");
             addLink(link);
         }
     }

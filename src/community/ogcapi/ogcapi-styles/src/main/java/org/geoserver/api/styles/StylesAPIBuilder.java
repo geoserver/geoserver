@@ -5,7 +5,6 @@
 package org.geoserver.api.styles;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.List;
 import java.util.Map;
@@ -31,16 +30,6 @@ public class StylesAPIBuilder extends OpenAPIBuilder<StylesServiceInfo> {
 
         // for the time being, remove extensions not yet implemented
         api.getPaths().remove("/resources");
-
-        // same goes for transactional support
-        PathItem styles = api.getPaths().get("/styles");
-        styles.setDelete(null);
-        PathItem style = api.getPaths().get("/styles/{styleId}");
-        style.setPut(null);
-        style.setDelete(null);
-        PathItem metadata = api.getPaths().get("/styles/{styleId}/metadata");
-        metadata.setPut(null);
-        metadata.setPatch(null);
 
         // provide a list of valid values for styleId
         Map<String, Parameter> parameters = api.getComponents().getParameters();

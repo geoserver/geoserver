@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
 import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -41,7 +42,7 @@ public class CollectionDocument extends AbstractDocument {
     String id;
     String title;
     String description;
-    WFSExtents extent;
+    CollectionExtents extent;
     FeatureTypeInfo featureType;
     String mapPreviewURL;
 
@@ -52,7 +53,7 @@ public class CollectionDocument extends AbstractDocument {
         setTitle(featureType.getTitle());
         setDescription(featureType.getAbstract());
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
-        setExtent(new WFSExtents(bbox));
+        setExtent(new CollectionExtents(bbox));
         this.featureType = featureType;
 
         // links
@@ -123,11 +124,11 @@ public class CollectionDocument extends AbstractDocument {
         this.description = description;
     }
 
-    public WFSExtents getExtent() {
+    public CollectionExtents getExtent() {
         return extent;
     }
 
-    public void setExtent(WFSExtents extent) {
+    public void setExtent(CollectionExtents extent) {
         this.extent = extent;
     }
 

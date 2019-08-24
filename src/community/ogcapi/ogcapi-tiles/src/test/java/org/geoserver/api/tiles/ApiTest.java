@@ -2,17 +2,17 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.styles;
+package org.geoserver.api.tiles;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Streams;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.geoserver.gwc.GWC;
 import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,11 +33,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class ApiTest extends StylesTestSupport {
+public class ApiTest extends TilesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/styles/api", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/api", 200);
         assertThat(
                 response.getContentType(),
                 CoreMatchers.startsWith("application/openapi+json;version=3.0"));
@@ -51,7 +52,7 @@ public class ApiTest extends StylesTestSupport {
     @Test
     public void testApiHTML() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/styles/api?f=text/html", 200);
+                getAsMockHttpServletResponse("ogc/tiles/api?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -76,12 +77,12 @@ public class ApiTest extends StylesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/styles/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0\""));
+                        "url: \"http://localhost:8080/geoserver/ogc/tiles/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/styles/api?f=application/x-yaml");
+        String yaml = getAsString("ogc/tiles/api?f=application/x-yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -91,7 +92,7 @@ public class ApiTest extends StylesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/styles/api");
+        MockHttpServletRequest request = createRequest("ogc/tiles/api");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -109,7 +110,7 @@ public class ApiTest extends StylesTestSupport {
         // only one server
         List<Server> servers = api.getServers();
         assertThat(servers, hasSize(1));
-        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/styles"));
+        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/tiles"));
 
         // paths
         Paths paths = api.getPaths();
@@ -124,30 +125,23 @@ public class ApiTest extends StylesTestSupport {
         assertNotNull(conformance);
         assertThat(conformance.getGet().getOperationId(), equalTo("getConformanceClasses"));
 
-        // ... styles
-        PathItem collections = paths.get("/styles");
+        // ... collections
+        PathItem collections = paths.get("/collections");
         assertNotNull(collections);
-        assertThat(collections.getGet().getOperationId(), equalTo("getStyleSet"));
+        assertThat(collections.getGet().getOperationId(), equalTo("describeCollections"));
 
         // ... style
-        PathItem collection = paths.get("/styles/{styleId}");
+        PathItem collection = paths.get("/collections/{collectionId}");
         assertNotNull(collection);
-        assertThat(collection.getGet().getOperationId(), equalTo("getStyle"));
+        assertThat(collection.getGet().getOperationId(), equalTo("describeCollection"));
 
         // check the styleId parameter contains actual style names from this server
-        Parameter styleId = api.getComponents().getParameters().get("styleId");
-        assertThat(
-                (List<String>) styleId.getSchema().getEnum(),
-                containsInAnyOrder(
-                        "generic",
-                        "polygon",
-                        "line",
-                        "point",
-                        "raster",
-                        "Default",
-                        "ws__NamedPlaces",
-                        "PolygonComment",
-                        "cssSample"));
+        Parameter collectionId = api.getComponents().getParameters().get("collectionId");
+        List<String> expectedCollectionIds =
+                Streams.stream(applicationContext.getBean(GWC.class).getTileLayers())
+                        .map(tl -> tl.getName())
+                        .collect(Collectors.toList());
+        assertThat(collectionId.getSchema().getEnum(), equalTo(expectedCollectionIds));
     }
 
     @Test

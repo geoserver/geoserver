@@ -2,33 +2,32 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 
 @JsonPropertyOrder({"spatial", "temporal"})
-public class WFSExtents {
+public class CollectionExtents {
 
     ReferencedEnvelope spatial;
     DateRange temporal;
 
-    public WFSExtents(ReferencedEnvelope spatial, DateRange temporal) {
+    public CollectionExtents(ReferencedEnvelope spatial, DateRange temporal) {
         this.spatial = spatial;
         this.temporal = temporal;
     }
 
-    public WFSExtents(DateRange temporal) {
+    public CollectionExtents(DateRange temporal) {
         this.temporal = temporal;
     }
 
-    public WFSExtents(ReferencedEnvelope spatial) {
+    public CollectionExtents(ReferencedEnvelope spatial) {
         this.spatial = spatial;
     }
 
@@ -62,7 +61,6 @@ public class WFSExtents {
     }
 
     @JsonProperty("temporal")
-    @JacksonXmlProperty()
     public String[] getTemporalArray() {
         if (temporal != null) {
             return new String[] {

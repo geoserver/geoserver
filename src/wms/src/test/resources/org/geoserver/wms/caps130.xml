@@ -80,6 +80,14 @@
         </EX_GeographicBoundingBox>
         <BoundingBox CRS="EPSG:4326" minx="-90" miny="-180"
           maxx="90" maxy="180" />
+        <Style>
+             <Name>raster</Name>
+             <Title>Default RasterSymbolizer</Title>
+             <LegendURL width="20" height="20">
+                 <Format>image/png</Format>
+                 <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms13?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;width=20&amp;height=20&amp;layer=world4326" />
+             </LegendURL>
+        </Style>
       </Layer>
     </Layer>
   </Capability>

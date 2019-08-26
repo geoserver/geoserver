@@ -52,6 +52,19 @@
           </HTTP>
         </DCPType>
       </GetFeatureInfo>
+      <GetLegendGraphic>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <Format>application/json</Format>
+        <Format>image/gif</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetLegendGraphic>
     </Request>
     <Exception>
       <Format>application/vnd.ogc.se_xml</Format>

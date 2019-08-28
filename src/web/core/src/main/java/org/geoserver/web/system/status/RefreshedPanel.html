@@ -1,0 +1,25 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+	<wicket:panel>
+		<div>
+			<wicket:message key="updated">Updated at</wicket:message>
+			<span wicket:id="time"></span>
+		</div>
+		<table>
+			<thead>
+				<tr>
+					<th><span><wicket:message key="info">Info</wicket:message></span></th>
+					<th><span><wicket:message key="value">Value</wicket:message></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr wicket:id="metrics">
+					<th scope="row"><span wicket:id="info"></span></th>
+					<td><span wicket:id="value"></span></td>
+				</tr>
+			</tbody>
+		</table>
+	</wicket:panel>
+</body>
+</html>

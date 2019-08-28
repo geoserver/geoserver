@@ -4,7 +4,7 @@
     <head>
         <title>OpenLayers map preview</title>
         <!-- Import OL CSS, auto import does not work with our minified OL.js build -->
-        <link rel="stylesheet" type="text/css" href="${baseUrl}/openlayers/theme/default/style.css"/>
+        <link rel="stylesheet" type="text/css" href="${relBaseUrl}/openlayers/theme/default/style.css"/>
         <!-- Basic CSS definitions -->
         <style type="text/css">
             /* General settings */
@@ -103,7 +103,7 @@
             }
         </style>
         <!-- Import OpenLayers, reduced, wms read only version -->
-        <script src="${baseUrl}/openlayers/OpenLayers.js" type="text/javascript">
+        <script src="${relBaseUrl}/openlayers/OpenLayers.js" type="text/javascript">
         </script>
         <script defer="defer" type="text/javascript">
             var map;

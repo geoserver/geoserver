@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="${baseUrl}/openlayers3/ol.css" type="text/css">
+    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css">
     <style>
         .ol-zoom {
           top: 52px;
@@ -127,7 +127,7 @@
             padding: .2em .2em;
         }
     </style>
-    <script src="${baseUrl}/openlayers3/ol.js" type="text/javascript"></script>
+    <script src="${relBaseUrl}/openlayers3/ol.js" type="text/javascript"></script>
     <title>OpenLayers map preview</title>
   </head>
   <body>

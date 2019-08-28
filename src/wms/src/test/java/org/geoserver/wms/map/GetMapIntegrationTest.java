@@ -293,7 +293,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                     + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150");
 
             assertXpathEvaluatesTo(
-                    "http://www.geoserver.org:1234/gs/openlayers/OpenLayers.js",
+                    "//www.geoserver.org:1234/gs/openlayers/OpenLayers.js",
                     "//xhtml:script[contains(@src, 'OpenLayers.js')]/@src",
                     dom);
         } finally {

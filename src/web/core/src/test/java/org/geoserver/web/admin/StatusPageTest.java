@@ -175,14 +175,14 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         // render the page, GeoServer status tab is show
         tester.assertRenderedPage(StatusPage.class);
         // click on the extra tab link
-        tester.clickLink("tabs:tabs-container:tabs:2:link", true);
+        tester.clickLink("tabs:tabs-container:tabs:3:link", true);
         // render extra tab content
         tester.assertRenderedPage(StatusPage.class);
         // check that extra tab content was rendered
         tester.assertContains("extra tab content");
         // check that the tab has the correct title
         Component component =
-                tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:2:link:title");
+                tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:3:link:title");
         assertThat(component, instanceOf(Label.class));
         Label label = (Label) component;
         assertThat(label.getDefaultModel(), notNullValue());
@@ -212,5 +212,23 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
                                 + ".StatusPage?29-1.ILinkListener-tabs-tabs~container-tabs-1-link");
         assertEquals(HttpStatus.FOUND.value(), response.getStatus());
         assertEquals("./org.geoserver.web.GeoServerLoginPage", response.getHeader("Location"));
+    }
+
+    @Test
+    public void testTabSwitch() {
+        // render the page, GeoServer status tab is show
+        tester.assertRenderedPage(StatusPage.class);
+        // click on the system status tab
+        tester.clickLink("tabs:tabs-container:tabs:2:link", true);
+        // render the system monitoring information
+        tester.assertRenderedPage(StatusPage.class);
+        // check that we have system monitoring tab expected content
+        tester.assertContains("CPUs");
+        // now click on modules tab
+        tester.clickLink("tabs:tabs-container:tabs:1:link", true);
+        // no rendering error should happen
+        tester.assertRenderedPage(StatusPage.class);
+        // check that we have a valid content
+        tester.assertContains("gs-main");
     }
 }

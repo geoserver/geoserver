@@ -24,7 +24,6 @@ Current PSC
 
 * Alessio Fabiani
 * Andrea Aime
-* Brad Hards
 * Ian Turton
 * Jody Garnett
 * Jukka Rahkonen
@@ -41,6 +40,7 @@ We would like to thank prior PSC members:
 * Phil Scadden
 * Christian Mueller
 * Ben Caradoc-Davies
+* Brad Hards
 
 PSC Membership
 --------------

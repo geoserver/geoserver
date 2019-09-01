@@ -25,8 +25,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -37,6 +39,7 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
+import org.geoserver.web.wicket.SimpleChoiceRenderer;
 
 /** Configures {@link LayerInfo} WMS specific attributes */
 public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
@@ -136,6 +139,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         new InterpolationRenderer(this));
         interpolDropDown.setNullValid(true);
         add(interpolDropDown);
+
+        initWMSCascadedUI(layerModel);
     }
 
     private class InterpolationRenderer extends ChoiceRenderer<WMSInterpolation> {
@@ -157,5 +162,76 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         public String getIdValue(WMSInterpolation object, int index) {
             return object.name();
         }
+    }
+
+    private void initWMSCascadedUI(IModel<LayerInfo> layerModel) {
+
+        // styles block container
+        WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
+        // remote formats
+        WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
+        add(styleContainer);
+        add(remoteForamtsContainer);
+
+        if (!(layerModel.getObject() instanceof CascadedLayerInfo)) {
+            styleContainer.setVisible(false);
+            remoteForamtsContainer.setVisible(false);
+            return;
+        }
+
+        CascadedLayerInfo cascadedLayerInfo = (CascadedLayerInfo) layerModel.getObject();
+        // for new only
+        if (cascadedLayerInfo.getId() == null) cascadedLayerInfo.reset();
+
+        DropDownChoice<String> remotStyles =
+                new DropDownChoice<String>(
+                        "remoteStylesDropDown",
+                        new PropertyModel<String>(cascadedLayerInfo, "forcedRemoteStyle"),
+                        cascadedLayerInfo.getRemoteStyles());
+
+        styleContainer.add(remotStyles);
+
+        LiveCollectionModel stylesModel =
+                LiveCollectionModel.set(
+                        new PropertyModel<List<String>>(cascadedLayerInfo, "selectedRemoteStyles"));
+        CollectionModel<String> options =
+                new CollectionModel<String>(cascadedLayerInfo.getRemoteStyles());
+        Palette<String> extraRemoteStyles =
+                new Palette<String>(
+                        "extraRemoteStyles",
+                        stylesModel,
+                        options,
+                        new SimpleChoiceRenderer<String>(),
+                        10,
+                        true);
+
+        extraRemoteStyles.add(new DefaultTheme());
+        styleContainer.add(extraRemoteStyles);
+
+        DropDownChoice<String> remoteForamts =
+                new DropDownChoice<String>(
+                        "remoteFormatsDropDown",
+                        new PropertyModel<String>(cascadedLayerInfo, "prefferedFormat"),
+                        cascadedLayerInfo.getAvailableFormats());
+
+        remoteForamtsContainer.add(remoteForamts);
+        // add format pallete
+
+        LiveCollectionModel remoteFormatsModel =
+                LiveCollectionModel.set(
+                        new PropertyModel<List<String>>(
+                                cascadedLayerInfo, "selectedRemoteFormats"));
+
+        Palette<String> remoteFormatsPalette =
+                new Palette<String>(
+                        "remoteFormatsPalette",
+                        remoteFormatsModel,
+                        new CollectionModel<String>(cascadedLayerInfo.getAvailableFormats()),
+                        new SimpleChoiceRenderer<String>(),
+                        10,
+                        true);
+
+        remoteFormatsPalette.add(new DefaultTheme());
+        remoteForamtsContainer.add(remoteFormatsPalette);
     }
 }

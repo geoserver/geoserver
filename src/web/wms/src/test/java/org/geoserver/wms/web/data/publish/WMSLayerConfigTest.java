@@ -10,6 +10,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -19,12 +21,19 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -166,5 +175,60 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.submit();
 
         tester.assertModelValue("form:panel:defaultInterpolationMethod", WMSInterpolation.Bicubic);
+    }
+
+    @Test
+    public void testWMSCascadeSettings() throws Exception {
+        MockHttpClient wms11Client = new MockHttpClient();
+        URL wms11BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
+        URL capsDocument =
+                WMSLayerConfigTest.class.getResource("/org/geoserver/wms/web/data/caps111.xml");
+        wms11Client.expectGet(
+                new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                new MockHttpResponse(capsDocument, "text/xml"));
+        String caps = wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
+        TestHttpClientProvider.bind(wms11Client, caps);
+
+        // setup the WMS layer
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        WMSStoreInfo store = cb.buildWMSStore("mock-wms-store-110");
+        getCatalog().add(store);
+        cb.setStore(store);
+        store.setCapabilitiesURL(caps);
+        WMSLayerInfo wmsLayer = cb.buildWMSLayer("roads");
+        wmsLayer.setName("roads");
+        getCatalog().add(wmsLayer);
+        CascadedLayerInfo gsLayer = (CascadedLayerInfo) cb.buildLayer(wmsLayer);
+        gsLayer.reset();
+        getCatalog().add(gsLayer);
+
+        // final LayerInfo layer = getCatalog().getLayerByName("roads");
+        final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
+
+        FormTestPage page =
+                new FormTestPage(
+                        new ComponentBuilder() {
+
+                            public Component buildComponent(String id) {
+                                return new WMSLayerConfig(id, layerModel);
+                            }
+                        });
+
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+
+        // asserting Remote Style UI fields
+        tester.assertModelValue(
+                "form:panel:remotestyles:remoteStylesDropDown", gsLayer.getForcedRemoteStyle());
+        tester.assertModelValue(
+                "form:panel:remotestyles:extraRemoteStyles",
+                new HashSet<String>(gsLayer.getRemoteStyles()));
+
+        // asserting Remote Style UI fields
+        tester.assertModelValue(
+                "form:panel:remoteformats:remoteFormatsDropDown", gsLayer.getPrefferedFormat());
+        tester.assertModelValue(
+                "form:panel:remoteformats:remoteFormatsPalette",
+                new HashSet<String>(gsLayer.getAvailableFormats()));
     }
 }

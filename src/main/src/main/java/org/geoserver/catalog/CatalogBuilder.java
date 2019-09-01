@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.measure.Unit;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PlanarImage;
+import org.geoserver.catalog.impl.CascadedLayerInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
@@ -1541,10 +1542,11 @@ public class CatalogBuilder {
      */
     public LayerInfo buildLayer(WMSLayerInfo wms) throws IOException {
         LayerInfo layer = buildLayer((ResourceInfo) wms);
-
         layer.setDefaultStyle(getDefaultStyle(wms));
+        // geos-9312
+        CascadedLayerInfo cascadedLayerInfo = new CascadedLayerInfoImpl(layer);
 
-        return layer;
+        return cascadedLayerInfo;
     }
 
     /**

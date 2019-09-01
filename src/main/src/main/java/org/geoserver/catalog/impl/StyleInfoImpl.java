@@ -97,6 +97,9 @@ public class StyleInfoImpl implements StyleInfo {
     }
 
     public Style getStyle() throws IOException {
+        // for cap doc return remote name
+        if (metadata != null)
+            if (metadata.containsKey("isRemote")) return CascadedLayerInfoImpl.getStyleInfo(this);
         return catalog.getResourcePool().getStyle(this);
     }
 

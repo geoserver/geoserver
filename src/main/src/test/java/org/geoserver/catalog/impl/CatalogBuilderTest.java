@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.media.jai.ImageLayout;
 import org.easymock.EasyMock;
+import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageDimensionInfo;
@@ -570,6 +571,12 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
+
+            CascadedLayerInfo publishedlayer = (CascadedLayerInfo) cb.buildLayer(layer);
+            assertNotNull(publishedlayer);
+            assertTrue(!publishedlayer.getAvailableFormats().isEmpty());
+            assertTrue(publishedlayer.getStyles().isEmpty());
+
         } finally {
             TestHttpClientProvider.endTest();
         }
@@ -600,6 +607,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
+
+            CascadedLayerInfo publishedlayer = (CascadedLayerInfo) cb.buildLayer(layer);
+            assertNotNull(publishedlayer);
+            assertTrue(!publishedlayer.getAvailableFormats().isEmpty());
+            assertTrue(publishedlayer.getStyles().isEmpty());
         } finally {
             TestHttpClientProvider.endTest();
         }
@@ -630,6 +642,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
+
+            CascadedLayerInfo publishedlayer = (CascadedLayerInfo) cb.buildLayer(layer);
+            assertNotNull(publishedlayer);
+            assertTrue(!publishedlayer.getAvailableFormats().isEmpty());
+            assertTrue(publishedlayer.getStyles().isEmpty());
         } finally {
             TestHttpClientProvider.endTest();
         }

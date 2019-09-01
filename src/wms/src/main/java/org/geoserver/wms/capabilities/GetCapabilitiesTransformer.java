@@ -15,7 +15,7 @@ import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,8 +40,10 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataLinkInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -53,7 +55,6 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -1032,6 +1033,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 handleRootCrsList(srsList);
             } else {
                 element("SRS", srs);
+                // overridingServiceSRS
+                // for other SRS
+                if (layer.getResource() instanceof FeatureTypeInfo) {
+                    FeatureTypeInfo resource = (FeatureTypeInfo) layer.getResource();
+                    if (!resource.getResponseSRS().isEmpty() && resource.isOverridingServiceSRS())
+                        for (String otherSRS : resource.getResponseSRS())
+                            element("SRS", qualifySRS(otherSRS));
+                }
             }
 
             ReferencedEnvelope bbox;
@@ -1077,11 +1086,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle DataURLs
             handleDataList(layer.getResource().getDataLinks());
 
-            // if WMSLayer or WMTS layer do nothing for the moment, we may want to list the set of
+            // if WMTS layer do nothing for the moment, we may want to list the set of
             // cascaded named styles
             // in the future (when we add support for that)
-            if (!(layer.getResource() instanceof WMSLayerInfo)
-                    && !(layer.getResource() instanceof WMTSLayerInfo)) {
+            if (!(layer.getResource() instanceof WMTSLayerInfo)) {
                 // add the layer style
                 start("Style");
 
@@ -1504,7 +1512,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
                 WorkspaceInfo styleWs = sampleStyle.getWorkspace();
                 String legendUrl;
-                if (styleWs != null) {
+
+                if (layer instanceof CascadedLayerInfo) legendUrl = legend.getOnlineResource();
+                else if (styleWs != null) {
                     legendUrl =
                             buildURL(
                                     request.getBaseUrl(),

@@ -669,7 +669,24 @@ public class GetMap {
                     }
                 }
                 if (!merged) {
-                    WMSLayer Layer = new WMSLayer(wms, gt2Layer);
+                    WMSLayer Layer = null;
+                    // GEOS-9312
+                    if (mapLayerInfo.getLayerInfo() instanceof CascadedLayerInfo) {
+                        CascadedLayerInfo cascadedLayerInfo =
+                                (CascadedLayerInfo) mapLayerInfo.getLayerInfo();
+
+                        String style = request.getStyles().get(i).getName();
+                        String imageFormat = request.getFormat();
+                        // if passed style does not exist in remote, default to forced
+                        if (!cascadedLayerInfo.isSelectedRemoteStyles(style))
+                            style = cascadedLayerInfo.getForcedRemoteStyle();
+
+                        // if the format is not selected then fall back to preffered
+                        if (!cascadedLayerInfo.isSelectedRemoteFormat(imageFormat))
+                            imageFormat = cascadedLayerInfo.getPrefferedFormat();
+
+                        Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+                    } else Layer = new WMSLayer(wms, gt2Layer);
                     Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }

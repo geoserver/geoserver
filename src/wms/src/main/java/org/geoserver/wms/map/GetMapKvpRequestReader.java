@@ -37,6 +37,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.cache.CacheConfig;
 import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
+import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -454,7 +455,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             // ok, parse the styles parameter in isolation
             if (styleNameList.size() > 0) {
-                List<Style> parseStyles = parseStyles(styleNameList);
+                List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
                 getMap.setStyles(parseStyles);
             }
 
@@ -1411,13 +1412,23 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     // return cv;
     // }
 
-    protected List<Style> parseStyles(List<String> styleNames) throws Exception {
+    protected List<Style> parseStyles(List<String> styleNames, List<Object> requestedLayerInfos)
+            throws Exception {
         List<Style> styles = new ArrayList<Style>();
-        for (String styleName : styleNames) {
+        for (int i = 0; i < styleNames.size(); i++) {
+            String styleName = styleNames.get(i);
             if ("".equals(styleName)) {
                 // return null, this should flag request reader to use default for
                 // the associated layer
                 styles.add(null);
+            } else if (requestedLayerInfos.get(i) instanceof CascadedLayerInfo) {
+                // GEOS-9312
+                // if the style belongs to a remote layer check inside the remote layer capabilities
+                // instead of local WMS
+                CascadedLayerInfo remoteWMSLayer = (CascadedLayerInfo) requestedLayerInfos.get(i);
+                Optional<Style> remoteStyle = remoteWMSLayer.findRemoteStyleByName(styleName);
+                if (remoteStyle.isPresent()) styles.add(remoteStyle.get());
+                else styles.add(null);
             } else {
                 final Style style = wms.getStyleByName(styleName);
                 if (style == null) {

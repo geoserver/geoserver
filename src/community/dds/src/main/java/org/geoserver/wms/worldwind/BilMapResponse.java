@@ -29,7 +29,6 @@ import javax.media.jai.JAI;
 import javax.media.jai.TiledImage;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.data.util.CoverageUtils;
-import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -55,6 +54,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.wcs.WcsException;
+import org.geoserver.platform.Operation;
 
 /**
  * Map producer for producing Raw bil images out of an elevation model. Modeled after the
@@ -71,7 +71,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     static final String MIME_TYPE = "image/bil";
 
     private static final String[] OUTPUT_FORMATS = {
-        MIME_TYPE, "application/bil", "application/bil8", "application/bil16", "application/bil32"
+            MIME_TYPE, "application/bil", "application/bil8", "application/bil16", "application/bil32"
     };
 
     /** GridCoverageFactory. - Where do we use this again ? */
@@ -91,8 +91,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     }
 
     /**
-     * jing 20190728 support application/bil16 and application/bil32
-     *
+     * jing 20190728 支持返回application/bil16 和 application/bil32
      * @param value
      * @param operation
      * @return
@@ -211,7 +210,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
                 // necessary.
                 if (defaultDataType != null
                         && ((bilEncoding.equals("application/bil")
-                                || bilEncoding.equals("image/bil")))) {
+                        || bilEncoding.equals("image/bil")))) {
                     bilEncoding = defaultDataType;
                 }
                 ImageWorker worker = new ImageWorker(transformedImage);
@@ -276,7 +275,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
             GridCoverage2DReader coverageReader,
             GeneralEnvelope destinationEnvelope)
             throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
-                    TransformException {
+            TransformException {
         // This is the final Response CRS
         final String responseCRS = request.getSRS();
 

@@ -8,6 +8,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -72,19 +73,23 @@ public class StyleDocument extends AbstractDocument {
         }
 
         // adding the metadata link
-        String metadataURL =
-                buildURL(
-                        info.getBaseURL(),
-                        "ogc/styles/styles/" + ResponseUtils.urlEncode(id) + "/metadata",
-                        Collections.singletonMap("f", MediaType.APPLICATION_JSON_VALUE),
-                        URLMangler.URLType.SERVICE);
-        Link link =
-                new Link(
-                        metadataURL,
-                        "describeBy",
-                        MediaType.APPLICATION_JSON_VALUE,
-                        "The style metadata");
-        addLink(link);
+        Collection<MediaType> metadataFormats =
+                APIRequestInfo.get().getProducibleMediaTypes(StyleMetadataDocument.class, true);
+        for (MediaType format : metadataFormats) {
+            String metadataURL =
+                    buildURL(
+                            info.getBaseURL(),
+                            "ogc/styles/styles/" + ResponseUtils.urlEncode(id) + "/metadata",
+                            Collections.singletonMap("f", format.toString()),
+                            URLMangler.URLType.SERVICE);
+            Link link =
+                    new Link(
+                            metadataURL,
+                            "describedBy",
+                            format.toString(),
+                            "The style metadata as " + format.toString());
+            addLink(link);
+        }
     }
 
     public String getId() {

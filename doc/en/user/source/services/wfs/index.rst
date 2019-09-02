@@ -14,3 +14,4 @@ This section describes the Web Feature Service (WFS).
    outputformats
    vendor
    schemamapping
+   axis_order

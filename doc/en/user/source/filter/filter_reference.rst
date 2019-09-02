@@ -147,7 +147,7 @@ Topological operators
 These operators test topological spatial relationships using the standard OGC Simple Features predicates: 
 
    * ``<Intersects>`` - Tests whether two geometries intersect
-   * ``<Disjoint>`` - Tests whether two geometries are disjoint
+   * ``<Disjoint>`` - Tests whether two geometries are disjoint (do not interact)
    * ``<Contains>`` - Tests whether a geometry contains another one
    * ``<Within>`` - Tests whether a geometry is within another one
    * ``<Touches>`` - Tests whether two geometries touch

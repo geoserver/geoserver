@@ -7,12 +7,10 @@ package org.geoserver.api.features;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
@@ -27,24 +25,15 @@ import org.opengis.filter.Filter;
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
 
-    private final FeatureTypeInfo featureType;
     private final GeoServer geoServer;
     /* private final List<WFS3Extension> extensions; */
 
-    public CollectionsDocument(GeoServer geoServer /*, List<WFS3Extension> extensions */) {
-        this(geoServer, null /*, extensions */);
-    }
-
-    public CollectionsDocument(GeoServer geoServer, FeatureTypeInfo featureType
-            /* List<WFS3Extension> extensions */ ) {
+    public CollectionsDocument(GeoServer geoServer /* List<WFS3Extension> extensions */) {
         this.geoServer = geoServer;
-        this.featureType = featureType;
         /* this.extensions = extensions; */
 
         // build the self links
-        String path =
-                "ogc/features/collections/"
-                        + (featureType != null ? NCNameResourceCodec.encode(featureType) : "");
+        String path = "ogc/features/collections/";
         addSelfLinks(path);
     }
 
@@ -55,14 +44,6 @@ public class CollectionsDocument extends AbstractDocument {
 
     @JacksonXmlProperty(localName = "Collection")
     public Iterator<CollectionDocument> getCollections() {
-        // single collection case
-        if (featureType != null) {
-            CollectionDocument document = new CollectionDocument(geoServer, featureType);
-            /* decorateWithExtensions(document); */
-            return Collections.singleton(document).iterator();
-        }
-
-        // full scan case
         CloseableIterator<FeatureTypeInfo> featureTypes =
                 geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
         return new Iterator<CollectionDocument>() {

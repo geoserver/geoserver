@@ -7,6 +7,7 @@ package org.geoserver.api;
 
 import freemarker.template.TemplateMethodModel;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.config.GeoServer;
@@ -108,7 +109,10 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
                                 ResponseUtils.buildURL(
                                         baseURL,
                                         (String) arguments.get(0),
-                                        null,
+                                        arguments.size() > 1
+                                                ? Collections.singletonMap(
+                                                        "f", arguments.get(1).toString())
+                                                : null,
                                         URLMangler.URLType.SERVICE));
         model.put(
                 "resourceLink",

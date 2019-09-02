@@ -1359,7 +1359,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
 
         // in case of component color model
-        boolean noDataTransparencyOnGrayByte = false;
+        boolean noDataTransparencyApplied = false;
         if (cm instanceof ComponentColorModel) {
 
             // convert to RGB if necessary
@@ -1405,7 +1405,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             bgValues = new double[] {mapToGrayColor(bgColor, ccm), 0};
                         } else {
                             image = transparentImage;
-                            noDataTransparencyOnGrayByte = true;
+                            noDataTransparencyApplied = true;
                         }
                     } else {
                         bgValues = new double[] {mapToGrayColor(bgColor, ccm)};
@@ -1429,7 +1429,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 hasAlpha = cm.hasAlpha();
             }
 
-            if (bgValues == null && !noDataTransparencyOnGrayByte) {
+            if (bgValues == null && !noDataTransparencyApplied) {
                 if (hasAlpha) {
                     // get alpha
                     final ImageWorker iw = new ImageWorker(image);
@@ -1449,10 +1449,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     }
                 } else {
                     if (transparent) {
-                        image = addAlphaChannel(image);
-                        // this will work fine for all situation where the color components are <= 3
-                        // e.g., one band rasters with no colormap will have only one usually
-                        bgValues = new double[] {0, 0, 0, 0};
+                        // If nodata is available, let's try to make it transparent when rgb.
+                        RenderedImage imageTransparent = rgbNoDataTransparent(image);
+                        if (imageTransparent != null) {
+                            image = imageTransparent;
+                            noDataTransparencyApplied = true;
+                        } else {
+                            image = addAlphaChannel(image);
+                            // this will work fine for all situation where the color components are
+                            // <= 3
+                            // e.g., one band rasters with no colormap will have only one usually
+                            bgValues = new double[] {0, 0, 0, 0};
+                        }
                     } else {
                         // TODO: handle the case where the component color model is not RGB
                         // We cannot use ImageWorker as is because it basically seems to assume
@@ -1486,7 +1494,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             transparencyType,
                             iw,
                             roiCandidate,
-                            noDataTransparencyOnGrayByte);
+                            noDataTransparencyApplied);
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea)
@@ -1627,12 +1635,32 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * Optmized method for Gray Scale Byte images to turn noData value to transparent.
+     * Optimized method for RGB images to turn noData value to transparent.
+     *
+     * @param image
+     * @return
+     */
+    private RenderedImage rgbNoDataTransparent(RenderedImage image) {
+        return makeNoDataTransparent(image, 3);
+    }
+
+    /**
+     * Optimized method for Gray Scale Byte images to turn noData value to transparent.
      *
      * @param image
      * @return
      */
     private RenderedImage grayNoDataTransparent(RenderedImage image) {
+        return makeNoDataTransparent(image, 1);
+    }
+
+    /**
+     * Optimized method to turn noData value to transparent.
+     *
+     * @param image
+     * @return
+     */
+    private RenderedImage makeNoDataTransparent(RenderedImage image, final int numBands) {
         // Using an ImageWorker
         ImageWorker iw = new ImageWorker(image);
         Range noData = iw.getNoData();
@@ -1640,12 +1668,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final int numColorBands = cm.getNumColorComponents();
         if (noData != null
                 && image.getSampleModel().getDataType() == DataBuffer.TYPE_BYTE
-                && numColorBands == 1
+                && numColorBands == numBands
                 && cm instanceof ComponentColorModel) {
             int minValue = noData.getMin().intValue();
             int maxValue = noData.getMax().intValue();
             if (minValue == maxValue && minValue >= Byte.MIN_VALUE && minValue <= Byte.MAX_VALUE) {
-                // Optimization on gray images with noData value. Make that value transparent
+                // Optimization on images with noData value. Make that value transparent
                 Color transparentColor = new Color(minValue, minValue, minValue);
                 iw.makeColorTransparent(transparentColor);
                 return iw.getRenderedImage();

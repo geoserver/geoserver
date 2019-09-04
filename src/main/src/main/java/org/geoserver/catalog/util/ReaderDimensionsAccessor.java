@@ -194,7 +194,7 @@ public class ReaderDimensionsAccessor {
         // if we got here, the optimization did not work, do the normal path
         if (result == null) {
             result = new TreeSet<Object>();
-            TreeSet<Object> fullDomain = getElevationDomain();
+            TreeSet<Object> fullDomain = getTimeDomain();
 
             for (Object o : fullDomain) {
                 if (o instanceof Date) {

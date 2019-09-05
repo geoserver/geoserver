@@ -1,0 +1,39 @@
+ul.links-above-table {
+    list-style-type: none;
+
+}
+/*todo create component for first level labels*/
+.even td, .odd td {
+    vertical-align: top;
+}
+
+.attribute-panel > table > tbody > tr.even td,
+.attribute-panel > table > tbody > tr td,
+.attribute-panel tr.even th,
+.attribute-panel tr th,
+.attribute-panel tr:hover td,
+.attribute-panel tr.even:hover td,
+.attribute-panel tr:hover th,
+.attribute-panel tr.even:hover th {
+    background: rgba(255, 255, 255, 0);
+}
+
+.attribute-panel > table > thead,
+.repeat-panel > table > thead {
+    display: none;
+}
+
+.repeat-panel .attribute-panel > table {
+    border: 1px solid #e2efcd;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: rgb(235, 235, 228);
+}
+
+.copy-link {
+    background: transparent url(img/copy.png) scroll no-repeat left center;
+    padding: 2px 0px 2px 20px;
+}

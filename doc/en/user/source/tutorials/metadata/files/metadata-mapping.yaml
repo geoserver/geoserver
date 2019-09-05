@@ -1,0 +1,169 @@
+geonetworkmapping:
+  - geoserver: title
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString/text()
+    mappingType: NATIVE
+  - geoserver: abstract
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString/text()
+    mappingType: NATIVE
+  - geoserver: metadata-identifier
+    geonetwork: //gmd:fileIdentifier/gco:CharacterString/text()
+  - geoserver: parent-identifier
+    geonetwork: //gmd:parentIdentifier/gco:CharacterString/text()
+  - geoserver: data-identifier
+    geonetwork: substring-after(//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString, "dataset/")
+  - geoserver: data-identifier
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString/text()
+  - geoserver: metadata-language-code
+    geonetwork: //gmd:language/gmd:LanguageCode/@codeListValue
+  - geoserver: data-language-code
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language/gmd:LanguageCode/@codeListValue
+  - geoserver: topic-category
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode/text()
+  - geoserver: data-date
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date
+  - geoserver: data-valid-date
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod
+  - geoserver: alternate-title
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString/text()
+  - geoserver: edition
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:edition/gco:CharacterString/text()
+  - geoserver: purpose
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose/gco:CharacterString/text()
+  - geoserver: status
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status/gmd:MD_ProgressCode/@codeListValue
+  - geoserver: update-frequency
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode/@codeListValue
+  - geoserver: resolution-equivalent-scale
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer/text()
+  - geoserver: supplemental-information
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:supplementalInformation/gco:CharacterString/text()
+  - geoserver: metadata-contact
+    geonetwork: //gmd:contact
+  - geoserver: data-contact
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact
+  - geoserver: distributor
+    geonetwork: //gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact
+  - geoserver: rc-rc-use-limitation
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString/text()
+  - geoserver: rc-lim-access-constraint
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue
+  - geoserver: rc-lim-other-constraint-label
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints[gmd:accessConstraints]/gmd:otherConstraints/gmx:Anchor/text()
+  - geoserver: rc-con-use-constraint
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue
+  - geoserver: rc-con-other-constraint
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints[gmd:useConstraints]/gmd:otherConstraints
+  - geoserver: rc-con-other-constraint
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation
+  - geoserver: data-quality-conformance
+    geonetwork: //gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult
+  - geoserver: lineage-statement
+    geonetwork: //gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString/text()
+  - geoserver: lineage-source
+    geonetwork: //gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source/gmd:LI_Source/gmd:description/gco:CharacterString/text()
+  - geoserver: specific-usage
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceSpecificUsage/gmd:MD_Usage
+  - geoserver: data-quality-process-step
+    geonetwork: //gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:processStep
+  - geoserver: transfer-option
+    geonetwork: //gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString="WWW:DOWNLOAD-1.0-http--download" or gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString="WWW:LINK-1.0-http--related" or gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString="LINK download-store"]
+  - geoserver: keyword-inspire-theme-label
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords[gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString="GEMET - INSPIRE thema's, versie 1.0"]/gmd:keyword/gco:CharacterString/text()
+  - geoserver: keyword-inspire-theme-label
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords[gmd:thesaurusName/gmd:CI_Citation/gmd:title/gmx:Anchor="GEMET - INSPIRE themes, version 1.0"]/gmd:keyword/gmx:Anchor/text()
+  - geoserver: keyword-gemet-concept
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords[gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString="GEMET - Concepten, versie 2.4"]/gmd:keyword/gco:CharacterString/text()
+  - geoserver: keyword-free
+    geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords[not(gmd:thesaurusName) or gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString[contains(., 'DOV')]]/gmd:keyword/gco:CharacterString/text()
+
+objectmapping:
+  - typename: responsible-party
+    mapping:
+      - geoserver: organisation
+        geonetwork: .//gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString/text()
+      - geoserver: contactinfo
+        geonetwork: .//gmd:CI_ResponsibleParty/gmd:contactInfo
+      - geoserver: role
+        geonetwork: .//gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode/@codeListValue
+  - typename: contactinfo
+    mapping:
+      - geoserver: delivery-point
+        geonetwork: .//gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString/text()
+      - geoserver: city
+        geonetwork: .//gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString/text()
+      - geoserver: postal-code
+        geonetwork: .//gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString/text()
+      - geoserver: country
+        geonetwork: .//gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString/text()
+      - geoserver: telephone
+        geonetwork: .//gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString/text()
+      - geoserver: email
+        geonetwork: .//gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString/text()
+      - geoserver: website
+        geonetwork: .//gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL/text()
+  - typename: data-identification-date
+    mapping:
+      - geoserver: date
+        geonetwork: .//gmd:CI_Date/gmd:date/gco:Date/text()
+      - geoserver: date-type
+        geonetwork: .//gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue
+  - typename: conformance
+    mapping:
+      - geoserver: specification-ref
+        geonetwork: .//gmd:specification/@xlink:href
+      - geoserver: title-label
+        geonetwork: .//gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString/text()
+      - geoserver: title-label
+        geonetwork: .//gmd:specification/gmd:CI_Citation/gmd:title/gmx:Anchor/text()
+      - geoserver: title-ref
+        geonetwork: .//gmd:specification/gmd:CI_Citation/gmd:title/gmx:Anchor/@xlink:href
+      - geoserver: date
+        geonetwork: .//gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date/text()
+      - geoserver: date-type
+        geonetwork: .//gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue
+      - geoserver: explanation
+        geonetwork: .//gmd:explanation/gco:CharacterString/text()
+      - geoserver: pass
+        geonetwork: .//gmd:pass/gco:Boolean/text()
+  - typename: date-range
+    mapping:
+      - geoserver: start-date
+        geonetwork: .//gml:beginPosition/text()
+      - geoserver: end-date
+        geonetwork: .//gml:endPosition/text()
+  - typename: process-step
+    mapping:
+      - geoserver: description
+        geonetwork: .//gmd:LI_ProcessStep/gmd:description/gco:CharacterString/text()
+      - geoserver: rationale
+        geonetwork: .//gmd:LI_ProcessStep/gmd:rationale/gco:CharacterString/text()
+      - geoserver: datetime
+        geonetwork: .//gmd:LI_ProcessStep/gmd:dateTime/gco:DateTime/text()
+      - geoserver: processor
+        geonetwork: .//gmd:LI_ProcessStep/gmd:processor
+  - typename: transfer-option
+    mapping:
+      - geoserver: linkage
+        geonetwork: .//gmd:CI_OnlineResource/gmd:linkage/gmd:URL/text()
+      - geoserver: protocol
+        geonetwork: .//gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString/text()
+      - geoserver: transfer-name
+        geonetwork: .//gmd:CI_OnlineResource/gmd:name/gco:CharacterString/text()
+      - geoserver: transfer-description
+        geonetwork: .//gmd:CI_OnlineResource/gmd:description/gco:CharacterString/text()
+      - geoserver: transfer-function
+        geonetwork: .//gmd:CI_OnlineResource/gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue
+  - typename: rc-con-other-constraint
+    mapping:
+      - geoserver: other-constraint-label
+        geonetwork: .//gco:CharacterString/text()
+      - geoserver: other-constraint-label
+        geonetwork: .//gmx:Anchor/text()
+      - geoserver: other-constraint-ref
+        geonetwork: .//gmx:Anchor/@xlink:href
+  - typename: specific-usage
+    mapping:
+      - geoserver: usage
+        geonetwork: .//gmd:specificUsage/gco:CharacterString/text()
+      - geoserver: user-contact
+        geonetwork: .//gmd:userContactInfo

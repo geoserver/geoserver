@@ -1,0 +1,44 @@
+types:
+  - typename: featureAttribute
+    attributes:
+        - label: Name
+          key: name
+          fieldType: TEXT
+        - label: Type
+          key: type
+          fieldType: DROPDOWN
+          values:
+              - String
+              - Date
+              - Number
+              - Geometry
+              - Boolean
+              - Unknown
+        - label: Length
+          key: length
+          fieldType: NUMBER
+        - label: Definition
+          key: definition
+          fieldType: TEXT_AREA
+        - label: Minimal Cardinality
+          key: min-occurrence
+          fieldType: NUMBER
+        - label: Maximal Cardinality
+          key: max-occurrence
+          fieldType: NUMBER
+        - label: Domain
+          key: domain
+          fieldType: COMPLEX
+          typename: domain
+          occurrence: REPEAT
+  - typename: domain
+    attributes:
+        - label: Code
+          key: code
+          fieldType: TEXT
+        - label: Value
+          key: value
+          fieldType: TEXT
+        - label: Definition
+          key: definition
+          fieldType: TEXT

@@ -1,0 +1,24 @@
+#sync custom fields and native fields
+customNativeMappings:
+  - type: KEYWORDS
+    mapping:
+      value: KEY_${refsystem-as-list}
+      vocabulary: VOCABULARY_A
+  - type: KEYWORDS
+    mapping:
+      value: KEY_${contact/name}
+      vocabulary: VOCABULARY_B
+  - type: METADATALINKS
+    mapping:
+      value: https://www.dov.vlaanderen.be/geonetwork/?uuid=${identifier-single}
+      type: text/html
+      metadataType: ISO191156:2003
+  - type: METADATALINKS
+    mapping:
+      value: https://www.dov.vlaanderen.be/geonetwork/srv/nl/csw?Service=CSW&Request=GetRecordById&Version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${identifier-single}
+      type: text/xml
+      metadataType: ISO191156:2003
+  - type: IDENTIFIERS
+    mapping:
+      value: ${referencesystem-object/code}
+      authority: ${referencesystem-object/code-space}

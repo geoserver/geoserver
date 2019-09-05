@@ -410,12 +410,12 @@ public class ResponseUtils {
      */
     public static String baseURL(HttpServletRequest req) {
         StringBuffer sb = new StringBuffer(req.getScheme());
-        sb.append("://")
-                .append(req.getServerName())
-                .append(":")
-                .append(req.getServerPort())
-                .append(req.getContextPath())
-                .append("/");
+        sb.append("://").append(req.getServerName());
+        if (!("http".equals(req.getScheme()) && req.getServerPort() == 80
+                || "https".equals(req.getScheme()) && req.getServerPort() == 443)) {
+            sb.append(":").append(req.getServerPort());
+        }
+        sb.append(req.getContextPath()).append("/");
         return sb.toString();
     }
 

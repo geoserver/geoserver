@@ -10,9 +10,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -27,6 +29,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
@@ -37,8 +40,10 @@ import org.geoserver.web.wicket.FeedbackMessageCleaner;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
+import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -120,6 +125,18 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(projectionPolicy);
 
         refForm.add(new ReprojectionIsPossibleValidator(nativeCRS, declaredCRS, projectionPolicy));
+
+        // for Feature types init empty
+        Label otherSRS = new Label("otherSRS", "");
+        if (addOtherSRS(model.getObject())) {
+            // set static label to list of available other SRS
+            String otherSrsMessage =
+                    "Other supported Formats Found in Remote WFS Resource:\n\n"
+                            + model.getObject().getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+            otherSRS.setDefaultModelObject(otherSrsMessage);
+        }
+        otherSRS.setVisible(model.getObject().getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null);
+        refForm.add(otherSRS);
     }
 
     AjaxSubmitLink computeNativeBoundsLink(final Form refForm, final EnvelopePanel nativeBBox) {
@@ -228,6 +245,43 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 return false;
             }
         };
+    }
+
+    public boolean addOtherSRS(ResourceInfo resourceInfo) {
+        // do nothing when
+        if (resourceInfo.getStore().getType() == null) return false;
+        else if (!resourceInfo.getStore().getType().equalsIgnoreCase("Web Feature Server (NG)"))
+            return false;
+        else if (!(resourceInfo instanceof FeatureTypeInfo)) return false;
+
+        try {
+            // featureType.
+            FeatureTypeInfo featureType = (FeatureTypeInfo) resourceInfo;
+            // for WFS-NG resource store OTHER_SRS in metadata
+
+            Name nativeName = new NameImpl(featureType.getNativeName());
+
+            org.geotools.data.wfs.internal.FeatureTypeInfo info =
+                    (org.geotools.data.wfs.internal.FeatureTypeInfo)
+                            featureType
+                                    .getStore()
+                                    .getDataStore(null)
+                                    .getFeatureSource(nativeName)
+                                    .getInfo();
+            // read all identifiers of this CRS into a an comma seperated string
+            if (info.getOtherSRS() != null) {
+                if (!info.getOtherSRS().isEmpty()) {
+                    featureType
+                            .getMetadata()
+                            .put(FeatureTypeInfo.OTHER_SRS, String.join(",", info.getOtherSRS()));
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return false;
     }
 
     class ProjectionPolicyRenderer extends ChoiceRenderer<ProjectionPolicy> {

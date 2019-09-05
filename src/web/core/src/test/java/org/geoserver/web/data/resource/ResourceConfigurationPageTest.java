@@ -23,9 +23,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,8 +44,16 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.feature.retype.RetypingDataStore;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.ColorPickerPanel;
@@ -51,6 +61,9 @@ import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.ParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
+import org.geotools.data.DataAccess;
+import org.geotools.data.wfs.WFSDataStore;
+import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -292,5 +305,80 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                         TIMERANGES.getPrefix(), TIMERANGES.getLocalPart(), CoverageInfo.class);
         Map<String, Serializable> parameters = ci.getParameters();
         assertEquals("NEAREST", parameters.get(OVERVIEW_POLICY.getName().toString()));
+    }
+
+    @Test
+    public void testWFSDataStoreResource() throws IOException {
+        // MOCKING WFS DataStore and Mock Remote Response
+        String baseURL = TestHttpClientProvider.MOCKSERVER;
+        MockHttpClient client = new MockHttpClient();
+
+        URL descURL =
+                new URL(baseURL + "/wfs?REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS");
+        client.expectGet(
+                descURL, new MockHttpResponse(getClass().getResource("/desc_110.xml"), "text/xml"));
+
+        URL descFeatureURL =
+                new URL(
+                        baseURL
+                                + "/wfs?NAMESPACE=xmlns%28topp%3Dhttp%3A%2F%2Fwww.topp.com%29&TYPENAME=topp%3Aroads22&REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS");
+        client.expectGet(
+                descFeatureURL,
+                new MockHttpResponse(getClass().getResource("/desc_feature.xml"), "text/xml"));
+
+        TestHttpClientProvider.bind(client, descURL);
+        TestHttpClientProvider.bind(client, descFeatureURL);
+
+        // MOCKING Catalog
+        URL url = getClass().getResource("/wfs_cap_110.xml");
+
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        DataStoreInfo storeInfo = cb.buildDataStore("MockWFSDataStore");
+        ((DataStoreInfoImpl) storeInfo).setId("1");
+        ((DataStoreInfoImpl) storeInfo).setType("Web Feature Server (NG)");
+        ((DataStoreInfoImpl) storeInfo)
+                .getConnectionParameters()
+                .put(WFSDataStoreFactory.URL.key, url);
+        ((DataStoreInfoImpl) storeInfo)
+                .getConnectionParameters()
+                .put("usedefaultsrs", Boolean.FALSE);
+        ((DataStoreInfoImpl) storeInfo)
+                .getConnectionParameters()
+                .put(WFSDataStoreFactory.PROTOCOL.key, Boolean.FALSE);
+        ((DataStoreInfoImpl) storeInfo).getConnectionParameters().put("TESTING", Boolean.TRUE);
+        getCatalog().add(storeInfo);
+
+        // MOCKING Feature Type
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        FeatureTypeInfo ftInfo =
+                xp.load(
+                        getClass().getResourceAsStream("/featuretype.xml"),
+                        FeatureTypeInfoImpl.class);
+        ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        getCatalog().add(ftInfo);
+
+        // setting mock feature type as resource of Layer from Test Data
+        LayerInfo layerInfo = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
+        layerInfo.setResource(ftInfo);
+
+        // Injecting Mock Http client in WFS Data Store to read mock respones from XML
+        DataAccess dac = ftInfo.getStore().getDataStore(null);
+        RetypingDataStore retypingDS = (RetypingDataStore) dac;
+        WFSDataStore wfsDS = (WFSDataStore) retypingDS.getWrapped();
+        wfsDS.getWfsClient().setHttpClient(client);
+
+        // now begins the test
+        // page should show additional SRS in WFS cap document
+        login();
+        // render page for a layer with WFS-NG resource
+        tester.startPage(new ResourceConfigurationPage(layerInfo, false));
+        String value = tester.getTagById("otherSRS").getValue();
+        System.out.println(value);
+        logout();
+
+        String expected =
+                "Other supported Formats Found in Remote WFS Resource:\n\nEPSG:4326,EPSG:3857";
+        assertTrue(expected.equalsIgnoreCase(value));
+        assertNotNull(layerInfo.getResource().getMetadata().get(FeatureTypeInfo.OTHER_SRS));
     }
 }

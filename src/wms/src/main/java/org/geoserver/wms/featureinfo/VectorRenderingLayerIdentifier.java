@@ -137,7 +137,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         // at the moment the new identifier works only with simple features due to a limitation
         // in the StreamingRenderer
-        if (!(params.getLayer().getFeatureSource(true).getSchema() instanceof SimpleFeatureType)) {
+        if (!(params.getLayer().getFeatureSource(true, params.getRequestedCRS()).getSchema()
+                instanceof SimpleFeatureType)) {
             return fallback.identify(params, maxFeatures);
         }
 
@@ -372,7 +373,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         GetMapRequest getMap = params.getGetMapRequest();
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
-                layer.getFeatureSource(true);
+                layer.getFeatureSource(true, getMap.getCrs());
         final Query definitionQuery = new Query(featureSource.getSchema().getName().getLocalPart());
         definitionQuery.setVersion(getMap.getFeatureVersion());
         definitionQuery.setFilter(filter);

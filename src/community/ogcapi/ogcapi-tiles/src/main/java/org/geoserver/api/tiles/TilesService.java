@@ -363,7 +363,7 @@ public class TilesService {
         // process the requested types in order, return the first compatible layer type
         for (MediaType requestedType : requestedTypes) {
             for (Map.Entry<MediaType, MimeType> layerType : layerTypes.entrySet()) {
-                if (requestedType.isCompatibleWith(layerType.getKey())) {
+                if (requestedType.equals(layerType.getKey())) {
                     // requested types can be generic, layer types are specific
                     return layerType.getValue();
                 }

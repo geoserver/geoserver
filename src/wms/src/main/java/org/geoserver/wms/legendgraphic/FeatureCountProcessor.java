@@ -177,6 +177,8 @@ class FeatureCountProcessor {
 
     private boolean hideEmptyRules;
 
+    private boolean countMatched;
+
     /**
      * Builds a new feature count processor given the legend graphic request. It can be used to
      * alter with feature counts many rule sets.
@@ -186,6 +188,11 @@ class FeatureCountProcessor {
     public FeatureCountProcessor(GetLegendGraphicRequest request) {
         this.request = request;
         this.getMapReader = new GetMapKvpRequestReader(request.getWms());
+        if (Boolean.TRUE.equals(
+                request.getLegendOption(
+                        GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))) {
+            countMatched = true;
+        }
         if (Boolean.TRUE.equals(
                 request.getLegendOption(GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
             hideEmptyRules = true;
@@ -233,11 +240,14 @@ class FeatureCountProcessor {
                 continue;
             }
             String label = LegendUtils.getRuleLabel(rule, request);
-            if (StringUtils.isEmpty(label)) {
-                label = "(" + counter.get() + ")";
-            } else {
-                label = label + " (" + counter.get() + ")";
+            if (this.countMatched) {
+                if (StringUtils.isEmpty(label)) {
+                    label = "(" + counter.get() + ")";
+                } else {
+                    label = label + " (" + counter.get() + ")";
+                }
             }
+
             TargetLabelUpdater duplicatingVisitor = new TargetLabelUpdater(label);
             rule.accept(duplicatingVisitor);
             Rule clone = (Rule) duplicatingVisitor.getCopy();

@@ -37,7 +37,9 @@ public class TilesTestSupport extends OGCApiTestSupport {
         String roadId = getLayerId(MockData.ROAD_SEGMENTS);
         GeoServerTileLayer roadTiles = (GeoServerTileLayer) getGWC().getTileLayerByName(roadId);
         Set<String> formats = roadTiles.getInfo().getMimeFormats();
-        formats.add(ApplicationMime.mapboxVector.getMimeType());
+        formats.add(ApplicationMime.mapboxVector.getFormat());
+        formats.add(ApplicationMime.topojson.getFormat());
+        formats.add(ApplicationMime.geojson.getFormat());
         // also add png8
         formats.add(ImageMime.png8.getFormat());
         getGWC().save(roadTiles);

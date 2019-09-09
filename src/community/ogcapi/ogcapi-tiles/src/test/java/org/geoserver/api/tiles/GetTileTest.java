@@ -7,6 +7,7 @@ package org.geoserver.api.tiles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
+import org.geowebcache.mime.ApplicationMime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -158,6 +160,26 @@ public class GetTileTest extends TilesTestSupport {
                 new VectorTileDecoder().decode(sr.getContentAsByteArray());
         // one road is before greenwich, not included in this tile
         assertEquals(4, features.asList().size());
+    }
+
+    @Test
+    public void testJsonTile() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                                + ApplicationMime.geojson.getFormat());
+        assertEquals(200, sr.getStatus());
+        assertEquals(ApplicationMime.json.getFormat(), sr.getContentType());
+
+        // check the headers
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a geojson tile
+        DocumentContext json = getAsJSONPath(sr);
+        assertEquals("FeatureCollection", json.read("type"));
     }
 
     @Test

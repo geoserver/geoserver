@@ -93,7 +93,15 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                 for (Property p2 : ((ComplexAttribute) p).getProperties()) {
                     if (p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         String name = p2.getName().getLocalPart().substring(1);
-                        atts.addAttribute("", name, name, "", p2.getValue().toString());
+                        String ns = p2.getName().getNamespaceURI();
+                        String qName =
+                                ns == null
+                                        ? name
+                                        : MetaDataDescriptor.NAMESPACES.getPrefix(
+                                                        p2.getName().getNamespaceURI())
+                                                + ":"
+                                                + name;
+                        atts.addAttribute(ns, name, qName, "", p2.getValue().toString());
                     }
                 }
 

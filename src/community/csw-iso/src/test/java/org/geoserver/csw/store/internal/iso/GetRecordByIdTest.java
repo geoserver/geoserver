@@ -45,6 +45,14 @@ public class GetRecordByIdTest extends MDTestSupport {
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:dateStamp/gco:Date/@xsi:nil",
                 d);
         assertXpathEvaluatesTo(
+                "anchor",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose/gmx:Anchor",
+                d);
+        assertXpathEvaluatesTo(
+                "anchor-ref",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose/gmx:Anchor/@xlink:href",
+                d);
+        assertXpathEvaluatesTo(
                 "http://purl.org/dc/dcmitype/Dataset",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
                 d);

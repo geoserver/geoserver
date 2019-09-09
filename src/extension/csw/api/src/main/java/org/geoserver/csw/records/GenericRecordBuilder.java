@@ -58,7 +58,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         public abstract TreeNode clone();
 
         public boolean cleanUp() {
-            // TODO Auto-generated method stub
+            // by default, do nothing
             return false;
         }
     }

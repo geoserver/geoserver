@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.csw.records.iso;
 
 import java.io.IOException;
@@ -25,8 +29,6 @@ import org.xml.sax.helpers.NamespaceSupport;
 /**
  * Describes the ISO FeatureCatalogue records and provides some handy constants to help building
  * features representing FC_FeatureCatalogue.
- *
- * @author Niels Charlier
  */
 public class FeatureCatalogueDescriptor extends AbstractRecordDescriptor {
 

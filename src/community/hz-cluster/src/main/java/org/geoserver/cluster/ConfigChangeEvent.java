@@ -10,6 +10,7 @@ import static com.google.common.base.Objects.equal;
 import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.geoserver.catalog.AttributionInfo;
@@ -117,6 +118,12 @@ public class ConfigChangeEvent extends Event {
 
     /** type of config change */
     Type type;
+
+    List<String> propertyNames;
+
+    List<Object> oldValues;
+
+    List<Object> newValues;
 
     private String nativeName;
 
@@ -234,5 +241,29 @@ public class ConfigChangeEvent extends Event {
     @Nullable
     public String getNativeName() {
         return nativeName;
+    }
+
+    public List<String> getPropertyNames() {
+        return propertyNames;
+    }
+
+    public void setPropertyNames(List<String> propertyNames) {
+        this.propertyNames = propertyNames;
+    }
+
+    public List<Object> getOldValues() {
+        return oldValues;
+    }
+
+    public void setOldValues(List<Object> oldValues) {
+        this.oldValues = oldValues;
+    }
+
+    public List<Object> getNewValues() {
+        return newValues;
+    }
+
+    public void setNewValues(List<Object> newValues) {
+        this.newValues = newValues;
     }
 }

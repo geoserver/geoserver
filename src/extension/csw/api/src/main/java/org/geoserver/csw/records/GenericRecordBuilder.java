@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geotools.data.complex.util.ComplexFeatureConstants;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
@@ -42,6 +44,8 @@ public class GenericRecordBuilder implements RecordBuilder {
      * A user property of the boundingBox attribute containing the original envelopes of the Record.
      */
     public static final String ORIGINAL_BBOXES = "RecordOriginalBounds";
+
+    private static final Pattern PATTERN_ATT_WITH_INDEX = Pattern.compile("([^\\[]*)\\[(.*)\\]");
 
     protected ComplexFeatureBuilder fb;
     protected List<ReferencedEnvelope> boxes = new ArrayList<ReferencedEnvelope>();
@@ -160,7 +164,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             int[] splitIndex) {
 
         AttributeDescriptor descriptor =
-                (AttributeDescriptor) Types.findDescriptor(type, path[index]);
+                (AttributeDescriptor) Types.findDescriptor(type, attName(path[index]));
 
         if (descriptor == null) {
             throw new IllegalArgumentException(
@@ -289,6 +293,15 @@ public class GenericRecordBuilder implements RecordBuilder {
                     }
                 }
             }
+        }
+    }
+
+    private String attName(String attWithIndex) {
+        Matcher matcher = PATTERN_ATT_WITH_INDEX.matcher(attWithIndex);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        } else {
+            return attWithIndex;
         }
     }
 

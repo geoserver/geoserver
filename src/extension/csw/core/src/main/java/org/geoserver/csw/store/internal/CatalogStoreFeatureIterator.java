@@ -207,27 +207,38 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     private String mapProperties(CatalogInfo resource) {
         String id = null;
         for (CatalogStoreMapping.CatalogStoreMappingElement mappingElement : mapping.elements()) {
-            Object value = mappingElement.getContent().evaluate(resource);
+            Object value;
+            try {
+                value = mappingElement.getContent().evaluate(resource);
 
-            if (value != null || mappingElement.isRequired()) {
-                if (value instanceof Collection) {
-                    List<Object> elements =
-                            interpolate(interpolationProperties, (Collection<?>) value);
-                    if (elements != null) {
+                if (value != null || mappingElement.isRequired()) {
+                    if (value instanceof Collection) {
+                        List<Object> elements =
+                                interpolate(interpolationProperties, (Collection<?>) value);
+                        if (elements != null) {
+                            builder.addElement(
+                                    mappingElement.getKey(),
+                                    mappingElement.getSplitIndex(),
+                                    elements.toArray(new Object[elements.size()]));
+                        }
+                    } else {
                         builder.addElement(
                                 mappingElement.getKey(),
-                                mappingElement.getSplitIndex(),
-                                elements.toArray(new Object[elements.size()]));
+                                interpolate(interpolationProperties, ObjectUtils.toString(value)));
                     }
-                } else {
-                    builder.addElement(
-                            mappingElement.getKey(),
-                            interpolate(interpolationProperties, ObjectUtils.toString(value)));
+
+                    if (mappingElement == mapping.getIdentifierElement()) {
+                        id = interpolate(interpolationProperties, ObjectUtils.toString(value));
+                    }
                 }
 
-                if (mappingElement == mapping.getIdentifierElement()) {
-                    id = interpolate(interpolationProperties, ObjectUtils.toString(value));
-                }
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "Failed mapping property '"
+                                + mappingElement.getKey()
+                                + "': "
+                                + e.getMessage(),
+                        e);
             }
         }
         return id;
@@ -283,43 +294,54 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
 
     private Feature convertToFeature(ResourceInfo resource) {
+        try {
+            String id = mapProperties(resource);
 
-        String id = mapProperties(resource);
-
-        // move on to the bounding boxes
-        if (mapping.isIncludeEnvelope()) {
-            ReferencedEnvelope bbox = null;
-            try {
-                bbox = resource.boundingBox();
-            } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+            // move on to the bounding boxes
+            if (mapping.isIncludeEnvelope()) {
+                ReferencedEnvelope bbox = null;
+                try {
+                    bbox = resource.boundingBox();
+                } catch (Exception e) {
+                    LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+                }
+                if (bbox != null) {
+                    builder.addBoundingBox(bbox);
+                }
             }
-            if (bbox != null) {
-                builder.addBoundingBox(bbox);
+            Feature feature = builder.build(id);
+            FeatureCustomizer customizer = getCustomizer(resource);
+            if (customizer != null) {
+                customizer.customizeFeature(feature, ModificationProxy.unwrap(resource));
             }
+            return feature;
+        } catch (IllegalArgumentException e) {
+            String message = "Error mapping resource " + resource.getName() + ": " + e.getMessage();
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new IllegalArgumentException(message, e);
         }
-        Feature feature = builder.build(id);
-        FeatureCustomizer customizer = getCustomizer(resource);
-        if (customizer != null) {
-            customizer.customizeFeature(feature, ModificationProxy.unwrap(resource));
-        }
-        return feature;
     }
 
     private Feature convertToFeature(LayerGroupInfo resource) {
+        try {
+            String id = mapProperties(resource);
 
-        String id = mapProperties(resource);
-
-        // move on to the bounding boxes
-        if (mapping.isIncludeEnvelope()) {
-            ReferencedEnvelope bbox = null;
-            bbox = resource.getBounds();
-            if (bbox != null) {
-                builder.addBoundingBox(bbox);
+            // move on to the bounding boxes
+            if (mapping.isIncludeEnvelope()) {
+                ReferencedEnvelope bbox = null;
+                bbox = resource.getBounds();
+                if (bbox != null) {
+                    builder.addBoundingBox(bbox);
+                }
             }
-        }
 
-        return builder.build(id);
+            return builder.build(id);
+        } catch (IllegalArgumentException e) {
+            String message =
+                    "Error mapping layer group " + resource.getName() + ": " + e.getMessage();
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new IllegalArgumentException(message, e);
+        }
     }
 
     @Override

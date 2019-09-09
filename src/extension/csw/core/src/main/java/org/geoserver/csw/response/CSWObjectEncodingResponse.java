@@ -47,7 +47,6 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
     protected void configureEncoder(
             Encoder encoder, String elementName, Class<?> xmlConfiguration) {
         encoder.setNamespaceAware(true);
-        encoder.getNamespaces().declarePrefix("gml", GML.NAMESPACE);
         encoder.getNamespaces().declarePrefix("xlink", XLINK.NAMESPACE);
         try {
             for (RecordDescriptor rd : catalogStore.getRecordDescriptors()) {
@@ -61,5 +60,6 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
         } catch (IOException e) {
             throw new CSWException(e.getMessage(), e);
         }
+        encoder.getNamespaces().declarePrefix("gml", GML.NAMESPACE);
     }
 }

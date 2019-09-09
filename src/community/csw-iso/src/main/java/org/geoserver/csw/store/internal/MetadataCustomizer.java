@@ -29,7 +29,9 @@ public class MetadataCustomizer extends FeatureCustomizer {
     private static final String TYPENAME = "MD_Metadata_Type";
 
     private static final String ONLINE_PARENT_NODE =
-            "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine";
+            "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions";
+
+    private static final AttributeDescriptor ONLINE_DESCRIPTOR;
 
     private static final AttributeDescriptor LINKAGE_ATTRIBUTE_DESCRIPTOR;
 
@@ -52,9 +54,8 @@ public class MetadataCustomizer extends FeatureCustomizer {
                         transferOptionsPropType
                                 .getDescriptor("MD_DigitalTransferOptions")
                                 .getType();
-        AttributeDescriptor onlinePropTypeDescr =
-                (AttributeDescriptor) transferOptionsType.getDescriptor("onLine");
-        ComplexType onlinePropType = (ComplexType) onlinePropTypeDescr.getType();
+        ONLINE_DESCRIPTOR = (AttributeDescriptor) transferOptionsType.getDescriptor("onLine");
+        ComplexType onlinePropType = (ComplexType) ONLINE_DESCRIPTOR.getType();
         ONLINE_RESOURCE_DESCRIPTOR =
                 (AttributeDescriptor) onlinePropType.getDescriptor("CI_OnlineResource");
         ComplexType onlineType = (ComplexType) ONLINE_RESOURCE_DESCRIPTOR.getType();
@@ -148,7 +149,13 @@ public class MetadataCustomizer extends FeatureCustomizer {
                         LINKAGE_ATTRIBUTE_DESCRIPTOR,
                         null);
 
+        // Wrap in Online Resource
+        Property onlineResource =
+                new ComplexAttributeImpl(
+                        Collections.singletonList(linkage), ONLINE_RESOURCE_DESCRIPTOR, null);
+
+        // Wrap in onLine
         return new ComplexAttributeImpl(
-                Collections.singletonList(linkage), ONLINE_RESOURCE_DESCRIPTOR, null);
+                Collections.singletonList(onlineResource), ONLINE_DESCRIPTOR, null);
     }
 }

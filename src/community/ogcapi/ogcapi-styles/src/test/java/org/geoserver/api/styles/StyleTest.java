@@ -14,6 +14,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -22,6 +25,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StyleTest extends StylesTestSupport {
@@ -111,6 +115,25 @@ public class StyleTest extends StylesTestSupport {
     }
 
     @Test
+    public void testPutOnNewStyleCharsetIssue() throws Exception {
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
+        byte[] body = sld != null ? sld.getBytes() : (byte[]) null;
+
+        MockHttpServletRequest request = createRequest("ogc/styles/styles/myNewStyle");
+        request.setMethod("PUT");
+        request.setContentType(SLDHandler.MIMETYPE_10);
+        request.setContent(body);
+
+        MockHttpServletResponse response = dispatch(new NonUpdatingServletRequest(request));
+        assertEquals(204, response.getStatus());
+
+        // check the style got created
+        StyleInfo myNewStyle = getCatalog().getStyleByName("myNewStyle");
+        assertNotNull(myNewStyle);
+        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+    }
+
+    @Test
     public void testValidateOnly() throws Exception {
         // check initial name (there is none in the initial style)
         StyleInfo ponds = getCatalog().getStyleByName("Ponds");
@@ -143,6 +166,26 @@ public class StyleTest extends StylesTestSupport {
         String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
         MockHttpServletResponse response =
                 postAsServletResponse("ogc/styles/styles", sld, SLDHandler.MIMETYPE_10);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/styles/styles/SimplePoint",
+                response.getHeader(HttpHeaders.LOCATION));
+
+        // check the style got created
+        StyleInfo myNewStyle = getCatalog().getStyleByName(SIMPLE_POINT);
+        assertNotNull(myNewStyle);
+        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+    }
+
+    @Test
+    public void testPostNewStyleNoCharset() throws Exception {
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
+        MockHttpServletRequest request = createRequest("ogc/styles/styles");
+        request.setMethod("POST");
+        request.setContentType(SLDHandler.MIMETYPE_10);
+        request.setContent(sld.getBytes("UTF-8"));
+
+        MockHttpServletResponse response = dispatch(new NonUpdatingServletRequest(request));
         assertEquals(201, response.getStatus());
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/SimplePoint",
@@ -208,5 +251,25 @@ public class StyleTest extends StylesTestSupport {
         // try again, this time it should be a 404
         response = deleteAsServletResponse("ogc/styles/styles/" + SIMPLE_POINT);
         assertEquals(404, response.getStatus());
+    }
+
+    static final class NonUpdatingServletRequest extends HttpServletRequestWrapper {
+
+        String characterEncoding;
+
+        public NonUpdatingServletRequest(HttpServletRequest request) {
+            super(request);
+        }
+
+        @Override
+        public String getCharacterEncoding() {
+            return characterEncoding;
+        }
+
+        @Override
+        public void setCharacterEncoding(String enc) throws UnsupportedEncodingException {
+            // do not delegate, so that the content type won't be updated
+            this.characterEncoding = enc;
+        }
     }
 }

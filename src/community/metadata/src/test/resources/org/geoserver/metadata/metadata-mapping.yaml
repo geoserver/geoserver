@@ -1,0 +1,54 @@
+namespaces:
+  - prefix: gco
+    uri: http://www.isotc211.org/2005/gco
+  - prefix: gmd
+    uri: http://www.isotc211.org/2005/gmd
+  - prefix: gml
+    uri: http://www.opengis.net/gml 
+  - prefix: xlink
+    uri:  http://www.w3.org/1999/xlink  
+
+#https://oefen.dov.vlaanderen.be/geonetwork/srv/api/records/024a15a4-a6f9-41ca-b28a-f17e3f5623f9/formatters/xml
+#//book[author="Neal Stephenson"]/title
+geonetworkmapping:
+    -  geoserver: identifier-single
+       geonetwork: substring-after(//gmd:fileIdentifier//gco:CharacterString/text(), "prefix/")
+    -  geoserver: refsystem-as-list
+       geonetwork: //gmd:referenceSystemInfo//gmd:code//gco:CharacterString/text()
+    -  geoserver: refsystem-as-list
+       geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString/text()
+    -  geoserver: referencesystem-object
+       geonetwork: //gmd:referenceSystemInfo
+    -  geoserver: referencesystem-object-list
+       geonetwork: //gmd:referenceSystemInfo
+    -  geoserver: referencesystem-object-list
+       geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty
+    -  geoserver: contact
+       geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty
+    -  geoserver: title
+       geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString/text()
+       mappingType: NATIVE
+    -  geoserver: alias
+       geonetwork: //gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString/text()
+       mappingType: NATIVE
+
+objectmapping:
+    - typename: referencesystem
+      mapping:
+          - geoserver: code
+            geonetwork: .//gmd:code//gco:CharacterString/text()
+          - geoserver: code-space
+            geonetwork: .//gmd:codeSpace//gco:CharacterString/text()
+          - geoserver: code
+            geonetwork: ./gmd:organisationName/gco:CharacterString/text()
+          - geoserver: code-space
+            geonetwork: ./gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL/text()
+    - typename: contact
+      mapping:
+          - geoserver: name
+            geonetwork: ./gmd:organisationName/gco:CharacterString/text()
+          - geoserver: url
+            geonetwork: ./gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL/text()
+          - geoserver: phone
+            geonetwork: .//gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString/text()
+

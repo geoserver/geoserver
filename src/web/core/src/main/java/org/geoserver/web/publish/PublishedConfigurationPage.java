@@ -287,6 +287,20 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
      */
     protected void doSave() {
         try {
+            for (Entry<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> e :
+                    tabPanelCustomModels.entrySet()) {
+                Class<? extends PublishedEditTabPanel<T>> panelClass = e.getKey();
+                IModel<?> customModel = e.getValue();
+                if (customModel == null) {
+                    continue;
+                }
+                PublishedEditTabPanel<?> tabPanel =
+                        panelClass
+                                .getConstructor(String.class, IModel.class, IModel.class)
+                                .newInstance("temp", myModel, customModel);
+                tabPanel.beforeSave();
+            }
+
             doSaveInternal();
             if (hasErrorMessage()) {
                 return;

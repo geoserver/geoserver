@@ -1,0 +1,3 @@
+geonetworks:
+  - name: geonetwork
+    url: http://localhost/geonetwork/srv/api/records/${UUID}/formatters/xml?attachment=true

@@ -339,6 +339,18 @@
               <output>${project.build.directory}/api/importerData</output>
             </configuration>
           </execution>
+          <execution>
+            <id>metadata</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/metadata.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/metadata</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

@@ -1685,13 +1685,23 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>
+    </profile>    
     <profile>
       <id>mapml</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-mapml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>metadata</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-metadata</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

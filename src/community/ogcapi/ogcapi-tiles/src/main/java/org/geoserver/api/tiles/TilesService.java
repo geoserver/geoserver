@@ -359,7 +359,7 @@ public class TilesService {
                         .filter(mt -> renderedTile ? !mt.isVector() : mt.isVector())
                         .collect(
                                 Collectors.toMap(
-                                        mt -> MediaType.parseMediaType(mt.toString()), mt -> mt));
+                                        mt -> MediaType.parseMediaType(mt.getFormat()), mt -> mt));
         // process the requested types in order, return the first compatible layer type
         for (MediaType requestedType : requestedTypes) {
             for (Map.Entry<MediaType, MimeType> layerType : layerTypes.entrySet()) {

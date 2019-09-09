@@ -496,37 +496,8 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @param bgColor the background color for which differing pixels are looked for
      */
     protected void assertNotBlank(String testName, BufferedImage image, Color bgColor) {
-        int pixelsDiffer = countNonBlankPixels(testName, image, bgColor);
+        int pixelsDiffer = super.countNonBlankPixels(testName, image, bgColor);
         assertTrue(testName + " image is completely blank", 0 < pixelsDiffer);
-    }
-
-    /**
-     * For WMS tests.
-     *
-     * <p>Counts the number of non black pixels
-     *
-     * @param testName
-     * @param image
-     * @param bgColor
-     */
-    protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
-        int pixelsDiffer = 0;
-
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                if (image.getRGB(x, y) != bgColor.getRGB()) {
-                    ++pixelsDiffer;
-                }
-            }
-        }
-
-        LOGGER.fine(
-                testName
-                        + ": pixel count="
-                        + (image.getWidth() * image.getHeight())
-                        + " non bg pixels: "
-                        + pixelsDiffer);
-        return pixelsDiffer;
     }
 
     /**

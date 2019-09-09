@@ -151,6 +151,34 @@ public class GetTileTest extends TilesTestSupport {
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
 
         // check the headers
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a vector tile
+        VectorTileDecoder.FeatureIterable features =
+                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        // one road is before greenwich, not included in this tile
+        assertEquals(4, features.asList().size());
+    }
+
+    @Test
+    public void testPng8Tile() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/maps/RoadSegments/tiles/EPSG:900913/EPSG:900913:10/511/512?f=image/png8");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a PNG
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(sr.getContentAsByteArray()));
+        assertNotBlank("testPng8Tile", image, null);
+    }
+
+    public void checkRoadGwcHeaders(String layerId, MockHttpServletResponse sr) {
+        // check the headers
         assertEquals("EPSG:900913", sr.getHeader("geowebcache-gridset"));
         assertEquals("EPSG:900913", sr.getHeader("geowebcache-crs"));
         // gwc has y axis inverted, mind
@@ -162,11 +190,5 @@ public class GetTileTest extends TilesTestSupport {
         assertEquals("no-cache", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
         assertNotNull(sr.getHeader("Last-Modified"));
-
-        // check it can actually be read as a vector tile
-        VectorTileDecoder.FeatureIterable features =
-                new VectorTileDecoder().decode(sr.getContentAsByteArray());
-        // one road is before greenwich, not included in this tile
-        assertEquals(4, features.asList().size());
     }
 }

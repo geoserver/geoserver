@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.tiles;
 
+import java.util.Set;
 import org.geoserver.api.OGCApiTestSupport;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -16,6 +17,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geowebcache.mime.ApplicationMime;
+import org.geowebcache.mime.ImageMime;
 
 public class TilesTestSupport extends OGCApiTestSupport {
 
@@ -34,7 +36,10 @@ public class TilesTestSupport extends OGCApiTestSupport {
         // add vector tiles as a format
         String roadId = getLayerId(MockData.ROAD_SEGMENTS);
         GeoServerTileLayer roadTiles = (GeoServerTileLayer) getGWC().getTileLayerByName(roadId);
-        roadTiles.getInfo().getMimeFormats().add(ApplicationMime.mapboxVector.getMimeType());
+        Set<String> formats = roadTiles.getInfo().getMimeFormats();
+        formats.add(ApplicationMime.mapboxVector.getMimeType());
+        // also add png8
+        formats.add(ImageMime.png8.getFormat());
         getGWC().save(roadTiles);
 
         // reduce it to its actual bounding box to see grid subsets

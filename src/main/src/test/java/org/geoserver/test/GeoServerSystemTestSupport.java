@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.*;
@@ -1908,6 +1909,66 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         di.setNearestMatchEnabled(nearestMatch);
         di.setAcceptableInterval(acceptableInterval);
         getCatalog().save(info);
+    }
+
+    /**
+     * Asserts that the image is not blank, in the sense that there must be pixels different from
+     * the passed background color.
+     *
+     * @param testName the name of the test to throw meaningfull messages if something goes wrong
+     * @param image the imgage to check it is not "blank"
+     * @param bgColor the background color for which differing pixels are looked for
+     */
+    protected void assertNotBlank(String testName, BufferedImage image, Color bgColor) {
+        int pixelsDiffer = countNonBlankPixels(testName, image, bgColor);
+        assertTrue(testName + " image is comlpetely blank", 0 < pixelsDiffer);
+    }
+
+    /**
+     * Asserts that the image is blank, in the sense that all pixels will be equal to the background
+     * color
+     *
+     * @param testName the name of the test to throw meaningful messages if something goes wrong
+     * @param image the image to check it is not "blank"
+     * @param bgColor the background color for which differing pixels are looked for
+     */
+    protected void assertBlank(String testName, BufferedImage image, Color bgColor) {
+        int pixelsDiffer = countNonBlankPixels(testName, image, bgColor);
+        assertEquals(testName + " image is completely blank", 0, pixelsDiffer);
+    }
+
+    /**
+     * Counts the number of non black pixels
+     *
+     * @param testName
+     * @param image
+     * @param bgColor
+     */
+    protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
+        int pixelsDiffer = 0;
+
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int rgb = image.getRGB(x, y);
+                if (bgColor == null || bgColor.getAlpha() == 0) {
+                    if (((rgb >> 24) & 0xff) != 0) {
+                        ++pixelsDiffer;
+                    }
+                } else {
+                    if (rgb != bgColor.getRGB()) {
+                        ++pixelsDiffer;
+                    }
+                }
+            }
+        }
+
+        LOGGER.fine(
+                testName
+                        + ": pixel count="
+                        + (image.getWidth() * image.getHeight())
+                        + " non bg pixels: "
+                        + pixelsDiffer);
+        return pixelsDiffer;
     }
 
     //

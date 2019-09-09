@@ -121,7 +121,7 @@ public class TiledCollectionDocument extends AbstractDocument {
                 addLinkForFormat(
                         this.id,
                         baseURL,
-                        dataFormat.getMimeType(),
+                        dataFormat.getFormat(),
                         "/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
                         "tiles");
             }
@@ -132,7 +132,7 @@ public class TiledCollectionDocument extends AbstractDocument {
                 addLinkForFormat(
                         this.id,
                         baseURL,
-                        imgeFormat.getMimeType(),
+                        imgeFormat.getFormat(),
                         "/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
                         "tiles");
             }
@@ -185,7 +185,7 @@ public class TiledCollectionDocument extends AbstractDocument {
                         "ogc/tiles/collections/" + ResponseUtils.urlEncode(layerName) + path,
                         Collections.singletonMap("f", format),
                         URLMangler.URLType.SERVICE);
-        addLink(new Link(apiUrl, rel, format, layerName + " tiles as " + format.toString()));
+        addLink(new Link(apiUrl, rel, format, layerName + " tiles as " + format));
     }
 
     CollectionExtents getExtentFromGridsets(TileLayer tileLayer)

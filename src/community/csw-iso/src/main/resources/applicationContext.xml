@@ -20,8 +20,9 @@
     </bean>   
     
     <!-- The record descriptor -->
-    <bean id="mdRecordDescriptor" class="org.geoserver.csw.records.iso.MetaDataDescriptor"/>
-    
+    <bean id="mdRecordDescriptor" class="org.geoserver.csw.records.iso.MetaDataDescriptor"/>    
+    <bean id="gfcRecordDescriptor" class="org.geoserver.csw.records.iso.FeatureCatalogueDescriptor"/>
+        
     <bean id="FeatureCustomizerMetadata" class="org.geoserver.csw.store.internal.MetadataCustomizer" >
         <property name="downloadLinkHandler">
             <ref bean="DownloadLinkHandler" />

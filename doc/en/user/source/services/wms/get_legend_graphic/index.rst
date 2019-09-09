@@ -95,7 +95,7 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **rows** enables **multirow** layout when layout is **horizontal**. The value is the the maximum rows number of legend. The columns used are equal to the next greater integer of <total of icons>/<number of rows>.
     - **grouplayout** Orientation of groups of layer, possible values are **horizontal** and **vertical** (default if not specified).
     - **countMatched** When set to true, adds at the end of each label the number of features matching that rule in the current map. Requires extra parameters, see details in the :ref:`dedicated section <content-dependent>`.
-    - **hideEmptyRules** When set to true and **countMatched** is also true, hides rules that are not matching any feature. 
+    + **hideEmptyRules** When set to true hides rules that are not matching any feature. 
     
 
 Here is a sample request sporting most the options::

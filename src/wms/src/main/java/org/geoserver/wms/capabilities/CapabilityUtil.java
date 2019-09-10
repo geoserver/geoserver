@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.FeatureTypeStyle;
@@ -176,5 +177,13 @@ public final class CapabilityUtil {
         Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStandardRenderPixel), 2) * 2);
 
         return scaleHint;
+    }
+
+    /** Returns true if legend accomplish some rules to be a valid one. */
+    public static boolean validateLegendInfo(LegendInfo legend) {
+        return legend != null
+                && legend.getOnlineResource() != null
+                && legend.getHeight() > 0
+                && legend.getWidth() > 0;
     }
 }

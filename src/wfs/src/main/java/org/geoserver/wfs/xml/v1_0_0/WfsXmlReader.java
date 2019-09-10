@@ -16,6 +16,7 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSURIHandler;
+import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
@@ -27,6 +28,7 @@ import org.geotools.xsd.Parser;
  *     <p>TODO: there is too much duplication with the 1.1.0 reader, factor it out.
  */
 public class WfsXmlReader extends XmlRequestReader {
+
     /** Xml Configuration */
     Configuration configuration;
     /** geoserver configuration */
@@ -66,6 +68,8 @@ public class WfsXmlReader extends XmlRequestReader {
         // set validation based on strict or not
         parser.setValidating(strict.booleanValue());
         WFSURIHandler.addToParser(geoServer, parser);
+        // set entity expansion limit
+        parser.setEntityExpansionLimit(WFSXmlUtils.getEntityExpansionLimitConfiguration());
 
         // parse
         Object parsed = parser.parse(reader);

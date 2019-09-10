@@ -57,6 +57,8 @@ public class WfsXmlReader extends XmlRequestReader {
 
         Parser parser = new Parser(configuration);
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
+        // set entity expansion limit
+        parser.setEntityExpansionLimit(WFSXmlUtils.getEntityExpansionLimitConfiguration());
 
         WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
         Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);

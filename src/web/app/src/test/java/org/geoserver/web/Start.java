@@ -112,7 +112,9 @@ public class Start {
             jettyServer.setHandler(wah);
             wah.setTempDirectory(new File("target/work"));
             // this allows to send large SLD's from the styles form
-            wah.getServletContext().getContextHandler().setMaxFormContentSize(1024 * 1024 * 2);
+            wah.getServletContext().getContextHandler().setMaxFormContentSize(1024 * 1024 * 5);
+            // this allows to configure hyperspectral images
+            wah.getServletContext().getContextHandler().setMaxFormKeys(2000);
 
             String jettyConfigFile = System.getProperty("jetty.config.file");
             if (jettyConfigFile != null) {

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.wicket.util.tester.TagTester;
-import org.geoserver.system.status.web.SystemStatusMonitorPanel;
+import org.geoserver.system.status.web.RefreshedPanel;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.admin.StatusPage;
 import org.junit.Before;
@@ -35,7 +35,7 @@ public class SystemStatusMonitorPanelTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testUpdate() throws Exception {
-        SimpleDateFormat formatter = new SimpleDateFormat(SystemStatusMonitorPanel.datePattern);
+        SimpleDateFormat formatter = new SimpleDateFormat(RefreshedPanel.datePattern);
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:tabs-container:tabs:2:link", true);
         TagTester time1 = tester.getTagByWicketId("time");
@@ -57,5 +57,23 @@ public class SystemStatusMonitorPanelTest extends GeoServerWicketTestSupport {
         Date thirdTime = formatter.parse(time3.getValue());
         // Check if update time is changed (use 500ms due to time imprecision)
         assertTrue(thirdTime.getTime() > secondTime.getTime());
+    }
+
+    @Test
+    public void testTabSwitch() {
+        // render the page, GeoServer status tab is show
+        tester.assertRenderedPage(StatusPage.class);
+        // click on the system status tab
+        tester.clickLink("tabs:tabs-container:tabs:2:link", true);
+        // render the system monitoring information
+        tester.assertRenderedPage(StatusPage.class);
+        // check that we have system monitoring tab expected content
+        tester.assertContains("CPUs");
+        // now click on modules tab
+        tester.clickLink("tabs:tabs-container:tabs:1:link", true);
+        // no rendering error should happen
+        tester.assertRenderedPage(StatusPage.class);
+        // check that we have a valid content
+        tester.assertContains("gs-main");
     }
 }

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.api.APIContentNegotiationManager;
@@ -60,7 +61,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -289,14 +289,15 @@ public class StylesService {
             InputStream inputStream,
             @RequestParam(name = "validate", required = false, defaultValue = "no")
                     ValidationMode validate,
-            @RequestHeader("Content-Type") String contentType)
+            HttpServletRequest request)
             throws IOException {
         // Extracting mimeType and charset
-        MediaType mediaType = MediaType.parseMediaType(contentType);
+        MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
 
         byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
-        String content = new String(rawData, mediaType.getCharset().toString());
+        String charsetName = getCharacterEncoding(request);
+        String content = new String(rawData, charsetName);
         StyleHandler handler = getHandler(mimeType);
 
         // validation
@@ -338,6 +339,22 @@ public class StylesService {
     }
 
     /**
+     * Gets the charset from the content type, or uses the default configured charset, of if even
+     * that is missing, returns UTF-8 as a default
+     *
+     * @param mediaType
+     * @return
+     */
+    private String getCharacterEncoding(HttpServletRequest request) {
+        return Optional.ofNullable(request.getCharacterEncoding())
+                .map(Object::toString)
+                .orElseGet(
+                        () ->
+                                Optional.ofNullable(geoServer.getSettings().getCharset())
+                                        .orElse("UTF-8"));
+    }
+
+    /**
      * Tries to get a style identifier from the style name itself, if not found, generates a random
      * one
      */
@@ -365,14 +382,15 @@ public class StylesService {
             @PathVariable String styleId,
             @RequestParam(name = "validate", required = false, defaultValue = "no")
                     ValidationMode validate,
-            @RequestHeader("Content-Type") String contentType)
+            HttpServletRequest request)
             throws IOException {
         // Extracting mimeType and charset
-        MediaType mediaType = MediaType.parseMediaType(contentType);
+        MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
 
         byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
-        String content = new String(rawData, mediaType.getCharset().toString());
+        String charsetName = getCharacterEncoding(request);
+        String content = new String(rawData, charsetName);
         StyleHandler handler = getHandler(mimeType);
 
         // validation

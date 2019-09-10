@@ -10,17 +10,20 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
+import org.geotools.util.Converters;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.OptionalComponentParameter;
 import org.geotools.xsd.Parser;
@@ -40,6 +43,9 @@ import org.xml.sax.InputSource;
  * @author Justin Deoliveira, OpenGeo
  */
 public class WFSXmlUtils {
+
+    public static final String ENTITY_EXPANSION_LIMIT =
+            "org.geoserver.wfs.xml.entityExpansionLimit";
 
     public static void initRequestParser(Parser parser, WFSInfo wfs, GeoServer geoServer, Map kvp) {
         // check the strict flag to determine if we should validate or not
@@ -156,6 +162,17 @@ public class WFSXmlUtils {
                 ((org.geotools.gml3.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
             }
         }
+    }
+
+    /**
+     * Returns the Entity Expansion Limit configuration from system property
+     * "org.geoserver.wfs.xml.entityExpansionLimit". Returns 100 as default if no system property is
+     * configured.
+     */
+    public static Integer getEntityExpansionLimitConfiguration() {
+        return Optional.ofNullable(GeoServerExtensions.getProperty(ENTITY_EXPANSION_LIMIT))
+                .map(p -> Converters.convert(p, Integer.class))
+                .orElse(100);
     }
 
     static class DirectObjectParameter extends BasicComponentParameter {

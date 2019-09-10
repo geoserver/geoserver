@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.util.TemporalUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
@@ -460,6 +461,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                                     jsonWriter.writeGeom((Geometry) value);
                                 }
                             }
+                        } else if (Date.class.isAssignableFrom(ad.getType().getBinding())
+                                && TemporalUtils.isDateTimeFormatEnabled()) {
+                            // Temporal types print handling
+                            jsonWriter.key(ad.getLocalName());
+                            jsonWriter.value(TemporalUtils.printDate((Date) value));
                         } else {
                             jsonWriter.key(ad.getLocalName());
                             jsonWriter.value(value);

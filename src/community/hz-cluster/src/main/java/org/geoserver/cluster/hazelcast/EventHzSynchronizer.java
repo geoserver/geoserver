@@ -19,6 +19,7 @@ import com.hazelcast.core.MessageListener;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -274,32 +275,96 @@ public class EventHzSynchronizer extends HzSynchronizer {
         final Class<? extends Info> clazz = ce.getObjectInterface();
         final String id = ce.getObjectId();
         final Catalog cat = cluster.getRawCatalog();
+        boolean extraArguments = false;
 
         Info subj;
         Method notifyMethod;
 
         if (GeoServerInfo.class.isAssignableFrom(clazz)) {
             subj = gs.getGlobal();
-            notifyMethod =
-                    ConfigurationListener.class.getMethod(
-                            "handlePostGlobalChange", GeoServerInfo.class);
+            switch (ce.getChangeType()) {
+                case MODIFY:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleGlobalChange",
+                                    GeoServerInfo.class,
+                                    List.class,
+                                    List.class,
+                                    List.class);
+                    extraArguments = true;
+                    break;
+                default:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handlePostGlobalChange", GeoServerInfo.class);
+            }
         } else if (SettingsInfo.class.isAssignableFrom(clazz)) {
             WorkspaceInfo ws =
                     ce.getWorkspaceId() != null ? cat.getWorkspace(ce.getWorkspaceId()) : null;
             subj = ws != null ? gs.getSettings(ws) : gs.getSettings();
-            notifyMethod =
-                    ConfigurationListener.class.getMethod(
-                            "handleSettingsPostModified", SettingsInfo.class);
+            switch (ce.getChangeType()) {
+                case MODIFY:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleSettingsModified",
+                                    SettingsInfo.class,
+                                    List.class,
+                                    List.class,
+                                    List.class);
+                    extraArguments = true;
+                    break;
+                case REMOVE:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleSettingsRemoved", SettingsInfo.class);
+                    break;
+
+                case ADD:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleSettingsAdded", SettingsInfo.class);
+                    break;
+                default:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleSettingsPostModified", SettingsInfo.class);
+            }
         } else if (LoggingInfo.class.isAssignableFrom(clazz)) {
             subj = gs.getLogging();
-            notifyMethod =
-                    ConfigurationListener.class.getMethod(
-                            "handlePostLoggingChange", LoggingInfo.class);
+            switch (ce.getChangeType()) {
+                case MODIFY:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleLoggingChange",
+                                    LoggingInfo.class,
+                                    List.class,
+                                    List.class,
+                                    List.class);
+                    extraArguments = true;
+                    break;
+                default:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handlePostLoggingChange", LoggingInfo.class);
+            }
         } else if (ServiceInfo.class.isAssignableFrom(clazz)) {
             subj = gs.getService(id, (Class<ServiceInfo>) clazz);
-            notifyMethod =
-                    ConfigurationListener.class.getMethod(
-                            "handlePostServiceChange", ServiceInfo.class);
+            switch (ce.getChangeType()) {
+                case MODIFY:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handleServiceChange",
+                                    ServiceInfo.class,
+                                    List.class,
+                                    List.class,
+                                    List.class);
+                    extraArguments = true;
+                    break;
+                default:
+                    notifyMethod =
+                            ConfigurationListener.class.getMethod(
+                                    "handlePostServiceChange", ServiceInfo.class);
+            }
         } else {
             throw new IllegalStateException("Unknown event type " + clazz);
         }
@@ -310,7 +375,16 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         && // HACK-HACK-HACK -- prevent infinite loop with update sequence listener
                         !"org.geoserver.config.UpdateSequenceListener"
                                 .equals(l.getClass().getCanonicalName())) {
-                    notifyMethod.invoke(l, subj);
+                    if (extraArguments) {
+                        notifyMethod.invoke(
+                                l,
+                                subj,
+                                ce.getPropertyNames(),
+                                ce.getOldValues(),
+                                ce.getNewValues());
+                    } else {
+                        notifyMethod.invoke(l, subj);
+                    }
                 }
             } catch (Exception ex) {
                 LOGGER.log(

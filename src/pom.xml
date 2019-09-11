@@ -381,6 +381,11 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
+    <artifactId>gt-wmts</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
     <artifactId>gt-postgis-versioned</artifactId>
     <version>${gt.version}</version>
    </dependency>

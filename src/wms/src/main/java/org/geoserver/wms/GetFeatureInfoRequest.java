@@ -50,20 +50,23 @@ public class GetFeatureInfoRequest extends WMSRequest {
      * Holder for the optional <code>EXCEPTIONS</code> parameter, defaults to <code>
      * "application/vnd.ogc.se_xml"</code>
      */
-    private String exeptionFormat = DEFAULT_EXCEPTION_FORMAT;
+    private String exceptionFormat = DEFAULT_EXCEPTION_FORMAT;
+
+    /** Optional parameter to exclude nodata values from the results */
+    private boolean excludeNodataResults = false;
 
     public GetFeatureInfoRequest() {
         super("GetFeatureInfo");
     }
 
-    /** @return Returns the exeptionFormat. */
+    /** @return Returns the exceptionFormat. */
     public String getExceptions() {
-        return exeptionFormat;
+        return exceptionFormat;
     }
 
-    /** @param exeptionFormat The exeptionFormat to set. */
-    public void setExceptions(String exeptionFormat) {
-        this.exeptionFormat = exeptionFormat;
+    /** @param exceptionFormat The exceptionFormat to set. */
+    public void setExceptions(String exceptionFormat) {
+        this.exceptionFormat = exceptionFormat;
     }
 
     /** @return Returns the featureCount. */
@@ -74,6 +77,16 @@ public class GetFeatureInfoRequest extends WMSRequest {
     /** @param featureCount The featureCount to set. */
     public void setFeatureCount(int featureCount) {
         this.featureCount = featureCount;
+    }
+
+    /** @return Returns the excludeNodataResults field */
+    public boolean isExcludeNodataResults() {
+        return excludeNodataResults;
+    }
+
+    /** @param excludeNodataResults Whether to exclude nodata results or not */
+    public void setExcludeNodataResults(boolean excludeNodataResults) {
+        this.excludeNodataResults = excludeNodataResults;
     }
 
     /** @return Returns the getMapRequest. */

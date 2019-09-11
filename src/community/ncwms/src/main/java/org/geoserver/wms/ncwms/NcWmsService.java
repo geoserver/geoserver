@@ -198,6 +198,7 @@ public class NcWmsService {
             ListFeatureCollection features =
                     new ListFeatureCollection(featureBuilder.getFeatureType());
             TreeSet<Date> addedDates = new TreeSet<Date>();
+            request.setExcludeNodataResults(true);
             for (DateRange date : availableDates) {
                 // check timeout
                 countdownClock.checkTimeout();

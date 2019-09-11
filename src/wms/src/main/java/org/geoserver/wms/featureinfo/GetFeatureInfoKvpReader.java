@@ -252,6 +252,16 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             throw new ServiceException(msg, "InvalidPoint");
         }
 
+        String excludeNodata =
+                (String)
+                        (kvp.containsKey("EXCLUDE_NODATA_RESULT")
+                                ? kvp.get("EXCLUDE_NODATA_RESULT")
+                                : null);
+        if (excludeNodata != null) {
+            boolean excludeNodataResults = Boolean.parseBoolean(excludeNodata);
+            request.setExcludeNodataResults(excludeNodataResults);
+        }
+
         return request;
     }
 }

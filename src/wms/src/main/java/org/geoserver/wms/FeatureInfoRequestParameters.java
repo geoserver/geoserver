@@ -73,6 +73,8 @@ public class FeatureInfoRequestParameters {
 
     int maxFeatures;
 
+    boolean excludeNodataResults;
+
     public FeatureInfoRequestParameters(GetFeatureInfoRequest request) {
         // use the layer of the QUERY_LAYERS parameter, not the LAYERS one
         this.layers = request.getQueryLayers();
@@ -87,6 +89,7 @@ public class FeatureInfoRequestParameters {
         this.getMapReq = request.getGetMapRequest();
         this.requestedCRS = getMapReq.getCrs(); // optional, may be null
         this.maxFeatures = request.getFeatureCount();
+        this.excludeNodataResults = request.isExcludeNodataResults();
 
         // basic information about the request
         this.width = getMapReq.getWidth();
@@ -288,5 +291,10 @@ public class FeatureInfoRequestParameters {
     /** The GetMap request wrapped by the GetFeatureInfo one */
     public GetMapRequest getGetMapRequest() {
         return getMapReq;
+    }
+
+    /** Excluding nodata from results */
+    public boolean isExcludeNodataResults() {
+        return excludeNodataResults;
     }
 }

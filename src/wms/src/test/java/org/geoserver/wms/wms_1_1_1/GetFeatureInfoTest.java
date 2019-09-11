@@ -20,11 +20,13 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -67,6 +69,9 @@ public class GetFeatureInfoTest extends WMSTestSupport {
             new QName(MockData.CITE_URI, "point_test_3d", MockData.CITE_PREFIX);
 
     public static QName STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
+
+    protected static QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -128,6 +133,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 catalog);
         testData.addRasterLayer(
                 CUSTOM, "custom.zip", null, propertyMap, GetFeatureInfoTest.class, catalog);
+        testData.addRasterLayer(
+                TIMESERIES, "timeseries.zip", null, null, SystemTestData.class, catalog);
+        setupRasterDimension(
+                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
         Map<LayerProperty, Object> properties = new HashMap<SystemTestData.LayerProperty, Object>();
         properties.put(
@@ -1269,5 +1278,31 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // System.out.println(result);
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
+    }
+
+    @Test
+    public void testOnNodataValueGetNans() throws Exception {
+        String timeseries = getLayerId(TIMESERIES);
+        String request =
+                "wms?version=1.1.1&BBOX=1,42,2,44&format=jpeg"
+                        + "&info_format=text/plain&request=GetFeatureInfo"
+                        + "&width=90&height=45&x=35&y=38"
+                        + "&layers="
+                        + timeseries
+                        + "&query_layers="
+                        + timeseries
+                        + "&time=2014-01-01T00:00:00.000Z"
+                        + "&FEATURE_COUNT=1";
+
+        // -30000 is nodata. Let's check we get a result with that value
+        String result = getAsString(request);
+        assertNotNull(result);
+        assertTrue(result.indexOf("-30000") > 0);
+
+        // Let's now specify nodata exclusion in the request.
+        // we should get back no results in that case
+        String request2 = request + "&EXCLUDE_NODATA_RESULT=true";
+        result = getAsString(request2);
+        assertTrue(result.indexOf("NaN") > 0);
     }
 }

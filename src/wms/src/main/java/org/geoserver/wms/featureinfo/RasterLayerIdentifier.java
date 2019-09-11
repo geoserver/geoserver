@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import it.geosolutions.jaiext.range.Range;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -40,6 +41,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
 import org.geotools.geometry.util.XRectangle2D;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.ows.ServiceException;
 import org.geotools.parameter.Parameter;
@@ -284,6 +286,14 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         FeatureCollection pixel = null;
         try {
             final double[] pixelValues = coverage.evaluate(position, (double[]) null);
+            if (params.isExcludeNodataResults() && pixelsAreNodata(coverage, pixelValues)) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Returning no result due to nodata pixel");
+                }
+                for (int i = 0; i < pixelValues.length; i++) {
+                    pixelValues[i] = Double.NaN;
+                }
+            }
             pixel = wrapPixelInFeatureCollection(coverage, pixelValues, cinfo.getQualifiedName());
         } catch (PointOutsideCoverageException e) {
             // it's fine, users might legitimately query point outside, we just don't
@@ -296,6 +306,21 @@ public class RasterLayerIdentifier implements LayerIdentifier {
             }
         }
         return Collections.singletonList(pixel);
+    }
+
+    private boolean pixelsAreNodata(GridCoverage2D coverage, final double values[]) {
+        RenderedImage ri = coverage.getRenderedImage();
+        ImageWorker worker = new ImageWorker(ri);
+        Range nodata = worker.getNoData();
+        int nodataValues = 0;
+        if (nodata != null) {
+            for (double value : values) {
+                if (nodata.contains(value)) {
+                    nodataValues++;
+                }
+            }
+        }
+        return nodataValues == values.length;
     }
 
     private SimpleFeatureCollection wrapPixelInFeatureCollection(

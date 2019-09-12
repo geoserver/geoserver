@@ -245,3 +245,5 @@ Sample chart output:
 
 .. figure:: images/geoserver-GetTimeSeries.png
    :align: center
+
+**Note:** Since GeoServer 2.17, nodata pixels will not be reported in the result list/chart.

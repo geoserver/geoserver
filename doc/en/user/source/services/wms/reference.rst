@@ -424,6 +424,9 @@ They are fully documented in the :ref:`wms_vendor_parameters` section.
    * - ``propertyName``
      - No
      - Feature properties to be returned
+   * - ``exclude_nodata_result``
+     - No
+     - When set to true, a feature will not be returned if the queried pixel value is nodata.
 
 An example request for feature information from the ``topp:states`` layer in HTML format is: ::
 

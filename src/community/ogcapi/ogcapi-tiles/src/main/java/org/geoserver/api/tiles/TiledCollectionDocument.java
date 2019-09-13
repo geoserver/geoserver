@@ -49,7 +49,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
-@JsonPropertyOrder({"id", "title", "description", "extent", "links"})
+@JsonPropertyOrder({"id", "title", "description", "extent", "links", "styles"})
 public class TiledCollectionDocument extends AbstractDocument {
     static final Logger LOGGER = Logging.getLogger(TiledCollectionDocument.class);
     public static final String DEFAULT_STYLE_NAME = "";
@@ -59,8 +59,9 @@ public class TiledCollectionDocument extends AbstractDocument {
     TileLayer layer;
     String mapPreviewURL;
     CollectionExtents extent;
-    TilesDocument tiles;
     List<StyleDocument> styles = new ArrayList<>();
+    boolean dataTiles;
+    boolean mapTiles;
 
     /**
      * Builds a description of a tiled collection
@@ -76,6 +77,7 @@ public class TiledCollectionDocument extends AbstractDocument {
         // basic info
         this.layer = tileLayer;
         this.id = tileLayer.getName();
+        String pathId = ResponseUtils.urlEncode(id);
 
         String baseURL = APIRequestInfo.get().getBaseURL();
         if (tileLayer instanceof GeoServerTileLayer) {
@@ -113,43 +115,34 @@ public class TiledCollectionDocument extends AbstractDocument {
             // backlinks in same and other formats
             addSelfLinks("ogc/tiles/collections/" + id);
 
+            // raw tiles links, if any (if the vector tiles plugin is missing or formats not
+            // configured, will be empty)
             List<MimeType> tileTypes = tileLayer.getMimeTypes();
 
-            // direct links to tiles are only for vector formats (for now)
-            for (MimeType dataFormat :
-                    tileTypes.stream().filter(mt -> mt.isVector()).collect(Collectors.toList())) {
-                addLinkForFormat(
-                        this.id,
-                        baseURL,
-                        dataFormat.getFormat(),
-                        "/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+            dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
+            if (dataTiles) {
+                addLinksFor(
+                        "ogc/tiles/collections/" + id + "/tiles",
+                        TilesDocument.class,
+                        "Tiles metadata as ",
+                        "dataTiles",
+                        null,
                         "tiles");
             }
-            // and then links for rendered formats too
-            List<MimeType> imageFormats =
-                    tileTypes.stream().filter(mt -> !mt.isVector()).collect(Collectors.toList());
-            for (MimeType imgeFormat : imageFormats) {
-                addLinkForFormat(
-                        this.id,
-                        baseURL,
-                        imgeFormat.getFormat(),
-                        "/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+
+            // map tiles links (a layer might not have image tiles configured, need to check)
+            mapTiles = tileTypes.stream().anyMatch(mt -> !mt.isVector());
+            if (mapTiles) {
+                addLinksFor(
+                        "ogc/tiles/collections/" + id + "/map/tiles",
+                        TilesDocument.class,
+                        "Map tiles metadata as ",
+                        "mapTiles",
+                        null,
                         "tiles");
             }
-            // add the info links (might be needed only for maps, but we always have a style so...)
-            for (String infoFormat : wms.getAvailableFeatureInfoFormats()) {
-                addLinkForFormat(
-                        this.id,
-                        baseURL,
-                        infoFormat,
-                        "/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info",
-                        "info");
-            }
 
-            // tile matrixes
-            this.tiles = new TilesDocument(tileLayer);
-
-            // styles
+            // style links
             if (tileLayer instanceof GeoServerTileLayer) {
                 PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
                 if (published instanceof LayerInfo) {
@@ -175,17 +168,6 @@ public class TiledCollectionDocument extends AbstractDocument {
                 }
             }
         }
-    }
-
-    protected void addLinkForFormat(
-            String layerName, String baseURL, String format, String path, String rel) {
-        String apiUrl =
-                ResponseUtils.buildURL(
-                        baseURL,
-                        "ogc/tiles/collections/" + ResponseUtils.urlEncode(layerName) + path,
-                        Collections.singletonMap("f", format),
-                        URLMangler.URLType.SERVICE);
-        addLink(new Link(apiUrl, rel, format, layerName + " tiles as " + format));
     }
 
     CollectionExtents getExtentFromGridsets(TileLayer tileLayer)
@@ -311,11 +293,15 @@ public class TiledCollectionDocument extends AbstractDocument {
         return mapPreviewURL;
     }
 
-    public TilesDocument getTiles() {
-        return tiles;
-    }
-
     public List<StyleDocument> getStyles() {
         return styles;
+    }
+
+    public boolean isDataTiles() {
+        return dataTiles;
+    }
+
+    public boolean isMapTiles() {
+        return mapTiles;
     }
 }

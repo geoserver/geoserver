@@ -1,10 +1,14 @@
 <#setting locale="en_US">
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-      <link rel="stylesheet" href="${resourceLink("apicss/blueprint/screen.css")}" type="text/css" media="screen, projection" />
+      <#if model?? && model.htmlTitle??>
+        <title>${model.htmlTitle}</title>
+      </#if>
+      <link rel="stylesheet" href="${resourceLink("apicss/blueprint/screen.css")}" type="text/css" media="screen" />
       <link rel="stylesheet" href="${resourceLink("apicss/blueprint/print.css")}" type="text/css" media="print" />
-      <link rel="stylesheet" href="${resourceLink("apicss/geoserver.css")}" type="text/css" media="screen, projection" />
-      <link rel="stylesheet" href="${resourceLink("apicss/blueprint/ie.css")}" type="text/css" media="screen, projection" />
+      <link rel="stylesheet" href="${resourceLink("apicss/geoserver.css")}" type="text/css" media="screen" />
+      <link rel="stylesheet" href="${resourceLink("apicss/blueprint/ie.css")}" type="text/css" media="screen" />
   </head>
 <body>
    <div id="header">

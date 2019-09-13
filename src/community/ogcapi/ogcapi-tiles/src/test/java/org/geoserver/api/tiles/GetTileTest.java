@@ -45,7 +45,7 @@ public class GetTileTest extends TilesTestSupport {
                 getAsServletResponse(
                         "ogc/tiles/collections/"
                                 + layerId
-                                + "/maps/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+                                + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
 
@@ -68,7 +68,7 @@ public class GetTileTest extends TilesTestSupport {
         String path =
                 "ogc/tiles/collections/"
                         + layerId
-                        + "/maps/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+                        + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -91,7 +91,7 @@ public class GetTileTest extends TilesTestSupport {
         String path =
                 "ogc/tiles/collections/"
                         + layerId
-                        + "/maps/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+                        + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -189,7 +189,7 @@ public class GetTileTest extends TilesTestSupport {
                 getAsServletResponse(
                         "ogc/tiles/collections/"
                                 + layerId
-                                + "/maps/RoadSegments/tiles/EPSG:900913/EPSG:900913:10/511/512?f=image/png8");
+                                + "/map/RoadSegments/tiles/EPSG:900913/EPSG:900913:10/511/512?f=image/png8");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         checkRoadGwcHeaders(layerId, sr);

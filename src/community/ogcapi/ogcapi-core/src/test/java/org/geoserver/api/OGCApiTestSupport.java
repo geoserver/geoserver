@@ -111,7 +111,12 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     protected Object getSingle(DocumentContext json, String path) {
         List items = json.read(path);
         assertEquals(
-                "Found " + items.size() + " items for this path, but was expecting one: " + path,
+                "Found "
+                        + items.size()
+                        + " items for this path, but was expecting one: "
+                        + path
+                        + "\n"
+                        + items,
                 1,
                 items.size());
         return items.get(0);

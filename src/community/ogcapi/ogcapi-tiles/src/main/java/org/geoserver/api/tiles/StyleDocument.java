@@ -37,7 +37,7 @@ import org.springframework.http.MediaType;
  *   <li>Have the style service used fully qualified names with NCNameResourceCodec
  * </ul>
  */
-@JsonPropertyOrder({"id", "title", "styles", "links"})
+@JsonPropertyOrder({"id", "title", "links"})
 public class StyleDocument extends AbstractDocument {
 
     static final Logger LOGGER = Logging.getLogger(StyleDocument.class);

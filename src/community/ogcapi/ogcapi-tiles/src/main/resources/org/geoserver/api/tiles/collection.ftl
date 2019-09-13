@@ -11,7 +11,14 @@
 <li><b>Geographic extents</b>: ${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
 </ul>
 
-TODO: add a OpenLayers preview using the tiles API here
-
+Tiles available for this collection:
+<ul>
+<#if model.dataTiles>
+<li><a href="${model.getLinkUrl('dataTiles', 'text/html')!}">Data tiles</a></li> 
+</#if>
+<#if model.mapTiles>
+<li><a href="${model.getLinkUrl('mapTiles', 'text/html')!}">Map tiles</a></li>
+</#if>
+</ul>
 
 <#include "common-footer.ftl">

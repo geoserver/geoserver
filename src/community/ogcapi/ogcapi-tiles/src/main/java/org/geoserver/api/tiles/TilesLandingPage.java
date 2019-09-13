@@ -4,7 +4,6 @@
  */
 package org.geoserver.api.tiles;
 
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractLandingPageDocument;
 
 /** Landing page for the tiles service */
@@ -15,12 +14,8 @@ public class TilesLandingPage extends AbstractLandingPageDocument {
     public TilesLandingPage(String title, String description) {
         super(title, description, TILES_SERVICE_BASE);
 
-        final APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
-
         // collections
         addLinksFor(
-                baseUrl,
                 TILES_SERVICE_BASE + "/collections",
                 TiledCollectionsDocument.class,
                 "Tiled collections metadata as ",

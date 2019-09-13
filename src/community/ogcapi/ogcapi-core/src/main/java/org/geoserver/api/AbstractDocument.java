@@ -31,6 +31,7 @@ public class AbstractDocument {
     protected static final Logger LOGGER = Logging.getLogger(AbstractDocument.class);
 
     protected String id;
+    protected String htmlTitle;
     protected final List<Link> links = new ArrayList<>();
 
     /**
@@ -70,15 +71,26 @@ public class AbstractDocument {
                 .collect(Collectors.toList());
     }
 
-    /** Builds service links for the given response types */
+    /**
+     * Builds service links for the given response types
+     *
+     * @param path The path of the resource, typically starting with "ogc/<service>"
+     * @param responseType The class of the response object in the controller
+     * @param titlePrefix The code will add the format name to this prefix and make it the link
+     *     title
+     * @param classification The link classification, if any (optional)
+     * @param linkUpdater An optional callback to update the link object
+     * @param rel The rel of the link object (the updater can modify it, to handle for example
+     *     "self" relationships)
+     */
     protected void addLinksFor(
-            String baseUrl,
             String path,
             Class<?> responseType,
             String titlePrefix,
             String classification,
             BiConsumer<MediaType, Link> linkUpdater,
             String rel) {
+        String baseUrl = APIRequestInfo.get().baseURL;
         for (MediaType mediaType :
                 APIRequestInfo.get().getProducibleMediaTypes(responseType, true)) {
             String format = mediaType.toString();
@@ -143,6 +155,15 @@ public class AbstractDocument {
     }
 
     /**
+     * Returns the document id, as is
+     *
+     * @return
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
      * Returns a URL encoded id (or null if the id is missing), useful to encode links in HTML
      *
      * @return
@@ -167,5 +188,18 @@ public class AbstractDocument {
             return null;
         }
         return id.replace(":", "__");
+    }
+
+    /**
+     * Returns the title for HTML pages. If not set, uses the id, if also missing, an empty string
+     *
+     * @return
+     */
+    public String getHtmlTitle() {
+        return htmlTitle != null ? htmlTitle : id != null ? id : "";
+    }
+
+    public void setHtmlTitle(String htmlTitle) {
+        this.htmlTitle = htmlTitle;
     }
 }

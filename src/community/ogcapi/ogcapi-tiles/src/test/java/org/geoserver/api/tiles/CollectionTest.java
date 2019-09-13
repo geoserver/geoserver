@@ -5,13 +5,12 @@
 package org.geoserver.api.tiles;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.geoserver.data.test.MockData;
-import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wms.WMS;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class CollectionTest extends TilesTestSupport {
@@ -24,6 +23,36 @@ public class CollectionTest extends TilesTestSupport {
         testRoadsCollectionJson(json);
     }
 
+    @Test
+    public void testRoadsCollectionHTML() throws Exception {
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+        getAsJSoup("ogc/tiles/collections/" + roadSegments + "?f=text/html");
+        // TODO: add ids in the elemnets and check contents using jSoup
+    }
+
+    @Test
+    public void testOnlyMapLinks() throws Exception {
+        // this one only has rendered formats assocaited
+        String lakesId = getLayerId(MockData.LAKES);
+        DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + lakesId, 200);
+
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Lakes/map/tiles?f=application%2Fjson",
+                getSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+    }
+
+    @Test
+    public void testOnlyDataLinks() throws Exception {
+        // this one only has rendered formats assocaited
+        String forestsId = getLayerId(MockData.FORESTS);
+
+        DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + forestsId, 200);
+
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Forests/tiles?f=application%2Fjson",
+                getSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+    }
+
     public void testRoadsCollectionJson(DocumentContext json) {
         assertEquals("cite:RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
@@ -32,62 +61,15 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals(0.0042, json.read("$.extent.spatial[2]", Double.class), 0d);
         assertEquals(0.0024, json.read("$.extent.spatial[3]", Double.class), 0d);
 
-        // check the raw tiles links
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=application%2Fvnd.mapbox-vector-tile",
-                getSingle(
-                        json,
-                        "$.links[?(@.rel=='tiles' && @.type=='application/vnd.mapbox-vector-tile')].href"));
-        // and the rendered tiles links
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fpng",
-                getSingle(json, "$.links[?(@.rel=='tiles' && @.type=='image/png')].href"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fjpeg",
-                getSingle(json, "$.links[?(@.rel=='tiles' && @.type=='image/jpeg')].href"));
-        // check the info links for the rendered outputs
-        List<String> infoFormats =
-                ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
-        for (String infoFormat : infoFormats) {
-            assertEquals(
-                    "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info?f="
-                            + ResponseUtils.urlEncode(infoFormat),
-                    getSingle(
-                            json,
-                            "$.links[?(@.rel=='info' && @.type=='" + infoFormat + "')].href"));
-        }
-
-        // check the tile matrices
-        assertEquals(Integer.valueOf(2), json.read("$.tiles.tileMatrixSetLinks.size()"));
-        // EPSG:4326
-        assertEquals("EPSG:4326", json.read("$.tiles.tileMatrixSetLinks[0].tileMatrixSet"));
-        assertEquals(
-                "http://temporary/url/EPSG:4326",
-                json.read("$.tiles.tileMatrixSetLinks[0].tileMatrixSetURI"));
-        assertEquals(
-                Integer.valueOf(22),
-                json.read("$.tiles.tileMatrixSetLinks[0].tileMatrixSetLimits.size()"));
-        String crs84Limit0 = "$.tiles.tileMatrixSetLinks[0].tileMatrixSetLimits[0]";
-        assertEquals("EPSG:4326:0", json.read(crs84Limit0 + ".tileMatrix"));
-        // both tiles as it spans the origin
-        assertEquals(Integer.valueOf(0), json.read(crs84Limit0 + ".minTileRow"));
-        assertEquals(Integer.valueOf(0), json.read(crs84Limit0 + ".maxTileRow"));
-        assertEquals(Integer.valueOf(0), json.read(crs84Limit0 + ".minTileCol"));
-        assertEquals(Integer.valueOf(1), json.read(crs84Limit0 + ".maxTileCol"));
-        // one more zoom level just for satefy
-        String crs84Limit10 = "$.tiles.tileMatrixSetLinks[0].tileMatrixSetLimits[10]";
-        assertEquals("EPSG:4326:10", json.read(crs84Limit10 + ".tileMatrix"));
-        assertEquals(Integer.valueOf(511), json.read(crs84Limit10 + ".minTileRow"));
-        assertEquals(Integer.valueOf(512), json.read(crs84Limit10 + ".maxTileRow"));
-        assertEquals(Integer.valueOf(1023), json.read(crs84Limit10 + ".minTileCol"));
-        assertEquals(Integer.valueOf(1024), json.read(crs84Limit10 + ".maxTileCol"));
-        // checking one in web marcator too (only one root tile)
-        String webMercatorLimit10 = "$.tiles.tileMatrixSetLinks[1].tileMatrixSetLimits[10]";
-        assertEquals("EPSG:900913:10", json.read(webMercatorLimit10 + ".tileMatrix"));
-        assertEquals(Integer.valueOf(511), json.read(webMercatorLimit10 + ".minTileRow"));
-        assertEquals(Integer.valueOf(512), json.read(webMercatorLimit10 + ".maxTileRow"));
-        assertEquals(Integer.valueOf(511), json.read(webMercatorLimit10 + ".minTileCol"));
-        assertEquals(Integer.valueOf(512), json.read(webMercatorLimit10 + ".maxTileCol"));
+        // check the tiles link (both data and map tiles)
+        List<String> items =
+                json.read("$.links[?(@.rel=='tiles' && @.type=='application/json')].href");
+        assertEquals(2, items.size());
+        assertThat(
+                items,
+                Matchers.containsInAnyOrder(
+                        "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/tiles?f=application%2Fjson",
+                        "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/map/tiles?f=application%2Fjson"));
 
         // styles
         assertEquals(Integer.valueOf(2), json.read("$.styles.size()"));

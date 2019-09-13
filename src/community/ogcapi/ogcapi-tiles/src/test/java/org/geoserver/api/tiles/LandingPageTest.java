@@ -35,8 +35,10 @@ public class LandingPageTest extends TilesTestSupport {
                         "getCollections",
                         "getLandingPage",
                         "getConformanceDeclaration",
-                        "getRawTile",
-                        "getRenderedTile"));
+                        "describeTiles",
+                        "describeMapTiles",
+                        "getTile",
+                        "getMapTile"));
     }
 
     @Test

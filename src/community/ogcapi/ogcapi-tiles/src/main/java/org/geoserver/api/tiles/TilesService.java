@@ -122,16 +122,26 @@ public class TilesService {
         return new TiledCollectionsDocument(geoServer, wms, gwc);
     }
 
-    @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
+    @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTiles")
     @ResponseBody
-    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public TiledCollectionDocument collection(
-            @PathVariable(name = "collectionId") String collectionId)
+    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
+    public TilesDocument describeTiles(@PathVariable(name = "collectionId") String collectionId)
             throws FactoryException, TransformException, IOException {
         TileLayer tileLayer = getTileLayer(collectionId);
-        TiledCollectionDocument collection = new TiledCollectionDocument(wms, tileLayer, false);
+        TilesDocument tiles = new TilesDocument(wms, tileLayer, TilesDocument.Type.RawTiles);
 
-        return collection;
+        return tiles;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/map/tiles", name = "describeMapTiles")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
+    public TilesDocument describeMapTiles(@PathVariable(name = "collectionId") String collectionId)
+            throws FactoryException, TransformException, IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        TilesDocument tiles = new TilesDocument(wms, tileLayer, TilesDocument.Type.RenderedTiles);
+
+        return tiles;
     }
 
     private TileLayer getTileLayer(String collectionId) {
@@ -146,10 +156,22 @@ public class TilesService {
         }
     }
 
+    @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
+    public TiledCollectionDocument collection(
+            @PathVariable(name = "collectionId") String collectionId)
+            throws FactoryException, TransformException, IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        TiledCollectionDocument collection = new TiledCollectionDocument(wms, tileLayer, false);
+
+        return collection;
+    }
+
     @GetMapping(
         path =
                 "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getRawTile"
+        name = "getTile"
     )
     @ResponseBody
     public ResponseEntity<byte[]> getRawTile(
@@ -165,8 +187,8 @@ public class TilesService {
 
     @GetMapping(
         path =
-                "/collections/{collectionId}/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getRenderedTile"
+                "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+        name = "getMapTile"
     )
     @ResponseBody
     public ResponseEntity<byte[]> getRenderedTile(

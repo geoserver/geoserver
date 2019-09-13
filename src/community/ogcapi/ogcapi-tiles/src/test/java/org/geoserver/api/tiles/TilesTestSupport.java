@@ -61,6 +61,17 @@ public class TilesTestSupport extends OGCApiTestSupport {
         FeatureTypeInfo lakes =
                 catalog.getResourceByName(getLayerId(MockData.LAKES), FeatureTypeInfo.class);
         lakes.getMetadata().put(ResourceInfo.CACHING_ENABLED, true);
+
+        // prepare a layer with vector formats only
+        String forestsId = getLayerId(MockData.FORESTS);
+        GeoServerTileLayer forestTiles =
+                (GeoServerTileLayer) getGWC().getTileLayerByName(forestsId);
+        Set<String> forestFormats = forestTiles.getInfo().getMimeFormats();
+        forestFormats.clear();
+        forestFormats.add(ApplicationMime.mapboxVector.getFormat());
+        forestFormats.add(ApplicationMime.geojson.getFormat());
+        forestFormats.add(ApplicationMime.topojson.getFormat());
+        getGWC().save(forestTiles);
     }
 
     protected GWC getGWC() {

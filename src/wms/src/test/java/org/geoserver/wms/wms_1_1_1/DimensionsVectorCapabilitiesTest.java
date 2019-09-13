@@ -392,4 +392,16 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("elevation", "//Layer/Dimension/@name", dom);
         assertXpathEvaluatesTo("-100/0", "//Layer/Extent/@default", dom);
     }
+
+    @Test
+    public void testCustomDimension() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "elevation", DimensionPresentation.LIST, null, null, null);
+        final Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+        // print(dom);
+        assertXpathEvaluatesTo("custom", "//Layer[Name='sf:TimeElevation']/Dimension/@name", dom);
+        assertXpathEvaluatesTo("custom", "//Layer[Name='sf:TimeElevation']/Extent/@name", dom);
+        assertXpathEvaluatesTo(
+                "0.0,1.0,2.0,3.0", "//Layer[Name='sf:TimeElevation']/Extent/text()", dom);
+    }
 }

@@ -38,7 +38,9 @@ public class LandingPageTest extends TilesTestSupport {
                         "describeTiles",
                         "describeMapTiles",
                         "getTile",
-                        "getMapTile"));
+                        "getMapTile",
+                        "getTileMatrixSet",
+                        "getTileMatrixSets"));
     }
 
     @Test
@@ -117,7 +119,7 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(20, (int) json.read("links.length()", Integer.class));
+        assertEquals(25, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,

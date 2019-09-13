@@ -159,6 +159,7 @@ public class AbstractDocument {
      *
      * @return
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getId() {
         return id;
     }
@@ -195,6 +196,7 @@ public class AbstractDocument {
      *
      * @return
      */
+    @JsonIgnore
     public String getHtmlTitle() {
         return htmlTitle != null ? htmlTitle : id != null ? id : "";
     }

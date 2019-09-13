@@ -22,5 +22,14 @@ public class TilesLandingPage extends AbstractLandingPageDocument {
                 "collections",
                 null,
                 "data");
+
+        // tile matrix sets
+        addLinksFor(
+                TILES_SERVICE_BASE + "/tileMatrixSets",
+                TileMatrixSets.class,
+                "Tile matrix set list as ",
+                "tileMatrixSets",
+                null,
+                "data");
     }
 }

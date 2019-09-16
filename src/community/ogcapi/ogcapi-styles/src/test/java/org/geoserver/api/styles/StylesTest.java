@@ -56,11 +56,6 @@ public class StylesTest extends StylesTestSupport {
                 getSingle(
                         json,
                         "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.ogc.sld+xml')].href"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/styles/Default?f=application%2Fvnd.ogc.se%2Bxml",
-                getSingle(
-                        json,
-                        "styles[?(@.id == 'Default')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.ogc.se+xml')].href"));
         // but not css, cannot go from css to sld at the moment
         assertFalse(
                 exists(

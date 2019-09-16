@@ -6,9 +6,7 @@ package org.geoserver.api.tiles;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +19,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.api.APIException;
 import org.geoserver.api.APIRequestInfo;
-import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
+import org.geoserver.api.StyleDocument;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -50,15 +49,11 @@ import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links", "styles"})
-public class TiledCollectionDocument extends AbstractDocument {
+public class TiledCollectionDocument extends AbstractCollectionDocument {
     static final Logger LOGGER = Logging.getLogger(TiledCollectionDocument.class);
     public static final String DEFAULT_STYLE_NAME = "";
-    String title;
-    String description;
     WMS wms;
     TileLayer layer;
-    String mapPreviewURL;
-    CollectionExtents extent;
     List<StyleDocument> styles = new ArrayList<>();
     boolean dataTiles;
     boolean mapTiles;
@@ -74,6 +69,7 @@ public class TiledCollectionDocument extends AbstractDocument {
      */
     public TiledCollectionDocument(WMS wms, TileLayer tileLayer, boolean summary)
             throws FactoryException, TransformException, IOException {
+        super(tileLayer);
         // basic info
         this.layer = tileLayer;
         this.id = tileLayer.getName();
@@ -247,50 +243,6 @@ public class TiledCollectionDocument extends AbstractDocument {
                         .findFirst()
                         .orElse(null);
         return si != null;
-    }
-
-    @JacksonXmlProperty(localName = "Id")
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String collectionId) {
-        id = collectionId;
-    }
-
-    @JacksonXmlProperty(localName = "Title")
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @JacksonXmlProperty(localName = "Description")
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public CollectionExtents getExtent() {
-        return extent;
-    }
-
-    public void setExtent(CollectionExtents extent) {
-        this.extent = extent;
-    }
-
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    @JsonIgnore
-    public String getMapPreviewURL() {
-        return mapPreviewURL;
     }
 
     public List<StyleDocument> getStyles() {

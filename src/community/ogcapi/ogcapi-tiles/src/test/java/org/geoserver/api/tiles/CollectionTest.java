@@ -75,16 +75,6 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals(Integer.valueOf(2), json.read("$.styles.size()"));
         assertEquals("RoadSegments", json.read("$.styles[0].id"));
         assertEquals("Default Styler", json.read("$.styles[0].title"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/styles/RoadSegments?f=application%2Fvnd.ogc.sld%2Bxml",
-                getSingle(
-                        json,
-                        "$.styles[0].links[?(@.rel=='stylesheet' && @.type=='application/vnd.ogc.sld+xml')].href"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/styles/styles/RoadSegments/metadata?f=application%2Fjson",
-                getSingle(
-                        json,
-                        "$.styles[0].links[?(@.rel=='describedBy' && @.type=='application/json')].href"));
 
         assertEquals("generic", json.read("$.styles[1].id"));
         assertEquals("Generic", json.read("$.styles[1].title"));

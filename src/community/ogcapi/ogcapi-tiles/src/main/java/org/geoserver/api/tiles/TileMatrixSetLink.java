@@ -7,6 +7,9 @@ package org.geoserver.api.tiles;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.ArrayList;
 import java.util.List;
+import org.geoserver.api.APIRequestInfo;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.grid.GridSubset;
 
 public class TileMatrixSetLink {
@@ -26,8 +29,14 @@ public class TileMatrixSetLink {
 
     public TileMatrixSetLink(GridSubset gridSubset) {
         this.tileMatrixSet = gridSubset.getGridSet().getName();
-        // TODO: map to the tile matrix resources once implemented
-        this.tileMatrixSetURI = "http://temporary/url/" + gridSubset.getGridSet().getName();
+        String baseURL = APIRequestInfo.get().getBaseURL();
+        this.tileMatrixSetURI =
+                ResponseUtils.buildURL(
+                        baseURL,
+                        "ogc/tiles/tileMatrixSets/"
+                                + ResponseUtils.urlEncode(gridSubset.getGridSet().getName()),
+                        null,
+                        URLMangler.URLType.SERVICE);
         if (!gridSubset.fullGridSetCoverage()) {
             String[] levelNames = gridSubset.getGridNames();
             long[][] wmtsLimits = gridSubset.getWMTSCoverages();

@@ -35,6 +35,7 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterFilter;
+import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
@@ -113,6 +114,28 @@ public class TilesService {
     public ConformanceDocument conformance() {
         List<String> classes = Arrays.asList(CORE, MULTITILE, INFO);
         return new ConformanceDocument(classes);
+    }
+
+    @GetMapping(path = "tileMatrixSets", name = "getTileMatrixSets")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tileMatrixSets.ftl", fileName = "tileMatrixSets.html")
+    public TileMatrixSets getTileMatrixSets() {
+        return new TileMatrixSets(gwc);
+    }
+
+    @GetMapping(path = "tileMatrixSets/{tileMatrixSetId}", name = "getTileMatrixSet")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tileMatrixSet.ftl", fileName = "tileMatrixSet.html")
+    public TileMatrixSetDocument getTileMatrixSet(
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId) {
+        GridSet gridSet = gwc.getGridSetBroker().get(tileMatrixSetId);
+        if (gridSet == null) {
+            throw new APIException(
+                    "NotFound",
+                    "Tile matrix set " + tileMatrixSetId + " not recognized",
+                    HttpStatus.NOT_FOUND);
+        }
+        return new TileMatrixSetDocument(gridSet, false);
     }
 
     @GetMapping(path = "collections", name = "getCollections")

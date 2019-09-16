@@ -21,6 +21,7 @@
 				<include>*imageio-ext-geocore*.jar</include>
 				<include>*imageio-ext-imagereadmt*.jar</include>
 				<include>gs-gdal-*.jar</include>
+				<include>gdal-*.jar</include>
 			</includes>
 			<excludes>
         <exclude>*arcgrid*.jar</exclude>

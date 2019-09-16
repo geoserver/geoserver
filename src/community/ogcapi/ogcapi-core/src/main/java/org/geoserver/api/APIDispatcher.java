@@ -84,6 +84,7 @@ public class APIDispatcher extends AbstractController {
     /** list of callbacks */
     protected List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
 
+    private List<DocumentCallback> documentCallbacks;
     protected RequestMappingHandlerMapping mappingHandler;
 
     protected RequestMappingHandlerAdapter handlerAdapter;
@@ -103,6 +104,7 @@ public class APIDispatcher extends AbstractController {
         // load life cycle callbacks
         callbacks = GeoServerExtensions.extensions(DispatcherCallback.class, context);
         exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
+        this.documentCallbacks = GeoServerExtensions.extensions(DocumentCallback.class, context);
 
         this.mappingHandler =
                 new RequestMappingHandlerMapping() {
@@ -261,6 +263,13 @@ public class APIDispatcher extends AbstractController {
 
             // and this is response handling
             Object returnValue = mav != null ? mav.getModel().get(RESPONSE_OBJECT) : null;
+
+            // if it's an AbstractDocument call the DocumentCallback implementations
+            if (returnValue instanceof AbstractDocument) {
+                applyDocumentCallbacks((AbstractDocument) returnValue);
+            }
+
+            // and then the dispatcher callbacks
             returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
 
             returnValueHandlers.handleReturnValue(
@@ -587,5 +596,16 @@ public class APIDispatcher extends AbstractController {
     private static boolean isRequestMapping(Annotation a) {
         return a instanceof RequestMapping
                 || a.annotationType().getAnnotation(RequestMapping.class) != null;
+    }
+
+    /**
+     * Applies all available callbacks to the document
+     *
+     * @param document The document the {@link DocumentCallback} will operate on
+     */
+    private void applyDocumentCallbacks(AbstractDocument document) {
+        for (DocumentCallback callback : documentCallbacks) {
+            callback.apply(document);
+        }
     }
 }

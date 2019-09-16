@@ -23,7 +23,6 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.DefaultContentType;
-import org.geoserver.api.DocumentCallbackSupport;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
@@ -76,7 +75,6 @@ public class FeatureService {
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     private final GeoServer geoServer;
-    private final DocumentCallbackSupport callbacks;
 
     // this could be done in an argument resolver returning a Filter, for example, however
     // each protocol would need a different thing, so kept the KVP parser as a way to have
@@ -84,9 +82,8 @@ public class FeatureService {
     private FeaturesBBoxKvpParser bboxParser = new FeaturesBBoxKvpParser();
     private TimeParser timeParser = new TimeParser();
 
-    public FeatureService(GeoServer geoServer, DocumentCallbackSupport callbacks) {
+    public FeatureService(GeoServer geoServer) {
         this.geoServer = geoServer;
-        this.callbacks = callbacks;
     }
 
     private WFSInfo getService() {
@@ -132,7 +129,6 @@ public class FeatureService {
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
         FeatureTypeInfo ft = getFeatureType(collectionId);
         CollectionDocument collection = new CollectionDocument(geoServer, ft);
-        callbacks.apply(collection);
 
         return collection;
     }

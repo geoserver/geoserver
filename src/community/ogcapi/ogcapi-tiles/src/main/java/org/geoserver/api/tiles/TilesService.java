@@ -26,7 +26,6 @@ import org.geoserver.api.APIException;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
-import org.geoserver.api.DocumentCallbackSupport;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.config.GeoServer;
@@ -73,19 +72,12 @@ public class TilesService {
     private final GWC gwc;
     private final WMS wms;
     private final StorageBroker storageBroker;
-    private final DocumentCallbackSupport callbacks;
 
-    public TilesService(
-            GeoServer geoServer,
-            WMS wms,
-            GWC gwc,
-            StorageBroker storageBroker,
-            DocumentCallbackSupport callbacks) {
+    public TilesService(GeoServer geoServer, WMS wms, GWC gwc, StorageBroker storageBroker) {
         this.geoServer = geoServer;
         this.gwc = gwc;
         this.wms = wms;
         this.storageBroker = storageBroker;
-        this.callbacks = callbacks;
     }
 
     @GetMapping(name = "getLandingPage")
@@ -195,7 +187,6 @@ public class TilesService {
             throws FactoryException, TransformException, IOException {
         TileLayer tileLayer = getTileLayer(collectionId);
         TiledCollectionDocument collection = new TiledCollectionDocument(wms, tileLayer, false);
-        callbacks.apply(collection);
 
         return collection;
     }

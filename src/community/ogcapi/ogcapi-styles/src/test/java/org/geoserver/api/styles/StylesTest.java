@@ -32,7 +32,6 @@ public class StylesTest extends StylesTestSupport {
         assertEquals("self", getSingle(json, "links[?(@.type == 'application/json')].rel"));
         // and the alternates
         assertEquals("alternate", getSingle(json, "links[?(@.type == 'application/x-yaml')].rel"));
-        assertEquals("alternate", getSingle(json, "links[?(@.type == 'application/xml')].rel"));
 
         // check all the styles are there
         assertThat(
@@ -50,7 +49,7 @@ public class StylesTest extends StylesTestSupport {
 
         // concentrate on one and check title and links
         assertEquals("Default Styler", getSingle(json, "styles[?(@.id == 'Default')].title"));
-        // can encode sld 1.0 and 1.1
+        // can encode sld 1.0
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/Default?f=application%2Fvnd.ogc.sld%2Bxml",
                 getSingle(

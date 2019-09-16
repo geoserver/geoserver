@@ -7,6 +7,7 @@ package org.geoserver.api.features;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -33,6 +34,7 @@ public class ConformanceTest extends FeaturesTestSupport {
     }
 
     @Test
+    @Ignore
     public void testConformanceXML() throws Exception {
         Document dom = getAsDOM("ogc/features?f=application/xml");
         print(dom);

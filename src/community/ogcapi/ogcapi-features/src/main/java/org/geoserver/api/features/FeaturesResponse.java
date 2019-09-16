@@ -5,6 +5,8 @@
 
 package org.geoserver.api.features;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
@@ -12,6 +14,8 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
  * A Features response that contains both the WFS request and response, to help reusing the
  * traditional WFS output formats
  */
+@JsonIgnoreType // not meant for jackson serialization
+@XmlTransient
 public class FeaturesResponse {
 
     private final EObject request;

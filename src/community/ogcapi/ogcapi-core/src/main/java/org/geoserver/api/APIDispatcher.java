@@ -44,7 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -126,7 +126,16 @@ public class APIDispatcher extends AbstractController {
         handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
-        // force json as the first choice
+        // force GeoServer version of jackson as the first choice
+        handlerAdapter
+                .getMessageConverters()
+                .removeIf(
+                        c ->
+                                c
+                                                instanceof
+                                                org.springframework.http.converter.json
+                                                        .MappingJackson2HttpMessageConverter
+                                        || c instanceof MappingJackson2XmlHttpMessageConverter);
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2YAMLMessageConverter());
         // add all registered converters before the Spring ones too

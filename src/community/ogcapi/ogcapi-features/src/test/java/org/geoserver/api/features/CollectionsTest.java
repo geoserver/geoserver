@@ -95,6 +95,7 @@ public class CollectionsTest extends FeaturesTestSupport {
     }
 
     @Test
+    @Ignore
     public void testCollectionsXML() throws Exception {
         Document dom = getAsDOM("ogc/features/collections?f=application/xml");
         print(dom);

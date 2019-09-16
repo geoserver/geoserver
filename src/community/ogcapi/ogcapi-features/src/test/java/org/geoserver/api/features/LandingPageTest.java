@@ -64,6 +64,7 @@ public class LandingPageTest extends FeaturesTestSupport {
     }
 
     @Test
+    @Ignore
     public void testLandingPageXML() throws Exception {
         Document dom = getAsDOM("ogc/features?f=application/xml");
         print(dom);
@@ -82,8 +83,6 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/features\\/\\?.*/)].rel",
-                "alternate",
-                "alternate",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -115,7 +114,7 @@ public class LandingPageTest extends FeaturesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(20, (int) json.read("links.length()", Integer.class));
+        assertEquals(12, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -124,8 +123,6 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/\\?.*/)].rel",
-                "alternate",
-                "alternate",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -138,8 +135,6 @@ public class LandingPageTest extends FeaturesTestSupport {
                 "links[?(@.href =~ /.*ogc\\/features\\/api.*/)].rel",
                 "service",
                 "service",
-                "service",
-                "service",
                 "service");
         // check conformance links
         assertJSONList(
@@ -147,15 +142,11 @@ public class LandingPageTest extends FeaturesTestSupport {
                 "links[?(@.href =~ /.*ogc\\/features\\/conformance.*/)].rel",
                 "conformance",
                 "conformance",
-                "conformance",
-                "conformance",
                 "conformance");
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/features\\/collections.*/)].rel",
-                "data",
-                "data",
                 "data",
                 "data",
                 "data");

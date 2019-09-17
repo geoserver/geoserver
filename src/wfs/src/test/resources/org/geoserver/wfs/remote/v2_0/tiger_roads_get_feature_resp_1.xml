@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wfs:FeatureCollection numberMatched="8333" numberReturned="1" timeStamp="2019-09-12T15:47:25.069Z" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:tiger="http://www.census.gov" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.census.gov http://localhost:8061/geoserver/wfs?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=tiger%3Atiger_roads http://www.opengis.net/wfs/2.0 http://localhost:8061/geoserver/schemas/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://localhost:8061/geoserver/schemas/gml/3.2.1/gml.xsd">
+<wfs:FeatureCollection numberMatched="1" numberReturned="1" timeStamp="2019-09-16T11:21:07.322Z"
+                       xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:tiger="http://www.census.gov"
+                       xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.census.gov ${TIGER_ROADS_SCHEMA_LOCATION}">
   <wfs:member>
     <tiger:tiger_roads gml:id="tiger_roads.1">
       <tiger:the_geom>
@@ -7,10 +11,13 @@
           <gml:curveMember>
             <gml:LineString gml:id="tiger_roads.1.the_geom.1">
               <gml:posList>40.73158 -73.999559 40.732188 -73.999079</gml:posList>
+              <gml:posList>-73.999559 40.73158 -73.999079 40.732188</gml:posList>
             </gml:LineString>
           </gml:curveMember>
         </gml:MultiCurve>
       </tiger:the_geom>
+      <tiger:CFCC>A41</tiger:CFCC>
+      <tiger:NAME>Washington Sq W</tiger:NAME>
     </tiger:tiger_roads>
   </wfs:member>
 </wfs:FeatureCollection>

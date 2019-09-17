@@ -5,8 +5,6 @@
 
 package org.geoserver.api;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
@@ -90,20 +87,17 @@ public class AbstractDocument {
             String classification,
             BiConsumer<MediaType, Link> linkUpdater,
             String rel) {
-        String baseUrl = APIRequestInfo.get().baseURL;
-        for (MediaType mediaType :
-                APIRequestInfo.get().getProducibleMediaTypes(responseType, true)) {
-            String format = mediaType.toString();
-            Map<String, String> params = Collections.singletonMap("f", format);
-            String url = buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
-            String linkTitle = titlePrefix + format;
-            Link link = new Link(url, rel, format, linkTitle);
-            link.setClassification(classification);
-            if (linkUpdater != null) {
-                linkUpdater.accept(mediaType, link);
-            }
-            addLink(link);
-        }
+        List<Link> links =
+                APIRequestInfo.get()
+                        .getLinksFor(
+                                path,
+                                responseType,
+                                titlePrefix,
+                                classification,
+                                linkUpdater,
+                                rel,
+                                true);
+        this.links.addAll(links);
     }
 
     /**

@@ -86,7 +86,7 @@ public class FeatureService {
         this.geoServer = geoServer;
     }
 
-    private WFSInfo getService() {
+    public WFSInfo getService() {
         return geoServer.getService(WFSInfo.class);
     }
 

@@ -14,6 +14,7 @@ import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -67,6 +68,7 @@ public class LandingPageTest extends StylesTestSupport {
     }
 
     @Test
+    @Ignore
     public void testLandingPageXML() throws Exception {
         Document dom = getAsDOM("ogc/styles?f=application/xml");
         print(dom);
@@ -86,8 +88,6 @@ public class LandingPageTest extends StylesTestSupport {
                 json,
                 "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/styles\\/\\?.*/)].rel",
                 "alternate",
-                "alternate",
-                "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
     }
@@ -105,7 +105,7 @@ public class LandingPageTest extends StylesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(20, (int) json.read("links.length()", Integer.class));
+        assertEquals(12, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -114,8 +114,6 @@ public class LandingPageTest extends StylesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/styles\\/\\?.*/)].rel",
-                "alternate",
-                "alternate",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -128,8 +126,6 @@ public class LandingPageTest extends StylesTestSupport {
                 "links[?(@.href =~ /.*ogc\\/styles\\/api.*/)].rel",
                 "service",
                 "service",
-                "service",
-                "service",
                 "service");
         // check conformance links
         assertJSONList(
@@ -137,15 +133,11 @@ public class LandingPageTest extends StylesTestSupport {
                 "links[?(@.href =~ /.*ogc\\/styles\\/conformance.*/)].rel",
                 "conformance",
                 "conformance",
-                "conformance",
-                "conformance",
                 "conformance");
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/styles\\/styles.*/)].rel",
-                "data",
-                "data",
                 "data",
                 "data",
                 "data");

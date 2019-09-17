@@ -102,16 +102,20 @@ public class StylesService {
 
     private final GeoServer geoServer;
     private final GeoServerDataDirectory dataDirectory;
-    Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
-    List<MediaType> mediaTypes = new ArrayList<>();
-    APIContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
+    private final SampleDataSupport sampleDataSupport;
+    private Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
+    private List<MediaType> mediaTypes = new ArrayList<>();
+    private APIContentNegotiationManager contentNegotiationManager =
+            new APIContentNegotiationManager();
 
     public StylesService(
             GeoServer geoServer,
             GeoServerExtensions extensions,
-            GeoServerDataDirectory dataDirectory) {
+            GeoServerDataDirectory dataDirectory,
+            SampleDataSupport sampleDataSupport) {
         this.geoServer = geoServer;
         this.dataDirectory = dataDirectory;
+        this.sampleDataSupport = sampleDataSupport;
         List<StyleHandler> handlers = extensions.extensions(StyleHandler.class);
         for (StyleHandler sh : handlers) {
             for (Version ver : sh.getVersions()) {
@@ -276,7 +280,7 @@ public class StylesService {
     public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
             throws IOException {
         StyleInfo styleInfo = getStyleInfo(styleId, true);
-        return new StyleMetadataDocument(styleInfo, geoServer);
+        return new StyleMetadataDocument(styleInfo, geoServer, sampleDataSupport);
     }
 
     @PostMapping(

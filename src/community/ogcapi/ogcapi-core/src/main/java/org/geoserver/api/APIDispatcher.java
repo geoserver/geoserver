@@ -44,7 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -84,6 +84,7 @@ public class APIDispatcher extends AbstractController {
     /** list of callbacks */
     protected List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
 
+    private List<DocumentCallback> documentCallbacks;
     protected RequestMappingHandlerMapping mappingHandler;
 
     protected RequestMappingHandlerAdapter handlerAdapter;
@@ -103,6 +104,7 @@ public class APIDispatcher extends AbstractController {
         // load life cycle callbacks
         callbacks = GeoServerExtensions.extensions(DispatcherCallback.class, context);
         exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
+        this.documentCallbacks = GeoServerExtensions.extensions(DocumentCallback.class, context);
 
         this.mappingHandler =
                 new RequestMappingHandlerMapping() {
@@ -124,7 +126,16 @@ public class APIDispatcher extends AbstractController {
         handlerAdapter = configurationSupport.requestMappingHandlerAdapter();
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
-        // force json as the first choice
+        // force GeoServer version of jackson as the first choice
+        handlerAdapter
+                .getMessageConverters()
+                .removeIf(
+                        c ->
+                                c
+                                                instanceof
+                                                org.springframework.http.converter.json
+                                                        .MappingJackson2HttpMessageConverter
+                                        || c instanceof MappingJackson2XmlHttpMessageConverter);
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2YAMLMessageConverter());
         // add all registered converters before the Spring ones too
@@ -261,6 +272,13 @@ public class APIDispatcher extends AbstractController {
 
             // and this is response handling
             Object returnValue = mav != null ? mav.getModel().get(RESPONSE_OBJECT) : null;
+
+            // if it's an AbstractDocument call the DocumentCallback implementations
+            if (returnValue instanceof AbstractDocument) {
+                applyDocumentCallbacks((AbstractDocument) returnValue);
+            }
+
+            // and then the dispatcher callbacks
             returnValue = fireOperationExecutedCallback(dr, dr.getOperation(), returnValue);
 
             returnValueHandlers.handleReturnValue(
@@ -587,5 +605,16 @@ public class APIDispatcher extends AbstractController {
     private static boolean isRequestMapping(Annotation a) {
         return a instanceof RequestMapping
                 || a.annotationType().getAnnotation(RequestMapping.class) != null;
+    }
+
+    /**
+     * Applies all available callbacks to the document
+     *
+     * @param document The document the {@link DocumentCallback} will operate on
+     */
+    private void applyDocumentCallbacks(AbstractDocument document) {
+        for (DocumentCallback callback : documentCallbacks) {
+            callback.apply(document);
+        }
     }
 }

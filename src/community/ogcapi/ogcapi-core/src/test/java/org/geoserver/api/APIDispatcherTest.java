@@ -24,6 +24,7 @@ import org.geoserver.ows.TestDispatcherCallback;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.http.HttpHeaders;
@@ -62,6 +63,7 @@ public class APIDispatcherTest {
     }
 
     @Test
+    @Ignore // restore when XML is back as supported format
     public void testXMLFormatQueryParameter() throws Exception {
         APIDispatcher dispatcher = getDispatcher();
 
@@ -75,6 +77,7 @@ public class APIDispatcherTest {
     }
 
     @Test
+    @Ignore // restore when XML is back as supported format
     public void testXMLFormatAcceptHeader() throws Exception {
         APIDispatcher dispatcher = getDispatcher();
 

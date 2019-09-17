@@ -90,7 +90,7 @@ public class TilesService {
                 (service.getAbstract() == null) ? "" : service.getAbstract());
     }
 
-    private TilesServiceInfo getService() {
+    public TilesServiceInfo getService() {
         return geoServer.getService(TilesServiceInfo.class);
     }
 

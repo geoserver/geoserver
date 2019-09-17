@@ -13,12 +13,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
+import org.geowebcache.mime.ApplicationMime;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +80,17 @@ public class StyleMetadataTest extends StylesTestSupport {
                 },
                 StyleMetadataTest.class,
                 getCatalog());
+
+        // add vector tiles as a format for it
+        String buildingsLabelId = getLayerId(BUILDINGS_LABEL);
+        GWC gwc = GeoServerExtensions.bean(GWC.class);
+        GeoServerTileLayer buildingTiles =
+                (GeoServerTileLayer) gwc.getTileLayerByName(buildingsLabelId);
+        Set<String> formats = buildingTiles.getInfo().getMimeFormats();
+        formats.add(ApplicationMime.mapboxVector.getFormat());
+        formats.add(ApplicationMime.topojson.getFormat());
+        formats.add(ApplicationMime.geojson.getFormat());
+        gwc.save(buildingTiles);
 
         // a multi-layer style
         testData.addStyle(TASMANIA, "tasmania.sld", StyleMetadataTest.class, getCatalog());
@@ -145,11 +161,19 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals(Integer.valueOf(1), (Integer) json.read("layers.size()"));
         assertEquals("Buildings", json.read("layers[0].id"));
         assertEquals("polygon", json.read("layers[0].type"));
-        assertEquals("data", json.read("layers[0].sampleData.rel"));
+
+        // sample data, vector items
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__BuildingsLabels",
-                json.read("layers[0].sampleData.href"));
-        assertEquals("application/json", json.read("layers[0].sampleData.type"));
+                "http://localhost:8080/geoserver/ogc/features/collections/cite__BuildingsLabels/items?f=application%2Fgeo%2Bjson",
+                getSingle(
+                        json,
+                        "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'data' && @.type == 'application/geo+json')].href"));
+        // sample data, tiles
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ABuildingsLabels%2Ftiles?f=application%2Fvnd.mapbox-vector-tile",
+                getSingle(
+                        json,
+                        "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'tiles' && @.type == 'application/vnd.mapbox-vector-tile')].href"));
 
         // attributes
         assertEquals("FID", json.read("layers[0].attributes[0].id"));

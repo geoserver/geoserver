@@ -50,12 +50,15 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
     String scope = "style";
     List<Stylesheet> stylesheets = new ArrayList<>();
     List<StyleLayer> layers = new ArrayList<>();
+    SampleDataSupport sampleDataSupport;
 
     public StyleMetadataDocument() {
         // empty constructor for Jackson usage
     }
 
-    public StyleMetadataDocument(StyleInfo si, GeoServer gs) throws IOException {
+    public StyleMetadataDocument(StyleInfo si, GeoServer gs, SampleDataSupport sampleDataSupport)
+            throws IOException {
+        this.sampleDataSupport = sampleDataSupport;
         this.id = NCNameResourceCodec.encode(si);
         StyledLayerDescriptor sld = si.getSLD();
         Optional<StyleMetadataInfo> styleMetadata =
@@ -93,14 +96,14 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
         if (styledLayers.length == 1) {
             // common GeoServer case, there is a single layer referenced and we use only the style
             // portion, not the layer one, we allow both userlayer and namedlayer
-            StyleLayer sl = new StyleLayer(si, styledLayers[0], gs.getCatalog());
+            StyleLayer sl = new StyleLayer(si, styledLayers[0], gs.getCatalog(), sampleDataSupport);
             layers.add(sl);
         } else {
             // here we skip the UserLayer, as they should contain data inline, so they get skipped
             layers =
                     Arrays.stream(styledLayers)
                             .filter(sl -> sl instanceof NamedLayer)
-                            .map(nl -> new StyleLayer(si, nl, gs.getCatalog()))
+                            .map(nl -> new StyleLayer(si, nl, gs.getCatalog(), sampleDataSupport))
                             .collect(Collectors.toList());
         }
     }

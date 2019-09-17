@@ -32,7 +32,7 @@ public class TileDescriptionTest extends TilesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/tileMatrixSets\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/xml", "application/x-yaml"));
+                hasItems("application/x-yaml"));
 
         // check some of the basic tile matrix sets are there
         assertThat(
@@ -69,7 +69,7 @@ public class TileDescriptionTest extends TilesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/tileMatrixSets\\/EPSG%3A4326\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/xml", "application/x-yaml"));
+                hasItems("application/x-yaml"));
 
         // check basic properties
         assertThat(json.read("identifier"), equalTo("EPSG:4326"));
@@ -112,7 +112,7 @@ public class TileDescriptionTest extends TilesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/collections\\/cite:RoadSegments\\/tiles\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/xml", "application/x-yaml"));
+                hasItems("application/x-yaml"));
 
         checkRoadSegmentsTileMatrix(json);
     }

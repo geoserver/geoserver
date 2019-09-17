@@ -68,6 +68,7 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     @Test
+    @Ignore
     public void testLandingPageXML() throws Exception {
         Document dom = getAsDOM("ogc/tiles?f=application/xml");
         print(dom);
@@ -86,8 +87,6 @@ public class LandingPageTest extends TilesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/tiles\\/\\?.*/)].rel",
-                "alternate",
-                "alternate",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -119,7 +118,7 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(25, (int) json.read("links.length()", Integer.class));
+        assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -128,8 +127,6 @@ public class LandingPageTest extends TilesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/\\?.*/)].rel",
-                "alternate",
-                "alternate",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -142,8 +139,6 @@ public class LandingPageTest extends TilesTestSupport {
                 "links[?(@.href =~ /.*ogc\\/tiles\\/api.*/)].rel",
                 "service",
                 "service",
-                "service",
-                "service",
                 "service");
         // check conformance links
         assertJSONList(
@@ -151,15 +146,11 @@ public class LandingPageTest extends TilesTestSupport {
                 "links[?(@.href =~ /.*ogc\\/tiles\\/conformance.*/)].rel",
                 "conformance",
                 "conformance",
-                "conformance",
-                "conformance",
                 "conformance");
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/tiles\\/collections.*/)].rel",
-                "data",
-                "data",
                 "data",
                 "data",
                 "data");

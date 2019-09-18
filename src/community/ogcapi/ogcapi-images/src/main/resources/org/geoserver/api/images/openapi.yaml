@@ -1,0 +1,362 @@
+openapi: 3.0.1
+# Revisions:
+# 2019-06-15 initial version inspired in the cportele styles API https://app.swaggerhub.com/apis/cportele/opf-style-api/1.0.0
+#
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/UAB-CREAF/ogc-api-images-opf-xml/1.0.0
+info:
+  version: '1.0.0'
+  title: |-
+    'Open Portrayal Framework Image API'
+  description: 'This is a draft of the OGC Testbed-15 Image API in the Open Portrayal Framework task. The Image API is a Web API for fetching and managing a server that maintains products composed by lists of images. The tipical example is a remote sensing product exposed a single mosaik but internally composed by many scenes that are constantly received from the satellite.'
+  contact:
+    name: Joan Masó
+    email: joan.maso@uab.cat
+  license:
+    name: OGC License
+    url: 'https://raw.githubusercontent.com/opengeospatial/WFS_FES/master/LICENSE'
+tags:
+  - name: OGC API Common
+    description: |-
+      Common characteristics of this API
+  - name: Images
+    description: |-
+      access to Images
+  - name: Manage Images
+    description: |-
+      Creation, modification of deletion of images
+paths:
+  '/':
+    get:
+      tags:
+        - OGC API Common
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition, the conformance statements and to the feature collections in this dataset.
+      operationId: getLandingPage
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          description: |-
+            Links to the API capabilities shared by this API.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/landingPage'
+              example:
+                title: Image API service example.
+                description: Image API service example. Part of the Testbed 15 OpenAPI work
+                links:
+                  - href: 'http://data.example.org/?f=json'
+                    rel: self
+                    type: application/json
+                    title: this document
+                  - href: 'http://data.example.org/?f=html'
+                    rel: alternate
+                    type: text/html
+                    title: this document in HTML
+                  - href: 'http://data.example.org/api?f=json'
+                    rel: service
+                    type: application/vnd.oai.openapi+json;version=3.0
+                    title: the API definition in OpenAPI 3.0 JSON
+                  - href: 'http://data.example.org/api?f=html'
+                    rel: service
+                    type: text/html
+                    title: the API definition in HTML
+                  - href: 'http://data.example.org/conformance?f=json'
+                    rel: conformance
+                    type: application/json
+                    title: the list of conformance classes implemented by this API
+                  - href: 'http://data.example.org/collections?f=json'
+                    rel: data
+                    type: application/json
+                    title: The image collections in the dataset in JSON
+                  - href: 'http://data.example.org/collections?f=html'
+                    rel: data
+                    type: text/html
+                    title: The image collections in the dataset in HTML
+            text/html:
+              schema:
+                type: string
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/conformance':
+    get:
+      summary: information about specifications that this API conforms to
+      description: |-
+        A list of all requirements classes specified in a standard that the 
+        server conforms to.
+      operationId: getConformanceDeclaration
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json'
+      tags:
+        - OGC API Common
+      responses:
+        '200':
+          description: |-
+            the URIs of all requirements classes supported by 
+            this API        
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/confClasses'
+              example:
+                - 'http://www.opengis.net/spec/ogcapi-common-1/1.0/req/core'
+                - 'http://www.opengis.net/spec/ogcapi-common-1/1.0/req/collections'
+                - 'http://www.opengis.net/spec/ogcapi-images-1/1.0/req/core'
+                - 'http://www.opengis.net/spec/ogcapi-images-1/1.0/req/stac'
+        '400':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/InvalidParam'
+        '406':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnsupportedFormat'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections':
+    get:
+      tags:
+        - OGC API Common
+      summary: the collections in the dataset
+      operationId: getCollections
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Collections'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collectionInfo'
+          '500':
+            $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}':
+    get:
+      tags:
+        - OGC API Common
+      summary: describe a collection
+      operationId: describeCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          description: |-
+            Metadata about the collection including image list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}/images':
+    get:
+      tags:
+        - Images
+      summary: retrieve images of the collection
+      operationId: getImages
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/limit'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/offset'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/bbox'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f-stac-html'
+      responses:
+        '200':
+          description: |-
+            Information about the feature collection plus the first features
+            matching the selection parameters.
+          content:
+            application/stac.collection+json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-images/1.0.0#/components/schemas/stacCollection'
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+    post:
+      tags:
+        - Manage images
+      summary: |-
+        adds a new image
+      operationId: addImage
+      description: |-
+        Adds an image to the image collection
+        The URI of the new image is returned in the header `Location`.
+        This operation is only available to registered image authors.
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '201':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Created'
+        '400':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Invalid'
+        '401':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnauthorizedAccess'
+        '409':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/AlreadyExist'
+      requestBody:
+        description: |-
+          image to be added in the form of a STAC document
+        content:
+          image/geo+tiff:
+            schema:
+              type: string
+              format: binary
+          application/vnd.ogc.multipart;container=application/x-zip-compressed;images=geo+tiff:
+            schema:
+              type: string
+              format: binary
+          application/vnd.ogc.multipart;container=application/x-zip-compressed;images=geo+tiff;description=application/stac.item+json:
+            schema:
+              type: string
+              format: binary
+  '/collections/{collectionId}/images/{imageId}':
+    get:
+      tags:
+        - Images
+      summary: fetch a image
+      operationId: getImage
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-images/1.0.0#/components/parameters/imageId'
+        - $ref: '#/components/parameters/f-stac-html'
+      responses:
+        '200':
+          description: |-
+            An image.
+          content:
+            application/stac.item+json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-images/1.0.0#/components/schemas/stacItemImage'
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+    put:
+      tags:
+        - Manage images
+      summary: |-
+        replace an image resource or add a new one
+      description: |-
+        Replace an existing image with the id `imageId`. If no such image exists, a new resource with that id is added.
+        The resource will only by available in the native format in which the resource is posted. There is no support for         automated conversions to other representations.
+
+        This operation is only available to registered image authors.
+      operationId: updateImage
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-images/1.0.0#/components/parameters/imageId'
+      requestBody:
+        description: |-
+          A single image resource.
+        content:
+          application/stac.item+json:
+            schema:
+              $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-images/1.0.0#/components/schemas/stacItem'
+          image/geo+tiff:
+            schema:
+              type: string
+              format: binary
+          application/vnd.ogc.multipart;container=application/x-zip-compressed;images=geo+tiff:
+            schema:
+              type: string
+              format: binary
+          application/vnd.ogc.multipart;container=application/x-zip-compressed;images=geo+tiff;description=application/stac.item+json:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '204':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Updated'
+        '401':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnauthorizedAccess'
+    delete:
+      tags:
+        - Manage images
+      summary: |-
+        delete an image resource
+      description: |-
+        Delete an existing image with the id `imageId`. If no 
+        such resource exists, an error is returned.
+        This operation is only available to registered image authors.
+      operationId: deleteImage
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-images/1.0.0#/components/parameters/imageId'
+      responses:
+        '204':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Deleted'
+        '401':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnauthorizedAccess'
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+
+components:
+  schemas:
+    collection:
+      allOf:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/collection'
+        - $ref: '#/components/schemas/collection-link'
+    collection-link:
+      #This element is a duplicate of the one in OGC API common but it is enriched with more examples for maps and other resource types.
+      type: object
+      required:
+        - links
+      properties:
+        links:
+          type: array
+          items:
+            $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/link'
+          example:
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-describedBy'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-license-html'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-license-rdf'
+            - href: 'http://data.example.com/collections/buildings/images'
+              rel: image
+              type: 'image/geotiff'
+  parameters:
+    collectionId:
+      name: collectionId
+      in: path
+      required: true
+      description: Identifier (name) of a specific collection
+      schema:
+        type: string
+    f-stac-html:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+
+        Pre-defined values are "application/stac+json" and "test/html".
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - application/stac.collection+json
+          - text/html
+      example: application/stac.collection+json

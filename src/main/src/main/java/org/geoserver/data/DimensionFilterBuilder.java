@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.dimension;
+package org.geoserver.data;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -34,7 +34,7 @@ import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.dimension.DimensionFilterBuilder;
+import org.geoserver.data.DimensionFilterBuilder;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;

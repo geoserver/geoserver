@@ -471,13 +471,14 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             jsonWriter.value(value);
                         }
                     }
+                    jsonWriter.endObject(); // end the properties
+
                     // Bounding box for feature in properties
                     ReferencedEnvelope refenv =
                             ReferencedEnvelope.reference(simpleFeature.getBounds());
                     if (featureBounding && !refenv.isEmpty()) {
                         jsonWriter.writeBoundingBox(refenv);
                     }
-                    jsonWriter.endObject(); // end the properties
 
                     writeExtraFeatureProperties(simpleFeature, operation, jsonWriter);
 

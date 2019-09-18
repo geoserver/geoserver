@@ -24,6 +24,7 @@
         <module>ogcapi-features</module>
         <module>ogcapi-styles</module>
         <module>ogcapi-tiles</module>
+        <module>ogcapi-images</module>
     </modules>
     
 </project>

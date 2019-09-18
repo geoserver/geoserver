@@ -259,8 +259,8 @@ public class StyleMetadataTest extends StylesTestSupport {
                 json.read("stylesheets.size()", Integer.class), Matchers.greaterThanOrEqualTo(3));
 
         // sld 1.is not native, CSS is
-        assertEquals(false, getSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
-        assertEquals(true, getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
+        assertEquals(false, (boolean) getSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
+        assertEquals(true, (boolean) getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
 
         // some checks on the CSS one
         assertEquals(

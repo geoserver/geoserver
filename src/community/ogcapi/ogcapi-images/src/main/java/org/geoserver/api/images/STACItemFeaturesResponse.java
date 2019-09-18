@@ -2,23 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api.images;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import javax.xml.namespace.QName;
+import static org.geoserver.ows.util.ResponseUtils.urlEncode;
+
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -28,9 +17,9 @@ import org.geoserver.wfs.json.GeoJSONBuilder;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geoserver.wfs.request.Query;
+import org.geotools.coverage.grid.io.GranuleSource;
+import org.geotools.data.FileGroupProvider;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.Feature;
@@ -40,15 +29,35 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 /** A subclass of GeoJSONGetFeatureResponse that encodes a RFC compliant document */
 @Component
-public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
+public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     /** The MIME type requested by WFS3 for GeoJSON Responses */
-    public static final String MIME = "application/geo+json";
+    public static final String MIME = "application/stac+json";
 
-    public RFCGeoJSONFeaturesResponse(GeoServer gs) {
+    private final AssetHasher assetHasher;
+
+    public STACItemFeaturesResponse(GeoServer gs, AssetHasher assetLinkHandler) {
         super(gs, MIME);
+        this.assetHasher = assetLinkHandler;
+    }
+
+    @Override
+    protected boolean canHandleInternal(Operation operation) {
+        return true;
     }
 
     @Override
@@ -58,25 +67,25 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         // was it a single feature request?
-        if (getItemId() != null) {
-            writeSingleFeature((FeatureCollectionResponse) value, output, operation);
+        if (getImageId() != null) {
+            writeSingleItem((FeatureCollectionResponse) value, output, operation);
         } else {
             super.write(value, output, operation);
         }
     }
 
     /**
-     * Returns the WFS3 featureId, or null if it's missing or the request is not a WFS3 one
+     * Returns the image id, or null if it's missing or the request is not a images API one
      *
      * @return
      */
-    private String getItemId() {
+    private String getImageId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(
                         att ->
                                 (String)
                                         att.getAttribute(
-                                                FeatureService.ITEM_ID,
+                                                ImagesService.IMAGE_ID,
                                                 RequestAttributes.SCOPE_REQUEST))
                 .orElse(null);
     }
@@ -89,7 +98,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
      * @param operation
      * @throws UnsupportedEncodingException
      */
-    private void writeSingleFeature(
+    private void writeSingleItem(
             FeatureCollectionResponse value, OutputStream output, Operation operation)
             throws IOException {
         OutputStreamWriter osw =
@@ -105,10 +114,55 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     @Override
     protected void writeExtraFeatureProperties(
             Feature feature, Operation operation, GeoJSONBuilder jw) {
-        String featureId = getItemId();
-        if (featureId != null) {
-            writeLinks(null, operation, jw, featureId);
+        jw.key("stac_version").value("0.8.0");
+        jw.key("collection").value(getParentCollectionId());
+        writeAssets(feature, jw);
+        writeLinks(null, operation, jw, feature.getIdentifier().getID());
+    }
+
+    private void writeAssets(Feature feature, GeoJSONBuilder jw) {
+        Object filesCandidate = feature.getUserData().get(GranuleSource.FILES);
+        if (!(filesCandidate instanceof FileGroupProvider.FileGroup)) {
+            return;
         }
+        FileGroupProvider.FileGroup files = (FileGroupProvider.FileGroup) filesCandidate;
+        jw.key("assets").array();
+        String featureId = feature.getIdentifier().getID();
+        writeAssetLink(featureId, files.getMainFile(), jw);
+        if (files.getSupportFiles() != null) {
+            for (File supportFile : files.getSupportFiles()) {
+                writeAssetLink(featureId, supportFile, jw);
+            }
+        }
+        jw.endArray();
+    }
+
+    private void writeAssetLink(String featureId, File file, GeoJSONBuilder jw) {
+        try {
+            jw.object();
+            String href = getFileDownloadURL(getParentCollectionId(), featureId, file);
+            jw.key("href").value(href);
+            jw.key("title").value(file.getName());
+            jw.key("type").value(assetHasher.guessMimeType(file));
+            jw.endObject();
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected IO error while writing assets", e);
+        }
+    }
+
+    private String getFileDownloadURL(String collectionId, String imageId, File file)
+            throws IOException {
+        String fileNameHash = assetHasher.hashFile(file);
+        return ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/images/collections/"
+                        + urlEncode(collectionId)
+                        + "/images/"
+                        + urlEncode(imageId)
+                        + "/assets/"
+                        + urlEncode(fileNameHash),
+                null,
+                URLMangler.URLType.SERVICE);
     }
 
     @Override
@@ -124,13 +178,11 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             GeoJSONBuilder jw,
             String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
-        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        FeatureTypeInfo featureType = getFeatureType(request);
-        String baseUrl = request.getBaseUrl();
+        String baseUrl = requestInfo.getBaseURL();
         jw.key("links");
         jw.array();
-        // paging links
-        if (response != null) {
+        // paging links (only for collections)
+        if (response != null && getImageId() == null && featureId == null) {
             if (response.getPrevious() != null) {
                 writeLink(jw, "Previous page", MIME, "prev", response.getPrevious());
             }
@@ -140,12 +192,11 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
         // alternate/self links
         String basePath =
-                "ogc/features/collections/"
-                        + ResponseUtils.urlEncode(NCNameResourceCodec.encode(featureType));
+                "ogc/images/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
         Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+                requestInfo.getProducibleMediaTypes(ImagesResponse.class, true);
         for (MediaType format : formats) {
-            String path = basePath + "/items";
+            String path = basePath + "/images";
             if (featureId != null) {
                 path += "/" + ResponseUtils.urlEncode(featureId);
             }
@@ -163,29 +214,30 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             }
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
-        // backpointer to the collection
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            basePath,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_COLLECTION;
-            String linkTitle = "The collection description as " + format;
-            writeLink(jw, linkTitle, format.toString(), linkType, href);
+        // backpointer to the collection, if it was a single feature request, or for the collection
+        // only
+        if (featureId == null || getImageId() != null) {
+            for (MediaType format :
+                    requestInfo.getProducibleMediaTypes(ImagesCollectionsDocument.class, true)) {
+                String href =
+                        ResponseUtils.buildURL(
+                                baseUrl,
+                                basePath,
+                                Collections.singletonMap("f", format.toString()),
+                                URLMangler.URLType.SERVICE);
+                String linkType = Link.REL_COLLECTION;
+                String linkTitle = "The collection description as " + format;
+                writeLink(jw, linkTitle, format.toString(), linkType, href);
+            }
         }
         jw.endArray();
     }
 
-    private FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
-        // a WFS3 always has a collection reference, so one query
-        Query query = request.getQueries().get(0);
-        QName typeName = query.getTypeNames().get(0);
-        return gs.getCatalog()
-                .getFeatureTypeByName(
-                        new NameImpl(typeName.getNamespaceURI(), typeName.getLocalPart()));
+    private String getParentCollectionId() {
+        return String.valueOf(
+                RequestContextHolder.getRequestAttributes()
+                        .getAttribute(
+                                ImagesService.COLLECTION_ID, RequestAttributes.SCOPE_REQUEST));
     }
 
     @Override
@@ -217,14 +269,12 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     /** capabilities output format string. */
     public String getCapabilitiesElementName() {
-        return "GeoJSON-RFC";
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean canHandle(Operation operation) {
-        if ("GetFeature".equalsIgnoreCase(operation.getId())
-                || "GetFeatureWithLock".equalsIgnoreCase(operation.getId())
-                || "getTile".equalsIgnoreCase(operation.getId())) {
+        if ("GetImages".equalsIgnoreCase(operation.getId())) {
             // also check that the resultType is "results"
             GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
             if (req.isResultTypeResults()) {

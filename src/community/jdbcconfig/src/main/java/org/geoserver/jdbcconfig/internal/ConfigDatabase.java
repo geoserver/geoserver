@@ -82,6 +82,7 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -1607,6 +1608,8 @@ public class ConfigDatabase {
         }
 
         public void reloaded() {}
+
+        public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
     }
     /** Listens to configuration events clearing cache entires when resources are modified. */
     public class ConfigClearingListener extends ConfigurationListenerAdapter {

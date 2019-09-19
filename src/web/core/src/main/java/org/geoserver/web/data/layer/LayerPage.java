@@ -80,6 +80,10 @@ public class LayerPage extends GeoServerSecuredPage {
                             return new Label(id, SRS.getModel(itemModel));
                         } else if (property == TITLE) {
                             return titleLink(id, itemModel);
+                        } else if (property == MODIFIED_TIMESTAMP) {
+                            return new Label(id, MODIFIED_TIMESTAMP.getModel(itemModel));
+                        } else if (property == CREATED_TIMESTAMP) {
+                            return new Label(id, CREATED_TIMESTAMP.getModel(itemModel));
                         }
                         throw new IllegalArgumentException(
                                 "Don't know a property named " + property.getName());

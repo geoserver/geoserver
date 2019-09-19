@@ -7,6 +7,7 @@ package org.geoserver.catalog;
 
 import java.util.List;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -145,6 +146,8 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
     public void reloaded() {
         // ignore
     }
+
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
 
     /**
      * If post modify event catalog object is a namespace or an workspace this method will make sure

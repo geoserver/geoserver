@@ -42,6 +42,8 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     private boolean localWorkspaceIncludesPrefix = false;
 
+    private boolean showTimeColumnsInAdminList = false;
+
     @Override
     public String getId() {
         return id;
@@ -239,5 +241,15 @@ public class SettingsInfoImpl implements SettingsInfo {
     @Override
     public void setLocalWorkspaceIncludesPrefix(boolean removePrefix) {
         localWorkspaceIncludesPrefix = removePrefix;
+    }
+
+    @Override
+    public boolean isShowTimeColumnsInAdminList() {
+        return showTimeColumnsInAdminList;
+    }
+
+    @Override
+    public void setShowTimeColumnsInAdminList(boolean showTimeColumnsInAdminList) {
+        this.showTimeColumnsInAdminList = showTimeColumnsInAdminList;
     }
 }

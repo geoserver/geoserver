@@ -38,6 +38,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -198,6 +199,13 @@ public class EventHzSynchronizer extends HzSynchronizer {
         final Catalog cat = cluster.getRawCatalog();
 
         switch (t) {
+            case PREADD:
+                subj = getCatalogInfo(cat, id, clazz);
+                notifyMethod =
+                        CatalogListener.class.getMethod(
+                                "handlePreAddEvent", CatalogBeforeAddEvent.class);
+                evt = new CatalogAddEventImpl();
+                break;
             case ADD:
                 subj = getCatalogInfo(cat, id, clazz);
                 notifyMethod =

@@ -12,6 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -131,4 +132,9 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
 
     @Override
     public void reloaded() {}
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) {
+        // nothing to do
+    }
 }

@@ -7,11 +7,13 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.opengis.util.ProgressListener;
@@ -202,5 +204,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
             if (other.getWorkspace() != null) return false;
         } else if (!workspace.equals(other.getWorkspace())) return false;
         return true;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return getMetadata().get(PublishedInfo.TIME_MODIFIED, Date.class);
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return getMetadata().get(PublishedInfo.TIME_CREATED, Date.class);
     }
 }

@@ -15,6 +15,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitorAdapter;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -143,5 +144,8 @@ public class MIMETypeMapper implements ApplicationContextAware {
         public void visit(CoverageInfo coverage) {
             outputMimeTypes.remove(coverage.getId());
         }
+
+        @Override
+        public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
     }
 }

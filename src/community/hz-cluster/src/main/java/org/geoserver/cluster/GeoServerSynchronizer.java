@@ -7,6 +7,7 @@ package org.geoserver.cluster;
 
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -21,6 +22,9 @@ public class GeoServerSynchronizer extends ConfigurationListenerAdapter implemen
     public void initialize(ClusterConfigWatcher configWatcher) {
         this.configWatcher = configWatcher;
     }
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {};
 
     @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {}

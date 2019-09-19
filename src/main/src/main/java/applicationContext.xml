@@ -309,4 +309,9 @@
   	<constructor-arg ref="geoServer"/>
   </bean>
   
+  <!-- handle time stamping of layer/style creation/modification -->
+  <bean id="catalogTimeStampUpdater" class="org.geoserver.config.CatalogTimeStampUpdater">
+  	<constructor-arg ref="catalog"/>
+  </bean>
+  
 </beans>

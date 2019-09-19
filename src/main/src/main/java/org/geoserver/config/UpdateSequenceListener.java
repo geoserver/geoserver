@@ -8,6 +8,7 @@ package org.geoserver.config;
 import java.util.List;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -59,6 +60,9 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
     public void reloaded() {
         // never mind
     }
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {}
 
     public void handleGlobalChange(
             GeoServerInfo global,

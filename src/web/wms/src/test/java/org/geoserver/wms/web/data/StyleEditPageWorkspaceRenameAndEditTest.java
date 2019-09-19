@@ -128,6 +128,11 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
                             public void reloaded() {
                                 // not interest, ignore this events
                             }
+
+                            @Override
+                            public void handlePreAddEvent(CatalogBeforeAddEvent event) {
+                                // not interest, ignore this events
+                            }
                         });
 
         edit = new StyleEditPage(styleInfoToMove);

@@ -25,6 +25,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
@@ -263,4 +264,7 @@ public class NotificationCatalogListener extends NotificationListener
 
     @Override
     public void reloaded() {}
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {}
 }

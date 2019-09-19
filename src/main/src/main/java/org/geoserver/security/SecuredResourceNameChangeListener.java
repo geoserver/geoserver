@@ -16,6 +16,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -122,6 +123,9 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
     public void reloaded() {
         // ignore
     }
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
 
     private boolean workspaceHasSecurityRule(String workspaceName) {
         List<DataAccessRule> rules = this.dao.getRules();

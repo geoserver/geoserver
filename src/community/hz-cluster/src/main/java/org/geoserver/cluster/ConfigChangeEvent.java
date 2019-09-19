@@ -95,6 +95,7 @@ public class ConfigChangeEvent extends Event {
     private static final long serialVersionUID = 1L;
 
     public enum Type {
+        PREADD,
         ADD,
         REMOVE,
         MODIFY,

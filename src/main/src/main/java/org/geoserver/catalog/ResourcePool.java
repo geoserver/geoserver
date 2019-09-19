@@ -49,6 +49,7 @@ import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -2521,6 +2522,9 @@ public class ResourcePool {
         }
 
         public void reloaded() {}
+
+        @Override
+        public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
 
         @Override
         public void visit(DataStoreInfo dataStore) {

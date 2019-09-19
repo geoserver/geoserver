@@ -7,6 +7,7 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
@@ -166,5 +167,15 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
 
     public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
         delegate.setUseConnectionPooling(useHttpConnectionPooling);
+    }
+
+    @Override
+    public Date getDateModified() {
+        return delegate.getDateModified();
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return delegate.getDateCreated();
     }
 }

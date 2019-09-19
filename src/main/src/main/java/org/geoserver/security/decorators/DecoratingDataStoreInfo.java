@@ -7,6 +7,7 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
@@ -108,5 +109,15 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo>
 
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return delegate.getAdapter(adapterClass, hints);
+    }
+
+    @Override
+    public Date getDateModified() {
+        return delegate.getDateModified();
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return delegate.getDateCreated();
     }
 }

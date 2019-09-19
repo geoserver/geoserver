@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.util.Date;
 import org.geoserver.catalog.*;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
@@ -168,6 +169,7 @@ public class StyleInfoImpl implements StyleInfo {
         if (languageVersion == null) {
             if (other.getFormatVersion() != null) return false;
         } else if (!languageVersion.equals(other.getFormatVersion())) return false;
+
         return true;
     }
 
@@ -205,5 +207,15 @@ public class StyleInfoImpl implements StyleInfo {
         }
 
         return this;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return getMetadata().get(PublishedInfo.TIME_MODIFIED, Date.class);
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return getMetadata().get(PublishedInfo.TIME_CREATED, Date.class);
     }
 }

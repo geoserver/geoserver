@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -252,6 +253,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public MetadataMap getMetadata() {
+        checkMetadataNotNull();
         return metadata;
     }
 
@@ -327,5 +329,19 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     public void setMetadataLinks(List<MetadataLinkInfo> metadataLinks) {
         this.metadataLinks = metadataLinks;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return getMetadata().get(PublishedInfo.TIME_MODIFIED, Date.class);
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return getMetadata().get(PublishedInfo.TIME_CREATED, Date.class);
+    }
+
+    private void checkMetadataNotNull() {
+        if (metadata == null) metadata = new MetadataMap();
     }
 }

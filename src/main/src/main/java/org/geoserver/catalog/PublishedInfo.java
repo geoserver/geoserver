@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,9 @@ public interface PublishedInfo extends CatalogInfo {
 
     /** Use the entity as capabilities root element if it's the only top level element */
     public static final String ROOT_IN_CAPABILITIES = "rootInCapabilities";
+
+    public static final String TIME_CREATED = "creationTime";
+    public static final String TIME_MODIFIED = "modificationTime";
 
     /** Returns the name. */
     String getName();
@@ -77,4 +81,8 @@ public interface PublishedInfo extends CatalogInfo {
      * @see AttributionInfo
      */
     void setAttribution(AttributionInfo attribution);
+
+    Date getDateModified();
+
+    Date getDateCreated();
 }

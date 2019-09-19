@@ -133,4 +133,8 @@ public interface SettingsInfo extends Info {
      *     it.
      */
     void setLocalWorkspaceIncludesPrefix(boolean includePrefix);
+
+    boolean isShowTimeColumnsInAdminList();
+
+    void setShowTimeColumnsInAdminList(boolean showTimeColumnsInAdminList);
 }

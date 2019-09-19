@@ -8,6 +8,7 @@ package org.geoserver.web.data.layergroup;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -50,6 +51,18 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                                 }
                                 if (property == LayerGroupProvider.WORKSPACE) {
                                     return workspaceLink(id, itemModel);
+                                }
+                                if (property == LayerGroupProvider.MODIFIED_TIMESTAMP) {
+                                    return new Label(
+                                            id,
+                                            LayerGroupProvider.MODIFIED_TIMESTAMP.getModel(
+                                                    itemModel));
+                                }
+                                if (property == LayerGroupProvider.CREATED_TIMESTAMP) {
+                                    return new Label(
+                                            id,
+                                            LayerGroupProvider.CREATED_TIMESTAMP.getModel(
+                                                    itemModel));
                                 }
                                 return null;
                             }

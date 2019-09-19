@@ -15,6 +15,7 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -277,5 +278,10 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
         // TODO disable and re-enable the producer!!!!!
         // this is potentially a problem since this listener should be the first
         // called by the GeoServer.
+    }
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) {
+        // nothing to do
     }
 }

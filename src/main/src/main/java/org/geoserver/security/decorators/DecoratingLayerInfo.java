@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.decorators;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.AttributionInfo;
@@ -192,5 +193,15 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     @Override
     public void setDefaultWMSInterpolationMethod(WMSInterpolation interpolationMethod) {
         delegate.setDefaultWMSInterpolationMethod(interpolationMethod);
+    }
+
+    @Override
+    public Date getDateModified() {
+        return delegate.getDateModified();
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return delegate.getDateCreated();
     }
 }

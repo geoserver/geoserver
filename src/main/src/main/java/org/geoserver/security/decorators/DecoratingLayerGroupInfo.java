@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.decorators;
 
+import java.util.Date;
 import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -220,5 +221,15 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
     @Override
     public List<KeywordInfo> getKeywords() {
         return delegate.getKeywords();
+    }
+
+    @Override
+    public Date getDateModified() {
+        return delegate.getDateModified();
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return delegate.getDateCreated();
     }
 }

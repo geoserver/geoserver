@@ -34,6 +34,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -682,4 +683,7 @@ public class CatalogLayerEventListener implements CatalogListener {
     public void reloaded() {
         //
     }
+
+    @Override
+    public void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {}
 }

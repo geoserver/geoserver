@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.geotools.styling.Style;
 
-/** @author ImranR */
 public interface CascadedLayerInfo extends LayerInfo {
     public List<String> getRemoteStyles();
 
@@ -33,11 +32,13 @@ public interface CascadedLayerInfo extends LayerInfo {
 
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles);
 
-    public boolean isSelectedRemoteFormat(String format);
+    public boolean isFormatValid(String format);
 
     void reset();
 
     public String getPrefferedFormat();
 
     public void setPrefferedFormat(String prefferedFormat);
+
+    public String getDefaultFormatOnRemote();
 }

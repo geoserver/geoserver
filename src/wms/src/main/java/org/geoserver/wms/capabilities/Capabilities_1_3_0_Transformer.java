@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -49,7 +50,6 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
@@ -1184,28 +1184,28 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // if WMSLayerInfo do nothing for the moment, we may want to list the set of cascaded
             // named styles
             // in the future (when we add support for that)
-            if (!(layer.getResource() instanceof WMSLayerInfo)) {
-                // add the layer style
-                start("Style");
+            // support added :GEOS-9312
 
-                StyleInfo defaultStyle = layer.getDefaultStyle();
-                if (defaultStyle == null) {
-                    throw new NullPointerException(
-                            "Layer " + layer.getName() + " has no default style");
-                }
-                handleCommonStyleElements(defaultStyle);
-                handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
-                end("Style");
+            // add the layer style
+            start("Style");
 
-                Set<StyleInfo> styles = layer.getStyles();
+            StyleInfo defaultStyle = layer.getDefaultStyle();
+            if (defaultStyle == null) {
+                throw new NullPointerException(
+                        "Layer " + layer.getName() + " has no default style");
+            }
+            handleCommonStyleElements(defaultStyle);
+            handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
+            end("Style");
 
-                if (styles != null) {
-                    for (StyleInfo styleInfo : styles) {
-                        start("Style");
-                        handleCommonStyleElements(styleInfo);
-                        handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
-                        end("Style");
-                    }
+            Set<StyleInfo> styles = layer.getStyles();
+
+            if (styles != null) {
+                for (StyleInfo styleInfo : styles) {
+                    start("Style");
+                    handleCommonStyleElements(styleInfo);
+                    handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
+                    end("Style");
                 }
             }
         }
@@ -1534,7 +1534,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
                 WorkspaceInfo styleWs = sampleStyle.getWorkspace();
                 String legendUrl;
-                if (styleWs != null) {
+
+                if (layer instanceof CascadedLayerInfo) legendUrl = legend.getOnlineResource();
+                else if (styleWs != null) {
                     legendUrl =
                             buildURL(
                                     request.getBaseUrl(),

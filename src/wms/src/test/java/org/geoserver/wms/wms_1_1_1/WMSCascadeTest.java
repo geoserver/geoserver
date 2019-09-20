@@ -91,7 +91,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                         + "&layers="
                         + info.getName()
                         + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png";
+                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png&styles=line1";
 
         // the request should generate exepected remote WMS URL
         // e.g default remote style, correct image format
@@ -105,7 +105,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                         + "&layers="
                         + info.getName()
                         + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&width=768&height=537&srs=EPSG:26713&Format=image/gif";
+                        + "&width=768&height=537&srs=EPSG:26713&Format=image/gif&styles=line1";
 
         // the request should generate exepected remote WMS URL
         // e.g default forced remote style

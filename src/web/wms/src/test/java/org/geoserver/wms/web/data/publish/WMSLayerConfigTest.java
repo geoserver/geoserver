@@ -181,8 +181,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
     public void testWMSCascadeSettings() throws Exception {
         MockHttpClient wms11Client = new MockHttpClient();
         URL wms11BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
-        URL capsDocument =
-                WMSLayerConfigTest.class.getResource("/org/geoserver/wms/web/data/caps111.xml");
+        URL capsDocument = WMSLayerConfigTest.class.getResource("caps111.xml");
         wms11Client.expectGet(
                 new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
                 new MockHttpResponse(capsDocument, "text/xml"));
@@ -202,7 +201,6 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         gsLayer.reset();
         getCatalog().add(gsLayer);
 
-        // final LayerInfo layer = getCatalog().getLayerByName("roads");
         final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
 
         FormTestPage page =

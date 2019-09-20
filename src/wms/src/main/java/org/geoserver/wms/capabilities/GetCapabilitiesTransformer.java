@@ -43,7 +43,6 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataLinkInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -1033,14 +1032,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 handleRootCrsList(srsList);
             } else {
                 element("SRS", srs);
-                // overridingServiceSRS
-                // for other SRS
-                if (layer.getResource() instanceof FeatureTypeInfo) {
-                    FeatureTypeInfo resource = (FeatureTypeInfo) layer.getResource();
-                    if (!resource.getResponseSRS().isEmpty() && resource.isOverridingServiceSRS())
-                        for (String otherSRS : resource.getResponseSRS())
-                            element("SRS", qualifySRS(otherSRS));
-                }
             }
 
             ReferencedEnvelope bbox;

@@ -208,7 +208,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         String getMapRequest =
                 "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&styles=&layers="
+                        + "&styles=line1&layers="
                         + info.getName()
                         + "&Format=image/png"
                         + "&request=GetMap&version=1.3.0&service=wms"
@@ -222,7 +222,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         // below request should force geoserver to request in default format
         String getMapUnsupportedRequest =
                 "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&styles=&layers="
+                        + "&styles=line1&layers="
                         + info.getName()
                         + "&Format=image/gif"
                         + "&request=GetMap&version=1.3.0&service=wms"

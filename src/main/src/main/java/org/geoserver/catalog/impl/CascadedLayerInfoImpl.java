@@ -6,13 +6,13 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.commons.beanutils.BeanUtils;
 import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
@@ -41,6 +41,7 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
 
     public CascadedLayerInfoImpl(LayerInfo delegate) {
 
+        super.setId(delegate.getId());
         super.setResource(delegate.getResource());
         super.setName(delegate.getResource().getName());
         super.setEnabled(delegate.enabled());
@@ -49,6 +50,8 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
 
     @Override
     public void reset() {
+        selectedRemoteStyles.clear();
+        selectedRemoteFormats.clear();
         // select all formats for use
         selectedRemoteStyles.addAll(getRemoteStyles());
         // set first style is selected
@@ -75,10 +78,9 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
             LOGGER.log(
                     Level.SEVERE,
                     "Unable to fetch styles for cascaded layer " + layerInfo.getName());
-            LOGGER.log(Level.SEVERE, e.getMessage());
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new RuntimeException(e);
         }
-
-        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -110,9 +112,9 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
             LOGGER.log(
                     Level.SEVERE,
                     "Unable to fetch available formats for cascaded layer " + layerInfo.getName());
-            LOGGER.log(Level.SEVERE, e.getMessage());
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new RuntimeException(e);
         }
-        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -126,7 +128,7 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
     }
 
     @Override
-    public boolean isSelectedRemoteFormat(String format) {
+    public boolean isFormatValid(String format) {
         if (prefferedFormat.equalsIgnoreCase(format)) return true;
         else return selectedRemoteFormats.contains(format);
     }
@@ -174,9 +176,11 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
                     .stream()
                     .map(CascadedLayerInfoImpl::getStyleInfo)
                     .collect(Collectors.toSet());
-
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Unable to fetch available styles for cascaded layer " + layerInfo.getName());
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         // on error default to super
         return super.getStyles();
@@ -197,11 +201,13 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
                     .filter(s -> s.getName().equalsIgnoreCase(name))
                     .map(s -> style)
                     .findFirst();
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Unable to fetch available styles for cascaded layer " + layerInfo.getName());
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new RuntimeException(e);
         }
-
-        return Optional.empty();
     }
 
     public static StyleInfo getStyleInfo(StyleImpl gtWmsStyle) {
@@ -232,6 +238,7 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
 
     public boolean isSelectedRemoteStyles(String name) {
         if (name == null) return false;
+        else if (name.isEmpty()) return true;
         else if (forcedRemoteStyle.equalsIgnoreCase(name)) return true;
         else return selectedRemoteStyles.contains(name);
     }
@@ -250,5 +257,37 @@ public class CascadedLayerInfoImpl extends LayerInfoImpl implements CascadedLaye
 
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
+    }
+
+    public static synchronized LayerInfo migrateToCascadedLayerInfo(LayerInfo layerInfo)
+            throws Exception {
+        LayerInfo cascadedLayerInfo = new CascadedLayerInfoImpl(layerInfo);
+        BeanUtils.copyProperties(cascadedLayerInfo, layerInfo);
+        ((CascadedLayerInfo) cascadedLayerInfo).reset();
+        // update reference
+        // layerInfo=cascadedLayerInfo;
+        return cascadedLayerInfo;
+    }
+
+    public String getDefaultFormatOnRemote() {
+        WMSLayerInfo layerInfo = (WMSLayerInfo) super.resource;
+
+        try {
+            return layerInfo
+                    .getStore()
+                    .getWebMapServer(null)
+                    .getCapabilities()
+                    .getRequest()
+                    .getGetMap()
+                    .getFormats()
+                    .stream()
+                    .filter(CascadedLayerInfoImpl::isImage)
+                    .findFirst()
+                    .get();
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 }

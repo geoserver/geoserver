@@ -5,9 +5,11 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -40,9 +42,12 @@ import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
+import org.geotools.util.logging.Logging;
 
 /** Configures {@link LayerInfo} WMS specific attributes */
 public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
+
+    static final Logger LOGGER = Logging.getLogger(WMSLayerConfig.class);
 
     private static final long serialVersionUID = -2895136226805357532L;
 
@@ -179,28 +184,42 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
             return;
         }
 
+        // migration
+        //        if (!(layerModel.getObject() instanceof CascadedLayerInfo)) {
+        //            try {
+        //
+        // layerModel.setObject(CascadedLayerInfoImpl.migrateToCascadedLayerInfo(layerModel.getObject()));
+        //            } catch (Exception e) {
+        //                LOGGER.severe("Failed to Migrate WMS Layer
+        // "+layerModel.getObject().getName());
+        //                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        //            }
+        //        }
+
         CascadedLayerInfo cascadedLayerInfo = (CascadedLayerInfo) layerModel.getObject();
         // for new only
         if (cascadedLayerInfo.getId() == null) cascadedLayerInfo.reset();
 
+        // empty string to use whatever default remote server has
+        List<String> remoteSyles = new ArrayList<String>();
+        remoteSyles.add("");
+        remoteSyles.addAll(cascadedLayerInfo.getRemoteStyles());
         DropDownChoice<String> remotStyles =
                 new DropDownChoice<String>(
                         "remoteStylesDropDown",
                         new PropertyModel<String>(cascadedLayerInfo, "forcedRemoteStyle"),
-                        cascadedLayerInfo.getRemoteStyles());
+                        remoteSyles);
 
         styleContainer.add(remotStyles);
 
         LiveCollectionModel stylesModel =
                 LiveCollectionModel.set(
                         new PropertyModel<List<String>>(cascadedLayerInfo, "selectedRemoteStyles"));
-        CollectionModel<String> options =
-                new CollectionModel<String>(cascadedLayerInfo.getRemoteStyles());
         Palette<String> extraRemoteStyles =
                 new Palette<String>(
                         "extraRemoteStyles",
                         stylesModel,
-                        options,
+                        new CollectionModel<String>(cascadedLayerInfo.getRemoteStyles()),
                         new SimpleChoiceRenderer<String>(),
                         10,
                         true);

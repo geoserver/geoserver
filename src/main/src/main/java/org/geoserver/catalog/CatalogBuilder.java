@@ -1543,7 +1543,7 @@ public class CatalogBuilder {
     public LayerInfo buildLayer(WMSLayerInfo wms) throws IOException {
         LayerInfo layer = buildLayer((ResourceInfo) wms);
         layer.setDefaultStyle(getDefaultStyle(wms));
-        // geos-9312
+        // instantiating CascadedLayerInfo to store remote metadata (styles, formats)
         CascadedLayerInfo cascadedLayerInfo = new CascadedLayerInfoImpl(layer);
 
         return cascadedLayerInfo;

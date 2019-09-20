@@ -670,19 +670,24 @@ public class GetMap {
                 }
                 if (!merged) {
                     WMSLayer Layer = null;
-                    // GEOS-9312
                     if (mapLayerInfo.getLayerInfo() instanceof CascadedLayerInfo) {
                         CascadedLayerInfo cascadedLayerInfo =
                                 (CascadedLayerInfo) mapLayerInfo.getLayerInfo();
 
                         String style = request.getStyles().get(i).getName();
+                        style = (style == null) ? "" : style;
                         String imageFormat = request.getFormat();
-                        // if passed style does not exist in remote, default to forced
+                        // if passed style does not exist in remote, throw exception
                         if (!cascadedLayerInfo.isSelectedRemoteStyles(style))
-                            style = cascadedLayerInfo.getForcedRemoteStyle();
+                            throw new IllegalArgumentException(
+                                    "Unknown remote style "
+                                            + style
+                                            + " in cascaded layer "
+                                            + cascadedLayerInfo.getName()
+                                            + ", , re-configure the layer and WMS Store");
 
                         // if the format is not selected then fall back to preffered
-                        if (!cascadedLayerInfo.isSelectedRemoteFormat(imageFormat))
+                        if (!cascadedLayerInfo.isFormatValid(imageFormat))
                             imageFormat = cascadedLayerInfo.getPrefferedFormat();
 
                         Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);

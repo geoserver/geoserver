@@ -49,6 +49,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.w3c.dom.Document;
 
 public class IntegrationTest extends CatalogRESTTestSupport {
 
@@ -314,6 +315,24 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         ReceiverService service = new ReceiverService(1);
         rc.receive(service);
 
+        // 1. do a getFeature
+        String getFeature =
+                "<wfs:GetFeature "
+                        + "service=\"WFS\" "
+                        + "version=\"1.0.0\" "
+                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                        + "> "
+                        + "<wfs:Query typeName=\"cgf:Lines\"> "
+                        + "<ogc:PropertyName>cite:id</ogc:PropertyName> "
+                        + "</wfs:Query> "
+                        + "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", getFeature);
+        assertEquals(1, dom.getElementsByTagName("gml:featureMember").getLength());
+
+        // do a double insert
         String xml =
                 "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
                         + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
@@ -366,6 +385,10 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         assertEquals(5d, b.getMiny().doubleValue(), 0);
         assertEquals(8d, b.getMaxx().doubleValue(), 0);
         assertEquals(8d, b.getMaxy().doubleValue(), 0);
+
+        // 2. do another get feature
+        dom = postAsDOM("wfs", getFeature);
+        assertEquals(3, dom.getElementsByTagName("gml:featureMember").getLength());
     }
 
     public void addWorkspace() throws Exception {

@@ -32,17 +32,21 @@ notifications:
 matrix:
   include:
     - jdk: oraclejdk8
+      dist: trusty
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS 
       name: Java 8 build
     - jdk: openjdk11
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
       name: Java 11 build
-    - jdk: openjdk11
+    - jdk: openjdk14
+      env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
+      name: Java 14 build
+    - jdk: openjdk14
       env: ACTION=build ARGS="-Dfmt.action=check -Dqa -DskipTests=true" COMMUNITY_ARGS="-Dfmt.action=check -DskipTests=true"
-      name: QA build on Java 11
-    - jdk: oraclejdk8
+      name: QA build on Java 14
+    - jdk: oraclejdk14
       env: ACTION=docs
       name: Documentation build
-    - jdk: oraclejdk8
+    - jdk: oraclejdk14
       env: ACTION=package
       name: Build release packages

@@ -38,12 +38,15 @@ matrix:
     - jdk: openjdk11
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
       name: Java 11 build
-    - jdk: openjdk14
+    - jdk: openjdk12
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
-      name: Java 14 build
-    - jdk: openjdk14
+      name: Java 12 build
+    - jdk: openjdk13
+      env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
+      name: Java 13 build
+    - jdk: openjdk13
       env: ACTION=build ARGS="-Dfmt.action=check -Dqa -DskipTests=true" COMMUNITY_ARGS="-Dfmt.action=check -DskipTests=true"
-      name: QA build on Java 14
+      name: QA build on Java 13
     - jdk: oraclejdk14
       env: ACTION=docs
       name: Documentation build

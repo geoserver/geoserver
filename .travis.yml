@@ -31,7 +31,7 @@ notifications:
     on_failure: never
 matrix:
   allow_failures:
-    - name: Java 14 build
+    - name: Java 13 build
   include:
     - jdk: oraclejdk8
       dist: trusty
@@ -40,15 +40,15 @@ matrix:
     - jdk: openjdk11
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
       name: Java 11 build
-    - jdk: openjdk14
+    - jdk: openjdk13
       env: ACTION=build ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
-      name: Java 14 build
+      name: Java 13 build
     - jdk: openjdk11
       env: ACTION=build ARGS="-Dfmt.action=check -Dqa -DskipTests=true" COMMUNITY_ARGS="-Dfmt.action=check -DskipTests=true"
       name: QA build on Java 11
-    - jdk: oraclejdk14
+    - jdk: oraclejdk13
       env: ACTION=docs
       name: Documentation build
-    - jdk: oraclejdk14
+    - jdk: oraclejdk13
       env: ACTION=package
       name: Build release packages

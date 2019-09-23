@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints.Key;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -174,6 +175,10 @@ class FeatureCountProcessor {
 
     private GetMapKvpRequestReader getMapReader;
 
+    private boolean hideEmptyRules;
+
+    private boolean countMatched;
+
     /**
      * Builds a new feature count processor given the legend graphic request. It can be used to
      * alter with feature counts many rule sets.
@@ -183,6 +188,15 @@ class FeatureCountProcessor {
     public FeatureCountProcessor(GetLegendGraphicRequest request) {
         this.request = request;
         this.getMapReader = new GetMapKvpRequestReader(request.getWms());
+        if (Boolean.TRUE.equals(
+                request.getLegendOption(
+                        GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))) {
+            countMatched = true;
+        }
+        if (Boolean.TRUE.equals(
+                request.getLegendOption(GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
+            hideEmptyRules = true;
+        }
     }
 
     /**
@@ -218,22 +232,28 @@ class FeatureCountProcessor {
     }
 
     private Rule[] updateRuleTitles(Rule[] rules, Map<Rule, AtomicInteger> counters) {
-        Rule[] result = new Rule[rules.length];
+        ArrayList<Rule> result = new ArrayList<Rule>();
         for (int i = 0; i < rules.length; i++) {
             Rule rule = rules[i];
             AtomicInteger counter = counters.get(rule);
-            String label = LegendUtils.getRuleLabel(rule, request);
-            if (StringUtils.isEmpty(label)) {
-                label = "(" + counter.get() + ")";
-            } else {
-                label = label + " (" + counter.get() + ")";
+            if (counter.get() == 0 && this.hideEmptyRules) {
+                continue;
             }
+            String label = LegendUtils.getRuleLabel(rule, request);
+            if (this.countMatched) {
+                if (StringUtils.isEmpty(label)) {
+                    label = "(" + counter.get() + ")";
+                } else {
+                    label = label + " (" + counter.get() + ")";
+                }
+            }
+
             TargetLabelUpdater duplicatingVisitor = new TargetLabelUpdater(label);
             rule.accept(duplicatingVisitor);
             Rule clone = (Rule) duplicatingVisitor.getCopy();
-            result[i] = clone;
+            result.add(clone);
         }
-        return result;
+        return result.toArray(new Rule[result.size()]);
     }
 
     private Map<Rule, AtomicInteger> renderAndCountFeatures(

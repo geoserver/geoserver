@@ -165,7 +165,7 @@ Postbody::
       	<Constraint version="1.1.0">
       	  <ogc:Filter>
       	    <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-      	      <ogc:PropertyName>dc::subject</ogc:PropertyName>
+      	      <ogc:PropertyName>dc:subject</ogc:PropertyName>
       	      <ogc:Literal>%ImageMosaic%</ogc:Literal>
       	    </ogc:PropertyIsLike>
       	  </ogc:Filter>

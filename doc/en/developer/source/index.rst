@@ -3,8 +3,8 @@ GeoServer Developer Manual
 
 Welcome to the GeoServer Developer Manual.  The manual is for those who want to help with the development process, including source code, software releasing, and other administrative work.
 
-Sadly we cannot create a Windows Installer at this time anymore.
-However you can create your own installer (using an Windows machine) following :ref:`the instruction on this site <win-installer>`.
+At the time the GeoServer project does not have financial resources and man power to stand up a Windows build server (if you can help with this, please contact the developer list).
+However you can create your own installer (using a Windows machine) following :ref:`the instruction on this site <win-installer>`.
 
 .. toctree::
    :maxdepth: 2

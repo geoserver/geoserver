@@ -10,7 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collection;
-import org.geoserver.catalog.CascadedLayerInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
@@ -82,8 +83,9 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadedSettings() throws Exception {
 
-        CascadedLayerInfo info = (CascadedLayerInfo) getCatalog().getLayerByName("roads_wms");
-        info.setPrefferedFormat("image/jpeg");
+        LayerInfo info = getCatalog().getLayerByName("roads_wms");
+        WMSLayerInfo wmsLayer = (WMSLayerInfo) info.getResource();
+        wmsLayer.setPrefferedFormat("image/jpeg");
 
         String getMapRequest =
                 "wms?service=WMS&version=1.1.0"

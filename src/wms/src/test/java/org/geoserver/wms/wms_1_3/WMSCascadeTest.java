@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.geoserver.catalog.CascadedLayerInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.http.MockHttpResponse;
@@ -202,7 +202,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadedSettings() throws Exception {
 
-        CascadedLayerInfo info = (CascadedLayerInfo) getCatalog().getLayerByName("roads_wms_130");
+        LayerInfo info = getCatalog().getLayerByName("roads_wms_130");
 
         info.toString();
 

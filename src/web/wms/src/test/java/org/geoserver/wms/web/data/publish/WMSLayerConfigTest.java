@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -196,9 +195,9 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         store.setCapabilitiesURL(caps);
         WMSLayerInfo wmsLayer = cb.buildWMSLayer("roads");
         wmsLayer.setName("roads");
+        wmsLayer.reset();
         getCatalog().add(wmsLayer);
-        CascadedLayerInfo gsLayer = (CascadedLayerInfo) cb.buildLayer(wmsLayer);
-        gsLayer.reset();
+        LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
 
         final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
@@ -217,16 +216,16 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
 
         // asserting Remote Style UI fields
         tester.assertModelValue(
-                "form:panel:remotestyles:remoteStylesDropDown", gsLayer.getForcedRemoteStyle());
+                "form:panel:remotestyles:remoteStylesDropDown", wmsLayer.getForcedRemoteStyle());
         tester.assertModelValue(
                 "form:panel:remotestyles:extraRemoteStyles",
-                new HashSet<String>(gsLayer.getRemoteStyles()));
+                new HashSet<String>(wmsLayer.remoteStyles()));
 
         // asserting Remote Style UI fields
         tester.assertModelValue(
-                "form:panel:remoteformats:remoteFormatsDropDown", gsLayer.getPrefferedFormat());
+                "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPrefferedFormat());
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsPalette",
-                new HashSet<String>(gsLayer.getAvailableFormats()));
+                new HashSet<String>(wmsLayer.availableFormats()));
     }
 }

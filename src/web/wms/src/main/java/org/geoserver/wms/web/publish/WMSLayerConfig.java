@@ -30,13 +30,13 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
@@ -178,48 +178,36 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(styleContainer);
         add(remoteForamtsContainer);
 
-        if (!(layerModel.getObject() instanceof CascadedLayerInfo)) {
+        if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
             styleContainer.setVisible(false);
             remoteForamtsContainer.setVisible(false);
             return;
         }
 
-        // migration
-        //        if (!(layerModel.getObject() instanceof CascadedLayerInfo)) {
-        //            try {
-        //
-        // layerModel.setObject(CascadedLayerInfoImpl.migrateToCascadedLayerInfo(layerModel.getObject()));
-        //            } catch (Exception e) {
-        //                LOGGER.severe("Failed to Migrate WMS Layer
-        // "+layerModel.getObject().getName());
-        //                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        //            }
-        //        }
-
-        CascadedLayerInfo cascadedLayerInfo = (CascadedLayerInfo) layerModel.getObject();
+        WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerModel.getObject().getResource();
         // for new only
-        if (cascadedLayerInfo.getId() == null) cascadedLayerInfo.reset();
+        if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
 
         // empty string to use whatever default remote server has
         List<String> remoteSyles = new ArrayList<String>();
         remoteSyles.add("");
-        remoteSyles.addAll(cascadedLayerInfo.getRemoteStyles());
+        remoteSyles.addAll(wmsLayerInfo.remoteStyles());
         DropDownChoice<String> remotStyles =
                 new DropDownChoice<String>(
                         "remoteStylesDropDown",
-                        new PropertyModel<String>(cascadedLayerInfo, "forcedRemoteStyle"),
+                        new PropertyModel<String>(wmsLayerInfo, "forcedRemoteStyle"),
                         remoteSyles);
 
         styleContainer.add(remotStyles);
 
         LiveCollectionModel stylesModel =
                 LiveCollectionModel.set(
-                        new PropertyModel<List<String>>(cascadedLayerInfo, "selectedRemoteStyles"));
+                        new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteStyles"));
         Palette<String> extraRemoteStyles =
                 new Palette<String>(
                         "extraRemoteStyles",
                         stylesModel,
-                        new CollectionModel<String>(cascadedLayerInfo.getRemoteStyles()),
+                        new CollectionModel<String>(wmsLayerInfo.remoteStyles()),
                         new SimpleChoiceRenderer<String>(),
                         10,
                         true);
@@ -230,22 +218,21 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         DropDownChoice<String> remoteForamts =
                 new DropDownChoice<String>(
                         "remoteFormatsDropDown",
-                        new PropertyModel<String>(cascadedLayerInfo, "prefferedFormat"),
-                        cascadedLayerInfo.getAvailableFormats());
+                        new PropertyModel<String>(wmsLayerInfo, "prefferedFormat"),
+                        wmsLayerInfo.availableFormats());
 
         remoteForamtsContainer.add(remoteForamts);
         // add format pallete
 
         LiveCollectionModel remoteFormatsModel =
                 LiveCollectionModel.set(
-                        new PropertyModel<List<String>>(
-                                cascadedLayerInfo, "selectedRemoteFormats"));
+                        new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteFormats"));
 
         Palette<String> remoteFormatsPalette =
                 new Palette<String>(
                         "remoteFormatsPalette",
                         remoteFormatsModel,
-                        new CollectionModel<String>(cascadedLayerInfo.getAvailableFormats()),
+                        new CollectionModel<String>(wmsLayerInfo.availableFormats()),
                         new SimpleChoiceRenderer<String>(),
                         10,
                         true);

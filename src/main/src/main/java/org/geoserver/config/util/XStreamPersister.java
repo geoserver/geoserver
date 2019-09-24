@@ -64,7 +64,6 @@ import org.codehaus.jettison.util.FastStack;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
-import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageDimensionInfo;
@@ -348,7 +347,6 @@ public class XStreamPersister {
         xs.aliasField("abstract", ResourceInfoImpl.class, "_abstract");
         xs.alias("AuthorityURL", AuthorityURLInfo.class);
         xs.alias("Identifier", LayerIdentifierInfo.class);
-        xs.alias("CascadedLayerInfo", CascadedLayerInfo.class);
 
         // GeoServerInfo
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");

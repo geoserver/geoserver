@@ -21,6 +21,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geotools.util.logging.Logging;
 
 public class LayerInfoImpl implements LayerInfo {
@@ -149,6 +150,8 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public StyleInfo getDefaultStyle() {
+        if (getResource() instanceof WMSLayerInfo)
+            return ((WMSLayerInfo) getResource()).getDefaultStyle();
         return defaultStyle;
     }
 
@@ -158,6 +161,8 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     public Set<StyleInfo> getStyles() {
+        if (getResource() instanceof WMSLayerInfo)
+            return ((WMSLayerInfo) getResource()).getStyles();
         return styles;
     }
 

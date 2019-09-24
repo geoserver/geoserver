@@ -101,7 +101,7 @@ public class StyleInfoImpl implements StyleInfo {
         // remote style does not exist in local catalog
         // do not look for this style inside ResourcePool
         if (metadata != null)
-            if (metadata.containsKey("isRemote")) return CascadedLayerInfoImpl.getStyleInfo(this);
+            if (metadata.containsKey("isRemote")) return WMSLayerInfoImpl.getStyleInfo(this);
         return catalog.getResourcePool().getStyle(this);
     }
 

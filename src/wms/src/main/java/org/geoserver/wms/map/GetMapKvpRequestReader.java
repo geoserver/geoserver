@@ -37,7 +37,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.cache.CacheConfig;
 import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
-import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -1421,14 +1420,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 // return null, this should flag request reader to use default for
                 // the associated layer
                 styles.add(null);
-            } else if (requestedLayerInfos.get(i) instanceof CascadedLayerInfo) {
+            } else if (isRemoteWMSLayer(requestedLayerInfos.get(i))) {
                 // GEOS-9312
                 // if the style belongs to a remote layer check inside the remote layer capabilities
                 // instead of local WMS
-                CascadedLayerInfo remoteWMSLayer = (CascadedLayerInfo) requestedLayerInfos.get(i);
+                WMSLayerInfo remoteWMSLayer =
+                        (WMSLayerInfo) ((LayerInfo) requestedLayerInfos.get(i)).getResource();
                 Optional<Style> remoteStyle = remoteWMSLayer.findRemoteStyleByName(styleName);
                 if (remoteStyle.isPresent()) styles.add(remoteStyle.get());
-                else styles.add(null);
+                else
+                    throw new ServiceException(
+                            "No such remote style: " + styleName, "StyleNotDefined");
             } else {
                 final Style style = wms.getStyleByName(styleName);
                 if (style == null) {
@@ -1458,5 +1460,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (httpClient != null) {
             httpClient.close();
         }
+    }
+
+    // check if this requested layer is a cascaded WMS Layer
+    private boolean isRemoteWMSLayer(Object o) {
+        if (o == null) return false;
+        else if (!(o instanceof LayerInfo)) return false;
+        else return ((LayerInfo) o).getResource() instanceof WMSLayerInfo;
     }
 }

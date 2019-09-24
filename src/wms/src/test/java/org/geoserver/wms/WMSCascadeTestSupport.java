@@ -10,7 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
@@ -93,10 +92,10 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         // roads layer
         WMSLayerInfo roadsWmsLayer = cb.buildWMSLayer("roads_wms_130");
         roadsWmsLayer.setName("roads_wms_130");
+        roadsWmsLayer.reset();
+        roadsWmsLayer.setPrefferedFormat("image/jpeg");
         getCatalog().add(roadsWmsLayer);
-        CascadedLayerInfo wmsRaodsLayer = (CascadedLayerInfo) cb.buildLayer(roadsWmsLayer);
-        wmsRaodsLayer.reset();
-        wmsRaodsLayer.setPrefferedFormat("image/jpeg");
+        LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
         getCatalog().add(wmsRaodsLayer);
 
         // http://mock.test.geoserver.org/wms13
@@ -157,10 +156,11 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         // roads layer
         WMSLayerInfo roadsWmsLayer = cb.buildWMSLayer("roads_wms");
         roadsWmsLayer.setName("roads_wms");
+        roadsWmsLayer.reset();
+        roadsWmsLayer.setPrefferedFormat("image/jpeg");
         getCatalog().add(roadsWmsLayer);
-        CascadedLayerInfo wmsRaodsLayer = (CascadedLayerInfo) cb.buildLayer(roadsWmsLayer);
-        wmsRaodsLayer.reset();
-        wmsRaodsLayer.setPrefferedFormat("image/jpeg");
+        LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
+
         getCatalog().add(wmsRaodsLayer);
 
         // setting up mock response

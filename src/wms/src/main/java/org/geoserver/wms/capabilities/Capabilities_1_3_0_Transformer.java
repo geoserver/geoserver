@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
-import org.geoserver.catalog.CascadedLayerInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -50,6 +49,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
@@ -1535,7 +1535,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 WorkspaceInfo styleWs = sampleStyle.getWorkspace();
                 String legendUrl;
 
-                if (layer instanceof CascadedLayerInfo) legendUrl = legend.getOnlineResource();
+                if (layer.getResource() instanceof WMSLayerInfo)
+                    legendUrl = legend.getOnlineResource();
                 else if (styleWs != null) {
                     legendUrl =
                             buildURL(

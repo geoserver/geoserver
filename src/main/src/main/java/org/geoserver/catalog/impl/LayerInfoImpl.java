@@ -38,8 +38,6 @@ public class LayerInfoImpl implements LayerInfo {
     // TODO: revert to normal property when the resource/publishing split is done
     protected transient String name;
 
-    private String abstractTxt;
-
     protected String path;
 
     protected PublishedType type;
@@ -404,12 +402,12 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public String getAbstract() {
-        return abstractTxt;
+        return this.resource.getAbstract();
     }
 
     @Override
     public void setAbstract(String abstractTxt) {
-        this.abstractTxt = abstractTxt;
+        this.resource.setAbstract(abstractTxt);
     }
 
     @Override

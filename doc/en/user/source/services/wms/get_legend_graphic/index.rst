@@ -86,6 +86,7 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **bgColor (hex)** background color for the generated legend, values are expressed in ``0xRRGGBB`` format
     - **dpi (integer)** sets the DPI for the current request, in the same way as it is supported by GetMap. Setting a DPI larger than 91 (the default) makes all fonts, symbols and line widths grow without changing the current scale, making it possible to get a high resolution version of the legend suitable for inclusion in printouts 
     - **forceLabels** "on" means labels will always be drawn, even if only one rule is available. "off" means labels will never be drawn, even if multiple rules are available. Off by default.
+    - **forceTitles** "off" means layer titles will not be drawn for layer groups. On by default.    
     - **labelMargin** margin (in pixels) to use between icons and labels.
     - **layout** sets icons layout to be **vertical** (default) or **horizontal**.
     - **columnheight** enables **multicolumn** layout when layout is **vertical**. Each column height is limited by the columnheight value (in pixels).
@@ -94,7 +95,7 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **rows** enables **multirow** layout when layout is **horizontal**. The value is the the maximum rows number of legend. The columns used are equal to the next greater integer of <total of icons>/<number of rows>.
     - **grouplayout** Orientation of groups of layer, possible values are **horizontal** and **vertical** (default if not specified).
     - **countMatched** When set to true, adds at the end of each label the number of features matching that rule in the current map. Requires extra parameters, see details in the :ref:`dedicated section <content-dependent>`.
-    
+    - **hideEmptyRules** When set to true hides rules that are not matching any feature.
 
 Here is a sample request sporting most the options::
 
@@ -239,9 +240,8 @@ filtering vendor parameters such as, for example, CQL_FILTER,FILTER,FEATUREID,TI
 Content dependent evaluation is enabled via the following LEGEND_OPTIONS parameters:
  
   *  countMatched: adds the number of features matching the particular rule at the end of the rule label (requires visible labels to work). Applicable only to vector layers.
+  *  hideEmptyRules:  hides rules that are not matching any feature. Applicable only if countMatched is true.
   
-More approaches may be added in future (e.g., making rules that are not matching any feature disappear).
-
 For example, let's assume the following layout is added to GeoServer (``legend.xml`` to be placed in ``GEOSERVER_DATA_DIR/layouts``)::
 
   <layout>
@@ -270,6 +270,11 @@ The result will look as follows:
 
    *Embedded legend, single state*
 
+.. figure:: img/states-one-hide-empty.png
+   :align: center 
+
+   *Embedded legend, single state, hide empty rules*
+
 The same can be achieved using a stand-alone GetLegendGraphic request::
 
   http://localhost:8080/geoserver/topp/wms?service=WMS&version=1.1.0&request=GetLegendGraphic&width=20&height=20&layer=topp:states&bbox=-124.73142200000001,24.955967,-66.969849,49.371735&srcwidth=768&srcheight=330&srs=EPSG:4326&format=image/png&legend_options=countMatched:true;fontAntiAliasing:true
@@ -278,6 +283,16 @@ The same can be achieved using a stand-alone GetLegendGraphic request::
    :align: center 
 
    *Direct legend request*
+
+Or hide the empty rules using a stand-alone GetLegendGraphic request::
+
+  http://localhost:8080/geoserver/topp/wms?service=WMS&version=1.1.0&request=GetLegendGraphic&width=20&height=20&layer=topp:states&bbox=-101.0028076171875,31.025390625,-96.7840576171875,32.838134765625&srcwidth=768&srcheight=330&srs=EPSG:4326&format=image/png&legend_options=countMatched:true;fontAntiAliasing:true;hideEmptyRules:true
+  
+.. figure:: img/legend-not-empty.png
+   :align: center 
+
+   *Direct legend request*
+
 
 
 JSON Output Format

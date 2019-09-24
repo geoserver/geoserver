@@ -6,19 +6,17 @@ package org.geoserver.api.features;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
-import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.AbstractCollectionDocument;
+import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
 import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -35,24 +33,21 @@ import org.springframework.http.MediaType;
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
 @JacksonXmlRootElement(localName = "Collection", namespace = "http://www.opengis.net/wfs/3.0")
-public class CollectionDocument extends AbstractDocument {
+public class CollectionDocument extends AbstractCollectionDocument {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 
-    String id;
-    String title;
-    String description;
-    WFSExtents extent;
     FeatureTypeInfo featureType;
     String mapPreviewURL;
 
     public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType) {
+        super(featureType);
         // basic info
         String collectionId = NCNameResourceCodec.encode(featureType);
-        setId(collectionId);
-        setTitle(featureType.getTitle());
-        setDescription(featureType.getAbstract());
+        this.id = collectionId;
+        this.title = featureType.getTitle();
+        this.description = featureType.getAbstract();
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
-        setExtent(new WFSExtents(bbox));
+        setExtent(new CollectionExtents(bbox));
         this.featureType = featureType;
 
         // links
@@ -94,47 +89,6 @@ public class CollectionDocument extends AbstractDocument {
                         .findFirst()
                         .orElse(null);
         return si != null;
-    }
-
-    @JacksonXmlProperty(localName = "Id")
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String collectionId) {
-        id = collectionId;
-    }
-
-    @JacksonXmlProperty(localName = "Title")
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @JacksonXmlProperty(localName = "Description")
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public WFSExtents getExtent() {
-        return extent;
-    }
-
-    public void setExtent(WFSExtents extent) {
-        this.extent = extent;
-    }
-
-    @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    public List<Link> getLinks() {
-        return links;
     }
 
     @JsonIgnore

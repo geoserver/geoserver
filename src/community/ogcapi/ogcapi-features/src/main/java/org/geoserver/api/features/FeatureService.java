@@ -86,7 +86,7 @@ public class FeatureService {
         this.geoServer = geoServer;
     }
 
-    private WFSInfo getService() {
+    public WFSInfo getService() {
         return geoServer.getService(WFSInfo.class);
     }
 
@@ -128,8 +128,7 @@ public class FeatureService {
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        CollectionsDocument collections = new CollectionsDocument(geoServer, ft);
-        CollectionDocument collection = collections.getCollections().next();
+        CollectionDocument collection = new CollectionDocument(geoServer, ft);
 
         return collection;
     }

@@ -12,6 +12,7 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
+import static org.geoserver.wms.capabilities.CapabilityUtil.validateLegendInfo;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -1486,7 +1487,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          */
         protected void handleLegendURL(
                 LayerInfo layer, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
-            if (legend != null) {
+            // add CapabilityUtil.validateLegendInfo
+            if (validateLegendInfo(legend)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("using user supplied legend URL");
                 }

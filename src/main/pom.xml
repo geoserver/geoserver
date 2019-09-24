@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.17-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
@@ -44,7 +44,6 @@
   <dependency>
    <groupId>net.sf.json-lib</groupId>
    <artifactId>json-lib</artifactId>
-   <classifier>jdk15</classifier>
   </dependency>
   <dependency>
    <groupId>commons-beanutils</groupId>
@@ -254,11 +253,6 @@
      <dependency>
          <groupId>org.codehaus.jettison</groupId>
          <artifactId>jettison</artifactId>
-     </dependency>
-     <dependency>
-     	<groupId>org.geotools</groupId>
-     	<artifactId>gt-wmts</artifactId>
-     	<version>${gt.version}</version>
      </dependency>
      <dependency>
      	<groupId>org.geotools</groupId>

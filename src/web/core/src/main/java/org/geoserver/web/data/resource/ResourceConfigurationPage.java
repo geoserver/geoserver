@@ -98,8 +98,14 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                         : getCatalog().getResource(info.getResource().getId(), ResourceInfo.class));
     }
 
+    private void updateResourceInLayerModel(ResourceInfo resource) {
+        LayerInfo layer = getPublishedInfo();
+        layer.setResource(resource);
+        myModel.setObject(layer);
+    }
+
     private void setupResource(ResourceInfo resource) {
-        getPublishedInfo().setResource(resource);
+        updateResourceInLayerModel(resource);
         myResourceModel = new CompoundPropertyModel<ResourceInfo>(new ResourceModel(resource));
     }
 
@@ -178,6 +184,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
      */
     public void updateResource(ResourceInfo info, final AjaxRequestTarget target) {
         myResourceModel.setObject(info);
+        updateResourceInLayerModel(info);
         visitChildren(
                 (component, visit) -> {
                     if (component instanceof ResourceConfigurationPanel) {
@@ -197,6 +204,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
     protected void doSaveInternal() throws IOException {
         Catalog catalog = getCatalog();
         ResourceInfo resourceInfo = getResourceInfo();
+        validateByChildren(resourceInfo);
         if (isNew) {
             // updating grid if is a coverage
             if (resourceInfo instanceof CoverageInfo) {
@@ -245,5 +253,15 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                 throw e;
             }
         }
+    }
+
+    private void validateByChildren(final ResourceInfo resourceInfo) {
+        if (resourceInfo == null || resourceInfo.getMetadata() == null) return;
+        visitChildren(
+                (component, visitor) -> {
+                    if (component instanceof MetadataMapValidator) {
+                        ((MetadataMapValidator) component).validate(resourceInfo.getMetadata());
+                    }
+                });
     }
 }

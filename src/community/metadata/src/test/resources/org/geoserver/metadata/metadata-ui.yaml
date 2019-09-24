@@ -1,0 +1,99 @@
+attributes:
+  - key: uuid-single
+    fieldType: UUID
+  - key: identifier-single
+    fieldType: TEXT
+  - key: number-field
+    fieldType: NUMBER
+  - key: dropdown-field
+    fieldType: DROPDOWN
+    values:
+        - Select me
+        - Or select this row
+        - Don't select this one
+        - the-final-choice
+  - label: refsystem as list
+    key: refsystem-as-list
+    fieldType: TEXT
+    occurrence: REPEAT
+  - label: Referencesystem object
+    key: referencesystem-object
+    fieldType: COMPLEX
+    typename: referencesystem
+  - label: Referencesystem object list
+    key: referencesystem-object-list
+    fieldType: COMPLEX
+    typename: referencesystem
+    occurrence: REPEAT
+    #duplicates should be ignored
+  - label: Referencesystem object list
+    key: referencesystem-object-list
+    fieldType: COMPLEX
+    typename: referencesystem
+    occurrence: REPEAT
+  - key: date-field
+    fieldType: DATE
+  - key: date-time-field
+    fieldType: DATETIME
+  - key: boolean-field
+    fieldType: BOOLEAN
+  - key: contact
+    fieldType: COMPLEX
+    typename: contact
+    occurrence: REPEAT
+  - key: identifier-other
+    fieldType: TEXT
+  - label: Feature catalog
+    key: feature-catalog
+    fieldType: COMPLEX
+    typename: featureCatalog    
+    condition: equalTo(typeOf("."), 'FeatureTypeInfo')
+  - key: source
+    fieldType: DROPDOWN
+    occurrence: REPEAT
+  - key: target
+    fieldType: DERIVED
+    derivedFrom: source
+    occurrence: REPEAT
+csvImports:
+  - sourcetarget.csv
+
+types:
+  - typename: referencesystem
+    attributes:
+        - label: Code
+          key: code
+          fieldType: TEXT
+        - label: codeSpace
+          key: code-space
+          fieldType: TEXT
+  - typename: contact
+    attributes:
+        - key: name
+          fieldType: TEXT
+        - key: url
+          fieldType: TEXT
+        - key: phone
+          fieldType: TEXT
+          occurrence: REPEAT          
+  - typename: featureCatalog
+    attributes:
+        - label: Unique identifier
+          key: feature-catalog-identifier
+          fieldType: UUID
+        - label: Feature attribute
+          key: feature-attribute
+          fieldType: COMPLEX
+          typename: featureAttribute
+          occurrence: REPEAT
+
+
+geonetworks:
+  - name: geonetwork url
+    url: https://www.dov.vlaanderen.be/geonetwork/xml_iso19139_save?uuid=${UUID}
+  - name: geonetwork oefen url
+    url: https://oefen.dov.vlaanderen.be/geonetwork/xml_iso19139_save?uuid=${UUID}
+
+geonetworkmapping:
+    -  geoserver: identifier-other
+       geonetwork: //gmd:fileIdentifier/gco:CharacterString/text()

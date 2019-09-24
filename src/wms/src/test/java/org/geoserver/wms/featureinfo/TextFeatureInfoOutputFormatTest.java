@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -31,10 +32,15 @@ import org.geoserver.ows.Request;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.util.factory.Hints;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
+
+    public static TimeZone defaultTimeZone;
 
     private TextFeatureInfoOutputFormat outputFormat;
 
@@ -43,6 +49,22 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
     Map<String, Object> parameters;
 
     GetFeatureInfoRequest getFeatureInfoRequest;
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.geotools.localDateTimeHandling", "true");
+        System.getProperties().remove("org.geotools.dateTimeFormatHandling");
+        Hints.scanSystemProperties();
+        defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT-05:00"));
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        System.getProperties().remove("org.geotools.dateTimeFormatHandling");
+        Hints.scanSystemProperties();
+        TimeZone.setDefault(defaultTimeZone);
+    }
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
@@ -94,5 +116,49 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         assertFalse(result.contains("java.lang.NullPointerException"));
         assertTrue(result.contains("pointProperty = null"));
+    }
+
+    @Test
+    public void testDateTimeFormattingEnabled() throws Exception {
+        TimeZone defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT-05:00"));
+        try {
+            System.setProperty("org.geotools.dateTimeFormatHandling", "true");
+            Hints.scanSystemProperties();
+            final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
+            fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
+            fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+
+            getFeatureInfoRequest.setFeatureCount(10);
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+            String result = new String(outStream.toByteArray());
+            assertTrue(result.contains("dateTimeProperty = 2006-06-26T19:00:00-05:00"));
+
+        } finally {
+            getFeatureInfoRequest.setFeatureCount(1);
+            TimeZone.setDefault(defaultTimeZone);
+        }
+    }
+
+    @Test
+    public void testDateTimeFormattingDisabled() throws Exception {
+        System.setProperty("org.geotools.dateTimeFormatHandling", "false");
+        Hints.scanSystemProperties();
+        try {
+            final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
+            fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
+            fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+
+            getFeatureInfoRequest.setFeatureCount(10);
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+            String result = new String(outStream.toByteArray());
+            assertTrue(result.contains("dateTimeProperty = 2006-06-26 19:00:00.0"));
+        } finally {
+            getFeatureInfoRequest.setFeatureCount(1);
+            System.getProperties().remove("org.geotools.dateTimeFormatHandling");
+            Hints.scanSystemProperties();
+        }
     }
 }

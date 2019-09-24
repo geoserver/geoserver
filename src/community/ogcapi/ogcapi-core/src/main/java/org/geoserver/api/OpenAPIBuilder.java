@@ -64,7 +64,8 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
      * @param service The service configuration
      */
     public OpenAPI build(T service) {
-        OpenAPI api = readTemplate();
+        GeoServerOpenAPI api = readTemplate();
+        api.setServiceBase(serviceBase);
         addAPIInfo(service, api);
         addServers(api);
         addBasePathFormats(api);
@@ -159,9 +160,9 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
      *
      * @return
      */
-    protected OpenAPI readTemplate() {
+    protected GeoServerOpenAPI readTemplate() {
         try {
-            return Yaml.mapper().readValue(apiSpecification, OpenAPI.class);
+            return Yaml.mapper().readValue(apiSpecification, GeoServerOpenAPI.class);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

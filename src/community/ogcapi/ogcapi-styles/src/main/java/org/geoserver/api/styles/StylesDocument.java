@@ -7,6 +7,7 @@ package org.geoserver.api.styles;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Iterator;
 import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.StyleDocument;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -44,9 +45,10 @@ public class StylesDocument extends AbstractDocument {
                 } else {
                     try {
                         StyleInfo style = styles.next();
-                        StyleDocument collection = new StyleDocument(style);
+                        StyleDocument styleDocument = new StyleDocument(style);
+                        StyleDocumentCallback.addStyleLinks(styleDocument);
 
-                        next = collection;
+                        next = styleDocument;
                         return true;
                     } catch (Exception e) {
                         styles.close();

@@ -31,6 +31,8 @@ public interface ResourceInfo extends CatalogInfo {
     /** Prefix for custom dimensions */
     public static final String CUSTOM_DIMENSION_PREFIX = "custom_dimension_";
 
+    public static final String VECTOR_CUSTOM_DIMENSION_PREFIX = "dim_";
+
     /** Key for the HTTP caching max age value in the metadata map */
     public static final String CACHE_AGE_MAX = "cacheAgeMax";
 

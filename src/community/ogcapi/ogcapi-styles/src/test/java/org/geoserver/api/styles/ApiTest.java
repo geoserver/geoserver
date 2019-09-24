@@ -76,7 +76,7 @@ public class ApiTest extends StylesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/features/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0\""));
+                        "url: \"http://localhost:8080/geoserver/ogc/styles/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test

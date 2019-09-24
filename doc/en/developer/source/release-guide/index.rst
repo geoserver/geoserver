@@ -114,8 +114,6 @@ When creating the first release candidate of a series, there are some extra step
     * ``doc/en/developer/source/conf.py``
     * ``doc/en/docguide/source/conf.py``
     * ``doc/en/user/source/conf.py``
-    * ``doc/es/user/source/conf.py``
-    * ``doc/fr/user/source/conf.py``
 
 * Commit the changes and push to the master branch on GitHub::
 

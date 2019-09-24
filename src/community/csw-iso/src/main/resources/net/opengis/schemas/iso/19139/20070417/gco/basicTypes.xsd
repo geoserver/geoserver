@@ -7,7 +7,7 @@ Information Metadata documented in ISO/TS 19139:2007. GCO includes all the defin
 	</xs:annotation>
 	<!-- ================================== Imports ================================== -->
 	<xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
-	<!-- <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/> -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
 	<xs:include schemaLocation="gco.xsd"/>
 	<xs:include schemaLocation="gcoBase.xsd"/>
 	<!-- ########################################################################### -->

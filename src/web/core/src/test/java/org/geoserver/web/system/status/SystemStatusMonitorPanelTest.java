@@ -28,15 +28,15 @@ public class SystemStatusMonitorPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testLoad() throws Exception {
         tester.assertRenderedPage(StatusPage.class);
-        tester.clickLink("tabs:tabs-container:tabs:3:link", true);
-        tester.assertContains("Updated at");
+        tester.clickLink("tabs:tabs-container:tabs:2:link", true);
+        tester.assertContains("CPUs");
     }
 
     @Test
     public void testUpdate() throws Exception {
-        SimpleDateFormat formatter = new SimpleDateFormat(SystemStatusMonitorPanel.datePattern);
+        SimpleDateFormat formatter = new SimpleDateFormat(RefreshedPanel.datePattern);
         tester.assertRenderedPage(StatusPage.class);
-        tester.clickLink("tabs:tabs-container:tabs:3:link", true);
+        tester.clickLink("tabs:tabs-container:tabs:2:link", true);
         TagTester time1 = tester.getTagByWicketId("time");
         assertNotNull(time1);
         Date firstTime = formatter.parse(time1.getValue());

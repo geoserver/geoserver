@@ -15,6 +15,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonContext;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
@@ -104,5 +105,26 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         ObjectMapper jsonWriter = new ObjectMapper();
         JsonContext json = (JsonContext) JsonPath.parse(jsonWriter.writeValueAsString(obj));
         return json;
+    }
+
+    /** Retuns a single element out of an array, checking that there is just one */
+    protected Object getSingle(DocumentContext json, String path) {
+        List items = json.read(path);
+        assertEquals(
+                "Found "
+                        + items.size()
+                        + " items for this path, but was expecting one: "
+                        + path
+                        + "\n"
+                        + items,
+                1,
+                items.size());
+        return items.get(0);
+    }
+
+    /** Checks the specified jsonpath exists in the document */
+    protected boolean exists(DocumentContext json, String path) {
+        List items = json.read(path);
+        return items.size() > 0;
     }
 }

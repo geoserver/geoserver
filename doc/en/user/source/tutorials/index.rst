@@ -22,3 +22,4 @@ Tutorials
    feature-pregeneralized/feature-pregeneralized_tutorial.rst
    tomcat-jndi/tomcat-jndi.rst
    jboss/jboss_tutorial.rst
+   metadata/index.rst

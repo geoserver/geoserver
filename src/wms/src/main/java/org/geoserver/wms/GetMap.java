@@ -565,7 +565,7 @@ public class GetMap {
 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter =
-                        wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
+                        buildDimensionFilter(times, elevations, mapLayerInfo, request);
                 Filter filter =
                         SimplifyingFilterVisitor.simplify(
                                 Filters.and(ff, layerFilter, dimensionFilter));
@@ -749,6 +749,20 @@ public class GetMap {
         }
 
         return map;
+    }
+
+    protected Filter buildDimensionFilter(
+            List<Object> times,
+            List<Object> elevations,
+            final MapLayerInfo mapLayerInfo,
+            final GetMapRequest request)
+            throws IOException {
+        final Filter dimensionFilter =
+                wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
+        final Filter customDimensionsfilter =
+                wms.getDimensionsToFilter(request.getRawKvp(), mapLayerInfo.getFeature());
+        return SimplifyingFilterVisitor.simplify(
+                Filters.and(ff, dimensionFilter, customDimensionsfilter));
     }
 
     private void validateSort(

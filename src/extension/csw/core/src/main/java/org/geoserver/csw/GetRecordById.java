@@ -15,6 +15,7 @@ import java.util.Set;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
 import org.eclipse.emf.common.util.EList;
+import org.geoserver.csw.GetRecords.WrappedQuery;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
@@ -58,15 +59,17 @@ public class GetRecordById {
 
         try {
             // build the queries
-            RecordDescriptor rd = getRecordDescriptor(request);
-            List<Query> queries = toGtQueries(rd, request.getId(), request);
+            List<RecordDescriptor> rd = getRecordDescriptors(request);
+            List<WrappedQuery> queries = toGtQueries(rd, request.getId(), request);
 
             // compute the number of records matched (in validate mode this is also a quick way
             // to check the request)
             int numberOfRecordsMatched = 0;
             int[] counts = new int[queries.size()];
             for (int i = 0; i < queries.size(); i++) {
-                counts[i] = store.getRecordsCount(queries.get(i), Transaction.AUTO_COMMIT);
+                counts[i] =
+                        store.getRecordsCount(
+                                queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
                 numberOfRecordsMatched += counts[i];
             }
 
@@ -78,7 +81,7 @@ public class GetRecordById {
             for (int i = 0; i < queries.size(); i++) {
                 FeatureCollection collection =
                         store.getRecords(
-                                queries.get(i), Transaction.AUTO_COMMIT, request.getOutputSchema());
+                                queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
                 if (collection != null && collection.size() > 0) {
                     results.add(collection);
                 }
@@ -117,7 +120,8 @@ public class GetRecordById {
         return elementSet;
     }
 
-    private List<Query> toGtQueries(RecordDescriptor rd, EList<URI> ids, GetRecordByIdType request)
+    private List<GetRecords.WrappedQuery> toGtQueries(
+            List<RecordDescriptor> rds, EList<URI> ids, GetRecordByIdType request)
             throws IOException {
         // prepare to build the queries
 
@@ -128,26 +132,29 @@ public class GetRecordById {
 
         Filter filter = FF.id(fids);
 
-        // build one query
+        // build queries
 
-        Name typeName = rd.getFeatureDescriptor().getName();
-        Query q = new Query(typeName.getLocalPart());
-        q.setFilter(filter);
+        List<GetRecords.WrappedQuery> result = new ArrayList<GetRecords.WrappedQuery>();
 
-        // perform some necessary query adjustments
-        Query adapted = rd.adaptQuery(q);
+        for (RecordDescriptor rd : rds) {
+            Name typeName = rd.getFeatureDescriptor().getName();
+            Query q = new Query(typeName.getLocalPart());
+            q.setFilter(filter);
 
-        // the specification demands that we throw an error if a spatial operator
-        // is used against a non spatial property
-        if (q.getFilter() != null) {
-            rd.verifySpatialFilters(q.getFilter());
+            // perform some necessary query adjustments
+            Query adapted = rd.adaptQuery(q);
+
+            // the specification demands that we throw an error if a spatial operator
+            // is used against a non spatial property
+            if (q.getFilter() != null) {
+                rd.verifySpatialFilters(q.getFilter());
+            }
+
+            // smuggle base url
+            adapted.getHints().put(GetRecords.KEY_BASEURL, request.getBaseUrl());
+
+            result.add(new GetRecords.WrappedQuery(adapted, rd));
         }
-
-        // smuggle base url
-        adapted.getHints().put(GetRecords.KEY_BASEURL, request.getBaseUrl());
-
-        List<Query> result = new ArrayList<Query>();
-        result.add(adapted);
 
         return result;
     }
@@ -158,22 +165,26 @@ public class GetRecordById {
      *
      * @param request
      */
-    private RecordDescriptor getRecordDescriptor(GetRecordByIdType request) {
+    private List<RecordDescriptor> getRecordDescriptors(GetRecordByIdType request) {
         String outputSchema = request.getOutputSchema();
         if (outputSchema == null) {
             outputSchema = CSW.NAMESPACE;
             request.setOutputFormat(CSW.NAMESPACE);
         }
 
+        List<RecordDescriptor> list = new ArrayList<RecordDescriptor>();
         for (RecordDescriptor rd : recordDescriptors) {
             if (outputSchema.equals(rd.getOutputSchema())) {
-                return rd;
+                list.add(rd);
             }
         }
 
-        throw new ServiceException(
-                "Cannot encode records in output schema " + outputSchema,
-                ServiceException.INVALID_PARAMETER_VALUE,
-                "outputSchema");
+        if (list.isEmpty()) {
+            throw new ServiceException(
+                    "Cannot encode records in output schema " + outputSchema,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "outputSchema");
+        }
+        return list;
     }
 }

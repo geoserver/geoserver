@@ -935,4 +935,124 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         // all black
         assertPixel(image, 20, 10, Color.BLACK);
     }
+
+    @Test
+    public void testCustomDimension() throws Exception {
+        setupVectorDimension(
+                "dim_custom",
+                //    			ResourceInfo.ELEVATION,
+                "elevation",
+                DimensionPresentation.LIST,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetMap"
+                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                + "&layers="
+                                + getLayerId(V_TIME_ELEVATION)
+                                + "&dim_custom=1.0",
+                        "image/png");
+
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.BLACK);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
+
+    @Test
+    public void testCustomDimensionRange() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetMap"
+                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                + "&layers="
+                                + getLayerId(V_TIME_ELEVATION)
+                                + "&dim_custom=0.5/1.5",
+                        "image/png");
+
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.BLACK);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
+
+    @Test
+    public void testCustomDimensionString() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "shared_key", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetMap"
+                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                + "&layers="
+                                + getLayerId(V_TIME_ELEVATION)
+                                + "&dim_custom=str1",
+                        "image/png");
+
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.BLACK);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
+
+    @Test
+    public void testCustomDimensionBoolean() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "enabled", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetMap"
+                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                + "&layers="
+                                + getLayerId(V_TIME_ELEVATION)
+                                + "&dim_custom=true",
+                        "image/png");
+
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.BLACK);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
+
+    @Test
+    public void testCustomDimensionDate() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "time", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetMap"
+                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                + "&layers="
+                                + getLayerId(V_TIME_ELEVATION)
+                                + "&dim_custom=2011-05-02",
+                        "image/png");
+
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.BLACK);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
+
+    @Test
+    public void testCustomDimensionDateRange() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "time", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetMap"
+                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                                + "&layers="
+                                + getLayerId(V_TIME_ELEVATION)
+                                + "&dim_custom=2011-05-01T20:00:00Z/2011-05-02T05:00:00Z",
+                        "image/png");
+
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.BLACK);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
 }

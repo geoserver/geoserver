@@ -6,7 +6,6 @@
 package org.geoserver.catalog;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -171,7 +170,4 @@ public interface StoreInfo extends CatalogInfo {
      */
     // <T extends Resource> Iterator<T> getResources(ProgressListener monitor) throws IOException;
 
-    public Date getDateModified();
-
-    public Date getDateCreated();
 }

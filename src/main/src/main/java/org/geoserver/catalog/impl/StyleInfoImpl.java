@@ -35,6 +35,10 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
+    protected Date dateCreated;
+
+    protected Date dateModified;
+
     protected StyleInfoImpl() {}
 
     public StyleInfoImpl(Catalog catalog) {
@@ -211,11 +215,21 @@ public class StyleInfoImpl implements StyleInfo {
 
     @Override
     public Date getDateModified() {
-        return getMetadata().get(PublishedInfo.TIME_MODIFIED, Date.class);
+        return this.dateModified;
     }
 
     @Override
     public Date getDateCreated() {
-        return getMetadata().get(PublishedInfo.TIME_CREATED, Date.class);
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 }

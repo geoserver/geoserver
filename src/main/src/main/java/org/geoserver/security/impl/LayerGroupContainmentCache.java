@@ -24,7 +24,6 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -457,8 +456,5 @@ class LayerGroupContainmentCache {
             // rebuild the containment cache
             buildLayerGroupCaches();
         }
-
-        @Override
-        public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
     }
 }

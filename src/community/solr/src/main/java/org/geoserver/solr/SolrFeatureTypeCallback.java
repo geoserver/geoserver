@@ -12,7 +12,6 @@ import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.FeatureTypeCallback;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -163,12 +162,6 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     @Override
     public void reloaded() {
         // nothing to do
-    }
-
-    @Override
-    public void handlePreAddEvent(CatalogBeforeAddEvent event) {
-        // nothing to do
-
     }
 
     /**

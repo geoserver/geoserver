@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.opengis.util.ProgressListener;
@@ -43,6 +42,10 @@ public abstract class StoreInfoImpl implements StoreInfo {
     protected Throwable error;
 
     protected boolean _default;
+
+    protected Date dateCreated;
+
+    protected Date dateModified;
 
     protected StoreInfoImpl() {}
 
@@ -208,11 +211,21 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     @Override
     public Date getDateModified() {
-        return getMetadata().get(PublishedInfo.TIME_MODIFIED, Date.class);
+        return this.dateModified;
     }
 
     @Override
     public Date getDateCreated() {
-        return getMetadata().get(PublishedInfo.TIME_CREATED, Date.class);
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 }

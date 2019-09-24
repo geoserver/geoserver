@@ -8,7 +8,6 @@ package org.geoserver.wms.web.data;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -20,6 +19,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -54,12 +54,12 @@ public class StylePage extends GeoServerSecuredPage {
                                     return workspaceLink(id, itemModel);
                                 }
                                 if (property == StyleProvider.MODIFIED_TIMESTAMP) {
-                                    return new Label(
+                                    return new DateTimeLabel(
                                             id,
                                             StyleProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
                                 }
                                 if (property == StyleProvider.CREATED_TIMESTAMP) {
-                                    return new Label(
+                                    return new DateTimeLabel(
                                             id,
                                             StyleProvider.CREATED_TIMESTAMP.getModel(itemModel));
                                 }

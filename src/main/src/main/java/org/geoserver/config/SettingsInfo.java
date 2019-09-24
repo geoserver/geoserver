@@ -134,7 +134,11 @@ public interface SettingsInfo extends Info {
      */
     void setLocalWorkspaceIncludesPrefix(boolean includePrefix);
 
-    boolean isShowTimeColumnsInAdminList();
+    public boolean isShowCreatedTimeColumnsInAdminList();
 
-    void setShowTimeColumnsInAdminList(boolean showTimeColumnsInAdminList);
+    public void setShowCreatedTimeColumnsInAdminList(boolean showCreatedTimeColumnsInAdminList);
+
+    public boolean isShowModifiedTimeColumnsInAdminList();
+
+    public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList);
 }

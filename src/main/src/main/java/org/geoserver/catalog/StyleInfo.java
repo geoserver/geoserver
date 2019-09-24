@@ -6,7 +6,6 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import java.util.Date;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
@@ -104,8 +103,4 @@ public interface StyleInfo extends CatalogInfo {
      * associate various bits of data with a particular style.
      */
     MetadataMap getMetadata();
-
-    Date getDateModified();
-
-    Date getDateCreated();
 }

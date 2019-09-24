@@ -235,11 +235,6 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
     public void reloaded() {
         // do nothing
     }
-	
-	@Override
-    public void handlePreAddEvent(CatalogBeforeAddEvent event) {
-     // nothing to do    
-    }
 
     private void setIdentifier(LayerInfo layer) {
         LOGGER.log(

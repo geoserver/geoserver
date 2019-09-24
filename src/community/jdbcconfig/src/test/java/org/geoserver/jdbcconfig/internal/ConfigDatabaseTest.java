@@ -35,7 +35,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -342,10 +341,6 @@ public class ConfigDatabaseTest {
 
                             @Override
                             public void reloaded() {}
-
-                            @Override
-                            public void handlePreAddEvent(CatalogBeforeAddEvent event)
-                                    throws CatalogException {}
                         });
         testSupport.getFacade().save(resourceInfo);
         LayerInfo layer2 = database.getById(layer.getId(), LayerInfo.class);

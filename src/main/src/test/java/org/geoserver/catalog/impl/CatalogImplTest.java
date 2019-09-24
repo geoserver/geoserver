@@ -66,13 +66,11 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.config.CatalogTimeStampUpdater;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
@@ -223,8 +221,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         lg.setName("layerGroup");
         lg.getLayers().add(l);
         lg.getStyles().add(s);
-
-        catalog.addListener(new CatalogTimeStampUpdater(catalog));
     }
 
     protected Catalog createCatalog() {
@@ -295,13 +291,11 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         addFeatureType();
         addStyle();
         catalog.add(l);
-        assertNotNull(l.getDateCreated());
     }
 
     protected void addLayerGroup() {
         addLayer();
         catalog.add(lg);
-        assertNotNull(lg.getDateCreated());
     }
 
     @Test
@@ -779,7 +773,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(1, catalog.getDataStores().size());
 
         DataStoreInfo retrieved = catalog.getDataStore(ds.getId());
-        assertNotNull(ds.getDateCreated());
 
         DataStoreInfo ds2 = catalog.getFactory().createDataStore();
         try {
@@ -915,7 +908,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(ds2, ds3);
         assertEquals("dsName2", ds3.getName());
         assertEquals("dsDescription2", ds3.getDescription());
-        assertNotNull(ds3.getDateModified());
     }
 
     @Test
@@ -946,8 +938,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         catalog.add(ds);
         assertEquals(1, l.added.size());
         assertEquals(ds, l.added.get(0).getSource());
-        assertEquals(1, l.preadded.size());
-        assertEquals(ds, l.preadded.get(0).getSource());
         assertEquals(1, l.modified.size());
         assertEquals(catalog, l.modified.get(0).getSource());
         assertEquals(1, l.postModified.size());
@@ -1561,9 +1551,8 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         }
 
         l2.setResource(ft);
-        assertNull(l2.getDateModified());
         catalog.save(l2);
-        assertNotNull(l2.getDateModified());
+
         // TODO: reinstate with resource/publishing split done
         // l3 = catalog.getLayerByName( "changed" );
         l3 = catalog.getLayerByName(ft.getName());
@@ -1610,8 +1599,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertFalse(l2.isEnabled());
         assertFalse(l2.enabled());
         assertFalse(l2.getResource().isEnabled());
-        // should have a modify date time stamp
-        assertNotNull(l2.getDateModified());
     }
 
     @Test
@@ -1626,8 +1613,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         catalog.add(l);
         assertEquals(1, tl.added.size());
         assertEquals(l, tl.added.get(0).getSource());
-        assertEquals(1, tl.preadded.size());
-        assertEquals(l, tl.preadded.get(0).getSource());
 
         LayerInfo l2 = catalog.getLayerByName(l.getName());
         l2.setPath("newPath");
@@ -1681,7 +1666,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         catalog.add(s2);
         assertEquals(2, catalog.getStyles().size());
-        assertNotNull(s2.getDateCreated());
     }
 
     @Test
@@ -2316,7 +2300,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         catalog.add(lg2);
 
         assertEquals(1, catalog.getLayerGroups().size());
-        assertNull(lg2.getDateModified());
+
         lg2 = catalog.getLayerGroupByName("layerGroup2");
         assertEquals("layerGroup2 abstract", lg2.getAbstract());
 
@@ -2325,7 +2309,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
         lg2 = catalog.getLayerGroupByName("layerGroup2");
         assertEquals("another abstract", lg2.getAbstract());
-        assertNotNull(lg2.getDateModified());
     }
 
     @Test
@@ -2522,7 +2505,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
     static class TestListener implements CatalogListener {
         public List<CatalogAddEvent> added = new CopyOnWriteArrayList<>();
-        public List<CatalogBeforeAddEvent> preadded = new CopyOnWriteArrayList<>();
         public List<CatalogModifyEvent> modified = new CopyOnWriteArrayList<>();
         public List<CatalogPostModifyEvent> postModified = new CopyOnWriteArrayList<>();
         public List<CatalogRemoveEvent> removed = new CopyOnWriteArrayList<>();
@@ -2544,10 +2526,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         }
 
         public void reloaded() {}
-
-        public void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {
-            preadded.add(event);
-        }
     }
 
     static class ExceptionThrowingListener implements CatalogListener {
@@ -2569,8 +2547,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {}
 
         public void reloaded() {}
-
-        public void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {}
     }
 
     class LayerAddRunner extends RunnerBase {

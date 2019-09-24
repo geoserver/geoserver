@@ -125,18 +125,20 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     @Override
     protected List<Property<StoreInfo>> getProperties() {
+        List<Property<StoreInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
         if (GeoServerApplication.get()
                 .getGeoServer()
                 .getSettings()
-                .isShowTimeColumnsInAdminList()) {
-            List<Property<StoreInfo>> modifiedPropertiesList =
-                    PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+                .isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
-            return modifiedPropertiesList;
-        }
-        return PROPERTIES;
+        return modifiedPropertiesList;
     }
 
     @Override

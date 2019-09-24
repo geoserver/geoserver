@@ -56,18 +56,20 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
 
     @Override
     protected List<Property<StyleInfo>> getProperties() {
+        List<Property<StyleInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
         if (GeoServerApplication.get()
                 .getGeoServer()
                 .getSettings()
-                .isShowTimeColumnsInAdminList()) {
-            List<Property<StyleInfo>> modifiedPropertiesList =
-                    PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+                .isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
-            return modifiedPropertiesList;
-        }
-        return PROPERTIES;
+        return modifiedPropertiesList;
     }
 
     public IModel<StyleInfo> newModel(StyleInfo object) {

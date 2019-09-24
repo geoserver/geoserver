@@ -19,7 +19,6 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -88,6 +87,10 @@ public class LayerInfoImpl implements LayerInfo {
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
 
     protected WMSInterpolation defaultWMSInterpolationMethod;
+
+    protected Date dateCreated;
+
+    protected Date dateModified;
 
     @Override
     public String getId() {
@@ -420,12 +423,22 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public Date getDateModified() {
-        return getMetadata().get(PublishedInfo.TIME_MODIFIED, Date.class);
+        return this.dateModified;
     }
 
     @Override
     public Date getDateCreated() {
-        return getMetadata().get(PublishedInfo.TIME_CREATED, Date.class);
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 
     private void checkMetadataNotNull() {

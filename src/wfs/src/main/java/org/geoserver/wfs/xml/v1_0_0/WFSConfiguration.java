@@ -16,7 +16,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -88,9 +87,6 @@ public class WFSConfiguration extends Configuration {
                     public void reloaded() {
                         wfs.dispose();
                     }
-
-                    @Override
-                    public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
                 });
         catalog.getResourcePool()
                 .addListener(

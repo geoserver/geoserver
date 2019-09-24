@@ -522,7 +522,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("Forests.sld", style.getFilename());
         MetadataMap metadata = style.getMetadata();
         assertNotNull(metadata);
-        assertTrue(metadata.size() == 2);
+        assertTrue(metadata.size() == 1);
         assertEquals("300", metadata.get("cacheAgeMax"));
         assertNotNull(style.getDateModified());
     }
@@ -552,7 +552,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("Ponds.sld", style.getFilename());
         MetadataMap metadata = style.getMetadata();
         assertNotNull(metadata);
-        assertTrue(metadata.size() == 3);
+        assertTrue(metadata.size() == 2);
         assertEquals("300", metadata.get("cacheAgeMax"));
         assertEquals("test1", metadata.get("surename"));
         assertNotNull(style.getDateModified());

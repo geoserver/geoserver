@@ -22,8 +22,10 @@ import org.geoserver.catalog.CatalogException;
  */
 public interface CatalogListener {
 
-    /** Handles the event of an addition to the catalog. */
-    void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException;
+    /** Handles the event of just before addition to the catalog. */
+    default void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {
+        // empty implementation for backward compatibility
+    };
 
     /** Handles the event of an addition to the catalog. */
     void handleAddEvent(CatalogAddEvent event) throws CatalogException;

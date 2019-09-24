@@ -79,7 +79,8 @@ public class StorePageTest extends GeoServerWicketTestSupport {
     public void testTimeColumnsToggle() {
 
         GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
-        info.getSettings().setShowTimeColumnsInAdminList(true);
+        info.getSettings().setShowCreatedTimeColumnsInAdminList(true);
+        info.getSettings().setShowModifiedTimeColumnsInAdminList(true);
         getGeoServerApplication().getGeoServer().save(info);
         login();
         tester.startPage(StorePage.class);

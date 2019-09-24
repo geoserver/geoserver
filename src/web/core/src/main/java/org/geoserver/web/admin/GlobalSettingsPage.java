@@ -152,8 +152,13 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(
                 new CheckBox(
-                        "showTimeCols",
-                        new PropertyModel<>(settingsModel, "showTimeColumnsInAdminList")));
+                        "showCreatedTimeCols",
+                        new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
+
+        form.add(
+                new CheckBox(
+                        "showModifiedTimeCols",
+                        new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
 
         Button submit =
                 new Button("submit") {

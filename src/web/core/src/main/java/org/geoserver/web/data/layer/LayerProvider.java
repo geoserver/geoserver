@@ -122,19 +122,20 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     @Override
     protected List<Property<LayerInfo>> getProperties() {
+        List<Property<LayerInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
         if (GeoServerApplication.get()
                 .getGeoServer()
                 .getSettings()
-                .isShowTimeColumnsInAdminList()) {
-            // List<Property<LayerInfo>> modifiedPropertiesList = Arrays.asList(MODIFIED_TIMESTAMP);
-            List<Property<LayerInfo>> modifiedPropertiesList =
-                    PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+                .isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
-            return modifiedPropertiesList;
-        }
-        return PROPERTIES;
+        return modifiedPropertiesList;
     }
 
     @Override

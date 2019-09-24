@@ -21,7 +21,6 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -263,6 +262,4 @@ public class CatalogStyleChangeListener implements CatalogListener {
     public void reloaded() {
         //
     }
-
-    public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
 }

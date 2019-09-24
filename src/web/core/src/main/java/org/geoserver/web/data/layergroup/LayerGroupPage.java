@@ -8,7 +8,6 @@ package org.geoserver.web.data.layergroup;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -18,6 +17,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -53,13 +53,13 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                                     return workspaceLink(id, itemModel);
                                 }
                                 if (property == LayerGroupProvider.MODIFIED_TIMESTAMP) {
-                                    return new Label(
+                                    return new DateTimeLabel(
                                             id,
                                             LayerGroupProvider.MODIFIED_TIMESTAMP.getModel(
                                                     itemModel));
                                 }
                                 if (property == LayerGroupProvider.CREATED_TIMESTAMP) {
-                                    return new Label(
+                                    return new DateTimeLabel(
                                             id,
                                             LayerGroupProvider.CREATED_TIMESTAMP.getModel(
                                                     itemModel));

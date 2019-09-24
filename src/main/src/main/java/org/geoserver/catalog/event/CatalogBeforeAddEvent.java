@@ -8,6 +8,6 @@ import org.geoserver.catalog.CatalogInfo;
 
 /** @author ImranR */
 public interface CatalogBeforeAddEvent extends CatalogEvent {
-    /** the object that was added. */
+    /** the object that is going to be added. */
     CatalogInfo getSource();
 }

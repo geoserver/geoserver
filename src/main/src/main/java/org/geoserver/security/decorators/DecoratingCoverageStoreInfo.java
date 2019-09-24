@@ -134,4 +134,14 @@ public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStore
     public Date getDateCreated() {
         return delegate.getDateCreated();
     }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        delegate.setDateCreated(dateCreated);
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        delegate.setDateModified(dateModified);
+    }
 }

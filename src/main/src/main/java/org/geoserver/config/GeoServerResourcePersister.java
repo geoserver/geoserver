@@ -18,7 +18,6 @@ import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -141,7 +140,4 @@ public class GeoServerResourcePersister implements CatalogListener {
             IOUtils.copy(in, out);
         }
     }
-
-    @Override
-    public void handlePreAddEvent(CatalogBeforeAddEvent event) {}
 }

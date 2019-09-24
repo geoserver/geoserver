@@ -13,6 +13,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /** Provides a table model for listing layer groups */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
@@ -57,18 +58,20 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     @Override
     protected List<Property<LayerGroupInfo>> getProperties() {
+        List<Property<LayerGroupInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
         if (GeoServerApplication.get()
                 .getGeoServer()
                 .getSettings()
-                .isShowTimeColumnsInAdminList()) {
-            List<Property<LayerGroupInfo>> modifiedPropertiesList =
-                    PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+                .isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
-            return modifiedPropertiesList;
-        }
-        return PROPERTIES;
+        return modifiedPropertiesList;
     }
 
     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {

@@ -1281,7 +1281,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     }
 
     @Test
-    public void testOnNodataValueGetNoResults() throws Exception {
+    public void testOnNodataValueGetNans() throws Exception {
         String timeseries = getLayerId(TIMESERIES);
         String request =
                 "wms?version=1.1.1&BBOX=1,42,2,44&format=jpeg"
@@ -1303,6 +1303,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // we should get back no results in that case
         String request2 = request + "&EXCLUDE_NODATA_RESULT=true";
         result = getAsString(request2);
-        assertTrue(result.contains("no feature"));
+        assertTrue(result.indexOf("NaN") > 0);
     }
 }

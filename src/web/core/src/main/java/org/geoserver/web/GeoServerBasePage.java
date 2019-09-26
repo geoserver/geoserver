@@ -394,7 +394,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                                         "alt",
                                                         new ParamResourceModel(
                                                                 info.getTitleKey(), null)));
-
                                         link.add(image);
                                         item.add(link);
                                     }

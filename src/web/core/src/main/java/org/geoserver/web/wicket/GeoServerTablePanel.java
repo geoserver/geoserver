@@ -62,6 +62,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** METADATA MAP inside user session that remembers the filters user input inside the form */
     private static final String FILTER_INPUTS = "userInput";
 
+    private static final String SORT_INPUTS = "userSort";
+
     // filter form components
     TextField<String> filter;
 
@@ -128,6 +130,17 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             // clear the filter from session
             // previousInput to null to hide clear button
             clearFilterFromSession();
+            previousInput = null;
+        }
+
+        SortParam previousSort = loadPreviousSort();
+
+        if (previousSort != null && keepFilter) dataProvider.setSort(previousSort);
+        else if (!keepFilter) {
+            // panel was invoke from Left Grid menu
+            // clear the filter from session
+            // previousInput to null to hide clear button
+            clearSortFromSession();
             previousInput = null;
         }
 
@@ -576,6 +589,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 }
                 setSelection(false);
                 target.add(listContainer);
+                rememeberSort();
             }
         };
     }
@@ -806,8 +820,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         }
     }
 
-    public void rememeberFilter() {
-        MetadataMap filters = (MetadataMap) getSession().getAttribute(FILTER_INPUTS);
+    private void rememeberFilter() {
+        MetadataMap filters = getMetaDataMapFromSession(FILTER_INPUTS);
         // if empty ignore and clear any previously saved filter against this dataprovider
         if (filter.getDefaultModelObjectAsString().isEmpty() && filters != null) {
             // clear
@@ -823,17 +837,48 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filters.put(dataProvider.getClass().getName(), filter.getDefaultModelObjectAsString());
     }
 
-    public String loadPreviousInput() {
-        MetadataMap filters = (MetadataMap) getSession().getAttribute(FILTER_INPUTS);
-        if (filters == null) return null;
-        else if (filters.get(dataProvider.getClass().getName()) == null) return null;
-        return (String) filters.get(dataProvider.getClass().getName());
+    private void rememeberSort() {
+        MetadataMap sorts = getMetaDataMapFromSession(SORT_INPUTS);
+
+        // create and populate user session
+        if (sorts == null) {
+            sorts = new MetadataMap();
+            getSession().setAttribute(SORT_INPUTS, sorts);
+        }
+
+        sorts.put(dataProvider.getClass().getName(), dataProvider.getSort());
     }
 
-    public void clearFilterFromSession() {
-        MetadataMap filters = (MetadataMap) getSession().getAttribute(FILTER_INPUTS);
+    private String loadPreviousInput() {
+        MetadataMap filters = getMetaDataMapFromSession(FILTER_INPUTS);
+        if (filters == null) return null;
+        else if (filters.get(dataProvider.getClass().getName(), String.class) == null) return null;
+        return filters.get(dataProvider.getClass().getName(), String.class);
+    }
+
+    private SortParam<Object> loadPreviousSort() {
+        MetadataMap filters = getMetaDataMapFromSession(SORT_INPUTS);
+        if (filters == null) return null;
+        else if (filters.get(dataProvider.getClass().getName(), SortParam.class) == null)
+            return null;
+        return filters.get(dataProvider.getClass().getName(), SortParam.class);
+    }
+
+    private void clearFilterFromSession() {
+        MetadataMap filters = getMetaDataMapFromSession(FILTER_INPUTS);
         // if empty ignore and clear any previously saved filter against this dataprovider
         if (filters != null) filters.put(dataProvider.getClass().getName(), null);
         dataProvider.setKeywords(null);
+    }
+
+    private void clearSortFromSession() {
+        MetadataMap sorts = getMetaDataMapFromSession(SORT_INPUTS);
+        // if empty ignore and clear any previously saved filter against this dataprovider
+        if (sorts != null) sorts.put(dataProvider.getClass().getName(), null);
+        dataProvider.setKeywords(null);
+    }
+
+    private MetadataMap getMetaDataMapFromSession(String key) {
+        return (MetadataMap) getSession().getAttribute(key);
     }
 }

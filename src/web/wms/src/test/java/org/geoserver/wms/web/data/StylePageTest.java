@@ -8,6 +8,7 @@ package org.geoserver.wms.web.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
@@ -126,15 +127,12 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         assertTrue(provider.getProperties().contains(StyleProvider.MODIFIED_TIMESTAMP));
     }
 
+    @Test
     public void testFilter() {
         login();
         Catalog catalog = getCatalog();
-
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
-
-        // Get the StyleProvider
-
         DataView dv =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
@@ -180,12 +178,8 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         Catalog catalog = getCatalog();
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
-
-        // Get the StyleProvider
-
         DataView dv =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
-
         assertEquals(dv.size(), catalog.getStyles().size());
         // apply filter by only viewing style with name polygon
         FormTester ft = tester.newFormTester("table:filterForm");

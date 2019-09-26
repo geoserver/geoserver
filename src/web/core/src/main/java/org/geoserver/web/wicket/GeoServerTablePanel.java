@@ -38,6 +38,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
@@ -55,6 +56,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     private static final long serialVersionUID = -5275268446479549108L;
 
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
+
+    public static final String FILTER_PARAM = "filter";
+
+    /** METADATA MAP inside user session that remembers the filters user input inside the form */
+    private static final String FILTER_INPUTS = "userInput";
 
     // filter form components
     TextField<String> filter;
@@ -77,6 +83,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     CheckBox selectAll;
 
     AjaxButton hiddenSubmit;
+
+    AjaxLink clearFilter;
 
     boolean sortable = true;
 
@@ -103,6 +111,25 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             final boolean selectable) {
         super(id);
         this.dataProvider = dataProvider;
+        // check if the request came from left menu link
+        // if so reset any previously used filter and treat it as a REST
+        // if param not found, treat as keep the filter intact
+        Boolean keepFilter =
+                getRequest().getRequestParameters().getParameterValue(FILTER_PARAM).toBoolean(true);
+
+        String previousInput = loadPreviousInput();
+        if (previousInput != null && keepFilter) {
+            // setting the previous filter UP FRONT
+            if (!previousInput.isEmpty()) {
+                dataProvider.setKeywords(loadPreviousInput().split("\\s+"));
+            }
+        } else if (!keepFilter) {
+            // panel was invoke from Left Grid menu
+            // clear the filter from session
+            // previousInput to null to hide clear button
+            clearFilterFromSession();
+            previousInput = null;
+        }
 
         // prepare the selection array
         selection = new boolean[DEFAULT_ITEMS_PER_PAGE];
@@ -127,6 +154,18 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                                         + hiddenSubmit.getMarkupId()
                                         + "').click();return false;}");
                     }
+
+                    @Override
+                    protected void onBeforeRender() {
+                        super.onBeforeRender();
+
+                        String previousInput = loadPreviousInput();
+                        if (previousInput != null)
+                            if (!previousInput.isEmpty()) {
+                                this.setModelObject(previousInput);
+                                // dataProvider.setKeywords(previousInput.split("\\s+"));
+                            }
+                    }
                 };
         filterForm.add(filter);
         filter.add(
@@ -137,6 +176,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                                         .getObject())));
         filterForm.add(hiddenSubmit = hiddenSubmit());
         filterForm.setDefaultButton(hiddenSubmit);
+
+        clearFilter = getClearFilterLink(previousInput);
+        filterForm.add(clearFilter);
 
         // setup the table
         listContainer.setOutputMarkupId(true);
@@ -462,8 +504,34 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
+                rememeberFilter();
             }
         };
+    }
+
+    /** The hidden button that will submit the form when the user presses enter in the text field */
+    AjaxLink getClearFilterLink(String previousInput) {
+        AjaxLink clearButton =
+                new AjaxLink("clear") {
+
+                    static final long serialVersionUID = 5334592790005438960L;
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        updateFilter(target, "");
+                        filter.setModelObject("");
+                        rememeberFilter();
+                        clearFilter.setVisible(false);
+                        target.add(filterForm);
+                    }
+                };
+        // decide if it should be visible
+        // null and empty checks
+        boolean visible = false;
+        if (previousInput != null) visible = !previousInput.isEmpty();
+
+        clearButton.setVisible(visible);
+        return clearButton;
     }
 
     /**
@@ -530,10 +598,12 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         navigatorTop.updateMatched();
         navigatorBottom.updateMatched();
         setSelection(false);
+        clearFilter.setVisible(true);
 
         target.add(listContainer);
         target.add(navigatorTop);
         target.add(navigatorBottom);
+        target.add(filterForm);
     }
 
     /** Sets back to the first page, clears the selection and */
@@ -734,5 +804,36 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             dataView.setItemsPerPage(DEFAULT_ITEMS_PER_PAGE);
             selection = new boolean[DEFAULT_ITEMS_PER_PAGE];
         }
+    }
+
+    public void rememeberFilter() {
+        MetadataMap filters = (MetadataMap) getSession().getAttribute(FILTER_INPUTS);
+        // if empty ignore and clear any previously saved filter against this dataprovider
+        if (filter.getDefaultModelObjectAsString().isEmpty() && filters != null) {
+            // clear
+            filters.put(dataProvider.getClass().getName(), null);
+            return;
+        }
+        // create and populate user session
+        if (filters == null) {
+            filters = new MetadataMap();
+            getSession().setAttribute(FILTER_INPUTS, filters);
+        }
+
+        filters.put(dataProvider.getClass().getName(), filter.getDefaultModelObjectAsString());
+    }
+
+    public String loadPreviousInput() {
+        MetadataMap filters = (MetadataMap) getSession().getAttribute(FILTER_INPUTS);
+        if (filters == null) return null;
+        else if (filters.get(dataProvider.getClass().getName()) == null) return null;
+        return (String) filters.get(dataProvider.getClass().getName());
+    }
+
+    public void clearFilterFromSession() {
+        MetadataMap filters = (MetadataMap) getSession().getAttribute(FILTER_INPUTS);
+        // if empty ignore and clear any previously saved filter against this dataprovider
+        if (filters != null) filters.put(dataProvider.getClass().getName(), null);
+        dataProvider.setKeywords(null);
     }
 }

@@ -16,12 +16,16 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Test;
 
@@ -86,6 +90,107 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         assertEquals(1, table.getSelection().size());
         LayerInfo li = (LayerInfo) table.getSelection().get(0);
         assertEquals("cite", li.getResource().getStore().getWorkspace().getName());
+    }
+
+    @Test
+    public void testFilterState() {
+        login();
+
+        // test that we can load the page
+        tester.startPage(new LayerPage());
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        // check it has two layers
+        GeoServerTablePanel table =
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(2, table.getDataProvider().size());
+        List<String> workspaces = getWorkspaces(table);
+        assertTrue(workspaces.contains("cite"));
+        assertTrue(workspaces.contains("gs"));
+
+        // apply filter by only viewing layer from workspace cite
+        FormTester ft = tester.newFormTester("table:filterForm");
+        ft.setValue("filter", "cite");
+        ft.submit("submit");
+
+        // verify clear button is visible
+        tester.assertVisible("table:filterForm:clear");
+
+        // verify the table is only showing 1 layer
+        table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(1, table.getDataProvider().size());
+
+        // navigate to a ResourceConfigurationPage
+        LayerInfo layerInfo = getCatalog().getLayers().get(0);
+        tester.startPage(new ResourceConfigurationPage(layerInfo, false));
+        tester.assertRenderedPage(ResourceConfigurationPage.class);
+        tester.assertNoErrorMessage();
+
+        // click submit and go back to LayerPage
+        ft = tester.newFormTester("publishedinfo");
+        ft.submit("save");
+
+        // verify when user navigates back to Layer Page
+        // the clear link is visible and filter is populated in text field
+        // and table is in filtered state
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertVisible("table:filterForm:clear");
+        tester.assertModelValue("table:filterForm:filter", "cite");
+        table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(1, table.getDataProvider().size());
+
+        // clear the filter by click the Clear button
+        tester.clickLink("table:filterForm:clear", true);
+        // verify clear button has disappeared and filter is set to empty
+        tester.assertInvisible("table:filterForm:clear");
+        tester.assertModelValue("table:filterForm:filter", "");
+        // verify table is back to showing all items
+        table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(2, table.getDataProvider().size());
+    }
+
+    @Test
+    public void testFilterStateReset() {
+        login();
+
+        // test that we can load the page
+        tester.startPage(new LayerPage());
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        // check it has two layers
+        GeoServerTablePanel table =
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(2, table.getDataProvider().size());
+        List<String> workspaces = getWorkspaces(table);
+        assertTrue(workspaces.contains("cite"));
+        assertTrue(workspaces.contains("gs"));
+
+        // apply filter by only viewing layer from workspace cite
+        FormTester ft = tester.newFormTester("table:filterForm");
+        ft.setValue("filter", "cite");
+        ft.submit("submit");
+
+        // verify clear button is visible
+        tester.assertVisible("table:filterForm:clear");
+
+        // verify the table is only showing 1 layer
+        table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(1, table.getDataProvider().size());
+
+        // simulate click from left menu which passes
+        // show the page with no filter
+        PageParameters pageParms = new PageParameters();
+        pageParms.set(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
+        tester.startPage(LayerPage.class, pageParms);
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        tester.assertInvisible("table:filterForm:clear");
+        tester.assertModelValue("table:filterForm:filter", null);
+        table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(2, table.getDataProvider().size());
     }
 
     private List<String> getWorkspaces(GeoServerTablePanel table) {

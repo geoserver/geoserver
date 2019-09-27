@@ -69,7 +69,35 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                 dom.getElementsByTagName("featureType").getLength());
     }
 
+    @Test // GEOS-9190
+    public void testCreateFeatureTypeSameStoreNameDifferentWorkspace() throws Exception {
+        final boolean configureFeatureType = false;
+        final String ws1 = "gs";
+        final String ws2 = "sf";
+        // create two stores named "pds" on different workspaces
+        addPropertyDataStore(ws1, configureFeatureType);
+        addPropertyDataStore(ws2, configureFeatureType);
+
+        String xml = "<featureType><name>pdsa</name><store>pds</store></featureType>";
+
+        MockHttpServletResponse response;
+        String ws1FetureTypesPath =
+                BASEPATH + "/workspaces/" + ws1 + "/datastores/pds/featuretypes";
+        String ws2FeatureTypesPath =
+                BASEPATH + "/workspaces/" + ws2 + "/datastores/pds/featuretypes";
+
+        response = postAsServletResponse(ws1FetureTypesPath, xml, "text/xml");
+        assertEquals(201, response.getStatus());
+
+        response = postAsServletResponse(ws2FeatureTypesPath, xml, "text/xml");
+        assertEquals(201, response.getStatus());
+    }
+
     void addPropertyDataStore(boolean configureFeatureType) throws Exception {
+        addPropertyDataStore("gs", configureFeatureType);
+    }
+
+    void addPropertyDataStore(String workspace, boolean configureFeatureType) throws Exception {
         ByteArrayOutputStream zbytes = new ByteArrayOutputStream();
         ZipOutputStream zout = new ZipOutputStream(zbytes);
 
@@ -95,10 +123,16 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=" + (configureFeatureType ? "all" : "none");
-        put(
-                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
-                zbytes.toByteArray(),
-                "application/zip");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH
+                                + "/workspaces/"
+                                + workspace
+                                + "/datastores/pds/file.properties?"
+                                + q,
+                        zbytes.toByteArray(),
+                        "application/zip");
+        assertEquals(201, response.getStatus());
     }
 
     void addGeomlessPropertyDataStore(boolean configureFeatureType) throws Exception {

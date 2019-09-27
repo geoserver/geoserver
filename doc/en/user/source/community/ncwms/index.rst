@@ -246,4 +246,17 @@ Sample chart output:
 .. figure:: images/geoserver-GetTimeSeries.png
    :align: center
 
-**Note:** Since GeoServer 2.17, nodata pixels will not be reported in the result list/chart.
+**Note:** Since GeoServer 2.17, nodata pixels will not be reported in the result chart. Moreover, entries in CSV list related to nodata pixels will report time but will have no pixel value reported, as in the example below for times 2014-02-01 and 2014-05-01:
+
+
+.. code-block:: none
+
+    # Latitude: 40.396728515625
+    # Longitude: -0.6921386718750019
+    Time (UTC),Temperature (degrees)
+    2014-01-01T00:00:00.000Z,0.4194810092449188
+    2014-02-01T00:00:00.000Z,
+    2014-03-01T00:00:00.000Z,3.1670899391174316
+    2014-04-01T00:00:00.000Z,4.932330131530762
+    2014-05-01T00:00:00.000Z,
+    2014-06-01T00:00:00.000Z,0.8373379707336426

@@ -342,17 +342,21 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         setNearestMatch(TIMESERIES, ResourceInfo.TIME, null);
     }
 
-    /** Test we aren't getting a result when hitting a nodata pixel */
+    /** Test we are getting an empty result when hitting a nodata pixel */
     @Test
-    public void testNoResultsWhenNodata() throws Exception {
+    public void testEmptyResultsWhenNodata() throws Exception {
         setupRasterDimension(
                 TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         String url = REQUEST_ON_NODATA_PIXEL;
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
 
-        // Make sure we aren't getting any result, only the CSV Headers is returned.
-        Assert.assertEquals("No Results", CSV_HEADER_ROWS, csvLines.length);
+        // Make sure we aren getting an empty value on nodata
+        Assert.assertEquals("CSV Number of results", CSV_HEADER_ROWS + 1, csvLines.length);
+        String line = csvLines[CSV_HEADER_ROWS];
+        String[] lineSplit = line.split(",");
+        // Nothing get found after the comma, meaning the result is empty
+        Assert.assertEquals(1, lineSplit.length);
     }
 
     private void setNearestMatch(QName layer, String dimension, String nearestAcceptableInterval) {

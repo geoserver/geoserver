@@ -290,7 +290,9 @@ public class RasterLayerIdentifier implements LayerIdentifier {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("Returning no result due to nodata pixel");
                 }
-                return null;
+                for (int i = 0; i < pixelValues.length; i++) {
+                    pixelValues[i] = Double.NaN;
+                }
             }
             pixel = wrapPixelInFeatureCollection(coverage, pixelValues, cinfo.getQualifiedName());
         } catch (PointOutsideCoverageException e) {

@@ -6,6 +6,8 @@ package org.geoserver.api.images;
 
 import static org.geotools.gce.imagemosaic.Utils.FF;
 
+import static java.util.stream.Collectors.toList;
+
 import net.opengis.wfs20.Wfs20Factory;
 
 import org.apache.commons.io.IOUtils;
@@ -17,28 +19,37 @@ import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
+import org.geotools.coverage.grid.io.GranuleStore;
+import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FileGroupProvider;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.transform.Definition;
 import org.geotools.data.transform.TransformFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -46,8 +57,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -65,10 +79,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -264,10 +281,7 @@ public class ImagesService {
             @PathVariable(name = "assetId") String assetId,
             HttpServletResponse response)
             throws Exception {
-        ImagesResponse ir = images(collectionId, 0, null, null, null, imageId);
-        SimpleFeatureCollection granules =
-                (SimpleFeatureCollection) ir.getResponse().getFeatures().get(0);
-        Feature granule = DataUtilities.first(granules);
+        Feature granule = getFeatureForImageId(collectionId, imageId);
         Object fileGroupCandidate = granule.getUserData().get(GranuleSource.FILES);
         if (!(fileGroupCandidate instanceof FileGroupProvider.FileGroup)) {
             throw new APIException(
@@ -298,11 +312,22 @@ public class ImagesService {
                             + collectionId,
                     HttpStatus.NOT_FOUND);
         }
-        response.setHeader(HttpHeaders.CONTENT_TYPE, assetHasher.guessMimeType(asset.get()));
+        response.setHeader(
+                HttpHeaders.CONTENT_TYPE, MimeTypeSupport.guessMimeType(asset.get().getName()));
         response.setStatus(HttpStatus.OK.value());
         try (FileInputStream fis = new FileInputStream(asset.get())) {
             IOUtils.copy(fis, response.getOutputStream());
         }
+    }
+
+    private Feature getFeatureForImageId(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "imageId") String imageId)
+            throws Exception {
+        ImagesResponse ir = images(collectionId, 0, null, null, null, imageId);
+        SimpleFeatureCollection granules =
+                (SimpleFeatureCollection) ir.getResponse().getFeatures().get(0);
+        return DataUtilities.first(granules);
     }
 
     private SimpleFeatureCollection remapGranules(
@@ -336,7 +361,7 @@ public class ImagesService {
                                             FF.property(d.getLocalName()),
                                             d.getType().getBinding());
                                 })
-                        .collect(Collectors.toList());
+                        .collect(toList());
         SimpleFeatureSource granulesSource = DataUtilities.source(granules);
         TransformFeatureSource remappedSource =
                 new TransformFeatureSource(
@@ -453,10 +478,164 @@ public class ImagesService {
             List<Filter> filters =
                     Stream.of((ReferencedEnvelope[]) parsed)
                             .map(e -> FF.bbox(FF.property(""), e))
-                            .collect(Collectors.toList());
+                            .collect(toList());
             return FF.or(filters);
         } else {
             throw new IllegalArgumentException("Could not understand parsed bbox " + parsed);
         }
+    }
+
+    @PostMapping(path = "collections/{collectionId}/images", name = "addImage")
+    @ResponseBody
+    public ResponseEntity addImage(
+            @PathVariable(name = "collectionId") String collectionId,
+            @RequestParam(name = "filename", required = false) String filename,
+            HttpServletRequest request)
+            throws Exception {
+        CoverageInfo coverageInfo = getStructuredCoverageInfo(collectionId);
+        CoverageStoreInfo store = coverageInfo.getStore();
+        String workspace = store.getWorkspace().getName();
+        String storeName = store.getName();
+        if (filename == null) {
+            filename =
+                    UUID.randomUUID().toString()
+                            + "."
+                            + MimeTypeSupport.guessFileExtension(request.getContentType());
+        }
+        Resource uploadRoot =
+                RESTUtils.createUploadRoot(geoServer.getCatalog(), workspace, storeName, true);
+        Resource uploadedResource =
+                RESTUtils.handleBinUpload(filename, uploadRoot, false, request, workspace);
+
+        List<Resource> resources = new ArrayList<>();
+        if (isZipFile(request)) {
+            RESTUtils.unzipFile(
+                    uploadedResource, uploadRoot, workspace, storeName, resources, false);
+            // remove the zip, not needed any longer
+            uploadedResource.delete();
+        } else {
+            resources.add(uploadedResource);
+        }
+
+        List<File> uploadedFiles = resources.stream().map(r -> Resources.find(r)).collect(toList());
+        StructuredGridCoverage2DReader sr =
+                (StructuredGridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+        List<HarvestedSource> harvested =
+                sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
+        if (harvested == null || harvested.size() == 0 || !harvested.get(0).success()) {
+            throw new APIException(
+                    "InternalServerError",
+                    "Resources could not be harvested (is the image posted in a format that GeoServer can understand?)",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        String featureId =
+                getFeatureIdFor(
+                        harvested.get(0),
+                        sr.getGranules(coverageInfo.getNativeCoverageName(), true));
+        if (featureId != null) {
+            String href =
+                    ResponseUtils.buildURL(
+                            APIRequestInfo.get().getBaseURL(),
+                            "ogc/images/collections/"
+                                    + ResponseUtils.urlEncode(collectionId)
+                                    + "/images/"
+                                    + ResponseUtils.urlEncode(featureId),
+                            null,
+                            URLType.SERVICE);
+            headers.add(HttpHeaders.LOCATION, href);
+        }
+        ResponseEntity response = new ResponseEntity("", headers, HttpStatus.CREATED);
+        return response;
+    }
+
+    /**
+     * Clunky non scalable implementation, the harvest API should be modified to return the feature
+     * after it has been inserted in the catalog...
+     *
+     * @param harvestedSource
+     * @return The id, or null if it could not be found
+     */
+    private String getFeatureIdFor(HarvestedSource harvestedSource, GranuleSource source) {
+        try {
+            if (!(harvestedSource.getSource() instanceof File)) {
+                return null;
+            }
+            File reference = ((File) harvestedSource.getSource()).getCanonicalFile();
+            Filter filter = Filter.INCLUDE;
+            if (source.getSchema().getDescriptor("location") != null) {
+                filter = FF.like(FF.property("location"), "*" + reference.getName());
+            }
+            Query q = new Query();
+            q.setFilter(filter);
+            q.setHints(new Hints(GranuleSource.FILE_VIEW, true));
+            SimpleFeatureCollection granules = source.getGranules(q);
+            try (SimpleFeatureIterator it = granules.features()) {
+                while (it.hasNext()) {
+                    SimpleFeature f = it.next();
+                    FileGroupProvider.FileGroup files =
+                            (FileGroupProvider.FileGroup) f.getUserData().get(GranuleSource.FILES);
+                    if (files.getMainFile().getCanonicalFile().equals(reference)) {
+                        return f.getID();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to locate harvested source", e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Recognizes zip types, including one added specifically for the images API
+     *
+     * @param request
+     * @return
+     */
+    private boolean isZipFile(HttpServletRequest request) {
+        return request.getContentType()
+                        .startsWith(
+                                "application/vnd.ogc.multipart;container=application/x-zip-compressed")
+                || RESTUtils.isZipMediaType(request);
+    }
+
+    @PutMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "getImage")
+    public void putImage(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "imageId") String imageId)
+            throws Exception {
+        throw new APIException(
+                "Unsupported",
+                "PUT on single images is not supported yet",
+                HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @DeleteMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "deleteImage")
+    @ResponseBody
+    public ResponseEntity deleteImage(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "imageId") String imageId)
+            throws Exception {
+        CoverageInfo info = getStructuredCoverageInfo(collectionId);
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
+        GranuleSource source = reader.getGranules(info.getNativeCoverageName(), false);
+        if (!(source instanceof GranuleStore)) {
+            throw new APIException(
+                    "UnsupportedOperation",
+                    "Write not supported on this reader",
+                    HttpStatus.NOT_IMPLEMENTED);
+        }
+
+        // this actually checks the image exists, not interested in the return value, but the
+        // side effect of it
+        getFeatureForImageId(collectionId, imageId);
+        // quick assumption here that there is just one file per feature, but we'll need
+        // to come back and modify the API so that it delivers all the features associated
+        // to the file instead, or return the raw location for filtering purposes
+        ((GranuleStore) source).removeGranules(FF.id(FF.featureId(imageId)));
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

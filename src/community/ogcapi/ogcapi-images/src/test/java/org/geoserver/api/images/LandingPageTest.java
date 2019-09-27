@@ -33,7 +33,11 @@ public class LandingPageTest extends ImagesTestSupport {
                         "getCollections",
                         "getLandingPage",
                         "getConformanceDeclaration",
-                        "getImages"));
+                        "getImages",
+                        "getImage",
+                        "getAsset",
+                        "addImage",
+                        "deleteImage"));
     }
 
     @Test

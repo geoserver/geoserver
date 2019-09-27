@@ -22,6 +22,7 @@ import org.geotools.data.FileGroupProvider;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geowebcache.mime.MimeType;
 import org.opengis.feature.Feature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
@@ -143,7 +144,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             String href = getFileDownloadURL(getParentCollectionId(), featureId, file);
             jw.key("href").value(href);
             jw.key("title").value(file.getName());
-            jw.key("type").value(assetHasher.guessMimeType(file));
+            jw.key("type").value(MimeTypeSupport.guessMimeType(file.getName()));
             jw.endObject();
         } catch (IOException e) {
             throw new RuntimeException("Unexpected IO error while writing assets", e);

@@ -50,24 +50,5 @@ class AssetHasher {
         }
     }
 
-    /**
-     * Performs an educated guess on the file mimeType based on the file name (fast lookup, not very
-     * precise)
-     */
-    public String guessMimeType(File file) {
-        String extension = FilenameUtils.getExtension(file.getName()).toLowerCase();
-        if (extension.equals("tif") || extension.equals(".tiff")) {
-            return "image/tiff";
-        } else if (extension.equals("jp2")) {
-            return "image/jp2";
-        } else if (extension.equals("nc")) {
-            return "application/x-netcdf"; // don't really know if it's a NetCDF4...
-        } else {
-            String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
-            return mimeType;
-        }
-    }
+   
 }

@@ -80,7 +80,7 @@ public class ImageTest extends ImagesTestSupport {
                 getSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href"),
                 allOf(
                         startsWith(
-                                "http://localhost:8080/geoserver/images/collections/sf%3Awatertemp/images/watertemp.1/assets/"),
+                                "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1/assets/"),
                         endsWith("-NCOM_wattemp_100_20081101T0000000_12.tiff")));
     }
 

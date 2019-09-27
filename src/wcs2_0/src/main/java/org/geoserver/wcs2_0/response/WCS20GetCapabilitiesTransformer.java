@@ -127,10 +127,11 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             this.extensions = GeoServerExtensions.extensions(WCSExtendedCapabilitiesProvider.class);
             // register namespaces provided by extended capabilities
             NamespaceSupport namespaces = getNamespaceSupport();
-            namespaces.declarePrefix(
-                    "wcscrs", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+            namespaces.declarePrefix("wcs", "http://www.opengis.net/wcs/2.0");
             namespaces.declarePrefix(
                     "int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+
+            namespaces.declarePrefix("crs", "http://www.opengis.net/wcs/crs/1.0");
 
             for (WCSExtendedCapabilitiesProvider cp : extensions) {
                 cp.registerNamespaces(namespaces);
@@ -296,12 +297,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             } else {
                 codes = wcs.getSRS();
             }
+            start("crs:CrsMetadata");
             for (String code : codes) {
                 if (!code.equals("WGS84(DD)")) {
-                    element("wcscrs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
+                    element("crs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
                 }
             }
-
+            end("crs:CrsMetadata");
             // add the supported interpolation methods
             element(
                     "int:interpolationSupported",

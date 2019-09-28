@@ -25,7 +25,6 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.SortableFieldKeySorter;
 import com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider;
 import com.thoughtworks.xstream.core.ClassLoaderReference;
-//import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -2414,9 +2413,7 @@ public class XStreamPersister {
         @Override
         protected void writeCompleteItem(
                 Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
-            // ExtendedHierarchicalStreamWriterHelper.startNode(writer, "string", Keyword.class);
-            //writer.startNode("string", Keyword.class);
-            writer.startNode(String.valueOf(Keyword.class));
+            writer.startNode("string");
             context.convertAnother(item);
             writer.endNode();
         }

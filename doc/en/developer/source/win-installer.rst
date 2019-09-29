@@ -1,6 +1,9 @@
 Build Windows installer
 -----------------------
 
+At the time the GeoServer project does not have financial resources and man power to stand up a Windows build server (if you can help with this, please contact the developer list).
+However you can create your own installer (using a Windows machine).
+
 .. note:: This step requires a Windows machine.
 
 #. Download and install `NSIS <http://nsis.sourceforge.net/>`_.

@@ -5,13 +5,6 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Collection;
-import org.geoserver.catalog.LayerInfo;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +18,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
@@ -134,6 +128,8 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         response = getAsImage(getMapUnsupportedRequest, "image/gif");
         assertNotNull(response);
     }
+
+    @Test
     public void testCascadeGetLegendRequest() throws Exception {
 
         URL exptectedResponse = this.getClass().getResource("../cascadedLegend.png");

@@ -51,8 +51,6 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     public void setPrefferedFormat(String prefferedFormat);
 
-    public String getDefaultFormatOnRemote();
-
     public Set<StyleInfo> getStyles();
 
     public StyleInfo getDefaultStyle();

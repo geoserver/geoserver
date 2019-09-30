@@ -140,12 +140,14 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public Set<StyleInfo> getStyles() {
-
-        return getRemoteStyleInfos()
-                .stream()
-                .filter(s -> !forcedRemoteStyle.equalsIgnoreCase(s.getName()))
-                .filter(s -> selectedRemoteStyles.contains(s.getName()))
-                .collect(Collectors.toSet());
+        Set<StyleInfo> remoteStyleInfos = getRemoteStyleInfos();
+        if (remoteStyleInfos == null) return null;
+        else
+            return remoteStyleInfos
+                    .stream()
+                    .filter(s -> !forcedRemoteStyle.equalsIgnoreCase(s.getName()))
+                    .filter(s -> selectedRemoteStyles.contains(s.getName()))
+                    .collect(Collectors.toSet());
     }
 
     @Override
@@ -253,40 +255,4 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
-
-    @Override
-    public String getDefaultFormatOnRemote() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    //    public static synchronized LayerInfo migrateToCascadedLayerInfo(LayerInfo layerInfo)
-    //            throws Exception {
-    //        LayerInfo cascadedLayerInfo = new CascadedLayerInfoImpl(layerInfo);
-    //        BeanUtils.copyProperties(cascadedLayerInfo, layerInfo);
-    //        ((CascadedLayerInfo) cascadedLayerInfo).reset();
-    //        // update reference
-    //        // layerInfo=cascadedLayerInfo;
-    //        return cascadedLayerInfo;
-    //    }
-
-    //    public String getDefaultFormatOnRemote() {
-    //
-    //        try {
-    //            return getStore()
-    //                    .getWebMapServer(null)
-    //                    .getCapabilities()
-    //                    .getRequest()
-    //                    .getGetMap()
-    //                    .getFormats()
-    //                    .stream()
-    //                    .filter(CascadedLayerInfoImpl::isImage)
-    //                    .findFirst()
-    //                    .get();
-    //
-    //        } catch (IOException e) {
-    //            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-    //            throw new RuntimeException(e);
-    //        }
-    //    }
 }

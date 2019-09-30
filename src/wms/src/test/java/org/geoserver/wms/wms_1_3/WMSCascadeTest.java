@@ -7,9 +7,7 @@ package org.geoserver.wms.wms_1_3;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-
 import static org.junit.Assert.assertFalse;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -27,11 +25,8 @@ import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
-
 import org.geoserver.catalog.LayerInfo;
-
 import org.geoserver.catalog.WMSLayerInfo;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.http.MockHttpResponse;
@@ -252,6 +247,8 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         response = getAsImage(getMapUnsupportedRequest, "image/gif");
         assertNotNull(response);
     }
+
+    @Test
     public void testCascadeGetLegendRequest() throws Exception {
 
         URL exptectedResponse = this.getClass().getResource("../cascadedLegend.png");

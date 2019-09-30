@@ -328,11 +328,6 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     }
 
     @Override
-    public String getDefaultFormatOnRemote() {
-        return delegate.getDefaultFormatOnRemote();
-    }
-
-    @Override
     public Set<StyleInfo> getStyles() {
         return delegate.getStyles();
     }

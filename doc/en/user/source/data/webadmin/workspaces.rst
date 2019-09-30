@@ -14,11 +14,20 @@ Edit a Workspace
 
 To view or edit a workspace, click the workspace name. A workspace configuration page will be displayed.
 
-.. figure:: img/data_workspaces_URI.png
+.. figure:: img/data_workspaces_basic_edit.png
    
    Workspace named "topp"
    
 A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier). The workspace name is limited to ten characters and may not contain space. A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier. For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
+
+The Security tab allows to set data access rules at workspace level.
+
+.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
+
+.. figure:: img/data_workspaces_security_edit.png
+
+To create/edit workspace's data access rules simply check/uncheck checkboxes according to the desidered role. 
+The Grant access to any role checkbox grant each role for admin access mode.
 
 Root Directory for REST PathMapper 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

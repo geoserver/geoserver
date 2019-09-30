@@ -17,6 +17,9 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -30,12 +33,14 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.validation.validator.RangeValidator;
@@ -49,6 +54,9 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ModuleCapabilities;
+import org.geoserver.platform.ModuleStatus;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -57,6 +65,9 @@ import org.geoserver.web.admin.ContactPanel;
 import org.geoserver.web.admin.GlobalSettingsPage;
 import org.geoserver.web.data.namespace.NamespaceDetachableModel;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
+import org.geoserver.web.security.AccessDataRuleInfoManager;
+import org.geoserver.web.security.AccessDataRulePanelWs;
+import org.geoserver.web.security.DataAccessRuleInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -75,11 +86,12 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     IModel<WorkspaceInfo> wsModel;
     IModel<NamespaceInfo> nsModel;
-    boolean defaultWs;
-
     SettingsPanel settingsPanel;
     ServicesPanel servicesPanel;
+    AccessDataRulePanelWs accessdataPanel;
+    WsEditBasicInfoPanel basicInfoPanel;
     GeoServerDialog dialog;
+    TabbedPanel tabbedPanel;
 
     /**
      * Uses a "name" parameter to locate the workspace
@@ -107,7 +119,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     }
 
     private void init(WorkspaceInfo ws) {
-        defaultWs = ws.getId().equals(getCatalog().getDefaultWorkspace().getId());
+        boolean defaultWs = ws.getId().equals(getCatalog().getDefaultWorkspace().getId());
 
         wsModel = new WorkspaceDetachableModel(ws);
 
@@ -123,68 +135,86 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
         nsModel = new NamespaceDetachableModel(ns);
 
-        Form<NamespaceInfo> form =
-                new Form<NamespaceInfo>("form", new CompoundPropertyModel<NamespaceInfo>(nsModel)) {
-                    private static final long serialVersionUID = 5140757565172795453L;
+        Form form =
+                new Form<NamespaceInfo>("form", new CompoundPropertyModel<NamespaceInfo>(nsModel));
+        List<ITab> tabs = new ArrayList<ITab>();
+        tabs.add(
+                new AbstractTab(new Model<String>("Basic Info")) {
 
-                    protected void onSubmit() {
-                        try {
-                            saveWorkspace();
-                        } catch (RuntimeException e) {
-                            LOGGER.log(Level.WARNING, "Failed to save workspace", e);
-                            error(
-                                    e.getMessage() == null
-                                            ? "Failed to save workspace, no error message available, see logs for details"
-                                            : e.getMessage());
+                    private static final long serialVersionUID = 5216769765556937554L;
+
+                    @Override
+                    public WebMarkupContainer getPanel(String panelId) {
+                        basicInfoPanel =
+                                new WsEditBasicInfoPanel(panelId, wsModel, nsModel, defaultWs);
+                        return basicInfoPanel;
+                    }
+                });
+        if (!GeoServerExtensions.extensions(ModuleStatus.class)
+                .stream()
+                .anyMatch(
+                        m ->
+                                m.hasCapability(
+                                        ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG))) {
+            tabs.add(
+                    new AbstractTab(new Model<String>("Security")) {
+
+                        private static final long serialVersionUID = 5216769765556937554L;
+
+                        @Override
+                        public WebMarkupContainer getPanel(String panelId) {
+                            AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
+                            ListModel<DataAccessRuleInfo> ownModel =
+                                    new ListModel<>(
+                                            manager.getDataAccessRuleInfo(wsModel.getObject()));
+                            accessdataPanel = new AccessDataRulePanelWs(panelId, wsModel, ownModel);
+                            return accessdataPanel;
                         }
+                    });
+        }
+
+        tabbedPanel =
+                new TabbedPanel("tabs", tabs) {
+
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected WebMarkupContainer newLink(String linkId, final int index) {
+                        return new SubmitLink(linkId) {
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            public void onSubmit() {
+                                setSelectedTab(index);
+                            }
+                        };
                     }
                 };
-        add(form);
-
-        // check for full admin, we don't allow workspace admins to change all settings
-        boolean isFullAdmin = isAuthenticatedAsAdmin();
-
-        TextField<String> name =
-                new TextField<String>("name", new PropertyModel<String>(wsModel, "name"));
-        name.setRequired(true);
-        name.setEnabled(isFullAdmin);
-
-        name.add(new XMLNameValidator());
-        form.add(name);
-        TextField<String> uri =
-                new TextField<String>(
-                        "uri", new PropertyModel<String>(nsModel, "uRI"), String.class);
-        uri.setRequired(true);
-        uri.add(new URIValidator());
-        form.add(uri);
-        CheckBox defaultChk =
-                new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
-        form.add(defaultChk);
-        defaultChk.setEnabled(isFullAdmin);
-
-        CheckBox isolatedChk = new CheckBox("isolated", new PropertyModel<>(wsModel, "isolated"));
-        form.add(isolatedChk);
-        defaultChk.setEnabled(isFullAdmin);
-
-        // stores
-        //        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws),
-        // false);
-        //        form.add(storePanel);
-
-        add(dialog = new GeoServerDialog("dialog"));
-
-        // local settings
-        form.add(settingsPanel = new SettingsPanel("settings", wsModel));
-        form.add(new HelpLink("settingsHelp").setDialog(dialog));
-
-        // local services
-        form.add(servicesPanel = new ServicesPanel("services", wsModel));
-        form.add(new HelpLink("servicesHelp").setDialog(dialog));
-
-        SubmitLink submit = new SubmitLink("save");
-        form.add(submit);
-        form.setDefaultButton(submit);
+        tabbedPanel.setOutputMarkupId(true);
+        form.add(tabbedPanel);
+        form.add(submitLink());
         form.add(new BookmarkablePageLink<WorkspacePage>("cancel", WorkspacePage.class));
+        add(form);
+    }
+
+    private SubmitLink submitLink() {
+        return new SubmitLink("save") {
+
+            private static final long serialVersionUID = -3462848930497720229L;
+
+            @Override
+            public void onSubmit() {
+                try {
+                    saveWorkspace();
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.WARNING, "Failed to save workspace", e);
+                    error(
+                            e.getMessage() == null
+                                    ? "Failed to save workspace, no error message available, see logs for details"
+                                    : e.getMessage());
+                }
+            }
+        };
     }
 
     private void saveWorkspace() {
@@ -205,7 +235,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         // this will ensure all datastore namespaces are updated when the workspace is modified
         catalog.save(workspaceInfo);
         catalog.save(namespaceInfo);
-        if (defaultWs) {
+        if (basicInfoPanel.defaultWs) {
             catalog.setDefaultWorkspace(workspaceInfo);
         }
 
@@ -241,6 +271,15 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     geoServer.remove(s.model.getObject());
                 }
             }
+        }
+        try {
+            accessdataPanel.save();
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.INFO,
+                    "Error saving access rules associated to workspace " + workspaceInfo.getName(),
+                    e);
+            error(e.getMessage() == null ? e.toString() : e.getMessage());
         }
         doReturn(WorkspacePage.class);
     }
@@ -309,6 +348,58 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 info.setWorkspace(wsModel.getObject());
             }
             return info;
+        }
+    }
+
+    class WsEditBasicInfoPanel extends Panel {
+
+        private static final long serialVersionUID = -8487041433764733692L;
+
+        boolean defaultWs;
+
+        public WsEditBasicInfoPanel(
+                String id,
+                IModel<WorkspaceInfo> wsModel,
+                IModel<NamespaceInfo> nsModel,
+                boolean defaultWs) {
+            super(id, wsModel);
+            this.defaultWs = defaultWs;
+
+            // check for full admin, we don't allow workspace admins to change all settings
+            boolean isFullAdmin = isAuthenticatedAsAdmin();
+
+            TextField<String> name =
+                    new TextField<String>("name", new PropertyModel<String>(wsModel, "name"));
+            name.setRequired(true);
+            name.setEnabled(isFullAdmin);
+
+            name.add(new XMLNameValidator());
+            add(name);
+            TextField<String> uri =
+                    new TextField<String>(
+                            "uri", new PropertyModel<String>(nsModel, "uRI"), String.class);
+            uri.setRequired(true);
+            uri.add(new URIValidator());
+            add(uri);
+            CheckBox defaultChk =
+                    new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
+            add(defaultChk);
+            defaultChk.setEnabled(isFullAdmin);
+
+            CheckBox isolatedChk =
+                    new CheckBox("isolated", new PropertyModel<>(wsModel, "isolated"));
+            add(isolatedChk);
+            defaultChk.setEnabled(isFullAdmin);
+
+            add(dialog = new GeoServerDialog("dialog"));
+
+            // local settings
+            add(settingsPanel = new SettingsPanel("settings", wsModel));
+            add(new HelpLink("settingsHelp").setDialog(dialog));
+
+            // local services
+            add(servicesPanel = new ServicesPanel("services", wsModel));
+            add(new HelpLink("servicesHelp").setDialog(dialog));
         }
     }
 

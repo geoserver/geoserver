@@ -92,6 +92,16 @@ You can view layer groups in the :ref:`layerpreview` section of the web admin.
 
 .. note:: By default, a layer group is queryable when at least a child layer is queryable. Uncheck "Queryable" box if you want to explicitly indicate that it is not queryable independently of how the child layers are configured.
 
+
+Security tab allows to set data access rules at layer group level.
+
+.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
+
+.. figure:: img/data_layergroups_security.png
+
+To create/edit layergroup's data access rules simply check/uncheck checkboxes according to desidered access mode (namely read and write) and role. 
+The Grant access to any role checkbox grant each role for each access mode.
+
 Add a Layer Group
 -----------------
 
@@ -148,6 +158,3 @@ Finally, it is possible to override the service settings and force a **Yes** to 
 .. figure:: img/data_layers_root_in_capabilities.png
   
    Layer groups root layer in capabilities options
-
-
-

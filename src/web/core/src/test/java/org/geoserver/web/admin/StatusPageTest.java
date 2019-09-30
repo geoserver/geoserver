@@ -153,7 +153,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertContains("gs-main");
         Component component =
                 tester.getComponentFromLastRenderedPage(
-                        "tabs:panel:listViewContainer:modules:0:version");
+                        "tabs:panel:listViewContainer:modules:1:version");
         assertTrue(component instanceof Label);
         assertNotNull(component.getDefaultModelObjectAsString());
         assertNotEquals("", component.getDefaultModelObjectAsString().trim());
@@ -163,7 +163,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
     public void testModuleStatusPopup() {
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:tabs-container:tabs:1:link", true);
-        tester.clickLink("tabs:panel:listViewContainer:modules:0:msg", true);
+        tester.clickLink("tabs:panel:listViewContainer:modules:1:msg", true);
         tester.assertRenderedPage(StatusPage.class);
         tester.assertContains("GeoServer Main");
         tester.assertContains("gs-main");

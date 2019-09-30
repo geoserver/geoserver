@@ -11,4 +11,9 @@
 
   <bean id="statusPageExtraTab" class="org.geoserver.web.admin.StatusPageTest$ExtraTabDefinition"/>
 
+  <bean id="gs-geofence" class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-geofence"/>
+    <constructor-arg index="1" value="GeoFence"/>
+  </bean>
+
 </beans>

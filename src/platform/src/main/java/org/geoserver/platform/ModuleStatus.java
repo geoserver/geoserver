@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @author Morgan Thompson - Boundless
  */
-public interface ModuleStatus {
+public interface ModuleStatus extends ModuleCapabilities {
 
     /**
      * Module identifier based on artifact bundle Example: <code>gs-main</code>, <code>gs-oracle

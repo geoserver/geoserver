@@ -10,13 +10,24 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockTestData;
+import org.geoserver.platform.ModuleCapabilities;
+import org.geoserver.platform.ModuleStatusImpl;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.security.AccessDataRuleInfoManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
 
 public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
 
@@ -24,7 +35,6 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     public void init() {
         login();
         tester.startPage(WorkspaceNewPage.class);
-
         // print(tester.getLastRenderedPage(), true, true);
     }
 
@@ -33,15 +43,15 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertNoErrorMessage();
 
-        tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:uri", TextField.class);
+        tester.assertComponent("form:tabs:panel:name", TextField.class);
+        tester.assertComponent("form:tabs:panel:uri", TextField.class);
     }
 
     @Test
     public void testNameRequired() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("uri", "http://www.geoserver.org");
-        form.submit();
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
@@ -50,8 +60,8 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testURIRequired() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("name", "test");
-        form.submit();
+        form.setValue("tabs:panel:name", "test");
+        form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
@@ -60,11 +70,10 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testValid() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("name", "abc");
-        form.setValue("uri", "http://www.geoserver.org");
-        form.setValue("default", "true");
-        form.submit();
-
+        form.setValue("tabs:panel:name", "abc");
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.setValue("tabs:panel:default", "true");
+        form.submit("submit");
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();
 
@@ -74,9 +83,9 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInvalidURI() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("name", "def");
-        form.setValue("uri", "not a valid uri");
-        form.submit();
+        form.setValue("tabs:panel:name", "def");
+        form.setValue("tabs:panel:uri", "not a valid uri");
+        form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Invalid URI syntax: not a valid uri"});
@@ -85,9 +94,9 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInvalidName() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("name", "default");
-        form.setValue("uri", "http://www.geoserver.org");
-        form.submit();
+        form.setValue("tabs:panel:name", "default");
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(
@@ -97,9 +106,9 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDuplicateURI() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("name", "def");
-        form.setValue("uri", MockTestData.CITE_URI);
-        form.submit();
+        form.setValue("tabs:panel:name", "def");
+        form.setValue("tabs:panel:uri", MockTestData.CITE_URI);
+        form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(
@@ -115,9 +124,9 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDuplicateName() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("name", MockTestData.CITE_PREFIX);
-        form.setValue("uri", "http://www.geoserver.org");
-        form.submit();
+        form.setValue("tabs:panel:name", MockTestData.CITE_PREFIX);
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(
@@ -176,10 +185,54 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         // get the workspace creation form
         FormTester form = tester.newFormTester("form");
         // fill the form with the provided values
-        form.setValue("name", name);
-        form.setValue("uri", namespace);
-        form.setValue("isolated", isolated);
+        form.setValue("tabs:panel:name", name);
+        form.setValue("tabs:panel:uri", namespace);
+        form.setValue("tabs:panel:isolated", isolated);
         // submit the form
-        form.submit();
+        form.submit("submit");
+    }
+
+    @Test
+    public void testSecurityTabLoad() {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tabs:panel:name", "abc");
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        tester.assertComponent("form:tabs:panel:listContainer", WebMarkupContainer.class);
+        tester.assertComponent("form:tabs:panel:listContainer:selectAll", CheckBox.class);
+        tester.assertComponent("form:tabs:panel:listContainer:rules", ListView.class);
+        tester.assertRenderedPage(WorkspaceNewPage.class);
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testCreateWsWithAccessRules() throws IOException {
+        AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
+        WorkspaceInfo wsInfo = null;
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tabs:panel:name", "cba");
+        form.setValue("tabs:panel:uri", "http://www.geoserver2.org");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        form.setValue("tabs:panel:listContainer:rules:0:admin", true);
+        form.submit("submit");
+        tester.assertNoErrorMessage();
+        wsInfo = getCatalog().getWorkspaceByName("cba");
+        assertEquals("cba", wsInfo.getName());
+        assertTrue(manager.getResourceRule(wsInfo.getName(), wsInfo).size() == 1);
+    }
+
+    @Test
+    public void testSecurityTabInactiveWithGeofenceActive() {
+        ApplicationContext context = GeoServerApplication.get().getApplicationContext();
+        ModuleStatusImpl module = (ModuleStatusImpl) context.getBean("gs-geofence");
+        module.addCapability(ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG);
+        tester.startPage(WorkspaceNewPage.class);
+        try {
+            tester.newFormTester("form");
+            TabbedPanel tabs = (TabbedPanel) tester.getComponentFromLastRenderedPage("form:tabs");
+            assertTrue(tabs.getTabs().size() == 1);
+        } finally {
+            module.getCapabilities().remove(ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG);
+        }
     }
 }

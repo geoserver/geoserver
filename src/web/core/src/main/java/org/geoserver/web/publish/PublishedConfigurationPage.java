@@ -31,10 +31,14 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ModuleCapabilities;
+import org.geoserver.platform.ModuleStatus;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.resource.LayerModel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
+import org.geoserver.web.security.LayerAccessDataRulePanelInfo;
 
 /**
  * Page allowing to configure a layer(group) (and its resource).
@@ -138,7 +142,14 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
         // sort the tabs based on order
         sortTabPanels(tabPanels);
-
+        boolean hasAdvancedSecurtyCapability =
+                GeoServerExtensions.extensions(ModuleStatus.class)
+                        .stream()
+                        .anyMatch(
+                                m ->
+                                        m.hasCapability(
+                                                ModuleCapabilities.Capability
+                                                        .ADVANCED_SECURITY_CONFIG));
         for (PublishedEditTabPanelInfo ttabPanelInfo : tabPanels) {
             if (ttabPanelInfo.supports(getPublishedInfo())) {
 
@@ -157,8 +168,11 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
                 final Class<PublishedEditTabPanel<T>> panelClass = tabPanelInfo.getComponentClass();
                 IModel<?> panelCustomModel = tabPanelInfo.createOwnModel(myModel, isNew);
+                if (tabPanelInfo instanceof LayerAccessDataRulePanelInfo
+                        && hasAdvancedSecurtyCapability) {
+                    continue;
+                }
                 tabPanelCustomModels.put(panelClass, panelCustomModel);
-
                 tabs.add(
                         new AbstractTab(titleModel) {
                             private static final long serialVersionUID = -6637277497986497791L;
@@ -310,13 +324,15 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                     tabPanelCustomModels.entrySet()) {
                 Class<? extends PublishedEditTabPanel<T>> panelClass = e.getKey();
                 IModel<?> customModel = e.getValue();
+                PublishedEditTabPanel<?> tabPanel;
                 if (customModel == null) {
                     continue;
+                } else {
+                    tabPanel =
+                            panelClass
+                                    .getConstructor(String.class, IModel.class, IModel.class)
+                                    .newInstance("temp", myModel, customModel);
                 }
-                PublishedEditTabPanel<?> tabPanel =
-                        panelClass
-                                .getConstructor(String.class, IModel.class, IModel.class)
-                                .newInstance("temp", myModel, customModel);
                 tabPanel.save();
             }
 

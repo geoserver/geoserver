@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.CoreMatchers;
@@ -171,7 +170,7 @@ public class ApiTest extends FeaturesTestSupport {
                 getCatalog()
                         .getFeatureTypes()
                         .stream()
-                        .map(ft -> NCNameResourceCodec.encode(ft))
+                        .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
 

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -85,7 +84,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
         // check the workspace prefixes have been removed
         assertThat(json.read("collections[?(@.name=='Deletes')]"), not(empty()));
-        assertThat(json.read("collections[?(@.name=='cdf__Deletes')]"), empty());
+        assertThat(json.read("collections[?(@.name=='cdf:Deletes')]"), empty());
         // check the url points to a ws qualified url
         final String deleteHrefPath =
                 "collections[?(@.name=='Deletes')].links[?(@.rel=='item' && @.type=='application/geo+json')].href";
@@ -116,11 +115,11 @@ public class CollectionsTest extends FeaturesTestSupport {
         // check collection links
         List<FeatureTypeInfo> featureTypes = getCatalog().getFeatureTypes();
         for (FeatureTypeInfo featureType : featureTypes) {
-            String encodedName = NCNameResourceCodec.encode(featureType);
+            String encodedName = featureType.prefixedName().replace(":", "__");
             assertNotNull(document.select("#html_" + encodedName + "_link"));
             assertEquals(
                     "http://localhost:8080/geoserver/ogc/features/collections/"
-                            + encodedName
+                            + featureType.prefixedName()
                             + "/items?f=text%2Fhtml&limit=50",
                     document.select("#html_" + encodedName + "_link").attr("href"));
         }
@@ -128,11 +127,12 @@ public class CollectionsTest extends FeaturesTestSupport {
         // go and check a specific collection title and description
         FeatureTypeInfo basicPolygons =
                 getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
-        String basicPolygonsName = NCNameResourceCodec.encode(basicPolygons);
+        String basicPolygonsName = basicPolygons.prefixedName();
+        String basicPolygonsHtmlId = basicPolygonsName.replace(":", "__");
         assertEquals(
-                BASIC_POLYGONS_TITLE, document.select("#" + basicPolygonsName + "_title").text());
+                BASIC_POLYGONS_TITLE, document.select("#" + basicPolygonsHtmlId + "_title").text());
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
-                document.select("#" + basicPolygonsName + "_description").text());
+                document.select("#" + basicPolygonsHtmlId + "_description").text());
     }
 }

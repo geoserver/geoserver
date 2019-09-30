@@ -18,7 +18,6 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -42,7 +41,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
     public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType) {
         super(featureType);
         // basic info
-        String collectionId = NCNameResourceCodec.encode(featureType);
+        String collectionId = featureType.prefixedName();
         this.id = collectionId;
         this.title = featureType.getTitle();
         this.description = featureType.getAbstract();

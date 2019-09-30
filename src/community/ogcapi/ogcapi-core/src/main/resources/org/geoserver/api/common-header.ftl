@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      <#if model?? && model.htmlTitle??>
+      <#if model?? && model.htmlTitle?has_content>
         <title>${model.htmlTitle}</title>
       </#if>
       <link rel="stylesheet" href="${resourceLink("apicss/blueprint/screen.css")}" type="text/css" media="screen" />

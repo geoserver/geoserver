@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
@@ -24,7 +23,6 @@ import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -135,19 +133,14 @@ public class FeatureService {
 
     private FeatureTypeInfo getFeatureType(String collectionId) {
         // single collection
-        Optional<FeatureTypeInfo> featureType =
-                NCNameResourceCodec.getLayers(getCatalog(), collectionId)
-                        .stream()
-                        .filter(l -> l.getResource() instanceof FeatureTypeInfo)
-                        .map(l -> (FeatureTypeInfo) l.getResource())
-                        .findFirst();
-        if (!featureType.isPresent()) {
+        FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(collectionId);
+        if (featureType == null) {
             throw new ServiceException(
                     "Unknown collection " + collectionId,
                     ServiceException.INVALID_PARAMETER_VALUE,
                     "collectionId");
         }
-        return featureType.get();
+        return featureType;
     }
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")

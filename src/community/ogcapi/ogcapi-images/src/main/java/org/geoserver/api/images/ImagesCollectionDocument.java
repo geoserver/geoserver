@@ -7,7 +7,10 @@ package org.geoserver.api.images;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
@@ -20,11 +23,6 @@ import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.MediaType;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.logging.Logger;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})

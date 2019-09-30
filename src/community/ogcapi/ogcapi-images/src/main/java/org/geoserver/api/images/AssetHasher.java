@@ -14,13 +14,11 @@
  */
 package org.geoserver.api.images;
 
+import java.io.File;
+import java.security.MessageDigest;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.net.URLConnection;
-import java.security.MessageDigest;
 
 /**
  * Manages creation and "decoding" of the file URLs so that the actual file system path is hidden
@@ -49,6 +47,4 @@ class AssetHasher {
             throw new RuntimeException(e);
         }
     }
-
-   
 }

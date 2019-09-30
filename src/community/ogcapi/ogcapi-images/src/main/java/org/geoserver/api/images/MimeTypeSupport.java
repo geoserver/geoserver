@@ -4,9 +4,8 @@
  */
 package org.geoserver.api.images;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.net.URLConnection;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Basic support for guessing mime types and files extensions (we should try to do better than

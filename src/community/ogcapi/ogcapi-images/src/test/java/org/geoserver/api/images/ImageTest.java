@@ -12,16 +12,14 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 public class ImageTest extends ImagesTestSupport {
 

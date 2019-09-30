@@ -6,6 +6,17 @@ package org.geoserver.api.images;
 
 import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
 import org.geoserver.config.GeoServer;
@@ -22,25 +33,12 @@ import org.geotools.data.FileGroupProvider;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geowebcache.mime.MimeType;
 import org.opengis.feature.Feature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 /** A subclass of GeoJSONGetFeatureResponse that encodes a RFC compliant document */
 @Component

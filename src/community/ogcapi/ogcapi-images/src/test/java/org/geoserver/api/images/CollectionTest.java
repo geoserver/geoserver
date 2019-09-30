@@ -9,11 +9,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
-import java.util.List;
 
 public class CollectionTest extends ImagesTestSupport {
 

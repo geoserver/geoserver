@@ -4,12 +4,29 @@
  */
 package org.geoserver.api.images;
 
+import static java.util.stream.Collectors.toList;
 import static org.geotools.gce.imagemosaic.Utils.FF;
 
-import static java.util.stream.Collectors.toList;
-
+import io.swagger.v3.oas.models.OpenAPI;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.opengis.wfs20.Wfs20Factory;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
@@ -68,34 +85,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import io.swagger.v3.oas.models.OpenAPI;
-
 /** A service to manage collections of images (mosaics, in GeoServer) */
 @APIService(
-        service = "Images",
-        version = "1.0",
-        landingPage = "ogc/images",
-        serviceClass = ImagesServiceInfo.class)
+    service = "Images",
+    version = "1.0",
+    landingPage = "ogc/images",
+    serviceClass = ImagesServiceInfo.class
+)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/images")
 public class ImagesService {
 
@@ -147,13 +143,14 @@ public class ImagesService {
     }
 
     @GetMapping(
-            path = "api",
-            name = "getApi",
-            produces = {
-                OpenAPIMessageConverter.OPEN_API_VALUE,
-                "application/x-yaml",
-                MediaType.TEXT_XML_VALUE
-            })
+        path = "api",
+        name = "getApi",
+        produces = {
+            OpenAPIMessageConverter.OPEN_API_VALUE,
+            "application/x-yaml",
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() {
@@ -215,7 +212,8 @@ public class ImagesService {
         if (time != null) {
             List<DimensionDescriptor> descriptors = reader.getDimensionDescriptors(nativeName);
             Optional<DimensionDescriptor> timeDescriptor =
-                    descriptors.stream()
+                    descriptors
+                            .stream()
                             .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
                             .findFirst();
             if (!timeDescriptor.isPresent()) {
@@ -273,8 +271,9 @@ public class ImagesService {
     }
 
     @GetMapping(
-            path = "collections/{collectionId}/images/{imageId:.+}/assets/{assetId:.+}",
-            name = "getAsset")
+        path = "collections/{collectionId}/images/{imageId:.+}/assets/{assetId:.+}",
+        name = "getAsset"
+    )
     public void asset(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "imageId") String imageId,
@@ -297,7 +296,8 @@ public class ImagesService {
             asset = Optional.of(files.getMainFile());
         } else {
             asset =
-                    files.getSupportFiles().stream()
+                    files.getSupportFiles()
+                            .stream()
                             .filter(f -> assetHasher.matches(f, assetId))
                             .findFirst();
         }
@@ -335,7 +335,8 @@ public class ImagesService {
             throws IOException {
         // remap the time attribute to "datetime", if needed
         DimensionDescriptor timeDescriptor =
-                dimensionDescriptors.stream()
+                dimensionDescriptors
+                        .stream()
                         .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
                         .findFirst()
                         .get();
@@ -349,7 +350,9 @@ public class ImagesService {
 
         // remapping requires a FeatureSource, no problem
         List<Definition> definitions =
-                granules.getSchema().getAttributeDescriptors().stream()
+                granules.getSchema()
+                        .getAttributeDescriptors()
+                        .stream()
                         .map(
                                 d -> {
                                     String outputName = d.getLocalName();
@@ -406,7 +409,11 @@ public class ImagesService {
 
         // copy over the request parameters, removing the paging ones
         Map<String, String> kvp =
-                APIRequestInfo.get().getRequest().getParameterMap().entrySet().stream()
+                APIRequestInfo.get()
+                        .getRequest()
+                        .getParameterMap()
+                        .entrySet()
+                        .stream()
                         .collect(
                                 Collectors.toMap(
                                         e -> e.getKey(),

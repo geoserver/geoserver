@@ -117,8 +117,7 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
             // unzip the file
             try {
                 // Unzipping of the file and, if it is a POST request, filling of the File List
-                RESTUtils.unzipFile(
-                        uploadedFile, directory, workspace, store, request, files, external);
+                RESTUtils.unzipFile(uploadedFile, directory, workspace, store, files, external);
 
                 // look for the "primary" file
                 // TODO: do a better check

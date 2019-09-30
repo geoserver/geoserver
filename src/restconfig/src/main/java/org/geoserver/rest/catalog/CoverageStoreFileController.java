@@ -22,15 +22,13 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.SingleGridCoverage2DReader;
 import org.geoserver.data.util.CoverageStoreUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.util.RESTUploadPathMapper;
+import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -443,51 +441,13 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             // Mapping of the input directory
             if (method == UploadMethod.url) {
                 // For URL upload method, workspace and StoreName are not considered
-                directory = createFinalRoot(null, null, postRequest);
+                directory = RESTUtils.createUploadRoot(catalog, null, null, postRequest);
             } else {
-                directory = createFinalRoot(workspaceName, storeName, postRequest);
+                directory =
+                        RESTUtils.createUploadRoot(catalog, workspaceName, storeName, postRequest);
             }
         }
         return handleFileUpload(
                 storeName, workspaceName, filename, method, format, directory, request);
-    }
-
-    private Resource createFinalRoot(String workspaceName, String storeName, boolean isPost)
-            throws IOException {
-        // Check if the Request is a POST request, in order to search for an existing coverage
-        Resource directory = null;
-        if (isPost && storeName != null) {
-            // Check if the coverage already exists
-            CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
-            if (coverage != null) {
-                if (workspaceName == null
-                        || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
-                    // If the coverage exists then the associated directory is defined by its URL
-                    directory =
-                            Resources.fromPath(
-                                    URLs.urlToFile(new URL(coverage.getURL())).getPath(),
-                                    catalog.getResourceLoader().get(""));
-                }
-            }
-        }
-        // If the directory has not been found then it is created directly
-        if (directory == null) {
-            directory =
-                    catalog.getResourceLoader().get(Paths.path("data", workspaceName, storeName));
-        }
-
-        // Selection of the original ROOT directory path
-        StringBuilder root = new StringBuilder(directory.path());
-        // StoreParams to use for the mapping.
-        Map<String, String> storeParams = new HashMap<>();
-        // Listing of the available pathMappers
-        List<RESTUploadPathMapper> mappers =
-                GeoServerExtensions.extensions(RESTUploadPathMapper.class);
-        // Mapping of the root directory
-        for (RESTUploadPathMapper mapper : mappers) {
-            mapper.mapStorePath(root, workspaceName, storeName, storeParams);
-        }
-        directory = Resources.fromPath(root.toString());
-        return directory;
     }
 }

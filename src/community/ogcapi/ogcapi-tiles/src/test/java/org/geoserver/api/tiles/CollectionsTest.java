@@ -25,7 +25,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,7 +61,7 @@ public class CollectionsTest extends TilesTestSupport {
         Collection<MediaType> formats =
                 GeoServerExtensions.bean(
                                 APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
-                        .getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+                        .getProducibleMediaTypes(TiledCollectionDocument.class, true);
         assertThat(
                 formats.size(),
                 lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));

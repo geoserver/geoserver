@@ -32,9 +32,11 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -246,7 +248,7 @@ public class RESTUtils {
             org.geoserver.platform.resource.Resource zipFile,
             org.geoserver.platform.resource.Resource outputDirectory)
             throws IOException {
-        unzipFile(zipFile, outputDirectory, null, null, null, null, false);
+        unzipFile(zipFile, outputDirectory, null, null, null, false);
     }
 
     /**
@@ -259,12 +261,11 @@ public class RESTUtils {
      *     <p>TODO: move this to IOUtils
      */
     public static void unzipFile(
-            org.geoserver.platform.resource.Resource zipFile,
-            org.geoserver.platform.resource.Resource outputDirectory,
+            Resource zipFile,
+            Resource outputDirectory,
             String workspace,
             String store,
-            HttpServletRequest request,
-            List<org.geoserver.platform.resource.Resource> files,
+            List<Resource> files,
             boolean external)
             throws IOException {
 
@@ -461,5 +462,46 @@ public class RESTUtils {
      */
     public static void unzipInputStream(InputStream in, File outputDirectory) throws IOException {
         org.geoserver.util.IOUtils.decompress(in, outputDirectory);
+    }
+
+    /** Creates a file upload root for the given workspace and store */
+    public static Resource createUploadRoot(
+            Catalog catalog, String workspaceName, String storeName, boolean isPost)
+            throws IOException {
+        // Check if the Request is a POST request, in order to search for an existing coverage
+        Resource directory = null;
+        if (isPost && storeName != null) {
+            // Check if the coverage already exists
+            CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
+            if (coverage != null) {
+                if (workspaceName == null
+                        || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
+                    // If the coverage exists then the associated directory is defined by its URL
+                    directory =
+                            Resources.fromPath(
+                                    URLs.urlToFile(new URL(coverage.getURL())).getPath(),
+                                    catalog.getResourceLoader().get(""));
+                }
+            }
+        }
+        // If the directory has not been found then it is created directly
+        if (directory == null) {
+            directory =
+                    catalog.getResourceLoader().get(Paths.path("data", workspaceName, storeName));
+        }
+
+        // Selection of the original ROOT directory path
+        StringBuilder root = new StringBuilder(directory.path());
+        // StoreParams to use for the mapping.
+        Map<String, String> storeParams = new HashMap<>();
+        // Listing of the available pathMappers
+        List<RESTUploadPathMapper> mappers =
+                GeoServerExtensions.extensions(RESTUploadPathMapper.class);
+        // Mapping of the root directory
+        for (RESTUploadPathMapper mapper : mappers) {
+            mapper.mapStorePath(root, workspaceName, storeName, storeParams);
+        }
+        directory = Resources.fromPath(root.toString());
+        return directory;
     }
 }

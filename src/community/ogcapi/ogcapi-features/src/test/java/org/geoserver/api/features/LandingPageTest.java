@@ -101,7 +101,6 @@ public class LandingPageTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testLandingPageHTMLInWorkspace() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("sf/ogc/features?f=html");
         // check a couple of links

@@ -259,7 +259,11 @@ class ImageReader {
                             .equals(readParameter.getDescriptor().getName())) {
                 ParameterValue pv = (ParameterValue) readParameter;
                 Filter filter = (Filter) pv.getValue();
-                return (Filter) filter.accept(new SimplifyingFilterVisitor(), null);
+                if (filter != null) {
+                    return (Filter) filter.accept(new SimplifyingFilterVisitor(), null);
+                } else {
+                    return null;
+                }
             }
         }
 

@@ -63,7 +63,7 @@ public class LandingPageTest extends StylesTestSupport {
 
     @Test
     public void testLandingPageWorkspaceSpecific() throws Exception {
-        DocumentContext json = getAsJSONPath("ogc/styles", 200);
+        DocumentContext json = getAsJSONPath("ws/ogc/styles", 200);
         checkJSONLandingPage(json);
     }
 

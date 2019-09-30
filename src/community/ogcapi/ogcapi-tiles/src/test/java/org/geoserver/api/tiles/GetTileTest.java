@@ -48,18 +48,37 @@ public class GetTileTest extends TilesTestSupport {
                                 + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
+        checkRootTileHeaders(sr, "cite:BasicPolygons");
+    }
 
+    public void checkRootTileHeaders(MockHttpServletResponse sr, String layerName)
+            throws IOException {
         // check the headers
         assertEquals("EPSG:4326", sr.getHeader("geowebcache-gridset"));
         assertEquals("EPSG:4326", sr.getHeader("geowebcache-crs"));
         assertEquals("[0, 0, 0]", sr.getHeader("geowebcache-tile-index"));
         assertEquals("-180.0,-90.0,0.0,90.0", sr.getHeader("geowebcache-tile-bounds"));
-        assertEquals("cite:BasicPolygons", sr.getHeader("geowebcache-layer"));
+        assertEquals(layerName, sr.getHeader("geowebcache-layer"));
         assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
         assertEquals("no-cache", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
         assertNotNull(sr.getHeader("Last-Modified"));
         assertValidPNGResponse(sr);
+    }
+
+    @Test
+    public void testPngIntegrationWorkspaceSpecific() throws Exception {
+        String layerId = MockData.BASIC_POLYGONS.getLocalPart();
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        MockData.BASIC_POLYGONS.getPrefix()
+                                + "/ogc/tiles/collections/"
+                                + layerId
+                                + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+
+        checkRootTileHeaders(sr, "BasicPolygons");
     }
 
     @Test

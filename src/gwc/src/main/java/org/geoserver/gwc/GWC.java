@@ -82,6 +82,7 @@ import org.geoserver.security.DataAccessLimits;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -1380,6 +1381,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
+        ThreadLocalsTransfer tx = new ThreadLocalsTransfer();
         try {
             owsDispatcher.handleRequest(req, resp);
         } finally {
@@ -1389,6 +1391,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             } else {
                 Dispatcher.REQUEST.remove();
             }
+            // reset thread locals
+            tx.apply();
         }
         return new ByteArrayResource(resp.getBytes());
     }

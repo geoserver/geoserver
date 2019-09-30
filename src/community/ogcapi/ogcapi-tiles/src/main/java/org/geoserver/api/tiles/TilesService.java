@@ -30,6 +30,7 @@ import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.wms.WMS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
@@ -242,10 +243,14 @@ public class TilesService {
         }
         MimeType requestedFormat = getRequestedFormat(tileLayer, renderedTile);
         long[] tileIndex = getTileIndex(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer);
+        String name =
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName();
         ConveyorTile tile =
                 new ConveyorTile(
                         storageBroker,
-                        tileLayer.getName(), // using the tile id won't work with storage broker
+                        name, // using the tile id won't work with storage broker
                         tileMatrixSetId,
                         tileIndex,
                         requestedFormat,
@@ -291,6 +296,12 @@ public class TilesService {
         GWC.setConditionalGetHeaders(
                 tmpHeaders, tile, etag, httpRequest.getHeader("If-Modified-Since"));
         GWC.setCacheMetadataHeaders(tmpHeaders, tile, tileLayer);
+        // override for workspace specific services
+        tmpHeaders.put(
+                "geowebcache-layer",
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName());
         HttpHeaders headers = new HttpHeaders();
         tmpHeaders.forEach((k, v) -> headers.add(k, v));
         // content type and disposition
@@ -336,7 +347,11 @@ public class TilesService {
             @PathVariable(name = "tileCol") long tileCol,
             TileLayer tileLayer,
             ConveyorTile tile) {
-        return tileLayer.getName()
+        String layerName =
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName();
+        return layerName
                 + "_"
                 + getExternalZIndex(tileMatrixSetId, tileMatrix, tileLayer)
                 + "_"

@@ -23,7 +23,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -51,7 +50,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
 
         // links
         Collection<MediaType> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+                APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
         String baseUrl = APIRequestInfo.get().getBaseURL();
         for (MediaType format : formats) {
             String apiUrl =

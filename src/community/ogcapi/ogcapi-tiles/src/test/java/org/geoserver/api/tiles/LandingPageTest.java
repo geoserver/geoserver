@@ -105,9 +105,8 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testLandingPageHTMLInWorkspace() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("sf/ogc/features?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("sf/ogc/tiles?f=html");
         // check a couple of links
         assertEquals(
                 "http://localhost:8080/geoserver/sf/ogc/tiles/collections?f=text%2Fhtml",

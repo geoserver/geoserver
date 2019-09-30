@@ -33,7 +33,7 @@
   </bean>
 
   <bean id="apiLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
-    <constructor-arg value="api"/>
+    <constructor-arg value="ogc"/>
   </bean>
   
   <!-- The api dispatcher -->

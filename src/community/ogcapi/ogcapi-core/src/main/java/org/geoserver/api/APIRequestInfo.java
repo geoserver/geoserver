@@ -55,10 +55,7 @@ public class APIRequestInfo {
         this.response = response;
 
         // http://host:port/appName
-        baseURL =
-                request.getRequestURL()
-                        .toString()
-                        .replace(request.getRequestURI(), request.getContextPath());
+        baseURL = ResponseUtils.baseURL(request);
     }
 
     /** Gets the base URL of the server, e.g. "http://localhost:8080/geoserver" */

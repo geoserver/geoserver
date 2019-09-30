@@ -32,7 +32,7 @@ public class StyleDocument extends AbstractDocument {
 
     public StyleDocument(StyleInfo style) {
         this.style = style;
-        this.id = NCNameResourceCodec.encode(style);
+        this.id = style.prefixedName();
         try {
             this.title =
                     Optional.ofNullable(style.getStyle().getDescription())

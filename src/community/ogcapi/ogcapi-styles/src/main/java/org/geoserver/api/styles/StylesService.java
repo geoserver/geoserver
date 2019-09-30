@@ -28,7 +28,6 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
@@ -214,8 +213,8 @@ public class StylesService {
     }
 
     private StyleInfo getStyleInfo(String styleId, boolean failIfNotFound) {
-        List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
-        if (styles == null || styles.isEmpty()) {
+        StyleInfo style = geoServer.getCatalog().getStyleByName(styleId);
+        if (style == null) {
             if (failIfNotFound) {
                 throw new APIException(
                         "StyleNotFound", "Could not locate style " + styleId, HttpStatus.NOT_FOUND);
@@ -223,14 +222,7 @@ public class StylesService {
                 return null;
             }
         }
-        if (styles.size() > 1) {
-            throw new RestException(
-                    "More than one style can be matched to "
-                            + styleId
-                            + " please contact the service administrator about this",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return styles.get(0);
+        return style;
     }
 
     public void writeNativeToResponse(

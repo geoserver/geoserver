@@ -43,7 +43,7 @@ public class StylesTest extends StylesTestSupport {
                         "raster",
                         "generic",
                         "Default",
-                        "ws__NamedPlaces",
+                        "ws:NamedPlaces",
                         "PolygonComment",
                         "cssSample"));
 

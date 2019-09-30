@@ -9,7 +9,6 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIBuilder;
 import org.geoserver.catalog.Catalog;
 
@@ -38,7 +37,7 @@ public class StylesAPIBuilder extends OpenAPIBuilder<StylesServiceInfo> {
         List<String> validStyleIds =
                 catalog.getStyles()
                         .stream()
-                        .map(si -> NCNameResourceCodec.encode(si))
+                        .map(si -> si.prefixedName())
                         .collect(Collectors.toList());
         styleId.getSchema().setEnum(validStyleIds);
 

@@ -7,7 +7,6 @@ package org.geoserver.api.styles;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OGCApiTestSupport;
 import org.geoserver.data.test.MockData;
 import org.junit.Test;
@@ -20,11 +19,7 @@ public class CollectionCallbackIntegrationTest
     public void testFeatureCollectionCallback() throws Exception {
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/"
-                                + NCNameResourceCodec.encode(
-                                        MockData.BASIC_POLYGONS.getPrefix(),
-                                        MockData.BASIC_POLYGONS.getLocalPart()),
-                        200);
+                        "ogc/features/collections/" + getLayerId(MockData.BASIC_POLYGONS), 200);
 
         // the collection shows links to the styles API
         // concentrate on one and check title and links

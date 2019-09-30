@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.api.AbstractDocument;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
@@ -59,7 +58,7 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
     public StyleMetadataDocument(StyleInfo si, GeoServer gs, SampleDataSupport sampleDataSupport)
             throws IOException {
         this.sampleDataSupport = sampleDataSupport;
-        this.id = NCNameResourceCodec.encode(si);
+        this.id = si.prefixedName();
         StyledLayerDescriptor sld = si.getSLD();
         Optional<StyleMetadataInfo> styleMetadata =
                 Optional.ofNullable(

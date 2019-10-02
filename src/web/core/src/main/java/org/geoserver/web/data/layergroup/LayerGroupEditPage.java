@@ -130,7 +130,8 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             // JD: don't need this, this is validated at the catalog level
             // name.add(new GroupNameValidator());
             add(name);
-
+            add(new CheckBox("enabled"));
+            add(new CheckBox("advertised"));
             final DropDownChoice<LayerGroupInfo.Mode> modeChoice =
                     new DropDownChoice<LayerGroupInfo.Mode>(
                             "mode", new LayerGroupModeModel(), new LayerGroupModeChoiceRenderer());

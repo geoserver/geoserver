@@ -98,13 +98,6 @@ public interface LayerInfo extends PublishedInfo {
     void setLegend(LegendInfo legend);
 
     /**
-     * Flag indicating wether the layer is enabled or not.
-     *
-     * @uml.property name="enabled"
-     */
-    boolean isEnabled();
-
-    /**
      * Derived property indicating whether both this LayerInfo and its ResourceInfo are enabled.
      *
      * <p>Note this is a derived property and hence not part of the model. Consider it equal to
@@ -115,13 +108,6 @@ public interface LayerInfo extends PublishedInfo {
      * @see ResourceInfo#enabled()
      */
     boolean enabled();
-
-    /**
-     * Sets the flag indicating wether the layer is enabled or not.
-     *
-     * @uml.property name="enabled"
-     */
-    void setEnabled(boolean enabled);
 
     /**
      * Sets the queryable status
@@ -154,18 +140,6 @@ public interface LayerInfo extends PublishedInfo {
      * @return Returns {@code true} for opaque layer, {@code false} for transparent.
      */
     boolean isOpaque();
-    /**
-     * Returns true if the layer existence should be advertised (true by default, unless otherwise
-     * set)
-     */
-    boolean isAdvertised();
-
-    /**
-     * Set to true if the layer should be advertised, false otherwise
-     *
-     * @param advertised
-     */
-    void setAdvertised(boolean advertised);
 
     /**
      * The default WMS interpolation method.

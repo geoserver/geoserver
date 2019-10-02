@@ -189,7 +189,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
         // do not go and check every layer if the request is not a GetCapabilities
         Request request = Dispatcher.REQUEST.get();
-        if (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest())) {
+        if (request == null || (!"GetCapabilities".equalsIgnoreCase(request.getRequest()))) {
             return group;
         }
 
@@ -197,6 +197,9 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         final List<StyleInfo> styles = group.getStyles();
         final List<PublishedInfo> filteredLayers = new ArrayList<>();
         final List<StyleInfo> filteredStyles = new ArrayList<>();
+        if (!group.isAdvertised()) {
+            return null; // new AdvertisedLayerGroup(group, filteredLayers, filteredStyles);
+        }
         for (int i = 0; i < layers.size(); i++) {
             PublishedInfo p = layers.get(i);
             StyleInfo style = (styles != null && styles.size() > i) ? styles.get(i) : null;

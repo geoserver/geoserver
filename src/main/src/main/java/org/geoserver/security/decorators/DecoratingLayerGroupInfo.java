@@ -135,6 +135,26 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
     }
 
     @Override
+    public boolean isEnabled() {
+        return delegate.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        delegate.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isAdvertised() {
+        return delegate.isAdvertised();
+    }
+
+    @Override
+    public void setAdvertised(boolean advertised) {
+        delegate.setAdvertised(advertised);
+    }
+
+    @Override
     public void setWorkspace(WorkspaceInfo workspace) {
         delegate.setWorkspace(workspace);
     }

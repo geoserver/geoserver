@@ -1305,7 +1305,11 @@ public class ResourcePool {
             CoordinateReferenceSystem nativeCRS =
                     gd != null ? gd.getCoordinateReferenceSystem() : null;
 
-            if (ppolicy == ProjectionPolicy.NONE && nativeCRS != null) {
+            if (ppolicy == ProjectionPolicy.NONE
+                    && info.getNativeCRS() != null
+                    && info.getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null)
+                resultCRS = info.getNativeCRS();
+            else if (ppolicy == ProjectionPolicy.NONE && nativeCRS != null) {
                 resultCRS = nativeCRS;
             } else {
                 resultCRS = getCRS(info.getSRS());

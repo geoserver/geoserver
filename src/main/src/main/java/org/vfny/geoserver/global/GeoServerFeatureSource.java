@@ -452,7 +452,17 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             // the native one usually, but it's the declared on in the force case (since in
             // that case we completely ignore the native one)
             CoordinateReferenceSystem nativeCRS = geom.getCoordinateReferenceSystem();
-            if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
+
+            if (srsHandling == ProjectionPolicy.NONE
+                    && metadata.get(FeatureTypeInfo.OTHER_SRS) != null) {
+                // a feature type with multiple native srs (cascaded feature from WFS-NG or
+                // WMSStore)
+                // and policy is set to keep native
+                // do not re-project at query
+                defaultCRS = source.getInfo().getCRS();
+                query.setCoordinateSystem(declaredCRS);
+                return query;
+            } else if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
                 defaultCRS = declaredCRS;
                 nativeFeatureType = FeatureTypes.transform(nativeFeatureType, declaredCRS);
             } else if (srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED) {

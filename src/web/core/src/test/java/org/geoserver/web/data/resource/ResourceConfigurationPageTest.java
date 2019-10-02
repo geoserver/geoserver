@@ -17,6 +17,7 @@ import static org.geotools.gce.imagemosaic.ImageMosaicFormat.EXCESS_GRANULE_REMO
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.MERGE_BEHAVIOR;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -355,8 +356,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                         getClass().getResourceAsStream("/featuretype.xml"),
                         FeatureTypeInfoImpl.class);
         ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        final String actualNativeSRS = ftInfo.getSRS();
         getCatalog().add(ftInfo);
-
         // setting mock feature type as resource of Layer from Test Data
         LayerInfo layerInfo = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
         layerInfo.setResource(ftInfo);
@@ -366,19 +367,37 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         RetypingDataStore retypingDS = (RetypingDataStore) dac;
         WFSDataStore wfsDS = (WFSDataStore) retypingDS.getWrapped();
         wfsDS.getWfsClient().setHttpClient(client);
-
         // now begins the test
         // page should show additional SRS in WFS cap document
         login();
         // render page for a layer with WFS-NG resource
         tester.startPage(new ResourceConfigurationPage(layerInfo, false));
-        String value = tester.getTagById("otherSRS").getValue();
-        System.out.println(value);
-        logout();
 
-        String expected =
-                "Other supported Formats Found in Remote WFS Resource:\n\nEPSG:4326,EPSG:3857";
-        assertTrue(expected.equalsIgnoreCase(value));
+        // click the FIND button next to Native SRS text field to open SRS selection popup
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:find", true);
+
+        // verify Layer`s resource is updated with metadata
         assertNotNull(layerInfo.getResource().getMetadata().get(FeatureTypeInfo.OTHER_SRS));
+
+        // click first item in SRS (4326)
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
+                true);
+
+        // assert that native SRS has changed from EPSG:26713 to EPSG:4326
+        String newNativeSRS =
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
+                        .getDefaultModelObjectAsString();
+        assertFalse(newNativeSRS.equalsIgnoreCase(actualNativeSRS));
+
+        // click submit and go back to LayerPage
+        FormTester ft = tester.newFormTester("publishedinfo");
+        ft.submit("save");
+
+        // check that native SRS is updated in catalog after submitting the page
+        String savedSRS = getCatalog().getLayerByName(layerInfo.getName()).getResource().getSRS();
+        assertFalse(savedSRS.equalsIgnoreCase(actualNativeSRS));
     }
 }

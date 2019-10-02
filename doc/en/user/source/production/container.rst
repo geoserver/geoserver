@@ -47,7 +47,7 @@ For more information about JVM configuration, see the article `Performance tunin
       uintx InitialHeapSize   := 134217728     {product}
       uintx MaxHeapSize       := 792723456     {product}
 
-   Which when converted from bytes matches ``128`` MB initial heap size, and ``512`` MB max heap size.
+   Which when converted from bytes matches ``128`` MB initial heap size, and ``756`` MB max heap size.
    
    Check defaults for your hardware using ``java -XX:+PrintFlagsFinal -version | grep HeapSize``::
 

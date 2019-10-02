@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -46,7 +45,7 @@ public class Stylesheet extends AbstractDocument implements Serializable {
             this.tilingScheme = "http://www.opengis.net/def/wkss/OGC/1.0/GoogleMapsCompatible";
         }
         String baseURL = APIRequestInfo.get().getBaseURL();
-        String styleId = NCNameResourceCodec.encode(info);
+        String styleId = info.prefixedName();
         String mimeType = handler.mimeType(version);
         String url =
                 ResponseUtils.buildURL(

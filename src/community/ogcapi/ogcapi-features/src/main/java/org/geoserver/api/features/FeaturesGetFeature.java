@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.geoserver.api.APIRequestInfo;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -64,7 +63,7 @@ class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
                             + typeName);
             return;
         }
-        String collectionName = NCNameResourceCodec.encode(typeInfo);
+        String collectionName = typeInfo.prefixedName();
         String itemsPath =
                 "ogc/features/collections/" + ResponseUtils.urlEncode(collectionName) + "/items";
 

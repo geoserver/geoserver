@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -127,7 +126,7 @@ public class CollectionsTest extends TilesTestSupport {
         // go and check a specific collection title and description
         FeatureTypeInfo basicPolygons =
                 getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
-        String basicPolygonsName = NCNameResourceCodec.encode(basicPolygons);
+        String basicPolygonsName = basicPolygons.prefixedName().replace(":", "__");
         assertEquals(
                 BASIC_POLYGONS_TITLE, document.select("#" + basicPolygonsName + "_title").text());
         assertEquals(

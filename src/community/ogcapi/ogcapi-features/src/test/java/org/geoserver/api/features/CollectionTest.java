@@ -28,10 +28,10 @@ public class CollectionTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionJson() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json = getAsJSONPath("ogc/features/collections/" + roadSegments, 200);
 
-        assertEquals("cite__RoadSegments", json.read("$.id", String.class));
+        assertEquals("cite:RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
         assertEquals(-180, json.read("$.extent.spatial[0]", Double.class), 0d);
         assertEquals(-90, json.read("$.extent.spatial[1]", Double.class), 0d);
@@ -50,7 +50,7 @@ public class CollectionTest extends FeaturesTestSupport {
             // check title and rel.
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
-            assertEquals("cite__RoadSegments items as " + format, item.get("title"));
+            assertEquals("cite:RoadSegments items as " + format, item.get("title"));
             assertEquals("item", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
@@ -110,14 +110,14 @@ public class CollectionTest extends FeaturesTestSupport {
         Document dom =
                 getAsDOM(
                         "ogc/features/collections/"
-                                + getEncodedName(MockData.ROAD_SEGMENTS)
+                                + getLayerId(MockData.ROAD_SEGMENTS)
                                 + "?f=application/xml");
         print(dom);
         String expected =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?f=application%2Fjson";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?f=application%2Fjson";
         XMLAssert.assertXpathEvaluatesTo(
                 expected,
-                "//wfs:Collection[wfs:id='cite__RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
+                "//wfs:Collection[wfs:id='cite:RoadSegments']/atom:link[@atom:type='application/json']/@atom:href",
                 dom);
     }
 
@@ -126,7 +126,7 @@ public class CollectionTest extends FeaturesTestSupport {
         String yaml =
                 getAsString(
                         "ogc/features/collections/"
-                                + getEncodedName(MockData.ROAD_SEGMENTS)
+                                + getLayerId(MockData.ROAD_SEGMENTS)
                                 + "?f=application/x-yaml");
         // System.out.println(yaml);
     }

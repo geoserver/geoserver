@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -85,7 +84,7 @@ public class CollectionsTest extends ImagesTestSupport {
 
         // go and check a specific collection title and description
         CoverageInfo waterTemp = getCatalog().getCoverageByName(getLayerId(WATER_TEMP));
-        String waterTempName = NCNameResourceCodec.encode(waterTemp);
+        String waterTempName = waterTemp.prefixedName().replace(":", "__");
         assertEquals(WATER_TEMP_TITLE, document.select("#" + waterTempName + "_title").text());
         assertEquals(
                 WATER_TEMP_DESCRIPTION,

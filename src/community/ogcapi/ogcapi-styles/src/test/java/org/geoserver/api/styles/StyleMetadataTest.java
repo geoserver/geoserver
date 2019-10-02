@@ -164,7 +164,7 @@ public class StyleMetadataTest extends StylesTestSupport {
 
         // sample data, vector items
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__BuildingsLabels/items?f=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildingsLabels/items?f=application%2Fgeo%2Bjson",
                 getSingle(
                         json,
                         "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'data' && @.type == 'application/geo+json')].href"));

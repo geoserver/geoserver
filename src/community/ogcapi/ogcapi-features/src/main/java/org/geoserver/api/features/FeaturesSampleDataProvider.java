@@ -8,10 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.SampleDataProvider;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,10 +26,12 @@ public class FeaturesSampleDataProvider implements SampleDataProvider {
     @Override
     public List<Link> getSampleData(LayerInfo layer) {
         if (layer.getResource() instanceof ResourceInfo && service.getService().isEnabled()) {
-            String resourceId = NCNameResourceCodec.encode(layer.getResource());
+            String resourceId = layer.getResource().prefixedName();
             return APIRequestInfo.get()
                     .getLinksFor(
-                            "ogc/features/collections/" + resourceId + "/items",
+                            "ogc/features/collections/"
+                                    + ResponseUtils.urlEncode(resourceId)
+                                    + "/items",
                             FeaturesResponse.class,
                             resourceId + " items as ",
                             "data",

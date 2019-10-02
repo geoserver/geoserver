@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
@@ -29,14 +28,6 @@ import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OGCApiTestSupport extends GeoServerSystemTestSupport {
-
-    protected String getEncodedName(QName qName) {
-        if (qName.getPrefix() != null) {
-            return qName.getPrefix() + "__" + qName.getLocalPart();
-        } else {
-            return qName.getLocalPart();
-        }
-    }
 
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse(path, expectedHttpCode);

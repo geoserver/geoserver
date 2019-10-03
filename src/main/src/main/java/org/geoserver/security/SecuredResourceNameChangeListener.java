@@ -9,12 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogException;
-import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
@@ -50,7 +45,31 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
 
     @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
-        // ignore
+        String resourceWorkSpaceName = null;
+        CatalogInfo resourceInfo = event.getSource();
+        String resourceName = null;
+        if (resourceInfo instanceof LayerInfo) {
+            resourceWorkSpaceName =
+                    ((LayerInfo) resourceInfo).getResource().getStore().getWorkspace().getName();
+            resourceName = ((LayerInfo) resourceInfo).getName();
+        } else if (event.getSource() instanceof LayerGroupInfo) {
+            resourceWorkSpaceName = ((LayerGroupInfo) resourceInfo).getWorkspace().getName();
+            resourceName = ((LayerGroupInfo) resourceInfo).getName();
+        }
+
+        if (resourceWorkSpaceName != null && resourceInfo != null) {
+            // if a security rule exists for the layer whose name has been changed
+            if (layerHasSecurityRule(resourceWorkSpaceName, resourceName)) {
+                LOGGER.info(
+                        String.format(
+                                "Removing Security Rules for removed layer: %s", resourceName));
+
+                List<DataAccessRule> rulesToRemove = getDataAccessRule(resourceInfo, resourceName);
+                for (DataAccessRule r : rulesToRemove) {
+                    dao.removeRule(r);
+                }
+            }
+        }
     }
 
     @Override
@@ -159,6 +178,12 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
             } else if (catalogInfo instanceof LayerGroupInfo) {
                 LayerGroupInfo resourceInfo = (LayerGroupInfo) catalogInfo;
                 String workspaceName = resourceInfo.getWorkspace().getName();
+                if (rule.getRoot().equalsIgnoreCase(workspaceName)
+                        && rule.getLayer().equalsIgnoreCase(oldName)) rulesToUpdate.add(rule);
+            } else if (catalogInfo instanceof LayerInfo) {
+                LayerInfo resourceInfo = (LayerInfo) catalogInfo;
+                String workspaceName =
+                        resourceInfo.getResource().getStore().getWorkspace().getName();
                 if (rule.getRoot().equalsIgnoreCase(workspaceName)
                         && rule.getLayer().equalsIgnoreCase(oldName)) rulesToUpdate.add(rule);
             }

@@ -4,7 +4,10 @@
  */
 package org.geoserver.security;
 
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.opengis.filter.Filter;
@@ -42,14 +45,6 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
     public boolean hideLayer(LayerInfo layer) {
         if (shouldApplyFilter()) {
             return !layer.enabled();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
-        if (shouldApplyFilter()) {
-            return !layerGroup.isEnabled();
         }
         return false;
     }

@@ -156,7 +156,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
-        System.out.println(response.getHeader("Location"));
+        // System.out.println(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
 
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");

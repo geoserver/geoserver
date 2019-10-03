@@ -74,12 +74,6 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     }
 
     @Override
-    protected String getLogConfiguration() {
-        // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
-        return super.getLogConfiguration();
-    }
-
-    @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // PNGJ has bugs with band selected data, fall back on JDK
         super.onSetUp(testData);

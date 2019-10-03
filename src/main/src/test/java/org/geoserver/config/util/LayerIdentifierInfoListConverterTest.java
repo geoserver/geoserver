@@ -64,7 +64,7 @@ public class LayerIdentifierInfoListConverterTest {
         list.add(id2);
 
         String actual = LayerIdentifierInfoListConverter.toString(list);
-        System.out.println(actual);
+        // System.out.println(actual);
         String expected =
                 "[{\"authority\":\"auth1\",\"identifier\":\"IDENTIFIER_1\"},{\"authority\":\"auth2\",\"identifier\":\"IDENTIFIER_2\"}]";
         assertEquals(expected, actual);

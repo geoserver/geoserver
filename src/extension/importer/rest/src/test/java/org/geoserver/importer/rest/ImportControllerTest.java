@@ -351,7 +351,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
         res = dispatch(req);
         assertEquals(200, res.getStatus());
-        System.out.println(res.getContentAsString());
+        // System.out.println(res.getContentAsString());
         assertEquals("text/html", res.getContentType());
     }
 

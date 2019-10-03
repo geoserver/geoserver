@@ -63,7 +63,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         WPSExecuteTransformer tx = new WPSExecuteTransformer();
         tx.setIndentation(2);
         String xml = tx.transform(executeBuffer);
-        System.out.println(xml);
+        // System.out.println(xml);
 
         String expected =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -326,8 +326,8 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
                 SAXParseException ex = (SAXParseException) e.next();
-                System.out.println(
-                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                // System.out.println(
+                //       ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }

@@ -36,6 +36,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     /** This property in 2.2.x series is stored under the metadata map with key 'abstract'. */
     protected String abstractTxt;
 
+    protected Boolean enabled;
+
+    protected Boolean advertised;
+
     protected WorkspaceInfo workspace;
     protected String path;
     protected LayerInfo rootLayer;
@@ -52,6 +56,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
 
     protected ReferencedEnvelope bounds;
+
     protected MetadataMap metadata = new MetadataMap();
 
     protected AttributionInfo attribution;
@@ -126,6 +131,17 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
 
     @Override
+    public boolean isEnabled() {
+        if (this.enabled != null) return this.enabled;
+        else return true;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
     public boolean isQueryDisabled() {
         return queryDisabled != null ? queryDisabled.booleanValue() : false;
     }
@@ -146,6 +162,20 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     @Override
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public boolean isAdvertised() {
+        if (this.advertised != null) {
+            return advertised;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void setAdvertised(boolean advertised) {
+        this.advertised = advertised;
     }
 
     @Override

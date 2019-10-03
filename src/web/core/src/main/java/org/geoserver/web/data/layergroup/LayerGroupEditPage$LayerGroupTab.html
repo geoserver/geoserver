@@ -6,6 +6,14 @@
          <label for="name"><wicket:message key="name">Name</wicket:message></label>
          <input wicket:id="name" id="name" class="text"/>
        </li>
+       <li class="choiceItem">
+         <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
+         <label for="basic-enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
+       </li>
+       <li class="choiceItem">
+         <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
+         <label for="basic-advertised"><wicket:message key="advertised">Advertised</wicket:message></label>
+       </li>
        <li>
          <label for="title"><wicket:message key="layerGroupTitle">Title</wicket:message></label>
          <input wicket:id="title" id="title" class="text"/>

@@ -584,6 +584,22 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     }
 
     @Test
+    public void testDisabledLayerGroup() throws Exception {
+        CatalogFilterAccessManager manager = new CatalogFilterAccessManager();
+        buildManager("publicRead.properties", manager);
+        manager.setCatalogFilters(Arrays.asList(new DisabledResourceFilter()));
+
+        assertFalse(namedTreeB.isEnabled());
+        Request request = org.easymock.EasyMock.createNiceMock(Request.class);
+        org.easymock.EasyMock.expect(request.getRequest()).andReturn("GetCapabilities").anyTimes();
+        org.easymock.EasyMock.expect(request.getService()).andReturn("WMS").anyTimes();
+        org.easymock.EasyMock.replay(request);
+        Dispatcher.REQUEST.set(request);
+        // buildManager("lockedLayerInLayerGroup.properties");
+        assertNull(sc.getLayerGroupByName(namedTreeB.getName()));
+    }
+
+    @Test
     public void testEoLayerGroupMustBeHiddenIfItsRootLayerIsHidden() throws Exception {
         LayerGroupInfo eoRoadsLayerGroup =
                 buildEOLayerGroup("eoRoadsLayerGroup", roadsLayer, lineStyle, toppWs, statesLayer);

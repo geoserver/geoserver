@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,6 +73,10 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.AccessMode;
+import org.geoserver.security.SecuredResourceNameChangeListener;
+import org.geoserver.security.impl.DataAccessRule;
+import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
@@ -1527,6 +1532,35 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testRemoveLayerAndAssociatedDataRules() throws IOException {
+        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+        CatalogListener listener = new SecuredResourceNameChangeListener(catalog, dao);
+        addLayer();
+        assertEquals(1, catalog.getLayers().size());
+
+        String workspaceName = l.getResource().getStore().getWorkspace().getName();
+        addLayerAccessRule(workspaceName, l.getName(), AccessMode.WRITE, "*");
+        assertTrue(layerHasSecurityRule(dao, workspaceName, l.getName()));
+        catalog.remove(l);
+        assertTrue(catalog.getLayers().isEmpty());
+        assertFalse(layerHasSecurityRule(dao, workspaceName, l.getName()));
+        catalog.removeListener(listener);
+    }
+
+    private boolean layerHasSecurityRule(
+            DataAccessRuleDAO dao, String workspaceName, String layerName) {
+
+        List<DataAccessRule> rules = dao.getRules();
+
+        for (DataAccessRule rule : rules) {
+            if (rule.getRoot().equalsIgnoreCase(workspaceName)
+                    && rule.getLayer().equalsIgnoreCase(layerName)) return true;
+        }
+
+        return false;
+    }
+
+    @Test
     public void testModifyLayer() {
         addLayer();
 
@@ -2147,6 +2181,30 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertNotNull(catalog.getLayerGroupByName(ws.getName() + ":layerGroup2"));
         assertNotNull(catalog.getLayerGroupByName(ws, "layerGroup2"));
         assertNull(catalog.getLayerGroupByName("cite", "layerGroup2"));
+    }
+
+    @Test
+    public void testRemoveLayerGroupAndAssociatedDataRules() throws IOException {
+        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+        CatalogListener listener = new SecuredResourceNameChangeListener(catalog, dao);
+        addLayer();
+        CatalogFactory factory = catalog.getFactory();
+        LayerGroupInfo lg = factory.createLayerGroup();
+        String lgName = "MyFakeWorkspace:layerGroup";
+        lg.setName(lgName);
+        lg.setWorkspace(ws);
+        lg.getLayers().add(l);
+        lg.getStyles().add(s);
+        catalog.add(lg);
+        String workspaceName = ws.getName();
+        assertNotNull(catalog.getLayerGroupByName(workspaceName, lg.getName()));
+
+        addLayerAccessRule(workspaceName, lg.getName(), AccessMode.WRITE, "*");
+        assertTrue(layerHasSecurityRule(dao, workspaceName, lg.getName()));
+        catalog.remove(lg);
+        assertNull(catalog.getLayerGroupByName(workspaceName, lg.getName()));
+        assertFalse(layerHasSecurityRule(dao, workspaceName, lg.getName()));
+        catalog.removeListener(listener);
     }
 
     @Test

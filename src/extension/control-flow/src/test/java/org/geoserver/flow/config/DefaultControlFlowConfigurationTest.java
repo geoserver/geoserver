@@ -64,7 +64,7 @@ public class DefaultControlFlowConfigurationTest {
 
         assertEquals(10, controllers.size());
 
-        System.out.println(controllers);
+        // System.out.println(controllers);
 
         assertTrue(controllers.get(0) instanceof RateFlowController);
         RateFlowController rfc = (RateFlowController) controllers.get(0);

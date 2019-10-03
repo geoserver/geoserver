@@ -70,12 +70,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         return true;
     }
 
-    @Override
-    protected String getLogConfiguration() {
-        // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
-        return super.getLogConfiguration();
-    }
-
     @Before
     public void cleanupTestProduct() throws IOException {
         DataStoreInfo ds = getCatalog().getDataStoreByName("oseo");

@@ -420,7 +420,7 @@ public class JDBCOpenSearchAccessTest {
 
     @Test
     public void testCustomProductClassGranules() throws Exception {
-        System.out.println(osAccess.getNames());
+        // System.out.println(osAccess.getNames());
         FeatureSource<FeatureType, Feature> featureSource =
                 osAccess.getFeatureSource(new NameImpl(TEST_NAMESPACE, "GS_TEST"));
         assertEquals(0, featureSource.getCount(Query.ALL));

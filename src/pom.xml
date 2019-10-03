@@ -1518,7 +1518,7 @@
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
      <excludedGroups>${test.excludedGroups}</excludedGroups>
-     <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions --illegal-access=debug</argLine>
+     <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions --illegal-access=debug -Dfile.encoding=UTF-8</argLine>
     </configuration>
    </plugin>
 

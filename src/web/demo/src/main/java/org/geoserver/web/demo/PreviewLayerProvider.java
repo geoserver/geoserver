@@ -219,8 +219,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         Filter enabledFilter = Predicates.equal("resource.enabled", true);
         Filter storeEnabledFilter = Predicates.equal("resource.store.enabled", true);
         Filter advertisedFilter = Predicates.equal("resource.advertised", true);
-        Filter enabledLayerGroup = Predicates.equal("enabled", true);
-        Filter advertisedLayerGroup = Predicates.equal("advertised", true);
+
         // return only layer groups that are not containers
         Filter nonContainerGroup =
                 Predicates.or(
@@ -233,12 +232,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         Filter layerFilter =
                 Predicates.and(isLayerInfo, enabledFilter, storeEnabledFilter, advertisedFilter);
         // Filter for the LayerGroups
-        Filter layerGroupFilter =
-                Predicates.and(
-                        isLayerGroupInfo,
-                        nonContainerGroup,
-                        enabledLayerGroup,
-                        advertisedLayerGroup);
+        Filter layerGroupFilter = Predicates.and(isLayerGroupInfo, nonContainerGroup);
         // Or filter for merging them
         Filter orFilter = Predicates.or(layerFilter, layerGroupFilter);
         // And between the new filter and the initial filter

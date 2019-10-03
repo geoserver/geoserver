@@ -22,15 +22,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     public static Property<LayerGroupInfo> WORKSPACE =
             new BeanProperty<LayerGroupInfo>("workspace", "workspace.name");
 
-    public static Property<LayerGroupInfo> ENABLED =
-            new AbstractProperty<LayerGroupInfo>("Enabled") {
-
-                public Boolean getPropertyValue(LayerGroupInfo item) {
-                    return Boolean.valueOf(item.isEnabled());
-                }
-            };
-
-    static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE, ENABLED);
+    static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
 
     protected LayerGroupProviderFilter groupFilter = null;
 

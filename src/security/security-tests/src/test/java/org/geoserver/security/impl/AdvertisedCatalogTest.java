@@ -56,18 +56,6 @@ public class AdvertisedCatalogTest extends AbstractAuthorizationTest {
     }
 
     @Test
-    public void testNotAdvertisedLayerGroup() throws Exception {
-        AdvertisedCatalog sc = new AdvertisedCatalog(catalog);
-        assertFalse(namedTreeC.isAdvertised());
-        assertNull(sc.getLayerGroupByName(namedTreeC.getName()));
-        /*assertTrue(lgA.getLayers().size()>0);
-        LayerGroupInfo lgB = sc.getLayerGroupByName("namedTreeB");
-        assertFalse(lgB.isAdvertised());
-        assertFalse(lgB.getLayers().size()>0);*/
-
-    }
-
-    @Test
     public void testLayerSpecificCapabilities() throws Exception {
         AdvertisedCatalog sc = new AdvertisedCatalog(catalog);
         Dispatcher.REQUEST.get().setContext("topp/states");

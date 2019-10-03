@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2"
+            xmlns:tiger="http://www.census.gov" xmlns:wfs="http://www.opengis.net/wfs/2.0"
+            elementFormDefault="qualified" targetNamespace="http://www.census.gov">
+  <xsd:import namespace="http://www.opengis.net/gml/3.2"
+              schemaLocation="http://localhost:8061/geoserver/schemas/gml/3.2.1/gml.xsd"/>
+  <xsd:complexType name="tiger_roadsType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="0" name="the_geom" nillable="true" type="gml:MultiCurvePropertyType"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="ænd" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="øst" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="nøj" nillable="true" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="tiger_roads" substitutionGroup="gml:AbstractFeature" type="tiger:tiger_roadsType"/>
+</xsd:schema>

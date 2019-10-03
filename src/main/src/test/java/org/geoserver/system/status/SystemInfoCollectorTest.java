@@ -25,12 +25,13 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
         final Metrics collected = systemInfoCollector.retrieveAllSystemInfo();
         final List<MetricValue> metrics = collected.getMetrics();
         for (MetricValue m : metrics) {
-            if (m.getAvailable()) {
-                System.out.println(
-                        m.getName() + " IS available -> " + m.getValue() + " " + m.getUnit());
-            } else {
-                System.err.println(m.getName() + " IS NOT available");
-            }
+            //            if (m.getAvailable()) {
+            //                System.out.println(
+            //                        m.getName() + " IS available -> " + m.getValue() + " " +
+            // m.getUnit());
+            //            } else {
+            //                System.err.println(m.getName() + " IS NOT available");
+            //            }
             collector.checkThat(
                     "Metric for " + m.getName() + " available but value is not retrived",
                     (m.getAvailable() && !m.getValue().equals(BaseSystemInfoCollector.DEFAULT_VALUE)

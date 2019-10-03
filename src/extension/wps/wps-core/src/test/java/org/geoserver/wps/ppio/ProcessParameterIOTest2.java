@@ -28,6 +28,6 @@ public class ProcessParameterIOTest2 extends WPSTestSupport {
     public void testGetWFSByMimeType() {
         Parameter p = new Parameter<>("WFS", WFSPPIO.class);
         ProcessParameterIO ppio = ProcessParameterIO.find(p, null, "text/xml");
-        System.out.println(ppio);
+        // System.out.println(ppio);
     }
 }

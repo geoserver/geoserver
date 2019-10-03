@@ -77,7 +77,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
                         + JSONType.json;
 
         String result = getAsString(request);
-        System.out.println(result);
+        // System.out.println(result);
 
         checkJSONDescribeLayer(result, layer);
     }

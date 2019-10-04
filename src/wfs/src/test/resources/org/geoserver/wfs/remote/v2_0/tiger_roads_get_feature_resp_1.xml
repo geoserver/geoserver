@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection numberMatched="1" numberReturned="1" timeStamp="2019-09-16T11:21:07.322Z"
+                       xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:tiger="http://www.census.gov"
+                       xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.census.gov ${TIGER_ROADS_SCHEMA_LOCATION}">
+  <wfs:member>
+    <tiger:tiger_roads gml:id="tiger_roads.1">
+      <tiger:the_geom>
+        <gml:MultiCurve gml:id="tiger_roads.1.the_geom" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:curveMember>
+            <gml:LineString gml:id="tiger_roads.1.the_geom.1">
+              <gml:posList>40.73158 -73.999559 40.732188 -73.999079</gml:posList>
+              <gml:posList>-73.999559 40.73158 -73.999079 40.732188</gml:posList>
+            </gml:LineString>
+          </gml:curveMember>
+        </gml:MultiCurve>
+      </tiger:the_geom>
+      <tiger:CFCC>A41</tiger:CFCC>
+      <tiger:NAME>Washington Sq W</tiger:NAME>
+    </tiger:tiger_roads>
+  </wfs:member>
+</wfs:FeatureCollection>

@@ -16,7 +16,7 @@ import static org.geoserver.wms.capabilities.CapabilityUtil.validateLegendInfo;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1078,11 +1078,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle DataURLs
             handleDataList(layer.getResource().getDataLinks());
 
-            // if WMSLayer or WMTS layer do nothing for the moment, we may want to list the set of
+            // if WMTS layer do nothing for the moment, we may want to list the set of
             // cascaded named styles
             // in the future (when we add support for that)
-            if (!(layer.getResource() instanceof WMSLayerInfo)
-                    && !(layer.getResource() instanceof WMTSLayerInfo)) {
+            if (!(layer.getResource() instanceof WMTSLayerInfo)) {
                 // add the layer style
                 start("Style");
 
@@ -1506,7 +1505,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
                 WorkspaceInfo styleWs = sampleStyle.getWorkspace();
                 String legendUrl;
-                if (styleWs != null) {
+
+                if (layer.getResource() instanceof WMSLayerInfo)
+                    legendUrl = legend.getOnlineResource();
+                else if (styleWs != null) {
                     legendUrl =
                             buildURL(
                                     request.getBaseUrl(),

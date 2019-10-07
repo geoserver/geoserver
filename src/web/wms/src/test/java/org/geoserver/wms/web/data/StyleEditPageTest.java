@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,9 +42,12 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.wms.web.data.publish.WMSLayerConfigTest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.URLs;
@@ -110,10 +114,23 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         // Create a cascaded WMS Layer
         WMSStoreInfo wms = catalog.getStoreByName("sf", "wmsstore", WMSStoreInfo.class);
         if (wms == null) {
+
+            MockHttpClient wms11Client = new MockHttpClient();
+            URL wms11BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
+            URL capsDocument =
+                    WMSLayerConfigTest.class.getResource(
+                            "/org/geoserver/wms/web/data/publish/caps111.xml");
+            wms11Client.expectGet(
+                    new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                    new MockHttpResponse(capsDocument, "text/xml"));
+            String caps = wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
+            TestHttpClientProvider.bind(wms11Client, caps);
+
             CatalogBuilder cb = new CatalogBuilder(catalog);
             cb.setWorkspace(catalog.getWorkspaceByName("sf"));
             wms = cb.buildWMSStore("wmsstore");
-            wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+            wms.setCapabilitiesURL(caps);
+
             catalog.add(wms);
 
             WMSLayerInfo wmr = catalog.getFactory().createWMSLayer();

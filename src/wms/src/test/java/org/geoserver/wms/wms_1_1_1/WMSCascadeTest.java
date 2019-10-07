@@ -18,6 +18,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
@@ -89,6 +90,43 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         // print(dom);
 
         xpath.evaluate("//Layer[name='" + WORLD4326_110_NFI + "']", dom);
+    }
+
+    @Test
+    public void testCascadedSettings() throws Exception {
+
+        LayerInfo info = getCatalog().getLayerByName("roads_wms");
+        WMSLayerInfo wmsLayer = (WMSLayerInfo) info.getResource();
+        wmsLayer.setPrefferedFormat("image/jpeg");
+
+        String getMapRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers="
+                        + info.getName()
+                        + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png&styles=line1";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default remote style, correct image format
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
+
+        // below request should force geoserver to request in default format
+        String getMapUnsupportedRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers="
+                        + info.getName()
+                        + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&width=768&height=537&srs=EPSG:26713&Format=image/gif&styles=line1";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default forced remote style
+        // correct image format because gif is not part of cap doc
+        // the mock client is not expecting a remote request in image/gif
+        response = getAsImage(getMapUnsupportedRequest, "image/gif");
+        assertNotNull(response);
     }
 
     @Test

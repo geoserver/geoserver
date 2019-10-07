@@ -8,7 +8,13 @@ package org.geoserver.catalog.impl;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -562,7 +568,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             store.setCapabilitiesURL(capsURL.toExternalForm());
             cb.setStore(store);
             WMSLayerInfo layer = cb.buildWMSLayer("world4326");
-
+            layer.reset();
             // check the bbox has the proper axis order
             assertEquals("EPSG:4326", layer.getSRS());
             ReferencedEnvelope bbox = layer.getLatLonBoundingBox();
@@ -570,6 +576,9 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
+            assertTrue(!layer.availableFormats().isEmpty());
+            assertTrue(layer.getStyles().isEmpty());
+
         } finally {
             TestHttpClientProvider.endTest();
         }
@@ -600,6 +609,8 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
+            assertTrue(!layer.availableFormats().isEmpty());
+            assertTrue(layer.getStyles().isEmpty());
         } finally {
             TestHttpClientProvider.endTest();
         }
@@ -630,6 +641,8 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
+            assertTrue(!layer.availableFormats().isEmpty());
+            assertTrue(layer.getStyles().isEmpty());
         } finally {
             TestHttpClientProvider.endTest();
         }

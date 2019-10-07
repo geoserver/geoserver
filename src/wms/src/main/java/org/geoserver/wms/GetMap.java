@@ -9,11 +9,24 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.RenderedImageList;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -669,7 +682,26 @@ public class GetMap {
                     }
                 }
                 if (!merged) {
-                    WMSLayer Layer = new WMSLayer(wms, gt2Layer);
+                    WMSLayer Layer = null;
+
+                    String style = request.getStyles().get(i).getName();
+                    style = (style == null) ? "" : style;
+                    String imageFormat = request.getFormat();
+                    // if passed style does not exist in remote, throw exception
+                    if (!wmsLayer.isSelectedRemoteStyles(style))
+                        throw new IllegalArgumentException(
+                                "Unknown remote style "
+                                        + style
+                                        + " in cascaded layer "
+                                        + wmsLayer.getName()
+                                        + ", , re-configure the layer and WMS Store");
+
+                    // if the format is not selected then fall back to preffered
+                    if (!wmsLayer.isFormatValid(imageFormat))
+                        imageFormat = wmsLayer.getPrefferedFormat();
+
+                    Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+
                     Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }

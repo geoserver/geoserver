@@ -88,6 +88,37 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         getCatalog().add(wmsLayer);
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
+
+        // roads layer
+        WMSLayerInfo roadsWmsLayer = cb.buildWMSLayer("roads_wms_130");
+        roadsWmsLayer.setName("roads_wms_130");
+        roadsWmsLayer.reset();
+        roadsWmsLayer.setPrefferedFormat("image/jpeg");
+        getCatalog().add(roadsWmsLayer);
+        LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
+        getCatalog().add(wmsRaodsLayer);
+
+        // http://mock.test.geoserver.org/wms13
+        String mockPNGUrl =
+                wms13BaseURL
+                        + "?&SERVICE=WMS&LAYERS=roads_wms_130&CRS=EPSG:26713"
+                        + "&FORMAT=image%2Fpng&HEIGHT=90&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF"
+                        + "&REQUEST=GetMap&BBOX=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&WIDTH=180&STYLES=line1&VERSION=1.3.0";
+        String mockJpegUrl =
+                wms13BaseURL
+                        + "?&SERVICE=WMS&LAYERS=roads_wms_130&CRS=EPSG:26713"
+                        + "&FORMAT=image%2Fjpeg&HEIGHT=90&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF"
+                        + "&REQUEST=GetMap&BBOX=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&WIDTH=180&STYLES=line1&VERSION=1.3.0";
+
+        URL pngRoadsImage = WMSTestSupport.class.getResource("roads_wms.png");
+        URL gifRoadsImage = WMSTestSupport.class.getResource("roads_wms.gif");
+
+        wms13Client.expectGet(
+                new URL(mockPNGUrl), new MockHttpResponse(pngRoadsImage, "image/png"));
+        wms13Client.expectGet(
+                new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
     }
 
     private void setupWMS110Layer() throws MalformedURLException, IOException {
@@ -121,6 +152,39 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         getCatalog().add(wmsLayer);
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
+
+        // roads layer
+        WMSLayerInfo roadsWmsLayer = cb.buildWMSLayer("roads_wms");
+        roadsWmsLayer.setName("roads_wms");
+        roadsWmsLayer.reset();
+        roadsWmsLayer.setPrefferedFormat("image/jpeg");
+        getCatalog().add(roadsWmsLayer);
+        LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
+
+        getCatalog().add(wmsRaodsLayer);
+
+        // setting up mock response
+
+        String mockPNGUrl =
+                wms11BaseURL
+                        + "?SERVICE=WMS&LAYERS=roads_wms&FORMAT=image%2Fpng"
+                        + "&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF"
+                        + "&REQUEST=GetMap&BBOX=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&WIDTH=768&STYLES=line1&SRS=EPSG:26713&VERSION=1.1.1";
+        String mockJpegUrl =
+                wms11BaseURL
+                        + "?SERVICE=WMS&LAYERS=roads_wms&FORMAT=image%2Fjpeg"
+                        + "&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF"
+                        + "&REQUEST=GetMap&BBOX=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&WIDTH=768&STYLES=line1&SRS=EPSG:26713&VERSION=1.1.1";
+
+        URL pngRoadsImage = WMSTestSupport.class.getResource("roads_wms.png");
+        URL gifRoadsImage = WMSTestSupport.class.getResource("roads_wms.gif");
+
+        wms11Client.expectGet(
+                new URL(mockPNGUrl), new MockHttpResponse(pngRoadsImage, "image/png"));
+        wms11Client.expectGet(
+                new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
     }
 
     private void setupWMS110NfiLayer() throws MalformedURLException, IOException {

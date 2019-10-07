@@ -8,6 +8,8 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.DataLinkInfo;
@@ -17,10 +19,12 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.Layer;
+import org.geotools.styling.Style;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -245,5 +249,91 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     @Override
     public void setDisabledServices(List<String> disabledServices) {
         delegate.setDisabledServices(disabledServices);
+    }
+
+    @Override
+    public List<String> remoteStyles() { //
+        return delegate.remoteStyles();
+    }
+
+    @Override
+    public String getForcedRemoteStyle() {
+
+        return delegate.getForcedRemoteStyle();
+    }
+
+    @Override
+    public void setForcedRemoteStyle(String forcedRemoteStyle) {
+        delegate.setForcedRemoteStyle(forcedRemoteStyle);
+    }
+
+    @Override
+    public List<String> availableFormats() {
+        return delegate.availableFormats();
+    }
+
+    @Override
+    public Optional<Style> findRemoteStyleByName(String name) {
+        return delegate.findRemoteStyleByName(name);
+    }
+
+    @Override
+    public boolean isSelectedRemoteStyles(String name) {
+        return delegate.isSelectedRemoteStyles(name);
+    }
+
+    @Override
+    public Set<StyleInfo> getRemoteStyleInfos() {
+        return delegate.getRemoteStyleInfos();
+    }
+
+    @Override
+    public List<String> getSelectedRemoteFormats() {
+        return delegate.getSelectedRemoteFormats();
+    }
+
+    @Override
+    public void setSelectedRemoteFormats(List<String> selectedRemoteFormats) {
+        delegate.setSelectedRemoteFormats(selectedRemoteFormats);
+    }
+
+    @Override
+    public List<String> getSelectedRemoteStyles() {
+        return delegate.getSelectedRemoteStyles();
+    }
+
+    @Override
+    public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
+        delegate.setSelectedRemoteStyles(selectedRemoteStyles);
+    }
+
+    @Override
+    public boolean isFormatValid(String format) {
+        return delegate.isFormatValid(format);
+    }
+
+    @Override
+    public void reset() {
+        delegate.reset();
+    }
+
+    @Override
+    public String getPrefferedFormat() {
+        return delegate.getPrefferedFormat();
+    }
+
+    @Override
+    public void setPrefferedFormat(String prefferedFormat) {
+        delegate.setPrefferedFormat(prefferedFormat);
+    }
+
+    @Override
+    public Set<StyleInfo> getStyles() {
+        return delegate.getStyles();
+    }
+
+    @Override
+    public StyleInfo getDefaultStyle() {
+        return delegate.getDefaultStyle();
     }
 }

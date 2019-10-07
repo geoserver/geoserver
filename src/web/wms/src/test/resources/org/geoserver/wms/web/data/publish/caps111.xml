@@ -53,19 +53,6 @@
           </HTTP>
         </DCPType>
       </GetFeatureInfo>
-      <GetLegendGraphic>
-        <Format>image/png</Format>
-        <Format>image/jpeg</Format>
-        <Format>application/json</Format>
-        <Format>image/gif</Format>
-        <DCPType>
-          <HTTP>
-            <Get>
-              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
-            </Get>
-          </HTTP>
-        </DCPType>
-      </GetLegendGraphic>
     </Request>
     <Exception>
       <Format>application/vnd.ogc.se_xml</Format>
@@ -83,9 +70,9 @@
         <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>
         <BoundingBox SRS="EPSG:4326" minx="-180" miny="-90" maxx="180" maxy="90"/>
       </Layer>
-            <Layer queryable="1" opaque="0">
-            <Name>roads_wms</Name>
-            <Title>roads_wms</Title>
+      <Layer queryable="1" opaque="0">
+            <Name>roads</Name>
+            <Title>roads</Title>
             <Abstract/>
             <KeywordList>
               <Keyword>features</Keyword>
@@ -123,7 +110,36 @@
                 <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line2"/>
               </LegendURL>
             </Style>
+          </Layer>
+          <Layer queryable="1" opaque="0">
+        <Name>topp:states</Name>
+        <Title>states</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>features</Keyword>
+          <Keyword>states</Keyword>
+        </KeywordList>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="36.0460729490001" miny="32.614108317" maxx="36.153265193" maxy="32.686323626"/>
+        <BoundingBox SRS="EPSG:4326" minx="36.0460729490001" miny="32.614108317" maxx="36.153265193" maxy="32.686323626"/>
+<!--         <Style> -->
+<!--           <Name>point</Name> -->
+<!--           <Title>A boring default style</Title> -->
+<!--           <Abstract>A sample style that just prints out a purple square</Abstract> -->
+<!--           <LegendURL width="20" height="20"> -->
+<!--             <Format>image/png</Format> -->
+<!--             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=vtp%3AAeronauticPnt"/> -->
+<!--           </LegendURL> -->
+<!--         </Style> -->
+<!--         <Style> -->
+<!--           <Name>polygon</Name> -->
+<!--           <Title>polygon</Title> -->
+<!--           <LegendURL width="111" height="60"> -->
+<!--             <Format>image/png</Format> -->
+<!--             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Astates&amp;style=polygon"/> -->
+<!--           </LegendURL> -->
+<!--         </Style> -->
       </Layer>
-    </Layer>
+    </Layer>  
   </Capability>
 </WMT_MS_Capabilities>

@@ -25,6 +25,7 @@ import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
@@ -208,6 +209,43 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         assertThat(coordinates.length, is(2));
         checkNumberSimilar(coordinates[0], -11556867.874, 0.0001);
         checkNumberSimilar(coordinates[1], 5527291.47718493, 0.0001);
+    }
+
+    @Test
+    public void testCascadedSettings() throws Exception {
+
+        LayerInfo info = getCatalog().getLayerByName("roads_wms_130");
+
+        info.toString();
+
+        String getMapRequest =
+                "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&styles=line1&layers="
+                        + info.getName()
+                        + "&Format=image/png"
+                        + "&request=GetMap&version=1.3.0&service=wms"
+                        + "&width=180&height=90&crs=EPSG:26713";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default remote style, correct image format
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
+
+        // below request should force geoserver to request in default format
+        String getMapUnsupportedRequest =
+                "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&styles=line1&layers="
+                        + info.getName()
+                        + "&Format=image/gif"
+                        + "&request=GetMap&version=1.3.0&service=wms"
+                        + "&width=180&height=90&crs=EPSG:26713";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default forced remote style and jpeg format in remote style
+        // correct image format because gif is not part of cap doc
+        // the mock client is not expecting a remote request in image/gif
+        response = getAsImage(getMapUnsupportedRequest, "image/gif");
+        assertNotNull(response);
     }
 
     @Test

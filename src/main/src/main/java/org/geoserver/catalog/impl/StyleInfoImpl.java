@@ -97,6 +97,11 @@ public class StyleInfoImpl implements StyleInfo {
     }
 
     public Style getStyle() throws IOException {
+        // for capability document request
+        // remote style does not exist in local catalog
+        // do not look for this style inside ResourcePool
+        if (metadata != null)
+            if (metadata.containsKey("isRemote")) return WMSLayerInfoImpl.getStyleInfo(this);
         return catalog.getResourcePool().getStyle(this);
     }
 

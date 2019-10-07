@@ -454,7 +454,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             // ok, parse the styles parameter in isolation
             if (styleNameList.size() > 0) {
-                List<Style> parseStyles = parseStyles(styleNameList);
+                List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
                 getMap.setStyles(parseStyles);
             }
 
@@ -1411,13 +1411,26 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     // return cv;
     // }
 
-    protected List<Style> parseStyles(List<String> styleNames) throws Exception {
+    protected List<Style> parseStyles(List<String> styleNames, List<Object> requestedLayerInfos)
+            throws Exception {
         List<Style> styles = new ArrayList<Style>();
-        for (String styleName : styleNames) {
+        for (int i = 0; i < styleNames.size(); i++) {
+            String styleName = styleNames.get(i);
             if ("".equals(styleName)) {
                 // return null, this should flag request reader to use default for
                 // the associated layer
                 styles.add(null);
+            } else if (isRemoteWMSLayer(requestedLayerInfos.get(i))) {
+                // GEOS-9312
+                // if the style belongs to a remote layer check inside the remote layer capabilities
+                // instead of local WMS
+                WMSLayerInfo remoteWMSLayer =
+                        (WMSLayerInfo) ((LayerInfo) requestedLayerInfos.get(i)).getResource();
+                Optional<Style> remoteStyle = remoteWMSLayer.findRemoteStyleByName(styleName);
+                if (remoteStyle.isPresent()) styles.add(remoteStyle.get());
+                else
+                    throw new ServiceException(
+                            "No such remote style: " + styleName, "StyleNotDefined");
             } else {
                 final Style style = wms.getStyleByName(styleName);
                 if (style == null) {
@@ -1447,5 +1460,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (httpClient != null) {
             httpClient.close();
         }
+    }
+
+    // check if this requested layer is a cascaded WMS Layer
+    private boolean isRemoteWMSLayer(Object o) {
+        if (o == null) return false;
+        else if (!(o instanceof LayerInfo)) return false;
+        else return ((LayerInfo) o).getResource() instanceof WMSLayerInfo;
     }
 }

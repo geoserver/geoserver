@@ -88,6 +88,7 @@ public class GetCoverageTest extends WCSTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+        System.setProperty("user.timezone", "UTC");
         testData.addRasterLayer(
                 WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
         GeoServerDataDirectory dataDirectory = getDataDirectory();
@@ -736,8 +737,14 @@ public class GetCoverageTest extends WCSTestSupport {
         String request = FileUtils.readFileToString(xml, "UTF-8");
         request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2000-10-31T00:00:00.000Z");
-        // nearest neighbor match, lowest time returned
-        checkWaterTempValue(request, 14.89799975766800344);
+        checkWaterTempValue(request, null);
+
+        try {
+            setupNearestMatch(WATTEMP, ResourceInfo.TIME, true, "P8Y", true);
+            checkWaterTempValue(request, 14.89799975766800344);
+        } finally {
+            setupNearestMatch(WATTEMP, ResourceInfo.TIME, false);
+        }
     }
 
     @Test
@@ -756,13 +763,19 @@ public class GetCoverageTest extends WCSTestSupport {
     public void testCoverageTimeSlicingTimeClosest() throws Exception {
         setupRasterDimension(
                 getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        // Enable nearest match
         final File xml =
                 new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request = FileUtils.readFileToString(xml, "UTF-8");
         request = request.replace("${coverageId}", "sf__watertemp");
-        request = request.replace("${slicePoint}", "2000-10-31T11:30:00.000Z");
-        // nearest neighbor match, lowest time returned
-        checkWaterTempValue(request, 14.89799975766800344);
+        request = request.replace("${slicePoint}", "2008-10-31T11:30:00.000Z");
+        checkWaterTempValue(request, null);
+        try {
+            setupNearestMatch(WATTEMP, ResourceInfo.TIME, true, "P8Y", true);
+            checkWaterTempValue(request, 14.89799975766800344);
+        } finally {
+            setupNearestMatch(WATTEMP, ResourceInfo.TIME, false);
+        }
     }
 
     @Test
@@ -787,8 +800,14 @@ public class GetCoverageTest extends WCSTestSupport {
         String request = FileUtils.readFileToString(xml, "UTF-8");
         request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2011-11-01T00:00:00.000Z");
-        // nearest neighbor match, highest time returned
-        checkWaterTempValue(request, 14.52999974018894136);
+        checkWaterTempValue(request, null);
+
+        try {
+            setupNearestMatch(WATTEMP, ResourceInfo.TIME, true, "P4Y", true);
+            checkWaterTempValue(request, 14.52999974018894136);
+        } finally {
+            setupNearestMatch(WATTEMP, ResourceInfo.TIME, false);
+        }
     }
 
     @Test
@@ -817,8 +836,14 @@ public class GetCoverageTest extends WCSTestSupport {
         String request = FileUtils.readFileToString(xml, "UTF-8");
         request = request.replace("${coverageId}", "sf__timeranges");
         request = request.replace("${slicePoint}", "2008-11-04T11:00:00.000Z");
-        // timeranges is really just an expanded watertemp, and we expect NN
-        checkWaterTempValue(request, 14.52999974018894136);
+        checkWaterTempValue(request, null);
+
+        try {
+            setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true, "PT20H", true);
+            checkWaterTempValue(request, 18.10899991018232);
+        } finally {
+            setupNearestMatch(TIMERANGES, ResourceInfo.TIME, false);
+        }
     }
 
     @Test
@@ -944,10 +969,16 @@ public class GetCoverageTest extends WCSTestSupport {
                 null);
     }
 
-    private void checkWaterTempValue(String request, double expectedValue)
+    private void checkWaterTempValue(String request, Double expectedValue)
             throws Exception, IOException, DataSourceException {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
+        if (expectedValue == null) {
+            // we expect a WCS Exception
+            assertTrue(response.getStatus() != 200);
+            assertEquals("application/xml", response.getContentType());
+            return;
+        }
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));

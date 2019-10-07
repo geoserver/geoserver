@@ -5,9 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.geoserver.wms.NearestMatchWarningAppender.WarningType.Nearest;
-import static org.geoserver.wms.NearestMatchWarningAppender.WarningType.NotFound;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -16,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +50,7 @@ import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
@@ -1114,7 +1113,8 @@ public class WMS implements ApplicationContextAware {
                 // nearest time support
                 if (timeInfo.isNearestMatchEnabled()) {
                     fixedTimes =
-                            getNearestMatches(coverage, timeInfo, fixedTimes, ResourceInfo.TIME);
+                            getNearestTimeMatch(
+                                    coverage, timeInfo, fixedTimes, getMaxRenderingTime());
                 }
             }
             // pass down the parameters
@@ -1289,7 +1289,8 @@ public class WMS implements ApplicationContextAware {
                     "Coverage " + coverage.prefixedName() + " does not have time support enabled");
         }
 
-        List<Object> dates = getNearestMatches(coverage, time, queryRanges, ResourceInfo.TIME);
+        List<Object> dates =
+                getNearestTimeMatch(coverage, time, queryRanges, getMaxRenderingTime());
         dates.stream()
                 .forEach(
                         d -> {
@@ -1297,6 +1298,25 @@ public class WMS implements ApplicationContextAware {
                             foundDates.add(date);
                         });
         return foundDates;
+    }
+
+    private static List<Object> getNearestTimeMatch(
+            ResourceInfo coverage,
+            DimensionInfo dimension,
+            List<Object> queryRanges,
+            int maxRenderingTime)
+            throws IOException {
+        NearestMatchFinder finder = NearestMatchFinder.get(coverage, dimension, ResourceInfo.TIME);
+        if (finder != null) {
+            return finder.getMatches(
+                    coverage.prefixedName(),
+                    dimension,
+                    queryRanges,
+                    ResourceInfo.TIME,
+                    maxRenderingTime);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /** Query and returns the times for the given layer, in the given time range */
@@ -1642,7 +1662,8 @@ public class WMS implements ApplicationContextAware {
 
             if (timeInfo.isNearestMatchEnabled()) {
                 List<Object> nearestMatchedTimes =
-                        getNearestMatches(typeInfo, timeInfo, defaultedTimes, ResourceInfo.TIME);
+                        getNearestTimeMatch(
+                                typeInfo, timeInfo, defaultedTimes, getMaxRenderingTime());
                 builder.appendFilters(
                         timeInfo.getAttribute(), timeInfo.getEndAttribute(), nearestMatchedTimes);
             } else {
@@ -1694,57 +1715,6 @@ public class WMS implements ApplicationContextAware {
         final CustomDimensionFilterConverter converter =
                 new CustomDimensionFilterConverter(defaultValueStrategyFactory, ff);
         return converter.getDimensionsToFilter(rawKVP, typeInfo);
-    }
-
-    private List<Object> getNearestMatches(
-            ResourceInfo resourceInfo,
-            DimensionInfo dimension,
-            List<Object> values,
-            String dimensionName)
-            throws IOException {
-        // if there is a max rendering time set, use it on this match, as the input request might
-        // make the
-        // code go through a lot of nearest match queries
-        int maxRenderingTime = getMaxRenderingTime();
-        long maxTime =
-                maxRenderingTime > 0 ? System.currentTimeMillis() + maxRenderingTime * 1000 : -1;
-        NearestMatchFinder finder = NearestMatchFinder.get(resourceInfo, dimension, dimensionName);
-        List<Object> result = new ArrayList<>();
-        for (Object value : values) {
-            Object nearest = finder.getNearest(value);
-            if (nearest == null) {
-                // no way to specify there is no match yet, so we'll use the original value, which
-                // will not match
-                NearestMatchWarningAppender.addWarning(
-                        resourceInfo.prefixedName(),
-                        dimensionName,
-                        null,
-                        dimension.getUnits(),
-                        NotFound);
-                result.add(value);
-            } else if (value.equals(nearest)) {
-                result.add(value);
-            } else {
-                NearestMatchWarningAppender.addWarning(
-                        resourceInfo.prefixedName(),
-                        dimensionName,
-                        nearest,
-                        dimension.getUnits(),
-                        Nearest);
-                result.add(nearest);
-            }
-
-            // check timeout
-            if (maxTime > 0 && System.currentTimeMillis() > maxTime) {
-                throw new ServiceException(
-                        "Nearest matching dimension values required more time than allowed and has been forcefully stopped. "
-                                + "The max rendering time is "
-                                + (maxRenderingTime)
-                                + "s");
-            }
-        }
-
-        return result;
     }
 
     /**

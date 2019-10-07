@@ -313,5 +313,6 @@
   <bean id="catalogTimeStampUpdater" class="org.geoserver.config.CatalogTimeStampUpdater">
   	<constructor-arg ref="catalog"/>
   </bean>
-  
+
+    <bean id="nearestMatchWarningAppender" class="org.geoserver.util.NearestMatchWarningAppender"/>
 </beans>

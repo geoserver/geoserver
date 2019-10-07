@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms;
+package org.geoserver.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,9 +76,7 @@ public class NearestMatchWarningAppender extends AbstractDispatcherCallback {
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         List<String> warnings = WARNINGS.get();
-        if ("WMS".equalsIgnoreCase(request.getService())
-                && warnings != null
-                && !warnings.isEmpty()) {
+        if (warnings != null && !warnings.isEmpty()) {
             HttpServletResponse httpResponse = request.getHttpResponse();
             for (String warning : warnings) {
                 httpResponse.addHeader(HttpHeaders.WARNING, warning);

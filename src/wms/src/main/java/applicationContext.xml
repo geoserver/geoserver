@@ -841,7 +841,5 @@
   <bean id="UTFGridMapProducer" class="org.geoserver.wms.utfgrid.UTFGridMapOutputFormat">
     <constructor-arg ref="wms"/>
   </bean>
-  
-  <bean id="wmsNearestMatchWarningAppender" class="org.geoserver.wms.NearestMatchWarningAppender"/>
-  
+
 </beans>

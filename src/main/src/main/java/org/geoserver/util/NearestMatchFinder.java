@@ -2,14 +2,18 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms;
+package org.geoserver.util;
 
-import static org.geoserver.wms.NearestMatchFinder.FilterDirection.HIGHEST_AMONG_LOWERS;
-import static org.geoserver.wms.NearestMatchFinder.FilterDirection.LOWEST_AMONG_HIGHER;
+import static org.geoserver.util.NearestMatchFinder.FilterDirection.HIGHEST_AMONG_LOWERS;
+import static org.geoserver.util.NearestMatchFinder.FilterDirection.LOWEST_AMONG_HIGHER;
+import static org.geoserver.util.NearestMatchWarningAppender.WarningType.Nearest;
+import static org.geoserver.util.NearestMatchWarningAppender.WarningType.NotFound;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TreeSet;
 import org.geoserver.catalog.AcceptableRange;
 import org.geoserver.catalog.CoverageInfo;
@@ -284,6 +288,59 @@ public abstract class NearestMatchFinder {
             Literal valueReference = FF.literal(value);
             return buildComparisonFilter(direction, valueReference, valueReference);
         }
+    }
+
+    /**
+     * Get the nearest matches on the given dimension, provided a List of values.
+     *
+     * @param layerName the name of the Layer
+     * @param dimension the dimensionInfo instance where the search will occur.
+     * @param values the reference values for the nearest match search
+     * @param dimensionName the name of the dimension
+     * @param maxOutputTime a max time (in seconds) to produce the output. A ServiceException will
+     *     be thrown if the matches search is exceeding the specified time. Set to -1 for no
+     *     timeout.
+     * @return
+     * @throws IOException
+     */
+    public List<Object> getMatches(
+            String layerName,
+            DimensionInfo dimension,
+            List<Object> values,
+            String dimensionName,
+            final int maxOutputTime)
+            throws IOException {
+        // if there is a max time set to produce an output, use it on this match,
+        // as the input request might make the code go through a lot of nearest match queries
+        long maxTime = maxOutputTime > 0 ? System.currentTimeMillis() + maxOutputTime * 1000 : -1;
+        List<Object> result = new ArrayList<>();
+        for (Object value : values) {
+            Object nearest = getNearest(value);
+            if (nearest == null) {
+                // no way to specify there is no match yet, so we'll use the original value, which
+                // will not match
+                NearestMatchWarningAppender.addWarning(
+                        layerName, dimensionName, null, dimension.getUnits(), NotFound);
+                result.add(value);
+            } else if (value.equals(nearest)) {
+                result.add(value);
+            } else {
+                NearestMatchWarningAppender.addWarning(
+                        layerName, dimensionName, nearest, dimension.getUnits(), Nearest);
+                result.add(nearest);
+            }
+
+            // check timeout
+            if (maxTime > 0 && System.currentTimeMillis() > maxTime) {
+                throw new ServiceException(
+                        "Nearest matching dimension values required more time than allowed and has been forcefully stopped. "
+                                + "The max time is "
+                                + (maxOutputTime)
+                                + "s");
+            }
+        }
+
+        return result;
     }
 
     private Filter buildComparisonFilter(

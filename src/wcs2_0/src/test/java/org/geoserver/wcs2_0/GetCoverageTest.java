@@ -4,7 +4,7 @@
  */
 package org.geoserver.wcs2_0;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,10 +13,15 @@ import javax.xml.namespace.QName;
 import net.opengis.wcs20.GetCoverageType;
 import net.opengis.wcs20.ScalingType;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -39,12 +44,17 @@ import org.opengis.referencing.operation.MathTransform;
 public class GetCoverageTest extends WCSTestSupport {
 
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
+    private static final QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
     private GridCoverage2DReader coverageReader;
     private AffineTransform2D originalMathTransform;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
+        setupRasterDimension(
+                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
     }
 
     @Before
@@ -74,6 +84,55 @@ public class GetCoverageTest extends WCSTestSupport {
         Map<String, String> raw = setupGetCoverageRain();
         raw.put("scaleextent", "i(0," + (width / 2) + "),j(0," + (height / 2) + ")");
         assertScalingByHalf(raw);
+    }
+
+    @Test
+    public void getNearestTime() throws Exception {
+        // get the original transform
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMESERIES));
+        WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
+        GetCoverageType gc =
+                parse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=timeseries&subset=time(\"2019-01-03T00:00:00Z\")");
+        coverageReader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        WCSInfo service = getGeoServer().getService(WCSInfo.class);
+        EnvelopeAxesLabelsMapper axesMapper =
+                GeoServerExtensions.bean(EnvelopeAxesLabelsMapper.class);
+        MIMETypeMapper mimeMapper = GeoServerExtensions.bean(MIMETypeMapper.class);
+        GetCoverage getCoverage = new GetCoverage(service, getCatalog(), axesMapper, mimeMapper);
+        boolean hasCoverage = true;
+        GridCoverage gridCoverage = null;
+        try {
+            // Requested a missing time will thrown an exception of requested time out of range
+            gridCoverage = getCoverage.run(gc);
+        } catch (WCS20Exception e) {
+            hasCoverage = false;
+            assertTrue(e.getMessage().contains("Requested time subset does not intersect"));
+            assertEquals(404, (int) e.getHttpCode());
+        }
+        assertFalse(hasCoverage);
+
+        // Enabling nearestMatch on timeDimension
+        setupNearestMatch(TIMESERIES, "time", true, "P5D", true);
+        getCoverage = new GetCoverage(service, getCatalog(), axesMapper, mimeMapper);
+        try {
+            gridCoverage = getCoverage.run(gc);
+            hasCoverage = true;
+        } catch (WCS20Exception e) {
+            hasCoverage = false;
+        }
+        assertNotNull(gridCoverage);
+        assertTrue(hasCoverage);
+        scheduleForCleaning(gridCoverage);
+    }
+
+    protected GetCoverageType parse(String url) throws Exception {
+        Map<String, Object> rawKvp = new CaseInsensitiveMap(KvpUtils.parseQueryString(url));
+        Map<String, Object> kvp = new CaseInsensitiveMap(parseKvp(rawKvp));
+        WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
+        GetCoverageType gc = (GetCoverageType) reader.createRequest();
+        return (GetCoverageType) reader.read(gc, kvp, rawKvp);
     }
 
     private void assertScalingByHalf(Map<String, String> raw) throws Exception {

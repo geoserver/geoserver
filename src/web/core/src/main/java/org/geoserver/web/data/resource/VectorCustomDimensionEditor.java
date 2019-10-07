@@ -29,7 +29,7 @@ public class VectorCustomDimensionEditor extends DimensionEditorBase<VectorCusto
             ResourceInfo resource,
             Class<?> type,
             boolean editNearestMatch) {
-        super(id, model, resource, type, editNearestMatch);
+        super(id, model, resource, type, editNearestMatch, false);
     }
 
     public VectorCustomDimensionEditor(

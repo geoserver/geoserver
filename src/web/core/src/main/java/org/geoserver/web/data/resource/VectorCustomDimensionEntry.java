@@ -127,6 +127,16 @@ public class VectorCustomDimensionEntry implements DimensionInfo {
         dimensionInfo.setAcceptableInterval(acceptableInterval);
     }
 
+    public boolean isRawNearestMatchEnabled() {
+        // raw nearest match isn't implemented on vectors, yet.
+        return false;
+    }
+
+    public void setRawNearestMatchEnabled(boolean rawNearestMatch) {
+        // raw nearest match isn't implemented on vectors, yet.
+        dimensionInfo.setRawNearestMatchEnabled(false);
+    }
+
     public String getKey() {
         return key;
     }

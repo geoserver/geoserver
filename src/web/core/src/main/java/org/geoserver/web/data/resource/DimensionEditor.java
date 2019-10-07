@@ -27,8 +27,9 @@ public class DimensionEditor extends DimensionEditorBase<DimensionInfo> {
             IModel<DimensionInfo> model,
             ResourceInfo resource,
             Class<?> type,
-            boolean editNearestMatch) {
-        super(id, model, resource, type, editNearestMatch);
+            boolean editNearestMatch,
+            boolean editRawNearestMatch) {
+        super(id, model, resource, type, editNearestMatch, editRawNearestMatch);
     }
 
     @Override

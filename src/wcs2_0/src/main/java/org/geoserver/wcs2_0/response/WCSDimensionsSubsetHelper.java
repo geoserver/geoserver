@@ -30,6 +30,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
 import org.geoserver.wcs2_0.WCSEnvelope;
@@ -399,52 +400,6 @@ public class WCSDimensionsSubsetHelper {
         // return the subsetting envelope in the CRS it was specified into, to
         // allow projection handlers to handle dateline crossing
         return subsettingEnvelope;
-
-        //
-        // intersect with original envelope to make sure the subsetting is valid
-        //
-        // GeneralEnvelope sourceEnvelope = reader.getOriginalEnvelope();
-
-        // reproject envelope  to native crs for cropping
-        // try {
-        // if(!CRS.equalsIgnoreMetadata(subsettingEnvelope.getCoordinateReferenceSystem(),
-        // reader.getOriginalEnvelope())){
-        // // look for transform
-        // if (!CRS.equalsIgnoreMetadata(subsettingCRS, sourceCRS)) {
-        // final GeneralEnvelope subsettingEnvelopeInSourceCRS = CRS.transform(
-        // subsettingEnvelope, sourceCRS);
-        //
-        // // intersect
-        // subsettingEnvelopeInSourceCRS.intersect(sourceEnvelope);
-        //
-        // // provided trim extent does not intersect coverage envelope
-        // if (subsettingEnvelopeInSourceCRS.isEmpty()) {
-        // throw new WCS20Exception(
-        // "Empty intersection after subsetting",
-        // WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
-        // }
-        // return new WCSEnvelope(subsettingEnvelopeInSourceCRS);
-        // }
-        // }
-        // // we are reprojecting
-        // subsettingEnvelope.intersect(sourceEnvelope);
-        //
-        // // provided trim extent does not intersect coverage envelope
-        // if(subsettingEnvelope.isEmpty()){
-        // throw new WCS20Exception(
-        // "Empty intersection after subsetting",
-        // WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
-        // }
-        // return new WCSEnvelope(subsettingEnvelope);
-        // } catch (TransformException e) {
-        // final WCS20Exception exception= new WCS20Exception(
-        // "Unable to initialize subsetting envelope",
-        // WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
-        // subsettingCRS.toWKT()); // TODO extract code
-        // exception.initCause(e);
-        // throw exception;
-        // }
-
     }
 
     /**
@@ -520,77 +475,35 @@ public class WCSDimensionsSubsetHelper {
             }
 
             // apply nearest neighbor matching on time
-            if (timeSubset != null && timeSubset.getMinValue().equals(timeSubset.getMaxValue())) {
-                timeSubset = interpolateTime(timeSubset, accessor);
-            }
-        }
-        return timeSubset;
-    }
-
-    /**
-     * Nearest interpolation against time
-     *
-     * @param timeSubset
-     * @param accessor
-     * @throws IOException
-     */
-    private DateRange interpolateTime(DateRange timeSubset, ReaderDimensionsAccessor accessor)
-            throws IOException {
-        TreeSet<Object> domain = accessor.getTimeDomain();
-        Date slicePoint = timeSubset.getMinValue();
-        if (!domainContainsPoint(slicePoint, domain)) {
-            // look for the closest time
-            Date previous = null;
-            Date newSlicePoint = null;
-            // for NN matching we don't need the ranges, NN against their extrema will be fine
-            TreeSet<Date> domainDates = getDomainDates(domain);
-            for (Date curr : domainDates) {
-                if (curr.compareTo(slicePoint) > 0) {
-                    if (previous == null) {
-                        newSlicePoint = curr;
-                        break;
-                    } else {
-                        long diffPrevious = slicePoint.getTime() - previous.getTime();
-                        long diffCurr = curr.getTime() - slicePoint.getTime();
-                        if (diffCurr > diffPrevious) {
-                            newSlicePoint = curr;
-                            break;
-                        } else {
-                            newSlicePoint = previous;
-                            break;
-                        }
-                    }
-                } else {
-                    previous = curr;
+            if (timeSubset != null
+                    && timeSubset.getMinValue().equals(timeSubset.getMaxValue())
+                    && timeDimension.isRawNearestMatchEnabled()) {
+                // Sending 1 value, expecting 1 value
+                List<Object> dates =
+                        getNearestTimeMatch(
+                                coverageInfo, timeDimension, Collections.singletonList(timeSubset));
+                if (dates != null && !dates.isEmpty()) {
+                    Object result = dates.get(0);
+                    timeSubset =
+                            result instanceof DateRange
+                                    ? (DateRange) result
+                                    : new DateRange((Date) result, (Date) result);
                 }
             }
-
-            if (newSlicePoint == null) {
-                newSlicePoint = previous;
-            }
-            timeSubset = new DateRange(newSlicePoint, newSlicePoint);
         }
         return timeSubset;
     }
 
-    /**
-     * Get the domain set as a set of dates.
-     *
-     * @param domain
-     */
-    private TreeSet<Date> getDomainDates(TreeSet<Object> domain) {
-        TreeSet<Date> results = new TreeSet<Date>();
-        for (Object item : domain) {
-            if (item instanceof Date) {
-                Date date = (Date) item;
-                results.add(date);
-            } else if (item instanceof DateRange) {
-                DateRange range = (DateRange) item;
-                results.add(range.getMinValue());
-                results.add(range.getMaxValue());
-            }
+    private List<Object> getNearestTimeMatch(
+            ResourceInfo coverage, DimensionInfo dimension, List<Object> queryRanges)
+            throws IOException {
+        NearestMatchFinder finder = NearestMatchFinder.get(coverage, dimension, ResourceInfo.TIME);
+        if (finder != null) {
+            return finder.getMatches(
+                    coverage.prefixedName(), dimension, queryRanges, ResourceInfo.TIME, -1);
+        } else {
+            return Collections.emptyList();
         }
-        return results;
     }
 
     public WCSEnvelope getRequestedEnvelope() {

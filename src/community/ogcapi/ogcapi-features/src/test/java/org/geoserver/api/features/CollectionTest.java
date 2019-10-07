@@ -5,7 +5,6 @@
 package org.geoserver.api.features;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -17,7 +16,6 @@ import org.geoserver.api.APIDispatcher;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,10 +37,7 @@ public class CollectionTest extends FeaturesTestSupport {
         assertEquals(90, json.read("$.extent.spatial[3]", Double.class), 0d);
 
         // check we have the expected number of links and they all use the right "rel" relation
-        Collection<MediaType> formats =
-                GeoServerExtensions.bean(
-                                APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
-                        .getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+        Collection<MediaType> formats = getFeaturesResponseFormats();
         assertThat(
                 (int) json.read("$.links.length()", Integer.class),
                 Matchers.greaterThanOrEqualTo(formats.size()));
@@ -54,13 +49,16 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("item", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
-        assertNotNull(
-                json.read(
-                        "$.links[?(@.type=='application/gml+xml;version=3.2;profile=http://www.opengis.net/def/profile/ogc/2.0/gml-sf0')]"));
+        getSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
+    }
+
+    private List<MediaType> getFeaturesResponseFormats() {
+        return GeoServerExtensions.bean(
+                        APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
+                .getProducibleMediaTypes(FeaturesResponse.class, true);
     }
 
     @Test
-    @Ignore // virtual services not working with API yet
     public void testCollectionVirtualWorkspace() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         DocumentContext json = getAsJSONPath("cite/ogc/features/collections/" + roadSegments, 200);
@@ -69,10 +67,7 @@ public class CollectionTest extends FeaturesTestSupport {
         assertEquals("RoadSegments", json.read("$.title", String.class));
 
         // check we have the expected number of links and they all use the right "rel" relation
-        Collection<MediaType> formats =
-                GeoServerExtensions.bean(
-                                APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
-                        .getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+        Collection<MediaType> formats = getFeaturesResponseFormats();
         assertThat(
                 (int) json.read("$.links.length()", Integer.class),
                 Matchers.greaterThanOrEqualTo(formats.size()));
@@ -84,23 +79,7 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("item", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
-        assertNotNull(
-                json.read(
-                        "$.links[?(@.type==''application/gml+xml;version=3.2;profile=http://www.opengis.net/def/profile/ogc/2.0/gml-sf0'')]"));
-
-        // tiling scheme extension
-        Map tilingScheme = (Map) json.read("links[?(@.rel=='tilingScheme')]", List.class).get(0);
-        assertEquals(
-                "http://localhost:8080/geoserver/cite/ogc/features/collections/"
-                        + roadSegments
-                        + "/tiles/{tilingSchemeId}",
-                tilingScheme.get("href"));
-        Map tiles = (Map) json.read("links[?(@.rel=='tiles')]", List.class).get(0);
-        assertEquals(
-                "http://localhost:8080/geoserver/cite/ogc/features/collections/"
-                        + roadSegments
-                        + "/tiles/{tilingSchemeId}/{level}/{row}/{col}",
-                tiles.get("href"));
+        getSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
     }
 
     @Test

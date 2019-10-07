@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -141,9 +140,8 @@ public class ApiTest extends ImagesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/images/api");
+        MockHttpServletRequest request = createRequest("gs/ogc/images/api");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -151,6 +149,7 @@ public class ApiTest extends ImagesTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("application/x-yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        System.out.println(yaml);
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
@@ -158,11 +157,11 @@ public class ApiTest extends ImagesTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
-                        .stream()
-                        .map(ft -> ft.getName())
+                getStructuredCoverages()
+                        .filter(c -> "gs".equals(c.getStore().getWorkspace().getName()))
+                        .map(c -> c.getName())
                         .collect(Collectors.toList());
+
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
     }
 }

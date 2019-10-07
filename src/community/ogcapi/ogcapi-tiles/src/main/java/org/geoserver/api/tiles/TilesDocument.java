@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
@@ -34,7 +35,10 @@ public class TilesDocument extends AbstractDocument {
                         .stream()
                         .map(id -> new TileMatrixSetLink(tileLayer.getGridSubset(id)))
                         .collect(Collectors.toList());
-        this.id = tileLayer.getName();
+        this.id =
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName();
 
         // backlinks in same and other formats
         if (type == Type.RawTiles) {

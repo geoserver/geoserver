@@ -18,6 +18,8 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 public class ImagesTestSupport extends OGCApiTestSupport {
 
     protected static QName WATER_TEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static QName WATER_TEMP_DEFAULT =
+            new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
 
     public static final String WATER_TEMP_TITLE = "Water temperature";
     public static final String WATER_TEMP_DESCRIPTION = "I love my water warm and cosy!";
@@ -35,6 +37,10 @@ public class ImagesTestSupport extends OGCApiTestSupport {
         // a raster layer with time and elevation
         testData.addRasterLayer(
                 WATER_TEMP, "watertemp.zip", null, null, SystemTestData.class, catalog);
+
+        // another copy in different workspace, to check ws specific services
+        testData.addRasterLayer(
+                WATER_TEMP_DEFAULT, "watertemp.zip", null, null, SystemTestData.class, catalog);
 
         // add a description for the water temp layer
         CoverageInfo waterTemp = getCatalog().getCoverageByName(getLayerId(WATER_TEMP));

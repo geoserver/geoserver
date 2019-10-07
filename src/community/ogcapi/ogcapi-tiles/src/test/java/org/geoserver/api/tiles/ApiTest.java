@@ -6,6 +6,7 @@ package org.geoserver.api.tiles;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,7 +28,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.geoserver.gwc.GWC;
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -145,9 +145,8 @@ public class ApiTest extends TilesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/styles/api");
+        MockHttpServletRequest request = createRequest("cdf/ogc/tiles/api");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -161,12 +160,10 @@ public class ApiTest extends TilesTestSupport {
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
-        List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
-                        .stream()
-                        .map(ft -> ft.getName())
-                        .collect(Collectors.toList());
-        assertThat(collectionIdValues, equalTo(expectedCollectionIds));
+        assertThat(
+                collectionIdValues,
+                containsInAnyOrder(
+                        "Other", "Inserts", "Nulls", "Fifteen", "Locks", "Seven", "Updates",
+                        "Deletes"));
     }
 }

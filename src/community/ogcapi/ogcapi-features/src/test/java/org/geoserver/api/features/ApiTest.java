@@ -32,7 +32,6 @@ import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -184,7 +183,6 @@ public class ApiTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testWorkspaceQualifiedAPI() throws Exception {
         MockHttpServletRequest request = createRequest("cdf/ogc/features/api");
         request.setMethod("GET");
@@ -194,6 +192,8 @@ public class ApiTest extends FeaturesTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("application/x-yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+
+        System.out.println(yaml);
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);

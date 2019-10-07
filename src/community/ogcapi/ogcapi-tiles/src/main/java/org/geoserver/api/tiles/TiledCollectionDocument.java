@@ -72,7 +72,10 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
         super(tileLayer);
         // basic info
         this.layer = tileLayer;
-        this.id = tileLayer.getName();
+        this.id =
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName();
         String pathId = ResponseUtils.urlEncode(id);
 
         String baseURL = APIRequestInfo.get().getBaseURL();

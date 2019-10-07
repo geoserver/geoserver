@@ -55,4 +55,20 @@ public class CollectionTest extends ImagesTestSupport {
         DocumentContext json = convertYamlToJsonPath(yaml);
         testWaterTempCollectionJson(json);
     }
+
+    @Test
+    public void testWorkspacedWaterTempCollectionJson() throws Exception {
+        DocumentContext json =
+                getAsJSONPath(
+                        "gs/ogc/images/collections/" + WATER_TEMP_DEFAULT.getLocalPart(), 200);
+
+        // check the images link
+        List<String> items = json.read("$.links[?(@.rel=='images')].href");
+        assertThat(items.size(), Matchers.greaterThanOrEqualTo(2));
+        assertThat(
+                items,
+                hasItems(
+                        "http://localhost:8080/geoserver/gs/ogc/images/collections/watertemp/images?f=application%2Fstac%2Bjson",
+                        "http://localhost:8080/geoserver/gs/ogc/images/collections/watertemp/images?f=text%2Fhtml"));
+    }
 }

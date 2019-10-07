@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -151,9 +150,43 @@ public class ApiTest extends StylesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testWorkspaceQualifiedAPI() throws Exception {
-        MockHttpServletRequest request = createRequest("cdf/ogc/styles/api");
+        OpenAPI api = getOpenAPI("ws/ogc/styles/api");
+        Map<String, Parameter> params = api.getComponents().getParameters();
+        Parameter collectionId = params.get("styleId");
+        List<String> collectionIdValues = collectionId.getSchema().getEnum();
+        List<String> expectedStyleIds =
+                getCatalog()
+                        .getStyles()
+                        .stream()
+                        .filter(
+                                s ->
+                                        s.getWorkspace() == null
+                                                || "ws".equals(s.getWorkspace().getName()))
+                        .map(s -> s.getName())
+                        .collect(Collectors.toList());
+        assertThat(collectionIdValues, equalTo(expectedStyleIds));
+    }
+
+    @Test
+    public void testWorkspaceQualifiedAPIGlobalOnly() throws Exception {
+        // cdf has no local styles, only global ones
+        OpenAPI api = getOpenAPI("cdf/ogc/styles/api");
+        Map<String, Parameter> params = api.getComponents().getParameters();
+        Parameter collectionId = params.get("styleId");
+        List<String> collectionIdValues = collectionId.getSchema().getEnum();
+        List<String> expectedStyleIds =
+                getCatalog()
+                        .getStyles()
+                        .stream()
+                        .filter(s -> s.getWorkspace() == null)
+                        .map(s -> s.getName())
+                        .collect(Collectors.toList());
+        assertThat(collectionIdValues, equalTo(expectedStyleIds));
+    }
+
+    private OpenAPI getOpenAPI(String path) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
@@ -163,16 +196,6 @@ public class ApiTest extends StylesTestSupport {
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();
-        OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
-        Map<String, Parameter> params = api.getComponents().getParameters();
-        Parameter collectionId = params.get("collectionId");
-        List<String> collectionIdValues = collectionId.getSchema().getEnum();
-        List<String> expectedCollectionIds =
-                getCatalog()
-                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
-                        .stream()
-                        .map(ft -> ft.getName())
-                        .collect(Collectors.toList());
-        assertThat(collectionIdValues, equalTo(expectedCollectionIds));
+        return mapper.readValue(yaml, OpenAPI.class);
     }
 }

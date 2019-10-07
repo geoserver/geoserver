@@ -22,7 +22,6 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -58,7 +57,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         Collection<MediaType> formats =
                 GeoServerExtensions.bean(
                                 APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
-                        .getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+                        .getProducibleMediaTypes(FeaturesResponse.class, true);
         assertThat(
                 formats.size(),
                 lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
@@ -71,7 +70,6 @@ public class CollectionsTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("cdf/ogc/features/collections", 200);
         long expected =
@@ -83,11 +81,11 @@ public class CollectionsTest extends FeaturesTestSupport {
         // check the filtering
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
         // check the workspace prefixes have been removed
-        assertThat(json.read("collections[?(@.name=='Deletes')]"), not(empty()));
-        assertThat(json.read("collections[?(@.name=='cdf:Deletes')]"), empty());
+        assertThat(json.read("collections[?(@.id=='Deletes')]"), not(empty()));
+        assertThat(json.read("collections[?(@.id=='cdf__Deletes')]"), empty());
         // check the url points to a ws qualified url
         final String deleteHrefPath =
-                "collections[?(@.name=='Deletes')].links[?(@.rel=='item' && @.type=='application/geo+json')].href";
+                "collections[?(@.id=='Deletes')].links[?(@.rel=='item' && @.type=='application/geo+json')].href";
         assertEquals(
                 "http://localhost:8080/geoserver/cdf/ogc/features/collections/Deletes/items?f=application%2Fgeo%2Bjson",
                 ((JSONArray) json.read(deleteHrefPath)).get(0));

@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.images;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -91,6 +92,16 @@ public class LandingPageTest extends ImagesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/images/api?f=text%2Fhtml",
                 document.select("#htmlApiLink").attr("href"));
+    }
+
+    @Test
+    public void testLandingPageInWrkspace() throws Exception {
+        DocumentContext json = getAsJSONPath("gs/ogc/images?f=json", 200);
+        // check the URLs are still workspace specific
+        assertThat(
+                getSingle(json, "links[?(@.rel=='data' && @.type=='application/json')].href"),
+                equalTo(
+                        "http://localhost:8080/geoserver/gs/ogc/images/collections?f=application%2Fjson"));
     }
 
     static void checkJSONLandingPage(DocumentContext json) {

@@ -29,6 +29,7 @@ import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.HttpErrorCodeException;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
@@ -62,6 +63,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 import org.springframework.web.servlet.support.RequestContextUtils;
+import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 import org.xml.sax.SAXException;
 
@@ -106,17 +108,21 @@ public class APIDispatcher extends AbstractController {
         exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
         this.documentCallbacks = GeoServerExtensions.extensions(DocumentCallback.class, context);
 
+        LocalWorkspaceURLPathHelper pathHelper = new LocalWorkspaceURLPathHelper();
         this.mappingHandler =
                 new RequestMappingHandlerMapping() {
                     @Override
                     protected boolean isHandler(Class<?> beanType) {
                         return hasAnnotation(beanType, APIService.class);
                     }
+
+                    @Override
+                    public UrlPathHelper getUrlPathHelper() {
+                        return pathHelper;
+                    }
                 };
         this.mappingHandler.setApplicationContext(context);
         this.mappingHandler.afterPropertiesSet();
-        // do we really want this? The REST API uses it though
-        this.mappingHandler.getUrlPathHelper().setAlwaysUseFullPath(true);
 
         // create the one handler adapter we need similar to how DispatcherServlet does it
         // but with a special implementation that supports callbacks for the operation
@@ -341,6 +347,7 @@ public class APIDispatcher extends AbstractController {
 
     private HandlerMethod getHandlerMethod(HttpServletRequest httpRequest, Request dr)
             throws Exception {
+        LocalWorkspace.get();
         HandlerExecutionChain chain = mappingHandler.getHandler(dr.getHttpRequest());
         if (chain == null) {
             String msg =

@@ -20,7 +20,6 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -54,7 +53,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // workspace qualified does not work yet
     public void testWorkspaceQualified() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =

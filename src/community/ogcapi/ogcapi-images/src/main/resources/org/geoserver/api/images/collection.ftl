@@ -11,14 +11,6 @@
 <li><b>Geographic extents</b>: ${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
 </ul>
 
-Tiles available for this collection:
-<ul>
-<#if model.dataTiles>
-<li><a href="${model.getLinkUrl('dataTiles', 'text/html')!}">Data tiles</a></li> 
-</#if>
-<#if model.mapTiles>
-<li><a href="${model.getLinkUrl('mapTiles', 'text/html')!}">Map tiles</a></li>
-</#if>
-</ul>
+<a href=""${model.getLinkUrl('images', 'text/html')!}"">Images available for this collection.</a>
 
 <#include "common-footer.ftl">

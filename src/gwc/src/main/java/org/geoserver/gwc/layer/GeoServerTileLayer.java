@@ -208,12 +208,17 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         if (gwcOperation != null && gwcOperation.equalsIgnoreCase("GetCapabilities")) {
             // this is a get capabilities request, we need to check if we are in the context of
             // virtual service
-            return getNoPrefixedNameIfVirtualService();
+            return getContextualName();
         }
         return info.getName();
     }
 
-    private String getNoPrefixedNameIfVirtualService() {
+    /**
+     * Returns the local name if in a workspace specific service, full name otherwise. It's not done
+     * fully automatically in getName because it would break tile lookups in blob stores (getName
+     * limits this behavior to the GetCapabilities request)
+     */
+    public String getContextualName() {
         // let's see if this a virtual service request
         WorkspaceInfo localWorkspace = LocalWorkspace.get();
         if (localWorkspace != null) {

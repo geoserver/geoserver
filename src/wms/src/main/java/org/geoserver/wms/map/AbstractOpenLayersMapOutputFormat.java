@@ -140,7 +140,10 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
                 queryString = baseUrl.substring(idx); // include question mark
                 baseUrl = baseUrl.substring(0, idx); // leave out question mark
             }
-            map.put("baseUrl", canonicUrl(baseUrl));
+            final String canonicBaseUrl = canonicUrl(baseUrl);
+            map.put("baseUrl", canonicBaseUrl);
+            // register a protocol-relative base URL for fetching HTML static resources
+            map.put("relBaseUrl", makeProtocolRelativeURL(canonicBaseUrl));
 
             // TODO: replace service path with call to buildURL since it does this
             // same dance
@@ -174,6 +177,12 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
         } catch (TemplateException e) {
             throw new ServiceException(e);
         }
+    }
+
+    private String makeProtocolRelativeURL(String url) {
+        if (!url.startsWith("http")) return url;
+        int startFrom = url.startsWith("https://") ? 6 : 5;
+        return url.substring(startFrom);
     }
 
     /**

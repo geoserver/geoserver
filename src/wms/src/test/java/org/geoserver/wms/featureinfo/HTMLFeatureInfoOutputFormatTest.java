@@ -110,6 +110,8 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         Request request = new Request();
         parameters = new HashMap<String, Object>();
         parameters.put("LAYER", "testLayer");
+        parameters.put("NUMBER1", 10);
+        parameters.put("NUMBER2", 100);
         Map<String, String> env = new HashMap<String, String>();
         env.put("TEST1", "VALUE1");
         env.put("TEST2", "VALUE2");
@@ -342,5 +344,14 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         } finally {
             executor.shutdown();
         }
+    }
+
+    @Test
+    public void testStaticMathMethodsAreEvaluatedInTemplate() throws IOException {
+        currentTemplate = "test_static_content.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        assertEquals(String.valueOf(Math.max(10, 100)), result);
     }
 }

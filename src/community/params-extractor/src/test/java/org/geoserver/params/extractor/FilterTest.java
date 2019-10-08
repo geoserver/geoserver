@@ -7,42 +7,19 @@ package org.geoserver.params.extractor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Enumeration;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterConfig;
 
 public class FilterTest extends TestSupport {
     FilterConfig filterConfig;
 
     @Before
     public void setUp() {
-        filterConfig =
-                new FilterConfig() {
-
-                    @Override
-                    public ServletContext getServletContext() {
-                        return null;
-                    }
-
-                    @Override
-                    public Enumeration<String> getInitParameterNames() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getInitParameter(String arg0) {
-                        return null;
-                    }
-
-                    @Override
-                    public String getFilterName() {
-                        return null;
-                    }
-                };
+        filterConfig = new MockFilterConfig();
         Rule ruleA =
                 new RuleBuilder()
                         .withId("0")

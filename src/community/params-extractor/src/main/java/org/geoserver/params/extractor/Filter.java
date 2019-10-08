@@ -24,21 +24,34 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
 
     private static final Logger LOGGER = Logging.getLogger(Filter.class);
 
+    // this becomes true if the filter is initialized from the web container
+    // via web.xml, so that we know we should ignore the spring initialized filter
     static boolean USE_AS_SERVLET_FILTER = false;
 
+    // marks the instance initialized via web.xml (if any) so that we can avoid
+    // duplicate filter application by the spring instance
     private boolean servletInstance = false;
 
     private List<Rule> rules;
 
     public Filter() {
+        // this is called if we initialize the filter in web.xml, so let's turn on the
+        // flags for this scenario
+        USE_AS_SERVLET_FILTER = true;
         servletInstance = true;
     }
 
     public Filter(GeoServerDataDirectory dataDirectory) {
         servletInstance = false;
-        Resource resource = dataDirectory.get(RulesDao.getRulesPath());
-        rules = RulesDao.getRules(resource.in());
-        resource.addListener(notify -> rules = RulesDao.getRules(resource.in()));
+        initRules(dataDirectory);
+    }
+
+    private void initRules(GeoServerDataDirectory dataDirectory) {
+        if (dataDirectory != null) {
+            Resource resource = dataDirectory.get(RulesDao.getRulesPath());
+            rules = RulesDao.getRules(resource.in());
+            resource.addListener(notify -> rules = RulesDao.getRules(resource.in()));
+        }
     }
 
     @Override
@@ -46,16 +59,16 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
         return ExtensionPriority.HIGHEST;
     }
 
+    /**
+     * This method is called only when the Filter is used as a standard web container Filter. When
+     * this happens the related instance will be used instead of the one initialized by Spring.
+     */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         GeoServerDataDirectory dataDirectory =
                 GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        if (dataDirectory != null) {
-            USE_AS_SERVLET_FILTER = true;
-            Resource resource = dataDirectory.get(RulesDao.getRulesPath());
-            rules = RulesDao.getRules(resource.in());
-            resource.addListener(notify -> rules = RulesDao.getRules(resource.in()));
-        }
+
+        initRules(dataDirectory);
     }
 
     @Override
@@ -80,13 +93,10 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
                         "Request '%s' transformed to '%s'.",
                         originalRequest,
                         urlTransform.toString());
-                chain.doFilter(new RequestWrapper(urlTransform, httpServletRequest), response);
-            } else {
-                chain.doFilter(request, response);
+                request = new RequestWrapper(urlTransform, httpServletRequest);
             }
-        } else {
-            chain.doFilter(request, response);
         }
+        chain.doFilter(request, response);
     }
 
     boolean isEnabled() {

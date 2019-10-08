@@ -4,23 +4,22 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.head.*;
+import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.resource.NoOpTextCompressor;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -28,12 +27,18 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /** */
 public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContributor {
@@ -51,12 +56,10 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
 
     /**
      * @param id The id given to the panel.
-     * @param parent
+     * @param parent The parent component
      */
     public GeoStylerTabPanel(String id, AbstractStylePage parent) {
         super(id, parent);
-        CodeMirrorEditor editor = parent.editor;
-
         LOGGER.info("Create a new instance of GeoStylerTabPanel");
 
         // Change layer link
@@ -167,6 +170,9 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
 
+        // temporarily disable javascript compression since build resources are already compressed
+        GeoServerApplication.get().getResourceSettings().setJavaScriptCompressor(new NoOpTextCompressor());
+
         header.render(
                 CssHeaderItem.forReference(
                         new PackageResourceReference(GeoStylerTabPanel.class, "js/geostyler.css")));
@@ -212,5 +218,17 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
         } else {
             return baseUrl;
         }
+    }
+
+    /**
+     * As soon as the {@link GeoStylerTabPanel} is removed the default Javascript compression
+     * needs to be enabled
+     */
+    @Override
+    protected void onRemove() {
+        // (re-) enable javascript compression
+        GeoServerApplication.get().getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
+
+        super.onRemove();
     }
 }

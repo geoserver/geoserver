@@ -5,12 +5,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import freemarker.template.Configuration;
-import freemarker.template.SimpleHash;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
+import freemarker.template.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -61,9 +56,15 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                             SimpleHash map = (SimpleHash) super.wrap(object);
                             map.put("request", Dispatcher.REQUEST.get().getKvp());
                             map.put("environment", new EnvironmentVariablesTemplateModel());
+                            map.put("Math", getStaticModel("java.lang.Math"));
                             return map;
                         }
                         return super.wrap(object);
+                    }
+
+                    private TemplateHashModel getStaticModel(String path)
+                            throws TemplateModelException {
+                        return (TemplateHashModel) getStaticModels().get(path);
                     }
                 });
     }

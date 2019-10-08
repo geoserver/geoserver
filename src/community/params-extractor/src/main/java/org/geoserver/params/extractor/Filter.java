@@ -78,22 +78,21 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             if (httpServletRequest.getRequestURI().contains("web/wicket")
                     || httpServletRequest.getRequestURI().contains("geoserver/web")) {
-                chain.doFilter(request, response);
-                return;
-            }
-            UrlTransform urlTransform =
-                    new UrlTransform(
-                            httpServletRequest.getRequestURI(),
-                            httpServletRequest.getParameterMap());
-            String originalRequest = urlTransform.toString();
-            rules.forEach(rule -> rule.apply(urlTransform));
-            if (urlTransform.haveChanged()) {
-                Utils.info(
-                        LOGGER,
-                        "Request '%s' transformed to '%s'.",
-                        originalRequest,
-                        urlTransform.toString());
-                request = new RequestWrapper(urlTransform, httpServletRequest);
+            } else {
+                UrlTransform urlTransform =
+                        new UrlTransform(
+                                httpServletRequest.getRequestURI(),
+                                httpServletRequest.getParameterMap());
+                String originalRequest = urlTransform.toString();
+                rules.forEach(rule -> rule.apply(urlTransform));
+                if (urlTransform.haveChanged()) {
+                    Utils.info(
+                            LOGGER,
+                            "Request '%s' transformed to '%s'.",
+                            originalRequest,
+                            urlTransform.toString());
+                    request = new RequestWrapper(urlTransform, httpServletRequest);
+                }
             }
         }
         chain.doFilter(request, response);

@@ -76,9 +76,8 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
             throws IOException, ServletException {
         if (isEnabled()) {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-            if (httpServletRequest.getRequestURI().contains("web/wicket")
-                    || httpServletRequest.getRequestURI().contains("geoserver/web")) {
-            } else {
+            if (!httpServletRequest.getRequestURI().contains("web/wicket")
+                    && !httpServletRequest.getRequestURI().contains("geoserver/web")) {
                 UrlTransform urlTransform =
                         new UrlTransform(
                                 httpServletRequest.getRequestURI(),

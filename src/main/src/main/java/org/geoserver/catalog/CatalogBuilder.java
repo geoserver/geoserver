@@ -382,6 +382,25 @@ public class CatalogBuilder {
             LOGGER.log(Level.WARNING, "Metadata lookup failed", e);
         }
 
+        // check other supported SRS in source also
+        try {
+            if (featureSource.getInfo() instanceof org.geotools.data.wfs.internal.FeatureTypeInfo) {
+                org.geotools.data.wfs.internal.FeatureTypeInfo info =
+                        (org.geotools.data.wfs.internal.FeatureTypeInfo) featureSource.getInfo();
+                // read all identifiers of this CRS into a an comma seperated string
+                if (info.getOtherSRS() != null) {
+                    if (!info.getOtherSRS().isEmpty())
+                        ftinfo.getMetadata()
+                                .put(
+                                        FeatureTypeInfo.OTHER_SRS,
+                                        String.join(",", info.getOtherSRS()));
+                }
+            }
+
+        } catch (UnsupportedOperationException ue) {
+            LOGGER.warning("Other SRS not read from Feature Source");
+        }
+
         return ftinfo;
     }
 

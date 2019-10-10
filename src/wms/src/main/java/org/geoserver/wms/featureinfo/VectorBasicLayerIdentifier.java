@@ -92,7 +92,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         }
 
         final FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
-        featureSource = layer.getFeatureSource(false);
+        featureSource = layer.getFeatureSource(false, requestedCRS);
         FeatureType schema = featureSource.getSchema();
 
         Filter getFInfoFilter = null;

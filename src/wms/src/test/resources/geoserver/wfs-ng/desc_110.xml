@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsd:schema targetNamespace="http://www.topp.com" elementFormDefault="qualified" xmlns:wp2="http://www.wp2.com/wp2" xmlns:topp="http://www.topp.com" xmlns:aacc123="http://test.com/aaiiii" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:import schemaLocation="http://mock.test.geoserver.org/wfs?request=DescribeFeatureType&version=1.1.0&service=WFS&typeName=topp%3Adescenders_sample_data%2Ctopp%3Aroads22%2Ctopp%3Astates3" namespace="http://www.topp.com"/>
+</xsd:schema>

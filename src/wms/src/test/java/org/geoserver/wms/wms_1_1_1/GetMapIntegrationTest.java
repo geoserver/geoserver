@@ -46,17 +46,27 @@ import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.data.test.TestData;
+import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapTest;
@@ -65,6 +75,9 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
+import org.geotools.data.DataAccess;
+import org.geotools.data.wfs.WFSDataStore;
+import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
@@ -1714,6 +1727,105 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         ImageAssert.assertEquals(
                 new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/jiffleBandSelected.png"),
                 jiffleBandSelected,
+                300);
+    }
+
+    @Test
+    public void testWFSNGReprojection() throws Exception {
+        String baseURL = TestHttpClientProvider.MOCKSERVER;
+        MockHttpClient client = new MockHttpClient();
+
+        URL descURL =
+                new URL(baseURL + "/wfs?REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS");
+        client.expectGet(
+                descURL,
+                new MockHttpResponse(
+                        getClass().getResource("/geoserver/wfs-ng/desc_110.xml"), "text/xml"));
+
+        URL descFeatureURL =
+                new URL(
+                        baseURL
+                                + "/wfs?NAMESPACE=xmlns%28topp%3Dhttp%3A%2F%2Fwww.topp.com%29&TYPENAME=topp%3Aroads22&REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS");
+
+        client.expectGet(
+                descFeatureURL,
+                new MockHttpResponse(
+                        getClass().getResource("/geoserver/wfs-ng/desc_feature.xml"), "text/xml"));
+
+        URL remoteRequestURL =
+                new URL(
+                        baseURL
+                                + "/wfs?PROPERTYNAME=the_geom&FILTER=%3Cogc%3AFilter+xmlns%3Axs%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3ABBOX%3E%3Cogc%3APropertyName%3Ethe_geom%3C%2Fogc%3APropertyName%3E%3Cgml%3AEnvelope+srsDimension%3D%222%22+srsName%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2Fsrs%2Fepsg.xml%234326%22%3E%3Cgml%3AlowerCorner%3E-103.882897+44.370304%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-103.617584+44.50476%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Fogc%3ABBOX%3E%3C%2Fogc%3AFilter%3E&TYPENAME=topp%3Aroads22&REQUEST=GetFeature&RESULTTYPE=RESULTS&OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&SRSNAME=EPSG%3A4326&VERSION=1.1.0&SERVICE=WFS");
+
+        client.expectGet(
+                remoteRequestURL,
+                new MockHttpResponse(
+                        getClass().getResource("/geoserver/wfs-ng/wfs_response_4326.xml"),
+                        "text/xml"));
+
+        TestHttpClientProvider.bind(client, descURL);
+        TestHttpClientProvider.bind(client, descFeatureURL);
+        TestHttpClientProvider.bind(client, remoteRequestURL);
+
+        // MOCKING Catalog
+        URL url = getClass().getResource("/geoserver/wfs-ng/wfs_cap_110.xml");
+
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        DataStoreInfo storeInfo = cb.buildDataStore("MockWFSDataStore");
+        ((DataStoreInfoImpl) storeInfo).setId("1");
+        ((DataStoreInfoImpl) storeInfo).setType("Web Feature Server (NG)");
+        ((DataStoreInfoImpl) storeInfo)
+                .getConnectionParameters()
+                .put(WFSDataStoreFactory.URL.key, url);
+        ((DataStoreInfoImpl) storeInfo)
+                .getConnectionParameters()
+                .put("usedefaultsrs", Boolean.FALSE);
+        ((DataStoreInfoImpl) storeInfo)
+                .getConnectionParameters()
+                .put(WFSDataStoreFactory.PROTOCOL.key, Boolean.FALSE);
+        ((DataStoreInfoImpl) storeInfo).getConnectionParameters().put("TESTING", Boolean.TRUE);
+        getCatalog().add(storeInfo);
+
+        // MOCKING Feature Type with native CRS EPSG:26713
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        FeatureTypeInfo ftInfo =
+                xp.load(
+                        getClass().getResourceAsStream("/geoserver/wfs-ng/featuretype.xml"),
+                        FeatureTypeInfoImpl.class);
+        ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
+        ((FeatureTypeInfoImpl) ftInfo).setMetadata(new MetadataMap());
+        ftInfo.setSRS("EPSG:26713");
+        ftInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,EPSG:3857");
+        getCatalog().add(ftInfo);
+
+        // setting mock feature type as resource of Layer from Test Data
+        LayerInfo layerInfo = getCatalog().getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        layerInfo.setResource(ftInfo);
+        layerInfo.setDefaultStyle(getCatalog().getStyleByName("line"));
+        // Injecting Mock Http client in WFS Data Store to read mock respones from XML
+        DataAccess dac = ftInfo.getStore().getDataStore(null);
+        RetypingDataStore retypingDS = (RetypingDataStore) dac;
+        WFSDataStore wfsDS = (WFSDataStore) retypingDS.getWrapped();
+        wfsDS.getWfsClient().setHttpClient(client);
+
+        getCatalog().save(layerInfo);
+
+        // test starts now
+        // a WMS request with EPSG:4326 should result in a remote WFS call with EPSG:4326 filter and
+        // response
+        // the expected URL can seen in remoteRequestURL
+        String wmsUrl =
+                "wms?LAYERS=topp_roads22&styles=line"
+                        + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                        + "&BBOX=-103.87779468316292,44.37288961726252,-103.62268570651278,44.50217396380937"
+                        + "&WIDTH=100&HEIGHT=100";
+
+        BufferedImage wfsNGImage = getAsImage(wmsUrl, "image/png");
+        // ImageIO.write(wfsNGImage, "png", new File("D://cascaded_wfs_layer_response.png"));
+        ImageAssert.assertEquals(
+                new File("./src/test/resources/geoserver/wfs-ng/cascaded_wfs_layer_response.png"),
+                wfsNGImage,
                 300);
     }
 }

@@ -5,7 +5,7 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -177,6 +177,7 @@ public class ResourcePool {
     /** Hint to specify additional joined attributes when loading a feature type */
     public static Hints.Key JOINS = new Hints.Key(List.class);
 
+    public static Hints.Key MAP_CRS = new Hints.Key(CoordinateReferenceSystem.class);
     /** logging */
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog");
 
@@ -1304,10 +1305,19 @@ public class ResourcePool {
             CoordinateReferenceSystem nativeCRS =
                     gd != null ? gd.getCoordinateReferenceSystem() : null;
 
-            if (ppolicy == ProjectionPolicy.NONE && nativeCRS != null) {
+            if (ppolicy == ProjectionPolicy.NONE
+                    && info.getNativeCRS() != null
+                    && info.getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null)
+                resultCRS = info.getNativeCRS();
+            else if (ppolicy == ProjectionPolicy.NONE && nativeCRS != null) {
                 resultCRS = nativeCRS;
             } else {
                 resultCRS = getCRS(info.getSRS());
+                // force remoting re-projection incase of WFS-NG only
+                if (hints != null)
+                    if (hints.get(ResourcePool.MAP_CRS) != null
+                            && info.getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null)
+                        resultCRS = (CoordinateReferenceSystem) hints.get(ResourcePool.MAP_CRS);
             }
 
             // make sure we create the appropriate schema, with the right crs

@@ -59,12 +59,14 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogBeforeAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
+import org.geoserver.catalog.event.impl.CatalogBeforeAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
@@ -171,7 +173,9 @@ public class CatalogImpl implements Catalog {
         // TODO: remove synchronized block, need transactions
         StoreInfo added;
         synchronized (facade) {
-            added = facade.add(resolve(store));
+            StoreInfo resolved = resolve(store);
+            beforeadded(resolved);
+            added = facade.add(resolved);
 
             // if there is no default store use this one as the default
             if (getDefaultDataStore(store.getWorkspace()) == null
@@ -402,7 +406,7 @@ public class CatalogImpl implements Catalog {
         }
         ResourceInfo resolved = resolve(resource);
         validate(resolved, true);
-
+        beforeadded(resolved);
         ResourceInfo added = facade.add(resolved);
         added(added);
     }
@@ -665,7 +669,7 @@ public class CatalogImpl implements Catalog {
                 throw new IllegalArgumentException(msg);
             }
         }
-
+        beforeadded(layer);
         LayerInfo added = facade.add(layer);
         added(added);
     }
@@ -845,7 +849,7 @@ public class CatalogImpl implements Catalog {
                 layerGroup.getStyles().add(null);
             }
         }
-
+        beforeadded(layerGroup);
         LayerGroupInfo added = facade.add(layerGroup);
         added(added);
     }
@@ -1117,6 +1121,7 @@ public class CatalogImpl implements Catalog {
     }
 
     public void add(MapInfo map) {
+        beforeadded(map);
         MapInfo added = facade.add(resolve(map));
         added(added);
     }
@@ -1164,6 +1169,7 @@ public class CatalogImpl implements Catalog {
         NamespaceInfo added;
         synchronized (facade) {
             final NamespaceInfo resolved = resolve(namespace);
+            beforeadded(namespace);
             added = facade.add(resolved);
             if (getDefaultNamespace() == null) {
                 setDefaultNamespace(resolved);
@@ -1296,6 +1302,7 @@ public class CatalogImpl implements Catalog {
 
         WorkspaceInfo added;
         synchronized (facade) {
+            beforeadded(workspace);
             added = facade.add(workspace);
             // if there is no default workspace use this one as the default
             if (getDefaultWorkspace() == null) {
@@ -1488,6 +1495,8 @@ public class CatalogImpl implements Catalog {
     public void add(StyleInfo style) {
         style = resolve(style);
         validate(style, true);
+        // set creation time before persisting
+        beforeadded(style);
         StyleInfo added = facade.add(style);
         added(added);
     }
@@ -1659,8 +1668,18 @@ public class CatalogImpl implements Catalog {
         fireAdded(object);
     }
 
+    protected void beforeadded(CatalogInfo object) {
+        fireBeforeAdded(object);
+    }
+
     protected void removed(CatalogInfo object) {
         fireRemoved(object);
+    }
+
+    public void fireBeforeAdded(CatalogInfo object) {
+        CatalogBeforeAddEventImpl event = new CatalogBeforeAddEventImpl();
+        event.setSource(object);
+        event(event);
     }
 
     public void fireAdded(CatalogInfo object) {
@@ -1705,6 +1724,7 @@ public class CatalogImpl implements Catalog {
         for (Iterator l = listeners.iterator(); l.hasNext(); ) {
             try {
                 CatalogListener listener = (CatalogListener) l.next();
+
                 if (event instanceof CatalogAddEvent) {
                     listener.handleAddEvent((CatalogAddEvent) event);
                 } else if (event instanceof CatalogRemoveEvent) {
@@ -1713,6 +1733,8 @@ public class CatalogImpl implements Catalog {
                     listener.handleModifyEvent((CatalogModifyEvent) event);
                 } else if (event instanceof CatalogPostModifyEvent) {
                     listener.handlePostModifyEvent((CatalogPostModifyEvent) event);
+                } else if (event instanceof CatalogBeforeAddEvent) {
+                    listener.handlePreAddEvent((CatalogBeforeAddEvent) event);
                 }
             } catch (Throwable t) {
                 if (t instanceof CatalogException && toThrow == null) {

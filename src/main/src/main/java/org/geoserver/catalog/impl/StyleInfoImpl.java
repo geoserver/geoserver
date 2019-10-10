@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.util.Date;
 import org.geoserver.catalog.*;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
@@ -33,6 +34,10 @@ public class StyleInfoImpl implements StyleInfo {
     protected transient Catalog catalog;
 
     protected MetadataMap metadata = new MetadataMap();
+
+    protected Date dateCreated;
+
+    protected Date dateModified;
 
     protected StyleInfoImpl() {}
 
@@ -173,6 +178,7 @@ public class StyleInfoImpl implements StyleInfo {
         if (languageVersion == null) {
             if (other.getFormatVersion() != null) return false;
         } else if (!languageVersion.equals(other.getFormatVersion())) return false;
+
         return true;
     }
 
@@ -210,5 +216,25 @@ public class StyleInfoImpl implements StyleInfo {
         }
 
         return this;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return this.dateModified;
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 }

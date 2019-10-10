@@ -458,6 +458,8 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         // check that the keywords were correctly added
         assertThat(lg.getKeywords().size(), is(2));
         assertThat(lg.getKeywords(), containsInAnyOrder(keyword1, keyword2));
+        // creation date
+        assertNotNull(lg.getDateCreated());
     }
 
     @Test
@@ -706,6 +708,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertEquals(101, lg.getAttribution().getLogoWidth());
         assertEquals(102, lg.getAttribution().getLogoHeight());
         assertEquals(2, lg.getMetadataLinks().size());
+        assertNotNull(lg.getDateModified());
     }
 
     @Test

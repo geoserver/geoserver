@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -96,5 +97,27 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
             workspaces.add(wsName);
         }
         return workspaces;
+    }
+
+    @Test
+    public void testTimeColumnsToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowCreatedTimeColumnsInAdminList(true);
+        info.getSettings().setShowModifiedTimeColumnsInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+
+        login();
+
+        // test that we can load the page
+        tester.startPage(new LayerPage());
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        // check it has two columns
+        GeoServerTablePanel table =
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        LayerProvider layerProvider = (LayerProvider) table.getDataProvider();
+        assertTrue(layerProvider.getProperties().contains(LayerProvider.CREATED_TIMESTAMP));
+        assertTrue(layerProvider.getProperties().contains(LayerProvider.MODIFIED_TIMESTAMP));
     }
 }

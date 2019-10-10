@@ -20,6 +20,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -70,6 +71,18 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                                             new Fragment(id, "iconFragment", LayerGroupPage.this);
                                     f.add(new Image("layerIcon", icon));
                                     return f;
+                                }
+                                if (property == LayerGroupProvider.MODIFIED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            LayerGroupProvider.MODIFIED_TIMESTAMP.getModel(
+                                                    itemModel));
+                                }
+                                if (property == LayerGroupProvider.CREATED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            LayerGroupProvider.CREATED_TIMESTAMP.getModel(
+                                                    itemModel));
                                 }
                                 return null;
                             }

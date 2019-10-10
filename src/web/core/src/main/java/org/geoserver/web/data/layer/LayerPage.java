@@ -31,6 +31,7 @@ import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
 import org.geoserver.web.data.store.WMTSStoreEditPage;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -80,6 +81,10 @@ public class LayerPage extends GeoServerSecuredPage {
                             return new Label(id, SRS.getModel(itemModel));
                         } else if (property == TITLE) {
                             return titleLink(id, itemModel);
+                        } else if (property == MODIFIED_TIMESTAMP) {
+                            return new DateTimeLabel(id, MODIFIED_TIMESTAMP.getModel(itemModel));
+                        } else if (property == CREATED_TIMESTAMP) {
+                            return new DateTimeLabel(id, CREATED_TIMESTAMP.getModel(itemModel));
                         }
                         throw new IllegalArgumentException(
                                 "Don't know a property named " + property.getName());

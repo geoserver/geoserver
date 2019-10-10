@@ -8,12 +8,18 @@ package org.vfny.geoserver.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.data.DataAccessFactoryProducer;
 import org.geoserver.data.DataStoreFactoryInitializer;
 import org.geoserver.feature.retype.RetypingDataStore;
@@ -23,9 +29,13 @@ import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStore;
+import org.geotools.data.util.NullProgressListener;
+import org.geotools.feature.NameImpl;
+import org.geotools.ows.wms.Layer;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * A collecitno of utilties for dealing with GeotTools DataStore.
@@ -262,5 +272,60 @@ public abstract class DataStoreUtils {
         }
 
         return factories;
+    }
+
+    // A utility method for retreiving supported SRS on WFS-NG resource
+    public static List<String> getOtherSRSFromWfsNg(ResourceInfo resourceInfo) {
+        // do nothing when
+        if (resourceInfo.getStore().getType() == null) return Collections.EMPTY_LIST;
+        else if (!resourceInfo.getStore().getType().equalsIgnoreCase("Web Feature Server (NG)"))
+            return Collections.EMPTY_LIST;
+        try {
+            // featureType.
+            FeatureTypeInfo featureType = (FeatureTypeInfo) resourceInfo;
+            Name nativeName = new NameImpl(featureType.getNativeName());
+
+            org.geotools.data.wfs.internal.FeatureTypeInfo info =
+                    (org.geotools.data.wfs.internal.FeatureTypeInfo)
+                            featureType
+                                    .getStore()
+                                    .getDataStore(null)
+                                    .getFeatureSource(nativeName)
+                                    .getInfo();
+            // read all identifiers of this CRS into a an comma seperated string
+            if (info.getOtherSRS() != null) {
+                return info.getOtherSRS();
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return Collections.EMPTY_LIST;
+    }
+
+    // A utility method for retreiving supported SRS on WMSLayerInfo resource
+    public static List<String> getOtherSRSFromWMSStore(ResourceInfo resource) {
+        if (!(resource instanceof WMSLayerInfo)) return Collections.EMPTY_LIST;
+
+        WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) resource;
+        try {
+
+            Layer wmsLayer = wmsLayerInfo.getWMSLayer(new NullProgressListener());
+
+            Set<String> supportedSRS = wmsLayer.getSrs();
+            // check if there are additional srs available
+            // if not return an empty list for legacy behavior
+            if (supportedSRS.size() == 1) return Collections.EMPTY_LIST;
+            // int index="EPSG:".length();
+            List<String> otherSRS = supportedSRS.stream().collect(Collectors.toList());
+            return otherSRS;
+        } catch (IOException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error while reading other SRS from WMS Layer :" + resource.getNativeName(),
+                    e);
+        }
+        // default to legacy behavior on failure
+        return Collections.EMPTY_LIST;
     }
 }

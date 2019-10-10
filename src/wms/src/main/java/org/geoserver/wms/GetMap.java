@@ -525,7 +525,7 @@ public class GetMap {
                 //
                 // /////////////////////////////////////////////////////////
                 try {
-                    source = mapLayerInfo.getFeatureSource(true);
+                    source = mapLayerInfo.getFeatureSource(true, request.getCrs());
 
                     if (layerSort != null) {
                         // filter gets validated down in the renderer, but

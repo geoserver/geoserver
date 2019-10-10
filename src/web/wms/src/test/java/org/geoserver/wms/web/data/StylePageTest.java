@@ -15,6 +15,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -89,5 +90,34 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         s.setWorkspace(cat.getDefaultWorkspace());
 
         assertFalse(StylePage.isDefaultStyle(s));
+    }
+
+    @Test
+    public void testTimeColumnsToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowCreatedTimeColumnsInAdminList(true);
+        info.getSettings().setShowModifiedTimeColumnsInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+
+        login();
+        tester.startPage(StylePage.class);
+        tester.assertRenderedPage(StylePage.class);
+
+        // Get the StyleProvider
+
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        Catalog catalog = getCatalog();
+        assertEquals(dv.size(), catalog.getStyles().size());
+        IDataProvider dataProvider = dv.getDataProvider();
+
+        // Ensure the data provider is an instance of StoreProvider
+        assertTrue(dataProvider instanceof StyleProvider);
+
+        // Cast to StoreProvider
+        StyleProvider provider = (StyleProvider) dataProvider;
+        // should have these columns
+        assertTrue(provider.getProperties().contains(StyleProvider.CREATED_TIMESTAMP));
+        assertTrue(provider.getProperties().contains(StyleProvider.MODIFIED_TIMESTAMP));
     }
 }

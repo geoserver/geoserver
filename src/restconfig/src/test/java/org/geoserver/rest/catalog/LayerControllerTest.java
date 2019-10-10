@@ -162,6 +162,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals("Forests", l.getDefaultStyle().getName());
+        assertNotNull(l.getDateModified());
     }
 
     @Test
@@ -182,6 +183,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals("Forests", l.getDefaultStyle().getName());
+        assertNotNull(l.getDateModified());
     }
 
     @Test
@@ -210,6 +212,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         assertEquals(isAdvertised, l.isAdvertised());
         assertEquals(isOpaque, l.isOpaque());
         assertEquals(isQueryable, l.isQueryable());
+        assertNotNull(l.getDateModified());
     }
 
     @Test
@@ -230,6 +233,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals("polygon", l.getDefaultStyle().getName());
+        assertNotNull(l.getDateModified());
     }
 
     @Test
@@ -305,6 +309,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         assertNotNull(l.getDefaultStyle());
         assertEquals("foo", l.getDefaultStyle().getName());
         assertNotNull(l.getDefaultStyle().getWorkspace());
+        assertNotNull(l.getDateModified());
 
         Document dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml", 200);
         assertXpathExists("/layer/defaultStyle/name[text() = 'cite:foo']", dom);
@@ -348,6 +353,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         StyleInfo style = l.getStyles().iterator().next();
         assertEquals("foo", style.getName());
         assertNotNull(style.getWorkspace());
+        assertNotNull(l.getDateModified());
 
         Document dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml", 200);
         assertXpathExists("/layer/styles/style/name[text() = 'cite:foo']", dom);
@@ -383,6 +389,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         l = cat.getLayerByName("cite:Buildings");
         assertNotNull(l.getDefaultWMSInterpolationMethod());
         assertEquals(LayerInfo.WMSInterpolation.Nearest, l.getDefaultWMSInterpolationMethod());
+        assertNotNull(l.getDateModified());
 
         dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml", 200);
         assertXpathEvaluatesTo("1", "count(/layer/defaultWMSInterpolationMethod)", dom);

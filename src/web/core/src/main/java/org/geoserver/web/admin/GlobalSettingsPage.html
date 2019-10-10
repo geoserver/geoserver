@@ -111,6 +111,16 @@
     </li>
   </ul>
   <ul>
+      <li class="choiceItem">
+        <input id="showCreatedTimeCols" type="checkbox" wicket:id="showCreatedTimeCols" />
+        <label><wicket:message key="timeCreatedColChkBox">Display creation timestamps on administration lists</wicket:message></label>
+      </li>
+      <li class="choiceItem">
+        <input id="showModifiedTimeCols" type="checkbox" wicket:id="showModifiedTimeCols" />
+        <label><wicket:message key="timeModifiedColChkBox">Display modification timestamps on administration lists</wicket:message></label>
+      </li>
+  </ul>
+  <ul>
     <li class="button-group selfclear">
       <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
       <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>

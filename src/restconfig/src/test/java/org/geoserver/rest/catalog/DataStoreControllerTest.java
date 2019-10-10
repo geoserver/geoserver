@@ -233,6 +233,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
+        assertNotNull(newDataStore.getDateCreated());
 
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
@@ -263,6 +264,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
+        assertNotNull(newDataStore.getDateCreated());
 
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
@@ -295,6 +297,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
+        assertNotNull(newDataStore.getDateCreated());
 
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
@@ -326,6 +329,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/dataStore/enabled", dom);
 
         assertFalse(catalog.getDataStoreByName("sf", "sf").isEnabled());
+        assertNotNull(catalog.getDataStoreByName("sf", "sf").getDateModified());
     }
 
     @Test
@@ -354,6 +358,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertEquals(2, ds.getConnectionParameters().size());
         assertTrue(ds.getConnectionParameters().containsKey("one"));
         assertTrue(ds.getConnectionParameters().containsKey("two"));
+        assertNotNull(ds.getDateModified());
     }
 
     @Test

@@ -150,6 +150,16 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         "extensions", settingsModel, getGeoServerApplication());
         form.add(extensions);
 
+        form.add(
+                new CheckBox(
+                        "showCreatedTimeCols",
+                        new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
+
+        form.add(
+                new CheckBox(
+                        "showModifiedTimeCols",
+                        new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
+
         Button submit =
                 new Button("submit") {
                     @Override

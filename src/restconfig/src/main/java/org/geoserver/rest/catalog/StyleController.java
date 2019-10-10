@@ -469,8 +469,8 @@ public class StyleController extends AbstractCatalogController {
         checkFullAdminRequired(workspaceName);
 
         StyleInfo original = catalog.getStyleByName(workspaceName, styleName);
-
         new CatalogBuilder(catalog).updateStyle(original, info);
+
         catalog.save(original);
     }
 

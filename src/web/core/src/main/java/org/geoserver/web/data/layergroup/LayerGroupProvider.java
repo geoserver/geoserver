@@ -8,9 +8,12 @@ package org.geoserver.web.data.layergroup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /** Provides a table model for listing layer groups */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
@@ -21,6 +24,12 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     public static Property<LayerGroupInfo> WORKSPACE =
             new BeanProperty<LayerGroupInfo>("workspace", "workspace.name");
+
+    static final Property<LayerGroupInfo> MODIFIED_TIMESTAMP =
+            new BeanProperty<>("datemodfied", "dateModified");
+
+    static final Property<LayerGroupInfo> CREATED_TIMESTAMP =
+            new BeanProperty<>("datecreated", "dateCreated");
 
     static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
 
@@ -49,7 +58,20 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     @Override
     protected List<Property<LayerGroupInfo>> getProperties() {
-        return PROPERTIES;
+        List<Property<LayerGroupInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+        // check geoserver properties
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowCreatedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        return modifiedPropertiesList;
     }
 
     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {

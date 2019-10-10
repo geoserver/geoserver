@@ -160,7 +160,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
             RenderedImage legendImage = null;
             if (useProvidedLegend || legend instanceof CascadedLegendRequest) {
-                legendImage = getLayerLegend(legend, w, h, transparent, request);
+                boolean forceResize = !(legend instanceof CascadedLegendRequest);
+                legendImage = getLayerLegend(legend, w, h, transparent, forceResize, request);
             }
 
             if (useProvidedLegend && legendImage != null) {
@@ -487,6 +488,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
      * @param w width for the image (hint)
      * @param h height for the image (hint)
      * @param transparent (should the image be transparent)
+     * @param forceDimensions (should the image be resized if response does not match w,h)
      * @param request GetLegendGraphicRequest being built
      */
     private RenderedImage getLayerLegend(
@@ -494,6 +496,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             int w,
             int h,
             boolean transparent,
+            boolean forceDimensions,
             GetLegendGraphicRequest request) {
 
         LegendInfo legendInfo = legend.getLegendInfo();
@@ -514,9 +517,10 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         try {
             BufferedImage image = ImageIO.read(url);
 
-            if (image.getWidth() == w && image.getHeight() == h) {
+            if ((image.getWidth() == w && image.getHeight() == h) || !forceDimensions) {
                 return image;
             }
+
             final BufferedImage rescale =
                     ImageUtils.createImage(w, h, (IndexColorModel) null, true);
 

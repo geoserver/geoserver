@@ -8,6 +8,7 @@ package org.geoserver.wms.wms_1_3;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -276,6 +277,12 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         assertNotNull(image);
         ImageAssert.assertEquals(expected, image, 0);
+        // resizing a remotely acquired image corrupts the image
+        // since the resizing occurs on image and graphics
+        // cascaded get legend request should not be response image
+        // because size params are already passed over to remote server
+        assertNotEquals(20, image.getHeight());
+        assertNotEquals(20, image.getWidth());
     }
 
     @Test

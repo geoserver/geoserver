@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.util.factory.Hints;
@@ -143,6 +144,16 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             new ArrayList<Property<SRS>>(Arrays.asList(CODE, DESCRIPTION));
 
     private volatile List<SRS> items;
+
+    public SRSProvider() {}
+
+    // a constructor to pass custom list of SRS list
+    public SRSProvider(List<String> srsList) {
+        int index = "EPSG:".length();
+        List<SRS> otherSRS =
+                srsList.stream().map(s -> new SRS(s.substring(index))).collect(Collectors.toList());
+        this.items = otherSRS;
+    }
 
     @Override
     protected List<SRS> getItems() {

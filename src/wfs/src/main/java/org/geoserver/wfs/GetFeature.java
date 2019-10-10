@@ -46,6 +46,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
@@ -112,6 +113,8 @@ import org.opengis.filter.temporal.Ends;
 import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.metadata.extent.GeographicBoundingBox;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.LazyLoader;
@@ -575,6 +578,39 @@ public class GetFeature {
                     if (joins != null) {
                         hints = new Hints(ResourcePool.JOINS, joins);
                     }
+
+                    // for remote reprojection in case of WFS-NG datastore ONLY
+                    if (meta.getStore()
+                                            .getConnectionParameters()
+                                            .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
+                                    != null
+                            && meta.getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null) {
+                        // if wfs-ng datastore is NOT set to use default srs
+                        // then find request SRS in OTHER_SRS list
+                        if (!Boolean.valueOf(
+                                meta.getStore()
+                                        .getConnectionParameters()
+                                        .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
+                                        .toString())) {
+                            String otherSRS =
+                                    (String) meta.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+                            if (query.getSrsName() != null) {
+                                if (otherSRS.contains(query.getSrsName().toString())) {
+                                    if (hints == null) hints = new Hints();
+                                    try {
+                                        hints.put(
+                                                ResourcePool.MAP_CRS,
+                                                CRS.decode(query.getSrsName().toString()));
+                                    } catch (NoSuchAuthorityCodeException ne) {
+                                        LOGGER.log(Level.SEVERE, ne.getMessage(), ne);
+                                    } catch (FactoryException e) {
+                                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     FeatureSource<? extends FeatureType, ? extends Feature> source =
                             primaryMeta.getFeatureSource(null, hints);
 

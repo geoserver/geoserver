@@ -4,13 +4,16 @@
  */
 package org.geoserver.api;
 
+import org.geoserver.ows.Request;
+
 /** Callback used to decorate documents with cross-links and other additions */
 public interface DocumentCallback {
 
     /**
      * Allows to alter the document being built before it's returned to the client
      *
+     * @param dr
      * @param document The document about to be returned to the client
      */
-    public void apply(AbstractDocument document);
+    public void apply(Request dr, AbstractDocument document);
 }

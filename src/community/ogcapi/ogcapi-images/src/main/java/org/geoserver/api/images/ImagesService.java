@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -70,6 +72,9 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -93,7 +98,7 @@ import org.springframework.web.context.request.RequestContextHolder;
     serviceClass = ImagesServiceInfo.class
 )
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/images")
-public class ImagesService {
+public class ImagesService implements ApplicationContextAware {
 
     static final Logger LOGGER = Logging.getLogger(ImagesService.class);
 
@@ -115,6 +120,7 @@ public class ImagesService {
     // private logic here
     private ImagesBBoxKvpParser bboxParser = new ImagesBBoxKvpParser();
     private TimeParser timeParser = new TimeParser();
+    private ImageListenerSupport imageListeners;
 
     public ImagesService(GeoServer geoServer, AssetHasher assetHasher) {
         this.geoServer = geoServer;
@@ -334,14 +340,14 @@ public class ImagesService {
             SimpleFeatureCollection granules, List<DimensionDescriptor> dimensionDescriptors)
             throws IOException {
         // remap the time attribute to "datetime", if needed
-        DimensionDescriptor timeDescriptor =
+
+        Optional<DimensionDescriptor> maybeDescriptor =
                 dimensionDescriptors
                         .stream()
                         .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
-                        .findFirst()
-                        .get();
-        String timeAttributeName = timeDescriptor.getStartAttribute();
-        if (timeAttributeName.equals("datetime")) {
+                        .findFirst();
+        if (maybeDescriptor.isPresent()
+                && "datetime".equals(maybeDescriptor.get().getStartAttribute())) {
             return granules;
         }
 
@@ -356,7 +362,11 @@ public class ImagesService {
                         .map(
                                 d -> {
                                     String outputName = d.getLocalName();
-                                    if (d.getLocalName().equals(timeAttributeName)) {
+                                    if (maybeDescriptor.isPresent()
+                                            && maybeDescriptor
+                                                    .get()
+                                                    .getStartAttribute()
+                                                    .equals(d.getLocalName())) {
                                         outputName = "datetime";
                                     }
                                     return new Definition(
@@ -365,6 +375,11 @@ public class ImagesService {
                                             d.getType().getBinding());
                                 })
                         .collect(toList());
+        // if there was no time descriptor to use, add a fake one with a fixed date
+        if (!maybeDescriptor.isPresent()) {
+            definitions.add(new Definition("datetime", FF.literal(new Timestamp(0))));
+        }
+
         SimpleFeatureSource granulesSource = DataUtilities.source(granules);
         TransformFeatureSource remappedSource =
                 new TransformFeatureSource(
@@ -552,6 +567,10 @@ public class ImagesService {
                             URLType.SERVICE);
             headers.add(HttpHeaders.LOCATION, href);
         }
+        imageListeners.imageAdded(
+                coverageInfo,
+                sr.getGranules(coverageInfo.getNativeCoverageName(), true),
+                featureId);
         ResponseEntity response = new ResponseEntity("", headers, HttpStatus.CREATED);
         return response;
     }
@@ -635,14 +654,18 @@ public class ImagesService {
                     HttpStatus.NOT_IMPLEMENTED);
         }
 
-        // this actually checks the image exists, not interested in the return value, but the
-        // side effect of it
-        getFeatureForImageId(collectionId, imageId);
+        Feature feature = getFeatureForImageId(collectionId, imageId);
         // quick assumption here that there is just one file per feature, but we'll need
         // to come back and modify the API so that it delivers all the features associated
         // to the file instead, or return the raw location for filtering purposes
         ((GranuleStore) source).removeGranules(FF.id(FF.featureId(imageId)));
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.imageListeners =
+                new ImageListenerSupport(GeoServerExtensions.extensions(ImageListener.class));
     }
 }

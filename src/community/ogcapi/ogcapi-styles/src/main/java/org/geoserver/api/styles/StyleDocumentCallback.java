@@ -23,6 +23,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.util.Version;
@@ -39,7 +40,7 @@ public class StyleDocumentCallback implements DocumentCallback {
     }
 
     @Override
-    public void apply(AbstractDocument document) {
+    public void apply(Request dr, AbstractDocument document) {
         if (document instanceof AbstractCollectionDocument) {
             AbstractCollectionDocument collection = (AbstractCollectionDocument) document;
             Object subject = collection.getSubject();

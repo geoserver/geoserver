@@ -43,7 +43,10 @@ Edit a Layer Group
 
 To view or edit a layer group, click the layer group name.  A layer group configuration page will be displayed.  The initial fields allow you to configure the name, title, abstract, workspace, bounds, projection and mode of the layer group. To automatically set the bounding box, select the :guilabel:`Generate Bounds` button or the :guilabel:`Generate Bounds From CRS` button to use the bounds defined in the CRS (if available). You may also provide your own custom bounding box extents. To select an appropriate projection click the :guilabel:`Find` button.
 
+
 .. note:: A layer group can contain layers with dissimilar bounds and projections. GeoServer automatically reprojects all layers to the projection of the layer group.
+
+The new :guilabel:`Enabled` checkbox, if disabled, will cause the layer group to just show up at configuration time (and in REST config), while the new :guilabel:`Advertised` checkbox, if unchecked, will make it to not be available in GetCapabilities request and in the layer preview. The behaviuor of layer group regarding both checkboxes will not affect the behaviour of any of the layers being grouped, which will follow respectively that specified  in the corresponding edit page.
 
 .. figure:: img/data_layergroups_edit.png
 
@@ -106,7 +109,7 @@ To add a new layer group, select the "Add a new layer group" button. You will be
 
 When finished, click :guilabel:`Submit`. You will be redirected to an empty layer group configuration page. Begin by adding layers by clicking the :guilabel:`Add layer...` button (described in the previous section). Once the layers are positioned accordingly, press :guilabel:`Generate Bounds` to automatically generate the bounding box and projection. You may also press the :guilabel:`Generate Bounds From CRS` button to use the CRS bounds (if available). Press :guilabel:`Save` to save the new layer group.
 
-.. figure:: img/data_layergroups_add_edit.png
+.. figure:: img/data_layergroups_edit.png
 
    New layer group configuration page
 

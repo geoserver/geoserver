@@ -193,7 +193,7 @@ public class ApiTest extends FeaturesTestSupport {
         assertEquals("application/x-yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
-        System.out.println(yaml);
+        // System.out.println(yaml);
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);

@@ -34,12 +34,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsControllerTest extends OSEORestTestSupport {
 
-    @Override
-    protected String getLogConfiguration() {
-        // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
-        return super.getLogConfiguration();
-    }
-
     @Test
     public void testGetCollections() throws Exception {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections", 200);

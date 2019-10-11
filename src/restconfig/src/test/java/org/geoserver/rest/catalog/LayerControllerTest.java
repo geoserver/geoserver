@@ -288,7 +288,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
 
-        System.out.println(response.getContentAsString());
+        // System.out.println(response.getContentAsString());
         assertEquals(201, response.getStatus());
         assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
         assertNotNull(cat.getStyleByName("cite", "foo"));

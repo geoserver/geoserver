@@ -149,7 +149,7 @@ public class ApiTest extends ImagesTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("application/x-yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
-        System.out.println(yaml);
+        // System.out.println(yaml);
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);

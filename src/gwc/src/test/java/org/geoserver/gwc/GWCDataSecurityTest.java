@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
@@ -440,25 +438,27 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileWmts() throws Exception {
 
-        System.out.println(
-                Arrays.toString(
-                        GWC.get()
-                                .getTileLayerByName("sf:mosaic")
-                                .getGridSubset("EPSG:900913")
-                                .getCoverage(13)));
-        System.out.println(
-                GWC.get()
-                        .getTileLayerByName("sf:mosaic")
-                        .getGridSubset("EPSG:900913")
-                        .getOriginalExtent());
-        System.out.println(
-                ((LayerInfo)
-                                ((GeoServerTileLayer) (GWC.get().getTileLayerByName("sf:mosaic")))
-                                        .getPublishedInfo())
-                        .getResource()
-                        .getLatLonBoundingBox());
-        System.out.println(
-                getCatalog().getLayerByName("sf:mosaic").getResource().getLatLonBoundingBox());
+        //        System.out.println(
+        //                Arrays.toString(
+        //                        GWC.get()
+        //                                .getTileLayerByName("sf:mosaic")
+        //                                .getGridSubset("EPSG:900913")
+        //                                .getCoverage(13)));
+        //        System.out.println(
+        //                GWC.get()
+        //                        .getTileLayerByName("sf:mosaic")
+        //                        .getGridSubset("EPSG:900913")
+        //                        .getOriginalExtent());
+        //        System.out.println(
+        //                ((LayerInfo)
+        //                                ((GeoServerTileLayer)
+        // (GWC.get().getTileLayerByName("sf:mosaic")))
+        //                                        .getPublishedInfo())
+        //                        .getResource()
+        //                        .getLatLonBoundingBox());
+        //        System.out.println(
+        //
+        // getCatalog().getLayerByName("sf:mosaic").getResource().getLatLonBoundingBox());
         doPermissionCropTileTest(
                 (layer, index) ->
                         String.format(

@@ -227,7 +227,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
         // reloading should have been triggered
         ticker.setMillisec(700);
-        System.out.println("sleeping...");
+        // System.out.println("sleeping...");
         Thread.sleep(500);
         // System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());

@@ -40,7 +40,7 @@ public class SystemStatusMonitorPanelTest extends GeoServerWicketTestSupport {
         TagTester time1 = tester.getTagByWicketId("time");
         assertNotNull(time1);
         Date firstTime = formatter.parse(time1.getValue());
-        System.out.println(firstTime.getTime());
+        // System.out.println(firstTime.getTime());
         // Execute timer
         Thread.sleep(1000);
         tester.executeAllTimerBehaviors(tester.getLastRenderedPage());

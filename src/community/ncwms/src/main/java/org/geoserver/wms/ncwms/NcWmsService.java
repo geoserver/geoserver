@@ -266,8 +266,6 @@ public class NcWmsService {
         // We have already checked before invoking this method that the list isn't null nor empty
         final boolean nearestMatch = timeDimension.isNearestMatchEnabled();
 
-        // if nearestMatch is enabled and there are multiple items, pass through the values and
-        // delegate the search to the getFeatureInfo call.
         DateFinder finder = nearestMatch ? DateFinder.NEAREST : DateFinder.QUERY;
         return finder.findDates(wms, coverage, times);
     }

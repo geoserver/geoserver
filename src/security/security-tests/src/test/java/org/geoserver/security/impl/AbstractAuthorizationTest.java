@@ -56,6 +56,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected LayerInfo statesLayer;
 
+    protected LayerInfo regionsLayer;
+
     protected LayerInfo landmarksLayer;
 
     protected LayerInfo basesLayer;
@@ -115,6 +117,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected List<WMTSLayerInfo> wmtsLayers;
 
     protected LayerGroupInfo namedTreeA;
+
+    protected LayerGroupInfo namedTreeB;
+
+    protected LayerGroupInfo namedTreeC;
 
     protected LayerGroupInfo containerTreeB;
 
@@ -180,6 +186,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         landmarksLayer = buildLayer("landmarks", toppWs, FeatureTypeInfo.class);
         basesLayer = buildLayer("bases", toppWs, FeatureTypeInfo.class);
         forestsLayer = buildLayer("forests", toppWs, FeatureTypeInfo.class);
+        regionsLayer = buildLayer("regions", toppWs, FeatureTypeInfo.class);
         // let's add one with a dot inside the name
         arcGridLayer = buildLayer("arc.grid", nurcWs, CoverageInfo.class);
 
@@ -213,6 +220,9 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         namedTreeA =
                 buildLayerGroup(
                         "namedTreeA", Mode.NAMED, null, statesLayer, roadsLayer, citiesLayer);
+        namedTreeB = buildLayerGroup("namedTreeB", Mode.NAMED, null, true, false, regionsLayer);
+        namedTreeC = buildLayerGroup("namedTreeC", Mode.NAMED, null, false, true, regionsLayer);
+
         nestedContainerE = buildLayerGroup("nestedContainerE", Mode.CONTAINER, null, forestsLayer);
         containerTreeB =
                 buildLayerGroup(
@@ -231,6 +241,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                         layerGroupTopp,
                         layerGroupWithSomeLockedLayer,
                         namedTreeA,
+                        namedTreeB,
+                        namedTreeC,
                         containerTreeB,
                         singleGroupC,
                         wsContainerD,
@@ -339,6 +351,25 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected LayerGroupInfo buildLayerGroup(
             String name, Mode type, WorkspaceInfo ws, PublishedInfo... contents) {
+        return buildLayerGroup(name, type, ws, true, true, contents);
+    }
+
+    protected LayerGroupInfo buildLayerGroup(
+            String name,
+            Mode type,
+            WorkspaceInfo ws,
+            boolean advertised,
+            PublishedInfo... contents) {
+        return buildLayerGroup(name, type, ws, advertised, true, contents);
+    }
+
+    protected LayerGroupInfo buildLayerGroup(
+            String name,
+            Mode type,
+            WorkspaceInfo ws,
+            boolean advertised,
+            boolean enabled,
+            PublishedInfo... contents) {
         LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
         expect(layerGroup.getName()).andReturn(name).anyTimes();
         expect(layerGroup.prefixedName())
@@ -356,6 +387,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(layerGroup.getId())
                 .andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id")
                 .anyTimes();
+        expect(layerGroup.isAdvertised()).andReturn(advertised).anyTimes();
         replay(layerGroup);
         return layerGroup;
     }

@@ -133,7 +133,9 @@ public class GetTimeSeriesResponse extends Response {
                     SimpleFeature f = fi.next();
                     Date date = (Date) f.getAttribute("date");
                     Double value = (Double) f.getAttribute("value");
-                    series.add(new Millisecond(date), value);
+                    if (!Double.isNaN(value)) {
+                        series.add(new Millisecond(date), value);
+                    }
                 }
             }
         }
@@ -186,7 +188,8 @@ public class GetTimeSeriesResponse extends Response {
                     SimpleFeature f = fi.next();
                     Date date = (Date) f.getAttribute("date");
                     Double value = (Double) f.getAttribute("value");
-                    writer.println(isoFormatter.format(date) + "," + value);
+                    writer.println(
+                            isoFormatter.format(date) + "," + (Double.isNaN(value) ? "" : value));
                 }
             }
         }

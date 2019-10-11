@@ -492,7 +492,7 @@ Raster symbology
       * no
     - * ``raster-color-map``
       * string
-      * Applies a color map to single banded input. The contents is a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1), or ``color-map-entry(color, value, opacity)``. The values must be provided in increasing order.
+      * Applies a color map to single banded input. The contents is a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1 and label will have a null value), or ``color-map-entry(color, value, opacity, label)``. The values must be provided in increasing order.
       * no
     - * ``raster-color-map-type``
       * string

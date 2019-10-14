@@ -4,6 +4,12 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -32,13 +38,6 @@ import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
 /** */
 public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContributor {
@@ -171,7 +170,9 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
         template.process(context, script);
 
         // temporarily disable javascript compression since build resources are already compressed
-        GeoServerApplication.get().getResourceSettings().setJavaScriptCompressor(new NoOpTextCompressor());
+        GeoServerApplication.get()
+                .getResourceSettings()
+                .setJavaScriptCompressor(new NoOpTextCompressor());
 
         header.render(
                 CssHeaderItem.forReference(
@@ -221,13 +222,15 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
     }
 
     /**
-     * As soon as the {@link GeoStylerTabPanel} is removed the default Javascript compression
-     * needs to be enabled
+     * As soon as the {@link GeoStylerTabPanel} is removed the default Javascript compression needs
+     * to be enabled
      */
     @Override
     protected void onRemove() {
         // (re-) enable javascript compression
-        GeoServerApplication.get().getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
+        GeoServerApplication.get()
+                .getResourceSettings()
+                .setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
         super.onRemove();
     }

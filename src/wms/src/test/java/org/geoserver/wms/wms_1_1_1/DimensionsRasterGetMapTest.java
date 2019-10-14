@@ -11,13 +11,17 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapCallback;
@@ -837,5 +841,35 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertWarningCount(2);
         assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
         assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
+    }
+
+    @Test
+    public void testNearestTimes() throws Exception {
+        setupRasterDimension(
+                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+
+        CoverageInfo info = getCatalog().getCoverageByName(TIMESERIES.getLocalPart());
+        DimensionInfo dim = (DimensionInfo) info.getMetadata().get(ResourceInfo.TIME);
+        dim.setNearestMatchEnabled(true);
+        dim.setAcceptableInterval("P2D");
+        getCatalog().save(info);
+
+        TimeParser parser = new TimeParser();
+        List<Object> queryRanges = (List<Object>) parser.parse("2014-01-01/2019-01-01/P1Y");
+        // 1Y Period is 365.25 days so the parsing will result in days not aligned to 1st of January
+        // at 00:00:00
+
+        // Add a duplicate
+        Date duplicate = (Date) ((List<Object>) parser.parse("2014-01-01T00:00:00.000Z")).get(0);
+        queryRanges.add(duplicate);
+        assertEquals(7, queryRanges.size());
+
+        WMS wms = new WMS(getGeoServer());
+        TreeSet<Date> times = wms.queryCoverageNearestMatchTimes(info, queryRanges);
+        assertEquals(6, times.size());
+        for (int i = 2014; i < 2020; i++) {
+            Date date = (Date) ((List<Object>) parser.parse(i + "-01-01T00:00:00.000Z")).get(0);
+            assertTrue(times.contains(date));
+        }
     }
 }

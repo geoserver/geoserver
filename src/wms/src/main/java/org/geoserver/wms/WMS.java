@@ -1298,6 +1298,30 @@ public class WMS implements ApplicationContextAware {
         return dimensions.getTimeDomain(queryRange, maxAnimationSteps);
     }
 
+    /**
+     * Query and returns the requested times for the given layer
+     *
+     * @throws IOException
+     */
+    public TreeSet<Date> queryCoverageNearestMatchTimes(
+            CoverageInfo coverage, List<Object> queryRanges) throws IOException {
+        DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        final TreeSet<Date> foundDates = new TreeSet<Date>();
+        if (time == null || !time.isEnabled()) {
+            throw new ServiceException(
+                    "Coverage " + coverage.prefixedName() + " does not have time support enabled");
+        }
+
+        List<Object> dates = getNearestMatches(coverage, time, queryRanges, ResourceInfo.TIME);
+        dates.stream()
+                .forEach(
+                        d -> {
+                            Date date = (Date) d;
+                            foundDates.add(date);
+                        });
+        return foundDates;
+    }
+
     /** Query and returns the times for the given layer, in the given time range */
     public TreeSet<Object> queryFeatureTypeTimes(
             FeatureTypeInfo typeInfo, DateRange range, int maxItems) throws IOException {

@@ -79,10 +79,7 @@ import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.renderer.lite.LabelCache;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.renderer.lite.RenderingTransformationHelper;
-import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.renderer.lite.*;
 import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.styling.RasterSymbolizer;
@@ -344,8 +341,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // TODO: handle color conversions
         // TODO: handle meta-tiling
         // TODO: how to handle timeout here? I guess we need to move it into the dispatcher?
-
         RenderedImage image = null;
+        RenderTimeStatistics statistics = new RenderTimeStatistics();
         // fast path for pure coverage rendering
         if (DefaultWebMapService.isDirectRasterPathEnabled()
                 && mapContent.layers().size() == 1
@@ -357,12 +354,17 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 if (request.getInterpolations() != null && request.getInterpolations().size() > 0) {
                     interpolation = request.getInterpolations().get(0);
                 }
+
                 image = directRasterRender(mapContent, 0, renderedCoverages, interpolation);
+
             } catch (Exception e) {
                 throw new ServiceException("Error rendering coverage on the fast path", e);
             }
 
             if (image != null) {
+                image = new RenderedImageTimeDecorator(image);
+                // setting the layer triggers layerStartEvent
+                ((RenderedImageTimeDecorator) image).setLayer(mapContent.layers().get(0));
                 return buildMap(mapContent, image);
             }
         }
@@ -570,7 +572,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final RenderExceptionStrategy nonIgnorableExceptionListener;
         nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
-
+        renderer.addRenderListener(statistics);
         onBeforeRender(renderer);
 
         int maxRenderingTime = wms.getMaxRenderingTime(request);
@@ -655,6 +657,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } finally {
             timeout.stop();
             graphic.dispose();
+            statistics.renderingComplete();
         }
         throw serviceException;
     }

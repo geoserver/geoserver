@@ -167,11 +167,16 @@ The following attributes are OGC service specific.
    * - Resources
      - Names of resources (layers, processes, etc...) specified as part of the request.
      - List of String
+   * - Resources processing times in milliseconds.
+     - Rendering times for resources.
+     - List of Numeric
+   * - Labels Processing Time
+     - Processing time in milliseconds for the labels of all resources listed.
+     - Numeric
    * - Bounding box
      - The bounding box specified as part of the request. In some cases this is not possible to 
        obtain this reliable, an example being a complex WFS query with a nested "BBOX" filter.
      - List of Numeric
-
 
 GeoIP
 -----
@@ -198,7 +203,7 @@ The following attributes are specific to GeoIP look ups and are not captured out
    * - Remote lon
      - The longitude from which the request originated.
      - Numeric
-   
+
 GWC 
 ---
 

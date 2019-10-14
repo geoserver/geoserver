@@ -112,6 +112,9 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 formatImageOutputStream(image, output, mapContent);
                 output.flush();
             } finally {
+                if (image instanceof RenderedImageTimeDecorator) {
+                    ((RenderedImageTimeDecorator) image).getStatistics().renderingComplete();
+                }
                 // let go of the coverages created for rendering
                 for (GridCoverage2D coverage : renderedCoverages) {
                     RasterCleaner.addCoverage(coverage);

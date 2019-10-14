@@ -38,6 +38,7 @@ import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -119,6 +120,7 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
 
     @Test
+    @Ignore // still randomly fails due to https://osgeo-org.atlassian.net/browse/GEOS-9367
     public void testConcurrentGet() throws Exception {
         ExecutorCompletionService<Object> es =
                 new ExecutorCompletionService<>(
@@ -139,6 +141,7 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
 
     @Test
+    @Ignore // still randomly fails due to https://osgeo-org.atlassian.net/browse/GEOS-9367
     public void testConcurrentPost() throws Exception {
         ExecutorCompletionService<Object> es =
                 new ExecutorCompletionService<>(

@@ -78,7 +78,7 @@ The following guidelines are meant to ensure that your pull request is as easy a
 GeoServer does not have much in the way of strict commit policies. Our current conventions are:
 
 1. **Add copyright headers:**
-   * Remember to add a copyright header with the year of creation to any new file. As an example, if you are adding a file in 2016 the copyright header would be:
+   * Remember to add a copyright header with the year of creation to any new file. As an example, if you are adding a file in 2018 the copyright header would be:
 
    ```
    /* (c) 2018 Open Source Geospatial Foundation - all rights reserved

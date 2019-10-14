@@ -74,6 +74,9 @@ public class GetLegendGraphicRequest extends WMSRequest {
     /** Legend option to enable feature count matching */
     public static final String COUNT_MATCHED_KEY = "countMatched";
 
+    /** Legend option to enable feature count matching */
+    public static final String HIDE_EMPTY_RULES = "hideEmptyRules";
+
     /**
      * Details collected for an individual LegendGraphic including layer, title, style and optional
      * legend graphic.

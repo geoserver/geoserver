@@ -27,6 +27,7 @@ import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.SecurityUtils;
+import org.geoserver.wms.map.RenderTimeStatistics;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -169,6 +170,19 @@ public class MonitorFilter implements GeoServerFilter {
 
         data.setEndTime(new Date());
         data.setTotalTime(data.getEndTime().getTime() - data.getStartTime().getTime());
+        RenderTimeStatistics statistics =
+                (RenderTimeStatistics) request.getAttribute(RenderTimeStatistics.ID);
+        if (statistics != null) {
+            List<Long> renderingTimeLayers =
+                    new ArrayList<>(statistics.getRenderingLayersIdxs().size());
+            data.setLabellingProcessingTime(statistics.getLabellingTime());
+            data.setResources(statistics.getLayerNames());
+            for (Integer idx : statistics.getRenderingLayersIdxs()) {
+                renderingTimeLayers.add(statistics.getRenderingTime(idx));
+            }
+            data.setResourcesProcessingTime(renderingTimeLayers);
+            if (data.getEndTime() == null) data.setEndTime(new Date());
+        }
         monitor.update();
         data = monitor.current();
 
@@ -241,7 +255,7 @@ public class MonitorFilter implements GeoServerFilter {
 
     /**
      * Audit consumer function to be executed on the underlying PostProcessTask thread. Will receive
-     * {@link RequestData} and {@link Authentication} from thread execution.
+     * {@link org.geoserver.monitor.RequestData} and {@link Authentication} from thread execution.
      */
     void setExecutionAudit(BiConsumer<RequestData, Authentication> executionAudit) {
         this.executionAudit = executionAudit;
@@ -299,8 +313,8 @@ public class MonitorFilter implements GeoServerFilter {
         }
 
         /**
-         * Audit consumer function. Will receive post processed {@link RequestData} and run time
-         * {@link Authentication}.
+         * Audit consumer function. Will receive post processed {@link
+         * org.geoserver.monitor.RequestData} and run time {@link Authentication}.
          */
         void setExecutionAudit(BiConsumer<RequestData, Authentication> executionAudit) {
             this.executionAudit = executionAudit;

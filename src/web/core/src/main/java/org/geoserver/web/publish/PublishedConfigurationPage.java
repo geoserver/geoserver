@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.platform.GeoServerExtensions;
@@ -38,6 +39,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.resource.LayerModel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
+import org.geoserver.web.security.LayerAccessDataRulePanel;
 import org.geoserver.web.security.LayerAccessDataRulePanelInfo;
 
 /**
@@ -146,10 +148,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 GeoServerExtensions.extensions(ModuleStatus.class)
                         .stream()
                         .anyMatch(
-                                m ->
-                                        m.hasCapability(
-                                                ModuleCapabilities.Capability
-                                                        .ADVANCED_SECURITY_CONFIG));
+                                m -> m.hasCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG));
         for (PublishedEditTabPanelInfo ttabPanelInfo : tabPanels) {
             if (ttabPanelInfo.supports(getPublishedInfo())) {
 
@@ -227,6 +226,12 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
                             @Override
                             public void onSubmit() {
+                                WebMarkupContainer panel =
+                                        tabs.get(index).getPanel("dataAccessPanel");
+                                if (myModel.getObject() instanceof LayerGroupInfo
+                                        && panel instanceof LayerAccessDataRulePanel) {
+                                    ((LayerAccessDataRulePanel) panel).reloadOwnModel();
+                                }
                                 setSelectedTab(index);
                             }
                         };

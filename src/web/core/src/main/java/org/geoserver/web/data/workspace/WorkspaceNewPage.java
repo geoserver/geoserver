@@ -39,7 +39,7 @@ import org.geoserver.platform.ModuleCapabilities;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.security.AccessDataRuleInfoManager;
-import org.geoserver.web.security.AccessDataRulePanelWs;
+import org.geoserver.web.security.AccessDataRulePanel;
 import org.geoserver.web.security.DataAccessRuleInfo;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
@@ -50,7 +50,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = -4355978268880701910L;
 
     TextField<String> nsUriTextField;
-    AccessDataRulePanelWs accessdataPanel;
+    AccessDataRulePanel accessdataPanel;
     WsNewBasicInfoPanel infoPanel;
     TabbedPanel tabbedPanel;
 
@@ -70,16 +70,12 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                     @Override
                     public WebMarkupContainer getPanel(String panelId) {
                         infoPanel = new WsNewBasicInfoPanel(panelId, model);
-                        ;
                         return infoPanel;
                     }
                 });
         if (!GeoServerExtensions.extensions(ModuleStatus.class)
                 .stream()
-                .anyMatch(
-                        m ->
-                                m.hasCapability(
-                                        ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG))) {
+                .anyMatch(m -> m.hasCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG))) {
             tabs.add(
                     new AbstractTab(new Model<>("Security")) {
 
@@ -91,7 +87,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                             ListModel<DataAccessRuleInfo> ownModel =
                                     new ListModel<>(
                                             manager.getDataAccessRuleInfo(model.getObject()));
-                            accessdataPanel = new AccessDataRulePanelWs(panelId, model, ownModel);
+                            accessdataPanel = new AccessDataRulePanel(panelId, model, ownModel);
                             return accessdataPanel;
                         }
                     });

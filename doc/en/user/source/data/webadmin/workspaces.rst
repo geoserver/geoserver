@@ -27,7 +27,7 @@ The Security tab allows to set data access rules at workspace level.
 .. figure:: img/data_workspaces_security_edit.png
 
 To create/edit workspace's data access rules simply check/uncheck checkboxes according to the desidered role. 
-The Grant access to any role checkbox grant each role for admin access mode.
+The Grant access to any role checkbox grant each role for any access mode.
 
 Root Directory for REST PathMapper 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

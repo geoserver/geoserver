@@ -408,5 +408,5 @@ Sets data access rules at layer level.
 
 .. figure:: img/data_layers_security_editor.png
 
-To create/edit layer's data access rules simply check/uncheck checkboxes according to desidered access mode (namely read and write) and role. 
+To create/edit layer's data access rules simply check/uncheck checkboxes according to desidered access mode and role. 
 The Grant access to any role checkboxe grant each role for each access mode.

@@ -66,7 +66,7 @@ import org.geoserver.web.admin.GlobalSettingsPage;
 import org.geoserver.web.data.namespace.NamespaceDetachableModel;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.security.AccessDataRuleInfoManager;
-import org.geoserver.web.security.AccessDataRulePanelWs;
+import org.geoserver.web.security.AccessDataRulePanel;
 import org.geoserver.web.security.DataAccessRuleInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
@@ -88,7 +88,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     IModel<NamespaceInfo> nsModel;
     SettingsPanel settingsPanel;
     ServicesPanel servicesPanel;
-    AccessDataRulePanelWs accessdataPanel;
+    AccessDataRulePanel accessdataPanel;
     WsEditBasicInfoPanel basicInfoPanel;
     GeoServerDialog dialog;
     TabbedPanel tabbedPanel;
@@ -152,10 +152,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 });
         if (!GeoServerExtensions.extensions(ModuleStatus.class)
                 .stream()
-                .anyMatch(
-                        m ->
-                                m.hasCapability(
-                                        ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG))) {
+                .anyMatch(m -> m.hasCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG))) {
             tabs.add(
                     new AbstractTab(new Model<String>("Security")) {
 
@@ -167,7 +164,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                             ListModel<DataAccessRuleInfo> ownModel =
                                     new ListModel<>(
                                             manager.getDataAccessRuleInfo(wsModel.getObject()));
-                            accessdataPanel = new AccessDataRulePanelWs(panelId, wsModel, ownModel);
+                            accessdataPanel = new AccessDataRulePanel(panelId, wsModel, ownModel);
                             return accessdataPanel;
                         }
                     });

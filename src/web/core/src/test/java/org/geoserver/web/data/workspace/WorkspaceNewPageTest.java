@@ -225,14 +225,14 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     public void testSecurityTabInactiveWithGeofenceActive() {
         ApplicationContext context = GeoServerApplication.get().getApplicationContext();
         ModuleStatusImpl module = (ModuleStatusImpl) context.getBean("gs-geofence");
-        module.addCapability(ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG);
+        module.addCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG);
         tester.startPage(WorkspaceNewPage.class);
         try {
             tester.newFormTester("form");
             TabbedPanel tabs = (TabbedPanel) tester.getComponentFromLastRenderedPage("form:tabs");
             assertTrue(tabs.getTabs().size() == 1);
         } finally {
-            module.getCapabilities().remove(ModuleCapabilities.Capability.ADVANCED_SECURITY_CONFIG);
+            module.getCapabilities().remove(ModuleCapabilities.ADVANCED_SECURITY_CONFIG);
         }
     }
 }

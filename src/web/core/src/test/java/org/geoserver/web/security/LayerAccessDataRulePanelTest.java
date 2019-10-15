@@ -43,7 +43,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                         }));
 
         tester.assertComponent("form:panel", LayerAccessDataRulePanel.class);
-        tester.assertComponent("form:panel:dataAccessPanel", AccessDataRulePanelPublished.class);
+        tester.assertComponent("form:panel:dataAccessPanel", AccessDataRulePanel.class);
         tester.assertComponent(
                 "form:panel:dataAccessPanel:listContainer", WebMarkupContainer.class);
         tester.assertComponent(

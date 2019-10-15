@@ -128,11 +128,8 @@
           lazy-init="false">
     </bean>
 
-    <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <bean class="org.geoserver.geofence.GeoFenceModuleStatus">
         <constructor-arg index="0" value="gs-geofence"/>
         <constructor-arg index="1" value="GeoFence"/>
-        <constructor-arg index="2">
-            <value type="org.geoserver.platform.ModuleCapabilities.Capability">ADVANCED_SECURITY_CONFIG</value>
-        </constructor-arg>
     </bean>
 </beans>

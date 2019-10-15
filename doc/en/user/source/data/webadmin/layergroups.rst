@@ -99,7 +99,7 @@ Security tab allows to set data access rules at layer group level.
 
 .. figure:: img/data_layergroups_security.png
 
-To create/edit layergroup's data access rules simply check/uncheck checkboxes according to desidered access mode (namely read and write) and role. 
+To create/edit layergroup's data access rules simply check/uncheck checkboxes according to desidered access mode and role. 
 The Grant access to any role checkbox grant each role for each access mode.
 
 Add a Layer Group

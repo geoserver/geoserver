@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @author Morgan Thompson - Boundless
  */
-public interface ModuleStatus extends ModuleCapabilities {
+public interface ModuleStatus {
 
     /**
      * Module identifier based on artifact bundle Example: <code>gs-main</code>, <code>gs-oracle
@@ -47,4 +47,8 @@ public interface ModuleStatus extends ModuleCapabilities {
 
     /** Optional relative link to GeoServer user manual */
     Optional<String> getDocumentation();
+
+    default boolean hasCapability(ModuleCapabilities capability) {
+        return false;
+    }
 }

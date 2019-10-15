@@ -76,6 +76,14 @@ public class AccessDataRuleInfoManager {
                 .collect(Collectors.toSet());
     }
 
+    public Set<DataAccessRule> getGlobalLayerGroupSecurityRule(String layerGroupName) {
+
+        return getRules()
+                .stream()
+                .filter(r -> r.getRoot().equalsIgnoreCase(layerGroupName))
+                .collect(Collectors.toSet());
+    }
+
     public Set<DataAccessRule> getLayerSecurityRule(String workspaceName, String layerName) {
 
         return getRules()
@@ -88,13 +96,17 @@ public class AccessDataRuleInfoManager {
     }
 
     public Set<DataAccessRule> getResourceRule(String workspaceName, CatalogInfo info) {
-        if (info instanceof PublishedInfo) {
-            return getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
+        Set<DataAccessRule> rules = null;
+        if (info instanceof LayerInfo) {
+            rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
+        } else if (info instanceof LayerGroupInfo) {
+            if (workspaceName == null)
+                rules = getGlobalLayerGroupSecurityRule(((LayerGroupInfo) info).getName());
+            else rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
         } else if (info instanceof WorkspaceInfo) {
-            return getWorkspaceDataAccessRules(((WorkspaceInfo) info).getName());
-        } else {
-            return null;
+            rules = getWorkspaceDataAccessRules(((WorkspaceInfo) info).getName());
         }
+        return rules;
     }
 
     public List<DataAccessRuleInfo> mapTo(
@@ -107,18 +119,14 @@ public class AccessDataRuleInfoManager {
         for (String auth : authorities) {
             Set<AccessMode> modes = new HashSet<>(3);
             for (AccessMode mode : MODES) {
-                if (mode == AccessMode.ADMIN && layerName != null) {
-                    continue;
-                } else {
-                    rules.stream()
-                            .filter(r -> r.getAccessMode() == mode)
-                            .forEach(
-                                    r -> {
-                                        if (r.getRoles().contains(auth)) {
-                                            modes.add(mode);
-                                        }
-                                    });
-                }
+                rules.stream()
+                        .filter(r -> r.getAccessMode() == mode)
+                        .forEach(
+                                r -> {
+                                    if (r.getRoles().contains(auth)) {
+                                        modes.add(mode);
+                                    }
+                                });
             }
             modeRoleMap.put(auth, modes);
         }
@@ -152,32 +160,35 @@ public class AccessDataRuleInfoManager {
             List<DataAccessRuleInfo> newRules,
             Set<String> authorities,
             String wsName,
-            String layerName) {
+            String layerName,
+            boolean globalLayerGroup) {
 
         Set<DataAccessRule> rules = new HashSet<>(authorities.size());
         Map<AccessMode, Set<String>> modeRoleMap = new HashMap<>(MODES.size());
         for (AccessMode mode : MODES) {
-            if (mode == AccessMode.ADMIN && layerName != null) {
-                continue;
-            } else {
-                Set<String> selectedRoles = new HashSet<>();
-                for (String auth : authorities) {
-                    newRules.stream()
-                            .filter(role -> role.getRoleName().equalsIgnoreCase(auth))
-                            .forEach(
-                                    rule -> {
-                                        if (rule.hasMode(mode)) selectedRoles.add(auth);
-                                    });
-                }
-                modeRoleMap.put(mode, selectedRoles);
+            Set<String> selectedRoles = new HashSet<>();
+            for (String auth : authorities) {
+                newRules.stream()
+                        .filter(role -> role.getRoleName().equalsIgnoreCase(auth))
+                        .forEach(
+                                rule -> {
+                                    if (rule.hasMode(mode)) selectedRoles.add(auth);
+                                });
             }
+            modeRoleMap.put(mode, selectedRoles);
         }
         for (AccessMode key : modeRoleMap.keySet()) {
             Set<String> roles = modeRoleMap.get(key);
             if (roles != null && roles.size() > 0) {
                 DataAccessRule rule = new DataAccessRule();
-                rule.setRoot(wsName);
-                rule.setLayer(layerName != null ? layerName : "*");
+                if (!globalLayerGroup) {
+                    rule.setRoot(wsName);
+                    rule.setLayer(layerName != null ? layerName : "*");
+                } else {
+                    rule.setRoot(layerName);
+                    rule.setLayer(null);
+                    rule.setGlobalGroupRule(true);
+                }
                 rule.setAccessMode(key);
                 rule.getRoles().addAll(roles);
                 rules.add(rule);

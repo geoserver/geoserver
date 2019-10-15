@@ -8,11 +8,19 @@
             <thead>
             <tr>
                 <th><wicket:message key="availableRoles">Available Roles</wicket:message></th>
+                <th><wicket:message key="read">Read</wicket:message></th>
+                <th><wicket:message key="write">Write</wicket:message></th>
                 <th><wicket:message key="admin">Admin</wicket:message></th>
             </tr>
             </thead>
             <tr wicket:id="rules">
                 <td><span wicket:id="roleName"></span></td>
+                <td>
+                    <input type="checkbox" wicket:id="read">
+                </td>
+                <td>
+                    <input type="checkbox" wicket:id="write">
+                </td>
                 <td>
                     <input type="checkbox" wicket:id="admin">
                 </td>

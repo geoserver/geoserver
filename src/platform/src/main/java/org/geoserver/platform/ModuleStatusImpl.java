@@ -51,7 +51,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
 
     private boolean isAvailable;
 
-    private List<ModuleCapabilities.Capability> capabilities;
+    private List<ModuleCapabilities> capabilities;
 
     public ModuleStatusImpl() {}
 
@@ -82,14 +82,6 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.name = name;
         this.isAvailable = true;
         this.isEnabled = true;
-    }
-
-    public ModuleStatusImpl(String module, String name, Capability capability) {
-        this.module = module;
-        this.name = name;
-        this.isAvailable = true;
-        this.isEnabled = true;
-        addCapability(capability);
     }
 
     /** @return the machine readable name */
@@ -224,21 +216,21 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         return null;
     }
 
-    public List<Capability> getCapabilities() {
+    public List<ModuleCapabilities> getCapabilities() {
         return capabilities;
     }
 
-    public void setCapabilities(List<Capability> capabilities) {
+    public void setCapabilities(List<ModuleCapabilities> capabilities) {
         this.capabilities = capabilities;
     }
 
-    public void addCapability(Capability capability) {
-        if (capabilities == null) capabilities = new ArrayList<Capability>();
+    public void addCapability(ModuleCapabilities capability) {
+        if (capabilities == null) capabilities = new ArrayList<ModuleCapabilities>();
         capabilities.add(capability);
     }
 
     @Override
-    public boolean hasCapability(Capability capability) {
+    public boolean hasCapability(ModuleCapabilities capability) {
         if (capabilities != null && capabilities.contains(capability)) return true;
         return false;
     }

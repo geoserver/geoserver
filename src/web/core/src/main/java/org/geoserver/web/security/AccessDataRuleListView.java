@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.security;
 
 import java.util.ArrayList;
@@ -14,34 +18,28 @@ import org.apache.wicket.model.PropertyModel;
 public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
 
     private List<CheckBox> checkBoxes;
-    private boolean ws;
     private Boolean selectAll;
 
-    public AccessDataRuleListView(String id, IModel<List<DataAccessRuleInfo>> model, boolean ws) {
+    public AccessDataRuleListView(String id, IModel<List<DataAccessRuleInfo>> model) {
         super(id, model);
-        this.ws = ws;
-        if (checkBoxes == null)
-            checkBoxes = new ArrayList<CheckBox>(model.getObject().size() * (ws ? 1 : 2));
+        if (checkBoxes == null) checkBoxes = new ArrayList<CheckBox>(model.getObject().size() * 3);
     }
 
     @Override
     protected void populateItem(ListItem<DataAccessRuleInfo> item) {
         DataAccessRuleInfo ruleModel = item.getModelObject();
         item.add(new Label("roleName", new PropertyModel<String>(ruleModel, "roleName")));
-        if (!ws) {
-            CheckBox readCheckBox = new CheckBox("read", new PropertyModel<>(ruleModel, "read"));
-            readCheckBox.setOutputMarkupId(true);
-            item.add(readCheckBox);
-            CheckBox writeCheckBox = new CheckBox("write", new PropertyModel<>(ruleModel, "write"));
-            item.add(writeCheckBox);
-            checkBoxes.add(readCheckBox);
-            checkBoxes.add(writeCheckBox);
-        } else {
-            CheckBox adminCheckBox = new CheckBox("admin", new PropertyModel<>(ruleModel, "admin"));
-            adminCheckBox.setOutputMarkupId(true);
-            item.add(adminCheckBox);
-            checkBoxes.add(adminCheckBox);
-        }
+        CheckBox readCheckBox = new CheckBox("read", new PropertyModel<>(ruleModel, "read"));
+        readCheckBox.setOutputMarkupId(true);
+        item.add(readCheckBox);
+        CheckBox writeCheckBox = new CheckBox("write", new PropertyModel<>(ruleModel, "write"));
+        item.add(writeCheckBox);
+        checkBoxes.add(readCheckBox);
+        checkBoxes.add(writeCheckBox);
+        CheckBox adminCheckBox = new CheckBox("admin", new PropertyModel<>(ruleModel, "admin"));
+        adminCheckBox.setOutputMarkupId(true);
+        item.add(adminCheckBox);
+        checkBoxes.add(adminCheckBox);
         addNewCheckboxesUpdateBeahaviour();
         this.selectAll = checkAllSelected();
     }
@@ -60,14 +58,6 @@ public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
             else return false;
         }
         return true;
-    }
-
-    public boolean isWs() {
-        return ws;
-    }
-
-    public void setWs(boolean ws) {
-        this.ws = ws;
     }
 
     public Boolean getSelectAll() {

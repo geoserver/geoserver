@@ -16,7 +16,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.*;
 import org.geoserver.security.impl.DataAccessRule;
 
-public class AccessDataRulePanelPublished extends Panel {
+public class AccessDataRulePanel extends Panel {
 
     private static final long serialVersionUID = -5609090679199229976L;
 
@@ -26,15 +26,15 @@ public class AccessDataRulePanelPublished extends Panel {
 
     private String layerName;
 
-    private PublishedInfo info;
+    private CatalogInfo info;
 
     private AccessDataRuleListView dataAccessView;
 
     WebMarkupContainer listContainer;
 
-    public AccessDataRulePanelPublished(
+    public AccessDataRulePanel(
             String id,
-            IModel<? extends PublishedInfo> model,
+            IModel<? extends CatalogInfo> model,
             IModel<List<DataAccessRuleInfo>> ownModel) {
         super(id, model);
         AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
@@ -44,7 +44,7 @@ public class AccessDataRulePanelPublished extends Panel {
         this.ownModel = ownModel;
         listContainer = new WebMarkupContainer("listContainer");
         listContainer.setOutputMarkupId(true);
-        dataAccessView = new AccessDataRuleListView("rules", ownModel, false);
+        dataAccessView = new AccessDataRuleListView("rules", ownModel);
         listContainer.add(selectAllCheckbox());
         dataAccessView.setOutputMarkupId(true);
         ownModel.setObject(dataAccessView.getList());
@@ -57,9 +57,11 @@ public class AccessDataRulePanelPublished extends Panel {
         Set<DataAccessRule> rules;
         Set<String> roles = manager.getAvailableRoles();
         rules = manager.getLayerSecurityRule(workspaceName, layerName);
-
+        boolean globalLayerGroup =
+                info instanceof LayerGroupInfo && workspaceName == null ? true : false;
         Set<DataAccessRule> news =
-                manager.mapFrom(ownModel.getObject(), roles, workspaceName, layerName);
+                manager.mapFrom(
+                        ownModel.getObject(), roles, workspaceName, layerName, globalLayerGroup);
         manager.saveRules(rules, news);
     }
 

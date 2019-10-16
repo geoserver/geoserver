@@ -21,6 +21,6 @@ public class StylesLandingPage extends AbstractLandingPageDocument {
                 "Styles Metadata as ",
                 "styles",
                 null,
-                "data");
+                "styles");
     }
 }

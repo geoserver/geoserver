@@ -138,9 +138,9 @@ public class LandingPageTest extends StylesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/styles\\/styles.*/)].rel",
-                "data",
-                "data",
-                "data");
+                "styles",
+                "styles",
+                "styles");
         // check title
         assertEquals("Styles server", json.read("title"));
         // check description

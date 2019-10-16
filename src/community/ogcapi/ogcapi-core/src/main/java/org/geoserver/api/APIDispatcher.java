@@ -7,6 +7,7 @@ package org.geoserver.api;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -87,6 +88,7 @@ public class APIDispatcher extends AbstractController {
     protected List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
 
     private List<DocumentCallback> documentCallbacks;
+    private List<OpenAPICallback> apiCallbacks;
     protected RequestMappingHandlerMapping mappingHandler;
 
     protected RequestMappingHandlerAdapter handlerAdapter;
@@ -104,9 +106,10 @@ public class APIDispatcher extends AbstractController {
     @Override
     protected void initApplicationContext(ApplicationContext context) {
         // load life cycle callbacks
-        callbacks = GeoServerExtensions.extensions(DispatcherCallback.class, context);
-        exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
+        this.callbacks = GeoServerExtensions.extensions(DispatcherCallback.class, context);
+        this.exceptionHandlers = GeoServerExtensions.extensions(APIExceptionHandler.class, context);
         this.documentCallbacks = GeoServerExtensions.extensions(DocumentCallback.class, context);
+        this.apiCallbacks = GeoServerExtensions.extensions(OpenAPICallback.class, context);
 
         LocalWorkspaceURLPathHelper pathHelper = new LocalWorkspaceURLPathHelper();
         this.mappingHandler =
@@ -281,7 +284,9 @@ public class APIDispatcher extends AbstractController {
 
             // if it's an AbstractDocument call the DocumentCallback implementations
             if (returnValue instanceof AbstractDocument) {
-                applyDocumentCallbacks((AbstractDocument) returnValue);
+                applyDocumentCallbacks(dr, (AbstractDocument) returnValue);
+            } else if (returnValue instanceof OpenAPI) {
+                applyOpenAPICallbacks(dr, (OpenAPI) returnValue);
             }
 
             // and then the dispatcher callbacks
@@ -617,11 +622,24 @@ public class APIDispatcher extends AbstractController {
     /**
      * Applies all available callbacks to the document
      *
+     * @param dr
      * @param document The document the {@link DocumentCallback} will operate on
      */
-    private void applyDocumentCallbacks(AbstractDocument document) {
+    private void applyDocumentCallbacks(Request dr, AbstractDocument document) {
         for (DocumentCallback callback : documentCallbacks) {
-            callback.apply(document);
+            callback.apply(dr, document);
+        }
+    }
+
+    /**
+     * Applies all available callbacks to the API description
+     *
+     * @param dr
+     * @param api The document the {@link OpenAPICallback} will operate on
+     */
+    private void applyOpenAPICallbacks(Request dr, OpenAPI api) {
+        for (OpenAPICallback callback : apiCallbacks) {
+            callback.apply(dr, api);
         }
     }
 }

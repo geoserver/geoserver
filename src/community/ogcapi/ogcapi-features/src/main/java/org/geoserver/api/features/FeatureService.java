@@ -14,9 +14,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
+import org.geoserver.api.APIBBoxParser;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
@@ -35,7 +35,6 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -74,10 +73,6 @@ public class FeatureService {
 
     private final GeoServer geoServer;
 
-    // this could be done in an argument resolver returning a Filter, for example, however
-    // each protocol would need a different thing, so kept the KVP parser as a way to have
-    // private logic here
-    private FeaturesBBoxKvpParser bboxParser = new FeaturesBBoxKvpParser();
     private TimeParser timeParser = new TimeParser();
 
     public FeatureService(GeoServer geoServer) {
@@ -185,7 +180,7 @@ public class FeatureService {
         query.setTypeNames(Arrays.asList(new QName(ft.getNamespace().getURI(), ft.getName())));
         List<Filter> filters = new ArrayList<>();
         if (bbox != null) {
-            filters.add(buildBBOXFilter(bbox));
+            filters.add(APIBBoxParser.toFilter(bbox));
         }
         if (time != null) {
             filters.add(buildTimeFilter(ft, time));
@@ -274,22 +269,6 @@ public class FeatureService {
             return filters.get(0);
         } else {
             return FF.or(filters);
-        }
-    }
-
-    public Filter buildBBOXFilter(@RequestParam(name = "bbox", required = false) String bbox)
-            throws Exception {
-        Object parsed = bboxParser.parse(bbox);
-        if (parsed instanceof ReferencedEnvelope) {
-            return FF.bbox(FF.property(""), (ReferencedEnvelope) parsed);
-        } else if (parsed instanceof ReferencedEnvelope[]) {
-            List<Filter> filters =
-                    Stream.of((ReferencedEnvelope[]) parsed)
-                            .map(e -> FF.bbox(FF.property(""), e))
-                            .collect(Collectors.toList());
-            return FF.or(filters);
-        } else {
-            throw new IllegalArgumentException("Could not understand parsed bbox " + parsed);
         }
     }
 

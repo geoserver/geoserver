@@ -241,7 +241,9 @@ public class TilesService {
         if (styleId != null) {
             validateStyle(tileLayer, styleId);
         }
-        MimeType requestedFormat = getRequestedFormat(tileLayer, renderedTile);
+        MimeType requestedFormat =
+                getRequestedFormat(
+                        tileLayer, renderedTile, APIRequestInfo.get().getRequestedMediaTypes());
         long[] tileIndex = getTileIndex(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer);
         String name =
                 tileLayer instanceof GeoServerTileLayer
@@ -313,7 +315,7 @@ public class TilesService {
         return new ResponseEntity(tileBytes, headers, HttpStatus.OK);
     }
 
-    private void validateStyle(TileLayer tileLayer, String styleId) {
+    public static void validateStyle(TileLayer tileLayer, String styleId) {
         // is it the default style? if so, nothing to check
         if (styleId.equalsIgnoreCase(tileLayer.getStyles())) {
             return;
@@ -332,6 +334,25 @@ public class TilesService {
                             + tileLayer.getStyles(),
                     HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * Checks the specified griset is supported by the tile layer, and returns it
+     *
+     * @param tileLayer
+     * @param tileMatrixSetId
+     * @return
+     */
+    public static GridSubset getGridSubset(TileLayer tileLayer, String tileMatrixSetId) {
+        GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixSetId);
+        if (gridSubset == null) {
+            throw new APIException(
+                    "InvalidParameterValue",
+                    "Invalid tileMatrixSetId " + tileMatrixSetId,
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        return gridSubset;
     }
 
     private Map<String, String> filterParameters(String styleId) {
@@ -410,8 +431,8 @@ public class TilesService {
         return gridSubset.getGridIndex(tileMatrix);
     }
 
-    private MimeType getRequestedFormat(TileLayer tileLayer, boolean renderedTile) {
-        List<MediaType> requestedTypes = APIRequestInfo.get().getRequestedMediaTypes();
+    public static MimeType getRequestedFormat(
+            TileLayer tileLayer, boolean renderedTile, List<MediaType> requestedTypes) {
         Map<MediaType, MimeType> layerTypes =
                 tileLayer
                         .getMimeTypes()
@@ -419,13 +440,30 @@ public class TilesService {
                         .filter(mt -> renderedTile ? !mt.isVector() : mt.isVector())
                         .collect(
                                 Collectors.toMap(
-                                        mt -> MediaType.parseMediaType(mt.getFormat()), mt -> mt));
-        // process the requested types in order, return the first compatible layer type
-        for (MediaType requestedType : requestedTypes) {
-            for (Map.Entry<MediaType, MimeType> layerType : layerTypes.entrySet()) {
-                if (requestedType.equals(layerType.getKey())) {
-                    // requested types can be generic, layer types are specific
-                    return layerType.getValue();
+                                        mt -> MediaType.parseMediaType(mt.getFormat()),
+                                        mt -> mt,
+                                        (a, b) -> a,
+                                        LinkedHashMap::new));
+        if (layerTypes.isEmpty()) {
+            throw new APIException(
+                    "InvalidParameterValue",
+                    "The layer does not seem to have any cached format suitable for "
+                            + "this type of resource, check the resource is listed "
+                            + "among the tiled collection links",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (requestedTypes == null || requestedTypes.isEmpty()) {
+            // default to the first found
+            return layerTypes.values().iterator().next();
+        } else {
+            // process the requested types in order, return the first compatible layer type
+            for (MediaType requestedType : requestedTypes) {
+                for (Map.Entry<MediaType, MimeType> layerType : layerTypes.entrySet()) {
+                    if (requestedType.equals(layerType.getKey())) {
+                        // requested types can be generic, layer types are specific
+                        return layerType.getValue();
+                    }
                 }
             }
         }

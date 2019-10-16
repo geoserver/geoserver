@@ -37,6 +37,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.ows.kvp.ElevationKvpParser;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
@@ -83,6 +84,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
     private final CheckBox nearestMatch;
 
+    private final CheckBox rawNearestMatch;
+
     private final TextField<String> acceptableInterval;
 
     boolean time;
@@ -93,7 +96,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     private final WebMarkupContainer unitsContainer;
 
     public DimensionEditorBase(String id, IModel<T> model, ResourceInfo resource, Class<?> type) {
-        this(id, model, resource, type, false);
+        this(id, model, resource, type, false, false);
     }
 
     public DimensionEditorBase(
@@ -101,7 +104,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             IModel<T> model,
             ResourceInfo resource,
             Class<?> type,
-            boolean editNearestMatch) {
+            boolean editNearestMatch,
+            boolean editRawNearestMatch) {
         super(id, model);
 
         originalType = type;
@@ -350,18 +354,52 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                 new CheckBox(
                         "nearestMatchEnabled", new PropertyModel<>(model, "nearestMatchEnabled"));
         nearestMatchContainer.add(nearestMatch);
+        boolean isNearestMatchEnabled = model.getObject().isNearestMatchEnabled();
+
+        // Need to use a container to hide the label too
+        WebMarkupContainer rawNearestMatchContainer = new WebMarkupContainer("rawNearestMatch");
+        rawNearestMatch =
+                new CheckBox(
+                        "rawNearestMatchEnabled",
+                        new PropertyModel<>(model, "rawNearestMatchEnabled"));
+        rawNearestMatchContainer.add(rawNearestMatch);
+        nearestMatchContainer.add(rawNearestMatchContainer);
         WebMarkupContainer acceptableIntervalEditor =
                 new WebMarkupContainer("acceptableIntervalEditor");
-        acceptableIntervalEditor.setVisible(model.getObject().isNearestMatchEnabled());
+        acceptableIntervalEditor.setVisible(isNearestMatchEnabled);
+
+        // At the moment, Nearest Match on raw is only supported for WCS (Coverages).
+        // Let's do a check on the resource type and show/hide the raw nearest accordingly
+        ResourceInfo resourceImpl = ModificationProxy.unwrap(resource);
+        boolean rawNearestIsSupported = resourceImpl instanceof CoverageInfo;
+        if (!rawNearestIsSupported) {
+            rawNearestMatchContainer.setVisible(rawNearestIsSupported);
+            rawNearestMatch.setModelObject(false);
+        }
+
         nearestMatchContainer.add(acceptableIntervalEditor);
         nearestMatch.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        Boolean enabled = nearestMatch.getModelObject();
-                        acceptableIntervalEditor.setVisible(Boolean.TRUE.equals(enabled));
-                        target.add(configsContainer);
+                        updateAccetptedInterval(
+                                target,
+                                acceptableIntervalEditor,
+                                configsContainer,
+                                rawNearestIsSupported);
+                    }
+                });
+        rawNearestMatch.add(
+                new AjaxFormComponentUpdatingBehavior("click") {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        updateAccetptedInterval(
+                                target,
+                                acceptableIntervalEditor,
+                                configsContainer,
+                                rawNearestIsSupported);
                     }
                 });
         acceptableInterval =
@@ -383,6 +421,19 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                             }
                         });
         initComponents();
+    }
+
+    protected void updateAccetptedInterval(
+            AjaxRequestTarget target,
+            WebMarkupContainer acceptableIntervalEditor,
+            WebMarkupContainer configsContainer,
+            boolean rawNearestIsSupported) {
+        // Keep the acceptedInterval text box if one of the 2 nearest match flags is checked
+        Boolean nearestEnabled = nearestMatch.getModelObject();
+        Boolean rawNearestEnabled = rawNearestIsSupported && rawNearestMatch.getModelObject();
+        acceptableIntervalEditor.setVisible(
+                Boolean.TRUE.equals(nearestEnabled || rawNearestEnabled));
+        target.add(configsContainer);
     }
 
     protected void updateTypeDependentStates() {
@@ -510,6 +561,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
         // nearest match
         nearestMatch.processInput();
+        rawNearestMatch.processInput();
         acceptableInterval.processInput();
         if (nearestMatch.isVisible() && nearestMatch.getModelObject()) {
             info.setNearestMatchEnabled(true);
@@ -517,6 +569,11 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         } else {
             info.setNearestMatchEnabled(false);
             info.setAcceptableInterval(null);
+        }
+        if (rawNearestMatch.isVisible() && rawNearestMatch.getModelObject()) {
+            info.setRawNearestMatchEnabled(true);
+        } else {
+            info.setRawNearestMatchEnabled(false);
         }
 
         convertInputExtensions(info);

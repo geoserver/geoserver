@@ -358,6 +358,7 @@ For each enabled dimension the following configuration options are available:
 
 * **Reference value**—The default value specifier. Only shown for the default value strategies where its used.
 * **Nearest match**—Whether to enable, or not, WMS nearest match support on this dimension. Currently supported only on the time dimension.
+* **Nearest match on raw data**—Whether to enable, or not, nearest match support on this dimension for raw data requests (WCS for coverage layers, WFS for feature layers). Currently supported only on the time dimension for WCS service.
 * **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled).
   Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range. Time distances should specified using the ISO period syntax. For example, ``PT1H/PT0H`` allows to search up to one hour before the user specified value,

@@ -20,6 +20,7 @@ import org.awaitility.core.ConditionTimeoutException;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.hamcrest.core.IsNull;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,6 +66,13 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         store = new FileSystemResourceStore(folder.getRoot());
     }
 
+    @After
+    public void after() throws Exception {
+        if (store != null && store.watcher.get() != null) {
+            store.watcher.get().destroy();
+        }
+    }
+
     @Test
     public void invalid() {
         expectedException.expect(IllegalArgumentException.class);
@@ -79,7 +87,8 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         AwaitResourceListener listener = new AwaitResourceListener();
 
         store.get("DirC/FileD").addListener(listener);
-        store.getResourceNotificationDispatcher().schedule(30, TimeUnit.MILLISECONDS);
+        ((FileSystemWatcher) store.getResourceNotificationDispatcher())
+                .schedule(30, TimeUnit.MILLISECONDS);
 
         long before = fileD.lastModified();
         long after = touch(fileD);
@@ -105,8 +114,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
     /**
      * Changes the {@link File#lastModified() file.lastModified()} timestamp, making sure the result
-     * differs from its current timestamp; may delay long enough to match file system resolution (2
-     * seconds).
+     * differs from its current timestamp; may delay long enough to match file system resolution.
      *
      * <p>Example: Linux systems expect around 1 second resolution for file modification.
      *
@@ -131,15 +139,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         ResourceNotification notification =
                 new ResourceNotification(".", Kind.ENTRY_CREATE, 1_000_000L);
-        CompletableFuture.runAsync(
-                () -> {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(50);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    listener.changed(notification);
-                });
+        CompletableFuture.runAsync(() -> listener.changed(notification));
 
         ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
         assertSame(notification, n);
@@ -159,7 +159,8 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         AwaitResourceListener listener = new AwaitResourceListener();
         store.get(Paths.BASE).addListener(listener);
-        store.getResourceNotificationDispatcher().schedule(30, TimeUnit.MILLISECONDS);
+        ((FileSystemWatcher) store.getResourceNotificationDispatcher())
+                .schedule(100, TimeUnit.MILLISECONDS);
 
         long before = fileB.lastModified();
         long after = touch(fileB);
@@ -184,7 +185,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         listener.reset();
         fileA.createNewFile();
-        n = listener.await(5, TimeUnit.SECONDS);
+        n = listener.await(2, TimeUnit.SECONDS);
         assertEquals(Kind.ENTRY_MODIFY, n.getKind());
         assertEquals(Paths.BASE, n.getPath());
         e = n.events().get(0);
@@ -213,7 +214,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
          */
         public ResourceNotification await(int timeout, TimeUnit unit) {
             return Awaitility.await()
-                    .pollDelay(50, TimeUnit.MILLISECONDS)
+                    .pollInterval(5, TimeUnit.MILLISECONDS)
                     .atMost(timeout, unit)
                     .untilAtomic(this.reference, IsNull.notNullValue());
         }

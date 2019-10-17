@@ -159,8 +159,14 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
-
+                // will return null if forcedRemoteStyle is not empty string
+                // and was not found in selected remote styles
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+            } else {
+                StyleInfoImpl emptyStyleInfo = new StyleInfoImpl();
+                emptyStyleInfo.setName("");
+                emptyStyleInfo.getMetadata().put("isRemote", true);
+                return emptyStyleInfo;
             }
 
         return null;

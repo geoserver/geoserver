@@ -7,7 +7,6 @@ package org.geoserver.wms.wms_1_3;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -21,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -35,7 +33,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.request.GetLegendGraphicRequest;
@@ -308,13 +305,6 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         print(dom);
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
-        assertTrue(responseJson.has(JSONLegendGraphicBuilder.LEGEND));
-
-        JSONArray legendArray = responseJson.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertFalse(legendArray.isEmpty());
-
-        JSONArray rulesJSONArray =
-                legendArray.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertFalse(rulesJSONArray.isEmpty());
+        assertTrue(responseJson.isEmpty());
     }
 }

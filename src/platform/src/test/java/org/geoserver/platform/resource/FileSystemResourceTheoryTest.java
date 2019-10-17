@@ -79,7 +79,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         AwaitResourceListener listener = new AwaitResourceListener();
 
         store.get("DirC/FileD").addListener(listener);
-        store.watcher.schedule(30, TimeUnit.MILLISECONDS);
+        store.getResourceNotificationDispatcher().schedule(30, TimeUnit.MILLISECONDS);
 
         long before = fileD.lastModified();
         long after = touch(fileD);
@@ -159,7 +159,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         AwaitResourceListener listener = new AwaitResourceListener();
         store.get(Paths.BASE).addListener(listener);
-        store.watcher.schedule(30, TimeUnit.MILLISECONDS);
+        store.getResourceNotificationDispatcher().schedule(30, TimeUnit.MILLISECONDS);
 
         long before = fileB.lastModified();
         long after = touch(fileB);

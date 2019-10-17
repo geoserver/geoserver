@@ -115,7 +115,10 @@ public class FileSystemResourceStoreTest {
                             .mapToObj(
                                     i ->
                                             (Callable<FileSystemWatcher>)
-                                                    () -> store.getResourceNotificationDispatcher())
+                                                    () ->
+                                                            ((FileSystemWatcher)
+                                                                    store
+                                                                            .getResourceNotificationDispatcher()))
                             .collect(Collectors.toList());
 
             List<FileSystemWatcher> watchers =

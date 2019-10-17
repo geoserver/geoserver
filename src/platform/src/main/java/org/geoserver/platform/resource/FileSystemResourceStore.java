@@ -46,7 +46,7 @@ public class FileSystemResourceStore implements ResourceStore {
     protected File baseDirectory = null;
 
     // lazily initialized by getResourceNotificationDispatcher()
-    private final AtomicReference<FileSystemWatcher> watcher = new AtomicReference<>(null);
+    final AtomicReference<FileSystemWatcher> watcher = new AtomicReference<>(null);
 
     protected FileSystemResourceStore() {
         // Used by Spring, baseDirectory set by subclass
@@ -57,8 +57,7 @@ public class FileSystemResourceStore implements ResourceStore {
      *
      * <p>Client code that insists on using {@link Resource#file()} can do us using:
      *
-     * <pre>
-     * <code>
+     * <pre><code>
      * Resource resource = resoures.get( "example.txt" );
      * Lock lock = resources.getLockProvider().acquire( resource.path() );
      * try {
@@ -68,8 +67,7 @@ public class FileSystemResourceStore implements ResourceStore {
      * finally {
      *    lock.release();
      * }
-     * </code>
-     * </pre>
+     * </code></pre>
      *
      * @return LockProvider used for {@link Resource#out}
      */
@@ -566,7 +564,7 @@ public class FileSystemResourceStore implements ResourceStore {
     }
 
     @Override
-    public FileSystemWatcher getResourceNotificationDispatcher() {
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
         FileSystemWatcher instance = this.watcher.get();
         if (instance == null) {
             // lazily initialize the FileSystemWatcher in a thread contention free way,

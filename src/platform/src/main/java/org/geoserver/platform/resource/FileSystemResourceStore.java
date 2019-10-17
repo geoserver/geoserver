@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
@@ -44,7 +45,8 @@ public class FileSystemResourceStore implements ResourceStore {
     /** Base directory for ResourceStore content */
     protected File baseDirectory = null;
 
-    protected FileSystemWatcher watcher;
+    // lazily initialized by getResourceNotificationDispatcher()
+    private final AtomicReference<FileSystemWatcher> watcher = new AtomicReference<>(null);
 
     protected FileSystemResourceStore() {
         // Used by Spring, baseDirectory set by subclass
@@ -55,7 +57,8 @@ public class FileSystemResourceStore implements ResourceStore {
      *
      * <p>Client code that insists on using {@link Resource#file()} can do us using:
      *
-     * <pre><code>
+     * <pre>
+     * <code>
      * Resource resource = resoures.get( "example.txt" );
      * Lock lock = resources.getLockProvider().acquire( resource.path() );
      * try {
@@ -65,7 +68,8 @@ public class FileSystemResourceStore implements ResourceStore {
      * finally {
      *    lock.release();
      * }
-     * </code></pre>
+     * </code>
+     * </pre>
      *
      * @return LockProvider used for {@link Resource#out}
      */
@@ -561,18 +565,19 @@ public class FileSystemResourceStore implements ResourceStore {
     }
 
     @Override
-    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
-        if (watcher == null) {
-            watcher =
-                    new FileSystemWatcher(
-                            new FileSystemWatcher.FileExtractor() {
-
-                                @Override
-                                public File getFile(String path) {
-                                    return Paths.toFile(baseDirectory, path);
-                                }
-                            });
+    public FileSystemWatcher getResourceNotificationDispatcher() {
+        FileSystemWatcher instance = this.watcher.get();
+        if (instance == null) {
+            // lazily initialize the FileSystemWatcher in a thread contention free way,
+            // creating a single instance
+            instance =
+                    watcher.updateAndGet(
+                            v ->
+                                    v == null
+                                            ? new FileSystemWatcher(
+                                                    path -> Paths.toFile(baseDirectory, path))
+                                            : v);
         }
-        return watcher;
+        return instance;
     }
 }

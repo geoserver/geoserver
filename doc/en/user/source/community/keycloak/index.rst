@@ -87,3 +87,21 @@ Installtation Instructions
     .. figure:: images/keycloak_adapter004.png
        :align: center
 
+.. warning:: Workaround in the event of a 403 unauthorized response after logging-in.
+
+    Enforce the algorithm RS256 in the keycloak client.
+
+    .. figure:: images/keycloak_client008.png
+        :align: center
+
+    Copy the public key for the RS256 algorithm from the Realm Settings into the adapter config as:
+
+    .. code::
+    
+        "realm-public-key": XXXXXXX
+
+    .. figure:: images/keycloak_client009.png
+        :align: center
+
+    .. figure:: images/keycloak_adapter005.png
+        :align: center

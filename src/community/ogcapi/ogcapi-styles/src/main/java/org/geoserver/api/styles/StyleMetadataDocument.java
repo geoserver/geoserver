@@ -95,14 +95,22 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
         if (styledLayers.length == 1) {
             // common GeoServer case, there is a single layer referenced and we use only the style
             // portion, not the layer one, we allow both userlayer and namedlayer
-            StyleLayer sl = new StyleLayer(si, styledLayers[0], gs.getCatalog(), sampleDataSupport);
+            StyleLayer sl =
+                    new StyleLayer(si, styledLayers[0], gs.getCatalog(), sampleDataSupport, false);
             layers.add(sl);
         } else {
             // here we skip the UserLayer, as they should contain data inline, so they get skipped
             layers =
                     Arrays.stream(styledLayers)
                             .filter(sl -> sl instanceof NamedLayer)
-                            .map(nl -> new StyleLayer(si, nl, gs.getCatalog(), sampleDataSupport))
+                            .map(
+                                    nl ->
+                                            new StyleLayer(
+                                                    si,
+                                                    nl,
+                                                    gs.getCatalog(),
+                                                    sampleDataSupport,
+                                                    true))
                             .collect(Collectors.toList());
         }
     }

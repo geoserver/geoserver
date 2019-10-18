@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -42,6 +43,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     public static final String BUILDINGS_LABEL_ASSOCIATED_STYLE = "BuildingsLabelAssociated";
     public static final String BUILDINGS_LABEL_STYLE = "BuildingsLabel";
     public static final String TASMANIA = "tasmania";
+    public static final String BUILDINGS_LAKES = "buildingsLakes";
 
     @Before
     public void clearMetadata() {
@@ -94,6 +96,12 @@ public class StyleMetadataTest extends StylesTestSupport {
 
         // a multi-layer style
         testData.addStyle(TASMANIA, "tasmania.sld", StyleMetadataTest.class, getCatalog());
+
+        // a style group kind, with the layers that it needs
+        testData.addVectorLayer(MockData.BASIC_POLYGONS, getCatalog());
+        testData.addVectorLayer(MockData.LAKES, getCatalog());
+        testData.addStyle(
+                BUILDINGS_LAKES, "buildingsLakes.sld", StyleMetadataTest.class, getCatalog());
     }
 
     @Test
@@ -214,6 +222,30 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals("point", json.read("layers[2].type"));
         assertEquals("Land", json.read("layers[3].id"));
         assertEquals("polygon", json.read("layers[3].type"));
+    }
+
+    @Test
+    public void testGetMetadataMultilayerSampleData() throws Exception {
+        DocumentContext json =
+                getAsJSONPath("ogc/styles/styles/" + BUILDINGS_LAKES + "/metadata", 200);
+        assertEquals("buildingsLakes", json.read("id"));
+        assertEquals(Integer.valueOf(2), (Integer) json.read("layers.size()"));
+
+        // Water Bodies
+        assertEquals("Lakes", json.read("layers[0].id"));
+        assertEquals("polygon", json.read("layers[0].type"));
+        // ... check the sample data link, make sure there is only one (there used to be extra
+        // layers)
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ALakes/items?f=application%2Fgeo%2Bjson",
+                getSingle(json, "layers[0].sampleData[?(@.type=='application/geo+json')].href"));
+
+        // BasicPolygons
+        assertEquals("BasicPolygons", json.read("layers[1].id"));
+        assertEquals("polygon", json.read("layers[1].type"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABasicPolygons/items?f=application%2Fgeo%2Bjson",
+                getSingle(json, "layers[1].sampleData[?(@.type=='application/geo+json')].href"));
     }
 
     @Test

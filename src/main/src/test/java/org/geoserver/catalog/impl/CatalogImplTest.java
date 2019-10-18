@@ -1543,6 +1543,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertTrue(layerHasSecurityRule(dao, workspaceName, l.getName()));
         catalog.remove(l);
         assertTrue(catalog.getLayers().isEmpty());
+        dao.reload();
         assertFalse(layerHasSecurityRule(dao, workspaceName, l.getName()));
         catalog.removeListener(listener);
     }
@@ -1551,7 +1552,6 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
             DataAccessRuleDAO dao, String workspaceName, String layerName) {
 
         List<DataAccessRule> rules = dao.getRules();
-
         for (DataAccessRule rule : rules) {
             if (rule.getRoot().equalsIgnoreCase(workspaceName)
                     && rule.getLayer().equalsIgnoreCase(layerName)) return true;

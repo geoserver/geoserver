@@ -6,16 +6,28 @@ package org.geoserver.api.changeset;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.api.APIException;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.h2.H2DataStoreFactory;
@@ -25,6 +37,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
@@ -42,6 +55,7 @@ import org.springframework.stereotype.Component;
 public class ChangesetIndexProvider {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final Logger LOGGER = Logging.getLogger(ChangesetIndexProvider.class);
 
     public static final String INITIAL_STATE = "Initial";
     public static final String CHECKPOINT = "checkpoint";
@@ -50,23 +64,37 @@ public class ChangesetIndexProvider {
 
     private final DataStore checkpointIndex;
 
-    public ChangesetIndexProvider(GeoServerDataDirectory dd) throws IOException {
+    public ChangesetIndexProvider(GeoServerDataDirectory dd, Catalog catalog) throws IOException {
         this.checkpointIndex = getCheckpointDataStore(dd);
+        catalog.addListener(new IndexCatalogListener());
     }
 
     DataStore getCheckpointDataStore(GeoServerDataDirectory dd) throws IOException {
-        // make sure we have the directory
-        Resource changesetDir = dd.get("changeset");
-        if (changesetDir.getType() == Resource.Type.UNDEFINED) {
-            changesetDir.dir();
-        }
+        // see if there is a configuration file
+        Resource properties = dd.get("changeset-store.properties");
+        if (properties.getType() == Resource.Type.RESOURCE) {
+            Properties p = new Properties();
+            try (InputStream is = properties.in()) {
+                p.load(is);
+            }
 
-        // create the index --- TODO: make this configurable for clustered installations!!
-        Map<String, Object> params = new HashMap<>();
-        params.put("dbtype", "h2");
-        params.put("database", new File(changesetDir.dir(), "index").getAbsolutePath());
-        H2DataStoreFactory factory = new H2DataStoreFactory();
-        return factory.createDataStore(params);
+            return DataStoreFinder.getDataStore(p);
+        } else {
+            // go and create a simple H2 database for local usage
+
+            // make sure we have the directory
+            Resource changesetDir = dd.get("changeset");
+            if (changesetDir.getType() == Resource.Type.UNDEFINED) {
+                changesetDir.dir();
+            }
+
+            // create the index
+            Map<String, Object> params = new HashMap<>();
+            params.put("dbtype", "h2");
+            params.put("database", new File(changesetDir.dir(), "index").getAbsolutePath());
+            H2DataStoreFactory factory = new H2DataStoreFactory();
+            return factory.createDataStore(params);
+        }
     }
 
     /**
@@ -194,5 +222,40 @@ public class ChangesetIndexProvider {
         } else {
             return (String) latestCheckpoint.getAttribute(CHECKPOINT);
         }
+    }
+
+    /** Drops the index tables when a store is removed */
+    private class IndexCatalogListener implements CatalogListener {
+        @Override
+        public void handleAddEvent(CatalogAddEvent event) throws CatalogException {}
+
+        @Override
+        public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
+            if (event.getSource() instanceof CoverageInfo) {
+                String typeName = event.getSource().getId();
+                try {
+                    if (Arrays.asList(checkpointIndex.getTypeNames()).contains(typeName)) {
+                        checkpointIndex.removeSchema(typeName);
+                    }
+                } catch (IOException e) {
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Coverage store "
+                                    + event.getSource()
+                                    + " has been removed, could not remove the corresponding index table named "
+                                    + typeName,
+                            e);
+                }
+            }
+        }
+
+        @Override
+        public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {}
+
+        @Override
+        public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {}
+
+        @Override
+        public void reloaded() {}
     }
 }

@@ -318,7 +318,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 UnmarshallingContext context,
                 Collection collection,
                 Collection target) {
-            Object item = this.readItem(reader, context, collection);
+            Object item = this.readBareItem(reader, context, collection);
             // Remove anything that threw an error upon deserialization
             if (!PROCESS_GROUP_ERROR.equals(item)) {
                 target.add(item);

@@ -3,7 +3,7 @@
 Eclipse M2 Quickstart
 =====================
 
-This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the the :ref:`eclipse_guide`.
+This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the :ref:`eclipse_guide`.
   
 .. include:: checkout.txt
 
@@ -13,7 +13,7 @@ Eclipse Maven builder
 The maven build supplied with eclipse works with the :file:`pom.xml` files, however it does recognize some of our custom build steps:
 
 #. Go to Preferences and navigate to :menuselection:`Maven --> Errors/Warning`
-#. Change the :guilabel:`Plugin executino not covered by lifecycle configuration` to ``Warning``.
+#. Change the :guilabel:`Plugin execution not covered by lifecycle configuration` to ``Warning``.
 
 .. figure:: img/m2_warning.png
    :scale: 50%
@@ -21,7 +21,7 @@ The maven build supplied with eclipse works with the :file:`pom.xml` files, howe
 java-cc-maven-plugin
 --------------------
 
-THe Eclipse M2 builder does recognize this plugin, build once on the command line first:
+The Eclipse M2 builder does recognize this plugin, build once on the command line first:
 
 #. Navigate to `:file:`src/wcs1_1``.
 #. Compile, to force the code to be generated::
@@ -63,14 +63,14 @@ Import modules into Eclipse
 #. Open :guilabel:`Advanced` options:
    
    * Profiles: :kbd:`release`
-   * Name template: :kbd:`[groupid].artifactid]`
+   * Name template: :kbd:`[groupId].[artifactId]`
 
    .. figure:: img/m2_import.png
       :scale: 50%
       
 #. Press :guilabel:`Finish` to start import.
    
-   During import import use ``Resolve Later``, exclude lifecyce mapping.
+   During import use ``Resolve Later``, exclude lifecycle mapping.
 
    .. figure:: img/m2_plugin_connectors.png
       :scale: 50%

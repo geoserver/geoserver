@@ -87,7 +87,7 @@ public abstract class XStreamCatalogListConverter
                     }
 
                     @Override
-                    protected void writeItem(
+                    protected void writeCompleteItem(
                             Object item,
                             MarshallingContext context,
                             HierarchicalStreamWriter writer) {

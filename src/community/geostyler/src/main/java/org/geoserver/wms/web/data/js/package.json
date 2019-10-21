@@ -1,31 +1,46 @@
 {
-    "name": "GeoStyler - GeoSever integration",
-    "type": "code",
-    "version": "0.0.1",
-    "description": "GeoStyler - GeoSever integration",
-    "license": "GPL-3.0",
-    "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
-    "contributors": [
-        "Nils Bühner <buehner@terrestris.de>",
-        "André Henn <henn@terrestris.de>",
-        "Kai Volland <volland@terrestris.de>"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://gitlab.intranet.terrestris.de/terrestris/geoserver-geostyler-addon.git"
-    },
-    "bugs": {
-        "url": "https://to.be/defined"
-    },
-    "scripts": {},
-    "dependencies": {
-        "antd": "3.11.2",
-        "geostyler": "0.28.0",
-        "geostyler-geojson-parser": "0.4.6",
-        "geostyler-sld-parser": "0.18.0",
-        "geostyler-style": "0.14.2",
-        "geostyler-wfs-parser": "0.7.3",
-        "react": "16.7.0",
-        "react-dom": "16.7.0"
-    }
+  "name": "geoserver-geostyler-module",
+  "version": "0.0.2",
+  "description": "GeoStyler - GeoServer integration",
+  "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
+  "contributors": [
+    "Andreas Schmitz <schmitz@terrestris.de>",
+    "André Henn <henn@terrestris.de>",
+    "Kai Volland <volland@terrestris.de>",
+    "Nils Bühner <buehner@terrestris.de>"
+  ],
+  "scripts": {
+    "pack:lib": "node ./npm-pack-libs.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/geoserver/geoserver.git"
+  },
+  "keywords": [
+    "GeoServer",
+    "GeoStyler",
+    "Style",
+    "SLD"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/geoserver/geoserver/issues"
+  },
+  "homepage": "https://github.com/geoserver/geoserver#readme",
+  "browserslist": [
+    ">1%",
+    "last 4 versions",
+    "Firefox ESR",
+    "not ie < 9"
+  ],
+  "dependencies": {
+    "antd": "^3.20.1",
+    "geostyler": "4.3.0",
+    "geostyler-geojson-parser": "^1.0.0",
+    "geostyler-sld-parser": "^1.2.0",
+    "geostyler-wfs-parser": "^1.0.0",
+    "react": "16.x",
+    "react-dom": "16.x"
+  }
 }

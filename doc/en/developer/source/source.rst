@@ -42,13 +42,28 @@ To review global settings:
 
    $ git config --global --get-regexp core.*
 
+On Linux and Windows machines:
+
 ::
 
    core.autocrlf input
    core.safecrlf true
-   core.ignorecase true
-   core.precomposeunicode false
-    
+   
+On macOS using decomposed unicode paths, and a default APFS case-insensitive file system:
+
+::
+
+   core.autocrlf input
+   core.safecrlf true
+   core.ignorecase false
+   core.precomposeunicode true
+
+We recommend making these changes to ``--gloabl`` (or ``--system``) as they reflect the operating system and file system on your local machine.
+
+Some useful reading on this subject:
+
+* `git config <https://git-scm.com/docs/git-config>`__ (git)
+
 Line endings
 ^^^^^^^^^^^^
 
@@ -61,8 +76,7 @@ dealing this without explicit configuration but to be safe developers should set
 
    $ git config --global core.autocrlf input
 
-The value "input" essentially tells git to respect whatever line ending form is present
-in the git repository.
+The value "input" respects the line ending form is present in the git repository.
 
 .. note::
 
@@ -73,62 +87,85 @@ in the git repository.
    
       $ git config --global core.safecrlf true
 
-   This will basically prevent commits that may potentially modify file line endings.
+   This will prevent commits that may potentially modify file line endings.
 
 Some useful reading on this subject:
 
-* `git config <https://git-scm.com/docs/git-config>`__ (git)
 * `Configuring Git to handle line endings <https://help.github.com/articles/dealing-with-line-endings>`__ (GitHub)
 * `What's the best CRLF (carriage return, line feed) handling strategy with Git? <http://stackoverflow.com/questions/170961/whats-the-best-crlf-handling-strategy-with-git>`__ (Stack Overflow)
+* `Mind the end of the End of Your Line <https://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/>`__ (Tim Clem)
 
-Unicode filenames
-^^^^^^^^^^^^^^^^^
+File paths
+^^^^^^^^^^
 
-Occasionally there are two different representations of a unicode character:
-
-+-------------------------+---------------+------------------+
-| Representation          | Example       | Operating System |
-+=========================+===============+==================+
-| Precomposed form        | ``Ü``         | Linux, Windows   |
-+-------------------------+---------------+------------------+
-| Decomposed form         | ``U`` + ``¨`` | macOS            |
-+-------------------------+---------------+------------------+
-
-To check if you are configured correctly:
+For those working on non case-sensitive, please keep in mind that our repository is case-sensitive:
 
 .. code-block:: bash
    
-   $ git status
-   
-::
+   $ git config --global core.ignorecase false
 
-   Untracked files:
-      (use "git add <file>..." to include in what will be committed)
-      
-      ...
-      
-      "Entit\303\251G\303\251n\303\251rique/"
-
-To change your configuration:
+Take extra care when adding files to prevent problems for others. To correct a file added with the wrong case:
 
 .. code-block:: bash
+   
+   $ git mv --cached HttpHandler.java HTTPHandler.java
 
-   $ git config --global core.precomposeunicode false
+.. note:: 
+   
+   File paths can use two different representations of select unicode characters:
 
-Reference:
+   +-------------------------+---------------+--------------------------+
+   | Representation          | Example       | Operating System Default |
+   +=========================+===============+==========================+
+   | Precomposed form        | ``Ü``         | Linux, Windows           |
+   +-------------------------+---------------+--------------------------+
+   | Decomposed form         | ``U`` + ``¨`` | macOS                    |
+   +-------------------------+---------------+--------------------------+
+
+   Files committed in decomposed form show up as untracked (even with no modification made).
+   
+   .. code-block:: bash
+ 
+      $ git status
+ 
+   ::
+
+      Untracked files:
+         (use "git add <file>..." to include in what will be committed)
+    
+         ...
+    
+         "Entit\303\251G\303\251n\303\251rique/"
+
+   GeoServer requires macOS users to use the following setting:
+
+   .. code-block:: bash
+
+      $ git config --global core.precomposeunicode true
+   
+   This setting converts paths to precomposed form as files are added to the repository.
+   
+   To fix a file added in decomposed form it must be removed, and then added:
+   
+   .. code-block:: bash
+   
+      git config --global core.precomposeunicode false
+      mv EntitéGénérique /tmp/EntitéGénérique
+      git rm EntitéGénérique
+      git commit -m "Remove EntitéGénérique with decomposed filename"
+      
+   And then added:
+   
+   .. code-block:: bash
+     
+      git config --global core.precomposeunicode true
+      mv /tmp/EntitéGénérique EntitéGénérique
+      git add EntitéGénérique
+      git commit -m "Restore EntitéGénérique with precomposed filename"
+
+Some useful reading on this subject:
 
 * `Untracked filenames with unicode names <https://www.git-tower.com/help/mac/faq-and-tips/faq/unicode-filenames>`__
-
-Case-sensitive filesystems
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Not all file systems are case-sensitive. When working on a non case sensitive file system please take extra care when adding files to prevent problems for others.
-
-If your file system is not case-sensitive:
-
-.. code-block:: bash
-   
-   $ git config --global core.ignorecase true
 
 Committing
 ----------

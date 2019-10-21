@@ -336,4 +336,19 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     public StyleInfo getDefaultStyle() {
         return delegate.getDefaultStyle();
     }
+
+    @Override
+    public void reloadRemoteStyles() {
+        delegate.reloadRemoteStyles();
+    }
+
+    @Override
+    public List<StyleInfo> getAllAvailableRemoteStyles() {
+        return delegate.getAllAvailableRemoteStyles();
+    }
+
+    @Override
+    public void setAllAvailableRemoteStyles(List<StyleInfo> allAvailableRemoteStyles) {
+        delegate.setAllAvailableRemoteStyles(allAvailableRemoteStyles);
+    }
 }

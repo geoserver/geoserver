@@ -35,6 +35,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
 
+    private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+
     protected WMSLayerInfoImpl() {}
 
     public WMSLayerInfoImpl(Catalog catalog) {
@@ -58,6 +60,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public void reset() {
         selectedRemoteStyles.clear();
         selectedRemoteFormats.clear();
+        reloadRemoteStyles();
         // select all formats for use
         selectedRemoteStyles.addAll(remoteStyles());
         // set empty to take whatever is on remote server
@@ -70,9 +73,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public List<String> remoteStyles() {
 
         try {
-            // read from cap doc
-            return getWMSLayer(null)
-                    .getStyles()
+            return allAvailableRemoteStyles
                     .stream()
                     .map(s -> s.getName())
                     .collect(Collectors.toList());
@@ -93,7 +94,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public void setForcedRemoteStyle(String forcedRemoteStyle) {
-        this.forcedRemoteStyle = forcedRemoteStyle;
+        this.forcedRemoteStyle = (forcedRemoteStyle == null) ? "" : forcedRemoteStyle;
     }
 
     @Override
@@ -125,7 +126,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public void setPrefferedFormat(String prefferedFormat) {
-        this.prefferedFormat = prefferedFormat;
+        this.prefferedFormat = (prefferedFormat == null) ? "image/png" : prefferedFormat;
     }
 
     @Override
@@ -140,10 +141,10 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public Set<StyleInfo> getStyles() {
-        Set<StyleInfo> remoteStyleInfos = getRemoteStyleInfos();
-        if (remoteStyleInfos == null) return null;
+        // no remote styles were read from this server
+        if (allAvailableRemoteStyles == null) return null;
         else
-            return remoteStyleInfos
+            return allAvailableRemoteStyles
                     .stream()
                     .filter(s -> !forcedRemoteStyle.equalsIgnoreCase(s.getName()))
                     .filter(s -> selectedRemoteStyles.contains(s.getName()))
@@ -155,7 +156,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (forcedRemoteStyle != null)
             if (!forcedRemoteStyle.isEmpty()) {
                 Optional<StyleInfo> defaultRemoteStyle =
-                        getRemoteStyleInfos()
+                        allAvailableRemoteStyles
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
@@ -182,7 +183,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         // on error default to super
-        return null;
+        return Collections.EMPTY_SET;
     }
 
     @Override
@@ -254,5 +255,17 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
+    }
+
+    public void reloadRemoteStyles() {
+        this.allAvailableRemoteStyles = new ArrayList<StyleInfo>(getRemoteStyleInfos());
+    }
+
+    public List<StyleInfo> getAllAvailableRemoteStyles() {
+        return allAvailableRemoteStyles;
+    }
+
+    public void setAllAvailableRemoteStyles(List<StyleInfo> allAvailableRemoteStyles) {
+        this.allAvailableRemoteStyles = allAvailableRemoteStyles;
     }
 }

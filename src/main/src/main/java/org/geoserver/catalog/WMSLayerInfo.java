@@ -54,4 +54,10 @@ public interface WMSLayerInfo extends ResourceInfo {
     public Set<StyleInfo> getStyles();
 
     public StyleInfo getDefaultStyle();
+
+    public void reloadRemoteStyles();
+
+    public List<StyleInfo> getAllAvailableRemoteStyles();
+
+    public void setAllAvailableRemoteStyles(List<StyleInfo> allAvailableRemoteStyles);
 }

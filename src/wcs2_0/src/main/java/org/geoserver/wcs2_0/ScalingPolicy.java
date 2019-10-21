@@ -664,6 +664,12 @@ enum ScalingPolicy {
             case ScaleByFactor:
                 final ScaleByFactorType scaleByFactorType = scaling.getScaleByFactor();
                 double scaleFactor = scaleByFactorType.getScaleFactor();
+                if (scaleFactor <= 0) {
+                    throw new WCS20Exception(
+                            "Invalid scale factor, needs to be a positive number",
+                            WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor,
+                            Double.toString(scaleFactor));
+                }
                 return new double[] {scaleFactor, scaleFactor};
             case ScaleAxesByFactor:
                 final ScaleAxisByFactorType scaleType = scaling.getScaleAxesByFactor();

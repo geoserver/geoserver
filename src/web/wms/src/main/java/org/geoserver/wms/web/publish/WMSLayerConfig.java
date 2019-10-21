@@ -187,7 +187,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerModel.getObject().getResource();
         // for new only
         if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
-
+        wmsLayerInfo.reloadRemoteStyles();
         // empty string to use whatever default remote server has
         List<String> remoteSyles = new ArrayList<String>();
         remoteSyles.add("");

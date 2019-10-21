@@ -96,7 +96,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         WMSLayerInfo roadsWmsLayer = cb.buildWMSLayer("roads_wms_130");
         roadsWmsLayer.setName("roads_wms_130");
         roadsWmsLayer.reset();
-        roadsWmsLayer.setPrefferedFormat("image/jpeg");
+        roadsWmsLayer.setPreferredFormat("image/jpeg");
         roadsWmsLayer.setForcedRemoteStyle("line1");
 
         getCatalog().add(roadsWmsLayer);

@@ -12,28 +12,128 @@ To clone the repository::
 To list available branches in the repository::
 
   % git branch
-     2.1.x
-     2.2.x
+     2.15.x
+     2.16.x
    * master
 
-To switch to the stable branch::
+To switch to the 2.16.x branch above::
 
-  % git checkout 2.2.x
+  % git checkout 2.16.x
   
 Git
 ---
 
-Those coming from a Subversion or CSV background will find the Git learning curve is a steep one.
+Git is a distributed version control system with a steep learning curve.
 Luckily there is lots of great documentation around. Before continuing developers should take the 
 time to educate themselves about git. The following are good references:
 
-* `The Git Book <http://git-scm.com/book/>`_
-* `A nice introduction <http://www.sbf5.com/~cduan/technical/git/>`_
+* `The Git Book <http://git-scm.com/book/>`__
+* `A nice introduction <http://www.sbf5.com/~cduan/technical/git/>`__
+* `Git Pull Requests <https://help.github.com/en/articles/about-pull-requests>`__
+
+.. _gitconfig:
+
+Git client configuration
+------------------------
+
+To review global settings:
+
+.. code-block:: bash
+
+   $ git config --global --get-regexp core.*
+
+::
+
+   core.autocrlf input
+   core.safecrlf true
+   core.ignorecase true
+   core.precomposeunicode false
+    
+Line endings
+^^^^^^^^^^^^
+
+When a repository is shared across different platforms it is necessary to have a 
+strategy in place for dealing with file line endings. In general git is pretty good about
+dealing this without explicit configuration but to be safe developers should set the 
+``core.autocrlf`` setting to "input":
+
+.. code-block:: bash
+
+   $ git config --global core.autocrlf input
+
+The value "input" essentially tells git to respect whatever line ending form is present
+in the git repository.
+
+.. note::
+
+   It is also a good idea, especially for Windows users, to set the ``core.safecrlf`` 
+   option to "true":
+
+   .. code-block:: bash
+   
+      $ git config --global core.safecrlf true
+
+   This will basically prevent commits that may potentially modify file line endings.
+
+Some useful reading on this subject:
+
+* `git config <https://git-scm.com/docs/git-config>`__ (git)
+* `Configuring Git to handle line endings <https://help.github.com/articles/dealing-with-line-endings>`__ (GitHub)
+* `What's the best CRLF (carriage return, line feed) handling strategy with Git? <http://stackoverflow.com/questions/170961/whats-the-best-crlf-handling-strategy-with-git>`__ (Stack Overflow)
+
+Unicode filenames
+^^^^^^^^^^^^^^^^^
+
+Occasionally there are two different representations of a unicode character:
+
++-------------------------+---------------+------------------+
+| Representation          | Example       | Operating System |
++=========================+===============+==================+
+| Precomposed form        | ``Ü``         | Linux, Windows   |
++-------------------------+---------------+------------------+
+| Decomposed form         | ``U`` + ``¨`` | macOS            |
++-------------------------+---------------+------------------+
+
+To check if you are configured correctly:
+
+.. code-block:: bash
+   
+   $ git status
+   
+::
+
+   Untracked files:
+      (use "git add <file>..." to include in what will be committed)
+      
+      ...
+      
+      "Entit\303\251G\303\251n\303\251rique/"
+
+To change your configuration:
+
+.. code-block:: bash
+
+   $ git config --global core.precomposeunicode false
+
+Reference:
+
+* `Untracked filenames with unicode names <https://www.git-tower.com/help/mac/faq-and-tips/faq/unicode-filenames>`__
+
+Case-sensitive filesystems
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Not all file systems are case-sensitive. When working on a non case sensitive file system please take extra care when adding files to prevent problems for others.
+
+If your file system is not case-sensitive:
+
+.. code-block:: bash
+   
+   $ git config --global core.ignorecase true
 
 Committing
 ----------
 
-In order to commit to the repository the following steps must be taken:
+In order to commit the following steps must be taken:
 
 #. Configure your git client for cross platform projects. See :ref:`notes <gitconfig>` below.
 #. Register for commit access as described :ref:`here <comitting>`.
@@ -114,20 +214,22 @@ project. These branches consist of:
 
 For example at present these branches are:
 
-* **master** - The 2.3.x release stream, where unstable development such as major new features take place
-* **2.2.x** - The 2.2.x release stream, where stable development such as bug fixing and stable features take place
-* **2.1.x** - The 2.1.x release stream, which is at end-of-life and has no active development
+* **master** - The 2.17.x release stream, where unstable development such as major new features take place
+* **2.16.x** - The 2.16.x release stream, where stable development such as bug fixing and stable features take place
+* **2.15.x** - The 2.15.x release stream, which is at end-of-life and has no active development
 
-Release branches
-^^^^^^^^^^^^^^^^
+Release tags
+^^^^^^^^^^^^
 
-Release branches are used to manage releases of stable branches. For each stable primary branch there is a 
-corresponding release branch. At present this includes:
+Release tags are used to mark releases from the stable or maintenance branches. These can be used to create a release branch if an emergency patch needs to be made:
 
-* **rel_2.2.x** - The stable release branch
-* **rel_2.1.x** - The previous stable release branch
+* 2.15-M0
+* 2.15-RC
+* 2.15.0
+* 2.15.1
 
-Release branches are only used during a versioned release of the software. At any given time a release branch
+
+Release tagas are only used during a versioned release of the software. At any given time a release branch
 corresponds to the exact state of the last release from that branch. During release these branches are tagged.
 
 Release branches are also present in all repositories.
@@ -160,36 +262,6 @@ Each branch has the following structure::
 * ``doc`` - sources for the user and developer guides 
 * ``src`` - java sources for GeoServer itself
 * ``data`` - a variety of GeoServer data directories / configurations
-
-.. _gitconfig:
-
-Git client configuration
-------------------------
-
-When a repository is shared across different platforms it is necessary to have a 
-strategy in place for dealing with file line endings. In general git is pretty good about
-dealing this without explicit configuration but to be safe developers should set the 
-``core.autocrlf`` setting to "input"::
-
-    % git config --global core.autocrlf input
-
-The value "input" essentially tells git to respect whatever line ending form is present
-in the git repository.
-
-.. note::
-
-   It is also a good idea, especially for Windows users, to set the ``core.safecrlf`` 
-   option to "true"::
-
-      % git config --global core.safecrlf true
-
-   This will basically prevent commits that may potentially modify file line endings.
-
-Some useful reading on this subject:
-
-* http://www.kernel.org/pub/software/scm/git/docs/git-config.html
-* https://help.github.com/articles/dealing-with-line-endings
-* http://stackoverflow.com/questions/170961/whats-the-best-crlf-handling-strategy-with-git
 
 .. _source_workflow:
 

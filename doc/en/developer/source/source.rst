@@ -76,7 +76,7 @@ dealing this without explicit configuration but to be safe developers should set
 
    $ git config --global core.autocrlf input
 
-The value "input" respects the line ending form is present in the git repository.
+The value "input" respects the line ending form as present in the git repository.
 
 .. note::
 
@@ -143,9 +143,9 @@ Take extra care when adding files to prevent problems for others. To correct a f
 
       $ git config --global core.precomposeunicode true
    
-   This setting converts paths to precomposed form as files are added to the repository.
+   This setting converts paths to precomposed form when adding files to the repository.
    
-   To fix a file added in decomposed form it must be removed, and then added:
+   To fix a file added in decomposed form it must be removed:
    
    .. code-block:: bash
    

@@ -280,7 +280,11 @@ public class StylesService {
         return new StyleMetadataDocument(styleInfo, geoServer, sampleDataSupport, thumbnailBuilder);
     }
 
-    @GetMapping(path = "styles/{styleId}/thumbnail", name = "getStyleThumbnail")
+    @GetMapping(
+        path = "styles/{styleId}/thumbnail",
+        name = "getStyleThumbnail",
+        produces = "image/png"
+    )
     @ResponseBody
     public void getStyleThumbnail(
             @PathVariable(name = "styleId") String styleId, HttpServletResponse response)

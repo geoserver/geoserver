@@ -5,9 +5,11 @@
 package org.geoserver.api.styles;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,9 +53,16 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
     boolean accessConstraintsSet;
     StyleDates dates;
     boolean datesSet;
+
+    @JsonProperty(access = READ_ONLY)
     String scope = "style";
+
+    @JsonProperty(access = READ_ONLY)
     List<Stylesheet> stylesheets = new ArrayList<>();
+
+    @JsonProperty(access = READ_ONLY)
     List<StyleLayer> layers = new ArrayList<>();
+
     SampleDataSupport sampleDataSupport;
 
     public StyleMetadataDocument() {

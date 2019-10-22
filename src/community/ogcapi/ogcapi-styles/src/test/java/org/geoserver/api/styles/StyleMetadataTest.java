@@ -374,4 +374,21 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals(parseDate("2019-05-17T11:46:12Z"), dates.getRevision());
         assertNull(dates.getValidTill());
     }
+
+    /**
+     * Read and put back, check it can be written as it was produced
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testRoundTrip() throws Exception {
+        String metadatPath = "ogc/styles/styles/raster/metadata";
+        String payload = getAsString(metadatPath);
+        MockHttpServletResponse response =
+                putAsServletResponse(metadatPath, payload, "application/json");
+        assertEquals(response.getContentAsString(), 204, response.getStatus());
+
+        // check nothing changed
+        testGetMetadataFromRasterStyle();
+    }
 }

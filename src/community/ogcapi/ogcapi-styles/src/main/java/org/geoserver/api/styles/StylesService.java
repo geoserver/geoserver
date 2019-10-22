@@ -8,6 +8,7 @@ import static org.geoserver.api.styles.StylesService.ValidationMode.only;
 import static org.geoserver.api.styles.StylesService.ValidationMode.yes;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
@@ -102,6 +104,7 @@ public class StylesService {
     private final GeoServer geoServer;
     private final GeoServerDataDirectory dataDirectory;
     private final SampleDataSupport sampleDataSupport;
+    private ThumbnailBuilder thumbnailBuilder;
     private Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
     private List<MediaType> mediaTypes = new ArrayList<>();
     private APIContentNegotiationManager contentNegotiationManager =
@@ -111,10 +114,12 @@ public class StylesService {
             GeoServer geoServer,
             GeoServerExtensions extensions,
             GeoServerDataDirectory dataDirectory,
-            SampleDataSupport sampleDataSupport) {
+            SampleDataSupport sampleDataSupport,
+            ThumbnailBuilder thumbnailBuilder) {
         this.geoServer = geoServer;
         this.dataDirectory = dataDirectory;
         this.sampleDataSupport = sampleDataSupport;
+        this.thumbnailBuilder = thumbnailBuilder;
         List<StyleHandler> handlers = extensions.extensions(StyleHandler.class);
         for (StyleHandler sh : handlers) {
             for (Version ver : sh.getVersions()) {
@@ -272,7 +277,31 @@ public class StylesService {
     public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
             throws IOException {
         StyleInfo styleInfo = getStyleInfo(styleId, true);
-        return new StyleMetadataDocument(styleInfo, geoServer, sampleDataSupport);
+        return new StyleMetadataDocument(styleInfo, geoServer, sampleDataSupport, thumbnailBuilder);
+    }
+
+    @GetMapping(
+        path = "styles/{styleId}/thumbnail",
+        name = "getStyleThumbnail",
+        produces = "image/png"
+    )
+    @ResponseBody
+    public void getStyleThumbnail(
+            @PathVariable(name = "styleId") String styleId, HttpServletResponse response)
+            throws IOException {
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
+        // TODO: return webmap instead and allow all GetMap encoders to work?
+        RenderedImage image = thumbnailBuilder.buildThumbnailFor(styleInfo);
+        if (image == null) {
+            throw new APIException(
+                    "InternalError",
+                    "Failed to build thumbnail, WMS returned no image",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // TODO: allow any other type of image, leverage the WMS output formats
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "image/png");
+        ImageIO.write(image, "PNG", response.getOutputStream());
     }
 
     @PostMapping(

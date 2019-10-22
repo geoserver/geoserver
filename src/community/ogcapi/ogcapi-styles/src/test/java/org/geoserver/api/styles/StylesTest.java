@@ -45,7 +45,9 @@ public class StylesTest extends StylesTestSupport {
                         "Default",
                         "ws:NamedPlaces",
                         "PolygonComment",
-                        "cssSample"));
+                        "cssSample",
+                        "Lakes",
+                        "Buildings"));
 
         // concentrate on one and check title and links
         assertEquals("Default Styler", getSingle(json, "styles[?(@.id == 'Default')].title"));

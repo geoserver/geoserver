@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.api.styles;
 
 import static junit.framework.TestCase.assertEquals;
@@ -73,7 +77,7 @@ public class StyleMetadataTest extends StylesTestSupport {
                 StyleMetadataTest.class,
                 getCatalog());
         testData.addVectorLayer(
-                BUILDINGS,
+                BUILDINGS_LABEL,
                 new HashMap() {
                     {
                         put(SystemTestData.LayerProperty.STYLE, BUILDINGS_LABEL_ASSOCIATED_STYLE);
@@ -98,7 +102,6 @@ public class StyleMetadataTest extends StylesTestSupport {
         testData.addStyle(TASMANIA, "tasmania.sld", StyleMetadataTest.class, getCatalog());
 
         // a style group kind, with the layers that it needs
-        testData.addVectorLayer(MockData.BASIC_POLYGONS, getCatalog());
         testData.addVectorLayer(MockData.LAKES, getCatalog());
         testData.addStyle(
                 BUILDINGS_LAKES, "buildingsLakes.sld", StyleMetadataTest.class, getCatalog());
@@ -241,10 +244,10 @@ public class StyleMetadataTest extends StylesTestSupport {
                 getSingle(json, "layers[0].sampleData[?(@.type=='application/geo+json')].href"));
 
         // BasicPolygons
-        assertEquals("BasicPolygons", json.read("layers[1].id"));
+        assertEquals("Buildings", json.read("layers[1].id"));
         assertEquals("polygon", json.read("layers[1].type"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABasicPolygons/items?f=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildings/items?f=application%2Fgeo%2Bjson",
                 getSingle(json, "layers[1].sampleData[?(@.type=='application/geo+json')].href"));
     }
 
@@ -252,7 +255,6 @@ public class StyleMetadataTest extends StylesTestSupport {
     public void testMetadataSerialization() throws Exception {
         Resource styleResource = getDataDirectory().getStyles("polygon.xml");
         Document dom = dom(styleResource.in(), true);
-        print(dom);
         String metadataPath =
                 "//metadata/entry[@key='" + StyleMetadataInfo.METADATA_KEY + "']/styleMetadata";
         assertXpathExists(metadataPath, dom);

@@ -12,15 +12,20 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.Link;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.styling.Description;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
@@ -55,7 +60,11 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
         // empty constructor for Jackson usage
     }
 
-    public StyleMetadataDocument(StyleInfo si, GeoServer gs, SampleDataSupport sampleDataSupport)
+    public StyleMetadataDocument(
+            StyleInfo si,
+            GeoServer gs,
+            SampleDataSupport sampleDataSupport,
+            ThumbnailBuilder thumbnails)
             throws IOException {
         this.sampleDataSupport = sampleDataSupport;
         this.id = si.prefixedName();
@@ -112,6 +121,20 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
                                                     sampleDataSupport,
                                                     true))
                             .collect(Collectors.toList());
+        }
+
+        // link to the thumbnail if possible
+        if (thumbnails.canGenerateThumbnail(si)) {
+            String baseURL = APIRequestInfo.get().getBaseURL();
+            String href =
+                    ResponseUtils.buildURL(
+                            baseURL,
+                            "ogc/styles/styles/"
+                                    + ResponseUtils.urlEncode(si.prefixedName())
+                                    + "/thumbnail",
+                            Collections.singletonMap("f", "image/png"),
+                            URLMangler.URLType.SERVICE);
+            addLink(new Link(href, "preview", "image/png", "Thumbnail for " + si.prefixedName()));
         }
     }
 

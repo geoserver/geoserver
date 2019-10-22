@@ -4,8 +4,10 @@
  */
 package org.geoserver.api.styles;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
  * These may eventually be added to StyleInfo itself, but for the moment we don't know if the OGC
@@ -22,6 +24,8 @@ public class StyleMetadataInfo implements Serializable {
     String pointOfContact;
     String accessConstraints;
     StyleDates dates;
+    ReferencedEnvelope thumbnailEnvelope;
+    int thumbnailWidth;
 
     public String getTitle() {
         return title;
@@ -69,5 +73,23 @@ public class StyleMetadataInfo implements Serializable {
 
     public void setDates(StyleDates dates) {
         this.dates = dates;
+    }
+
+    @JsonIgnore
+    public ReferencedEnvelope getThumbnailEnvelope() {
+        return thumbnailEnvelope;
+    }
+
+    public void setThumbnailEnvelope(ReferencedEnvelope thumbnailEnvelope) {
+        this.thumbnailEnvelope = thumbnailEnvelope;
+    }
+
+    @JsonIgnore
+    public int getThumbnailWidth() {
+        return thumbnailWidth;
+    }
+
+    public void setThumbnailWidth(int thumbnailWidth) {
+        this.thumbnailWidth = thumbnailWidth;
     }
 }

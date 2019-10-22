@@ -29,15 +29,15 @@
         </UserStyle>
     </NamedLayer>
     <NamedLayer>
-        <Name>BasicPolygons</Name>
+        <Name>Buildings</Name>
         <UserStyle>
-            <Name>Blue</Name>
+            <Name>Gray</Name>
             <FeatureTypeStyle>
                 <Rule>
                     <PolygonSymbolizer>
                         <Fill>
                             <CssParameter name="fill">
-                                <ogc:Literal>#0000C0</ogc:Literal>
+                                <ogc:Literal>#999999</ogc:Literal>
                             </CssParameter>
                             <CssParameter name="fill-opacity">
                                 <ogc:Literal>1.0</ogc:Literal>

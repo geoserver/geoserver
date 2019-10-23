@@ -38,7 +38,7 @@ public class CollectionTest extends TilesTestSupport {
 
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Lakes/map/tiles?f=application%2Fjson",
-                getSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+                readSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class CollectionTest extends TilesTestSupport {
 
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Forests/tiles?f=application%2Fjson",
-                getSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+                readSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
     }
 
     public void testRoadsCollectionJson(DocumentContext json) {

@@ -38,7 +38,7 @@ public class StyleThumbnailTest extends StylesTestSupport {
     public void testThumbnailLakesLink() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/styles/styles/Lakes/metadata", 200);
         assertThat(
-                getSingle(json, "links[?(@.rel=='preview')].href"),
+                readSingle(json, "links[?(@.rel=='preview')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/styles/styles/Lakes/thumbnail?f=image%2Fpng"));
     }
@@ -54,7 +54,7 @@ public class StyleThumbnailTest extends StylesTestSupport {
     public void testThumbnailBuildingLakesLink() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/styles/styles/buildingsLakes/metadata", 200);
         assertThat(
-                getSingle(json, "links[?(@.rel=='preview')].href"),
+                readSingle(json, "links[?(@.rel=='preview')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/styles/styles/buildingsLakes/thumbnail?f=image%2Fpng"));
     }

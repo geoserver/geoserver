@@ -12,16 +12,14 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 public class ImageTest extends ImagesTestSupport {
 
@@ -39,7 +37,7 @@ public class ImageTest extends ImagesTestSupport {
         // get the feature id by the properties, as the harvesting order might change
         // with the file system
         String featureId =
-                getSingle(
+                readSingle(
                         json,
                         "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
@@ -58,12 +56,12 @@ public class ImageTest extends ImagesTestSupport {
     }
 
     public void checkWaterTemp(DocumentContext json, String basePath) {
-        assertThat(getSingle(json, basePath + ".properties.size()"), equalTo(2));
+        assertThat(readSingle(json, basePath + ".properties.size()"), equalTo(2));
         // check mandatory STAC item properties
-        assertThat(getSingle(json, basePath + ".stac_version"), equalTo("0.8.0"));
-        assertThat(getSingle(json, basePath + ".collection"), equalTo("sf:watertemp"));
+        assertThat(readSingle(json, basePath + ".stac_version"), equalTo("0.8.0"));
+        assertThat(readSingle(json, basePath + ".collection"), equalTo("sf:watertemp"));
         assertThat(
-                getSingle(json, basePath + ".bbox"),
+                readSingle(json, basePath + ".bbox"),
                 Matchers.hasItems(
                         closeTo(0.23722069, 1e-6),
                         closeTo(40.56208, 1e-6),
@@ -72,21 +70,21 @@ public class ImageTest extends ImagesTestSupport {
 
         // check links (mandatory in STAC)
         assertThat(
-                getSingle(json, basePath + ".links[?(@.rel=='self')].href"),
+                readSingle(json, basePath + ".links[?(@.rel=='self')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1?f=application%2Fstac%2Bjson"));
         assertThat(
-                getSingle(
+                readSingle(
                         json,
                         basePath + ".links[?(@.rel=='alternate' && @.type =='text/html')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1?f=text%2Fhtml"));
         // check the assets (also mandatory in STAC)
         assertThat(
-                getSingle(json, basePath + ".assets[?(@.type=='image/tiff')].title"),
+                readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].title"),
                 equalTo("NCOM_wattemp_100_20081101T0000000_12.tiff"));
         assertThat(
-                getSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href"),
+                readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href"),
                 allOf(
                         startsWith(
                                 "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1/assets/"),
@@ -121,7 +119,7 @@ public class ImageTest extends ImagesTestSupport {
                                 + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
                         200);
         String featureId =
-                getSingle(
+                readSingle(
                         collectionJson,
                         "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
@@ -152,16 +150,16 @@ public class ImageTest extends ImagesTestSupport {
                                 + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
                         200);
         String featureId =
-                getSingle(
+                readSingle(
                         json,
                         "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
 
         String basePath = "features[?(@.id == '" + featureId + "')]";
         assertThat(
-                getSingle(json, basePath + ".assets[?(@.type=='image/tiff')].title"),
+                readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].title"),
                 equalTo("NCOM_wattemp_100_20081101T0000000_12.tiff"));
-        String assetHRef = getSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href");
+        String assetHRef = readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href");
         String testAssetHRef = assetHRef.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletResponse response = getAsServletResponse(testAssetHRef);
         assertThat(response.getStatus(), equalTo(200));

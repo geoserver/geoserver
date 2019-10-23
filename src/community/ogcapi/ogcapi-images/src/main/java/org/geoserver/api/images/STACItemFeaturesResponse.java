@@ -199,7 +199,9 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
                     String href =
                             ResponseUtils.buildURL(
                                     baseUrl,
-                                    basePath + "/images/" + ResponseUtils.urlEncode(next.getIdentifier().getID()),
+                                    basePath
+                                            + "/images/"
+                                            + ResponseUtils.urlEncode(next.getIdentifier().getID()),
                                     Collections.singletonMap("f", MIME),
                                     URLMangler.URLType.SERVICE);
                     String linkType = Link.REL_ITEM;

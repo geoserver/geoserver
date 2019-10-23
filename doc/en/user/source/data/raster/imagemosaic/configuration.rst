@@ -332,6 +332,28 @@ In case of custom format datetimes in filename, an additional *format* element s
 
     regex=.*([0-9]{10}).*,format=yyyyMMddHH
 
+In case of reduced precision of temporal information, where there is the need to get the higher time included in that reduced value, an additional *,useHighTime=true* element should be added.
+
+| Example:
+| Temperature_2017111319.tif
+| an hourly Temperature file with datetime = November, 13 2017 at 19h 00m 00s 000ms
+| You want to get the max time included in that reduced precision, which is November, 13 2017 at 19h 59m 59s 999ms 
+|
+| In that case, the timeregex.properties file should be like this:
+
+    regex=.*([0-9]{10}).*,format=yyyyMMddHH,useHighTime=true
+
+In case the temporal information is spread along the whole file path, an additional *,fullPath=true* element should be added.
+
+| Example:
+| /data/20120202/Temperature.T1800.tif
+| an hourly Temperature tif file with Year,Month and Day specified in the parent folder (20120202) and time value embeeded in the name (Temperature.T1800.tif)
+|
+| In that case, the timeregex.properties file should be like this:
+
+    regex=(?:\/)(\\d{8})(?:\/)(?:Temperature.)(T\\d{4})(?:.tif),fullPath=true
+
+
 
 :file:`elevationregex.properties`::
 

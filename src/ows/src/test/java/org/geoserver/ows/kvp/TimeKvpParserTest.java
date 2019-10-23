@@ -42,16 +42,19 @@ public class TimeKvpParserTest extends TestCase {
     /** Format of dates. */
     private static final DateFormat format;
 
+    private static final TimeParser timeParser;
+
     static {
         format = new SimpleDateFormat("yyyy-MM-dd'T'HH'Z'");
         format.setTimeZone(TimeParser.UTC_TZ);
+        timeParser = new TimeParser();
     }
 
     public void testReducedAccuracyYear() throws Exception {
         Calendar c = new GregorianCalendar();
         c.setTimeZone(TimeParser.UTC_TZ);
 
-        DateRange year = (DateRange) TimeParser.getFuzzyDate("2000");
+        DateRange year = (DateRange) timeParser.parse("2000").iterator().next();
         c.clear();
         c.set(Calendar.YEAR, 2000);
         assertRangeStarts(year, c.getTime());
@@ -59,7 +62,7 @@ public class TimeKvpParserTest extends TestCase {
         c.add(Calendar.MILLISECOND, -1);
         assertRangeEnds(year, c.getTime());
 
-        year = (DateRange) TimeParser.getFuzzyDate("2001");
+        year = (DateRange) timeParser.parse("2001").iterator().next();
         c.clear();
         c.set(Calendar.YEAR, 2001);
         assertRangeStarts(year, c.getTime());
@@ -67,7 +70,7 @@ public class TimeKvpParserTest extends TestCase {
         c.add(Calendar.MILLISECOND, -1);
         assertRangeEnds(year, c.getTime());
 
-        year = (DateRange) TimeParser.getFuzzyDate("-6052");
+        year = (DateRange) timeParser.parse("-6052").iterator().next();
         c.clear();
         c.set(Calendar.ERA, GregorianCalendar.BC);
         c.set(Calendar.YEAR, 6053);
@@ -82,7 +85,7 @@ public class TimeKvpParserTest extends TestCase {
         c.setTimeZone(TimeParser.UTC_TZ);
         c.clear();
 
-        DateRange hour = (DateRange) TimeParser.getFuzzyDate("2000-04-04T12Z");
+        DateRange hour = (DateRange) timeParser.parse("2000-04-04T12Z").iterator().next();
         c.set(Calendar.YEAR, 2000);
         c.set(Calendar.MONTH, 3); // 0-indexed
         c.set(Calendar.DAY_OF_MONTH, 4);
@@ -92,10 +95,8 @@ public class TimeKvpParserTest extends TestCase {
         c.add(Calendar.MILLISECOND, -1);
         assertRangeEnds(hour, c.getTime());
 
-        hour =
-                (DateRange)
-                        TimeParser.getFuzzyDate(
-                                "2005-12-31T23Z"); // selected due to leapsecond at 23:59:60 UTC
+        hour = (DateRange) timeParser.parse("2005-12-31T23Z").iterator().next();
+        // selected due to leapsecond at 23:59:60 UTC
         c.clear();
         c.set(Calendar.YEAR, 2005);
         c.set(Calendar.MONTH, 11);
@@ -106,7 +107,7 @@ public class TimeKvpParserTest extends TestCase {
         c.add(Calendar.MILLISECOND, -1);
         assertRangeEnds(hour, c.getTime());
 
-        hour = (DateRange) TimeParser.getFuzzyDate("-25-06-08T17Z");
+        hour = (DateRange) timeParser.parse("-25-06-08T17Z").iterator().next();
         c.clear();
         c.set(Calendar.ERA, GregorianCalendar.BC);
         c.set(Calendar.YEAR, 26);
@@ -124,18 +125,15 @@ public class TimeKvpParserTest extends TestCase {
         c.setTimeZone(TimeParser.UTC_TZ);
         c.clear();
 
-        Date instant = (Date) TimeParser.getFuzzyDate("2000-04-04T12:00:00.000Z");
+        Date instant = (Date) timeParser.parse("2000-04-04T12:00:00.000Z").iterator().next();
         c.set(Calendar.YEAR, 2000);
         c.set(Calendar.MONTH, 3); // 0-indexed
         c.set(Calendar.DAY_OF_MONTH, 4);
         c.set(Calendar.HOUR_OF_DAY, 12);
         assertEquals(instant, c.getTime());
 
-        instant =
-                (Date)
-                        TimeParser.getFuzzyDate(
-                                "2005-12-31T23:59:60.000Z"); // selected due to leapsecond at
-        // 23:59:60 UTC
+        instant = (Date) timeParser.parse("2005-12-31T23:59:60.000Z").iterator().next();
+        // selected due to leapsecond at 23:59:60 UTC
         c.clear();
         c.set(Calendar.YEAR, 2005);
         c.set(Calendar.MONTH, 11);
@@ -145,7 +143,7 @@ public class TimeKvpParserTest extends TestCase {
         c.set(Calendar.SECOND, 60);
         assertEquals(instant, c.getTime());
 
-        instant = (Date) TimeParser.getFuzzyDate("-25-06-08T17:15:00.123Z");
+        instant = (Date) timeParser.parse("-25-06-08T17:15:00.123Z").iterator().next();
         c.clear();
         c.set(Calendar.ERA, GregorianCalendar.BC);
         c.set(Calendar.YEAR, 26);

@@ -94,6 +94,10 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         if ("application/xml".equals(response.getContentType())) {
             System.out.println("Error message: " + response.getContentAsString());
+            Runtime runtime = Runtime.getRuntime();
+            System.out.println("Max memory: " + runtime.maxMemory());
+            System.out.println("Free memory: " + runtime.freeMemory());
+            System.out.println("Total memory: " + runtime.totalMemory());
         }
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);

@@ -12,14 +12,16 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class ImageTest extends ImagesTestSupport {
 
@@ -34,8 +36,8 @@ public class ImageTest extends ImagesTestSupport {
                                 + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
                         200);
 
-        // the the feature id by the properties, as the harvesting order might change with the file
-        // system
+        // get the feature id by the properties, as the harvesting order might change
+        // with the file system
         String featureId =
                 getSingle(
                         json,
@@ -43,10 +45,19 @@ public class ImageTest extends ImagesTestSupport {
         assertThat(featureId, startsWith("watertemp."));
         // check properties (location is gone, time torned to "datetime")
         String basePath = "features[?(@.id == '" + featureId + "')]";
-        checkWaterTemp1(json, basePath);
+        checkWaterTemp(json, basePath);
+
+        // also check the links (will fail if the link is not available
+        assertThat(
+                json.read("links[?(@.rel=='item')].href"),
+                Matchers.hasItems(
+                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1?f=application%2Fstac%2Bjson",
+                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.2?f=application%2Fstac%2Bjson",
+                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.3?f=application%2Fstac%2Bjson",
+                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.4?f=application%2Fstac%2Bjson"));
     }
 
-    public void checkWaterTemp1(DocumentContext json, String basePath) {
+    public void checkWaterTemp(DocumentContext json, String basePath) {
         assertThat(getSingle(json, basePath + ".properties.size()"), equalTo(2));
         // check mandatory STAC item properties
         assertThat(getSingle(json, basePath + ".stac_version"), equalTo("0.8.0"));

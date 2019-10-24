@@ -168,7 +168,8 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
 
     @Test
     public void virtualServiceStoredQueryNamespacesGml31() throws Exception {
-        StoredQueryProvider storedQueryProvider = new StoredQueryProvider(getCatalog());
+        StoredQueryProvider storedQueryProvider =
+                new StoredQueryProvider(getCatalog(), null, true, null);
         try {
             createTestStoredQuery(storedQueryProvider, GML31_PARAMETERS);
 

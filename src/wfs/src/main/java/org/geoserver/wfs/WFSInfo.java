@@ -265,4 +265,9 @@ public interface WFSInfo extends ServiceInfo {
 
     /** The srs's that the WFS service will advertise in the capabilities document */
     List<String> getSRS();
+
+    /** Flag that determines if global stored queries are allowed. Default true. */
+    Boolean getAllowGlobalQueries();
+
+    void setAllowGlobalQueries(Boolean allowGlobalQueries);
 }

@@ -112,6 +112,13 @@ is not selected, OGC WKT format will be used. If this checkbox is selected, ESRI
 
 Note: this requires an ``esri.properties`` file to be provided in the ``user_projections`` subdirectory of the GeoServer data directory. This may be obtained from the GeoTools EPSG extension.
 
+Stored Queries
+--------------
+
+.. figure:: img/global-queries.png
+
+Selecting the :guilabel:`Allow Global Stored Queries` checkbox determines if global stored queries will included for usage in workspace virtual services, or not. When disabled, only stored queries created inside the workspace will be visible.
+
 Override GML 3.2 MIME type
 --------------------------
 

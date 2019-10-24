@@ -81,7 +81,10 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     }
 
     public StoredQueryProvider getStoredQueryProvider() {
-        return new StoredQueryProvider(getCatalog());
+        return new StoredQueryProvider(
+                getCatalog(),
+                getServiceInfo(),
+                geoServer.getGlobal().isAllowStoredQueriesPerWorkspace());
     }
 
     public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {

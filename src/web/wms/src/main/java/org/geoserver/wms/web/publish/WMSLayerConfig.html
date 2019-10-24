@@ -50,7 +50,7 @@
           </li>
         </ul>
         <ul id="remotestyles" wicket:id="remotestyles">
-        <h3><wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message></h3>
+        <h3><wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message></h3>          
           <li>
             <label for="remoteStylesDropDown"><wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message></label>
             <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown" class="text"/>
@@ -70,6 +70,12 @@
             <span wicket:id="remoteFormatsPalette"></span>
           </li>
         </ul>
+        <ul id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer" class="choiceList"> 
+          <li>
+            <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"></input>
+            <label for="respectMetadataBBoxChkBox"><wicket:message key="respectMetadataBBoxLabel">Do not send requests if requested Map Area is outside Layer bounds</wicket:message></label>
+          </li>
+        </ul>   
       </fieldset>
     </li>
   </ul>

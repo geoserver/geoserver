@@ -175,12 +175,17 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
         // remote formats
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
+        WebMarkupContainer metaDataCheckBoxContainer =
+                new WebMarkupContainer("metaDataCheckBoxContainer");
+
         add(styleContainer);
         add(remoteForamtsContainer);
+        add(metaDataCheckBoxContainer);
 
         if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
             styleContainer.setVisible(false);
             remoteForamtsContainer.setVisible(false);
+            metaDataCheckBoxContainer.setVisible(false);
             return;
         }
 
@@ -239,5 +244,9 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
+        metaDataCheckBoxContainer.add(
+                new CheckBox(
+                        "respectMetadataBBoxChkBox",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "respectMetadataBBox")));
     }
 }

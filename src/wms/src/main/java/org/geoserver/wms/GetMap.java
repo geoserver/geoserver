@@ -666,6 +666,18 @@ public class GetMap {
                 WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
                 WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
+                if (wmsLayer.isRespectMetadataBBox()) {
+                    boolean isInsideBounnds =
+                            wmsLayer.checkEnvelopOverLapWithNativeBounds(
+                                    mapContent.getViewport().getBounds());
+                    if (!isInsideBounnds) {
+                        LOGGER.warning(
+                                "Get Map Request BBOX is outside Layer "
+                                        + request.getLayers().get(i).getName()
+                                        + " metada BoundsIgnoring Layer,Ignoring");
+                        continue;
+                    }
+                }
 
                 // see if we can merge this layer with the previous one
                 boolean merged = false;
@@ -685,7 +697,7 @@ public class GetMap {
                     WMSLayer Layer = null;
 
                     String style = request.getStyles().get(i).getName();
-                    style = (style == null) ? "" : style;
+                    style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
                     String imageFormat = request.getFormat();
                     // if passed style does not exist in remote, throw exception
                     if (!wmsLayer.isSelectedRemoteStyles(style))

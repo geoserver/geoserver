@@ -336,4 +336,19 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     public StyleInfo getDefaultStyle() {
         return delegate.getDefaultStyle();
     }
+
+    @Override
+    public boolean isRespectMetadataBBox() {
+        return delegate.isRespectMetadataBBox();
+    }
+
+    @Override
+    public void setRespectMetadataBBox(boolean respectMetadataBBox) {
+        delegate.setRespectMetadataBBox(respectMetadataBBox);
+    }
+
+    @Override
+    public boolean checkEnvelopOverLapWithNativeBounds(ReferencedEnvelope requestEnevelope) {
+        return delegate.checkEnvelopOverLapWithNativeBounds(requestEnevelope);
+    }
 }

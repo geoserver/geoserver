@@ -227,5 +227,6 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsPalette",
                 new HashSet<String>(wmsLayer.availableFormats()));
+        tester.assertVisible("form:panel:metaDataCheckBoxContainer");
     }
 }

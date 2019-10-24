@@ -19,6 +19,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
@@ -26,6 +27,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.request.GetLegendGraphicRequest;
@@ -197,5 +199,63 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         JSONArray rulesJSONArray =
                 legendArray.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
         assertFalse(rulesJSONArray.isEmpty());
+    }
+
+    @Test
+    public void testCascadedLayergroup() throws Exception {
+        LayerGroupInfo info = getCatalog().getLayerGroupByName("cascaded_group");
+        LayerInfo groupLayer2 = getCatalog().getLayerByName("group_lyr_2");
+        assertNotNull(info);
+        assertNotNull(groupLayer2);
+        ReferencedEnvelope request1 =
+                new ReferencedEnvelope(groupLayer2.getResource().getNativeBoundingBox());
+        // minx,miny,maxx,maxy
+        String lyrBBox =
+                request1.getMinX()
+                        + ","
+                        + request1.getMinY()
+                        + ","
+                        + request1.getMaxX()
+                        + ","
+                        + request1.getMaxY();
+
+        String getMapRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers="
+                        + info.getName()
+                        + "&bbox="
+                        + lyrBBox
+                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+
+        // should result in a request with both group layers present
+        // should invoke expected Mock URL in which both layers are present
+        // since the BBOX covers both
+
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
+
+        // next part of test
+        // make getMap request outside group_lyr_2 but inside group_lyr_1
+        // should result in a URL with single layer only
+
+        request1 = new ReferencedEnvelope(groupLayer2.getResource().getNativeBoundingBox());
+
+        // minx,miny,maxx,maxy
+        String lyrBBoxOutSideNativeBounds = "-10.0,0,-5.0,5";
+        getMapRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers="
+                        + info.getName()
+                        + "&bbox="
+                        + lyrBBoxOutSideNativeBounds
+                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+
+        // should result in a request with single group layers present
+        // should invoke expected Mock URL in which only 1 layer is present
+        // since the BBOX only covers one layer
+        response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
     }
 }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.Layer;
 import org.geotools.styling.Style;
 import org.opengis.util.ProgressListener;
@@ -54,4 +55,10 @@ public interface WMSLayerInfo extends ResourceInfo {
     public Set<StyleInfo> getStyles();
 
     public StyleInfo getDefaultStyle();
+
+    public boolean isRespectMetadataBBox();
+
+    public void setRespectMetadataBBox(boolean respectMetadataBBox);
+
+    public boolean checkEnvelopOverLapWithNativeBounds(ReferencedEnvelope requestEnevelope);
 }

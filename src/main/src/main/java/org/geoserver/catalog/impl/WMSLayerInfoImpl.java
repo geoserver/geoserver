@@ -264,16 +264,17 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
 
+    public List<StyleInfo> getAllAvailableRemoteStyles() {
+        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+        return allAvailableRemoteStyles;
+    }
+    /** @return the respectMetadataBBox */
     public boolean isRespectMetadataBBox() {
         return respectMetadataBBox;
     }
 
+    /** @param respectMetadataBBox the respectMetadataBBox to set */
     public void setRespectMetadataBBox(boolean respectMetadataBBox) {
         this.respectMetadataBBox = respectMetadataBBox;
-    }
-
-    public List<StyleInfo> getAllAvailableRemoteStyles() {
-        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
-        return allAvailableRemoteStyles;
     }
 }

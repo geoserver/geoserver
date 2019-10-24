@@ -338,6 +338,11 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     }
 
     @Override
+    public List<StyleInfo> getAllAvailableRemoteStyles() {
+        return delegate.getAllAvailableRemoteStyles();
+    }
+
+    @Override
     public boolean isRespectMetadataBBox() {
         return delegate.isRespectMetadataBBox();
     }
@@ -345,10 +350,5 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     @Override
     public void setRespectMetadataBBox(boolean respectMetadataBBox) {
         delegate.setRespectMetadataBBox(respectMetadataBBox);
-    }
-
-    @Override
-    public List<StyleInfo> getAllAvailableRemoteStyles() {
-        return delegate.getAllAvailableRemoteStyles();
     }
 }

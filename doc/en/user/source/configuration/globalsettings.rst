@@ -33,6 +33,10 @@ Enable Global Services
 
 When enabled, allows access to both global services and :ref:`virtual services <virtual_services>`. When disabled, clients will only be able to access virtual services. Disabling is useful if GeoServer is hosting a large amount of layers and you want to ensure that client always request limited layer lists. Disabling is also useful for security reasons.
 
+Allow Per-Workspace Stored Queries
+----------------------------------
+
+When enabled, allows to persist Stored queries per workspace, making queries created inside a workspace  available in the workspace virtual service only.
 
 Handle data and configuration problems
 --------------------------------------

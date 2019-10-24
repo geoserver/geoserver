@@ -179,4 +179,10 @@ public interface GeoServerInfo extends Info {
      * @param mode
      */
     public void setWebUIMode(WebUIMode mode);
+
+    /** Determines if Per-workspace Stores Queries are activated. */
+    Boolean isAllowStoredQueriesPerWorkspace();
+
+    /** Sets if Per-workspace Stores Queries are activated. */
+    void setAllowStoredQueriesPerWorkspace(Boolean allowStoredQueriesPerWorkspace);
 }

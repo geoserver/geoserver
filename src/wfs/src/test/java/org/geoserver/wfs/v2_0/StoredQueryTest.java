@@ -11,11 +11,15 @@ import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.filter.v2_0.FES;
@@ -31,7 +35,8 @@ public class StoredQueryTest extends WFS20TestSupport {
 
     @Before
     public void clearQueries() {
-        new StoredQueryProvider(getCatalog()).removeAll();
+        final WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        new StoredQueryProvider(getCatalog(), wfsInfo, true).removeAll();
     }
 
     @Test
@@ -128,6 +133,10 @@ public class StoredQueryTest extends WFS20TestSupport {
     }
 
     public String getCreatePrimitiveWithinQuery(boolean emptyReturnFeatureTypes) {
+        return getCreatePrimitiveWithinQuery(emptyReturnFeatureTypes, "myStoredQuery");
+    }
+
+    public String getCreatePrimitiveWithinQuery(boolean emptyReturnFeatureTypes, String id) {
         String returnFeatureTypes = emptyReturnFeatureTypes ? "" : "sf:PrimitiveGeoFeature";
 
         return "<wfs:CreateStoredQuery service='WFS' version='2.0.0' "
@@ -138,7 +147,9 @@ public class StoredQueryTest extends WFS20TestSupport {
                 + "   xmlns:sf='"
                 + MockData.SF_URI
                 + "'>"
-                + "   <wfs:StoredQueryDefinition id='myStoredQuery'> "
+                + "   <wfs:StoredQueryDefinition id='"
+                + id
+                + "'> "
                 + "      <wfs:Parameter name='AreaOfInterest' type='gml:Polygon'/> "
                 + "      <wfs:QueryExpressionText "
                 + "           returnFeatureTypes='"
@@ -592,5 +603,127 @@ public class StoredQueryTest extends WFS20TestSupport {
         String message =
                 checkOws11Exception(dom, "2.0.0", "OperationProcessingFailed", "CreateStoredQuery");
         assertThat(message, containsString("Entity resolution disallowed"));
+    }
+
+    @Test
+    public void testCreateLocalStoredQuery() throws Exception {
+        try {
+            String xml =
+                    "<wfs:ListStoredQueries service='WFS' version='2.0.0' "
+                            + " xmlns:wfs='"
+                            + WFS.NAMESPACE
+                            + "'/>";
+            Document dom = postAsDOM("sf/wfs", xml);
+            // print(dom);
+            assertEquals("wfs:ListStoredQueriesResponse", dom.getDocumentElement().getNodeName());
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
+
+            xml = getCreatePrimitiveWithinQuery(false);
+            // save on local workspace
+            dom = postAsDOM("sf/wfs", xml);
+            assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
+            assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+            // check local workspace
+            dom = getAsDOM("sf/wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+            XMLAssert.assertXpathExists(
+                    "//wfs:ReturnFeatureType[text() = 'sf:PrimitiveGeoFeature']", dom);
+            // check global
+            dom = getAsDOM("wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathNotExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+
+            // remove stored query
+            xml =
+                    "<wfs:DropStoredQuery xmlns:wfs='"
+                            + WFS.NAMESPACE
+                            + "' service='WFS' id='myStoredQuery'/>";
+            dom = postAsDOM("sf/wfs", xml);
+            assertEquals("wfs:DropStoredQueryResponse", dom.getDocumentElement().getNodeName());
+            assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
+            // check local workspace
+            dom = getAsDOM("sf/wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathNotExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+        } finally {
+            removeAllLocalStoredQueries();
+        }
+    }
+
+    @Test
+    public void testDisallowGlobalQueries() throws Exception {
+        final GeoServer geoServer = getGeoServer();
+        try {
+            WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+            wfsInfo.setAllowGlobalQueries(false);
+            geoServer.save(wfsInfo);
+
+            String xml = getCreatePrimitiveWithinQuery(false);
+            Document dom = postAsDOM("sf/wfs", xml);
+
+            xml = getCreatePrimitiveWithinQuery(false, "otherQuery");
+            dom = postAsDOM("wfs", xml);
+            // check local workspace
+            dom = getAsDOM("sf/wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+            XMLAssert.assertXpathNotExists("//wfs:StoredQuery[@id = 'otherQuery']", dom);
+
+            // check global
+            dom = getAsDOM("wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'otherQuery']", dom);
+        } finally {
+            WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+            wfsInfo.setAllowGlobalQueries(true);
+            geoServer.save(wfsInfo);
+            removeAllLocalStoredQueries();
+        }
+    }
+
+    @Test
+    public void testDisallowPerWorkspaceQueries() throws Exception {
+        final GeoServer geoServer = getGeoServer();
+        GeoServerInfo geoServerInfo = geoServer.getGlobal();
+        geoServerInfo.setAllowStoredQueriesPerWorkspace(false);
+        geoServer.save(geoServerInfo);
+        try {
+            WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+            wfsInfo.setAllowGlobalQueries(false);
+            geoServer.save(wfsInfo);
+
+            String xml = getCreatePrimitiveWithinQuery(false);
+            Document dom = postAsDOM("sf/wfs", xml);
+
+            xml = getCreatePrimitiveWithinQuery(false, "otherQuery");
+            dom = postAsDOM("wfs", xml);
+            // check local workspace
+            dom = getAsDOM("sf/wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'otherQuery']", dom);
+
+            // check global
+            dom = getAsDOM("wfs?request=ListStoredQueries");
+            XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:StoredQuery)", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
+            XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'otherQuery']", dom);
+        } finally {
+            WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
+            wfsInfo.setAllowGlobalQueries(true);
+            geoServer.save(wfsInfo);
+            geoServerInfo = geoServer.getGlobal();
+            geoServerInfo.setAllowStoredQueriesPerWorkspace(false);
+            geoServer.save(geoServerInfo);
+        }
+    }
+
+    private void removeAllLocalStoredQueries() {
+        final GeoServer geoServer = getGeoServer();
+        WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName("sf");
+        WFSInfo wfsInfo = geoServer.getService(workspaceInfo, WFSInfo.class);
+        if (wfsInfo == null) wfsInfo = geoServer.getService(WFSInfo.class);
+        new StoredQueryProvider(getCatalog(), wfsInfo, true, "sf").removeAll();
     }
 }

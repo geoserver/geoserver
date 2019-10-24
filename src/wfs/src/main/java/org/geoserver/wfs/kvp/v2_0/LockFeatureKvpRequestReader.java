@@ -99,7 +99,11 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             throw new WFSException(req, "Stored queries only supported in WFS 2.0+");
         }
 
-        StoredQueryProvider sqp = new StoredQueryProvider(catalog);
+        StoredQueryProvider sqp =
+                new StoredQueryProvider(
+                        catalog,
+                        getWFS(),
+                        geoServer.getGlobal().isAllowStoredQueriesPerWorkspace());
         for (URI storedQueryId : storedQueryIds) {
             StoredQuery sq = sqp.getStoredQuery(storedQueryId.toString());
             if (sq == null) {

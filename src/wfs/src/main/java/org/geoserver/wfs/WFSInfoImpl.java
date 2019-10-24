@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
@@ -21,6 +22,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean encodeFeatureMember = false;
     protected boolean hitsIgnoreMaxFeatures = false;
     protected List<String> srs = new ArrayList<String>();
+    protected Boolean allowGlobalQueries = true;
 
     public WFSInfoImpl() {}
 
@@ -110,6 +112,16 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
 
     @Override
+    public Boolean getAllowGlobalQueries() {
+        return allowGlobalQueries == null ? Boolean.TRUE : allowGlobalQueries;
+    }
+
+    @Override
+    public void setAllowGlobalQueries(Boolean allowGlobalQueries) {
+        this.allowGlobalQueries = allowGlobalQueries;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -121,6 +133,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + maxFeatures;
         result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
+        result = prime * result + (allowGlobalQueries == null ? 0 : allowGlobalQueries.hashCode());
         return result;
     }
 
@@ -144,7 +157,10 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         if (srs == null) {
             if (other.getSRS() != null) return false;
         } else if (!srs.equals(other.getSRS())) return false;
-
+        if (allowGlobalQueries == null && other.getAllowGlobalQueries() != null
+                || !Objects.equals(allowGlobalQueries, other.getAllowGlobalQueries())) {
+            return false;
+        }
         return true;
     }
 }

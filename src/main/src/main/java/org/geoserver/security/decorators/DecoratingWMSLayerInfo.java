@@ -336,4 +336,24 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     public StyleInfo getDefaultStyle() {
         return delegate.getDefaultStyle();
     }
+
+    @Override
+    public Integer getMinScale() {
+        return delegate.getMinScale();
+    }
+
+    @Override
+    public void setMinScale(Integer minScale) {
+        delegate.setMinScale(minScale);
+    }
+
+    @Override
+    public Integer getMaxScale() {
+        return delegate.getMaxScale();
+    }
+
+    @Override
+    public void setMaxScale(Integer maxScale) {
+        delegate.setMaxScale(maxScale);
+    }
 }

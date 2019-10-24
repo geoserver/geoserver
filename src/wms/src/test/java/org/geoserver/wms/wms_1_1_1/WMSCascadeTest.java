@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -16,16 +15,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import javax.imageio.ImageIO;
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.request.GetLegendGraphicRequest;
@@ -189,13 +188,54 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         print(dom);
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
-        assertTrue(responseJson.has(JSONLegendGraphicBuilder.LEGEND));
+        // styless remote layer..fixed wrong assertion
+        assertTrue(responseJson.isEmpty());
+    }
 
-        JSONArray legendArray = responseJson.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertFalse(legendArray.isEmpty());
+    @Test
+    public void testScaleDenominator() throws Exception {
+        LayerGroupInfo info = getCatalog().getLayerGroupByName("cascaded_group");
+        LayerInfo groupLayer2 = getCatalog().getLayerByName("group_lyr_2");
+        assertNotNull(info);
+        assertNotNull(groupLayer2);
+        ReferencedEnvelope request1 =
+                new ReferencedEnvelope(groupLayer2.getResource().getNativeBoundingBox());
+        // minx,miny,maxx,maxy
+        String lyrBBox =
+                request1.getMinX()
+                        + ","
+                        + request1.getMinY()
+                        + ","
+                        + request1.getMaxX()
+                        + ","
+                        + request1.getMaxY();
 
-        JSONArray rulesJSONArray =
-                legendArray.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertFalse(rulesJSONArray.isEmpty());
+        // configure max scale on one of the layers
+        // set max scale as small as possible to have it filtered
+        WMSLayerInfo groupLayer1WMSResource =
+                (WMSLayerInfo) getCatalog().getLayerByName("group_lyr_1").getResource();
+        groupLayer1WMSResource.setMinScale(1);
+        groupLayer1WMSResource.setMaxScale(1000);
+        getCatalog().save(groupLayer1WMSResource);
+
+        String getMapRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers="
+                        + info.getName()
+                        + "&bbox="
+                        + lyrBBox
+                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+
+        // should result in a request with both group layers present
+        // should invoke expected Mock URL in which both layers are present
+        // since the BBOX covers both
+        // but group_lyr_1 min/max scale is outside the bound of map scale
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
+        // reset
+        groupLayer1WMSResource.setMinScale(null);
+        groupLayer1WMSResource.setMaxScale(null);
+        getCatalog().save(groupLayer1WMSResource);
     }
 }

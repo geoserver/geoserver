@@ -664,6 +664,7 @@ public class GetMap {
                 }
             } else if (layerType == MapLayerInfo.TYPE_WMS) {
                 WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
+                if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) continue;
                 WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
 
@@ -987,5 +988,20 @@ public class GetMap {
             throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
+    }
+
+    private boolean checkWMSLayerMinMaxScale(WMSLayerInfo wmsLayerInfo, double mapScale) {
+        //
+        // if none configured
+        if (wmsLayerInfo.getMinScale() == null && wmsLayerInfo.getMaxScale() == null) return true;
+        if (wmsLayerInfo.getMinScale() != null)
+            if (mapScale < wmsLayerInfo.getMinScale())
+                return false; // return false map scale is below min
+
+        if (wmsLayerInfo.getMaxScale() != null)
+            if (mapScale > wmsLayerInfo.getMaxScale())
+                return false; // return false map scale is above max
+
+        return true;
     }
 }

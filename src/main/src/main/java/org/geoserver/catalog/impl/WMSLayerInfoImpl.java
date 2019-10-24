@@ -35,6 +35,10 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
 
+    private Integer minScale = null;
+
+    private Integer maxScale = null;
+
     protected WMSLayerInfoImpl() {}
 
     public WMSLayerInfoImpl(Catalog catalog) {
@@ -71,12 +75,15 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
         try {
             // read from cap doc
-            return getWMSLayer(null)
-                    .getStyles()
-                    .stream()
-                    .map(s -> s.getName())
-                    .collect(Collectors.toList());
-
+            List<String> remoteStyles = new ArrayList<String>();
+            remoteStyles.add("");
+            remoteStyles.addAll(
+                    getWMSLayer(null)
+                            .getStyles()
+                            .stream()
+                            .map(s -> s.getName())
+                            .collect(Collectors.toList()));
+            return remoteStyles;
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -161,6 +168,11 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                                 .findFirst();
 
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+            } else {
+                StyleInfo emptyStyleInfo = new StyleInfoImpl();
+                emptyStyleInfo.setName("");
+                emptyStyleInfo.getMetadata().put("isRemote", true);
+                return emptyStyleInfo;
             }
 
         return null;
@@ -254,5 +266,21 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
+    }
+
+    public Integer getMinScale() {
+        return minScale;
+    }
+
+    public void setMinScale(Integer minScale) {
+        this.minScale = minScale;
+    }
+
+    public Integer getMaxScale() {
+        return maxScale;
+    }
+
+    public void setMaxScale(Integer maxScale) {
+        this.maxScale = maxScale;
     }
 }

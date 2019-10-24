@@ -29,6 +29,9 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -175,12 +178,17 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
         // remote formats
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
+        WebMarkupContainer metaDataCheckBoxContainer =
+                new WebMarkupContainer("metaDataCheckBoxContainer");
+
         add(styleContainer);
         add(remoteForamtsContainer);
+        add(metaDataCheckBoxContainer);
 
         if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
             styleContainer.setVisible(false);
             remoteForamtsContainer.setVisible(false);
+            metaDataCheckBoxContainer.setVisible(false);
             return;
         }
 
@@ -239,5 +247,47 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
+        // scale denominators
+        TextField<Integer> minScale =
+                new TextField(
+                        "minScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
+                        Integer.class);
+        metaDataCheckBoxContainer.add(minScale);
+        TextField<Integer> maxScale =
+                new TextField(
+                        "maxScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
+                        Integer.class);
+        metaDataCheckBoxContainer.add(maxScale);
+
+        minScale.add(new ScalesValidator(minScale, maxScale));
+    }
+
+    // validator to make sure min scale smaller than max scale and vice-versa
+    private class ScalesValidator implements IValidator {
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1349568700386246273L;
+
+        TextField<Integer> minScale;
+        TextField<Integer> maxScale;
+
+        public ScalesValidator(TextField<Integer> minScale, TextField<Integer> maxScale) {
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+
+        @Override
+        public void validate(IValidatable validatable) {
+            if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
+                // if both are set perform check min < max
+                if (Integer.valueOf(minScale.getInput()) >= Integer.valueOf(maxScale.getInput())) {
+                    validatable.error(
+                            new ValidationError(
+                                    "Minimum Scale cannot be greater than Maximum Scale"));
+                }
+            }
+        }
     }
 }

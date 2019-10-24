@@ -54,4 +54,12 @@ public interface WMSLayerInfo extends ResourceInfo {
     public Set<StyleInfo> getStyles();
 
     public StyleInfo getDefaultStyle();
+
+    public Integer getMinScale();
+
+    public void setMinScale(Integer minScale);
+
+    public Integer getMaxScale();
+
+    public void setMaxScale(Integer maxScale);
 }

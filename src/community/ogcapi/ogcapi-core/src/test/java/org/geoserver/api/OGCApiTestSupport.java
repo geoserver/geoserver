@@ -99,7 +99,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Retuns a single element out of an array, checking that there is just one */
-    protected <T> T getSingle(DocumentContext json, String path) {
+    protected <T> T readSingle(DocumentContext json, String path) {
         List items = json.read(path);
         assertEquals(
                 "Found "

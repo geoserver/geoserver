@@ -100,7 +100,7 @@ public class TileDescriptionTest extends TilesTestSupport {
         // check the raw tiles links
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=application%2Fvnd.mapbox-vector-tile",
-                getSingle(
+                readSingle(
                         json,
                         "$.links[?(@.rel=='tile' && @.type=='application/vnd.mapbox-vector-tile')].href"));
 
@@ -167,10 +167,10 @@ public class TileDescriptionTest extends TilesTestSupport {
         // check the rendered tiles links
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fpng",
-                getSingle(json, "$.links[?(@.rel=='tile' && @.type=='image/png')].href"));
+                readSingle(json, "$.links[?(@.rel=='tile' && @.type=='image/png')].href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fjpeg",
-                getSingle(json, "$.links[?(@.rel=='tile' && @.type=='image/jpeg')].href"));
+                readSingle(json, "$.links[?(@.rel=='tile' && @.type=='image/jpeg')].href"));
         // check the info links for the rendered outputs
         List<String> infoFormats =
                 ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
@@ -178,7 +178,7 @@ public class TileDescriptionTest extends TilesTestSupport {
             assertEquals(
                     "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info?f="
                             + ResponseUtils.urlEncode(infoFormat),
-                    getSingle(
+                    readSingle(
                             json,
                             "$.links[?(@.rel=='info' && @.type=='" + infoFormat + "')].href"));
         }

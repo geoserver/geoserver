@@ -68,7 +68,7 @@ public class StoredQueryProviderTest {
         loader = new GeoServerResourceLoader(baseDirectory);
         expect(catalog.getResourceLoader()).andReturn(loader);
         replay(catalog);
-        storedQueryProvider = new StoredQueryProvider(catalog);
+        storedQueryProvider = new StoredQueryProvider(catalog, new WFSInfoImpl(), false);
     }
 
     @Test

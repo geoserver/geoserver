@@ -164,6 +164,9 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
                                         "otherSRS.message", WFSAdminPage.this, null));
                     }
                 });
+
+        // allowGlobalQueries checkbox
+        form.add(new CheckBox("allowGlobalQueries"));
     }
 
     static class GMLPanel extends Panel {

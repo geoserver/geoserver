@@ -52,6 +52,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected WebUIMode webUIMode = WebUIMode.DEFAULT;
 
+    protected Boolean allowStoredQueriesPerWorkspace = true;
+
     // deprecated members, kept around to maintain xstream persistence backward compatability
     protected ContactInfo contact;
     protected String charset;
@@ -281,6 +283,16 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         if (coverageAccess != null) {
             coverageAccess.dispose();
         }
+    }
+
+    public Boolean isAllowStoredQueriesPerWorkspace() {
+        return allowStoredQueriesPerWorkspace == null
+                ? Boolean.TRUE
+                : allowStoredQueriesPerWorkspace;
+    }
+
+    public void setAllowStoredQueriesPerWorkspace(Boolean allowStoredQueriesPerWorkspace) {
+        this.allowStoredQueriesPerWorkspace = allowStoredQueriesPerWorkspace;
     }
 
     public int hashCode() {

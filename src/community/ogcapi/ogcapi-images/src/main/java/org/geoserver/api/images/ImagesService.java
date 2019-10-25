@@ -67,7 +67,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
@@ -286,7 +285,7 @@ public class ImagesService implements ApplicationContextAware {
             @PathVariable(name = "assetId") String assetId,
             HttpServletResponse response)
             throws Exception {
-        Feature granule = getFeatureForImageId(collectionId, imageId);
+        SimpleFeature granule = getFeatureForImageId(collectionId, imageId);
         Object fileGroupCandidate = granule.getUserData().get(GranuleSource.FILES);
         if (!(fileGroupCandidate instanceof FileGroupProvider.FileGroup)) {
             throw new APIException(
@@ -326,14 +325,14 @@ public class ImagesService implements ApplicationContextAware {
         }
     }
 
-    private Feature getFeatureForImageId(
+    private SimpleFeature getFeatureForImageId(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "imageId") String imageId)
             throws Exception {
         ImagesResponse ir = images(collectionId, 0, null, null, null, imageId);
         SimpleFeatureCollection granules =
                 (SimpleFeatureCollection) ir.getResponse().getFeatures().get(0);
-        return DataUtilities.first(granules);
+        return (SimpleFeature) DataUtilities.first(granules);
     }
 
     private SimpleFeatureCollection remapGranules(
@@ -626,7 +625,7 @@ public class ImagesService implements ApplicationContextAware {
                 || RESTUtils.isZipMediaType(request);
     }
 
-    @PutMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "getImage")
+    @PutMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "updateImage")
     public void putImage(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "imageId") String imageId)
@@ -654,11 +653,13 @@ public class ImagesService implements ApplicationContextAware {
                     HttpStatus.NOT_IMPLEMENTED);
         }
 
-        Feature feature = getFeatureForImageId(collectionId, imageId);
+        SimpleFeature feature = getFeatureForImageId(collectionId, imageId);
         // quick assumption here that there is just one file per feature, but we'll need
         // to come back and modify the API so that it delivers all the features associated
         // to the file instead, or return the raw location for filtering purposes
         ((GranuleStore) source).removeGranules(FF.id(FF.featureId(imageId)));
+
+        imageListeners.imageRemoved(info, feature);
 
         return new ResponseEntity(HttpStatus.OK);
     }

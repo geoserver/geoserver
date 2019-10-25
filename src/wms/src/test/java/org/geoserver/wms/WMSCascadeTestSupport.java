@@ -5,12 +5,15 @@
  */
 package org.geoserver.wms;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -94,6 +97,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         roadsWmsLayer.setName("roads_wms_130");
         roadsWmsLayer.reset();
         roadsWmsLayer.setPrefferedFormat("image/jpeg");
+        roadsWmsLayer.setForcedRemoteStyle("line1");
         getCatalog().add(roadsWmsLayer);
         LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
         getCatalog().add(wmsRaodsLayer);
@@ -119,6 +123,69 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                 new URL(mockPNGUrl), new MockHttpResponse(pngRoadsImage, "image/png"));
         wms13Client.expectGet(
                 new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
+
+        // mock JSON Legend calls
+        String jsonResponse =
+                "{\"Legend\": [{\n"
+                        + "  \"layerName\": \"roads22\",\n"
+                        + "  \"title\": \"roads\",\n"
+                        + "  \"rules\": [  {\n"
+                        + "    \"name\": \"Rule 1\",\n"
+                        + "    \"title\": \"Green Line\",\n"
+                        + "    \"abstract\": \"A green line with a 2 pixel width\",\n"
+                        + "    \"symbolizers\": [{\"Line\":     {\n"
+                        + "      \"stroke\": \"#0000FF\",\n"
+                        + "      \"stroke-width\": 1,\n"
+                        + "      \"stroke-opacity\": \"1\",\n"
+                        + "      \"stroke-linecap\": \"butt\",\n"
+                        + "      \"stroke-linejoin\": \"miter\"\n"
+                        + "    }}]\n"
+                        + "  }]\n"
+                        + "}]}";
+
+        // this url is coming from caps111.xml file
+        String mockCascadedJSONUrl =
+                wms13BaseURL
+                        + "?REQUEST=GetLegendGraphic&LAYER=roads_wms_130&FORMAT=application/json"
+                        + "&VERSION=1.3.0&SERVICE=WMS";
+        wms13Client.expectGet(
+                new URL(mockCascadedJSONUrl),
+                new MockHttpResponse(jsonResponse, "application/json"));
+
+        // styleless roads layer
+        WMSLayerInfo styleLessroadsWmsLayer = cb.buildWMSLayer("roads_styleless_130");
+        styleLessroadsWmsLayer.setName("roads_styleless_130");
+        styleLessroadsWmsLayer.reset();
+        getCatalog().add(styleLessroadsWmsLayer);
+        LayerInfo styleLessroadsWmsLayerLayer = cb.buildLayer(styleLessroadsWmsLayer);
+
+        getCatalog().add(styleLessroadsWmsLayerLayer);
+
+        // make a layer group of roads_wms and styleless_roads
+        LayerGroupInfo roadsGroup = getCatalog().getFactory().createLayerGroup();
+
+        roadsGroup.setName("roads_group_130");
+        roadsGroup.getLayers().add(wmsRaodsLayer);
+        roadsGroup.getLayers().add(styleLessroadsWmsLayerLayer);
+
+        try {
+            cb.calculateLayerGroupBounds(roadsGroup);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        getCatalog().add(roadsGroup);
+
+        // setup mock URL
+        String mockLayergroupRequest =
+                wms13BaseURL
+                        + "?SERVICE=WMS&LAYERS=roads_wms_130,roads_styleless_130"
+                        + "&CRS=EPSG:26713&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF"
+                        + "&REQUEST=GetMap&BBOX=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461&WIDTH=768"
+                        + "&STYLES=line1,&VERSION=1.3.0";
+        wms13Client.expectGet(
+                new URL(mockLayergroupRequest), new MockHttpResponse(pngRoadsImage, "image/png"));
     }
 
     private void setupWMS110Layer() throws MalformedURLException, IOException {
@@ -158,6 +225,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         roadsWmsLayer.setName("roads_wms");
         roadsWmsLayer.reset();
         roadsWmsLayer.setPrefferedFormat("image/jpeg");
+        roadsWmsLayer.setForcedRemoteStyle("line1");
         getCatalog().add(roadsWmsLayer);
         LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
 
@@ -185,6 +253,66 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                 new URL(mockPNGUrl), new MockHttpResponse(pngRoadsImage, "image/png"));
         wms11Client.expectGet(
                 new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
+
+        // mock JSON Legend calls
+        String jsonResponse =
+                "{\"Legend\": [{\n"
+                        + "  \"layerName\": \"roads22\",\n"
+                        + "  \"title\": \"roads\",\n"
+                        + "  \"rules\": [  {\n"
+                        + "    \"name\": \"Rule 1\",\n"
+                        + "    \"title\": \"Green Line\",\n"
+                        + "    \"abstract\": \"A green line with a 2 pixel width\",\n"
+                        + "    \"symbolizers\": [{\"Line\":     {\n"
+                        + "      \"stroke\": \"#0000FF\",\n"
+                        + "      \"stroke-width\": 1,\n"
+                        + "      \"stroke-opacity\": \"1\",\n"
+                        + "      \"stroke-linecap\": \"butt\",\n"
+                        + "      \"stroke-linejoin\": \"miter\"\n"
+                        + "    }}]\n"
+                        + "  }]\n"
+                        + "}]}";
+
+        // this url is coming from caps111.xml file
+        String mockCascadedJSONUrl =
+                wms11BaseURL
+                        + "?REQUEST=GetLegendGraphic&LAYER=roads_wms&FORMAT=application/json&VERSION=1.0.0&SERVICE=WMS";
+        wms11Client.expectGet(
+                new URL(mockCascadedJSONUrl),
+                new MockHttpResponse(jsonResponse, "application/json"));
+        // styleless roads layer
+        WMSLayerInfo styleLessroadsWmsLayer = cb.buildWMSLayer("styleless_roads");
+        styleLessroadsWmsLayer.setName("styleless_roads");
+        styleLessroadsWmsLayer.reset();
+        getCatalog().add(styleLessroadsWmsLayer);
+        LayerInfo styleLessroadsWmsLayerLayer = cb.buildLayer(styleLessroadsWmsLayer);
+
+        getCatalog().add(styleLessroadsWmsLayerLayer);
+
+        // make a layer group of roads_wms and styleless_roads
+        LayerGroupInfo roadsGroup = getCatalog().getFactory().createLayerGroup();
+
+        roadsGroup.setName("roads_group");
+        roadsGroup.getLayers().add(wmsRaodsLayer);
+        roadsGroup.getLayers().add(styleLessroadsWmsLayerLayer);
+
+        try {
+            cb.calculateLayerGroupBounds(roadsGroup);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        getCatalog().add(roadsGroup);
+
+        String mockLayerGroupRequest =
+                wms11BaseURL
+                        + "?SERVICE=WMS&LAYERS=roads_wms,styleless_roads"
+                        + "&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap"
+                        + "&BBOX=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&WIDTH=768&STYLES=line1,&SRS=EPSG:26713&VERSION=1.1.1";
+        wms11Client.expectGet(
+                new URL(mockLayerGroupRequest), new MockHttpResponse(pngRoadsImage, "image/png"));
     }
 
     private void setupWMS110NfiLayer() throws MalformedURLException, IOException {

@@ -26,14 +26,20 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.Resources;
@@ -48,6 +54,42 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     private static final Logger LOGGER = Logging.getLogger(DefaultTileLayerCatalog.class);
 
     private static final String LAYERINFO_DIRECTORY = "gwc-layers";
+
+    /**
+     * Thread factory used to load {@link GeoServerTileLayerInfo} objects at {@link
+     * #initialize()}/{@link #reset()}. A short lived {@link ForkJoinPool} will be created with this
+     * factory and the configured {@link #INITIALIZATION_PARALLELISM parallelism}
+     */
+    private static final ForkJoinWorkerThreadFactory INITIALLIZATION_THREAD_FACTORY =
+            new ForkJoinWorkerThreadFactory() {
+                private AtomicInteger threadIdSeq = new AtomicInteger();
+
+                public @Override ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+                    String name =
+                            String.format(
+                                    "%s-%d",
+                                    DefaultTileLayerCatalog.class.getSimpleName(),
+                                    threadIdSeq.incrementAndGet());
+                    ForkJoinWorkerThread thread =
+                            ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+                    thread.setName(name);
+                    return thread;
+                }
+            };
+
+    private static final int INITIALIZATION_PARALLELISM;
+
+    static {
+        String value = GeoServerExtensions.getProperty("org.geoserver.catalog.loadingThreads");
+        if (value != null) {
+            INITIALIZATION_PARALLELISM = Integer.parseInt(value);
+        } else {
+            // empirical determination after benchmarks, the value is related not the
+            // available CPUs, but by how well the disk handles parallel access, different
+            // disk subsystems will have a different optimal value
+            INITIALIZATION_PARALLELISM = 4;
+        }
+    }
 
     private ConcurrentMap<String, GeoServerTileLayerInfo> layersById;
 
@@ -90,9 +132,11 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         // have to use a string here because UnmodifiableSet is private
         this.serializer.allowTypes(new String[] {"java.util.Collections$UnmodifiableSet"});
         // automatically reload configuration on change
-        resourceLoader
-                .get(baseDirectory)
-                .addListener(evt -> evt.events().forEach(this::handleBaseDirectoryResourceEvent));
+        resourceLoader.get(baseDirectory).addListener(this::handleBaseDirectoryResourceEvent);
+    }
+
+    private void handleBaseDirectoryResourceEvent(ResourceNotification notify) {
+        notify.events().forEach(this::handleBaseDirectoryResourceEvent);
     }
 
     private void handleBaseDirectoryResourceEvent(Event event) {
@@ -172,7 +216,22 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         LOGGER.info("Loading tile layers from " + baseDir.path());
         Stopwatch sw = Stopwatch.createStarted();
         ExtensionFilter xmlFilter = new Resources.ExtensionFilter("XML");
-        baseDir.list().parallelStream().filter(r -> xmlFilter.accept(r)).forEach(this::load);
+        // do not thrash the filesystem if there are several cores by using the common
+        // pool
+        ForkJoinPool pool =
+                new ForkJoinPool(
+                        INITIALIZATION_PARALLELISM, INITIALLIZATION_THREAD_FACTORY, null, false);
+        try {
+            pool.submit(
+                            () ->
+                                    baseDir.list()
+                                            .parallelStream()
+                                            .filter(r -> xmlFilter.accept(r))
+                                            .forEach(this::load))
+                    .join();
+        } finally {
+            pool.shutdownNow();
+        }
         LOGGER.info(String.format("Loaded %,d tile layers in %s", layersById.size(), sw.stop()));
         this.initialized = true;
     }
@@ -376,15 +435,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         GeoServerTileLayerInfoImpl info;
         try (Reader reader =
                 new InputStreamReader(new ByteArrayInputStream(res.getContents()), "UTF-8")) {
-            info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
-        }
-
-        return info;
-    }
-
-    private GeoServerTileLayerInfoImpl depersist(final byte[] contents) throws IOException {
-        GeoServerTileLayerInfoImpl info;
-        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(contents), "UTF-8")) {
             info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
         }
 

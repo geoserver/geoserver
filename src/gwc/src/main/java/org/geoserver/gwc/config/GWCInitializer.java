@@ -10,9 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +18,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.GeoServerReinitializer;
@@ -312,31 +309,25 @@ public class GWCInitializer implements GeoServerReinitializer {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Adding Layers to avoid In Memory Caching");
         }
-        List<PublishedInfo> publisheds = new ArrayList<>(rawCatalog.getLayers());
-        publisheds.addAll(rawCatalog.getLayerGroups());
-        publisheds
+        tileLayerCatalog
+                .getLayerIds()
                 .parallelStream()
-                .forEach(
-                        layer -> {
-                            try {
-                                // Check if the Layer must not be cached
-                                GeoServerTileLayerInfo tileLayerInfo =
-                                        tileLayerCatalog.getLayerById(layer.getId());
-                                if (tileLayerInfo != null
-                                        && tileLayerInfo.isEnabled()
-                                        && !tileLayerInfo.isInMemoryCached()) {
-                                    // Add it to the cache
-                                    synchronized (cache) {
-                                        cache.addUncachedLayer(tileLayerInfo.getName());
-                                    }
-                                }
-                            } catch (RuntimeException e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Error occurred retrieving Layer '" + layer.getName() + "'",
-                                        e);
-                            }
-                        });
+                .forEach(id -> addLayerToNotCache(cache, id));
+    }
+
+    private void addLayerToNotCache(CacheProvider cache, String layerId) {
+        try {
+            // Check if the Layer must not be cached
+            GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layerId);
+            if (tileLayerInfo != null
+                    && tileLayerInfo.isEnabled()
+                    && !tileLayerInfo.isInMemoryCached()) {
+                // Add it to the cache
+                cache.addUncachedLayer(tileLayerInfo.getName());
+            }
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.WARNING, "Error occurred retrieving Layer '" + layerId + "'", e);
+        }
     }
 
     /**

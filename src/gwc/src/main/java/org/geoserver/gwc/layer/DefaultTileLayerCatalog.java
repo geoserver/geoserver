@@ -286,10 +286,14 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         return layer == null ? null : layer.clone();
     }
 
-    private synchronized void checkInitialized() {
-        if (!initialized) {
-            initialize();
-        }
+    /**
+     * Precondition check all public methods should make before proceeding to ensure they've been
+     * called on an initialized state
+     *
+     * @throws IllegalStateException if this layer catalog has not been initialized yet
+     */
+    private void checkInitialized() {
+        Preconditions.checkState(this.initialized, "DefaultTileLayerCatalog is not initialized");
     }
 
     @Override

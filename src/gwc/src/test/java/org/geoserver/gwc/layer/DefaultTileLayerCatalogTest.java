@@ -54,6 +54,7 @@ public class DefaultTileLayerCatalogTest {
                                 new SecureXStream(), (WebApplicationContext) null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
+        catalog.initialize();
     }
 
     @Test

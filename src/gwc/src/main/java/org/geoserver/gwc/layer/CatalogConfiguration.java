@@ -718,6 +718,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         try {
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.reset();
+            this.tileLayerCatalog.initialize();
         } finally {
             lock.releaseWriteLock();
         }

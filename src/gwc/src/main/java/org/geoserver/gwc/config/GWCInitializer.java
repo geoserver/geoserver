@@ -309,6 +309,7 @@ public class GWCInitializer implements GeoServerReinitializer {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Adding Layers to avoid In Memory Caching");
         }
+        // it is ok to use the ForkJoinPool.commonPool() here, there's no I/O involved
         tileLayerCatalog
                 .getLayerIds()
                 .parallelStream()

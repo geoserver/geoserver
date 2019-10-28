@@ -258,7 +258,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                                 tabPanelCustomModels.keySet())
                         .indexOf(selectedTabClass);
         if (selectedTabIndex > -1) {
-            tabbedPanel.setSelectedTab(selectedTabIndex);
+            // add differential to match index of tabPanelCustomModels with total tabs count
+            int diff = (tabbedPanel.getTabs().size() - tabPanelCustomModels.size());
+            tabbedPanel.setSelectedTab(selectedTabIndex + diff);
         }
     }
 

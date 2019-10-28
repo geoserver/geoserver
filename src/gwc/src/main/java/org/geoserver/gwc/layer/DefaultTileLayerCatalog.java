@@ -68,7 +68,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 public @Override ForkJoinWorkerThread newThread(ForkJoinPool pool) {
                     String name =
                             String.format(
-                                    "%s-%d",
+                                    "ForkJoinPool.%s-%d",
                                     DefaultTileLayerCatalog.class.getSimpleName(),
                                     threadIdSeq.incrementAndGet());
                     ForkJoinWorkerThread thread =

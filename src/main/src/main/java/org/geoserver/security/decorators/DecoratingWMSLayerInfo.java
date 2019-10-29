@@ -346,9 +346,4 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     public void setRespectMetadataBBox(boolean respectMetadataBBox) {
         delegate.setRespectMetadataBBox(respectMetadataBBox);
     }
-
-    @Override
-    public boolean checkEnvelopOverLapWithNativeBounds(ReferencedEnvelope requestEnevelope) {
-        return delegate.checkEnvelopOverLapWithNativeBounds(requestEnevelope);
-    }
 }

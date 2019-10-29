@@ -58,7 +58,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         setupWMS130Layer();
         setupWMS110Layer();
         setupWMS110NfiLayer();
-        //  setupLayerGroup();
     }
 
     private void setupWMS130Layer() throws MalformedURLException, IOException {
@@ -102,7 +101,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         LayerInfo wmsRaodsLayer = cb.buildLayer(roadsWmsLayer);
         getCatalog().add(wmsRaodsLayer);
 
-        // http://mock.test.geoserver.org/wms13
         String mockPNGUrl =
                 wms13BaseURL
                         + "?&SERVICE=WMS&LAYERS=roads_wms_130&CRS=EPSG:26713"
@@ -129,7 +127,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group_lyr_1.setName("group_lyr_130");
         group_lyr_1.reset();
         group_lyr_1.setRespectMetadataBBox(true);
-        // group_lyr_1.setForcedRemoteStyle("line_group");
         getCatalog().add(group_lyr_1);
         LayerInfo layer1 = cb.buildLayer(group_lyr_1);
         getCatalog().add(layer1);
@@ -138,16 +135,12 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group_lyr_2.setName("group_lyr_230");
         group_lyr_2.reset();
         group_lyr_2.setRespectMetadataBBox(true);
-        // group_lyr_1.setForcedRemoteStyle("line_group2");
         getCatalog().add(group_lyr_2);
         LayerInfo layer2 = cb.buildLayer(group_lyr_2);
         getCatalog().add(layer2);
 
         LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
-        // LayerGroupInfoImpl group = new LayerGroupInfoImpl();
-        // (LayerGroupInfoImpl) getCatalog().getFactory().createLayerGroup();
 
-        // group.setId("casc_group");
         group.setName("cascaded_group_130");
         group.getLayers().add(layer1);
         group.getLayers().add(layer2);
@@ -243,7 +236,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group_lyr_1.setName("group_lyr_1");
         group_lyr_1.reset();
         group_lyr_1.setRespectMetadataBBox(true);
-        // group_lyr_1.setForcedRemoteStyle("line_group");
+
         getCatalog().add(group_lyr_1);
         LayerInfo layer1 = cb.buildLayer(group_lyr_1);
         getCatalog().add(layer1);
@@ -252,14 +245,11 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group_lyr_2.setName("group_lyr_2");
         group_lyr_2.reset();
         group_lyr_2.setRespectMetadataBBox(true);
-        // group_lyr_1.setForcedRemoteStyle("line_group2");
         getCatalog().add(group_lyr_2);
         LayerInfo layer2 = cb.buildLayer(group_lyr_2);
         getCatalog().add(layer2);
 
         LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
-        // LayerGroupInfoImpl group = new LayerGroupInfoImpl();
-        // (LayerGroupInfoImpl) getCatalog().getFactory().createLayerGroup();
 
         // group.setId("casc_group");
         group.setName("cascaded_group");
@@ -274,7 +264,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         getCatalog().add(group);
 
         // setting up mock requests
-        // http://mock.test.geoserver.org/wms11?SERVICE=WMS&LAYERS=group_lyr_1,group_lyr_2&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=7008575.48,-1.273421344E7,1.356988789E7,1.639713933E7&WIDTH=768&STYLES=,&SRS=EPSG:26713&VERSION=1.1.1
         String mockURLWithBothLayers =
                 wms11BaseURL
                         + "?SERVICE=WMS&LAYERS=group_lyr_1,group_lyr_2&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=0.0,0.0,20.0,20.0&WIDTH=768&STYLES=,&SRS=EPSG:4326&VERSION=1.1.1";

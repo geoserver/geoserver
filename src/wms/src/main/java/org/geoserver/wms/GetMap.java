@@ -668,13 +668,16 @@ public class GetMap {
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
                 if (wmsLayer.isRespectMetadataBBox()) {
                     boolean isInsideBounnds =
-                            wmsLayer.checkEnvelopOverLapWithNativeBounds(
-                                    mapContent.getViewport().getBounds());
+                            checkEnvelopOverLapWithNativeBounds(
+                                    mapContent.getViewport().getBounds(),
+                                    wmsLayer.getNativeBoundingBox());
                     if (!isInsideBounnds) {
-                        LOGGER.warning(
-                                "Get Map Request BBOX is outside Layer "
-                                        + request.getLayers().get(i).getName()
-                                        + " metada BoundsIgnoring Layer,Ignoring");
+                        if (LOGGER.isLoggable(Level.FINE))
+                            LOGGER.fine(
+                                    "Get Map Request BBOX is outside Layer "
+                                            + request.getLayers().get(i).getName()
+                                            + " metada BoundsIgnoring Layer,Ignoring");
+
                         continue;
                     }
                 }
@@ -697,7 +700,7 @@ public class GetMap {
                     WMSLayer Layer = null;
 
                     String style = request.getStyles().get(i).getName();
-                    style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
+                    style = (style == null) ? "" : style;
                     String imageFormat = request.getFormat();
                     // if passed style does not exist in remote, throw exception
                     if (!wmsLayer.isSelectedRemoteStyles(style))
@@ -999,5 +1002,21 @@ public class GetMap {
             throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
+    }
+
+    private boolean checkEnvelopOverLapWithNativeBounds(
+            ReferencedEnvelope requestEnevelope, ReferencedEnvelope layerEnevelope) {
+
+        try {
+            // transofrm requested enevelope to resource`s native bounds
+            ReferencedEnvelope transformedRequestEnv;
+            transformedRequestEnv =
+                    requestEnevelope.transform(layerEnevelope.getCoordinateReferenceSystem(), true);
+            return !layerEnevelope.intersection(transformedRequestEnv).isEmpty();
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE, "Error in WMSLayerInfo.checkEnvelopOverLapWithNativeBounds", e);
+        }
+        return false;
     }
 }

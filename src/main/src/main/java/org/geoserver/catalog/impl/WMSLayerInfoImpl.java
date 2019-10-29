@@ -19,7 +19,6 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.StyleImpl;
 import org.geotools.styling.NamedStyleImpl;
@@ -74,12 +73,15 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
         try {
             // read from cap doc
-            return getWMSLayer(null)
-                    .getStyles()
-                    .stream()
-                    .map(s -> s.getName())
-                    .collect(Collectors.toList());
-
+            List<String> remoteStyles = new ArrayList<String>();
+            remoteStyles.add("");
+            remoteStyles.addAll(
+                    getWMSLayer(null)
+                            .getStyles()
+                            .stream()
+                            .map(s -> s.getName())
+                            .collect(Collectors.toList()));
+            return remoteStyles;
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -164,6 +166,11 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                                 .findFirst();
 
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+            } else {
+                StyleInfo emptyStyleInfo = new StyleInfoImpl();
+                emptyStyleInfo.setName("");
+                emptyStyleInfo.getMetadata().put("isRemote", true);
+                return emptyStyleInfo;
             }
 
         return null;
@@ -259,27 +266,11 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
 
-    /** @return the respectMetadataBBox */
     public boolean isRespectMetadataBBox() {
         return respectMetadataBBox;
     }
 
-    /** @param respectMetadataBBox the respectMetadataBBox to set */
     public void setRespectMetadataBBox(boolean respectMetadataBBox) {
         this.respectMetadataBBox = respectMetadataBBox;
-    }
-
-    public boolean checkEnvelopOverLapWithNativeBounds(ReferencedEnvelope requestEnevelope) {
-
-        try {
-            // transofrm requested enevelope to resource`s native bounds
-            ReferencedEnvelope transformedRequestEnv;
-            transformedRequestEnv = requestEnevelope.transform(this.getNativeCRS(), true);
-            return !this.getNativeBoundingBox().intersection(transformedRequestEnv).isEmpty();
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE, "Error in WMSLayerInfo.checkEnvelopOverLapWithNativeBounds", e);
-        }
-        return false;
     }
 }

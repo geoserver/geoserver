@@ -47,6 +47,8 @@ public class WFSXmlUtils {
     public static final String ENTITY_EXPANSION_LIMIT =
             "org.geoserver.wfs.xml.entityExpansionLimit";
 
+    public static final String XLINK_DEFAULT_PREFIX = "xlink";
+
     public static void initRequestParser(Parser parser, WFSInfo wfs, GeoServer geoServer, Map kvp) {
         // check the strict flag to determine if we should validate or not
         Boolean strict = (Boolean) kvp.get("strict");

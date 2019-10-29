@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -19,6 +18,7 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
@@ -85,8 +85,7 @@ public final class CascadedLegendRequest extends LegendRequest {
             WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) getLayerInfo().getResource();
             StyleInfo defaultRemoteStyle = getLayerInfo().getDefaultStyle();
             // when set to use whatever on remote WMS server
-            if (defaultRemoteStyle.getName().isEmpty() || defaultRemoteStyle.getLegend() == null)
-                return null;
+            if (defaultRemoteStyle == WMSLayerInfoImpl.DEFAULT_ON_REMOTE) return null;
             // execute the request and fetch JSON
             HTTPClient client = wmsLayerInfo.getStore().getWebMapServer(null).getHTTPClient();
             HTTPResponse jsonResponse =
@@ -107,8 +106,7 @@ public final class CascadedLegendRequest extends LegendRequest {
                     layerLegends.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
             return cascadedRules;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new org.geoserver.platform.ServiceException("Unable to cascade Legend");
         } finally {
             IOUtils.closeQuietly(bufferedReader);
             IOUtils.closeQuietly(is);

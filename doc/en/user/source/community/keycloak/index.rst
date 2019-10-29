@@ -30,13 +30,13 @@ Installtation Instructions
     .. figure:: images/keycloak_client002.png
        :align: center
 
-2. Set the `access-type` of client as appropriate. If your GeoServer instance is depending on another service for authentication (eg: NGINX auth plugin) then you should probably select *bearer-only*.
-   Otherwise, you should probably select *public*.
+3. Set the `access-type` of client as appropriate. If your GeoServer instance is depending on another service for authentication (eg: NGINX auth plugin) then you should probably select *bearer-only*.
+   Otherwise, you should probably select *confidential*.
 
     .. figure:: images/keycloak_client003.png
        :align: center
 
-3. Add the the *ADMINISTRATOR* and *AUTHENTICATED* `client-role <http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html>`_ to the `geoserver-client` in Keycloak.
+4. Add the the *ADMINISTRATOR* and *AUTHENTICATED* `client-role <http://www.keycloak.org/docs/2.5/server_admin/topics/roles/client-roles.html>`_ to the `geoserver-client` in Keycloak.
 
     .. figure:: images/keycloak_client004.png
        :align: center
@@ -51,7 +51,7 @@ Installtation Instructions
     .. figure:: images/keycloak_client006.png
        :align: center
 
-4. Obtain the `installation-configuration <http://www.keycloak.org/docs/3.2/server_admin/topics/clients/installation.html>`_ for the `geoserver-client` in JSON, and provide this to the GeoServer Admin for the next steps.
+5. Obtain the `installation-configuration <http://www.keycloak.org/docs/3.2/server_admin/topics/clients/installation.html>`_ for the `geoserver-client` in JSON, and provide this to the GeoServer Admin for the next steps.
 
     .. figure:: images/keycloak_client007.png
        :align: center
@@ -72,7 +72,7 @@ Installtation Instructions
     .. figure:: images/keycloak_adapter001.png
        :align: center
 
-2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance.
+2. Add the `keycloak_adapter` to the *web* `filter-chain` if you want to protect the Admin GUI, as an instance. If you want to be redirected everytime to Keycloak, then remove all of the others `chain filters` (basic, form, rememberme, anonymous), otherwise you will need to access directly the login url on Keycloak.
 
     .. figure:: images/keycloak_adapter002.png
        :align: center

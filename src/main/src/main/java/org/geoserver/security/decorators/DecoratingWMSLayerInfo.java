@@ -318,13 +318,13 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     }
 
     @Override
-    public String getPrefferedFormat() {
-        return delegate.getPrefferedFormat();
+    public String getPreferredFormat() {
+        return delegate.getPreferredFormat();
     }
 
     @Override
-    public void setPrefferedFormat(String prefferedFormat) {
-        delegate.setPrefferedFormat(prefferedFormat);
+    public void setPreferredFormat(String prefferedFormat) {
+        delegate.setPreferredFormat(prefferedFormat);
     }
 
     @Override
@@ -338,17 +338,7 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     }
 
     @Override
-    public void reloadRemoteStyles() {
-        delegate.reloadRemoteStyles();
-    }
-
-    @Override
     public List<StyleInfo> getAllAvailableRemoteStyles() {
         return delegate.getAllAvailableRemoteStyles();
-    }
-
-    @Override
-    public void setAllAvailableRemoteStyles(List<StyleInfo> allAvailableRemoteStyles) {
-        delegate.setAllAvailableRemoteStyles(allAvailableRemoteStyles);
     }
 }

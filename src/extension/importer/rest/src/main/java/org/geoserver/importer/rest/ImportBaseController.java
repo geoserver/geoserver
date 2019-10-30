@@ -89,6 +89,10 @@ public class ImportBaseController extends RestBaseController {
             Long importId, Integer taskId, Integer transformId, boolean optional) {
         ImportTask task = task(importId, taskId);
 
+        return transform(task, transformId, optional);
+    }
+
+    ImportTransform transform(ImportTask task, Integer transformId, boolean optional) {
         ImportTransform tx = null;
         if (transformId != null) {
             try {

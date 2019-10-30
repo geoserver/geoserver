@@ -3,12 +3,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.importer.bdb;
+package org.geoserver.importer;
 
-import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportStore.ImportVisitor;
 
-class CountingVisitor implements ImportVisitor {
+public class CountingVisitor implements ImportVisitor {
 
     int count = 0;
 

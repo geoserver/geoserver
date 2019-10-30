@@ -17,10 +17,16 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
 import org.junit.Test;
 
 public class SerialVersionSafeSerialBindingTest extends ImporterTestSupport {
+
+    @Override
+    protected void setupImporterFieldInternal() {
+        importer = (Importer) applicationContext.getBean("importer");
+    }
 
     @Test
     public void testSerialize() throws Exception {

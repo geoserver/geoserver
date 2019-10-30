@@ -29,7 +29,7 @@ import org.opengis.util.ProgressListener;
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     protected String forcedRemoteStyle = "";
-    protected String prefferedFormat = "image/png";
+    protected String preferredFormat = "image/png";
 
     private List<String> selectedRemoteFormats = new ArrayList<String>();
 
@@ -60,7 +60,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public void reset() {
         selectedRemoteStyles.clear();
         selectedRemoteFormats.clear();
-        reloadRemoteStyles();
+        getAllAvailableRemoteStyles().clear();
+        getAllAvailableRemoteStyles().addAll(getRemoteStyleInfos());
         // select all formats for use
         selectedRemoteStyles.addAll(remoteStyles());
         // set empty to take whatever is on remote server
@@ -120,18 +121,18 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     }
 
     @Override
-    public String getPrefferedFormat() {
-        return this.prefferedFormat;
+    public String getPreferredFormat() {
+        return this.preferredFormat;
     }
 
     @Override
-    public void setPrefferedFormat(String prefferedFormat) {
-        this.prefferedFormat = (prefferedFormat == null) ? "image/png" : prefferedFormat;
+    public void setPreferredFormat(String preferredFormat) {
+        this.preferredFormat = (preferredFormat == null) ? "image/png" : preferredFormat;
     }
 
     @Override
     public boolean isFormatValid(String format) {
-        if (prefferedFormat.equalsIgnoreCase(format)) return true;
+        if (preferredFormat.equalsIgnoreCase(format)) return true;
         else return selectedRemoteFormats.contains(format);
     }
 
@@ -257,15 +258,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
 
-    public void reloadRemoteStyles() {
-        this.allAvailableRemoteStyles = new ArrayList<StyleInfo>(getRemoteStyleInfos());
-    }
-
     public List<StyleInfo> getAllAvailableRemoteStyles() {
+        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
         return allAvailableRemoteStyles;
-    }
-
-    public void setAllAvailableRemoteStyles(List<StyleInfo> allAvailableRemoteStyles) {
-        this.allAvailableRemoteStyles = allAvailableRemoteStyles;
     }
 }

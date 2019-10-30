@@ -223,7 +223,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
 
         // asserting Remote Style UI fields
         tester.assertModelValue(
-                "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPrefferedFormat());
+                "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsPalette",
                 new HashSet<String>(wmsLayer.availableFormats()));

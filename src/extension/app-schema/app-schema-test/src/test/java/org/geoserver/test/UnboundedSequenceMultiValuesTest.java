@@ -1,3 +1,8 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geoserver.test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -191,7 +196,7 @@ public class UnboundedSequenceMultiValuesTest extends AbstractAppSchemaTestSuppo
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                2,
+                3,
                 "/wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
 
         checkCount(
@@ -261,7 +266,7 @@ public class UnboundedSequenceMultiValuesTest extends AbstractAppSchemaTestSuppo
     private void checkStationGml32(Document document) {
         final String stationsXpath = "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32";
         // check that we have two complex features
-        checkCount(WFS20_XPATH_ENGINE, document, 2, stationsXpath);
+        checkCount(WFS20_XPATH_ENGINE, document, 3, stationsXpath);
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,

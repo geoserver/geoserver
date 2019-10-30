@@ -5,9 +5,20 @@
  */
 package org.geoserver.importer.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -23,8 +34,17 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.importer.*;
+import org.geoserver.importer.DataFormat;
+import org.geoserver.importer.Directory;
+import org.geoserver.importer.GridFormat;
+import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportContext.State;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.ImporterTestSupport;
+import org.geoserver.importer.SpatialFile;
+import org.geoserver.importer.UpdateMode;
+import org.geoserver.importer.VFSWorker;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.util.IOUtils;
@@ -186,27 +206,31 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetAllTasks() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks");
+        int id = lastId();
+        JSONObject json =
+                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
 
         JSONArray tasks = json.getJSONArray("tasks");
         assertEquals(2, tasks.size());
 
         JSONObject task = tasks.getJSONObject(0);
         assertEquals(0, task.getInt("id"));
-        assertTrue(task.getString("href").endsWith("/imports/0/tasks/0"));
+        assertTrue(task.getString("href").endsWith("/imports/" + id + "/tasks/0"));
 
         task = tasks.getJSONObject(1);
         assertEquals(1, task.getInt("id"));
-        assertTrue(task.getString("href").endsWith("/imports/0/tasks/1"));
+        assertTrue(task.getString("href").endsWith("/imports/" + id + "/tasks/1"));
     }
 
     @Test
     public void testGetTask() throws Exception {
+        int id = lastId();
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0");
+                (JSONObject)
+                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
         JSONObject task = json.getJSONObject("task");
         assertEquals(0, task.getInt("id"));
-        assertTrue(task.getString("href").endsWith("/imports/0/tasks/0"));
+        assertTrue(task.getString("href").endsWith("/imports/" + id + "/tasks/0"));
     }
 
     @Test
@@ -214,7 +238,11 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         JSONObject json =
                 (JSONObject)
                         getAsJSON(
-                                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/progress", 200);
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + lastId()
+                                        + "/tasks/0/progress",
+                                200);
         assertEquals("READY", json.get("state"));
         // TODO: trigger import and check progress
     }
@@ -433,37 +461,65 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetTarget() throws Exception {
+        int id = lastId();
         JSONObject json =
-                ((JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0"))
+                ((JSONObject)
+                                getAsJSON(
+                                        RestBaseController.ROOT_PATH
+                                                + "/imports/"
+                                                + id
+                                                + "/tasks/0"))
                         .getJSONObject("task");
 
         JSONObject target = json.getJSONObject("target");
         assertTrue(target.has("href"));
         assertTrue(
                 target.getString("href")
-                        .endsWith(RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target"));
+                        .endsWith(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0/target"));
         assertTrue(target.has("dataStore"));
 
         target = target.getJSONObject("dataStore");
         assertTrue(target.has("name"));
 
-        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target");
+        json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0/target");
         assertNotNull(json.get("dataStore"));
     }
 
     @Test
     public void testPutTarget() throws Exception {
+        int id = lastId();
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target");
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0/target");
         assertEquals("archsites", json.getJSONObject("dataStore").getString("name"));
 
         String update = "{\"dataStore\": { \"type\": \"foo\" }}";
         put(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target",
+                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target",
                 update,
                 MediaType.APPLICATION_JSON.toString());
 
-        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target");
+        json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("type"));
     }
 
@@ -471,14 +527,20 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     public void testPutTargetExisting() throws Exception {
         createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
+        int id = lastId();
         String update = "{\"dataStore\": { \"name\": \"foo\" }}";
         put(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target",
+                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target",
                 update,
                 MediaType.APPLICATION_JSON.toString());
 
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0/target");
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("name"));
         assertEquals("H2", json.getJSONObject("dataStore").getString("type"));
     }
@@ -487,25 +549,26 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     public void testUpdateMode() throws Exception {
         createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
-        ImportContext session = importer.getContext(0);
+        int id = lastId();
+        ImportContext session = importer.getContext(id);
         assertEquals(UpdateMode.CREATE, session.getTasks().get(0).getUpdateMode());
 
         // change to append mode
         String update = "{\"task\": { \"updateMode\" : \"APPEND\" }}";
         put(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0",
+                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0",
                 update,
                 MediaType.APPLICATION_JSON.toString());
-        session = importer.getContext(0);
+        session = importer.getContext(id);
         assertEquals(UpdateMode.APPEND, session.getTasks().get(0).getUpdateMode());
 
         // put a dumby and verify the modified updateMode remains
         update = "{\"task\": {}}";
         put(
-                RestBaseController.ROOT_PATH + "/imports/0/tasks/0",
+                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0",
                 update,
                 MediaType.APPLICATION_JSON.toString());
-        session = importer.getContext(0);
+        session = importer.getContext(id);
         assertEquals(UpdateMode.APPEND, session.getTasks().get(0).getUpdateMode());
     }
 
@@ -514,24 +577,30 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_no_crs.zip");
         importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
 
-        JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/1/tasks/0");
+        int id = lastId();
+        String firstTaskPath = RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0";
+        JSONObject json = (JSONObject) getAsJSON(firstTaskPath);
         JSONObject task = json.getJSONObject("task");
         assertEquals("NO_CRS", task.get("state"));
         assertFalse(task.getJSONObject("layer").containsKey("srs"));
 
         // verify invalid SRS handling
-        MockHttpServletResponse resp =
-                setSRSRequest(RestBaseController.ROOT_PATH + "/imports/1/tasks/0", "26713");
+        MockHttpServletResponse resp = setSRSRequest(firstTaskPath, "26713");
         verifyInvalidCRSErrorResponse(resp);
-        resp = setSRSRequest(RestBaseController.ROOT_PATH + "/imports/1/tasks/0", "EPSG:9838275");
+        resp = setSRSRequest(firstTaskPath, "EPSG:9838275");
         verifyInvalidCRSErrorResponse(resp);
 
-        setSRSRequest(RestBaseController.ROOT_PATH + "/imports/1/tasks/0", "EPSG:26713");
+        setSRSRequest(firstTaskPath, "EPSG:26713");
 
-        ImportContext context = importer.getContext(1);
+        ImportContext context = importer.getContext(id);
 
-        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/1/tasks/0?expand=2");
+        json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0?expand=2");
         task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));
 
@@ -550,17 +619,26 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_no_crs.zip");
         importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
 
+        int id = lastId();
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/1/tasks/0");
+                (JSONObject)
+                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
         JSONObject task = json.getJSONObject("task");
         assertEquals("NO_CRS", task.get("state"));
         assertFalse(task.getJSONObject("layer").containsKey("srs"));
 
-        setSRSRequest(RestBaseController.ROOT_PATH + "/imports/1/tasks/0/layer", "EPSG:26713");
+        setSRSRequest(
+                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/layer", "EPSG:26713");
 
-        ImportContext context = importer.getContext(1);
+        ImportContext context = importer.getContext(id);
 
-        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/1/tasks/0?expand=2");
+        json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + id
+                                        + "/tasks/0?expand=2");
         task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));
 
@@ -588,7 +666,12 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/1/tasks/0");
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + context.getId()
+                                        + "/tasks/0");
         JSONObject task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));
 
@@ -603,7 +686,10 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         JSONObject response =
                 (JSONObject)
                         putAsJSON(
-                                RestBaseController.ROOT_PATH + "/imports/1/tasks/0/layer",
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + context.getId()
+                                        + "/tasks/0/layer",
                                 renamer,
                                 "application/json");
         JSONObject layer = response.getJSONObject("layer");
@@ -611,7 +697,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals("test123", layer.getString("nativeName"));
         assertEquals("archsites", layer.getString("originalName"));
 
-        context = importer.getContext(1);
+        context = importer.getContext(context.getId());
         importer.run(context);
 
         // check created type, layer and database table
@@ -639,8 +725,10 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
      */
     @Test
     public void testErrorHandling() throws Exception {
+        int id = lastId();
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks/0");
+                (JSONObject)
+                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
 
         JSONObjectBuilder badDateFormatTransform = new JSONObjectBuilder();
         badDateFormatTransform
@@ -668,7 +756,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         MockHttpServletResponse resp =
                 putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0",
+                        RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0",
                         badDateFormatTransform.buildObject().toString(),
                         "application/json");
         assertErrorResponse(resp, "Invalid date parsing format");
@@ -677,10 +765,13 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testDeleteTask2() throws Exception {
         MockHttpServletResponse response =
-                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/imports/0/tasks/0");
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks/0");
         assertEquals(204, response.getStatus());
 
-        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0/tasks");
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks");
 
         JSONArray items = json.getJSONArray("tasks");
         assertEquals(1, items.size());
@@ -689,7 +780,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetLayer() throws Exception {
-        String path = RestBaseController.ROOT_PATH + "/imports/0/tasks/0";
+        String path = RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks/0";
         JSONObject json = ((JSONObject) getAsJSON(path)).getJSONObject("task");
 
         assertTrue(json.has("layer"));

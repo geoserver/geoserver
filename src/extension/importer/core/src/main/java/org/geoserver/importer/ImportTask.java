@@ -5,7 +5,7 @@
  */
 package org.geoserver.importer;
 
-import static org.geoserver.importer.ImporterUtils.*;
+import static org.geoserver.importer.ImporterUtils.resolve;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,6 +20,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.TransformChain;
+import org.geotools.data.DataUtilities;
+import org.geotools.feature.SchemaException;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 
 /**
  * A unit of work during an import.
@@ -30,6 +34,9 @@ public class ImportTask implements Serializable {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
+
+    public static final String TYPE_NAME = "typeName";
+    public static final String TYPE_SPEC = "typeSpec";
 
     public static enum State {
         PENDING,
@@ -87,9 +94,13 @@ public class ImportTask implements Serializable {
     transient Map<Object, Object> metadata;
 
     /** used to track progress */
-    transient volatile int totalToProcess;
+    int totalToProcess;
 
-    transient volatile int numberProcessed;
+    int numberProcessed;
+
+    String typeName;
+
+    String typeSpec;
 
     public ImportTask() {
         updateMode = UpdateMode.CREATE;
@@ -172,6 +183,13 @@ public class ImportTask implements Serializable {
         this.transform = transform;
     }
 
+    /**
+     * Returns a transient metadata map, useful for caching information that's expensive to compute.
+     * The map won't be stored in the {@link ImportStore} so don't use it for anything that needs to
+     * be persisted.
+     *
+     * @return
+     */
     public Map<Object, Object> getMetadata() {
         if (metadata == null) {
             metadata = new HashMap<Object, Object>();
@@ -271,5 +289,29 @@ public class ImportTask implements Serializable {
         } else if (!context.equals(other.context)) return false;
         if (id != other.id) return false;
         return true;
+    }
+
+    public SimpleFeatureType getFeatureType() {
+        SimpleFeatureType schema = (SimpleFeatureType) getMetadata().get(FeatureType.class);
+        if (schema == null) {
+            if (typeName != null && typeSpec != null) {
+                try {
+                    schema = DataUtilities.createType(typeName, typeSpec);
+                    getMetadata().put(FeatureType.class, schema);
+                } catch (SchemaException e) {
+                    // ignore
+                }
+            }
+        }
+
+        return schema;
+    }
+
+    public void setFeatureType(SimpleFeatureType featureType) {
+        getMetadata().put(FeatureType.class, featureType);
+        if (featureType != null) {
+            typeName = featureType.getTypeName();
+            typeSpec = DataUtilities.encodeType(featureType);
+        }
     }
 }

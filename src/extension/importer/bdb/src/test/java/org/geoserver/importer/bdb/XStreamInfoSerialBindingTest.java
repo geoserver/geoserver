@@ -22,11 +22,17 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
+
+    @Override
+    protected void setupImporterFieldInternal() {
+        importer = (Importer) applicationContext.getBean("importer");
+    }
 
     @Test
     public void testSerializeWithNewStore() throws Exception {

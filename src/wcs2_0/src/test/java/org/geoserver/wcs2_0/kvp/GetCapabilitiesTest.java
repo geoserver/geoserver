@@ -69,7 +69,8 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         // print(dom);
         NodeList list =
                 xpath.getMatchingNodes(
-                        "//wcs:ServiceMetadata/wcs:Extension/wcscrs:crsSupported", dom);
+                        "//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata/crs:crsSupported",
+                        dom);
         assertTrue(list.getLength() > 1000);
 
         // setup limited list
@@ -82,7 +83,8 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         // print(dom);
         list =
                 xpath.getMatchingNodes(
-                        "//wcs:ServiceMetadata/wcs:Extension/wcscrs:crsSupported", dom);
+                        "//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata/crs:crsSupported",
+                        dom);
         assertEquals(2, list.getLength());
     }
 

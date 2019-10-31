@@ -187,7 +187,11 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerModel.getObject().getResource();
         // for new only
         if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
-
+        else {
+            wmsLayerInfo.getAllAvailableRemoteStyles().clear();
+        }
+        // reload latest styles
+        wmsLayerInfo.getAllAvailableRemoteStyles().addAll(wmsLayerInfo.getRemoteStyleInfos());
         // empty string to use whatever default remote server has
         List<String> remoteSyles = new ArrayList<String>();
         remoteSyles.add("");
@@ -218,7 +222,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         DropDownChoice<String> remoteForamts =
                 new DropDownChoice<String>(
                         "remoteFormatsDropDown",
-                        new PropertyModel<String>(wmsLayerInfo, "prefferedFormat"),
+                        new PropertyModel<String>(wmsLayerInfo, "preferredFormat"),
                         wmsLayerInfo.availableFormats());
 
         remoteForamtsContainer.add(remoteForamts);

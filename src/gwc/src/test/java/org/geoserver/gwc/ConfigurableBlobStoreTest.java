@@ -98,9 +98,6 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
     public void after() throws IOException {
         // Delete the created directory
         blobStore.destroy();
-        if (directory.exists()) {
-            FileUtils.deleteDirectory(directory);
-        }
     }
 
     @Test

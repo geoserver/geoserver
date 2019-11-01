@@ -260,7 +260,8 @@ public class ConfigurableBlobStore implements BlobStore {
             // Wait until all the operations are finished
             while (actualOperations.get() > 0) {}
             // Destroy all
-            delegate.destroy();
+            defaultStore.destroy();
+            memoryStore.destroy();
             cache.reset();
         }
     }

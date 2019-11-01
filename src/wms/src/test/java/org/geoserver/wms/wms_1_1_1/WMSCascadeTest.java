@@ -97,8 +97,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         LayerInfo info = getCatalog().getLayerByName("roads_wms");
         WMSLayerInfo wmsLayer = (WMSLayerInfo) info.getResource();
-        wmsLayer.setPrefferedFormat("image/jpeg");
-
+        wmsLayer.setPreferredFormat("image/jpeg");
         String getMapRequest =
                 "wms?service=WMS&version=1.1.0"
                         + "&request=GetMap"

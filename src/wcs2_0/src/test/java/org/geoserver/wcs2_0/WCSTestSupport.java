@@ -243,7 +243,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("wcs", "http://www.opengis.net/wcs/2.0");
-        namespaces.put("wcscrs", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+        namespaces.put("crs", "http://www.opengis.net/wcs/crs/1.0");
         namespaces.put("ows", "http://www.opengis.net/ows/2.0");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
@@ -314,7 +314,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 dom);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//wcs:ServiceMetadata/wcs:Extension[wcscrs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])",
+                "count(//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata[crs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])",
                 dom);
 
         // check the interpolation extension

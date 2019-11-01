@@ -176,13 +176,13 @@ public class StyleMetadataTest extends StylesTestSupport {
         // sample data, vector items
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildingsLabels/items?f=application%2Fgeo%2Bjson",
-                getSingle(
+                readSingle(
                         json,
                         "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'data' && @.type == 'application/geo+json')].href"));
         // sample data, tiles
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ABuildingsLabels%2Ftiles?f=application%2Fvnd.mapbox-vector-tile",
-                getSingle(
+                readSingle(
                         json,
                         "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'tiles' && @.type == 'application/vnd.mapbox-vector-tile')].href"));
 
@@ -241,14 +241,14 @@ public class StyleMetadataTest extends StylesTestSupport {
         // layers)
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/collections/cite%3ALakes/items?f=application%2Fgeo%2Bjson",
-                getSingle(json, "layers[0].sampleData[?(@.type=='application/geo+json')].href"));
+                readSingle(json, "layers[0].sampleData[?(@.type=='application/geo+json')].href"));
 
         // BasicPolygons
         assertEquals("Buildings", json.read("layers[1].id"));
         assertEquals("polygon", json.read("layers[1].type"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildings/items?f=application%2Fgeo%2Bjson",
-                getSingle(json, "layers[1].sampleData[?(@.type=='application/geo+json')].href"));
+                readSingle(json, "layers[1].sampleData[?(@.type=='application/geo+json')].href"));
     }
 
     @Test
@@ -295,24 +295,24 @@ public class StyleMetadataTest extends StylesTestSupport {
         // sld 1.is not native, CSS is
         assertEquals(
                 false,
-                (boolean) getSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
+                (boolean) readSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
         assertEquals(
-                true, (boolean) getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
+                true, (boolean) readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
 
         // some checks on the CSS one
         assertEquals(
                 "Stylesheet as CSS 1.0.0",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].title"));
-        assertEquals("1.0.0", getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].version"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].title"));
+        assertEquals("1.0.0", readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].version"));
         assertEquals(
                 "https://docs.geoserver.org/latest/en/user/styling/css/index.html",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].specification"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].specification"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/cssSample?f=application%2Fvnd.geoserver.geocss%2Bcss",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.href"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.href"));
         assertEquals(
                 "application/vnd.geoserver.geocss+css",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.type"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.type"));
     }
 
     @Test

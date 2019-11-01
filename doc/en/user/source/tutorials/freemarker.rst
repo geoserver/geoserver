@@ -97,6 +97,9 @@ Allows accessing several environment variables, in particular those defined in:
  * OS environment variables
  * web.xml context parameters 
 
+**Math (map)**
+
+Allows accessing math functions.
 
 Examples
 ``````````````````
@@ -110,6 +113,9 @@ Examples
  * ${environment.GEOSERVER_DATA_DIR}
  * ${environment.WEB_SITE_URL}
 
+**Math**
+  
+ * ${Math.max(request.NUMBER1,request.NUMBER2)}
 
 
 

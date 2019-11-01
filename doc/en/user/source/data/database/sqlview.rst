@@ -3,7 +3,7 @@
 SQL Views
 =========
 
-The traditional way to access database data is is to configure layers against either tables or database views. 
+The traditional way to access database data is to configure layers against either tables or database views. 
 Starting with GeoServer 2.1.0, layers can also be defined as SQL Views.  
 SQL Views allow executing a custom SQL query on each request to the layer.  
 This avoids the need to create a database view for complex queries.  
@@ -132,14 +132,14 @@ The ``viewparams`` argument is a list of ``key:value`` pairs, separated by semic
 If the values contain semicolons or commas these must be escaped with a backslash (e.g. ``\,`` and ``\;``).
 
 For example, the ``popstates`` SQL View layer can be displayed by invoking the :ref:`layerpreview`.
-Initially no parameter values are supplied, so the defaults are used and all the states are displayed, 
+Initially no parameter values are supplied, so the defaults are used and all the states are displayed. 
 
 To display all states having more than 20 million inhabitants the following parameter is added to the ``GetMap`` request: ``&viewparams=low:20000000``
 
 .. figure:: images/sqlview-20millions.png
    :align: center
 
-To display all states having between 2 and 5 millions inhabitants the view parameters are: ``&viewparams=low:2000000;high:5000000``
+To display all states having between 2 and 5 million inhabitants the view parameters are: ``&viewparams=low:2000000;high:5000000``
 
 .. figure:: images/sqlview-2m-5m.png
    :align: center

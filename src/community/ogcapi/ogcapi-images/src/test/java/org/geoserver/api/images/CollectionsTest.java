@@ -58,10 +58,10 @@ public class CollectionsTest extends ImagesTestSupport {
         // check one well known collection is there
         assertEquals(1, json.read("collections[?(@.id=='sf:watertemp')]", List.class).size());
         assertEquals(
-                WATER_TEMP_TITLE, getSingle(json, "collections[?(@.id=='sf:watertemp')].title"));
+                WATER_TEMP_TITLE, readSingle(json, "collections[?(@.id=='sf:watertemp')].title"));
         assertEquals(
                 WATER_TEMP_DESCRIPTION,
-                getSingle(json, "collections[?(@.id=='sf:watertemp')].description"));
+                readSingle(json, "collections[?(@.id=='sf:watertemp')].description"));
     }
 
     @Test

@@ -2,4 +2,5 @@
 <wcs:GetCapabilities service="WCS"
 	xmlns:ows="http://www.opengis.net/ows/1.1" 
 	xmlns:wcs="http://www.opengis.net/wcs/2.0" 
+	xmlns:crs="http://www.opengis.net/wcs/crs/1.0" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>

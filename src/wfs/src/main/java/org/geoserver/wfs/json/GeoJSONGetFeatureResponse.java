@@ -341,9 +341,15 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             GeoJSONBuilder jw, String title, String mimeType, String rel, String href) {
         if (href != null) {
             jw.object();
-            jw.key("title").value(title);
-            jw.key("type").value(mimeType);
-            jw.key("rel").value(rel);
+            if (title != null) {
+                jw.key("title").value(title);
+            }
+            if (mimeType != null) {
+                jw.key("type").value(mimeType);
+            }
+            if (rel != null) {
+                jw.key("rel").value(rel);
+            }
             jw.key("href").value(href);
             jw.endObject();
         }

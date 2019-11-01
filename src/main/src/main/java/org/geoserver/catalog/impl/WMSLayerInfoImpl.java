@@ -29,11 +29,13 @@ import org.opengis.util.ProgressListener;
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     protected String forcedRemoteStyle = "";
-    protected String prefferedFormat = "image/png";
+    protected String preferredFormat = "image/png";
 
     private List<String> selectedRemoteFormats = new ArrayList<String>();
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
+
+    private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
 
     protected WMSLayerInfoImpl() {}
 
@@ -58,6 +60,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public void reset() {
         selectedRemoteStyles.clear();
         selectedRemoteFormats.clear();
+        getAllAvailableRemoteStyles().clear();
+        getAllAvailableRemoteStyles().addAll(getRemoteStyleInfos());
         // select all formats for use
         selectedRemoteStyles.addAll(remoteStyles());
         // set empty to take whatever is on remote server
@@ -70,9 +74,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public List<String> remoteStyles() {
 
         try {
-            // read from cap doc
-            return getWMSLayer(null)
-                    .getStyles()
+            return allAvailableRemoteStyles
                     .stream()
                     .map(s -> s.getName())
                     .collect(Collectors.toList());
@@ -93,7 +95,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public void setForcedRemoteStyle(String forcedRemoteStyle) {
-        this.forcedRemoteStyle = forcedRemoteStyle;
+        this.forcedRemoteStyle = (forcedRemoteStyle == null) ? "" : forcedRemoteStyle;
     }
 
     @Override
@@ -119,18 +121,18 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     }
 
     @Override
-    public String getPrefferedFormat() {
-        return this.prefferedFormat;
+    public String getPreferredFormat() {
+        return this.preferredFormat;
     }
 
     @Override
-    public void setPrefferedFormat(String prefferedFormat) {
-        this.prefferedFormat = prefferedFormat;
+    public void setPreferredFormat(String preferredFormat) {
+        this.preferredFormat = (preferredFormat == null) ? "image/png" : preferredFormat;
     }
 
     @Override
     public boolean isFormatValid(String format) {
-        if (prefferedFormat.equalsIgnoreCase(format)) return true;
+        if (preferredFormat.equalsIgnoreCase(format)) return true;
         else return selectedRemoteFormats.contains(format);
     }
 
@@ -140,10 +142,10 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public Set<StyleInfo> getStyles() {
-        Set<StyleInfo> remoteStyleInfos = getRemoteStyleInfos();
-        if (remoteStyleInfos == null) return null;
+        // no remote styles were read from this server
+        if (allAvailableRemoteStyles == null) return null;
         else
-            return remoteStyleInfos
+            return allAvailableRemoteStyles
                     .stream()
                     .filter(s -> !forcedRemoteStyle.equalsIgnoreCase(s.getName()))
                     .filter(s -> selectedRemoteStyles.contains(s.getName()))
@@ -155,7 +157,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (forcedRemoteStyle != null)
             if (!forcedRemoteStyle.isEmpty()) {
                 Optional<StyleInfo> defaultRemoteStyle =
-                        getRemoteStyleInfos()
+                        allAvailableRemoteStyles
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
@@ -182,7 +184,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         // on error default to super
-        return null;
+        return Collections.EMPTY_SET;
     }
 
     @Override
@@ -254,5 +256,10 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
+    }
+
+    public List<StyleInfo> getAllAvailableRemoteStyles() {
+        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+        return allAvailableRemoteStyles;
     }
 }

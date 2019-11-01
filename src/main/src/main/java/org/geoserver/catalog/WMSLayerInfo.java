@@ -60,5 +60,4 @@ public interface WMSLayerInfo extends ResourceInfo {
     public void setRespectMetadataBBox(boolean respectMetadataBBox);
 
     public List<StyleInfo> getAllAvailableRemoteStyles();
-
 }

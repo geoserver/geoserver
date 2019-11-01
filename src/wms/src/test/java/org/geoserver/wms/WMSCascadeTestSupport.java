@@ -5,8 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -147,8 +145,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         try {
             cb.calculateLayerGroupBounds(group);
         } catch (Exception e) {
-            e.printStackTrace();
-            fail();
+            throw new IOException(e);
         }
         getCatalog().add(group);
 
@@ -258,8 +255,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         try {
             cb.calculateLayerGroupBounds(group);
         } catch (Exception e) {
-            e.printStackTrace();
-            fail();
+            throw new IOException(e);
         }
         getCatalog().add(group);
 

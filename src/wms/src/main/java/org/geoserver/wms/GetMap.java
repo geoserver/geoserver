@@ -1008,7 +1008,7 @@ public class GetMap {
             ReferencedEnvelope requestEnevelope, ReferencedEnvelope layerEnevelope) {
 
         try {
-            // transofrm requested enevelope to resource`s native bounds
+            // transform requested enevelope to resource`s native bounds
             ReferencedEnvelope transformedRequestEnv;
             transformedRequestEnv =
                     requestEnevelope.transform(layerEnevelope.getCoordinateReferenceSystem(), true);

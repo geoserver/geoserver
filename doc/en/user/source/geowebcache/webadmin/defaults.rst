@@ -136,7 +136,7 @@ This parameter allows to enable or disable in memory caching. By default it is d
 
 Avoid Persistence
 `````````````````
-This parameter can be used in order to avoid to save any file in the file system, keeping all the GWC tiles only in memory. By default it is disabled.
+This parameter can be used to prevent the saving of any file in the file system, keeping all the GWC tiles only in memory. By default it is disabled.
 
 Available Caches
 ````````````````
@@ -144,7 +144,7 @@ This parameter defines which Cache method can be used for In Memory Caching. By 
 requires an immutable configuration at GeoServer startup like HazelCast, the *Hard Memory limit*, *Eviction Policy*, *Eviction Time* and *Concurrency Level*
 parameters are disabled.
 
-More informations on how to configure a new Cache object can be found in the GeoWebCache :ref:`gwc_config` page.
+More information on how to configure a new Cache object can be found in the GeoWebCache :ref:`gwc_config` page.
 
 Cache Hard Memory limit (Mb)
 ````````````````````````````
@@ -160,25 +160,25 @@ Note, only the eviction policies accepted by the selected cache will be shown on
 
 Cache Eviction Time (in Seconds)
 ````````````````````````````````
-Paramter for configuring in memory cache eviction time. It is in Seconds. 
+Parameter for configuring in memory cache eviction time. It is in seconds. 
 
 .. note:: Note that this parameter is also used for configuring an internal thread which performs a periodical cache cleanup.
 
 Cache Concurrency Level
 ```````````````````````
-Paramter for configuring in memory cache concurrency.
+Parameter for configuring in memory cache concurrency.
 
 Clear In Memory Cache
 `````````````````````
-Button for clearing all the tiles in the in-memory cache.
+Button for clearing all the tiles in the in memory cache.
 
 Cache Statistics
 ````````````````
-Various statistics parameters associated to the in memory cache.
+Various statistics parameters associated with the in memory cache.
 
 Update Cache Statistics
 ```````````````````````
-Button for updating cache statistics seen above. The statistics are always related to the local cached entries, even in case of distributed in-memory caching
+Button for updating cache statistics seen above. The statistics are always related to the local cached entries, even in case of distributed in memory caching
 
 .. note:: Note that some Caches do not provide all the statistics parameters, in that case the user will only see *"Unavailable"* for those parameters.
 
@@ -187,7 +187,7 @@ Button for updating cache statistics seen above. The statistics are always relat
 
    *In Memory BlobStore Options* 
 
-.. note:: Note that in the *TileCaching* tab for each Layer, you may decide to disable in memory caching for the selected Layer by clicking on the **Enable In Memory Caching for this Layer** checkbox. This option is disabled for those cache which don't support this feature.  
+.. note:: Note that in the *TileCaching* tab for each Layer, you may decide to disable in memory caching for the selected Layer by clicking on the **Enable In Memory Caching for this Layer** checkbox. This option is disabled for those caches which don't support this feature.  
 
 Default Cached Gridsets
 ~~~~~~~~~~~~~~~~~~~~~~~

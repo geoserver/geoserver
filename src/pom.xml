@@ -1999,7 +1999,7 @@
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
   <jackson1.version>1.9.13</jackson1.version>
-  <jackson2.version>2.9.10</jackson2.version>
+  <jackson2.version>2.10.0</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.9.3</marlin.version>
   <postgresql.jdbc.version>42.2.5</postgresql.jdbc.version>

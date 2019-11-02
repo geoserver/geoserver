@@ -20,7 +20,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collections;
@@ -33,6 +35,7 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.catalog.Catalog;
@@ -376,9 +379,9 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testImportUnknownFile() throws Exception {
-        File dir = new File("./src/test/resources/org/geoserver/importer/test-data/random");
+        File randomDir = setupRandomFileData();
 
-        ImportContext context = importer.createContext(new Directory(dir));
+        ImportContext context = importer.createContext(new Directory(randomDir));
         assertEquals(1, context.getTasks().size());
 
         ImportTask task = context.getTasks().get(0);
@@ -390,13 +393,25 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportUnknownFileIndirect() throws Exception {
 
         DataStoreInfo ds = createH2DataStore(null, "foo");
-        File dir = new File("./src/test/resources/org/geoserver/importer/test-data/random");
-        ImportContext context = importer.createContext(new Directory(dir), ds);
+        File randomDir = setupRandomFileData();
+        ImportContext context = importer.createContext(new Directory(randomDir), ds);
         assertEquals(1, context.getTasks().size());
 
         ImportTask task = context.getTasks().get(0);
         assertEquals(ImportTask.State.NO_FORMAT, task.getState());
         assertNull(task.getData().getFormat());
+    }
+
+    public File setupRandomFileData() throws IOException {
+        File randomDir = new File("./target/random");
+        randomDir.mkdirs();
+        File randomFile = new File("./target/random/random.dat");
+        try (FileOutputStream out = new FileOutputStream(randomFile);
+                InputStream in =
+                        ImporterDataTest.class.getResourceAsStream("test-data/random/random.dat")) {
+            IOUtils.copy(in, out);
+        }
+        return randomDir;
     }
 
     @Test
@@ -709,16 +724,20 @@ public class ImporterDataTest extends ImporterTestSupport {
     @Test
     public void testImportGML2WithSchema() throws Exception {
         // TODO: remove this manipulation once we get relative schema references to work
-        File gmlSourceFile =
-                new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml2.gml");
-        File gmlFile = new File("./target/states.gml2.gml");
-        File schemaSourceFile =
-                new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml2.xsd");
         File schemaFile = new File("./target/states.gml2.xsd");
-        FileUtils.copyFile(schemaSourceFile, schemaFile);
-        String gml = FileUtils.readFileToString(gmlSourceFile, "UTF-8");
-        gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
-        FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
+        try (FileOutputStream out = new FileOutputStream(schemaFile);
+                InputStream in =
+                        ImporterDataTest.class.getResourceAsStream(
+                                "test-data/gml/states.gml2.xsd")) {
+            IOUtils.copy(in, out);
+        }
+        File gmlFile = new File("./target/states.gml2.gml");
+        try (InputStream in =
+                ImporterDataTest.class.getResourceAsStream("test-data/gml/states.gml2.gml")) {
+            String gml = IOUtils.toString(in, "UTF-8");
+            gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
+            FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
+        }
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
         DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
@@ -728,16 +747,20 @@ public class ImporterDataTest extends ImporterTestSupport {
     @Test
     public void testImportGML3WithSchema() throws Exception {
         // TODO: remove this manipulation once we get relative schema references to work
-        File gmlSourceFile =
-                new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml3.gml");
-        File gmlFile = new File("./target/states.gml3.gml");
-        File schemaSourceFile =
-                new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml3.xsd");
         File schemaFile = new File("./target/states.gml3.xsd");
-        FileUtils.copyFile(schemaSourceFile, schemaFile);
-        String gml = FileUtils.readFileToString(gmlSourceFile, "UTF-8");
-        gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
-        FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
+        try (FileOutputStream out = new FileOutputStream(schemaFile);
+                InputStream in =
+                        ImporterDataTest.class.getResourceAsStream(
+                                "test-data/gml/states.gml3.xsd")) {
+            IOUtils.copy(in, out);
+        }
+        File gmlFile = new File("./target/states.gml3.gml");
+        try (InputStream in =
+                ImporterDataTest.class.getResourceAsStream("test-data/gml/states.gml3.gml")) {
+            String gml = IOUtils.toString(in, "UTF-8");
+            gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
+            FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
+        }
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
         DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");

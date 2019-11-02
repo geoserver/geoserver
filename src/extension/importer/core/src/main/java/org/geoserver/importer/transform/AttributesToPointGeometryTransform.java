@@ -29,7 +29,7 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
 
     private final String pointFieldName;
 
-    private final GeometryFactory geometryFactory;
+    private static GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     public AttributesToPointGeometryTransform(String latField, String lngField) {
         this(latField, lngField, AttributesToPointGeometryTransform.POINT_NAME);
@@ -40,7 +40,6 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
         this.latField = latField;
         this.lngField = lngField;
         this.pointFieldName = pointFieldName;
-        geometryFactory = new GeometryFactory();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
             feature.setDefaultGeometry(null);
         } else {
             Coordinate coordinate = new Coordinate(lng, lat);
-            Point point = geometryFactory.createPoint(coordinate);
+            Point point = GEOMETRY_FACTORY.createPoint(coordinate);
             feature.setAttribute(pointFieldName, point);
         }
         return feature;

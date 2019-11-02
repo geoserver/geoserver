@@ -48,7 +48,7 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
         File executable = getExecutable();
 
         CommandLine cmd = new CommandLine(executable);
-        for (String option : options) {
+        for (String option : getOptions()) {
             cmd.addArgument(option, false);
         }
 

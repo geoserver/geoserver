@@ -36,6 +36,9 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
 
     /** @return the options */
     public List<String> getOptions() {
+        if (options == null) {
+            options = new ArrayList<>();
+        }
         return options;
     }
 

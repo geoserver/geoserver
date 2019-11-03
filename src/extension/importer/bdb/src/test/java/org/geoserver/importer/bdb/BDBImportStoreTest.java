@@ -15,15 +15,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.importer.CountingVisitor;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportStore.ImportVisitor;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.RemoteData;
+import org.geoserver.importer.SearchingVisitor;
 import org.geoserver.importer.bdb.BDBImportStore.BindingType;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -48,6 +51,19 @@ public class BDBImportStoreTest extends ImporterTestSupport {
 
     public BDBImportStoreTest(String name, BindingType bindingType) {
         this.bindingType = bindingType;
+    }
+
+    // The test has been written assuming the importer uses a memory store while a separate, test
+    // managed store is used to run checks... keeping it that way, wasted enough time trying to
+    // make it just run with the importer one
+    @BeforeClass
+    public static void setupMemoryStore() {
+        System.setProperty(Importer.IMPORTER_STORE_KEY, "memory");
+    }
+
+    @AfterClass
+    public static void clearMemoryStore() {
+        System.clearProperty(Importer.IMPORTER_STORE_KEY);
     }
 
     @Before
@@ -200,25 +216,6 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         ImportContext dumby = new ImportContext();
         store.add(dumby);
         assertEquals(Long.valueOf(667), dumby.getId());
-    }
-
-    class SearchingVisitor implements ImportVisitor {
-        long id;
-        boolean found = false;
-
-        SearchingVisitor(long id) {
-            this.id = id;
-        }
-
-        public void visit(ImportContext context) {
-            if (context.getId().longValue() == id) {
-                found = true;
-            }
-        }
-
-        public boolean isFound() {
-            return found;
-        }
     }
 
     @After

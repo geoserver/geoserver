@@ -28,7 +28,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     /** the expression to apply (stored as a string as CQL does not always round trip properly */
     protected String cql;
 
-    protected Expression expression;
+    protected transient Expression expression;
 
     public AttributeComputeTransform(String field, Class type, String cql) throws CQLException {
         this.field = field;
@@ -61,6 +61,13 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         this.expression = ECQL.toExpression(cql);
     }
 
+    Expression getExpression() throws CQLException {
+        if (expression == null && cql != null) {
+            expression = ECQL.toExpression(cql);
+        }
+        return expression;
+    }
+
     public SimpleFeatureType apply(
             ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         // validate the target attribute is not already there
@@ -83,7 +90,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     public SimpleFeature apply(
             ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
-        Object value = expression.evaluate(oldFeature);
+        Object value = getExpression().evaluate(oldFeature);
         feature.setAttribute(field, value);
 
         return feature;

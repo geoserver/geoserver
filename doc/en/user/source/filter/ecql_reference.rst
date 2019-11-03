@@ -216,13 +216,13 @@ Literals specify constant values of various types.
      - String literal delimited by single quotes.  To include a single quote in the
        string use two single-quotes: ``''``
    * - *Geometry*
-     - Geometry in WKT format. 
+     - Geometry in WKT or EWKT format. 
        WKT is defined in the OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ specification.
        All standard geometry types are supported:
        ``POINT``, ``LINESTRING``, ``POLYGON``, 
        ``MULTIPOINT``, ``MULTILINESTRING``, ``MULTIPOLYGON``, ``GEOMETRYCOLLECTION``.
-       A custom type of Envelope is also supported 
-       with syntax ``ENVELOPE (`` *x1* *x2* *y1* *y2* ``)``.
+       EWKT allows specifying a geometry spatial reference system by prefixing it with a numerical code, in the form ``SRID=number;WKT``, for example, ``SRID=4326;POINT (1 2)``.
+       A custom type of Envelope is also supported with syntax ``ENVELOPE (`` *x1* *x2* *y1* *y2* ``)``.
        
    * - *Time*
      - A UTC date/time value in the format ``yyyy-mm-hhThh:mm:ss``.

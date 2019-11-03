@@ -40,7 +40,8 @@ public class LandingPageTest extends StylesTestSupport {
                         "patchStyleMetadata",
                         "addStyle",
                         "updateStyle",
-                        "deleteStyle"));
+                        "deleteStyle",
+                        "getStyleThumbnail"));
     }
 
     @Test

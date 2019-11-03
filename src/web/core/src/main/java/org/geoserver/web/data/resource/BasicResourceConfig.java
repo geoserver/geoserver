@@ -168,15 +168,19 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                         private boolean isActualNative(
                                 CoordinateReferenceSystem crs, ResourceInfo resourceInfo) {
 
-                            // ResourcePool resourcePool
-                            // =resourceInfo.getCatalog().getResourcePool();
                             try {
-                                ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
-                                return CRS.equalsIgnoreMetadata(
-                                        crs, bounds.getCoordinateReferenceSystem());
+                                CoordinateReferenceSystem resourceNativeCRS = null;
+                                if (resourceInfo instanceof FeatureTypeInfo) {
+                                    FeatureTypeInfo ft = (FeatureTypeInfo) resourceInfo;
+                                    resourceNativeCRS =
+                                            ft.getFeatureSource(null, null).getInfo().getCRS();
+                                } else {
+                                    ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
+                                    resourceNativeCRS = bounds.getCoordinateReferenceSystem();
+                                }
+                                return CRS.equalsIgnoreMetadata(crs, resourceNativeCRS);
                             } catch (IOException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
+                                LOGGER.log(Level.SEVERE, e.getMessage(), e);
                             }
                             return false;
                         }
@@ -346,8 +350,16 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     private String getActualNativeSRSCode(ResourceInfo resourceInfo) {
 
         try {
-            ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
-            return "EPSG:" + CRS.lookupEpsgCode(bounds.getCoordinateReferenceSystem(), false);
+            if (resourceInfo instanceof FeatureTypeInfo) {
+                FeatureTypeInfo ft = (FeatureTypeInfo) resourceInfo;
+                return "EPSG:"
+                        + CRS.lookupEpsgCode(
+                                ft.getFeatureSource(null, null).getInfo().getCRS(), false);
+            } else {
+                ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
+                return "EPSG:" + CRS.lookupEpsgCode(bounds.getCoordinateReferenceSystem(), false);
+            }
+
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,

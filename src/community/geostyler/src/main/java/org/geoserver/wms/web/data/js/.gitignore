@@ -1,0 +1,10 @@
+antd/
+geostyler
+geostyler-geojson-parser
+geostyler-style
+geostyler-sld-parser
+geostyler-wfs-parser
+react
+react-dom
+
+node_modules

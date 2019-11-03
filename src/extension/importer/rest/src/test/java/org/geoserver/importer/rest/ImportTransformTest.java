@@ -33,8 +33,6 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     DataStoreInfo store;
 
-    ImportTask importTask;
-
     private static String BASEPATH = RestBaseController.ROOT_PATH;
 
     /**
@@ -54,14 +52,16 @@ public class ImportTransformTest extends ImporterTestSupport {
         file.prepare();
 
         ImportContext context = importer.createContext(file, store);
-        importTask = context.getTasks().get(0);
+        ImportTask importTask = context.getTasks().get(0);
         importTask.getTransform().add(new ReprojectTransform(CRS.decode("EPSG:4326")));
         importTask.getTransform().add(new IntegerFieldToDateTransform("pretendDateIntField"));
+        importer.changed(importTask);
     }
 
     @Test
     public void testGetTransforms() throws Exception {
-        JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms");
+        int id = lastId();
+        JSON j = getAsJSON(BASEPATH + "/imports/" + id + "/tasks/0/transforms");
         List<JSONObject> txs = parseTransformObjectsFromResponse(j);
 
         assertEquals(2, txs.size());
@@ -71,7 +71,8 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     @Test
     public void testGetTransform() throws Exception {
-        JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms/0");
+        int id = lastId();
+        JSON j = getAsJSON(BASEPATH + "/imports/" + id + "/tasks/0/transforms/0");
 
         assertTrue(j instanceof JSONObject);
         assertEquals("ReprojectTransform", ((JSONObject) j).get("type"));
@@ -79,7 +80,8 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     @Test
     public void testGetTransformsExpandNone() throws Exception {
-        JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms?expand=none");
+        int id = lastId();
+        JSON j = getAsJSON(BASEPATH + "/imports/" + id + "/tasks/0/transforms?expand=none");
         List<JSONObject> txs = parseTransformObjectsFromResponse(j);
 
         assertEquals(2, txs.size());
@@ -89,25 +91,31 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     @Test
     public void testPostTransform() throws Exception {
+        int id = lastId();
         String json = "{\"type\": \"ReprojectTransform\", \"target\": \"EPSG:3005\"}";
         MockHttpServletResponse resp =
                 postAsServletResponse(
-                        BASEPATH + "/imports/0/tasks/0/transforms", json, "application/json");
+                        BASEPATH + "/imports/" + id + "/tasks/0/transforms",
+                        json,
+                        "application/json");
 
         String location = resp.getHeader("Location");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // Make sure it was created
+        ImportTask importTask = importer.getContext(id).getTasks().get(0);
         assertEquals(3, importTask.getTransform().getTransforms().size());
     }
 
     @Test
     public void testDeleteTransform() throws Exception {
+        int id = lastId();
         MockHttpServletResponse resp =
-                deleteAsServletResponse(BASEPATH + "/imports/0/tasks/0/transforms/0");
+                deleteAsServletResponse(BASEPATH + "/imports/" + id + "/tasks/0/transforms/0");
         assertEquals(HttpStatus.OK.value(), resp.getStatus());
 
         // Make sure it was deleted
+        ImportTask importTask = importer.getContext(id).getTasks().get(0);
         assertEquals(1, importTask.getTransform().getTransforms().size());
     }
 
@@ -115,14 +123,17 @@ public class ImportTransformTest extends ImporterTestSupport {
     public void testPutTransform() throws Exception {
         String json = "{\"type\": \"ReprojectTransform\", \"target\": \"EPSG:3005\"}";
 
+        int id = lastId();
         MockHttpServletResponse resp =
                 putAsServletResponse(
-                        BASEPATH + "/imports/0/tasks/0/transforms/0", json, "application/json");
+                        BASEPATH + "/imports/" + id + "/tasks/0/transforms/0",
+                        json,
+                        "application/json");
 
         assertEquals(HttpStatus.OK.value(), resp.getStatus());
 
         // Get it again and make sure it changed.
-        JSON j = getAsJSON(BASEPATH + "/imports/0/tasks/0/transforms/0");
+        JSON j = getAsJSON(BASEPATH + "/imports/" + id + "/tasks/0/transforms/0");
         assertTrue(j instanceof JSONObject);
         assertEquals("EPSG:3005", ((JSONObject) j).get("target"));
     }

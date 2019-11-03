@@ -171,7 +171,7 @@ public class FeatureTypeController extends AbstractCatalogController {
             UriComponentsBuilder builder)
             throws Exception {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
+        final DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
         // ensure the store matches up
         if (ftInfo.getStore() != null && storeName != null) {
             if (!storeName.equals(ftInfo.getStore().getName())) {
@@ -182,7 +182,10 @@ public class FeatureTypeController extends AbstractCatalogController {
                                 + ftInfo.getStore().getName(),
                         HttpStatus.FORBIDDEN);
             }
-            dsInfo = ftInfo.getStore();
+            // HACK: override the StoreInfo in case there's a store named the same on a
+            // different workspace. The FeatureTypeInfo deserialization doesn't know how to
+            // disambiguate to ftInfo may come in with the wrong Store
+            ftInfo.setStore(dsInfo);
         } else {
             ftInfo.setStore(dsInfo);
         }

@@ -37,7 +37,6 @@ import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 
 /**
  * Base for formats that have a DataStore implementation.
@@ -144,7 +143,7 @@ public class DataStoreFormat extends VectorFormat {
 
                     ImportTask task = new ImportTask(data.part(typeName));
                     task.setLayer(layer);
-                    task.getMetadata().put(FeatureType.class, schema);
+                    task.setFeatureType(schema);
 
                     tasks.add(task);
                 } catch (Exception e) {

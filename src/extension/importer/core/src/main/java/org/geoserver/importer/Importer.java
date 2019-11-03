@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import com.google.common.collect.Iterators;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,6 +44,7 @@ import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
@@ -109,6 +111,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  */
 public class Importer implements DisposableBean, ApplicationListener {
 
+    public static final String IMPORTER_STORE_KEY = "org.geoserver.importer.store";
     static Logger LOGGER = Logging.getLogger(Importer.class);
 
     public static final String PROPERTYFILENAME = "importer.properties";
@@ -181,14 +184,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         // check the spring context for an import store
         ImportStore store = null;
 
-        String name = GeoServerExtensions.getProperty("org.geoserver.importer.store");
+        String name = GeoServerExtensions.getProperty(IMPORTER_STORE_KEY);
         if (name == null) {
             // backward compatability check
             name = GeoServerExtensions.getProperty("org.opengeo.importer.store");
         }
 
+        List<ImportStore> extensions = GeoServerExtensions.extensions(ImportStore.class);
         if (name != null) {
-            for (ImportStore bean : GeoServerExtensions.extensions(ImportStore.class)) {
+            for (ImportStore bean : extensions) {
                 if (name.equals(bean.getName())) {
                     store = bean;
                     break;
@@ -198,6 +202,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (store == null) {
                 LOGGER.warning("Invalid value for import store, no such store " + name);
             }
+        } else if (!extensions.isEmpty()) {
+            if (extensions.size() > 1) {
+                LOGGER.warning("Found multiple extensions");
+            }
+            // pick the first found
+            store = extensions.get(0);
         }
 
         if (store == null) {
@@ -331,7 +341,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         ImportContext context = new ImportContext();
         if (id != null) {
             Long retval = contextStore.advanceId(id);
-            assert retval >= id;
+            assert retval == null || retval >= id;
             context.setId(retval);
             contextStore.save(context);
         } else {
@@ -990,6 +1000,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                 RequestContextHolder.setRequestAttributes(parentRequestAttributes);
                 SecurityContextHolder.getContext().setAuthentication(auth);
                 return callInternal(monitor);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to run job in background", e);
+                throw e;
             } finally {
                 if (Thread.currentThread() != parentThread) {
                     // cleaning request spring context for the current thread
@@ -1274,8 +1287,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         Transaction transaction = new DefaultTransaction();
         try {
 
-            SimpleFeatureType featureType =
-                    (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
+            SimpleFeatureType featureType = task.getFeatureType();
             task.setOriginalLayerName(featureType.getTypeName());
             String nativeName = task.getLayer().getResource().getNativeName();
             if (!featureType.getTypeName().equals(nativeName)) {
@@ -1849,6 +1861,20 @@ public class Importer implements DisposableBean, ApplicationListener {
         xs.allowTypeHierarchy(DataFormat.class);
         xs.allowTypeHierarchy(ImportData.class);
         xs.allowTypeHierarchy(ImportTransform.class);
+        xs.allowTypeHierarchy(Exception.class);
+        xs.allowTypeHierarchy(StackTraceElement.class);
+        xs.allowTypeHierarchy(Class.class);
+
+        // normal serialization handles only references in the catalog, the importer
+        // is playing with objects that are not persisted in the catalog yet instead
+        xs.registerLocalConverter(
+                LayerInfoImpl.class,
+                "resource",
+                new ReflectionConverter(xs.getMapper(), xs.getReflectionProvider()));
+        xs.registerLocalConverter(
+                LayerInfoImpl.class,
+                "defaultStyle",
+                new ReflectionConverter(xs.getMapper(), xs.getReflectionProvider()));
 
         return xp;
     }

@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.MultiValuedFilter;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.geometry.coordinate.Polygon;
@@ -71,44 +72,39 @@ public class StyleLayer implements Serializable {
             StyleInfo si,
             StyledLayer source,
             Catalog catalog,
-            SampleDataSupport sampleDataSupport) {
+            SampleDataSupport sampleDataSupport,
+            boolean filterOnStyleLayerName) {
         this.sampleDataSupport = sampleDataSupport;
         this.id = Optional.ofNullable(source.getName()).orElse("layer");
 
-        // look for layer associations
-        try (CloseableIterator<LayerInfo> layers =
-                catalog.list(
-                        LayerInfo.class,
-                        Predicates.or(
-                                Predicates.equal("defaultStyle", si),
-                                Predicates.equal(
-                                        "styles", si, MultiValuedFilter.MatchAction.ANY)))) {
-            while (layers.hasNext()) {
-                LayerInfo layer = layers.next();
-                // determine type from first usable match
-                if (type == null) {
-                    try {
-                        ResourceInfo resource = layer.getResource();
-                        if (resource instanceof FeatureTypeInfo) {
-                            FeatureType featureType = ((FeatureTypeInfo) resource).getFeatureType();
-                            this.type = getLayerType(featureType);
-                            this.attributes = getAttributes(source, featureType);
-                        } else if (resource instanceof CoverageInfo) {
-                            type = LayerType.raster;
-                        }
-
-                    } catch (IOException e) {
-                        LOGGER.log(
-                                Level.WARNING,
-                                "Could not grab type information from layer "
-                                        + layer.prefixedName()
-                                        + ", skipping and moving on");
-                    }
+        if (filterOnStyleLayerName) {
+            // style group case, we look for layers by name
+            LayerInfo layer;
+            if (si.getWorkspace() == null) {
+                layer = catalog.getLayerByName(source.getName());
+            } else {
+                if (source.getName().contains(":")) {
+                    layer = catalog.getLayerByName(source.getName());
+                } else {
+                    layer =
+                            catalog.getLayerByName(
+                                    si.getWorkspace().getName() + ":" + source.getName());
                 }
-
-                // add sample data links for all layers
-                List<Link> sampleDataLinks = sampleDataSupport.getSampleDataFor(layer);
-                this.sampleData.addAll(sampleDataLinks);
+            }
+            if (layer != null) {
+                addLayerInfo(source, sampleDataSupport, layer);
+            }
+        } else {
+            // common style case, look for layer associations
+            Filter layerFilter =
+                    Predicates.or(
+                            Predicates.equal("defaultStyle", si),
+                            Predicates.equal("styles", si, MultiValuedFilter.MatchAction.ANY));
+            try (CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, layerFilter)) {
+                while (layers.hasNext()) {
+                    LayerInfo layer = layers.next();
+                    addLayerInfo(source, sampleDataSupport, layer);
+                }
             }
         }
 
@@ -119,6 +115,34 @@ public class StyleLayer implements Serializable {
             this.type = guessLayerType(source);
             this.attributes = getAttributes(source, null);
         }
+    }
+
+    public void addLayerInfo(
+            StyledLayer source, SampleDataSupport sampleDataSupport, LayerInfo layer) {
+        // determine type from first usable match
+        if (type == null) {
+            try {
+                ResourceInfo resource = layer.getResource();
+                if (resource instanceof FeatureTypeInfo) {
+                    FeatureType featureType = ((FeatureTypeInfo) resource).getFeatureType();
+                    this.type = getLayerType(featureType);
+                    this.attributes = getAttributes(source, featureType);
+                } else if (resource instanceof CoverageInfo) {
+                    type = LayerType.raster;
+                }
+
+            } catch (IOException e) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Could not grab type information from layer "
+                                + layer.prefixedName()
+                                + ", skipping and moving on");
+            }
+        }
+
+        // add sample data links for all layers
+        List<Link> sampleDataLinks = sampleDataSupport.getSampleDataFor(layer);
+        this.sampleData.addAll(sampleDataLinks);
     }
 
     private LayerType guessLayerType(StyledLayer source) {

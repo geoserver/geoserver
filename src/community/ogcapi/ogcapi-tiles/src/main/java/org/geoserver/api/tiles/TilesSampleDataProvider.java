@@ -61,6 +61,6 @@ public class TilesSampleDataProvider implements SampleDataProvider {
                         .collect(Collectors.toList());
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 }

@@ -40,7 +40,7 @@ class ImageListenerSupport {
         }
     }
 
-    private void imageRemoved(CoverageInfo coverageInfo, SimpleFeature feature) {
+    void imageRemoved(CoverageInfo coverageInfo, SimpleFeature feature) {
         if (feature != null && imageListeners != null) {
             for (ImageListener listener : imageListeners) {
                 listener.imageRemoved(coverageInfo, feature);

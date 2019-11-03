@@ -48,6 +48,14 @@ public class RolesRestController {
         return getUser(securityManager.getActiveRoleService(), userName);
     }
 
+    @GetMapping(
+        value = "/group/{group}",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    protected JaxbRoleList getGroup(@PathVariable("group") String groupName) throws IOException {
+        return getGroup(securityManager.getActiveRoleService(), groupName);
+    }
+
     @PostMapping(
         value = "/role/{role}",
         produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
@@ -67,17 +75,31 @@ public class RolesRestController {
     }
 
     @PostMapping(value = "/role/{role}/user/{user}")
-    public @ResponseStatus(HttpStatus.OK) void associate(
+    public @ResponseStatus(HttpStatus.OK) void associateUser(
             @PathVariable("role") String roleName, @PathVariable("user") String userName)
             throws IOException {
-        associate(securityManager.getActiveRoleService(), roleName, userName);
+        associateUser(securityManager.getActiveRoleService(), roleName, userName);
     }
 
     @DeleteMapping(value = "/role/{role}/user/{user}")
-    public @ResponseStatus(HttpStatus.OK) void disassociate(
+    public @ResponseStatus(HttpStatus.OK) void disassociateUser(
             @PathVariable("role") String roleName, @PathVariable("user") String userName)
             throws IOException {
-        disassociate(securityManager.getActiveRoleService(), roleName, userName);
+        disassociateUser(securityManager.getActiveRoleService(), roleName, userName);
+    }
+
+    @PostMapping(value = "/role/{role}/group/{group}")
+    public @ResponseStatus(HttpStatus.OK) void associateGroup(
+            @PathVariable("role") String roleName, @PathVariable("group") String groupName)
+            throws IOException {
+        associateToGroup(securityManager.getActiveRoleService(), roleName, groupName);
+    }
+
+    @DeleteMapping(value = "/role/{role}/group/{group}")
+    public @ResponseStatus(HttpStatus.OK) void disassociateGroup(
+            @PathVariable("role") String roleName, @PathVariable("group") String groupName)
+            throws IOException {
+        disassociateToGroup(securityManager.getActiveRoleService(), roleName, groupName);
     }
 
     @GetMapping(
@@ -98,6 +120,17 @@ public class RolesRestController {
         return getUser(getService(serviceName), userName);
     }
 
+    @GetMapping(
+        value = "/service/{serviceName}/group/{group}",
+        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    protected JaxbRoleList getGroup(
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("group") String groupName)
+            throws IOException {
+        return getGroup(getService(serviceName), groupName);
+    }
+
     @PostMapping(value = "/service/{serviceName}/role/{role}")
     public @ResponseStatus(HttpStatus.CREATED) void insert(
             @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName)
@@ -113,26 +146,71 @@ public class RolesRestController {
     }
 
     @PostMapping(value = "/service/{serviceName}/role/{role}/user/{user}")
-    public @ResponseStatus(HttpStatus.OK) void associate(
+    public @ResponseStatus(HttpStatus.OK) void associateUser(
             @PathVariable("serviceName") String serviceName,
             @PathVariable("role") String roleName,
             @PathVariable("user") String userName)
             throws IOException {
-        associate(getService(serviceName), roleName, userName);
+        associateUser(getService(serviceName), roleName, userName);
     }
 
     @DeleteMapping(value = "/service/{serviceName}/role/{role}/user/{user}")
-    public @ResponseStatus(HttpStatus.OK) void disassociate(
+    public @ResponseStatus(HttpStatus.OK) void disassociateUser(
             @PathVariable("serviceName") String serviceName,
             @PathVariable("role") String roleName,
             @PathVariable("user") String userName)
             throws IOException {
-        disassociate(getService(serviceName), roleName, userName);
+        disassociateUser(getService(serviceName), roleName, userName);
+    }
+
+    @PostMapping(value = "/service/{serviceName}/role/{role}/group/{group}")
+    public @ResponseStatus(HttpStatus.OK) void associateGroup(
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("role") String roleName,
+            @PathVariable("group") String groupName)
+            throws IOException {
+        associateToGroup(getService(serviceName), roleName, groupName);
+    }
+
+    @DeleteMapping(value = "/service/{serviceName}/role/{role}/group/{user}")
+    public @ResponseStatus(HttpStatus.OK) void disassociateGroup(
+            @PathVariable("serviceName") String serviceName,
+            @PathVariable("role") String roleName,
+            @PathVariable("user") String groupName)
+            throws IOException {
+        disassociateToGroup(getService(serviceName), roleName, groupName);
+    }
+
+    protected void associateToGroup(
+            GeoServerRoleService roleService, String roleName, String groupName)
+            throws IOException {
+        GeoServerRoleStore store = getStore(roleService);
+        try {
+            store.associateRoleToGroup(getRole(store, roleName), groupName);
+        } finally {
+            store.store();
+        }
+    }
+
+    protected void disassociateToGroup(
+            GeoServerRoleService roleService, String roleName, String groupName)
+            throws IOException {
+        GeoServerRoleStore store = getStore(roleService);
+        try {
+            store.disAssociateRoleFromGroup(getRole(store, roleName), groupName);
+        } finally {
+            store.store();
+        }
     }
 
     protected JaxbRoleList getUser(GeoServerRoleService roleService, String userName)
             throws IOException {
         return JaxbRoleList.fromGS(roleService.getRolesForUser(userName));
+    }
+
+    protected JaxbRoleList getGroup(GeoServerRoleService roleService, String groupName)
+            throws IOException {
+        return JaxbRoleList.fromGS(roleService.getRolesForGroup(groupName));
     }
 
     protected JaxbRoleList get(GeoServerRoleService roleService) throws IOException {
@@ -157,7 +235,7 @@ public class RolesRestController {
         }
     }
 
-    protected void associate(GeoServerRoleService roleService, String roleName, String userName)
+    protected void associateUser(GeoServerRoleService roleService, String roleName, String userName)
             throws IOException {
         GeoServerRoleStore store = getStore(roleService);
         try {
@@ -167,8 +245,8 @@ public class RolesRestController {
         }
     }
 
-    protected void disassociate(GeoServerRoleService roleService, String roleName, String userName)
-            throws IOException {
+    protected void disassociateUser(
+            GeoServerRoleService roleService, String roleName, String userName) throws IOException {
         GeoServerRoleStore store = getStore(roleService);
         try {
             store.disAssociateRoleFromUser(getRole(store, roleName), userName);

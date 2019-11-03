@@ -367,6 +367,11 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-ogcapi-changeset</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geostyler</artifactId>
      <version>${project.version}</version>
    </dependency>
@@ -375,7 +380,12 @@
      <artifactId>gs-csw-iso</artifactId>
      <version>${project.version}</version>
    </dependency>
- </dependencies>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-importer-jdbc</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+</dependencies>
  <build>
   <plugins>
    <plugin>

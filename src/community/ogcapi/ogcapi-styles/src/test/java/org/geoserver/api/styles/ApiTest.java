@@ -146,7 +146,9 @@ public class ApiTest extends StylesTestSupport {
                         "Default",
                         "ws:NamedPlaces",
                         "PolygonComment",
-                        "cssSample"));
+                        "cssSample",
+                        "Buildings",
+                        "Lakes"));
     }
 
     @Test

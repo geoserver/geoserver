@@ -99,7 +99,7 @@ public class LandingPageTest extends ImagesTestSupport {
         DocumentContext json = getAsJSONPath("gs/ogc/images?f=json", 200);
         // check the URLs are still workspace specific
         assertThat(
-                getSingle(json, "links[?(@.rel=='data' && @.type=='application/json')].href"),
+                readSingle(json, "links[?(@.rel=='data' && @.type=='application/json')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/gs/ogc/images/collections?f=application%2Fjson"));
     }

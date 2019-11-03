@@ -68,6 +68,12 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
                 for (DataAccessRule r : rulesToRemove) {
                     dao.removeRule(r);
                 }
+                try {
+                    dao.storeRules();
+                } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    throw new CatalogException(e);
+                }
             }
         }
     }

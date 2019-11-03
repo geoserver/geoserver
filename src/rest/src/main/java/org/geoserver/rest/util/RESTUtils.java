@@ -479,7 +479,7 @@ public class RESTUtils {
                     // If the coverage exists then the associated directory is defined by its URL
                     String url = coverage.getURL();
                     String path;
-                    if (url.contains("://")) {
+                    if (url.startsWith("file:")) {
                         path = URLs.urlToFile(new URL(url)).getPath();
                     } else {
                         path = url;

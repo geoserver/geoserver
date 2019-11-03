@@ -99,6 +99,7 @@
           <descriptor>release/ext-ogcapi.xml</descriptor>
           <descriptor>release/ext-geostyler.xml</descriptor>
           <descriptor>release/ext-csw-iso.xml</descriptor>
+          <descriptor>release/ext-importer-jdbc.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -278,6 +279,7 @@
         <module>ogcapi</module>
         <module>metadata</module>
         <module>csw-iso</module>
+        <module>importer-jdbc</module>
       </modules>
     </profile>
     <profile>
@@ -643,6 +645,12 @@
       <id>csw-iso</id>
       <modules>
         <module>csw-iso</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>importer-jdbc</id>
+      <modules>
+        <module>importer-jdbc</module>
       </modules>
     </profile>
   </profiles>  

@@ -49,7 +49,7 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("item", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
-        getSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
+        readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
     }
 
     private List<MediaType> getFeaturesResponseFormats() {
@@ -79,7 +79,7 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("item", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
-        getSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
+        readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
     }
 
     @Test

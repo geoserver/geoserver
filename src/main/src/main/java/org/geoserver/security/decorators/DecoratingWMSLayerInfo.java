@@ -318,13 +318,13 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     }
 
     @Override
-    public String getPrefferedFormat() {
-        return delegate.getPrefferedFormat();
+    public String getPreferredFormat() {
+        return delegate.getPreferredFormat();
     }
 
     @Override
-    public void setPrefferedFormat(String prefferedFormat) {
-        delegate.setPrefferedFormat(prefferedFormat);
+    public void setPreferredFormat(String prefferedFormat) {
+        delegate.setPreferredFormat(prefferedFormat);
     }
 
     @Override
@@ -355,5 +355,10 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     @Override
     public void setMaxScale(Integer maxScale) {
         delegate.setMaxScale(maxScale);
+    }
+
+    @Override
+    public List<StyleInfo> getAllAvailableRemoteStyles() {
+        return delegate.getAllAvailableRemoteStyles();
     }
 }

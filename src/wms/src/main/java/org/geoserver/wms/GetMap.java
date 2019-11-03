@@ -699,7 +699,7 @@ public class GetMap {
 
                     // if the format is not selected then fall back to preffered
                     if (!wmsLayer.isFormatValid(imageFormat))
-                        imageFormat = wmsLayer.getPrefferedFormat();
+                        imageFormat = wmsLayer.getPreferredFormat();
 
                     Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
 

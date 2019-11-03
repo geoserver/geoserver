@@ -25,17 +25,17 @@ public class CollectionCallbackIntegrationTest
         // concentrate on one and check title and links
         assertEquals(
                 "A blue linestring style",
-                getSingle(json, "styles[?(@.id == 'BasicPolygons')].title"));
+                readSingle(json, "styles[?(@.id == 'BasicPolygons')].title"));
         // there is at least a link to SLD 1.0
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/BasicPolygons?f=application%2Fvnd.ogc.sld%2Bxml",
-                getSingle(
+                readSingle(
                         json,
                         "styles[?(@.id == 'BasicPolygons')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.ogc.sld+xml')].href"));
         // link to the metadata
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/BasicPolygons/metadata?f=application%2Fjson",
-                getSingle(
+                readSingle(
                         json,
                         "styles[?(@.id == 'BasicPolygons')].links[?(@.rel == 'describedBy' && @.type == 'application/json')].href"));
     }
@@ -50,13 +50,13 @@ public class CollectionCallbackIntegrationTest
         // there is at least a link to SLD 1.0
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/BasicPolygons?f=application%2Fvnd.ogc.sld%2Bxml",
-                getSingle(
+                readSingle(
                         json,
                         "styles[?(@.id == 'BasicPolygons')].links[?(@.rel == 'stylesheet' && @.type == 'application/vnd.ogc.sld+xml')].href"));
         // link to the metadata
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/BasicPolygons/metadata?f=application%2Fjson",
-                getSingle(
+                readSingle(
                         json,
                         "styles[?(@.id == 'BasicPolygons')].links[?(@.rel == 'describedBy' && @.type == 'application/json')].href"));
     }

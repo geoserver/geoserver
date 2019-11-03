@@ -47,9 +47,9 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     void reset();
 
-    public String getPrefferedFormat();
+    public String getPreferredFormat();
 
-    public void setPrefferedFormat(String prefferedFormat);
+    public void setPreferredFormat(String prefferedFormat);
 
     public Set<StyleInfo> getStyles();
 
@@ -62,4 +62,6 @@ public interface WMSLayerInfo extends ResourceInfo {
     public Integer getMaxScale();
 
     public void setMaxScale(Integer maxScale);
+
+    public List<StyleInfo> getAllAvailableRemoteStyles();
 }

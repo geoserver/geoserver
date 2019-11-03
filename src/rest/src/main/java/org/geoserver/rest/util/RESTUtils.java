@@ -477,10 +477,14 @@ public class RESTUtils {
                 if (workspaceName == null
                         || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
                     // If the coverage exists then the associated directory is defined by its URL
-                    directory =
-                            Resources.fromPath(
-                                    URLs.urlToFile(new URL(coverage.getURL())).getPath(),
-                                    catalog.getResourceLoader().get(""));
+                    String url = coverage.getURL();
+                    String path;
+                    if (url.startsWith("file:")) {
+                        path = URLs.urlToFile(new URL(url)).getPath();
+                    } else {
+                        path = url;
+                    }
+                    directory = Resources.fromPath(path, catalog.getResourceLoader().get(""));
                 }
             }
         }

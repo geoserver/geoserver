@@ -31,6 +31,7 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.data.FileGroupProvider;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.Feature;
@@ -178,6 +179,8 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         String baseUrl = requestInfo.getBaseURL();
+        String basePath =
+                "ogc/images/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
         jw.key("links");
         jw.array();
         // paging links (only for collections)
@@ -188,10 +191,25 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             if (response.getNext() != null) {
                 writeLink(jw, "Next page", MIME, "next", response.getNext());
             }
+            // links to each an every image at top level (sigh... from spec)
+            FeatureCollection fc = response.getFeatures().get(0);
+            try (FeatureIterator fi = fc.features()) {
+                while (fi.hasNext()) {
+                    Feature next = fi.next();
+                    String href =
+                            ResponseUtils.buildURL(
+                                    baseUrl,
+                                    basePath
+                                            + "/images/"
+                                            + ResponseUtils.urlEncode(next.getIdentifier().getID()),
+                                    Collections.singletonMap("f", MIME),
+                                    URLMangler.URLType.SERVICE);
+                    String linkType = Link.REL_ITEM;
+                    writeLink(jw, null, MIME, linkType, href);
+                }
+            }
         }
         // alternate/self links
-        String basePath =
-                "ogc/images/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
         Collection<MediaType> formats =
                 requestInfo.getProducibleMediaTypes(ImagesResponse.class, true);
         for (MediaType format : formats) {
@@ -229,6 +247,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
                 writeLink(jw, linkTitle, format.toString(), linkType, href);
             }
         }
+
         jw.endArray();
     }
 

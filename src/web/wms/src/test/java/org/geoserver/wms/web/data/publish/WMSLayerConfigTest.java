@@ -221,6 +221,13 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remotestyles:extraRemoteStyles",
                 new HashSet<String>(wmsLayer.remoteStyles()));
 
+        // asserting Remote Style UI fields
+        tester.assertModelValue(
+                "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
+        tester.assertModelValue(
+                "form:panel:remoteformats:remoteFormatsPalette",
+                new HashSet<String>(wmsLayer.availableFormats()));
+        //min max scale UI fields
         tester.assertVisible("form:panel:metaDataCheckBoxContainer:minScale");
         tester.assertVisible("form:panel:metaDataCheckBoxContainer:maxScale");
 
@@ -231,5 +238,6 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.submit();
         // there should be an error
         tester.assertErrorMessages("Minimum Scale cannot be greater than Maximum Scale");
+
     }
 }

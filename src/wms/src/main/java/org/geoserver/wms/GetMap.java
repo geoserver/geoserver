@@ -991,16 +991,15 @@ public class GetMap {
     }
 
     private boolean checkWMSLayerMinMaxScale(WMSLayerInfo wmsLayerInfo, double mapScale) {
-        //
+
         // if none configured
         if (wmsLayerInfo.getMinScale() == null && wmsLayerInfo.getMaxScale() == null) return true;
-        if (wmsLayerInfo.getMinScale() != null)
-            if (mapScale < wmsLayerInfo.getMinScale())
-                return false; // return false map scale is below min
-
-        if (wmsLayerInfo.getMaxScale() != null)
-            if (mapScale > wmsLayerInfo.getMaxScale())
-                return false; // return false map scale is above max
+        // return false map scale is below min
+        if (wmsLayerInfo.getMinScale() != null && mapScale < wmsLayerInfo.getMinScale())
+            return false;
+        // return false map scale is above max
+        if (wmsLayerInfo.getMaxScale() != null && mapScale > wmsLayerInfo.getMaxScale())
+            return false;
 
         return true;
     }

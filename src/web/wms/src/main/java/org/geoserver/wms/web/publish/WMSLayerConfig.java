@@ -252,17 +252,17 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
         // scale denominators
-        TextField<Integer> minScale =
+        TextField<Double> minScale =
                 new TextField(
                         "minScale",
                         new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
-                        Integer.class);
+                        Double.class);
         metaDataCheckBoxContainer.add(minScale);
-        TextField<Integer> maxScale =
+        TextField<Double> maxScale =
                 new TextField(
                         "maxScale",
                         new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
-                        Integer.class);
+                        Double.class);
         metaDataCheckBoxContainer.add(maxScale);
 
         minScale.add(new ScalesValidator(minScale, maxScale));
@@ -274,19 +274,31 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         /** serialVersionUID */
         private static final long serialVersionUID = 1349568700386246273L;
 
-        TextField<Integer> minScale;
-        TextField<Integer> maxScale;
+        TextField<Double> minScale;
+        TextField<Double> maxScale;
 
-        public ScalesValidator(TextField<Integer> minScale, TextField<Integer> maxScale) {
+        public ScalesValidator(TextField<Double> minScale, TextField<Double> maxScale) {
             this.minScale = minScale;
             this.maxScale = maxScale;
+        }
+
+        private Double safeGet(String input, Double defaultValue) {
+            if (input == null || input.isEmpty()) return defaultValue;
+            else return Double.valueOf(input);
         }
 
         @Override
         public void validate(IValidatable validatable) {
             if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
+                // negative check
+                if (Double.valueOf(minScale.getInput()) < 0
+                        || Double.valueOf(maxScale.getInput()) < 0) {
+                    validatable.error(new ValidationError("Scale denominator cannot be Negative"));
+                }
                 // if both are set perform check min < max
-                if (Integer.valueOf(minScale.getInput()) >= Integer.valueOf(maxScale.getInput())) {
+
+                if (safeGet(minScale.getInput(), 0d)
+                        >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
                     validatable.error(
                             new ValidationError(
                                     "Minimum Scale cannot be greater than Maximum Scale"));

@@ -55,13 +55,13 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     public StyleInfo getDefaultStyle();
 
-    public Integer getMinScale();
+    public Double getMinScale();
 
-    public void setMinScale(Integer minScale);
+    public void setMinScale(Double minScale);
 
-    public Integer getMaxScale();
+    public Double getMaxScale();
 
-    public void setMaxScale(Integer maxScale);
+    public void setMaxScale(Double maxScale);
 
     public List<StyleInfo> getAllAvailableRemoteStyles();
 }

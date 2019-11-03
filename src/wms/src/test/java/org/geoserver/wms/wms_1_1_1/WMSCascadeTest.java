@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import javax.imageio.ImageIO;
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -24,6 +26,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
@@ -187,8 +190,14 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         print(dom);
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
-        // styless remote layer..fixed wrong assertion
-        assertTrue(responseJson.isEmpty());
+        assertTrue(responseJson.has(JSONLegendGraphicBuilder.LEGEND));
+
+        JSONArray legendArray = responseJson.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertFalse(legendArray.isEmpty());
+
+        JSONArray rulesJSONArray =
+                legendArray.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+        assertFalse(rulesJSONArray.isEmpty());
     }
 
     @Test
@@ -213,8 +222,8 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         // set max scale as small as possible to have it filtered
         WMSLayerInfo groupLayer1WMSResource =
                 (WMSLayerInfo) getCatalog().getLayerByName("group_lyr_1").getResource();
-        groupLayer1WMSResource.setMinScale(1);
-        groupLayer1WMSResource.setMaxScale(1000);
+        groupLayer1WMSResource.setMinScale(1d);
+        groupLayer1WMSResource.setMaxScale(1000d);
         getCatalog().save(groupLayer1WMSResource);
 
         String getMapRequest =
@@ -230,11 +239,15 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         // should invoke expected Mock URL in which both layers are present
         // since the BBOX covers both
         // but group_lyr_1 min/max scale is outside the bound of map scale
-        BufferedImage response = getAsImage(getMapRequest, "image/png");
-        assertNotNull(response);
-        // reset
-        groupLayer1WMSResource.setMinScale(null);
-        groupLayer1WMSResource.setMaxScale(null);
-        getCatalog().save(groupLayer1WMSResource);
+        try {
+            BufferedImage response = getAsImage(getMapRequest, "image/png");
+            assertNotNull(response);
+
+        } finally {
+            // reset
+            groupLayer1WMSResource.setMinScale(null);
+            groupLayer1WMSResource.setMaxScale(null);
+            getCatalog().save(groupLayer1WMSResource);
+        }
     }
 }

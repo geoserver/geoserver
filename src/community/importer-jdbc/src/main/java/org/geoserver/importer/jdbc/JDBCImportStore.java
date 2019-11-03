@@ -85,20 +85,24 @@ public class JDBCImportStore implements ImportStore {
             SimpleFeatureType statusSchema = lookupStatusSchema();
             if (statusSchema == null) {
                 backingStore.createSchema(CTX_FEATURE_TYPE);
+                statusSchema = lookupStatusSchema();
+                this.actualTypeName = statusSchema.getTypeName();
+
+                // try creating indexes, not a big deal if that does not work
+                try {
+                    backingStore.createIndex(
+                            new Index(actualTypeName, actualTypeName + "_user", false, "user"));
+                    backingStore.createIndex(
+                            new Index(actualTypeName, actualTypeName + "_state", false, "state"));
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Failed to create database indexes", e);
+                }
+            } else {
+                statusSchema = lookupStatusSchema();
+                this.actualTypeName = statusSchema.getTypeName();
             }
-            statusSchema = lookupStatusSchema();
-            this.actualTypeName = statusSchema.getTypeName();
             this.needsMapping = DataUtilities.compare(statusSchema, CTX_FEATURE_TYPE) != 0;
 
-            // try creating indexes, not a big deal if that does not work
-            try {
-                backingStore.createIndex(
-                        new Index(actualTypeName, actualTypeName + "_user", false, "user"));
-                backingStore.createIndex(
-                        new Index(actualTypeName, actualTypeName + "_state", false, "state"));
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Failed to create database indexes", e);
-            }
         } catch (IOException e) {
             throw new ServiceException(e);
         }

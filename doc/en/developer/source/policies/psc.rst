@@ -28,7 +28,9 @@ Current PSC
 * Jody Garnett
 * Jukka Rahkonen
 * Kevin Smith
+* Nuno Oliveira
 * Simone Giannecchini
+* Torben Barsballe
 
 We would like to thank prior PSC members:
 

@@ -168,26 +168,22 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
     @Test
     public void testCascadeGetLegendRequestJSON() throws Exception {
-        assertTrue(true);
-
         WMSLayerInfo layerInfo =
-                (WMSLayerInfo) getCatalog().getLayerByName(WORLD4326_110).getResource();
+                (WMSLayerInfo) getCatalog().getLayerByName("roads_wms").getResource();
         WebMapServer webMapServer = layerInfo.getStore().getWebMapServer(null);
-        // setting up OperationType
-        // webMapServer.getCapabilities().getRequest().setGetLegendGraphic(new OperationType());
-        // assert that webserver can make getLegend requests
+        // reset getlegend URL for this test
+        webMapServer.getCapabilities().getRequest().getGetLegendGraphic().setGet(null);
+
         GetLegendGraphicRequest getLegend = webMapServer.createGetLegendGraphicRequest();
         assertNotNull(getLegend);
-
+        // For Mock URL check WMSCascadeTestSupport.setupWMS110Layer()
         JSON dom =
                 getAsJSON(
                         "wms?service=WMS&version=1.0.0&request=GetLegendGraphic"
-                                + "&layer="
-                                + WORLD4326_110
+                                + "&layer=roads_wms"
                                 + "&format=application/json",
                         HttpStatus.SC_OK);
 
-        print(dom);
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
         assertTrue(responseJson.has(JSONLegendGraphicBuilder.LEGEND));
 
@@ -197,5 +193,23 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         JSONArray rulesJSONArray =
                 legendArray.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
         assertFalse(rulesJSONArray.isEmpty());
+    }
+
+    @Test
+    public void testCascadeLayerGroup() throws Exception {
+
+        String getMapRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers=roads_group"
+                        + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default remote styles should include the forced remote style of one layer
+        // and empty for second layer
+        // For Mock URL check WMSCascadeTestSupport.setupWMS110Layer()
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
     }
 }

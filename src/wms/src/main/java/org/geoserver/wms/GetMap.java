@@ -685,7 +685,7 @@ public class GetMap {
                     WMSLayer Layer = null;
 
                     String style = request.getStyles().get(i).getName();
-                    style = (style == null) ? "" : style;
+                    style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
                     String imageFormat = request.getFormat();
                     // if passed style does not exist in remote, throw exception
                     if (!wmsLayer.isSelectedRemoteStyles(style))

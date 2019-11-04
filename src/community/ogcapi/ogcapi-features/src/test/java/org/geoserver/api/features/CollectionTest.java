@@ -46,7 +46,7 @@ public class CollectionTest extends FeaturesTestSupport {
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
             assertEquals("cite:RoadSegments items as " + format, item.get("title"));
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
         readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
@@ -76,7 +76,7 @@ public class CollectionTest extends FeaturesTestSupport {
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
             assertEquals("RoadSegments items as " + format, item.get("title"));
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
         readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");

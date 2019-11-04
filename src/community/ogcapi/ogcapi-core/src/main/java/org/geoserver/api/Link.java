@@ -17,6 +17,7 @@ public class Link {
     public static final String REL_ALTERNATE = "alternate";
     public static final String REL_ABOUT = "about";
     public static final String REL_ITEM = "item";
+    public static final String REL_ITEMS = "items";
     public static final String REL_DESCRIBEDBY = "describedBy";
     public static final String REL_COLLECTION = "collection";
     public static final String REL_SERVICE_DESC = "service-desc";

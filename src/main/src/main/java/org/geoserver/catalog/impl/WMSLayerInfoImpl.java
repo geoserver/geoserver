@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javax.persistence.Transient;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LegendInfo;
@@ -27,6 +28,17 @@ import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
+
+    // will style info with empty name
+    // intended for legacy functionaloty
+    // of using default remote style
+    @Transient public static StyleInfo DEFAULT_ON_REMOTE;
+
+    static {
+        DEFAULT_ON_REMOTE = new StyleInfoImpl();
+        DEFAULT_ON_REMOTE.setName("");
+        DEFAULT_ON_REMOTE.getMetadata().put("isRemote", true);
+    }
 
     protected String forcedRemoteStyle = "";
     protected String prefferedFormat = "image/png";
@@ -159,8 +171,11 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
-
+                // will return null if forcedRemoteStyle is not empty string
+                // and was not found in selected remote styles
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+            } else {
+                return DEFAULT_ON_REMOTE;
             }
 
         return null;

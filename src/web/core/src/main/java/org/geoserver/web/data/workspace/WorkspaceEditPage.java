@@ -54,7 +54,6 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -86,7 +85,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     IModel<NamespaceInfo> nsModel;
     SettingsPanel settingsPanel;
     ServicesPanel servicesPanel;
-    AccessDataRulePanel accessdataPanel;
+    AccessDataRulePanel accessDataPanel;
     WsEditInfoPanel basicInfoPanel;
     GeoServerDialog dialog;
     TabbedPanel tabbedPanel;
@@ -143,14 +142,16 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                     @Override
                     public WebMarkupContainer getPanel(String panelId) {
-                        basicInfoPanel =
-                                new WsEditInfoPanel(panelId, wsModel, nsModel, defaultWs);
-                        return basicInfoPanel;
+                        try {
+                            basicInfoPanel =
+                                    new WsEditInfoPanel(panelId, wsModel, nsModel, defaultWs);
+                            return basicInfoPanel;
+                        } catch (Exception e) {
+                            throw new WicketRuntimeException(e);
+                        }
                     }
                 });
-        if (GeoServerApplication.get()
-                .getBeanOfType(SecureCatalogImpl.class)
-                .isDefaultAccessManager()) {
+        if (AccessDataRuleInfoManager.canAccess()) {
             tabs.add(
                     new AbstractTab(new Model<String>("Security")) {
 
@@ -158,12 +159,17 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                         @Override
                         public WebMarkupContainer getPanel(String panelId) {
-                            AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
-                            ListModel<DataAccessRuleInfo> ownModel =
-                                    new ListModel<>(
-                                            manager.getDataAccessRuleInfo(wsModel.getObject()));
-                            accessdataPanel = new AccessDataRulePanel(panelId, wsModel, ownModel);
-                            return accessdataPanel;
+                            try {
+                                AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
+                                ListModel<DataAccessRuleInfo> ownModel =
+                                        new ListModel<>(
+                                                manager.getDataAccessRuleInfo(wsModel.getObject()));
+                                accessDataPanel =
+                                        new AccessDataRulePanel(panelId, wsModel, ownModel);
+                                return accessDataPanel;
+                            } catch (Exception e) {
+                                throw new WicketRuntimeException(e);
+                            }
                         }
                     });
         }
@@ -268,8 +274,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             }
         }
         try {
-            if (accessdataPanel != null)
-                accessdataPanel.save();
+            if (accessDataPanel != null) accessDataPanel.save();
+            doReturn(WorkspacePage.class);
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
@@ -277,7 +283,6 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     e);
             error(e.getMessage() == null ? e.toString() : e.getMessage());
         }
-        doReturn(WorkspacePage.class);
     }
 
     @Override

@@ -4,15 +4,20 @@
  */
 package org.geoserver.web.security;
 
+import static org.geoserver.security.impl.GeoServerRole.ADMIN_ROLE;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.*;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.spring.security.GeoServerSession;
+import org.springframework.security.core.GrantedAuthority;
 
 public class AccessDataRuleInfoManager {
 
@@ -109,6 +114,16 @@ public class AccessDataRuleInfoManager {
         return rules;
     }
 
+    /**
+     * Convert a <code>List</code> of {@Link DataAccessRule} to a <code>Set</code>> of {@Link
+     * DataAccessRuleInfo} suitable to be used as a model object by {@Link AccessDataRulePanel}
+     *
+     * @param rules
+     * @param authorities
+     * @param wsName
+     * @param layerName
+     * @return
+     */
     public List<DataAccessRuleInfo> mapTo(
             Set<DataAccessRule> rules, Set<String> authorities, String wsName, String layerName) {
         if (rules == null || rules.isEmpty()) {
@@ -156,6 +171,17 @@ public class AccessDataRuleInfoManager {
         return rules;
     }
 
+    /**
+     * Convert a <code>List</code> of {@Link DataAccessRuleInfo} to a <code>Set</code>> of {@Link
+     * DataAccessRule} suitable to be by {@Link DataAccessRuleDAO}
+     *
+     * @param newRules
+     * @param authorities
+     * @param wsName
+     * @param layerName
+     * @param globalLayerGroup
+     * @return
+     */
     public Set<DataAccessRule> mapFrom(
             List<DataAccessRuleInfo> newRules,
             Set<String> authorities,
@@ -218,5 +244,20 @@ public class AccessDataRuleInfoManager {
     public void removeAllResourceRules(String wsName, CatalogInfo info) throws IOException {
         getResourceRule(wsName, info).forEach(r -> dao.removeRule(r));
         dao.storeRules();
+    }
+
+    public static boolean canAccess() {
+        boolean isAdmin = false;
+        for (GrantedAuthority auth : GeoServerSession.get().getAuthentication().getAuthorities()) {
+            if (auth.getAuthority().equalsIgnoreCase(ADMIN_ROLE.getAuthority())) {
+                isAdmin = true;
+                break;
+            }
+        }
+        if (!GeoServerApplication.get()
+                        .getBeanOfType(SecureCatalogImpl.class)
+                        .isDefaultAccessManager()
+                || !isAdmin) return false;
+        else return true;
     }
 }

@@ -5,13 +5,10 @@
 package org.geoserver.web.security;
 
 import java.util.*;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import org.geoserver.catalog.*;
-import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.DataAccessRule;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 
 public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInfo {
@@ -21,8 +18,8 @@ public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInf
     @Override
     public ListModel<DataAccessRuleInfo> createOwnModel(
             final IModel<? extends PublishedInfo> layerModel, final boolean isNew) {
-        AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
         CatalogInfo info = layerModel.getObject();
+        AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
         String workspaceName = manager.getWorkspaceName(info);
         String layerName = manager.getLayerName(info);
         Set<String> authorities = manager.getAvailableRoles();
@@ -34,12 +31,7 @@ public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInf
 
     @Override
     public boolean supports(PublishedInfo pi) {
-        if (!GeoServerApplication.get()
-                .getBeanOfType(SecureCatalogImpl.class)
-                .isDefaultAccessManager())
-            return false;
-        else
-
-            return getPublishedInfoClass().isAssignableFrom(pi.getClass());
+        return getPublishedInfoClass().isAssignableFrom(pi.getClass())
+                && AccessDataRuleInfoManager.canAccess();
     }
 }

@@ -4,13 +4,11 @@
  */
 package org.geoserver.geofence;
 
-import org.geoserver.platform.ModuleCapabilities;
 import org.geoserver.platform.ModuleStatusImpl;
 
 public final class GeoFenceModuleStatus extends ModuleStatusImpl {
 
     public GeoFenceModuleStatus(String module, String name) {
         super(module, name);
-        addCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG);
     }
 }

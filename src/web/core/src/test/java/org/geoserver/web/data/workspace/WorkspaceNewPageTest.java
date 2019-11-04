@@ -20,14 +20,15 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockTestData;
-import org.geoserver.platform.ModuleCapabilities;
-import org.geoserver.platform.ModuleStatusImpl;
-import org.geoserver.web.GeoServerApplication;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.security.AccessDataRuleInfoManager;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
 
 public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
 
@@ -222,17 +223,29 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testSecurityTabInactiveWithGeofenceActive() {
-        ApplicationContext context = GeoServerApplication.get().getApplicationContext();
-        ModuleStatusImpl module = (ModuleStatusImpl) context.getBean("gs-geofence");
-        module.addCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG);
+    public void testSecurityTabInactiveWithNoDeafaultAccessManager() {
+        TestResourceAccessManager manager = new TestResourceAccessManager();
+        SecureCatalogImpl oldSc = (SecureCatalogImpl) GeoServerExtensions.bean("secureCatalog");
+        SecureCatalogImpl sc =
+                new SecureCatalogImpl(getCatalog(), manager) {
+
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
+        applicationContext.getBeanFactory().destroyBean("secureCatalog");
+        GeoServerExtensionsHelper.clear();
+        GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
         tester.startPage(WorkspaceNewPage.class);
         try {
             tester.newFormTester("form");
             TabbedPanel tabs = (TabbedPanel) tester.getComponentFromLastRenderedPage("form:tabs");
             assertTrue(tabs.getTabs().size() == 1);
         } finally {
-            module.getCapabilities().remove(ModuleCapabilities.ADVANCED_SECURITY_CONFIG);
+            applicationContext.getBeanFactory().destroyBean("secureCatalog");
+            GeoServerExtensionsHelper.clear();
+            GeoServerExtensionsHelper.singleton("secureCatalog", oldSc, SecureCatalogImpl.class);
         }
     }
 }

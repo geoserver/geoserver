@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.util.*;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.*;
 import org.geoserver.security.impl.DataAccessRule;
 
@@ -44,10 +47,16 @@ public class AccessDataRulePanel extends Panel {
         this.ownModel = ownModel;
         listContainer = new WebMarkupContainer("listContainer");
         listContainer.setOutputMarkupId(true);
-        dataAccessView = new AccessDataRuleListView("rules", ownModel);
+        boolean isWs = WorkspaceInfo.class.isAssignableFrom(model.getObject().getClass());
+        dataAccessView = new AccessDataRuleListView("rules", ownModel, isWs);
+
+        Label label = new Label("adminTh", new ResourceModel("admin"));
+        if (!isWs) label.setVisible(false);
+        listContainer.add(label);
         listContainer.add(selectAllCheckbox());
         dataAccessView.setOutputMarkupId(true);
         ownModel.setObject(dataAccessView.getList());
+        listContainer.add(new AjaxPagingNavigator("navigator", dataAccessView));
         listContainer.add(dataAccessView);
         add(listContainer);
     }
@@ -83,9 +92,6 @@ public class AccessDataRulePanel extends Panel {
                         // update table and the checkbox itself
                         target.add(getComponent());
                         target.add(listContainer);
-
-                        // allow subclasses to play on this change as well
-                        // onSelectionUpdate(target);
                     }
                 });
         return sa;

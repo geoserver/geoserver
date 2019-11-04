@@ -32,14 +32,11 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.web.ComponentAuthorizer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.resource.LayerModel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.security.LayerAccessDataRulePanel;
-import org.geoserver.web.security.LayerAccessDataRulePanelInfo;
 
 /**
  * Page allowing to configure a layer(group) (and its resource).
@@ -279,7 +276,8 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     private SubmitLink saveLink() {
         return new SubmitLink("save") {
-            private static final long serialVersionUID = 1839992481355433705L;
+
+            private static final long serialVersionUID = 4615460713943555026L;
 
             @Override
             public void onSubmit() {
@@ -319,6 +317,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                     tabPanelCustomModels.entrySet()) {
                 Class<? extends PublishedEditTabPanel<T>> panelClass = e.getKey();
                 IModel<?> customModel = e.getValue();
+                if (customModel == null) {
+                    continue;
+                }
                 PublishedEditTabPanel<?> tabPanel =
                         panelClass
                                 .getConstructor(String.class, IModel.class, IModel.class)

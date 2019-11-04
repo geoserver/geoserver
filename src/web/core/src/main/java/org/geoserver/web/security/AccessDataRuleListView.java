@@ -11,18 +11,23 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.PageableListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 
-public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
+public class AccessDataRuleListView extends PageableListView<DataAccessRuleInfo> {
 
     private List<CheckBox> checkBoxes;
     private Boolean selectAll;
+    private boolean isWs;
 
-    public AccessDataRuleListView(String id, IModel<List<DataAccessRuleInfo>> model) {
-        super(id, model);
-        if (checkBoxes == null) checkBoxes = new ArrayList<CheckBox>(model.getObject().size() * 3);
+    public AccessDataRuleListView(String id, IModel<List<DataAccessRuleInfo>> model, boolean isWs) {
+        super(id, model, 15);
+        this.isWs = isWs;
+        if (checkBoxes == null) {
+            int checkBoxesTypes = isWs ? 3 : 2;
+            checkBoxes = new ArrayList<CheckBox>(model.getObject().size() * checkBoxesTypes);
+        }
     }
 
     @Override
@@ -38,7 +43,11 @@ public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
         checkBoxes.add(writeCheckBox);
         CheckBox adminCheckBox = new CheckBox("admin", new PropertyModel<>(ruleModel, "admin"));
         adminCheckBox.setOutputMarkupId(true);
+        if (!isWs) {
+            adminCheckBox.setVisible(false);
+        }
         item.add(adminCheckBox);
+
         checkBoxes.add(adminCheckBox);
         addNewCheckboxesUpdateBeahaviour();
         this.selectAll = checkAllSelected();
@@ -87,5 +96,13 @@ public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
                         }
                     });
         }
+    }
+
+    public boolean isWs() {
+        return isWs;
+    }
+
+    public void setWs(boolean ws) {
+        isWs = ws;
     }
 }

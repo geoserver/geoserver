@@ -1601,7 +1601,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     public boolean isDefaultAccessManager() {
-        if (this.accessManager instanceof DefaultResourceAccessManager) return true;
-        return false;
+        ResourceAccessManager manager = this.accessManager;
+        while (ResourceAccessManagerWrapper.class.isAssignableFrom(manager.getClass())) {
+            manager = ((ResourceAccessManagerWrapper) manager).unwrap();
+        }
+        return manager instanceof DefaultResourceAccessManager;
     }
 }

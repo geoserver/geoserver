@@ -66,7 +66,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
     }
 
     public void cleanRules(String wsName, CatalogInfo info) throws IOException {
-        ruleInfoMan.getResourceRule(wsName, info).forEach(r -> dao.removeRule(r));
-        dao.storeRules();
+        ruleInfoMan.removeAllResourceRules(wsName, info);
+        assertTrue(0 == ruleInfoMan.getResourceRule(wsName, info).size());
     }
 }

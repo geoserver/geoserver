@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.appschema.jdbc.NestedFilterToSQL;
 import org.geotools.data.FeatureSource;
@@ -282,5 +284,29 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
         NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
         String encodedFilter = nestedFilterToSQL.encodeToString(unrolled);
         assertTrue(encodedFilter.contains("EXISTS"));
+    }
+
+    /** Tests reprojection from native to declared for complex features. */
+    @Test
+    public void testReprojection() throws Exception {
+        final Catalog catalog = getCatalog();
+        try {
+            FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName("gsml:MappedFeature");
+            typeInfo.setSRS("EPSG:3857");
+            typeInfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+            catalog.save(typeInfo);
+            Document doc =
+                    getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
+            print(doc);
+            assertXpathEvaluatesTo(
+                    "urn:x-ogc:def:crs:EPSG:3857",
+                    "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",
+                    doc);
+        } finally {
+            FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName("gsml:MappedFeature");
+            typeInfo.setSRS("EPSG:4326");
+            typeInfo.setProjectionPolicy(ProjectionPolicy.NONE);
+            catalog.save(typeInfo);
+        }
     }
 }

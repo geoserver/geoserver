@@ -1599,4 +1599,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     public CatalogCapabilities getCatalogCapabilities() {
         return delegate.getCatalogCapabilities();
     }
+
+    public boolean isDefaultAccessManager() {
+        if (this.accessManager instanceof DefaultResourceAccessManager) return true;
+        return false;
+    }
 }

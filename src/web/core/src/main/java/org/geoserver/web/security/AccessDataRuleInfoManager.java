@@ -198,11 +198,13 @@ public class AccessDataRuleInfoManager {
     }
 
     public void saveRules(Set<DataAccessRule> old, Set<DataAccessRule> news) throws IOException {
-        old.forEach(r -> dao.removeRule(r));
-        if (!news.isEmpty()) {
-            news.forEach(r -> dao.addRule(r));
+        synchronized (this) {
+            old.forEach(r -> dao.removeRule(r));
+            if (!news.isEmpty()) {
+                news.forEach(r -> dao.addRule(r));
+            }
+            dao.storeRules();
         }
-        dao.storeRules();
     }
 
     public List<DataAccessRuleInfo> getDataAccessRuleInfo(CatalogInfo info) {

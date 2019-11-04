@@ -54,9 +54,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.ModuleCapabilities;
-import org.geoserver.platform.ModuleStatus;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -89,7 +87,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     SettingsPanel settingsPanel;
     ServicesPanel servicesPanel;
     AccessDataRulePanel accessdataPanel;
-    WsEditBasicInfoPanel basicInfoPanel;
+    WsEditInfoPanel basicInfoPanel;
     GeoServerDialog dialog;
     TabbedPanel tabbedPanel;
 
@@ -146,13 +144,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     @Override
                     public WebMarkupContainer getPanel(String panelId) {
                         basicInfoPanel =
-                                new WsEditBasicInfoPanel(panelId, wsModel, nsModel, defaultWs);
+                                new WsEditInfoPanel(panelId, wsModel, nsModel, defaultWs);
                         return basicInfoPanel;
                     }
                 });
-        if (!GeoServerExtensions.extensions(ModuleStatus.class)
-                .stream()
-                .anyMatch(m -> m.hasCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG))) {
+        if (GeoServerApplication.get()
+                .getBeanOfType(SecureCatalogImpl.class)
+                .isDefaultAccessManager()) {
             tabs.add(
                     new AbstractTab(new Model<String>("Security")) {
 
@@ -270,7 +268,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             }
         }
         try {
-            accessdataPanel.save();
+            if (accessdataPanel != null)
+                accessdataPanel.save();
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
@@ -348,13 +347,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
     }
 
-    class WsEditBasicInfoPanel extends Panel {
+    class WsEditInfoPanel extends Panel {
 
         private static final long serialVersionUID = -8487041433764733692L;
 
         boolean defaultWs;
 
-        public WsEditBasicInfoPanel(
+        public WsEditInfoPanel(
                 String id,
                 IModel<WorkspaceInfo> wsModel,
                 IModel<NamespaceInfo> nsModel,

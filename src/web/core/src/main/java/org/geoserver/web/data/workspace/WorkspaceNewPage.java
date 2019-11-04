@@ -34,9 +34,8 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.ModuleCapabilities;
-import org.geoserver.platform.ModuleStatus;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.security.AccessDataRuleInfoManager;
 import org.geoserver.web.security.AccessDataRulePanel;
@@ -51,7 +50,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     TextField<String> nsUriTextField;
     AccessDataRulePanel accessdataPanel;
-    WsNewBasicInfoPanel infoPanel;
+    WsNewInfoPanel infoPanel;
     TabbedPanel tabbedPanel;
 
     CompoundPropertyModel<WorkspaceInfo> model;
@@ -69,13 +68,13 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
                     @Override
                     public WebMarkupContainer getPanel(String panelId) {
-                        infoPanel = new WsNewBasicInfoPanel(panelId, model);
+                        infoPanel = new WsNewInfoPanel(panelId, model);
                         return infoPanel;
                     }
                 });
-        if (!GeoServerExtensions.extensions(ModuleStatus.class)
-                .stream()
-                .anyMatch(m -> m.hasCapability(ModuleCapabilities.ADVANCED_SECURITY_CONFIG))) {
+        if (GeoServerApplication.get()
+                .getBeanOfType(SecureCatalogImpl.class)
+                .isDefaultAccessManager()) {
             tabs.add(
                     new AbstractTab(new Model<>("Security")) {
 
@@ -237,12 +236,12 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         error(exception.getMessage());
     }
 
-    class WsNewBasicInfoPanel extends Panel {
+    class WsNewInfoPanel extends Panel {
 
         private static final long serialVersionUID = 4286364808180616865L;
         boolean defaultWs;
 
-        public WsNewBasicInfoPanel(String id, IModel<WorkspaceInfo> model) {
+        public WsNewInfoPanel(String id, IModel<WorkspaceInfo> model) {
             super(id, model);
             TextField<String> nameTextField = new TextField<String>("name");
             nameTextField.setRequired(true);

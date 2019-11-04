@@ -80,6 +80,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 
+        // get list of available alternate SRS
+        List<String> otherSRS = getOtherSRS(model.getObject());
+
         final Form<ResourceInfo> refForm = new Form<ResourceInfo>("referencingForm");
         add(refForm);
 
@@ -89,10 +92,16 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
-        boolean showComputeNativeBoundsLink =
-                model.getObject()
-                        .getSRS()
-                        .equalsIgnoreCase(getActualNativeSRSCode(model.getObject()));
+        boolean showComputeNativeBoundsLink = otherSRS.isEmpty();
+        if (!otherSRS.isEmpty()) {
+            // if resource has more than one Native SRS then check if current resource is Native
+            // else dont bother checking for Actual NativeSRS and fall back to Legacy behavior
+            showComputeNativeBoundsLink =
+                    model.getObject()
+                            .getSRS()
+                            .equalsIgnoreCase(getActualNativeSRSCode(model.getObject()));
+        }
+
         refForm.add(computeNativeBoundsLink(refForm, nativeBBox, showComputeNativeBoundsLink));
 
         // lat/lon bbox
@@ -105,13 +114,11 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(latLonPanel);
         refForm.add(computeLatLonBoundsLink(refForm, nativeBBox, latLonPanel));
 
-        // check other native srs for Cascaded WFS or WMS resource
-        List<String> otherSRS = getOtherSRS(model.getObject());
-
         // native srs , declared srs, and srs handling dropdown
         CRSPanel nativeCRS;
 
         if (otherSRS.isEmpty()) {
+            // legacy behavior
             // native srs , declared srs, and srs handling dropdown
             nativeCRS =
                     new CRSPanel(
@@ -141,7 +148,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             try {
                                 CoordinateReferenceSystem crs = CRS.decode(srs);
                                 ReferencedEnvelope bounds =
-                                        cb.getNativeBounds(model.getObject()).transform(crs, false);
+                                        model.getObject()
+                                                .getNativeBoundingBox()
+                                                .transform(crs, false);
                                 nativeBBox.setModelObject(bounds);
                                 model.getObject().setSRS(srs);
                                 model.getObject().setNativeCRS(crs);
@@ -180,7 +189,11 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                                 }
                                 return CRS.equalsIgnoreMetadata(crs, resourceNativeCRS);
                             } catch (IOException e) {
-                                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                                LOGGER.log(
+                                        Level.SEVERE,
+                                        "Error getting actual Native SRS code for resource "
+                                                + resourceInfo.getNativeName(),
+                                        e);
                             }
                             return false;
                         }

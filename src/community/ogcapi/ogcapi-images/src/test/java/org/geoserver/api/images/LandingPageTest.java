@@ -124,9 +124,9 @@ public class LandingPageTest extends ImagesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/images\\/api.*/)].rel",
-                "service",
-                "service",
-                "service");
+                "service-desc",
+                "service-desc",
+                "service-doc");
         // check conformance links
         assertJSONList(
                 json,

@@ -62,7 +62,7 @@ public class AbstractLandingPageDocument extends AbstractDocument {
                 "Conformance declaration as ",
                 "conformance",
                 null,
-                "conformance");
+                Link.REL_CONFORMANCE);
         this.title = title;
         this.description = description;
     }

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+
+import org.geoserver.api.Link;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
@@ -146,9 +148,9 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/features\\/collections.*/)].rel",
-                "data",
-                "data",
-                "data");
+                Link.REL_COLLECTION,
+                Link.REL_COLLECTION,
+                Link.REL_COLLECTION);
         // check title
         assertEquals("Features 1.0 server", json.read("title"));
         // check description

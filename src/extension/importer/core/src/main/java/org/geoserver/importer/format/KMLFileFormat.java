@@ -39,7 +39,6 @@ import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class KMLFileFormat extends VectorFormat {
@@ -69,7 +68,7 @@ public class KMLFileFormat extends VectorFormat {
         // we need to get the feature type, to use for the particular parse through the file
         // since we put it on the metadata from the list method, we first check if that's still
         // available
-        SimpleFeatureType ft = (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
+        SimpleFeatureType ft = (SimpleFeatureType) task.getFeatureType();
         if (ft == null) {
             // if the type is not available, we can generate one from the resource
             // we aren't able to ask for the feature type from the resource directly,
@@ -265,7 +264,7 @@ public class KMLFileFormat extends VectorFormat {
 
             ImportTask task = new ImportTask(data);
             task.setLayer(layer);
-            task.getMetadata().put(FeatureType.class, featureType);
+            task.setFeatureType(featureType);
             result.add(task);
         }
         return Collections.unmodifiableList(result);

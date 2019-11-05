@@ -228,9 +228,10 @@ public class ImportTaskController extends ImportBaseController {
         if (store == null) {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
         } else {
-            updateStoreInfo(task(id, taskId), store, importer);
+            ImportTask task = task(id, taskId);
+            updateStoreInfo(task, store, importer);
             try {
-                importer.changed(task(id, taskId));
+                importer.changed(task);
             } catch (IOException e) {
                 throw new RestException(
                         "Error while initializing Importer Context",

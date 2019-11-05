@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -182,7 +184,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                         + "&STYLES=line1,&VERSION=1.3.0";
         wms13Client.expectGet(
                 new URL(mockLayergroupRequest), new MockHttpResponse(pngRoadsImage, "image/png"));
-
         // SET UP layer group of two cascaded wms layers
         WMSLayerInfo group_lyr_1 = cb.buildWMSLayer("group_lyr_130");
         group_lyr_1.setName("group_lyr_130");
@@ -339,8 +340,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         try {
             cb.calculateLayerGroupBounds(roadsGroup);
         } catch (Exception e) {
-            new IOException(e);
-        }
+            new IOException(e);        }
 
         getCatalog().add(roadsGroup);
 
@@ -352,6 +352,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                         + "&WIDTH=768&STYLES=line1,&SRS=EPSG:26713&VERSION=1.1.1";
         wms11Client.expectGet(
                 new URL(mockLayerGroupRequest), new MockHttpResponse(pngRoadsImage, "image/png"));
+
         // SET UP layer group of two cascaded wms layers
         WMSLayerInfo group_lyr_1 = cb.buildWMSLayer("group_lyr_1");
         group_lyr_1.setName("group_lyr_1");

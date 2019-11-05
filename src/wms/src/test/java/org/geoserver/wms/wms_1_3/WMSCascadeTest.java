@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -21,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -298,14 +296,25 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                         HttpStatus.SC_OK);
 
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
-        assertTrue(responseJson.has(JSONLegendGraphicBuilder.LEGEND));
+        assertFalse(responseJson.isEmpty());
+    }
 
-        JSONArray legendArray = responseJson.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertFalse(legendArray.isEmpty());
+    @Test
+    public void testCascadeLayerGroup() throws Exception {
 
-        JSONArray rulesJSONArray =
-                legendArray.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertFalse(rulesJSONArray.isEmpty());
+        String getMapRequest =
+                "wms?service=WMS&version=1.3.0"
+                        + "&request=GetMap"
+                        + "&layers=roads_group_130"
+                        + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default remote styles should include the forced remote style of one layer
+        // and empty for second layer
+        // For Mock URL check WMSCascadeTestSupport.setupWMS110Layer()
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
     }
 
     @Test

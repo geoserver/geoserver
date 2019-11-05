@@ -578,6 +578,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(90, bbox.getMaxY(), 0d);
             assertTrue(!layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
+            assertTrue(layer.getDefaultStyle().getName().isEmpty());
 
         } finally {
             TestHttpClientProvider.endTest();
@@ -611,6 +612,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(90, bbox.getMaxY(), 0d);
             assertTrue(!layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
+            assertTrue(layer.getDefaultStyle().getName().isEmpty());
         } finally {
             TestHttpClientProvider.endTest();
         }
@@ -643,6 +645,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(90, bbox.getMaxY(), 0d);
             assertTrue(!layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
+            assertTrue(layer.getDefaultStyle().getName().isEmpty());
         } finally {
             TestHttpClientProvider.endTest();
         }

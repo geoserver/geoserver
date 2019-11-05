@@ -137,10 +137,22 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
 
     @Before
     public void setupImporterField() {
+        setupImporterFieldInternal();
+    }
+
+    /**
+     * Override this method in case a subclass has other @Before that need to run after {@link
+     * #setupImporterField()}
+     */
+    protected void setupImporterFieldInternal() {
         importer = (Importer) applicationContext.getBean("importer");
         // clean up the import history (to isolate tests from each other)
-        MemoryImportStore store = (MemoryImportStore) importer.getStore();
-        store.destroy();
+        if (importer.getStore() instanceof MemoryImportStore) {
+            MemoryImportStore store = (MemoryImportStore) importer.getStore();
+            store.destroy();
+        } else {
+            importer.getStore().removeAll();
+        }
     }
 
     protected File tmpDir() throws Exception {
@@ -281,12 +293,11 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
 
     protected int lastId() {
         Iterator<ImportContext> ctx = importer.getAllContexts();
-        int id = -1;
+        long max = 0;
         while (ctx.hasNext()) {
-            ctx.next();
-            id++;
+            max = Math.max(ctx.next().getId(), max);
         }
-        return id;
+        return (int) max;
     }
 
     public static class JSONObjectBuilder extends JSONBuilder {

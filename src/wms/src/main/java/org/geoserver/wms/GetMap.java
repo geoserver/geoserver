@@ -666,7 +666,7 @@ public class GetMap {
                 WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
                 WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
-                if (wmsLayer.isRespectMetadataBBox()) {
+                if (wmsLayer.isMetadataBBoxRespected()) {
                     boolean isInsideBounnds =
                             checkEnvelopOverLapWithNativeBounds(
                                     mapContent.getViewport().getBounds(),

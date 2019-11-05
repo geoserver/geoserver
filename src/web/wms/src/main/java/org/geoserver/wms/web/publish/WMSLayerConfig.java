@@ -251,6 +251,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         metaDataCheckBoxContainer.add(
                 new CheckBox(
                         "respectMetadataBBoxChkBox",
-                        new PropertyModel<Boolean>(wmsLayerInfo, "respectMetadataBBox")));
+                        new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
     }
 }

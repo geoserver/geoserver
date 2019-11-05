@@ -34,7 +34,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
@@ -297,24 +296,6 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
         assertFalse(responseJson.isEmpty());
-    }
-
-    @Test
-    public void testCascadeLayerGroup() throws Exception {
-
-        String getMapRequest =
-                "wms?service=WMS&version=1.3.0"
-                        + "&request=GetMap"
-                        + "&layers=roads_group_130"
-                        + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png";
-
-        // the request should generate exepected remote WMS URL
-        // e.g default remote styles should include the forced remote style of one layer
-        // and empty for second layer
-        // For Mock URL check WMSCascadeTestSupport.setupWMS110Layer()
-        BufferedImage response = getAsImage(getMapRequest, "image/png");
-        assertNotNull(response);
     }
 
     @Test

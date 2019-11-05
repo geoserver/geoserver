@@ -47,7 +47,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
 
-    private boolean respectMetadataBBox = false;
+    private boolean metadataBBoxRespected = false;
 
     private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
 
@@ -279,13 +279,14 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
         return allAvailableRemoteStyles;
     }
-    /** @return the respectMetadataBBox */
-    public boolean isRespectMetadataBBox() {
-        return respectMetadataBBox;
+
+    /** @return the metadataBBoxRespected */
+    public boolean isMetadataBBoxRespected() {
+        return metadataBBoxRespected;
     }
 
-    /** @param respectMetadataBBox the respectMetadataBBox to set */
-    public void setRespectMetadataBBox(boolean respectMetadataBBox) {
-        this.respectMetadataBBox = respectMetadataBBox;
+    /** @param metadataBBoxRespected the metadataBBoxRespected to set */
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
+        this.metadataBBoxRespected = metadataBBoxRespected;
     }
 }

@@ -343,12 +343,12 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     }
 
     @Override
-    public boolean isRespectMetadataBBox() {
-        return delegate.isRespectMetadataBBox();
+    public boolean isMetadataBBoxRespected() {
+        return delegate.isMetadataBBoxRespected();
     }
 
     @Override
-    public void setRespectMetadataBBox(boolean respectMetadataBBox) {
-        delegate.setRespectMetadataBBox(respectMetadataBBox);
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
+        delegate.setMetadataBBoxRespected(metadataBBoxRespected);
     }
 }

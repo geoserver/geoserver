@@ -5,8 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -170,7 +168,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         try {
             cb.calculateLayerGroupBounds(roadsGroup);
         } catch (Exception e) {
-            new IOException(e);
+            throw new IOException(e);
         }
 
         getCatalog().add(roadsGroup);
@@ -188,7 +186,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         WMSLayerInfo group_lyr_1 = cb.buildWMSLayer("group_lyr_130");
         group_lyr_1.setName("group_lyr_130");
         group_lyr_1.reset();
-        group_lyr_1.setRespectMetadataBBox(true);
+        group_lyr_1.setMetadataBBoxRespected(true);
         getCatalog().add(group_lyr_1);
         LayerInfo layer1 = cb.buildLayer(group_lyr_1);
         getCatalog().add(layer1);
@@ -196,7 +194,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         WMSLayerInfo group_lyr_2 = cb.buildWMSLayer("group_lyr_230");
         group_lyr_2.setName("group_lyr_230");
         group_lyr_2.reset();
-        group_lyr_2.setRespectMetadataBBox(true);
+        group_lyr_2.setMetadataBBoxRespected(true);
         getCatalog().add(group_lyr_2);
         LayerInfo layer2 = cb.buildLayer(group_lyr_2);
         getCatalog().add(layer2);
@@ -340,7 +338,8 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         try {
             cb.calculateLayerGroupBounds(roadsGroup);
         } catch (Exception e) {
-            new IOException(e);        }
+            throw new IOException(e);
+        }
 
         getCatalog().add(roadsGroup);
 
@@ -357,7 +356,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         WMSLayerInfo group_lyr_1 = cb.buildWMSLayer("group_lyr_1");
         group_lyr_1.setName("group_lyr_1");
         group_lyr_1.reset();
-        group_lyr_1.setRespectMetadataBBox(true);
+        group_lyr_1.setMetadataBBoxRespected(true);
 
         getCatalog().add(group_lyr_1);
         LayerInfo layer1 = cb.buildLayer(group_lyr_1);
@@ -366,7 +365,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         WMSLayerInfo group_lyr_2 = cb.buildWMSLayer("group_lyr_2");
         group_lyr_2.setName("group_lyr_2");
         group_lyr_2.reset();
-        group_lyr_2.setRespectMetadataBBox(true);
+        group_lyr_2.setMetadataBBoxRespected(true);
         getCatalog().add(group_lyr_2);
         LayerInfo layer2 = cb.buildLayer(group_lyr_2);
         getCatalog().add(layer2);

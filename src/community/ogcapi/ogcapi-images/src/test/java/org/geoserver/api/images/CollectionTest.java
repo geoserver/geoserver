@@ -33,10 +33,10 @@ public class CollectionTest extends ImagesTestSupport {
     public void testWaterTempCollectionJson(DocumentContext json) {
         assertEquals("sf:watertemp", json.read("$.id", String.class));
         assertEquals("Water temperature", json.read("$.title", String.class));
-        assertEquals(0.23722069, json.read("$.extent.spatial[0]", Double.class), 1e-6d);
-        assertEquals(40.56208, json.read("$.extent.spatial[1]", Double.class), 1e-6d);
-        assertEquals(14.592757, json.read("$.extent.spatial[2]", Double.class), 1e-6d);
-        assertEquals(44.558083, json.read("$.extent.spatial[3]", Double.class), 1e-6d);
+        assertEquals(0.23722069, json.read("$.extent.spatial[0][0]", Double.class), 1e-6d);
+        assertEquals(40.56208, json.read("$.extent.spatial[0][1]", Double.class), 1e-6d);
+        assertEquals(14.592757, json.read("$.extent.spatial[0][2]", Double.class), 1e-6d);
+        assertEquals(44.558083, json.read("$.extent.spatial[0][3]", Double.class), 1e-6d);
 
         // check the images link
         List<String> items = json.read("$.links[?(@.rel=='images')].href");

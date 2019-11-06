@@ -31,10 +31,10 @@ public class CollectionTest extends FeaturesTestSupport {
 
         assertEquals("cite:RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
-        assertEquals(-180, json.read("$.extent.spatial[0]", Double.class), 0d);
-        assertEquals(-90, json.read("$.extent.spatial[1]", Double.class), 0d);
-        assertEquals(180, json.read("$.extent.spatial[2]", Double.class), 0d);
-        assertEquals(90, json.read("$.extent.spatial[3]", Double.class), 0d);
+        assertEquals(-180, json.read("$.extent.spatial[0][0]", Double.class), 0d);
+        assertEquals(-90, json.read("$.extent.spatial[0][1]", Double.class), 0d);
+        assertEquals(180, json.read("$.extent.spatial[0][2]", Double.class), 0d);
+        assertEquals(90, json.read("$.extent.spatial[0][3]", Double.class), 0d);
 
         // check we have the expected number of links and they all use the right "rel" relation
         Collection<MediaType> formats = getFeaturesResponseFormats();
@@ -46,7 +46,7 @@ public class CollectionTest extends FeaturesTestSupport {
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
             assertEquals("cite:RoadSegments items as " + format, item.get("title"));
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
         readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
@@ -76,7 +76,7 @@ public class CollectionTest extends FeaturesTestSupport {
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
             assertEquals("RoadSegments items as " + format, item.get("title"));
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
         readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");

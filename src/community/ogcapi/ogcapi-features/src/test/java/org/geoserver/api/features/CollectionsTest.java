@@ -65,7 +65,7 @@ public class CollectionsTest extends FeaturesTestSupport {
             // check title and rel.
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
     }
 
@@ -85,7 +85,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertThat(json.read("collections[?(@.id=='cdf__Deletes')]"), empty());
         // check the url points to a ws qualified url
         final String deleteHrefPath =
-                "collections[?(@.id=='Deletes')].links[?(@.rel=='item' && @.type=='application/geo+json')].href";
+                "collections[?(@.id=='Deletes')].links[?(@.rel=='items' && @.type=='application/geo+json')].href";
         assertEquals(
                 "http://localhost:8080/geoserver/cdf/ogc/features/collections/Deletes/items?f=application%2Fgeo%2Bjson",
                 ((JSONArray) json.read(deleteHrefPath)).get(0));

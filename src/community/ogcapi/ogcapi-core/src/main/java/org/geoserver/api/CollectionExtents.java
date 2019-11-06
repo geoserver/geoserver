@@ -7,19 +7,28 @@ package org.geoserver.api;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 
 @JsonPropertyOrder({"spatial", "temporal"})
 public class CollectionExtents {
 
-    ReferencedEnvelope spatial;
+    List<ReferencedEnvelope> spatial;
     DateRange temporal;
 
-    public CollectionExtents(ReferencedEnvelope spatial, DateRange temporal) {
+    public CollectionExtents(List<ReferencedEnvelope> spatial, DateRange temporal) {
         this.spatial = spatial;
+        this.temporal = temporal;
+    }
+
+    public CollectionExtents(ReferencedEnvelope spatial, DateRange temporal) {
+        this.spatial = Arrays.asList(spatial);
         this.temporal = temporal;
     }
 
@@ -28,15 +37,15 @@ public class CollectionExtents {
     }
 
     public CollectionExtents(ReferencedEnvelope spatial) {
-        this.spatial = spatial;
+        this.spatial = Arrays.asList(spatial);
     }
 
     @JsonIgnore
-    public ReferencedEnvelope getSpatial() {
+    public List<ReferencedEnvelope> getSpatial() {
         return spatial;
     }
 
-    public void setSpatial(ReferencedEnvelope spatial) {
+    public void setSpatial(List<ReferencedEnvelope> spatial) {
         this.spatial = spatial;
     }
 
@@ -50,17 +59,22 @@ public class CollectionExtents {
     }
 
     @JsonProperty("spatial")
-    public double[] getSpatialArray() {
+    public List<double[]> getSpatialArray() {
         if (spatial != null) {
-            return new double[] {
-                spatial.getMinX(), spatial.getMinY(), spatial.getMaxX(), spatial.getMaxY()
-            };
+            return spatial.stream()
+                    .map(
+                            re ->
+                                    new double[] {
+                                        re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()
+                                    })
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
     }
 
     @JsonProperty("temporal")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String[] getTemporalArray() {
         if (temporal != null) {
             return new String[] {

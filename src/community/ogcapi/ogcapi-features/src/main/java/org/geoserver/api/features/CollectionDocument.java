@@ -62,7 +62,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
             addLink(
                     new Link(
                             apiUrl,
-                            Link.REL_ITEM,
+                            Link.REL_ITEMS,
                             format.toString(),
                             collectionId + " items as " + format.toString(),
                             "items"));

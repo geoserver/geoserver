@@ -68,6 +68,20 @@ public class CollectionDocument extends AbstractCollectionDocument {
                             "items"));
         }
 
+        // describedBy as GML schema
+        String describedByHref = ResponseUtils.buildURL(
+                baseUrl,
+                "wfs",
+                new HashMap<String, String>() {{
+                    put("service", "WFS");
+                    put("version", "2.0");
+                    put("request", "DescribeFeatureType");
+                    put("typenames", featureType.prefixedName());
+                }},
+                URLMangler.URLType.SERVICE);
+        Link describedBy = new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
+        addLink(describedBy);
+
         // map preview
         if (isWMSAvailable(geoServer)) {
             Map<String, String> kvp = new HashMap<>();

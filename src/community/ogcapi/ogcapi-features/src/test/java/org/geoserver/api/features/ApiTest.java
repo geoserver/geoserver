@@ -154,7 +154,9 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/collectionId",
                         "#/components/parameters/limit",
                         "#/components/parameters/bbox",
-                        "#/components/parameters/datetime"));
+                        "#/components/parameters/datetime",
+                        "#/components/parameters/filter",
+                        "#/components/parameters/filter-lang"));
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

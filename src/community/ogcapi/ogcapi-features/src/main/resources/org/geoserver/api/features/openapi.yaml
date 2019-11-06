@@ -109,6 +109,8 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/bbox'
         - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
       responses:
         '200':
           $ref: '#/components/responses/Features'
@@ -668,6 +670,15 @@ components:
       type: string
       format: date-time
       example: '2017-08-17T08:05:32Z'
+    filter:
+      description: Defines a filter that will be applied on items, only items matching the filter will be returned
+      type: string
+    filter-lang:
+      description: Filter encoding used in the filter parameter
+      type: string
+      enum:
+        - cql-text
+      default: cql-text
   responses:
     LandingPage:
       description: |-

@@ -44,11 +44,11 @@ public class FeaturesAPIBuilder extends org.geoserver.api.OpenAPIBuilder<WFSInfo
         declareGetResponseFormats(api, "/collections", CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionsDocument.class);
         declareGetResponseFormats(
-                api, "/collections/{collectionId}/items", FeatureCollectionResponse.class);
+                api, "/collections/{collectionId}/items", FeaturesResponse.class);
         declareGetResponseFormats(
                 api,
                 "/collections/{collectionId}/items/{featureId}",
-                FeatureCollectionResponse.class);
+                FeaturesResponse.class);
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();

@@ -60,12 +60,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
-    public static final String CORE = "http://www.opengis.net/spec/wfs-1/3.0/req/core";
-    public static final String HTML = "http://www.opengis.net/spec/wfs-1/3.0/req/html";
-    public static final String GEOJSON = "http://www.opengis.net/spec/wfs-1/3.0/req/geojson";
-    public static final String GMLSF0 = "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf0";
-    public static final String GMLSF2 = "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf2";
-    public static final String OAS30 = "http://www.opengis.net/spec/wfs-1/3.0/req/oas30";
+    public static final String CORE = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
+    public static final String HTML = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
+    public static final String GEOJSON =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
+    public static final String GMLSF0 =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/gmlsf0";
+    public static final String GMLSF2 =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/gmlsf2";
+    public static final String OAS30 =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
@@ -141,7 +145,7 @@ public class FeatureService {
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE, OAS30, GEOJSON, GMLSF0);
+        List<String> classes = Arrays.asList(CORE, OAS30, HTML, GEOJSON, GMLSF0);
         return new ConformanceDocument(classes);
     }
 

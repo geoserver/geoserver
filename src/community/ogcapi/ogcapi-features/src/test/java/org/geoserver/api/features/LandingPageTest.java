@@ -147,9 +147,9 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/features\\/collections.*/)].rel",
-                Link.REL_COLLECTION,
-                Link.REL_COLLECTION,
-                Link.REL_COLLECTION);
+                Link.REL_DATA,
+                Link.REL_DATA,
+                Link.REL_DATA);
         // check title
         assertEquals("Features 1.0 server", json.read("title"));
         // check description

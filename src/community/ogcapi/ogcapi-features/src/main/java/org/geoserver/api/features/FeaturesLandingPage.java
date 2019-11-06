@@ -27,6 +27,6 @@ public class FeaturesLandingPage extends AbstractLandingPageDocument {
                 "Collections Metadata as ",
                 "collections",
                 null,
-                Link.REL_COLLECTION);
+                Link.REL_DATA);
     }
 }

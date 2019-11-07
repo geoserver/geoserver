@@ -37,7 +37,8 @@ public class LandingPageTest extends FeaturesTestSupport {
                         "getConformanceDeclaration",
                         "getFeature",
                         "getFeatures",
-                        "getLandingPage"));
+                        "getLandingPage",
+                        "getQueryables"));
     }
 
     @Test

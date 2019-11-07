@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.features;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -49,7 +50,14 @@ public class CollectionTest extends FeaturesTestSupport {
             assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
-        readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
+        readSingle(json, "links[?(@.type=='application/gml+xml;version=3.2')]");
+
+        // check the queryables link
+        assertThat(
+                readSingle(
+                        json, "links[?(@.rel=='queryables' && @.type=='application/json')].href"),
+                equalTo(
+                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/queryables?f=application%2Fjson"));
     }
 
     private List<MediaType> getFeaturesResponseFormats() {
@@ -108,5 +116,15 @@ public class CollectionTest extends FeaturesTestSupport {
                                 + getLayerId(MockData.ROAD_SEGMENTS)
                                 + "?f=application/x-yaml");
         // System.out.println(yaml);
+    }
+
+    @Test
+    public void testQueryables() throws Exception {
+        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        DocumentContext json =
+                getAsJSONPath("cite/ogc/features/collections/" + roadSegments + "/queryables", 200);
+        assertThat(readSingle(json, "queryables[?(@.id == 'the_geom')].type"), equalTo("geometry"));
+        assertThat(readSingle(json, "queryables[?(@.id == 'FID')].type"), equalTo("string"));
+        assertThat(readSingle(json, "queryables[?(@.id == 'NAME')].type"), equalTo("string"));
     }
 }

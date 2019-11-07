@@ -90,6 +90,22 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/queryables':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        lists the queryable attributes for the feature collection with id `collectionId`
+      operationId: getQueryables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/items':
     get:
       tags:
@@ -239,6 +255,38 @@ components:
       style: form
       explode: false
   schemas:
+    queryables:
+      type: object
+      required:
+        - queryables
+      properties:
+        queryables:
+          description: list of queryable properties
+          type: array
+          items:
+            $ref: "#/components/schemas/queryable"
+    queryable:
+      type:  object
+      required:
+        - name
+        - type
+      properties:
+        id:
+          description: identifier of the attribute that can be used in CQL filters
+          type: string
+          example: address
+        type:
+          description: the property type
+          type: string
+          enum:
+            - string
+            - uri
+            - number
+            - integer
+            - date
+            - dateTime
+            - boolean
+            - geometry
     collection:
       type: object
       required:
@@ -815,6 +863,13 @@ components:
         text/html:
           schema:
             type: string
+    Queryables:
+      description: |-
+        Information about the feature collection queryable properties
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/queryables'
     Collection:
       description: |-
         Information about the feature collection with id `collectionId`.

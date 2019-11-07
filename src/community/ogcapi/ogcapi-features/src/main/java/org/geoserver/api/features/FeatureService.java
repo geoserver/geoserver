@@ -69,7 +69,7 @@ public class FeatureService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-text";
     public static final String CQL_JSON_OBJECT =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-object";
-    public static final String CQL_JSON_ARRAY=
+    public static final String CQL_JSON_ARRAY =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-array";
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
@@ -129,6 +129,15 @@ public class FeatureService {
         CollectionDocument collection = new CollectionDocument(geoServer, ft);
 
         return collection;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/queryables", name = "getQueryables")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
+    public QueryablesDocument queryables(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
+        FeatureTypeInfo ft = getFeatureType(collectionId);
+        return new QueryablesDocument(ft);
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {

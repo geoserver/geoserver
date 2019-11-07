@@ -119,7 +119,9 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/" + roadSegments + "/items?filter=name='name-f001'",
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=name='name-f001'",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
@@ -133,7 +135,9 @@ public class FeatureTest extends FeaturesTestSupport {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/" + roadSegments + "/items?filter=name='name-f001'&filter-lang=foo-bar",
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=name='name-f001'&filter-lang=foo-bar",
                         400);
         assertEquals("InvalidParameterValue", json.read("code", String.class));
         assertThat(json.read("description", String.class), Matchers.containsString("foo-bar"));

@@ -254,6 +254,21 @@ components:
         default: 10
       style: form
       explode: false
+    filter:
+      name: filter
+      in: query
+      description: Defines a filter that will be applied on items, only items matching the filter will be returned
+      schema:
+        type: string
+    filter-lang:
+      name: filter-lang
+      in: query
+      description: Filter encoding used in the filter parameter
+      schema:
+        type: string
+        enum:
+          - cql-text
+        default: cql-text
   schemas:
     queryables:
       type: object
@@ -718,15 +733,6 @@ components:
       type: string
       format: date-time
       example: '2017-08-17T08:05:32Z'
-    filter:
-      description: Defines a filter that will be applied on items, only items matching the filter will be returned
-      type: string
-    filter-lang:
-      description: Filter encoding used in the filter parameter
-      type: string
-      enum:
-        - cql-text
-      default: cql-text
   responses:
     LandingPage:
       description: |-

@@ -12,8 +12,13 @@
          <#if collection.description??>
          <li><b>Description</b>: <span id="${collection.htmlId}_description">${collection.description!}</span><br/></li>
          </#if>
-         <#assign se = collection.extent.spatial>
-         <li><b>Geographic extents</b>: ${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
+         <#assign spatial = collection.extent.spatial>
+         <li><b>Geographic extents</b>:
+         <ul>
+         <#list spatial as se>
+         <li>${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
+         </#list>
+         </ul>
          </li>
          </ul>
        </#list>

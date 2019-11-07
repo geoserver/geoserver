@@ -251,6 +251,10 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
+         metaDataCheckBoxContainer.add(
+                new CheckBox(
+                        "respectMetadataBBoxChkBox",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
         // scale denominators
         TextField<Double> minScale =
                 new TextField(
@@ -305,5 +309,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 }
             }
         }
+
     }
 }

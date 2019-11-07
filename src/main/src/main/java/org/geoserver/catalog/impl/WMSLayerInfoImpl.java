@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javax.persistence.Transient;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LegendInfo;
@@ -29,6 +30,17 @@ import org.opengis.util.ProgressListener;
 @SuppressWarnings("serial")
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
+    // will style info with empty name
+    // intended for legacy functionaloty
+    // of using default remote style
+    @Transient public static StyleInfo DEFAULT_ON_REMOTE;
+
+    static {
+        DEFAULT_ON_REMOTE = new StyleInfoImpl();
+        DEFAULT_ON_REMOTE.setName("");
+        DEFAULT_ON_REMOTE.getMetadata().put("isRemote", true);
+    }
+
     protected String forcedRemoteStyle = "";
     protected String preferredFormat = "image/png";
 
@@ -36,9 +48,13 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
 
+
     private Double minScale = null;
 
     private Double maxScale = null;
+
+    private boolean metadataBBoxRespected = false;
+
 
     private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
 
@@ -161,12 +177,16 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (forcedRemoteStyle != null)
             if (!forcedRemoteStyle.isEmpty()) {
                 Optional<StyleInfo> defaultRemoteStyle =
-                        allAvailableRemoteStyles
+                        getAllAvailableRemoteStyles()
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
-
+                // will return null if forcedRemoteStyle is not empty string
+                // and was not found in selected remote styles
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+                else return DEFAULT_ON_REMOTE;
+            } else {
+                return DEFAULT_ON_REMOTE;
             }
 
         return null;
@@ -302,6 +322,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                                 : allAvailableRemoteStyles.hashCode());
         result = prime * result + ((minScale == null) ? 0 : minScale.hashCode());
         result = prime * result + ((maxScale == null) ? 0 : maxScale.hashCode());
+        result = prime * result + Boolean.hashCode(metadataBBoxRespected);
 
         return result;
     }
@@ -320,7 +341,16 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             return false;
         if (!Objects.equal(minScale, other.getMinScale())) return false;
         if (!Objects.equal(maxScale, other.getMaxScale())) return false;
+        if (!(other.isMetadataBBoxRespected() == this.metadataBBoxRespected)) return false;
 
         return true;
+    }
+ 
+    public boolean isMetadataBBoxRespected() {
+        return metadataBBoxRespected;
+    }
+
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
+        this.metadataBBoxRespected = metadataBBoxRespected;
     }
 }

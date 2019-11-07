@@ -115,11 +115,41 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testCqlFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=name='name-f001'",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testCqlFilterInvalidLanguage() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=name='name-f001'&filter-lang=foo-bar",
+                        400);
+        assertEquals("InvalidParameterValue", json.read("code", String.class));
+        assertThat(json.read("description", String.class), Matchers.containsString("foo-bar"));
+    }
+
+    @Test
     public void testTimeFilter() throws Exception {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/" + roadSegments + "/items?time=2006-10-25", 200);
+                        "ogc/features/collections/" + roadSegments + "/items?datetime=2006-10-25",
+                        200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -134,7 +164,7 @@ public class FeatureTest extends FeaturesTestSupport {
                 getAsJSONPath(
                         "ogc/features/collections/"
                                 + roadSegments
-                                + "/items?time=2006-09-01/2006-10-23",
+                                + "/items?datetime=2006-09-01/2006-10-23",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -151,7 +181,7 @@ public class FeatureTest extends FeaturesTestSupport {
                 getAsJSONPath(
                         "ogc/features/collections/"
                                 + roadSegments
-                                + "/items?time=2006-09-01/P1M23DT12H31M12S",
+                                + "/items?datetime=2006-09-01/P1M23DT12H31M12S",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -168,7 +198,7 @@ public class FeatureTest extends FeaturesTestSupport {
                 getAsJSONPath(
                         "ogc/features/collections/"
                                 + roadSegments
-                                + "/items?time=2006-09-01/2006-10-23&bbox=35,0,60,3",
+                                + "/items?datetime=2006-09-01/2006-10-23&bbox=35,0,60,3",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(1, (int) json.read("features.length()", Integer.class));

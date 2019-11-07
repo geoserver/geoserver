@@ -15,10 +15,14 @@ import java.util.logging.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
+import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.HTTPResponse;
 import org.geotools.data.ows.Response;
 import org.geotools.ows.ServiceException;
@@ -76,9 +80,17 @@ public final class CascadedLegendRequest extends LegendRequest {
     public JSONArray getCascadedJSONRules() {
         InputStream is = null;
         BufferedReader bufferedReader = null;
+
         try {
+            WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) getLayerInfo().getResource();
+            StyleInfo defaultRemoteStyle = getLayerInfo().getDefaultStyle();
+            // when set to use whatever on remote WMS server
+            if (defaultRemoteStyle == WMSLayerInfoImpl.DEFAULT_ON_REMOTE) return null;
             // execute the request and fetch JSON
-            is = new URL(super.getLegendInfo().getOnlineResource()).openStream();
+            HTTPClient client = wmsLayerInfo.getStore().getWebMapServer(null).getHTTPClient();
+            HTTPResponse jsonResponse =
+                    client.get(new URL(super.getLegendInfo().getOnlineResource()));
+            is = jsonResponse.getResponseStream();
             bufferedReader =
                     new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
@@ -93,13 +105,12 @@ public final class CascadedLegendRequest extends LegendRequest {
             JSONArray cascadedRules =
                     layerLegends.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
             return cascadedRules;
-            // return jsonLegend;
         } catch (Exception e) {
+            throw new org.geoserver.platform.ServiceException("Unable to cascade Legend");
+        } finally {
             IOUtils.closeQuietly(bufferedReader);
             IOUtils.closeQuietly(is);
         }
-
-        return null;
     }
 
     public static class GetLegendGraphicRequestV1_3_0 extends AbstractGetLegendGraphicRequest {

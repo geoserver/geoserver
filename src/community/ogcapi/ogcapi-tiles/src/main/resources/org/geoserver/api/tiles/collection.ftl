@@ -7,8 +7,14 @@
 <#if model.description??>
 <li><b>Description</b>: <span id="${model.htmlId}_description">${model.description!}</span><br/></li>
 </#if>
-<#assign se = model.extent.spatial>
-<li><b>Geographic extents</b>: ${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
+<#assign spatial = model.extent.spatial>
+<li><b>Geographic extents</b>:
+<ul>
+<#list spatial as se>
+<li>${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
+</#list>
+</ul>
+</li>
 </ul>
 
 Tiles available for this collection:

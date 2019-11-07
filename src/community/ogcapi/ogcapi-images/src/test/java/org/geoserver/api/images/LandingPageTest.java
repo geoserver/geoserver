@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import org.geoserver.api.Link;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
@@ -124,16 +125,16 @@ public class LandingPageTest extends ImagesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/images\\/api.*/)].rel",
-                "service",
-                "service",
-                "service");
+                Link.REL_SERVICE_DESC,
+                Link.REL_SERVICE_DESC,
+                Link.REL_SERVICE_DOC);
         // check conformance links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/images\\/conformance.*/)].rel",
-                "conformance",
-                "conformance",
-                "conformance");
+                Link.REL_CONFORMANCE,
+                Link.REL_CONFORMANCE,
+                Link.REL_CONFORMANCE);
         // check collection links
         assertJSONList(
                 json,

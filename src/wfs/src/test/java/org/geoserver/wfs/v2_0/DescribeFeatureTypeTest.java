@@ -31,7 +31,9 @@ import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -66,6 +68,9 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
                         "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
                                 + typeName);
         assertThat(response.getContentType(), is("application/gml+xml; version=3.2"));
+        assertThat(
+                response.getHeader(HttpHeaders.CONTENT_DISPOSITION),
+                CoreMatchers.containsString("filename=sf-PrimitiveGeoFeature.xsd"));
         Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
         // override GML 3.2 MIME type with text / xml

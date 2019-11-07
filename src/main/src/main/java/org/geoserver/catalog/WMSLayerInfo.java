@@ -63,5 +63,9 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     public void setMaxScale(Double maxScale);
 
+    public boolean isMetadataBBoxRespected();
+
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected);
+
     public List<StyleInfo> getAllAvailableRemoteStyles();
 }

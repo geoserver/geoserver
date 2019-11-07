@@ -137,6 +137,25 @@
        </Style>
       </Layer>
       <Layer queryable="1" opaque="0">
+        <Name>roads_styleless_130</Name>
+        <Title>roads_styleless_130</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>roads</Keyword>
+        </KeywordList>
+       <CRS>EPSG:26713</CRS>
+       <CRS>CRS:84</CRS>
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>-103.87779468316292</westBoundLongitude>
+           <eastBoundLongitude>-103.62268570651278</eastBoundLongitude>
+           <southBoundLatitude>44.37288961726252</southBoundLatitude>
+           <northBoundLatitude>44.50217396380937</northBoundLatitude>
+       </EX_GeographicBoundingBox>
+       <BoundingBox maxy="44.50217396380937" maxx="-103.62268570651278" miny="44.37288961726252" minx="-103.87779468316292" CRS="CRS:84"/>
+       <BoundingBox maxy="4928063.39801461" maxx="609527.21021496" miny="4914006.33783702" minx="589434.85646865" CRS="EPSG:26713"/>
+      </Layer>
+      <Layer queryable="1" opaque="0">
         <Name>group_lyr_130</Name>
         <Title>group_lyr_130</Title>
         <Abstract/>

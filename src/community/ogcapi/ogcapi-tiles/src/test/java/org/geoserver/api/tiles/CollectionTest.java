@@ -56,10 +56,13 @@ public class CollectionTest extends TilesTestSupport {
     public void testRoadsCollectionJson(DocumentContext json) {
         assertEquals("cite:RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
-        assertEquals(-0.0042, json.read("$.extent.spatial[0]", Double.class), 0d);
-        assertEquals(-0.0024, json.read("$.extent.spatial[1]", Double.class), 0d);
-        assertEquals(0.0042, json.read("$.extent.spatial[2]", Double.class), 0d);
-        assertEquals(0.0024, json.read("$.extent.spatial[3]", Double.class), 0d);
+        assertEquals(-0.0042, json.read("$.extent.spatial.bbox[0][0]", Double.class), 0d);
+        assertEquals(-0.0024, json.read("$.extent.spatial.bbox[0][1]", Double.class), 0d);
+        assertEquals(0.0042, json.read("$.extent.spatial.bbox[0][2]", Double.class), 0d);
+        assertEquals(0.0024, json.read("$.extent.spatial.bbox[0][3]", Double.class), 0d);
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                json.read("$.extent.spatial.crs", String.class));
 
         // check the tiles link (both data and map tiles)
         List<String> items =

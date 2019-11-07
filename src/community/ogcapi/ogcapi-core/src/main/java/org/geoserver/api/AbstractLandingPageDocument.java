@@ -49,8 +49,12 @@ public class AbstractLandingPageDocument extends AbstractDocument {
                 OpenAPI.class,
                 "API definition for this endpoint as ",
                 "api",
-                null,
-                Link.REL_SERVICE);
+                (format, link) -> {
+                    if (MediaType.TEXT_HTML.equals(format)) {
+                        link.setRel(Link.REL_SERVICE_DOC);
+                    }
+                },
+                Link.REL_SERVICE_DESC);
         // conformance
         addLinksFor(
                 serviceBase + "/conformance",
@@ -58,7 +62,7 @@ public class AbstractLandingPageDocument extends AbstractDocument {
                 "Conformance declaration as ",
                 "conformance",
                 null,
-                "conformance");
+                Link.REL_CONFORMANCE);
         this.title = title;
         this.description = description;
     }

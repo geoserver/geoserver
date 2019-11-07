@@ -123,7 +123,10 @@ public class FeatureService {
 
     @GetMapping(path = "filter-capabilities", name = "getFilterCapabilities")
     @ResponseBody
-    @HTMLResponseBody(templateName = "filterCapabilities.ftl", fileName = "filterCapabilities.html")
+    @HTMLResponseBody(
+        templateName = "filter-capabilities.ftl",
+        fileName = "filter-capabilities.html"
+    )
     public FilterCapabilitiesDocument getFilterCapabilities() {
         return new FilterCapabilitiesDocument();
     }

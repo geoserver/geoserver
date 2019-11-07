@@ -34,7 +34,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;

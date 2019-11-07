@@ -251,7 +251,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
-         metaDataCheckBoxContainer.add(
+        metaDataCheckBoxContainer.add(
                 new CheckBox(
                         "respectMetadataBBoxChkBox",
                         new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
@@ -309,6 +309,5 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 }
             }
         }
-
     }
 }

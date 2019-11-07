@@ -1018,7 +1018,7 @@ public class GetMap {
 
         return true;
     }
-  
+
     private boolean checkEnvelopOverLapWithNativeBounds(
             ReferencedEnvelope requestEnevelope, ReferencedEnvelope layerEnevelope) {
 

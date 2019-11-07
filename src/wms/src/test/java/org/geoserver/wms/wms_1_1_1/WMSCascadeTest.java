@@ -271,8 +271,8 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         response = getAsImage(getMapRequest, "image/png");
         assertNotNull(response);
     }
-	
-	  @Test
+
+    @Test
     public void testScaleDenominator() throws Exception {
         LayerGroupInfo info = getCatalog().getLayerGroupByName("cascaded_group");
         LayerInfo groupLayer2 = getCatalog().getLayerByName("group_lyr_2");

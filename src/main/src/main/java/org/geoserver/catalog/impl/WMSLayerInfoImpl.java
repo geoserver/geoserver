@@ -48,13 +48,11 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
 
-
     private Double minScale = null;
 
     private Double maxScale = null;
 
     private boolean metadataBBoxRespected = false;
-
 
     private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
 
@@ -345,7 +343,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
         return true;
     }
- 
+
     public boolean isMetadataBBoxRespected() {
         return metadataBBoxRespected;
     }

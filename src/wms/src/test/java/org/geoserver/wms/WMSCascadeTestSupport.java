@@ -5,8 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -122,7 +120,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                 new URL(mockPNGUrl), new MockHttpResponse(pngRoadsImage, "image/png"));
         wms13Client.expectGet(
                 new URL(mockJpegUrl), new MockHttpResponse(gifRoadsImage, "image/gif"));
-
 
         // mock JSON Legend calls
         String jsonResponse =

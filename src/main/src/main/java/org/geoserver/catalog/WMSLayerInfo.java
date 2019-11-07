@@ -55,5 +55,9 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     public StyleInfo getDefaultStyle();
 
+    public boolean isMetadataBBoxRespected();
+
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected);
+
     public List<StyleInfo> getAllAvailableRemoteStyles();
 }

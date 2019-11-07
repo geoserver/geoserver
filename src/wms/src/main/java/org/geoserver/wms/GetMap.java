@@ -666,6 +666,21 @@ public class GetMap {
                 WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
                 WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
+                if (wmsLayer.isMetadataBBoxRespected()) {
+                    boolean isInsideBounnds =
+                            checkEnvelopOverLapWithNativeBounds(
+                                    mapContent.getViewport().getBounds(),
+                                    wmsLayer.getNativeBoundingBox());
+                    if (!isInsideBounnds) {
+                        if (LOGGER.isLoggable(Level.FINE))
+                            LOGGER.fine(
+                                    "Get Map Request BBOX is outside Layer "
+                                            + request.getLayers().get(i).getName()
+                                            + " metada BoundsIgnoring Layer,Ignoring");
+
+                        continue;
+                    }
+                }
 
                 // see if we can merge this layer with the previous one
                 boolean merged = false;
@@ -973,5 +988,21 @@ public class GetMap {
             throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
+    }
+
+    private boolean checkEnvelopOverLapWithNativeBounds(
+            ReferencedEnvelope requestEnevelope, ReferencedEnvelope layerEnevelope) {
+
+        try {
+            // transform requested enevelope to resource`s native bounds
+            ReferencedEnvelope transformedRequestEnv;
+            transformedRequestEnv =
+                    requestEnevelope.transform(layerEnevelope.getCoordinateReferenceSystem(), true);
+            return !layerEnevelope.intersection(transformedRequestEnv).isEmpty();
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE, "Error in WMSLayerInfo.checkEnvelopOverLapWithNativeBounds", e);
+        }
+        return false;
     }
 }

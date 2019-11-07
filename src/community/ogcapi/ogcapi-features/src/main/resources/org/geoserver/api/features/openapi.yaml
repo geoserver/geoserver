@@ -63,6 +63,19 @@ paths:
           $ref: '#/components/responses/ConformanceDeclaration'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/filter-capabilities':
+    get:
+      tags:
+        - Capabilities
+      summary: information about filters supported in the CQL filter extension
+      description: |-
+        A list of supported filters and functions.
+      operationId: getFilterCapabilities
+      responses:
+        '200':
+          $ref: '#/components/responses/FilterCapabilities'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections':
     get:
       tags:
@@ -1054,6 +1067,16 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/exception'
+        text/html:
+          schema:
+            type: string
+    FilterCapabilities:
+      description: |-
+        A document listing the server filtering capabilities
+      content:
+        application/json:
+          schema:
+            type: object
         text/html:
           schema:
             type: string

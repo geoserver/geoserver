@@ -38,7 +38,8 @@ public class LandingPageTest extends FeaturesTestSupport {
                         "getFeature",
                         "getFeatures",
                         "getLandingPage",
-                        "getQueryables"));
+                        "getQueryables",
+                        "getFilterCapabilities"));
     }
 
     @Test
@@ -115,7 +116,7 @@ public class LandingPageTest extends FeaturesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(12, (int) json.read("links.length()", Integer.class));
+        assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,

@@ -28,5 +28,14 @@ public class FeaturesLandingPage extends AbstractLandingPageDocument {
                 "collections",
                 null,
                 Link.REL_DATA);
+
+        // filter capabilities
+        addLinksFor(
+                featuresBase + "/filter-capabilities",
+                FilterCapabilitiesDocument.class,
+                "Filter capabilities as ",
+                "filter-capabilities",
+                null,
+                Link.REL_DATA);
     }
 }

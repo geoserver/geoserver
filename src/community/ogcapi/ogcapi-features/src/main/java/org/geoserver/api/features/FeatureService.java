@@ -121,6 +121,13 @@ public class FeatureService {
         return new CollectionsDocument(geoServer);
     }
 
+    @GetMapping(path = "filter-capabilities", name = "getFilterCapabilities")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "filterCapabilities.ftl", fileName = "filterCapabilities.html")
+    public FilterCapabilitiesDocument getFilterCapabilities() {
+        return new FilterCapabilitiesDocument();
+    }
+
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")

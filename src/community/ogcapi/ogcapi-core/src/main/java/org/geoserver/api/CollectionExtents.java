@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -21,6 +22,46 @@ public class CollectionExtents {
 
     List<ReferencedEnvelope> spatial;
     DateRange temporal;
+
+    public class SpatialExtents {
+
+        public List<double[]> getBbox() {
+            if (spatial != null) {
+                return spatial.stream()
+                        .map(
+                                re ->
+                                        new double[] {
+                                            re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()
+                                        })
+                        .collect(Collectors.toList());
+            } else {
+                return null;
+            }
+        }
+
+        public String getCrs() {
+            return "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+        }
+    }
+
+    public class TemporalExtents {
+
+        public List<String[]> getInterval() {
+            if (temporal != null) {
+                return Collections.singletonList(
+                        new String[] {
+                            ISO_INSTANT.format(temporal.getMinValue().toInstant()),
+                            ISO_INSTANT.format(temporal.getMaxValue().toInstant())
+                        });
+            } else {
+                return null;
+            }
+        }
+
+        public String getTrs() {
+            return "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian";
+        }
+    }
 
     public CollectionExtents(List<ReferencedEnvelope> spatial, DateRange temporal) {
         this.spatial = spatial;
@@ -59,15 +100,9 @@ public class CollectionExtents {
     }
 
     @JsonProperty("spatial")
-    public List<double[]> getSpatialArray() {
+    public SpatialExtents getSpatialExtents() {
         if (spatial != null) {
-            return spatial.stream()
-                    .map(
-                            re ->
-                                    new double[] {
-                                        re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()
-                                    })
-                    .collect(Collectors.toList());
+            return new SpatialExtents();
         } else {
             return null;
         }
@@ -75,12 +110,9 @@ public class CollectionExtents {
 
     @JsonProperty("temporal")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String[] getTemporalArray() {
+    public TemporalExtents getTemporalExtents() {
         if (temporal != null) {
-            return new String[] {
-                ISO_INSTANT.format(temporal.getMinValue().toInstant()),
-                ISO_INSTANT.format(temporal.getMaxValue().toInstant())
-            };
+            return new TemporalExtents();
         } else {
             return null;
         }

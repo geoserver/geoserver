@@ -47,6 +47,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
 
+    private boolean metadataBBoxRespected = false;
+
     private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
 
     protected WMSLayerInfoImpl() {}
@@ -90,7 +92,6 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                     .stream()
                     .map(s -> s.getName())
                     .collect(Collectors.toList());
-
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -169,13 +170,14 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (forcedRemoteStyle != null)
             if (!forcedRemoteStyle.isEmpty()) {
                 Optional<StyleInfo> defaultRemoteStyle =
-                        allAvailableRemoteStyles
+                        getAllAvailableRemoteStyles()
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
                 // will return null if forcedRemoteStyle is not empty string
                 // and was not found in selected remote styles
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+                else return DEFAULT_ON_REMOTE;
             } else {
                 return DEFAULT_ON_REMOTE;
             }
@@ -276,5 +278,15 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public List<StyleInfo> getAllAvailableRemoteStyles() {
         if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
         return allAvailableRemoteStyles;
+    }
+
+    /** @return the metadataBBoxRespected */
+    public boolean isMetadataBBoxRespected() {
+        return metadataBBoxRespected;
+    }
+
+    /** @param metadataBBoxRespected the metadataBBoxRespected to set */
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
+        this.metadataBBoxRespected = metadataBBoxRespected;
     }
 }

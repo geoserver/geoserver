@@ -69,23 +69,34 @@
             <label for="remoteFormatsPalette"><wicket:message key="remoteFormatsPaeletteLabel">Additional Remote Formats</wicket:message></label>
             <span wicket:id="remoteFormatsPalette"></span>
           </li>
-        </ul>
-        <ul id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer" class="choiceList">
-          <li>
-            <input id="minScale" type="text" wicket:id="minScale"></input>
-            <label for="minScale"><wicket:message key="minScaleLabel">Minimum Scale Denominator</wicket:message></label>
-            
-            <input id="maxScale" type="text" wicket:id="maxScale"></input>
-            <label for="maxScale"><wicket:message key="maxScaleLabel">Maximum Scale Denominator</wicket:message></label>
-          </li>        
-          <li>
-            <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"></input>
-            <label for="respectMetadataBBoxChkBox"><wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested Map Area is outside of the Layer bounds</wicket:message></label>
-          </li>          
-        </ul>   
+        </ul>        
       </fieldset>
     </li>
   </ul>
+  <ul>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="MinMaxTitle">Minimum and Maximum Scale Denominators</wicket:message></span></legend>
+        <ul id="scaleDenominatorContainer" wicket:id="scaleDenominatorContainer">
+           <li>
+            <label for="minScale"><wicket:message key="minScaleLabel">Minimum</wicket:message></label>            
+            <input id="minScale" type="text" wicket:id="minScale"></input>            
+          </li>        
+          <li>
+            <label for="maxScale"><wicket:message key="maxScaleLabel">Maximum</wicket:message></label>
+            <input id="maxScale" type="text" wicket:id="maxScale"></input>            
+          </li>
+        </ul>        
+        <ul id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer"  class="choiceList">
+          <li>
+            <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"></input>
+            <label for="respectMetadataBBoxChkBox"><wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested map area is outside of the layer bounds</wicket:message></label>
+          </li>
+        </ul>                  
+        
+      </fieldset>
+     </li>
+    </ul>  
   </wicket:panel>
 </form>
 </body>

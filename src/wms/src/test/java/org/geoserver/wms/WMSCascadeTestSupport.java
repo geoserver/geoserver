@@ -187,6 +187,7 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group_lyr_1.setName("group_lyr_130");
         group_lyr_1.reset();
         group_lyr_1.setMetadataBBoxRespected(true);
+
         getCatalog().add(group_lyr_1);
         LayerInfo layer1 = cb.buildLayer(group_lyr_1);
         getCatalog().add(layer1);
@@ -223,6 +224,13 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                         + "?SERVICE=WMS&LAYERS=group_lyr_130&CRS=EPSG:4326&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=-10.0,0.0,-5.0,5.0&WIDTH=768&STYLES=&VERSION=1.3.0";
         wms13Client.expectGet(
                 new URL(mockSingleLayerUrl), new MockHttpResponse(pngRoadsImage, "image/png"));
+
+        String mockURLWithSingleLayerInsideBounds =
+                wms13BaseURL
+                        + "?SERVICE=WMS&LAYERS=group_lyr_230&CRS=EPSG:4326&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=0.0,0.0,20.0,20.0&WIDTH=768&STYLES=&VERSION=1.3.0";
+        wms13Client.expectGet(
+                new URL(mockURLWithSingleLayerInsideBounds),
+                new MockHttpResponse(pngRoadsImage, "image/png"));
     }
 
     private void setupWMS110Layer() throws MalformedURLException, IOException {
@@ -357,7 +365,6 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         group_lyr_1.setName("group_lyr_1");
         group_lyr_1.reset();
         group_lyr_1.setMetadataBBoxRespected(true);
-
         getCatalog().add(group_lyr_1);
         LayerInfo layer1 = cb.buildLayer(group_lyr_1);
         getCatalog().add(layer1);
@@ -397,6 +404,12 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         // we dont care about response, URL content is important
         wms11Client.expectGet(
                 new URL(mockURLWithSingleLayer), new MockHttpResponse(pngRoadsImage, "image/png"));
+        String mockURLWithSingleLayerInsideBounds =
+                wms11BaseURL
+                        + "?SERVICE=WMS&LAYERS=group_lyr_2&FORMAT=image%2Fpng&HEIGHT=537&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=0.0,0.0,20.0,20.0&WIDTH=768&STYLES=&SRS=EPSG:4326&VERSION=1.1.1";
+        wms11Client.expectGet(
+                new URL(mockURLWithSingleLayerInsideBounds),
+                new MockHttpResponse(pngRoadsImage, "image/png"));
     }
 
     private void setupWMS110NfiLayer() throws MalformedURLException, IOException {

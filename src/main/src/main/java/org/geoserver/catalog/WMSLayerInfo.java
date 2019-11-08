@@ -55,6 +55,14 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     public StyleInfo getDefaultStyle();
 
+    public Double getMinScale();
+
+    public void setMinScale(Double minScale);
+
+    public Double getMaxScale();
+
+    public void setMaxScale(Double maxScale);
+
     public boolean isMetadataBBoxRespected();
 
     public void setMetadataBBoxRespected(boolean metadataBBoxRespected);

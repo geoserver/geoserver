@@ -271,4 +271,55 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         response = getAsImage(getMapRequest, "image/png");
         assertNotNull(response);
     }
+
+    @Test
+    public void testScaleDenominator() throws Exception {
+        LayerGroupInfo info = getCatalog().getLayerGroupByName("cascaded_group");
+        LayerInfo groupLayer2 = getCatalog().getLayerByName("group_lyr_2");
+        assertNotNull(info);
+        assertNotNull(groupLayer2);
+        ReferencedEnvelope request1 =
+                new ReferencedEnvelope(groupLayer2.getResource().getNativeBoundingBox());
+        // minx,miny,maxx,maxy
+        String lyrBBox =
+                request1.getMinX()
+                        + ","
+                        + request1.getMinY()
+                        + ","
+                        + request1.getMaxX()
+                        + ","
+                        + request1.getMaxY();
+
+        // configure max scale on one of the layers
+        // set max scale as small as possible to have it filtered
+        WMSLayerInfo groupLayer1WMSResource =
+                (WMSLayerInfo) getCatalog().getLayerByName("group_lyr_1").getResource();
+        groupLayer1WMSResource.setMinScale(1d);
+        groupLayer1WMSResource.setMaxScale(1000d);
+        getCatalog().save(groupLayer1WMSResource);
+
+        String getMapRequest =
+                "wms?service=WMS&version=1.1.0"
+                        + "&request=GetMap"
+                        + "&layers="
+                        + info.getName()
+                        + "&bbox="
+                        + lyrBBox
+                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+
+        // should result in a request with both group layers present
+        // should invoke expected Mock URL in which both layers are present
+        // since the BBOX covers both
+        // but group_lyr_1 min/max scale is outside the bound of map scale
+        try {
+            BufferedImage response = getAsImage(getMapRequest, "image/png");
+            assertNotNull(response);
+
+        } finally {
+            // reset
+            groupLayer1WMSResource.setMinScale(null);
+            groupLayer1WMSResource.setMaxScale(null);
+            getCatalog().save(groupLayer1WMSResource);
+        }
+    }
 }

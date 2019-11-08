@@ -664,6 +664,7 @@ public class GetMap {
                 }
             } else if (layerType == MapLayerInfo.TYPE_WMS) {
                 WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
+                if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) continue;
                 WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
                 if (wmsLayer.isMetadataBBoxRespected()) {
@@ -1002,6 +1003,20 @@ public class GetMap {
             throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
+    }
+
+    private boolean checkWMSLayerMinMaxScale(WMSLayerInfo wmsLayerInfo, double mapScale) {
+
+        // if none configured
+        if (wmsLayerInfo.getMinScale() == null && wmsLayerInfo.getMaxScale() == null) return true;
+        // return false map scale is below min
+        if (wmsLayerInfo.getMinScale() != null && mapScale < wmsLayerInfo.getMinScale())
+            return false;
+        // return false map scale is above max
+        if (wmsLayerInfo.getMaxScale() != null && mapScale > wmsLayerInfo.getMaxScale())
+            return false;
+
+        return true;
     }
 
     private boolean checkEnvelopOverLapWithNativeBounds(

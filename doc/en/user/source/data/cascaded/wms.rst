@@ -62,6 +62,8 @@ Connecting a remote WMS allows for the following features:
 
 * Full **REST Configuration**. See the :ref:`rest` section for more information about the GeoServer REST interface.
 
+* **Scale Denominators**. It is possible to configure Min and Max scale denominators . These settings are available under **Publishing** Tab.
+
 * **Optimization**. It is possible to ignore remote WMS calls if requested map area is completely outside the native bounds as advertised by remote WMS layer. These settings are available under **Publishing** Tab.
 
 Limitations

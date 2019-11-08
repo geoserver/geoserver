@@ -31,6 +31,9 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -267,6 +270,60 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new CheckBox(
                         "respectMetadataBBoxChkBox",
                         new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
+        // scale denominators
+        TextField<Double> minScale =
+                new TextField(
+                        "minScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
+                        Double.class);
+        metaDataCheckBoxContainer.add(minScale);
+        TextField<Double> maxScale =
+                new TextField(
+                        "maxScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
+                        Double.class);
+        metaDataCheckBoxContainer.add(maxScale);
+
+        minScale.add(new ScalesValidator(minScale, maxScale));
+    }
+
+    // validator to make sure min scale smaller than max scale and vice-versa
+    private class ScalesValidator implements IValidator {
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1349568700386246273L;
+
+        TextField<Double> minScale;
+        TextField<Double> maxScale;
+
+        public ScalesValidator(TextField<Double> minScale, TextField<Double> maxScale) {
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+
+        private Double safeGet(String input, Double defaultValue) {
+            if (input == null || input.isEmpty()) return defaultValue;
+            else return Double.valueOf(input);
+        }
+
+        @Override
+        public void validate(IValidatable validatable) {
+            if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
+                // negative check
+                if (Double.valueOf(minScale.getInput()) < 0
+                        || Double.valueOf(maxScale.getInput()) < 0) {
+                    validatable.error(new ValidationError("Scale denominator cannot be Negative"));
+                }
+                // if both are set perform check min < max
+
+                if (safeGet(minScale.getInput(), 0d)
+                        >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
+                    validatable.error(
+                            new ValidationError(
+                                    "Minimum Scale cannot be greater than Maximum Scale"));
+                }
+            }
+        }
     }
 
     private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {

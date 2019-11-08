@@ -34,9 +34,9 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.AsynchResourceIterator;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -78,24 +78,17 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 }
             };
 
-    private static final int INITIALIZATION_PARALLELISM;
+    /**
+     * Reuse the value initialized for I/O parallelism through the {@code
+     * org.geoserver.catalog.loadingThreads} System property
+     */
+    private static final int INITIALIZATION_PARALLELISM =
+            AsynchResourceIterator.ASYNCH_RESOURCE_THREADS;
     /**
      * Thread local of XStream used during initialization parallel execution, to circumvent the
      * terrible concurrency of XStream
      */
     private static ThreadLocal<XStream> INITIALIZATION_SERIALIZER = new ThreadLocal<>();
-
-    static {
-        String value = GeoServerExtensions.getProperty("org.geoserver.catalog.loadingThreads");
-        if (value != null) {
-            INITIALIZATION_PARALLELISM = Integer.parseInt(value);
-        } else {
-            // empirical determination after benchmarks, the value is related not the
-            // available CPUs, but by how well the disk handles parallel access, different
-            // disk subsystems will have a different optimal value
-            INITIALIZATION_PARALLELISM = 4;
-        }
-    }
 
     private ConcurrentMap<String, GeoServerTileLayerInfo> layersById;
 

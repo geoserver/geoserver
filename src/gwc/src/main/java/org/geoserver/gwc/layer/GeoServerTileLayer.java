@@ -161,22 +161,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public GeoServerTileLayer(
             final Catalog catalog,
             final String publishedId,
-            final GWCConfig configDefaults,
-            final GridSetBroker gridsets) {
-        checkNotNull(catalog, "catalog");
-        checkNotNull(publishedId, "publishedId");
-        checkNotNull(gridsets, "gridsets");
-        checkNotNull(configDefaults, "configDefaults");
-
-        this.gridSetBroker = gridsets;
-        this.catalog = catalog;
-        this.publishedId = publishedId;
-        this.info = TileLayerInfoUtil.loadOrCreate(getPublishedInfo(), configDefaults);
-    }
-
-    public GeoServerTileLayer(
-            final Catalog catalog,
-            final String publishedId,
             final GridSetBroker gridsets,
             final GeoServerTileLayerInfo state) {
         checkNotNull(catalog, "catalog");

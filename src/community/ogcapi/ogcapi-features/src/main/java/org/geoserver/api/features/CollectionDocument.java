@@ -62,11 +62,40 @@ public class CollectionDocument extends AbstractCollectionDocument {
             addLink(
                     new Link(
                             apiUrl,
-                            Link.REL_ITEM,
+                            Link.REL_ITEMS,
                             format.toString(),
                             collectionId + " items as " + format.toString(),
                             "items"));
         }
+
+        // describedBy as GML schema
+        String describedByHref =
+                ResponseUtils.buildURL(
+                        baseUrl,
+                        "wfs",
+                        new HashMap<String, String>() {
+                            {
+                                put("service", "WFS");
+                                put("version", "2.0");
+                                put("request", "DescribeFeatureType");
+                                put("typenames", featureType.prefixedName());
+                            }
+                        },
+                        URLMangler.URLType.SERVICE);
+        Link describedBy =
+                new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
+        addLink(describedBy);
+
+        // queryables
+        addLinksFor(
+                "ogc/features/collections/"
+                        + ResponseUtils.urlEncode(featureType.prefixedName())
+                        + "/queryables",
+                QueryablesDocument.class,
+                "Queryable attributes as ",
+                null,
+                null,
+                "queryables");
 
         // map preview
         if (isWMSAvailable(geoServer)) {

@@ -128,12 +128,12 @@ public class ApiTest extends FeaturesTestSupport {
         // ... conformance
         PathItem conformance = paths.get("/conformance");
         assertNotNull(conformance);
-        assertThat(conformance.getGet().getOperationId(), equalTo("getRequirementsClasses"));
+        assertThat(conformance.getGet().getOperationId(), equalTo("getConformanceDeclaration"));
 
         // ... collections
         PathItem collections = paths.get("/collections");
         assertNotNull(collections);
-        assertThat(collections.getGet().getOperationId(), equalTo("describeCollections"));
+        assertThat(collections.getGet().getOperationId(), equalTo("getCollections"));
 
         // ... collection
         PathItem collection = paths.get("/collections/{collectionId}");
@@ -154,7 +154,9 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/collectionId",
                         "#/components/parameters/limit",
                         "#/components/parameters/bbox",
-                        "#/components/parameters/time"));
+                        "#/components/parameters/datetime",
+                        "#/components/parameters/filter",
+                        "#/components/parameters/filter-lang"));
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

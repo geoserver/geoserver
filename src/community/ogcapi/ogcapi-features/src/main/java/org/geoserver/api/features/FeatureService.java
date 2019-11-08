@@ -16,14 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
-import org.geoserver.api.APIBBoxParser;
-import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.APIRequestInfo;
-import org.geoserver.api.APIService;
-import org.geoserver.api.ConformanceDocument;
-import org.geoserver.api.DefaultContentType;
-import org.geoserver.api.HTMLResponseBody;
-import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.api.*;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -35,12 +28,14 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.DateRange;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,12 +55,22 @@ import org.springframework.web.context.request.RequestContextHolder;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
-    public static final String CORE = "http://www.opengis.net/spec/wfs-1/3.0/req/core";
-    public static final String HTML = "http://www.opengis.net/spec/wfs-1/3.0/req/html";
-    public static final String GEOJSON = "http://www.opengis.net/spec/wfs-1/3.0/req/geojson";
-    public static final String GMLSF0 = "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf0";
-    public static final String GMLSF2 = "http://www.opengis.net/spec/wfs-1/3.0/req/gmlsf2";
-    public static final String OAS30 = "http://www.opengis.net/spec/wfs-1/3.0/req/oas30";
+    public static final String CORE = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
+    public static final String HTML = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
+    public static final String GEOJSON =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
+    public static final String GMLSF0 =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/gmlsf0";
+    public static final String GMLSF2 =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/gmlsf2";
+    public static final String OAS30 =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
+    public static final String CQL_TEXT =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-text";
+    public static final String CQL_JSON_OBJECT =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-object";
+    public static final String CQL_JSON_ARRAY =
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-array";
 
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
@@ -116,6 +121,13 @@ public class FeatureService {
         return new CollectionsDocument(geoServer);
     }
 
+    @GetMapping(path = "filter-capabilities", name = "getFilterCapabilities")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "filterCapabilities.ftl", fileName = "filterCapabilities.html")
+    public FilterCapabilitiesDocument getFilterCapabilities() {
+        return new FilterCapabilitiesDocument();
+    }
+
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
@@ -124,6 +136,15 @@ public class FeatureService {
         CollectionDocument collection = new CollectionDocument(geoServer, ft);
 
         return collection;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/queryables", name = "getQueryables")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
+    public QueryablesDocument queryables(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
+        FeatureTypeInfo ft = getFeatureType(collectionId);
+        return new QueryablesDocument(ft);
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {
@@ -141,7 +162,7 @@ public class FeatureService {
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE, OAS30, GEOJSON, GMLSF0);
+        List<String> classes = Arrays.asList(CORE, OAS30, HTML, GEOJSON, GMLSF0, CQL_TEXT);
         return new ConformanceDocument(classes);
     }
 
@@ -157,7 +178,7 @@ public class FeatureService {
             @RequestParam(name = "time", required = false) String time,
             @PathVariable(name = "itemId") String itemId)
             throws Exception {
-        return items(collectionId, startIndex, limit, bbox, time, itemId);
+        return items(collectionId, startIndex, limit, bbox, time, null, null, itemId);
     }
 
     @GetMapping(path = "collections/{collectionId}/items", name = "getFeatures")
@@ -169,7 +190,9 @@ public class FeatureService {
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
-            @RequestParam(name = "time", required = false) String time,
+            @RequestParam(name = "datetime", required = false) String datetime,
+            @RequestParam(name = "filter", required = false) String filter,
+            @RequestParam(name = "filter-lang", required = false) String filterLanguage,
             String itemId)
             throws Exception {
         // build the request in a way core WFS machinery can understand it
@@ -182,11 +205,20 @@ public class FeatureService {
         if (bbox != null) {
             filters.add(APIBBoxParser.toFilter(bbox));
         }
-        if (time != null) {
-            filters.add(buildTimeFilter(ft, time));
+        if (datetime != null) {
+            filters.add(buildTimeFilter(ft, datetime));
         }
         if (itemId != null) {
             filters.add(FF.id(FF.featureId(itemId)));
+        }
+        if (filter != null) {
+            if (filterLanguage != null && !filterLanguage.equals("cql-text")) {
+                throw new APIException(
+                        "InvalidParameterValue",
+                        "Unsupported filter language: " + filterLanguage,
+                        HttpStatus.BAD_REQUEST);
+            }
+            filters.add(ECQL.toFilter(filter));
         }
         query.setFilter(mergeFiltersAnd(filters));
         request.setStartIndex(startIndex);

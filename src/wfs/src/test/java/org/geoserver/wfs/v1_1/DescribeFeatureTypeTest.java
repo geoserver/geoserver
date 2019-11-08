@@ -7,10 +7,9 @@ package org.geoserver.wfs.v1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URLEncoder;
 import javax.xml.namespace.QName;
@@ -28,7 +27,10 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml3.GML;
 import org.geotools.wfs.v1_1.WFS;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -123,7 +125,11 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
                         + CiteTestData.GENERICENTITY.getLocalPart() //
                         + "</wfs:TypeName>" //
                         + "</wfs:DescribeFeatureType>";
-        Document doc = postAsDOM("wfs", xml);
+        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+        assertThat(
+                response.getHeader(HttpHeaders.CONTENT_DISPOSITION),
+                CoreMatchers.containsString("filename=schema.xsd"));
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         // print(doc);
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         NodeList nodes = doc.getDocumentElement().getChildNodes();

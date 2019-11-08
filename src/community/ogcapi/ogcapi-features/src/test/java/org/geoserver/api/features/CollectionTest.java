@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.features;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -31,10 +32,13 @@ public class CollectionTest extends FeaturesTestSupport {
 
         assertEquals("cite:RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
-        assertEquals(-180, json.read("$.extent.spatial[0]", Double.class), 0d);
-        assertEquals(-90, json.read("$.extent.spatial[1]", Double.class), 0d);
-        assertEquals(180, json.read("$.extent.spatial[2]", Double.class), 0d);
-        assertEquals(90, json.read("$.extent.spatial[3]", Double.class), 0d);
+        assertEquals(-180, json.read("$.extent.spatial.bbox[0][0]", Double.class), 0d);
+        assertEquals(-90, json.read("$.extent.spatial.bbox[0][1]", Double.class), 0d);
+        assertEquals(180, json.read("$.extent.spatial.bbox[0][2]", Double.class), 0d);
+        assertEquals(90, json.read("$.extent.spatial.bbox[0][3]", Double.class), 0d);
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                json.read("$.extent.spatial.crs", String.class));
 
         // check we have the expected number of links and they all use the right "rel" relation
         Collection<MediaType> formats = getFeaturesResponseFormats();
@@ -46,10 +50,17 @@ public class CollectionTest extends FeaturesTestSupport {
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
             assertEquals("cite:RoadSegments items as " + format, item.get("title"));
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
-        readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
+        readSingle(json, "links[?(@.type=='application/gml+xml;version=3.2')]");
+
+        // check the queryables link
+        assertThat(
+                readSingle(
+                        json, "links[?(@.rel=='queryables' && @.type=='application/json')].href"),
+                equalTo(
+                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/queryables?f=application%2Fjson"));
     }
 
     private List<MediaType> getFeaturesResponseFormats() {
@@ -76,7 +87,7 @@ public class CollectionTest extends FeaturesTestSupport {
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
             assertEquals("RoadSegments items as " + format, item.get("title"));
-            assertEquals("item", item.get("rel"));
+            assertEquals("items", item.get("rel"));
         }
         // the ogc/features specific GML3.2 output format is available
         readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
@@ -108,5 +119,15 @@ public class CollectionTest extends FeaturesTestSupport {
                                 + getLayerId(MockData.ROAD_SEGMENTS)
                                 + "?f=application/x-yaml");
         // System.out.println(yaml);
+    }
+
+    @Test
+    public void testQueryables() throws Exception {
+        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        DocumentContext json =
+                getAsJSONPath("cite/ogc/features/collections/" + roadSegments + "/queryables", 200);
+        assertThat(readSingle(json, "queryables[?(@.id == 'the_geom')].type"), equalTo("geometry"));
+        assertThat(readSingle(json, "queryables[?(@.id == 'FID')].type"), equalTo("string"));
+        assertThat(readSingle(json, "queryables[?(@.id == 'NAME')].type"), equalTo("string"));
     }
 }

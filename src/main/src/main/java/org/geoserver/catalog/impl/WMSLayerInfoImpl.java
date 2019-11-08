@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import com.google.common.base.Objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +47,12 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     private List<String> selectedRemoteFormats = new ArrayList<String>();
 
     private List<String> selectedRemoteStyles = new ArrayList<String>();
+
+    private Double minScale = null;
+
+    private Double maxScale = null;
+
+    private boolean metadataBBoxRespected = false;
 
     private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
 
@@ -90,7 +97,6 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                     .stream()
                     .map(s -> s.getName())
                     .collect(Collectors.toList());
-
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -169,13 +175,14 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         if (forcedRemoteStyle != null)
             if (!forcedRemoteStyle.isEmpty()) {
                 Optional<StyleInfo> defaultRemoteStyle =
-                        allAvailableRemoteStyles
+                        getAllAvailableRemoteStyles()
                                 .stream()
                                 .filter(s -> s.getName().equalsIgnoreCase(forcedRemoteStyle))
                                 .findFirst();
                 // will return null if forcedRemoteStyle is not empty string
                 // and was not found in selected remote styles
                 if (defaultRemoteStyle.isPresent()) return defaultRemoteStyle.get();
+                else return DEFAULT_ON_REMOTE;
             } else {
                 return DEFAULT_ON_REMOTE;
             }
@@ -273,8 +280,75 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
 
+    public Double getMinScale() {
+        return minScale;
+    }
+
+    public void setMinScale(Double minScale) {
+        this.minScale = minScale;
+    }
+
+    public Double getMaxScale() {
+        return maxScale;
+    }
+
+    public void setMaxScale(Double maxScale) {
+        this.maxScale = maxScale;
+    }
+
     public List<StyleInfo> getAllAvailableRemoteStyles() {
         if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
         return allAvailableRemoteStyles;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((forcedRemoteStyle == null) ? 0 : forcedRemoteStyle.hashCode());
+        result = prime * result + ((preferredFormat == null) ? 0 : preferredFormat.hashCode());
+        result =
+                prime * result
+                        + ((selectedRemoteFormats == null) ? 0 : selectedRemoteFormats.hashCode());
+        result =
+                prime * result
+                        + ((selectedRemoteStyles == null) ? 0 : selectedRemoteStyles.hashCode());
+        result =
+                prime * result
+                        + ((allAvailableRemoteStyles == null)
+                                ? 0
+                                : allAvailableRemoteStyles.hashCode());
+        result = prime * result + ((minScale == null) ? 0 : minScale.hashCode());
+        result = prime * result + ((maxScale == null) ? 0 : maxScale.hashCode());
+        result = prime * result + Boolean.hashCode(metadataBBoxRespected);
+
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof WMSLayerInfo)) return false;
+        if (!super.equals(obj)) return false;
+
+        WMSLayerInfo other = (WMSLayerInfo) obj;
+        if (!Objects.equal(forcedRemoteStyle, other.getForcedRemoteStyle())) return false;
+        if (!Objects.equal(preferredFormat, other.getPreferredFormat())) return false;
+        if (!Objects.equal(selectedRemoteFormats, other.getSelectedRemoteFormats())) return false;
+        if (!Objects.equal(selectedRemoteStyles, other.getSelectedRemoteStyles())) return false;
+        if (!Objects.equal(allAvailableRemoteStyles, other.getAllAvailableRemoteStyles()))
+            return false;
+        if (!Objects.equal(minScale, other.getMinScale())) return false;
+        if (!Objects.equal(maxScale, other.getMaxScale())) return false;
+        if (!(other.isMetadataBBoxRespected() == this.metadataBBoxRespected)) return false;
+
+        return true;
+    }
+
+    public boolean isMetadataBBoxRespected() {
+        return metadataBBoxRespected;
+    }
+
+    public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
+        this.metadataBBoxRespected = metadataBBoxRespected;
     }
 }

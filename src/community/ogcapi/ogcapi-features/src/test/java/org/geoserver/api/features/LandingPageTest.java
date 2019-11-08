@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import org.geoserver.api.Link;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
@@ -36,7 +37,9 @@ public class LandingPageTest extends FeaturesTestSupport {
                         "getConformanceDeclaration",
                         "getFeature",
                         "getFeatures",
-                        "getLandingPage"));
+                        "getLandingPage",
+                        "getQueryables",
+                        "getFilterCapabilities"));
     }
 
     @Test
@@ -113,7 +116,7 @@ public class LandingPageTest extends FeaturesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(12, (int) json.read("links.length()", Integer.class));
+        assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -132,23 +135,23 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/features\\/api.*/)].rel",
-                "service",
-                "service",
-                "service");
+                Link.REL_SERVICE_DESC,
+                Link.REL_SERVICE_DESC,
+                Link.REL_SERVICE_DOC);
         // check conformance links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/features\\/conformance.*/)].rel",
-                "conformance",
-                "conformance",
-                "conformance");
+                Link.REL_CONFORMANCE,
+                Link.REL_CONFORMANCE,
+                Link.REL_CONFORMANCE);
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/features\\/collections.*/)].rel",
-                "data",
-                "data",
-                "data");
+                Link.REL_DATA,
+                Link.REL_DATA,
+                Link.REL_DATA);
         // check title
         assertEquals("Features 1.0 server", json.read("title"));
         // check description

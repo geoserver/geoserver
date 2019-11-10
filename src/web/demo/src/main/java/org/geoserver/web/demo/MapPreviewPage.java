@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -33,6 +34,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.DynamicImageResource;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
@@ -300,6 +302,26 @@ public class MapPreviewPage extends GeoServerBasePage {
             String t1 = translateFormat(prefix, f1);
             String t2 = translateFormat(prefix, f2);
             return t1.compareTo(t2);
+        }
+    }
+
+    private static class DelayedImageResource extends DynamicImageResource {
+        private final IModel<PreviewLayer> itemModel;
+
+        public DelayedImageResource(IModel<PreviewLayer> itemModel) {
+            super("image/png");
+            this.itemModel = itemModel;
+        }
+
+        @Override
+        protected byte[] getImageData(Attributes attributes) {
+            PreviewLayer layer = (PreviewLayer) itemModel.getObject();
+            try {
+                return IOUtils.toByteArray(
+                        layer.getIcon().getResource().getResourceStream().getInputStream());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

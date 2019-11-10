@@ -4,7 +4,6 @@
  */
 package org.geoserver.api.features;
 
-
 public class Queryable {
 
     String id;

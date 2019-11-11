@@ -118,6 +118,9 @@
 
 	<!-- LOADAVG Signal -->
 	<bean id="xmppLoadAverageMessage" class="org.geoserver.wps.remote.plugin.XMPPLoadAverageMessage" />
+
+	<!-- CANTEXEC Signal -->
+	<bean id="xmppCannotExecuteMessage" class="org.geoserver.wps.remote.plugin.XMPPCannotExecuteMessage" />
 	
 	<!-- ERROR Signal -->
 	<bean id="xmppErrorMessage" class="org.geoserver.wps.remote.plugin.XMPPErrorMessage" />

@@ -82,9 +82,13 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     protected List<RemoteMachineDescriptor> registeredProcessingMachines =
             Collections.synchronizedList(new ArrayList<RemoteMachineDescriptor>());
 
-    /** */
-    protected List<RemoteRequestDescriptor> pendingRequests =
+    /** Queue of WPS Requests GeoServer will test on Remote endpoints */
+    private List<RemoteRequestDescriptor> pendingRequests =
             Collections.synchronizedList(new LinkedList<RemoteRequestDescriptor>());
+
+    /** Execution Requests in charge from the RemoteProcessClient <pID; Request> */
+    private Map<String, RemoteRequestDescriptor> executingRequests =
+            new ConcurrentHashMap<String, RemoteRequestDescriptor>();
 
     /** */
     protected File certificateFile = null;
@@ -125,6 +129,16 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /** @return the remoteClientListeners */
     public Set<RemoteProcessClientListener> getRemoteClientListeners() {
         return remoteClientListeners;
+    }
+
+    /** @return the pendingRequests */
+    public List<RemoteRequestDescriptor> getPendingRequests() {
+        return pendingRequests;
+    }
+
+    /** @return the executingRequests */
+    public Map<String, RemoteRequestDescriptor> getExecutingRequests() {
+        return executingRequests;
     }
 
     /** @param enabled the enabled to set */

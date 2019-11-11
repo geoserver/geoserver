@@ -229,9 +229,8 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             if (pendingDeletes.contains(layerName)) {
                 return false;
             }
-            Set<String> layerNames = tileLayerCatalog.getLayerNames();
-            boolean hasLayer = layerNames.contains(layerName);
-            return hasLayer;
+            String layerId = tileLayerCatalog.getLayerId(layerName);
+            return layerId != null;
         } finally {
             lock.releaseReadLock();
         }

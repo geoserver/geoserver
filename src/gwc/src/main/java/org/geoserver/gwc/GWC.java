@@ -100,7 +100,6 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.config.BaseConfiguration;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.ConfigurationPersistenceException;
@@ -2212,13 +2211,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         } else {
             return false;
         }
-        BaseConfiguration configuration;
-        try {
-            configuration = tld.getConfiguration(tileLayerName);
-        } catch (IllegalArgumentException notFound) {
-            return false;
-        }
-        return configuration instanceof CatalogConfiguration;
+        return tld.layerExists(tileLayerName);
     }
 
     /**

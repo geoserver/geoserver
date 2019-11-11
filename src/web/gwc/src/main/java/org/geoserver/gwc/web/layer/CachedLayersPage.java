@@ -328,6 +328,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     }
 
     private static class DelayedImageResource extends DynamicImageResource {
+        private static final long serialVersionUID = 657353636149402818L;
         private final IModel<TileLayer> itemModel;
         private final Property<TileLayer> property;
 
@@ -340,8 +341,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         @Override
         protected byte[] getImageData(Attributes attributes) {
             TileLayer layer = (TileLayer) itemModel.getObject();
-            PackageResourceReference layerIcon =
-                    (PackageResourceReference) property.getPropertyValue(layer);
+            PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
             try {
                 return IOUtils.toByteArray(
                         layerIcon.getResource().getResourceStream().getInputStream());

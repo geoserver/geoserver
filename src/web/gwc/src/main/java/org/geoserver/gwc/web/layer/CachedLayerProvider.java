@@ -17,9 +17,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.web.GWCIconFactory;
+import org.geoserver.gwc.web.GWCIconFactory.CachedLayerType;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geowebcache.layer.TileLayer;
 
@@ -32,15 +32,14 @@ import org.geowebcache.layer.TileLayer;
 class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
     private static final long serialVersionUID = -8599398086587516574L;
-
     static final Property<TileLayer> TYPE =
             new AbstractProperty<TileLayer>("type") {
 
                 private static final long serialVersionUID = 3215255763580377079L;
 
                 @Override
-                public PackageResourceReference getPropertyValue(TileLayer item) {
-                    return GWCIconFactory.getSpecificLayerIcon(item);
+                public GWCIconFactory.CachedLayerType getPropertyValue(TileLayer item) {
+                    return GWCIconFactory.getCachedLayerType(item);
                 }
 
                 @Override
@@ -48,9 +47,9 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
                     return new Comparator<TileLayer>() {
                         @Override
                         public int compare(TileLayer o1, TileLayer o2) {
-                            PackageResourceReference r1 = getPropertyValue(o1);
-                            PackageResourceReference r2 = getPropertyValue(o2);
-                            return r1.getName().compareTo(r2.getName());
+                            CachedLayerType r1 = getPropertyValue(o1);
+                            CachedLayerType r2 = getPropertyValue(o2);
+                            return r1.compareTo(r2);
                         }
                     };
                 }

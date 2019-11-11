@@ -52,5 +52,10 @@ public class XMPPErrorMessage implements XMPPMessage {
             listener.exceptionOccurred(pID, cause, metadata);
             listener.progress(pID, listener.getProgress(pID));
         }
+
+        // Cleanup the executing requests
+        if (xmppClient.getExecutingRequests().containsKey(pID)) {
+            xmppClient.getExecutingRequests().remove(pID);
+        }
     }
 }

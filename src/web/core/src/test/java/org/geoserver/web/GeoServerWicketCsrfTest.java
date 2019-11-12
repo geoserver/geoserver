@@ -88,8 +88,8 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         request.setHeader("Referer", "http://www.geoserver.org" + relativePath);
 
         // try changing the URI of a workspace
-        form.setValue("uri", "http://www.geoserver.org");
-        form.submit();
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.submit("save");
 
         if ("".equals(csrfWhitelist)) {
             // form submit should fail
@@ -122,8 +122,8 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         request.setHeader("Referer", "http://www.remote.com" + relativePath);
 
         // try changing the URI of a workspace
-        form.setValue("uri", "http://www.geoserver.org");
-        form.submit();
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.submit("save");
 
         if ("true".equals(csrfDisabled)) {
             // form submit should succeed

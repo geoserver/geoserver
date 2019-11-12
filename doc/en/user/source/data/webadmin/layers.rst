@@ -398,3 +398,15 @@ For each enabled dimension the following configuration options are available:
 * **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled).
   Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range.
+
+Edit Layer: Security
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
+
+Sets data access rules at layer level.
+
+.. figure:: img/data_layers_security_editor.png
+
+To create/edit layer's data access rules simply check/uncheck checkboxes according to desidered access mode and role. 
+The Grant access to any role checkboxe grant each role for each access mode.

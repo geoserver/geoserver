@@ -1,0 +1,25 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+</head>
+<body>
+<wicket:panel>
+<ul>
+    <li>
+        <label for="name">Name</label>
+        <input wicket:id="name" id="name" type="text" size="20"/>
+    </li>
+    <li>
+        <label for="uri"><wicket:message key="namespaceURI">Namespace URI</wicket:message></label>
+        <input wicket:id="uri" id="uri" type="text" size="60"/>
+        <div class="instruct"><wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message></div>
+    </li>
+    <li class="choiceItem">
+        <input wicket:id="default" id="default" type="checkbox"/> <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
+    </li>
+    <li class="choiceItem">
+        <input wicket:id="isolated" id="isolated" type="checkbox"/> <label for="isolated"><wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message></label>
+    </li>
+</ul>
+</wicket:panel>
+</body>
+</html>

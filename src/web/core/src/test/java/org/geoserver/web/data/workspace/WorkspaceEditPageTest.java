@@ -10,20 +10,22 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.security.AccessDataRuleInfoManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,8 +53,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testURIRequired() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("uri", "");
-        form.submit();
+        form.setValue("tabs:panel:uri", "");
+        form.submit("save");
 
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
@@ -63,15 +65,15 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertNoErrorMessage();
 
-        tester.assertModelValue("form:name", MockData.CITE_PREFIX);
-        tester.assertModelValue("form:uri", MockData.CITE_URI);
+        tester.assertModelValue("form:tabs:panel:name", MockData.CITE_PREFIX);
+        tester.assertModelValue("form:tabs:panel:uri", MockData.CITE_URI);
     }
 
     @Test
     public void testValidURI() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("uri", "http://www.geoserver.org");
-        form.submit();
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        form.submit("save");
 
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();
@@ -80,8 +82,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInvalidURI() {
         FormTester form = tester.newFormTester("form");
-        form.setValue("uri", "not a valid uri");
-        form.submit();
+        form.setValue("tabs:panel:uri", "not a valid uri");
+        form.submit("save");
 
         tester.assertRenderedPage(WorkspaceEditPage.class);
         List messages = tester.getMessages(FeedbackMessage.ERROR);
@@ -109,8 +111,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
 
         FormTester form = tester.newFormTester("form");
         final String newNsURI = "http://www.geoserver.org/changed";
-        form.setValue("uri", newNsURI);
-        form.submit();
+        form.setValue("tabs:panel:uri", newNsURI);
+        form.submit("save");
         tester.assertNoErrorMessage();
 
         List<DataStoreInfo> storesChanged =
@@ -125,8 +127,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         assertFalse(getCatalog().getDefaultWorkspace().getName().equals(MockData.CITE_PREFIX));
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("default", "true");
-        form.submit();
+        form.setValue("tabs:panel:default", true);
+        form.submit("save");
         tester.assertNoErrorMessage();
 
         assertEquals(MockData.CITE_PREFIX, getCatalog().getDefaultWorkspace().getName());
@@ -139,8 +141,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         assertNull(gs.getSettings(citeWorkspace));
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("settings:enabled", true);
-        form.submit();
+        form.setValue("tabs:panel:settings:enabled", true);
+        form.submit("save");
 
         tester.assertNoErrorMessage();
         assertNotNull(gs.getSettings(citeWorkspace));
@@ -160,8 +162,9 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
 
         FormTester form = tester.newFormTester("form");
         form.setValue(
-                "settings:settingsContainer:otherSettings:localWorkspaceIncludesPrefix", false);
-        form.submit();
+                "tabs:panel:settings:settingsContainer:otherSettings:localWorkspaceIncludesPrefix",
+                false);
+        form.submit("save");
 
         assertEquals(false, settings.isLocalWorkspaceIncludesPrefix());
     }
@@ -182,9 +185,9 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         assertEquals(
                 "http://foo.org",
                 form.getTextComponentValue(
-                        "settings:settingsContainer:otherSettings:proxyBaseUrl"));
-        form.setValue("settings:enabled", false);
-        form.submit();
+                        "tabs:panel:settings:settingsContainer:otherSettings:proxyBaseUrl"));
+        form.setValue("tabs:panel:settings:enabled", false);
+        form.submit("save");
 
         assertNull(gs.getSettings(citeWorkspace));
     }
@@ -293,10 +296,51 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         // get the workspace creation form
         FormTester form = tester.newFormTester("form");
         // fill the form with the provided values
-        form.setValue("name", name);
-        form.setValue("uri", namespace);
-        form.setValue("isolated", isolated);
+        form.setValue("tabs:panel:name", name);
+        form.setValue("tabs:panel:uri", namespace);
+        form.setValue("tabs:panel:isolated", isolated);
         // submit the form
-        form.submit();
+        form.submit("save");
+    }
+
+    @Test
+    public void testSecurityTabLoad() {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tabs:panel:name", "abc");
+        form.setValue("tabs:panel:uri", "http://www.geoserver.org");
+        tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+        tester.assertComponent("form:tabs:panel:listContainer", WebMarkupContainer.class);
+        tester.assertComponent("form:tabs:panel:listContainer:selectAll", CheckBox.class);
+        tester.assertComponent("form:tabs:panel:listContainer:rules", ListView.class);
+        tester.assertRenderedPage(WorkspaceEditPage.class);
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testUpdatesWsSecurityRules() throws IOException {
+        AccessDataRuleInfoManager ruleMan = new AccessDataRuleInfoManager();
+        try {
+            final Catalog catalog = getCatalog();
+            final List<DataStoreInfo> storesInitial =
+                    catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
+
+            final NamespaceInfo citeNamespace =
+                    catalog.getNamespaceByPrefix(citeWorkspace.getName());
+            for (DataStoreInfo store : storesInitial) {
+                assertEquals(
+                        citeNamespace.getURI(), store.getConnectionParameters().get("namespace"));
+            }
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).isEmpty());
+            FormTester form = tester.newFormTester("form");
+            tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+            form.setValue("tabs:panel:listContainer:rules:0:admin", true);
+            tester.clickLink("form:save");
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size() == 1);
+            tester.assertNoErrorMessage();
+
+        } finally {
+            ruleMan.removeAllResourceRules(citeWorkspace.getName(), citeWorkspace);
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).isEmpty());
+        }
     }
 }

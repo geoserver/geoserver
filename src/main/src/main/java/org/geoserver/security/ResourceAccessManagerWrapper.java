@@ -241,4 +241,8 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
             Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
         return delegate.getAccessLimits(user, layerGroup, containers);
     }
+
+    public ResourceAccessManager unwrap() {
+        return this.delegate;
+    }
 }

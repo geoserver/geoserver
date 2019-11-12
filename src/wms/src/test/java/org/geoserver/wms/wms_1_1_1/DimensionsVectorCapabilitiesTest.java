@@ -404,4 +404,19 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo(
                 "0.0,1.0,2.0,3.0", "//Layer[Name='sf:TimeElevation']/Extent/text()", dom);
     }
+
+    @Test
+    public void testCustomContinuousDate() throws Exception {
+        setupVectorDimension(
+                "dim_custom",
+                "time",
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.0"), false);
+        assertXpathEvaluatesTo(
+                "2011-05-01T00:00:00Z", "//Layer[Name='sf:TimeElevation']/Extent/@default", dom);
+    }
 }

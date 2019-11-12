@@ -342,7 +342,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // TODO: handle meta-tiling
         // TODO: how to handle timeout here? I guess we need to move it into the dispatcher?
         RenderedImage image = null;
-        RenderTimeStatistics statistics = new RenderTimeStatistics();
+
         // fast path for pure coverage rendering
         if (DefaultWebMapService.isDirectRasterPathEnabled()
                 && mapContent.layers().size() == 1
@@ -572,7 +572,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final RenderExceptionStrategy nonIgnorableExceptionListener;
         nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
-        renderer.addRenderListener(statistics);
+        RenderTimeStatistics statistics = null;
+        if (!request.getRequest().equalsIgnoreCase("GETFEATUREINFO")) {
+            statistics = new RenderTimeStatistics();
+            renderer.addRenderListener(statistics);
+        }
         onBeforeRender(renderer);
 
         int maxRenderingTime = wms.getMaxRenderingTime(request);
@@ -657,7 +661,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } finally {
             timeout.stop();
             graphic.dispose();
-            statistics.renderingComplete();
+            if (statistics != null) {
+                statistics.renderingComplete();
+            }
         }
         throw serviceException;
     }

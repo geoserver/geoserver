@@ -175,12 +175,22 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
         // remote formats
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
+
+        WebMarkupContainer metaDataCheckBoxContainer =
+                new WebMarkupContainer("metaDataCheckBoxContainer");
+        WebMarkupContainer scaleDenominatorContainer =
+                new WebMarkupContainer("scaleDenominatorContainer");
+
         add(styleContainer);
         add(remoteForamtsContainer);
+        add(metaDataCheckBoxContainer);
+        add(scaleDenominatorContainer);
 
         if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
             styleContainer.setVisible(false);
             remoteForamtsContainer.setVisible(false);
+            metaDataCheckBoxContainer.setVisible(false);
+            scaleDenominatorContainer.setVisible(false);
             return;
         }
 
@@ -243,5 +253,63 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
+        metaDataCheckBoxContainer.add(
+                new CheckBox(
+                        "respectMetadataBBoxChkBox",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
+        // scale denominators
+        TextField<Double> minScale =
+                new TextField(
+                        "minScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
+                        Double.class);
+        scaleDenominatorContainer.add(minScale);
+        TextField<Double> maxScale =
+                new TextField(
+                        "maxScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
+                        Double.class);
+        scaleDenominatorContainer.add(maxScale);
+
+        minScale.add(new ScalesValidator(minScale, maxScale));
+    }
+
+    // validator to make sure min scale smaller than max scale and vice-versa
+    private class ScalesValidator implements IValidator {
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1349568700386246273L;
+
+        TextField<Double> minScale;
+        TextField<Double> maxScale;
+
+        public ScalesValidator(TextField<Double> minScale, TextField<Double> maxScale) {
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+
+        private Double safeGet(String input, Double defaultValue) {
+            if (input == null || input.isEmpty()) return defaultValue;
+            else return Double.valueOf(input);
+        }
+
+        @Override
+        public void validate(IValidatable validatable) {
+            if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
+                // negative check
+                if (Double.valueOf(minScale.getInput()) < 0
+                        || Double.valueOf(maxScale.getInput()) < 0) {
+                    validatable.error(new ValidationError("Scale denominator cannot be Negative"));
+                }
+                // if both are set perform check min < max
+
+                if (safeGet(minScale.getInput(), 0d)
+                        >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
+                    validatable.error(
+                            new ValidationError(
+                                    "Minimum Scale cannot be greater than Maximum Scale"));
+                }
+            }
+        }
     }
 }

@@ -182,3 +182,30 @@ The rules and echo parameters can also be managed by means of a REST API found a
 ``geoserver/rest/params-extractor``. Documentation for it is available in 
 :api:`Swagger format <params-extractor.yaml>`
 
+Intercepting the security filters chain
+---------------------------------------
+By default, the params-extractor module does not interact with the security authentication filters.
+This is because the params-extractor filter is called later in the GeoServer filters chain.
+
+If you want params-extractor to work before the security filter chain, you have to configure it as
+a standard servlet filter in the GeoServer WEB-INF/web.xml file.
+
+This can be done adding the following to your current web.xml (immediately after the ``Set Character Encoding`` filter) and restarting GeoServer:
+
+    .. code-block:: xml
+
+        <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+        <web-app>
+            ...
+            <filter>
+             <filter-name>ExtractParams</filter-name>
+             <filter-class>org.geoserver.params.extractor.Filter</filter-class>
+            </filter>
+            ...
+            <filter-mapping>
+              <filter-name>ExtractParams</filter-name>
+              <url-pattern>/*</url-pattern>
+            </filter-mapping>
+            ...
+        </web-app>
+    

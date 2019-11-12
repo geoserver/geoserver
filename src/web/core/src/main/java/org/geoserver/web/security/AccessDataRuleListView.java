@@ -11,18 +11,18 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.PageableListView;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 
-public class AccessDataRuleListView extends PageableListView<DataAccessRuleInfo> {
+public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
 
     private List<CheckBox> checkBoxes;
     private Boolean selectAll;
     private boolean isWs;
 
     public AccessDataRuleListView(String id, IModel<List<DataAccessRuleInfo>> model, boolean isWs) {
-        super(id, model, 15);
+        super(id, model);
         this.isWs = isWs;
         if (checkBoxes == null) {
             int checkBoxesTypes = isWs ? 3 : 2;

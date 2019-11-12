@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.*;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -56,7 +55,6 @@ public class AccessDataRulePanel extends Panel {
         listContainer.add(selectAllCheckbox());
         dataAccessView.setOutputMarkupId(true);
         ownModel.setObject(dataAccessView.getList());
-        listContainer.add(new AjaxPagingNavigator("navigator", dataAccessView));
         listContainer.add(dataAccessView);
         add(listContainer);
     }

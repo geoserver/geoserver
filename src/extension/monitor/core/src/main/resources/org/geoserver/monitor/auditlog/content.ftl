@@ -5,6 +5,8 @@
    <Operation>${operation!""}</Operation>
    <SubOperation>${subOperation!""}</SubOperation>
    <Resources>${resourcesList!""}</Resources>
+   <ResourcesProcessingTime>${resourcesProcessingTimeList!""}</ResourcesProcessingTime>
+   <LabelsProcessingTime>${labellingProcessingTime!""}</LabelsProcessingTime>
    <Path>${path!""}</Path>
    <QueryString>${queryString!""}</QueryString>
    <#if bodyAsString??>

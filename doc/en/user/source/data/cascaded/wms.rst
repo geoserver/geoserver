@@ -62,9 +62,23 @@ Connecting a remote WMS allows for the following features:
 
 * Full **REST Configuration**. See the :ref:`rest` section for more information about the GeoServer REST interface.
 
-* **Scale Denominators**. It is possible to configure Min and Max scale denominators . These settings are available under **Publishing** Tab.
 
-* **Optimization**. It is possible to ignore remote WMS calls if requested map area is completely outside the native bounds as advertised by remote WMS layer. These settings are available under **Publishing** Tab.
+Cascaded WMS Settings
+---------------------
+
+Making use of Remotely advertised styles and supported image formats.
+
+* **Remote Styles Configuration**. Remote Styles advertised in WMS capability document under <Layer> tag, can also be used. A default style and additionally supported styles can be selected. By default no remote style is selected which indicates Geoserver to use whatever style is configured remotely and all available styles are selected. This means that remote styles can be passed in a GetMap request just like local styles. If the styles on remote WMS server have changed, please re-save the layer from UI.
+
+* **Remote Image Format**. Preferred image format(s) can be selected. It is possible to select a preferred image format and additionally supported image formats. This configuration works looks at the requested image format in local GetMap, if the GetMap format is either the preferred remote format or one of the many selected remote formats, the passed image format will be relayed in the remote WMS request. If the image format requested in local GetMap is neither the preferred remote image format nor in the list of Selected formats, the remote WMS format will use the preferred remote image format. This setting only works for image formats and ignore other advertised formats such as JSON, KML and SVG etc
+
+* **Scale Denominators**. Min and Max scale denominators can be applied to WMS layers. The effects of this configurations on the WMS layer are similar to that of scale denominators used in SLD as filters. See :ref:`sld_reference_rules`
+
+* **Respect Advertised Bounds**. It is possible to ignore remote WMS requests with bounding box completely outside the advertised bounds of remote WMS layer. Some external WMS providers might respond with error instead of empty transparent image for WMS requests outside their advertised bounds, in such cases enable the check box to bar Geoserver from making empty WMS requests to WMS provider. 
+
+
+.. figure:: images/cascaded_wms.png
+   :align: center
 
 Limitations
 -----------

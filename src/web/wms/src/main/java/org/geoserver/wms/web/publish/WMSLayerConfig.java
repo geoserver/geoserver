@@ -182,15 +182,19 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
         WebMarkupContainer metaDataCheckBoxContainer =
                 new WebMarkupContainer("metaDataCheckBoxContainer");
+        WebMarkupContainer scaleDenominatorContainer =
+                new WebMarkupContainer("scaleDenominatorContainer");
 
         add(styleContainer);
         add(remoteForamtsContainer);
         add(metaDataCheckBoxContainer);
+        add(scaleDenominatorContainer);
 
         if (!(layerModel.getObject().getResource() instanceof WMSLayerInfo)) {
             styleContainer.setVisible(false);
             remoteForamtsContainer.setVisible(false);
             metaDataCheckBoxContainer.setVisible(false);
+            scaleDenominatorContainer.setVisible(false);
             return;
         }
 
@@ -276,13 +280,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "minScale",
                         new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
                         Double.class);
-        metaDataCheckBoxContainer.add(minScale);
+        scaleDenominatorContainer.add(minScale);
         TextField<Double> maxScale =
                 new TextField(
                         "maxScale",
                         new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
                         Double.class);
-        metaDataCheckBoxContainer.add(maxScale);
+        scaleDenominatorContainer.add(maxScale);
 
         minScale.add(new ScalesValidator(minScale, maxScale));
     }

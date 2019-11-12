@@ -233,13 +233,13 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertVisible("form:panel:metaDataCheckBoxContainer");
 
         // min max scale UI fields
-        tester.assertVisible("form:panel:metaDataCheckBoxContainer:minScale");
-        tester.assertVisible("form:panel:metaDataCheckBoxContainer:maxScale");
+        tester.assertVisible("form:panel:scaleDenominatorContainer:minScale");
+        tester.assertVisible("form:panel:scaleDenominatorContainer:maxScale");
 
         // validation check, setting min scale above max
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("panel:metaDataCheckBoxContainer:minScale", "100");
-        ft.setValue("panel:metaDataCheckBoxContainer:maxScale", "1");
+        ft.setValue("panel:scaleDenominatorContainer:minScale", "100");
+        ft.setValue("panel:scaleDenominatorContainer:maxScale", "1");
         ft.submit();
         // there should be an error
         tester.assertErrorMessages("Minimum Scale cannot be greater than Maximum Scale");

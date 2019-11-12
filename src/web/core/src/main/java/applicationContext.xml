@@ -435,6 +435,14 @@
     <property name="order" value="100" />
   </bean>
 
+  <bean id="layerAccessDataRulePanelInfo" class="org.geoserver.web.security.LayerAccessDataRulePanelInfo">
+    <property name="id" value="layerAccessDataRulePanelInfo"/>
+    <property name="titleKey" value="LayerAccessDataRulePanel.title"/>
+    <property name="descriptionKey" value="LayerAccessDataRulePanel.shortDescription"/>
+    <property name="componentClass" value="org.geoserver.web.security.LayerAccessDataRulePanel"/>
+    <property name="order" value="300"/>
+  </bean>
+
   <bean id="wicketConfigurationLocker" class="org.geoserver.web.WicketConfigurationLockCallback">
     <constructor-arg index="0" ref="configurationLock" />
   </bean>

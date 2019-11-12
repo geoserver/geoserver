@@ -36,6 +36,7 @@ import javax.xml.namespace.QName;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
@@ -53,6 +54,10 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.feature.retype.RetypingDataStore;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -70,6 +75,7 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.springframework.security.core.Authentication;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
@@ -297,6 +303,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         FormTester ft = tester.newFormTester("publishedinfo");
         ft.select(ref.get() + ":border:border_body:paramValue", 2);
+        tester.debugComponentTrees();
         ft.submit("save");
         tester.assertNoErrorMessage();
 
@@ -399,5 +406,36 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         // check that native SRS is updated in catalog after submitting the page
         String savedSRS = getCatalog().getLayerByName(layerInfo.getName()).getResource().getSRS();
         assertFalse(savedSRS.equalsIgnoreCase(actualNativeSRS));
+    }
+
+    @Test
+    public void testSecurityTabInactiveWithNoDeafaultAccessManager() {
+        TestResourceAccessManager manager = new TestResourceAccessManager();
+        SecureCatalogImpl oldSc = (SecureCatalogImpl) GeoServerExtensions.bean("secureCatalog");
+        SecureCatalogImpl sc =
+                new SecureCatalogImpl(getCatalog(), manager) {
+
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
+        applicationContext.getBeanFactory().destroyBean("secureCatalog");
+        GeoServerExtensionsHelper.clear();
+        GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        LayerInfo layer = catalog.getLayerByName(getLayerId(TIMERANGES));
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        try {
+            TabbedPanel tabs =
+                    (TabbedPanel) tester.getComponentFromLastRenderedPage("publishedinfo:tabs");
+            assertTrue(tabs.getTabs().size() == 3);
+        } finally {
+            applicationContext.getBeanFactory().destroyBean("secureCatalog");
+            GeoServerExtensionsHelper.clear();
+            GeoServerExtensionsHelper.singleton("secureCatalog", oldSc, SecureCatalogImpl.class);
+        }
     }
 }

@@ -134,10 +134,10 @@ abstract class DimensionHelper {
             String unitSymbol = customDim.getValue().getUnitSymbol();
             final Optional<Class> dataTypeOpt = getDataType(values);
             if (dataTypeOpt.isPresent()) {
-                final Class type = dataTypeOpt.get();
-                if (type.isAssignableFrom(Date.class)) {
+                final Class<Object> type = dataTypeOpt.get();
+                if (Date.class.isAssignableFrom(type)) {
                     metadata = getTemporalDomainRepresentation(customDim.getValue(), values);
-                } else if (type.isAssignableFrom(Double.class)) {
+                } else if (Number.class.isAssignableFrom(type)) {
                     metadata = getNumberRepresentation(customDim.getValue(), values);
                 } else {
                     final List<String> valuesList =
@@ -493,9 +493,19 @@ abstract class DimensionHelper {
             elevationMetadata = buff.toString();
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
             final NumberRange range = getMinMaxZInterval(values);
-            buff.append(range.getMinimum());
+            final Class<?> typeBinding = values.first().getClass();
+            final boolean isDecimal = isDecimal(typeBinding);
+            String minStr, maxStr;
+            if (isDecimal) {
+                minStr = String.valueOf(range.getMinimum());
+                maxStr = String.valueOf(range.getMaximum());
+            } else {
+                minStr = String.valueOf(Double.valueOf(range.getMinimum()).longValue());
+                maxStr = String.valueOf(Double.valueOf(range.getMaximum()).longValue());
+            }
+            buff.append(minStr);
             buff.append("/");
-            buff.append(range.getMaximum());
+            buff.append(maxStr);
             buff.append("/");
 
             BigDecimal resolution = dimension.getResolution();
@@ -504,19 +514,22 @@ abstract class DimensionHelper {
             } else {
                 if (values.size() >= 2 && allNumbers(values)) {
                     int count = 2, i = 2;
-                    Double[] zPositions = new Double[count];
+                    Number[] zPositions = new Number[count];
                     // convert all to double
-                    final List<Double> doubleValues =
-                            values.stream()
-                                    .map(x -> (Number) x)
-                                    .map(Number::doubleValue)
-                                    .collect(Collectors.toList());
-                    for (Object val : doubleValues) {
-                        zPositions[count - i--] = (Double) val;
+                    final List<Number> numberValues =
+                            values.stream().map(x -> (Number) x).collect(Collectors.toList());
+                    for (Object val : numberValues) {
+                        zPositions[count - i--] = (Number) val;
                         if (i == 0) break;
                     }
-                    double span = zPositions[count - 1] - zPositions[count - 2];
-                    buff.append(span);
+                    if (isDecimal)
+                        buff.append(
+                                zPositions[count - 1].doubleValue()
+                                        - zPositions[count - 2].doubleValue());
+                    else
+                        buff.append(
+                                zPositions[count - 1].longValue()
+                                        - zPositions[count - 2].longValue());
                 } else {
                     buff.append(0);
                 }
@@ -526,6 +539,12 @@ abstract class DimensionHelper {
         }
 
         return elevationMetadata;
+    }
+
+    private boolean isDecimal(Class<?> typeBinding) {
+        return Float.class.isAssignableFrom(typeBinding)
+                || Double.class.isAssignableFrom(typeBinding)
+                || BigDecimal.class.isAssignableFrom(typeBinding);
     }
 
     /**

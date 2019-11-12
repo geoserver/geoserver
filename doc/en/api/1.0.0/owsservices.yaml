@@ -980,6 +980,233 @@ paths:
         200:
           description: OK
 
+  /services/wmts/settings:
+    get:
+      operationId: getWMTSSettings
+      description: Retrieves Web Map Tile Service settings globally for the server.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+          examples:
+            application/xml: |
+              <wmts>
+                <enabled>true</enabled>
+                <name>WMTS</name>
+                <title>Web Map Tile Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This server implements the WMTS specification 1.0</abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WMTS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink>
+                  <type>undef</type>
+                  <about>http://geoserver.sourceforge.net/html/index.php</about>
+                  <metadataType>other</metadataType>
+                </metadataLink>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+              </wmts>
+
+            application/json: |
+              {
+                "wmts": {
+                  "enabled": true,
+                  "name": "WMTS",
+                  "title": "Web Map Tile Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This server implements the WMTS specification 1.0",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WMTS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": {
+                    "type": "undef",
+                    "about": "http://geoserver.sourceforge.net/html/index.php",
+                    "metadataType": "other"
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false
+                }
+              }
+    post:
+      operationId: postWMTSSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+    put:
+      operationId: putWMTSSettings
+      description: Edits a global WMTS setting.
+      parameters:
+        - name: WMTSSettingsBody
+          in: body
+          description: Body of the WMTS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWMTSSettings
+      description: Invalid. Use PUT to edit settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /services/wmts/workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
+    get:
+      operationId: getWMTSWorkspaceSettings
+      description: Retrieves Web Map Tile Service settings for a given workspace.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+          examples:
+            application/xml: |
+              <wmts>
+                <workspace>
+                  <name>nurc</name>
+                </workspace>
+                <enabled>true</enabled>
+                <name>WMTS</name>
+                <title>Web Map Tile Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This server implements the WMTS specification 1.0</abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WMTS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink>
+                  <type>undef</type>
+                  <about>http://geoserver.sourceforge.net/html/index.php</about>
+                  <metadataType>other</metadataType>
+                </metadataLink>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+              </wmts>
+            application/json: |
+              {
+                "wmts": {
+                  "workspace": {
+                    "name": "nurc"
+                  },
+                  "enabled": true,
+                  "name": "WMTS",
+                  "title": "Web Map Tile Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This server implements the WMTS specification 1.0",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WMTS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": {
+                    "type": "undef",
+                    "about": "http://geoserver.sourceforge.net/html/index.php",
+                    "metadataType": "other"
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false
+                }
+              }
+
+
+    post:
+      operationId: postWMTSWorkspaceSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMTSWorkspaceSettings
+      description: Edits a workspace-specific WMTS setting.
+      parameters:
+        - name: WMTSSettingsBody
+          in: body
+          description: Body of the WMTS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+    delete:
+      operationId: deleteWMTSWorkspaceSettings
+      description: Deletes a workspace-specific WMTS setting.
+      responses:
+        200:
+          description: OK
 
 
 definitions:
@@ -1295,3 +1522,66 @@ definitions:
         type: boolean
         description: ""
 
+  WMTSInfo:
+    type: object
+    xml:
+      name: wmts
+    properties:
+      enabled:
+        type: boolean
+        description: Status of the service
+      name:
+        type: string
+        description: Name of the service. This value is unique among all instances of ServiceInfo and can be used as an identifier.
+      title:
+        type: string
+        description: Title of the service
+      maintainer:
+        type: string
+        description: Maintainer of the service
+      abstrct:
+        type: string
+        description: Description of the service
+      accessConstraints:
+        type: string
+        description: Access constraints
+      fees:
+        type: string
+        description: Any fees associated with the service
+      versions:
+        type: object
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
+              type: string
+              description: version number
+      keywords:
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
+      metadataLink:
+        type: array
+        items:
+          type: object
+          properties:
+            "@key":
+              type: string
+              description: Metadata key
+            text:
+              type: string
+              description: Metadata value
+      citeCompliant:
+        type: boolean
+        description: Status of service CITE compliance
+      onlineResource:
+        type: string
+        description: URL resource
+      schemaBaseURL:
+        type: string 
+        description: Base URL for the schemas describing the service
+      verbose:
+        type: boolean
+        description: Flag indicating if the service should be verbose

@@ -619,14 +619,22 @@ public class XMPPClient extends RemoteProcessClient {
                             + fixedInputs
                             + "]");
 
+            // Keep the request in charge. In the case the Remote Endpoint won't be able to execute
+            // this, it will be put on queue again
+            getExecutingRequests()
+                    .put(
+                            pid,
+                            new RemoteRequestDescriptor(
+                                    serviceName, input, metadata, pid, baseURL));
+
             sendMessage(serviceJID, msg);
         } else {
             /**
              * We could not find a suitable processing node to serve the request; queue it for later
              * checks...
              */
-            pendingRequests.add(
-                    new RemoteRequestDescriptor(serviceName, input, metadata, pid, baseURL));
+            getPendingRequests()
+                    .add(new RemoteRequestDescriptor(serviceName, input, metadata, pid, baseURL));
         }
 
         return pid;
@@ -936,8 +944,8 @@ public class XMPPClient extends RemoteProcessClient {
      * @throws Exception
      */
     protected void checkPendingRequests() throws Exception {
-        synchronized (pendingRequests) {
-            for (RemoteRequestDescriptor request : pendingRequests) {
+        synchronized (getPendingRequests()) {
+            for (RemoteRequestDescriptor request : getPendingRequests()) {
                 // Check if the request is still valid
                 final String pid = request.getPid();
                 boolean isRequestValid = false;
@@ -952,7 +960,7 @@ public class XMPPClient extends RemoteProcessClient {
 
                 if (!isRequestValid) {
                     // Remove the request from the queue
-                    pendingRequests.remove(request);
+                    getPendingRequests().remove(request);
                     continue;
                 }
 
@@ -981,6 +989,8 @@ public class XMPPClient extends RemoteProcessClient {
                      * We have a JID to an available processing node; send the request message to
                      * it...
                      */
+                    // Remove the request from the queue
+                    getPendingRequests().remove(request);
 
                     // Update Metadata
                     request.getMetadata().put("serviceJID", serviceJID);
@@ -992,10 +1002,12 @@ public class XMPPClient extends RemoteProcessClient {
                                     + fixedInputs
                                     + "]");
 
+                    // Keep the request in charge. In the case the Remote Endpoint won't be able to
+                    // execute this, it will be put on queue again
+                    getExecutingRequests().put(pid, request);
+
                     sendMessage(serviceJID, msg);
 
-                    // Remove the request from the queue
-                    pendingRequests.remove(request);
                     continue;
                 } else {
                     blockedProcess.setTask(pid, "Blocked: no resources available for execution!");

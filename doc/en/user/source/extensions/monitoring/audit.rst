@@ -57,7 +57,7 @@ By default each log file contents will be a xml document looking like the follow
 		   <SubOperation></SubOperation>
 		   <Resources>GeoSolutions:elba-deparea</Resources>
 		   <ResourcesProcessingTime>4</ResourcesProcessingTime>
-           <LabelsProcessingTime>0</LabelsProcessingTime>
+		   <LabelsProcessingTime>0</LabelsProcessingTime>
 		   <Path>/GeoSolutions/wms</Path>
 		   <QueryString>LAYERS=GeoSolutions:elba-deparea&amp;STYLES=&amp;FORMAT=image/png&amp;TILED=true&amp;TILESORIGIN=9.916,42.312&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;EXCEPTIONS=application/vnd.ogc.se_inimage&amp;SRS=EPSG:4326&amp;BBOX=9.58375,42.64425,9.916,42.9765&amp;WIDTH=256&amp;HEIGHT=256</QueryString>
 		   <HttpMethod>GET</HttpMethod>
@@ -97,7 +97,7 @@ The default header template is::
 	   <SubOperation>${subOperation!""}</SubOperation>
 	   <Resources>${resourcesList!""}</Resources>
 	   <ResourcesProcessingTime>${resourcesProcessingTimeList!""}</ResourcesProcessingTime>
-       <LabelsProcessingTime>${labellingProcessingTime!""}</LabelsProcessingTime>
+	   <LabelsProcessingTime>${labellingProcessingTime!""}</LabelsProcessingTime>
 	   <Path>${path!""}</Path>
 	   <QueryString>${queryString!""}</QueryString>
 	   <#if bodyAsString??>

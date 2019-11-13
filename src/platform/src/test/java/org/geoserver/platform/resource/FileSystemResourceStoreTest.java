@@ -8,6 +8,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -15,6 +25,12 @@ import org.junit.rules.TemporaryFolder;
 public class FileSystemResourceStoreTest {
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
+
+    private FileSystemResourceStore store;
+
+    public @Before void before() {
+        store = new FileSystemResourceStore(folder.getRoot());
+    }
 
     @Test
     public void renameSameFileName() throws IOException, InterruptedException {
@@ -82,10 +98,54 @@ public class FileSystemResourceStoreTest {
 
     private void attemptRename(String oldName, String newName) throws IOException {
         assertEquals(1, folder.getRoot().list().length);
-        FileSystemResourceStore toTest = new FileSystemResourceStore(folder.getRoot());
 
-        toTest.move(oldName, newName);
+        store.move(oldName, newName);
 
         assertEquals(1, folder.getRoot().list().length);
+    }
+
+    @Test
+    public void testGetResourceNotificationDispatcher_AtomicLazyInitialization() {
+        final int nThreads = 64;
+        final int nTasks = 4 * nThreads;
+        final ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        try {
+            Collection<Callable<FileSystemWatcher>> tasks =
+                    IntStream.range(0, nTasks)
+                            .mapToObj(
+                                    i ->
+                                            (Callable<FileSystemWatcher>)
+                                                    () ->
+                                                            ((FileSystemWatcher)
+                                                                    store
+                                                                            .getResourceNotificationDispatcher()))
+                            .collect(Collectors.toList());
+
+            List<FileSystemWatcher> watchers =
+                    executorService
+                            .invokeAll(tasks)
+                            .stream()
+                            .map(
+                                    completedFuture -> {
+                                        try {
+                                            return completedFuture.get();
+                                        } catch (InterruptedException | ExecutionException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    })
+                            .collect(Collectors.toList());
+
+            assertEquals(nTasks, watchers.size());
+
+            assertEquals(
+                    "FileSystemWatcher initialization wasn't lazy and atomic",
+                    1,
+                    new HashSet<>(watchers).size());
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            executorService.shutdownNow();
+        }
     }
 }

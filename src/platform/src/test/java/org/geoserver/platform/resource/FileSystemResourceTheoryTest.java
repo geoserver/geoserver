@@ -6,22 +6,26 @@ package org.geoserver.platform.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicReference;
+import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.hamcrest.core.IsNull;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
@@ -29,6 +33,8 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     FileSystemResourceStore store;
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
+
+    @Rule public ExpectedException expectedException = ExpectedException.none();
 
     @DataPoints
     public static String[] testPaths() {
@@ -60,14 +66,18 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         store = new FileSystemResourceStore(folder.getRoot());
     }
 
+    @After
+    public void after() throws Exception {
+        if (store != null && store.watcher.get() != null) {
+            store.watcher.get().destroy();
+        }
+    }
+
     @Test
     public void invalid() {
-        try {
-            Resource resource = store.get("..");
-            assertNotNull(resource);
-            fail(".. invalid");
-        } catch (IllegalArgumentException expected) {
-        }
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Contains invalid .. path");
+        store.get("..");
     }
 
     @Test
@@ -77,13 +87,14 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         AwaitResourceListener listener = new AwaitResourceListener();
 
         store.get("DirC/FileD").addListener(listener);
-        store.watcher.schedule(30, TimeUnit.MILLISECONDS);
+        ((FileSystemWatcher) store.getResourceNotificationDispatcher())
+                .schedule(30, TimeUnit.MILLISECONDS);
 
         long before = fileD.lastModified();
         long after = touch(fileD);
         assertTrue("touched", after > before);
 
-        ResourceNotification n = listener.await(5, TimeUnit.SECONDS);
+        ResourceNotification n = listener.await(1, TimeUnit.SECONDS);
         assertNotNull("detected event", n);
 
         assertEquals("file modified", Kind.ENTRY_MODIFY, n.getKind());
@@ -100,39 +111,42 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         assertEquals("file created", Kind.ENTRY_CREATE, n.getKind());
         store.get("DirC/FileD").removeListener(listener);
     }
+
     /**
-     * Must delay long enough to match file system resolution (2 seconds).
+     * Changes the {@link File#lastModified() file.lastModified()} timestamp, making sure the result
+     * differs from its current timestamp; may delay long enough to match file system resolution.
      *
      * <p>Example: Linux systems expect around 1 second resolution for file modification.
      *
      * @param file
      * @return resulting value of lastmodified
-     * @throws InterruptedException
      */
-    private long touch(File file) throws InterruptedException {
+    private long touch(File file) {
         long origional = file.lastModified();
         if (origional == 0l) {
             return 0l; // cannot modify a file that does not exsist
         }
-        Thread.sleep(2000); // wait two seconds
-        long modifided = System.currentTimeMillis();
-        file.setLastModified(modifided);
-        for (modifided = file.lastModified();
-                (modifided - origional) < 2000;
-                modifided = file.lastModified()) {
+        long after = origional;
+        do {
             file.setLastModified(System.currentTimeMillis());
-            Thread.sleep(1000);
-        }
-        return modifided;
+        } while (origional == (after = file.lastModified()));
+        return after;
     }
 
     @Test
     public void eventNotification() throws InterruptedException {
         AwaitResourceListener listener = new AwaitResourceListener();
 
-        ResourceNotification n =
-                listener.await(5, TimeUnit.SECONDS); // expect timeout as no events will be sent!
-        assertNull("No events expected", n);
+        ResourceNotification notification =
+                new ResourceNotification(".", Kind.ENTRY_CREATE, 1_000_000L);
+        CompletableFuture.runAsync(() -> listener.changed(notification));
+
+        ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
+        assertSame(notification, n);
+
+        listener.reset();
+        expectedException.expect(ConditionTimeoutException.class);
+        listener.await(100, TimeUnit.MILLISECONDS); // expect timeout as no events will be sent!
     }
 
     @Test
@@ -145,12 +159,13 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         AwaitResourceListener listener = new AwaitResourceListener();
         store.get(Paths.BASE).addListener(listener);
-        store.watcher.schedule(30, TimeUnit.MILLISECONDS);
+        ((FileSystemWatcher) store.getResourceNotificationDispatcher())
+                .schedule(100, TimeUnit.MILLISECONDS);
 
         long before = fileB.lastModified();
         long after = touch(fileB);
         assertTrue("touched", after > before);
-        ResourceNotification n = listener.await(5, TimeUnit.SECONDS);
+        ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
 
         assertEquals(Kind.ENTRY_MODIFY, n.getKind());
         assertEquals(Paths.BASE, n.getPath());
@@ -170,7 +185,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         listener.reset();
         fileA.createNewFile();
-        n = listener.await(5, TimeUnit.SECONDS);
+        n = listener.await(2, TimeUnit.SECONDS);
         assertEquals(Kind.ENTRY_MODIFY, n.getKind());
         assertEquals(Paths.BASE, n.getPath());
         e = n.events().get(0);
@@ -181,87 +196,27 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     }
 
     /** ResourceListener that traps the next ResourceNotification for testing */
-    static class AwaitResourceListener extends Await<ResourceNotification>
-            implements ResourceListener {
+    static class AwaitResourceListener implements ResourceListener {
+        private final AtomicReference<ResourceNotification> reference = new AtomicReference<>();
+
         @Override
         public void changed(ResourceNotification notify) {
-            notify(notify);
-        }
-    }
-    /**
-     * Support class to efficiently wait for event notification.
-     *
-     * @author Jody Garnett (Boundless)
-     * @param <T> Event Type
-     */
-    abstract static class Await<T> {
-
-        Lock lock = new ReentrantLock(true);
-
-        Condition condition = lock.newCondition();
-
-        private T event = null;
-
-        public void notify(T notification) {
-            // System.out.println("Arrived:"+notification);
-            lock.lock();
-            try {
-                if (this.event == null) {
-                    this.event = notification;
-                }
-                condition.signalAll(); // wake up your event is ready
-            } finally {
-                lock.unlock();
-            }
-        }
-
-        public T await() throws InterruptedException {
-            return await(5, TimeUnit.SECONDS);
-        }
-        /**
-         * Wait for event notification.
-         *
-         * <p>If the event has arrived already this method will return immediately, if not we will
-         * wait for signal. If the event still has not arrived after five seconds null will be
-         * returned.
-         *
-         * @return Notification event, or null if it does not arrive within 5 seconds
-         * @throws InterruptedException
-         */
-        public T await(long howlong, TimeUnit unit) throws InterruptedException {
-            final long DELAY = unit.convert(howlong, TimeUnit.MILLISECONDS);
-            lock.lock();
-            try {
-                if (this.event == null) {
-                    long mark = System.currentTimeMillis();
-                    while (this.event == null) {
-                        long check = System.currentTimeMillis();
-                        if (mark + DELAY < check) {
-                            return null; // event did not show up!
-                        }
-                        boolean signal = condition.await(1, TimeUnit.SECONDS);
-                        // System.out.println("check wait="+signal+" time="+check+"
-                        // notify="+this.event);
-                    }
-                }
-            } finally {
-                lock.unlock();
-            }
-            return this.event;
+            reference.set(notify);
         }
 
         public void reset() {
-            lock.lock();
-            try {
-                this.event = null;
-            } finally {
-                lock.unlock();
-            }
+            this.reference.set(null);
         }
 
-        @Override
-        public String toString() {
-            return "Await [event=" + event + "]";
+        /**
+         * Awaits for {@link #changed} to be called for at most the given timeout before throwing a
+         * {@link ConditionTimeoutException}, returning the event in case it was received.
+         */
+        public ResourceNotification await(int timeout, TimeUnit unit) {
+            return Awaitility.await()
+                    .pollInterval(5, TimeUnit.MILLISECONDS)
+                    .atMost(timeout, unit)
+                    .untilAtomic(this.reference, IsNull.notNullValue());
         }
     }
 

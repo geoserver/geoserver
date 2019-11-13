@@ -77,7 +77,8 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);
         formTester.setValue(
-                "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
+                "blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue",
+                "/mydir");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         tester.assertNoErrorMessage();
@@ -110,7 +111,8 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "yourblobstore");
         formTester.setValue(
-                "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/yourdir");
+                "blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue",
+                "/yourdir");
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
@@ -141,12 +143,14 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
+        print(tester.getLastRenderedPage(), true, true);
 
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);
         formTester.setValue(
-                "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
+                "blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue",
+                "/mydir");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
         tester.assertErrorMessages(
@@ -180,7 +184,8 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "myblobstore");
         formTester.setValue(
-                "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/yourdir");
+                "blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue",
+                "/yourdir");
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 

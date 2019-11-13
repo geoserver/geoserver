@@ -8,10 +8,10 @@ package org.geoserver.web.data.store.shape;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
-import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.ExtensionFileFilter;
@@ -28,8 +28,8 @@ public class ShapefileDirectoryEditPanel extends ShapefileStoreEditPanel {
         super(componentId, storeEditForm);
     }
 
-    protected FileParamPanel buildFileParamPanel(final IModel paramsModel) {
-        FileParamPanel file =
+    protected Panel buildFileParamPanel(final IModel paramsModel) {
+        DirectoryParamPanel file =
                 new DirectoryParamPanel(
                         "url",
                         new MapModel(paramsModel, URLP.key),

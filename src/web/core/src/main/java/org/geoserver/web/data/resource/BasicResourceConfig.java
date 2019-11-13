@@ -93,14 +93,14 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(latLonPanel);
         refForm.add(computeLatLonBoundsLink(refForm, nativeBBox, latLonPanel));
 
-        // ALERT - CORE CHANGE
         // for resources coming from WMS and WFS Datastore
         // then check if it has more than one SRS, then add FIND SRS button in Native SRS
         // which will allow user to set other SRS as Native SRS
         List<String> otherSRS = getOtherSRSFromWFSOrWMS(model.getObject());
         CRSPanel nativeCRS;
         if (otherSRS.isEmpty()) {
-            // legacy behavior
+            // normal behavior for resoureces not belonging to WFS and WMS Store
+            // or if WMS and WFS Store features dont have multiple SRS advertised
             // native srs , declared srs, and srs handling dropdown
             nativeCRS =
                     new CRSPanel(
@@ -108,7 +108,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"));
             nativeCRS.setReadOnly(true);
         } else {
-            // add other remotely supported srs in metadatamap
+            // or resoureces belonging to WFS and WMS Store
+            // and with multiple advertised SRS
             nativeCRS = getSelectableNativeCRSPanel(model, otherSRS, nativeBBox, refForm);
             // show FIND button
             nativeBoundsLink.setOutputMarkupId(true);
@@ -378,6 +379,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         return otherSRS;
     }
 
+    /*
+     * returns CRS Panel which will allow selecting alternative SRS as Native SRS
+     * */
     private CRSPanel getSelectableNativeCRSPanel(
             IModel<ResourceInfo> model,
             List<String> otherSRS,

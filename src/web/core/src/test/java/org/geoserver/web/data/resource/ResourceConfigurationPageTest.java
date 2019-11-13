@@ -29,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +46,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -76,11 +78,20 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     protected static QName TIMERANGES =
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
+    protected static QName LINES = new QName(MockData.SF_URI, "null_srid_line", MockData.SF_PREFIX);
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(
                 TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+
+        testData.addVectorLayer(
+                LINES,
+                Collections.EMPTY_MAP,
+                "null_srid_line.properties",
+                ResourceConfigurationPageTest.class,
+                getCatalog());
     }
 
     @Test
@@ -399,5 +410,28 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         // check that native SRS is updated in catalog after submitting the page
         String savedSRS = getCatalog().getLayerByName(layerInfo.getName()).getResource().getSRS();
         assertFalse(savedSRS.equalsIgnoreCase(actualNativeSRS));
+    }
+
+    @Test
+    public void testNullSRIDResource() throws IOException {
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        LayerInfo layer = catalog.getLayerByName(getLayerId(LINES));
+        assertNotNull(layer);
+        // remove SRID from feature
+        ResourceInfo ft = layer.getResource();
+        ft.setSRS(null);
+        ft.setNativeCRS(null);
+        catalog.save(ft);
+        login();
+        // render page for a layer with resource without SRID
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        // assert no error occurred on page and page is available for configuration
+        tester.assertNoErrorMessage();
+        // assert that native srs is set empty
+        String nativeSRSTextFieldValue =
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
+                        .getDefaultModelObjectAsString();
+        assertTrue(nativeSRSTextFieldValue.isEmpty());
     }
 }

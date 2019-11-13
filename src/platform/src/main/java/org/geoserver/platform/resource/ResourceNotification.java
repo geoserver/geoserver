@@ -8,6 +8,7 @@ package org.geoserver.platform.resource;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class ResourceNotification implements Serializable {
         /** Resource modified */
         ENTRY_MODIFY
     }
+
     /** Event for resource change notification. */
     public static class Event implements Serializable {
         private static final long serialVersionUID = 2852962095949861322L;
@@ -55,6 +57,7 @@ public class ResourceNotification implements Serializable {
             this.path = path;
             this.kind = kind;
         }
+
         /**
          * Nature of change
          *
@@ -63,6 +66,7 @@ public class ResourceNotification implements Serializable {
         public Kind getKind() {
             return kind;
         }
+
         /**
          * Resource path changed
          *
@@ -114,35 +118,30 @@ public class ResourceNotification implements Serializable {
     private final long timestamp;
 
     public static List<Event> delta(
-            File baseDirectory, List<File> created, List<File> removed, List<File> modified) {
-        if (created == null) {
-            created = Collections.emptyList();
+            File baseDirectory,
+            Collection<String> created,
+            Collection<String> removed,
+            Collection<String> modified) {
+
+        created = created == null ? Collections.emptyList() : created;
+        removed = removed == null ? Collections.emptyList() : removed;
+        modified = modified == null ? Collections.emptyList() : modified;
+        if (created.isEmpty() && removed.isEmpty() && modified.isEmpty()) {
+            return Collections.emptyList();
         }
-        if (removed == null) {
-            removed = Collections.emptyList();
-        }
-        if (modified == null) {
-            modified = Collections.emptyList();
-        }
-        int size = created.size() + removed.size() + modified.size();
-        if (size == 0) {
-            return null;
-        }
-        List<Event> delta = new ArrayList<Event>(size);
-        for (File file : created) {
-            String newPath = Paths.convert(baseDirectory, file);
-            delta.add(new Event(newPath, Kind.ENTRY_CREATE));
-        }
-        for (File file : removed) {
-            String deletePath = Paths.convert(baseDirectory, file);
-            delta.add(new Event(deletePath, Kind.ENTRY_DELETE));
-        }
-        for (File file : modified) {
-            String changedPath = Paths.convert(baseDirectory, file);
-            delta.add(new Event(changedPath, Kind.ENTRY_MODIFY));
-        }
-        return delta;
+        List<Event> events = new ArrayList<>(created.size() + removed.size() + modified.size());
+        created.stream()
+                .map(relativePath -> new Event(relativePath, Kind.ENTRY_CREATE))
+                .forEach(events::add);
+        removed.stream()
+                .map(relativePath -> new Event(relativePath, Kind.ENTRY_DELETE))
+                .forEach(events::add);
+        modified.stream()
+                .map(relativePath -> new Event(relativePath, Kind.ENTRY_MODIFY))
+                .forEach(events::add);
+        return events;
     }
+
     /**
      * Notification of a change to a single resource.
      *
@@ -188,6 +187,7 @@ public class ResourceNotification implements Serializable {
     public long getTimestamp() {
         return timestamp;
     }
+
     /**
      * Paths of changed resources.
      *

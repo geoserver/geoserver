@@ -12,6 +12,7 @@ import static org.geotools.data.shapefile.ShapefileDataStoreFactory.MEMORY_MAPPE
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -40,7 +41,7 @@ public class ShapefileStoreEditPanel extends StoreEditPanel {
 
         final IModel paramsModel = new PropertyModel(model, "connectionParameters");
 
-        FileParamPanel file = buildFileParamPanel(paramsModel);
+        Panel file = buildFileParamPanel(paramsModel);
         add(file);
 
         add(
@@ -68,7 +69,7 @@ public class ShapefileStoreEditPanel extends StoreEditPanel {
                         new ParamResourceModel("spatialIndex", this)));
     }
 
-    protected FileParamPanel buildFileParamPanel(final IModel paramsModel) {
+    protected Panel buildFileParamPanel(final IModel paramsModel) {
         FileParamPanel file =
                 new FileParamPanel(
                         "url",

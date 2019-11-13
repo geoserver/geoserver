@@ -107,30 +107,22 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testUploadRootExternalProps() throws Exception {
-        // On a brand new data folder, the directory may not exists until the Importer has been
-        // invoked the first time
-        File dirFromProperties = Resources.directory(Resources.fromPath("props_uploads"));
-
-        // Read the upload root folder and creates it if does not exists
-        importer.getUploadRoot();
-
-        // Read the folder again...
-        dirFromProperties = Resources.directory(Resources.fromPath("props_uploads"));
-        // ... and ensure it is the same as defined on the .properties file
-        assertEquals(dirFromProperties, importer.getUploadRoot());
-
         // Let's now override the external folder through the Environment variable. This takes
         // precedence on .properties
-        System.setProperty(Importer.UPLOAD_ROOT_KEY, "env_uploads");
+        System.setProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY, "env_uploads");
+        importer.reloadConfiguration();
+        try {
+            // get and eventually force importer to create
+            File uploadRoot = importer.getUploadRoot();
 
-        // Let's check that the upload root is now different from the previous one...
-        assertNotEquals(dirFromProperties, importer.getUploadRoot());
-
-        // ... but it is equal to the one defined through the Environment variable instead
-        // Read the folder again...
-        dirFromProperties = Resources.directory(Resources.fromPath("env_uploads"));
-        // ... and ensure it is the same as defined on the .properties file
-        assertEquals(dirFromProperties, importer.getUploadRoot());
+            // it is equal to the one defined through the Environment variable instead
+            // Read the folder again...
+            File dirFromProperties = Resources.directory(Resources.fromPath("env_uploads"));
+            // ... and ensure it is the same as defined on the .properties file
+            assertEquals(dirFromProperties, uploadRoot);
+        } finally {
+            System.clearProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY);
+        }
     }
 
     @Test

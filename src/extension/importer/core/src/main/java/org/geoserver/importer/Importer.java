@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -61,7 +61,6 @@ import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
-import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
@@ -115,12 +114,8 @@ public class Importer implements DisposableBean, ApplicationListener {
     static Logger LOGGER = Logging.getLogger(Importer.class);
 
     public static final String PROPERTYFILENAME = "importer.properties";
-
-    public static final String UPLOAD_ROOT_KEY = "importer.upload_root";
-
-    private FileWatcher<Properties> configFile;
-
-    private Properties props;
+    private final ImporterInfoDAO configDAO;
+    private Resource configFile;
 
     /** catalog */
     Catalog catalog;
@@ -135,35 +130,50 @@ public class Importer implements DisposableBean, ApplicationListener {
     StyleHandler styleHandler = new SLDHandler();
 
     /** job queue */
-    JobQueue jobs = new JobQueue();
+    JobQueue asynchronousJobs = new JobQueue();
+
+    JobQueue synchronousJobs = new JobQueue();
 
     ConcurrentHashMap<Long, ImportTask> currentlyProcessing =
             new ConcurrentHashMap<Long, ImportTask>();
 
-    public Importer(Catalog catalog) {
+    ImporterInfo configuration;
+
+    public Importer(Catalog catalog, ImporterInfoDAO dao) {
         this.catalog = catalog;
         this.styleGen = new StyleGenerator(catalog);
+        this.configDAO = dao;
 
         try {
             GeoServerResourceLoader loader =
                     GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            configFile =
-                    new FileWatcher<Properties>(loader.get("importer/" + PROPERTYFILENAME)) {
+            this.configFile = loader.get("importer/" + PROPERTYFILENAME);
+            this.configuration = new ImporterInfoImpl();
 
-                        @Override
-                        protected Properties parseFileContents(InputStream in) throws IOException {
-                            Properties p = new Properties();
-                            p.load(in);
-                            return p;
-                        }
-                    };
-
-            props = configFile.read();
+            // first load
+            this.configuration = configDAO.read(configFile);
+            asynchronousJobs.setMaximumPoolSize(configuration.getMaxAsynchronousImports());
+            synchronousJobs.setMaximumPoolSize(configuration.getMaxSynchronousImports());
+            // register to reload (resource events are too slow, can trigger up to 10 seconds later)
+            configFile.addListener(c -> reloadConfiguration());
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not find any '" + PROPERTYFILENAME + "' property file.",
-                    e);
+            LOGGER.log(Level.WARNING, "Issues found while loading the importer configuration", e);
+            try {
+                this.configuration = dao.read(null);
+            } catch (IOException ex) {
+                // not expected, but still...
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    public void reloadConfiguration() {
+        try {
+            configDAO.read(configFile, configuration);
+            asynchronousJobs.setMaximumPoolSize(configuration.getMaxAsynchronousImports());
+            synchronousJobs.setMaximumPoolSize(configuration.getMaxSynchronousImports());
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to update importer configuration");
         }
     }
 
@@ -390,7 +400,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     public Long createContextAsync(
             final ImportData data, final WorkspaceInfo targetWorkspace, final StoreInfo targetStore)
             throws IOException {
-        return jobs.submit(
+        return asynchronousJobs.submit(
                 new SecurityContextCopyingJob<ImportContext>() {
                     @Override
                     protected ImportContext callInternal(ProgressMonitor monitor) throws Exception {
@@ -412,7 +422,7 @@ public class Importer implements DisposableBean, ApplicationListener {
      * @param prepData
      */
     public Long initAsync(final ImportContext context, final boolean prepData) {
-        return jobs.submit(
+        return asynchronousJobs.submit(
                 new SecurityContextCopyingJob<ImportContext>() {
                     @Override
                     protected ImportContext callInternal(ProgressMonitor monitor) throws Exception {
@@ -875,6 +885,30 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public void run(ImportContext context, ImportFilter filter, ProgressMonitor monitor)
             throws IOException {
+        Long taskId = runOnPool(synchronousJobs, context, filter, false);
+        Task<?> task = synchronousJobs.getTask(taskId);
+        // wait for it to complete
+        try {
+            task.get();
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof IOException) {
+                throw (IOException) cause;
+            } else {
+                throw new IOException(cause);
+            }
+        }
+    }
+
+    public Long runAsync(
+            final ImportContext context, final ImportFilter filter, final boolean init) {
+        return runOnPool(asynchronousJobs, context, filter, init);
+    }
+
+    protected void runInternal(ImportContext context, ImportFilter filter, ProgressMonitor monitor)
+            throws IOException {
         if (context.getState() == ImportContext.State.INIT) {
             throw new IllegalStateException("Importer is still initializing, cannot run it");
         }
@@ -957,10 +991,10 @@ public class Importer implements DisposableBean, ApplicationListener {
         changed(task.getContext());
     }
 
-    public Long runAsync(
-            final ImportContext context, final ImportFilter filter, final boolean init) {
+    private Long runOnPool(
+            JobQueue asynchronousJobs, ImportContext context, ImportFilter filter, boolean init) {
         // creating an asynchronous importer job
-        return jobs.submit(
+        return asynchronousJobs.submit(
                 new SecurityContextCopyingJob<ImportContext>() {
 
                     @Override
@@ -968,7 +1002,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                         if (init) {
                             init(context, true);
                         }
-                        run(context, filter, monitor);
+                        runInternal(context, filter, monitor);
                         return context;
                     }
 
@@ -1016,11 +1050,11 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public Task<ImportContext> getTask(Long job) {
-        return (Task<ImportContext>) jobs.getTask(job);
+        return (Task<ImportContext>) asynchronousJobs.getTask(job);
     }
 
     public List<Task<ImportContext>> getTasks() {
-        return (List) jobs.getTasks();
+        return (List) asynchronousJobs.getTasks();
     }
 
     /*
@@ -1731,40 +1765,14 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public File getUploadRoot() {
-        String value = null;
-        try {
-            value = System.getProperty(UPLOAD_ROOT_KEY);
-            if (value == null) {
-                value = System.getenv(UPLOAD_ROOT_KEY);
-            }
-        } catch (Throwable ex) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(
-                        Level.FINEST,
-                        "Could not access system property '" + UPLOAD_ROOT_KEY + "': " + ex);
-            }
-        }
-
-        if (configFile != null && configFile.isModified()) {
-            try {
-                props = configFile.read();
-            } catch (Exception e) {
-                LOGGER.log(
-                        Level.FINEST,
-                        "Could not find any '" + PROPERTYFILENAME + "' property file.",
-                        e);
-            }
-        }
-
-        if (props != null && value == null) {
-            value = props.getProperty(UPLOAD_ROOT_KEY);
-        }
+        String value = configuration.getUploadRoot();
 
         try {
             if (value != null) {
                 Resource uploadsRoot = Resources.fromPath(value);
                 return Resources.directory(uploadsRoot, !Resources.exists(uploadsRoot));
             }
+
             return catalog.getResourceLoader().findOrCreateDirectory("uploads");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -1772,7 +1780,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public void destroy() throws Exception {
-        jobs.shutdown();
+        asynchronousJobs.shutdown();
         contextStore.destroy();
     }
 
@@ -1925,5 +1933,25 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
 
         return null;
+    }
+
+    /**
+     * Returns a copy of the importer configuration
+     *
+     * @return
+     */
+    public ImporterInfo getConfiguration() {
+        return new ImporterInfoImpl(configuration);
+    }
+
+    /**
+     * Sets the importer configuration, and saves it on disk
+     *
+     * @param configuration
+     * @throws IOException
+     */
+    public void setConfiguration(ImporterInfo configuration) throws IOException {
+        configDAO.write(configuration, configFile);
+        reloadConfiguration();
     }
 }

@@ -19,6 +19,7 @@ import org.geoserver.importer.CountingVisitor;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.ImporterInfoDAO;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.SearchingVisitor;
@@ -78,7 +79,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
     @Test
     public void testSerialVersionUIDChange() throws Exception {
         Importer imp =
-                new Importer(null) {
+                new Importer(null, new ImporterInfoDAO()) {
 
                     @Override
                     public File getImportRoot() {

@@ -124,13 +124,15 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         FileUtils.deleteQuietly(dir);
 
         try {
-            if (System.getProperty(Importer.UPLOAD_ROOT_KEY) != null) {
-                System.clearProperty(Importer.UPLOAD_ROOT_KEY);
+            if (System.getProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY) != null) {
+                System.clearProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY);
             }
         } catch (Exception e) {
             LOGGER.log(
                     Level.WARNING,
-                    "Could not remove System ENV variable {" + Importer.UPLOAD_ROOT_KEY + "}",
+                    "Could not remove System ENV variable {"
+                            + ImporterInfoDAO.UPLOAD_ROOT_KEY
+                            + "}",
                     e);
         }
     }

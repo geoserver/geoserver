@@ -18,5 +18,14 @@
     <property name="order" value="6"/>
     <property name="icon" value="map_add.png"/>
   </bean>
+  <bean id="importerConfigPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="importerConfigPage"/>
+    <property name="titleKey" value="ImporterConfigPage.title"/>
+    <property name="descriptionKey" value="ImporterConfigPage.description"/>
+    <property name="componentClass" value="org.geoserver.importer.web.ImporterConfigPage"/>
+    <property name="category" ref="settingsCategory" />
+    <property name="order" value="50" />
+    <property name="icon" value="map_cog.png" />
+  </bean>
 
 </beans>

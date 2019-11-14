@@ -441,7 +441,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                         .getDefaultModelObjectAsString();
         assertTrue(nativeSRSTextFieldValue.isEmpty());
     }
-  
+
     @Test
     public void testSecurityTabInactiveWithNoDeafaultAccessManager() {
         TestResourceAccessManager manager = new TestResourceAccessManager();

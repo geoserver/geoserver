@@ -101,6 +101,7 @@
           <descriptor>release/ext-geostyler.xml</descriptor>
           <descriptor>release/ext-csw-iso.xml</descriptor>
           <descriptor>release/ext-importer-jdbc.xml</descriptor>
+          <descriptor>release/ext-jsonld.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -652,6 +653,12 @@
       <id>importer-jdbc</id>
       <modules>
         <module>importer-jdbc</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jsonld</id>
+      <modules>
+        <module>json-ld</module>
       </modules>
     </profile>
   </profiles>  

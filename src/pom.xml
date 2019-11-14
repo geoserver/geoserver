@@ -617,6 +617,12 @@
     <scope>test</scope>
    </dependency>
    <dependency>
+     <groupId>org.awaitility</groupId>
+     <artifactId>awaitility</artifactId>
+     <version>4.0.1</version>
+     <scope>test</scope>
+   </dependency>
+   <dependency>
     <groupId>org.hamcrest</groupId>
     <artifactId>hamcrest-library</artifactId>
     <version>1.3</version>
@@ -1948,6 +1954,7 @@
   <module>restconfig-wcs</module>
   <module>restconfig-wfs</module>
   <module>restconfig-wms</module>
+  <module>restconfig-wmts</module>
   <module>web</module>
   <module>community</module>
   <module>extension</module>

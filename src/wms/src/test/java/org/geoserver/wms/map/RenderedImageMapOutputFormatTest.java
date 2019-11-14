@@ -922,7 +922,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_NEAREST)));
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageNearest = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsNearest", imageNearest);
@@ -942,7 +943,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         request.setFormat(getMapFormat());
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        op = (RenderedOp) imageMap.getImage();
+        op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageBicubic = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
@@ -990,7 +991,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageNearest = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsNearest", imageNearest);
@@ -1010,7 +1012,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        op = (RenderedOp) imageMap.getImage();
+        op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageBicubic = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
@@ -1088,7 +1090,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        op = (RenderedOp) imageMap.getImage();
+        op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageServiceDefault = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationServiceDefault", imageServiceDefault);
@@ -1528,7 +1530,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage image = op.getAsBufferedImage();
         imageMap.dispose();
 
@@ -1564,7 +1567,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage image = op.getAsBufferedImage();
         imageMap.dispose();
 
@@ -1727,7 +1731,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         Point[] tileIndices = op.getTileIndices(new Rectangle(0, 0, mapWidth, mapHeight));
 
         // Assert we are getting more than a single huge tile.

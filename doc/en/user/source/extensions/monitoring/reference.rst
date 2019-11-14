@@ -144,6 +144,7 @@ OWS/OGC
 
 The following attributes are OGC service specific.
 
+
 .. list-table::
    :widths: 20 65 15
    :header-rows: 1
@@ -167,6 +168,13 @@ The following attributes are OGC service specific.
    * - Resources
      - Names of resources (layers, processes, etc...) specified as part of the request.
      - List of String
+   * - Resources processing times in milliseconds.
+     - Rendering times for resources. Rendering is performed by two concurrent threads, one reading and preprocessing data and styles towards a Java2D compatible
+       format, the other painting the results of the first on the canvas. When the first thread starts reading the next layer, the second thread is likely still painting features from the layer before it, thus, times in this list are overlapping with each other, and the sum will be greater than the actual wall rendering time.
+     - List of Numeric
+   * - Labels Processing Time
+     - Processing time in milliseconds for the labels of all resources listed.
+     - Numeric
    * - Bounding box
      - The bounding box specified as part of the request. In some cases this is not possible to 
        obtain this reliable, an example being a complex WFS query with a nested "BBOX" filter.
@@ -198,7 +206,7 @@ The following attributes are specific to GeoIP look ups and are not captured out
    * - Remote lon
      - The longitude from which the request originated.
      - Numeric
-   
+
 GWC 
 ---
 

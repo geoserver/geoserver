@@ -5,28 +5,35 @@
 package org.geoserver.jsonld.builders.impl;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
+import org.geoserver.jsonld.expressions.FilterFunction_xpath;
 import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /** Evaluates xpath and cql functions, writing their results to the output. */
 public class DynamicValueBuilder extends AbstractJsonBuilder {
 
     private Expression cql;
 
-    private Expression xpath;
+    private AttributeExpressionImpl xpath;
 
     private int contextPos = 0;
 
+    private NamespaceSupport namespaces;
+
     private static final Logger LOGGER = Logging.getLogger(DynamicValueBuilder.class);
 
-    public DynamicValueBuilder(String key, String expression) {
+    public DynamicValueBuilder(String key, String expression, NamespaceSupport namespaces) {
         super(key);
+        this.namespaces = namespaces;
         if (expression.startsWith("$${")) {
             this.cql =
                     TemplateExpressionExtractor.extractCqlExpressions(
@@ -34,7 +41,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         } else if (expression.startsWith("${")) {
             String strXpath = TemplateExpressionExtractor.extractXpath(expression);
             strXpath = determineContextPos(strXpath);
-            this.xpath = new AttributeExpressionImpl(strXpath, RootBuilder.namespaces);
+            this.xpath = new AttributeExpressionImpl(strXpath, namespaces);
         }
     }
 
@@ -87,6 +94,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
                 context = context.getParent();
                 i++;
             }
+            if (namespaces != null) prepareXpathFilter(cql);
             result = cql.evaluate(context.getCurrentObj());
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Unable to evaluate expression. Exception: {0}", e.getMessage());
@@ -94,9 +102,22 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return result;
     }
 
+    private void prepareXpathFilter(Expression expr) {
+        List<Expression> params = ((Function) expr).getParameters();
+        if (params.size() > 0) {
+            for (Expression e : params) {
+                if (e instanceof FilterFunction_xpath)
+                    ((FilterFunction_xpath) e).setNamespaces(namespaces);
+                else if (e instanceof Function) {
+                    prepareXpathFilter(e);
+                }
+            }
+        }
+    }
+
     /**
-     * Determines how many times needs, at writing time, to walk up {@link JsonBuilderContext} in
-     * order to execute xpath, and cleans it from ../ notation.
+     * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
+     * xpath, and cleans it from ../ notation.
      *
      * @param xpath
      * @return

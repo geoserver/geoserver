@@ -3,14 +3,13 @@ package org.geoserver.jsonld.builders;
 import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
-import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.opengis.filter.expression.Expression;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /** Abstract class for builders that can set the context for their children through source xpath */
 public abstract class SourceBuilder extends AbstractJsonBuilder {
 
-    private String source;
+    private AttributeExpressionImpl source;
 
     protected List<JsonBuilder> children;
 
@@ -23,8 +22,7 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
 
         if (source != null && !source.equals(context.getCurrentSource())) {
             Object o = evaluateSource(context.getCurrentObj());
-            JsonBuilderContext newContext = new JsonBuilderContext(o, source);
-            newContext.setCurrentSource(source);
+            JsonBuilderContext newContext = new JsonBuilderContext(o, source.getPropertyName());
             newContext.setParent(context);
             return newContext;
         }
@@ -32,8 +30,7 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
     }
 
     public Object evaluateSource(Object o) {
-        Expression expression = new AttributeExpressionImpl(source, RootBuilder.namespaces);
-        return expression.evaluate(o);
+        return source.evaluate(o);
     }
 
     @Override
@@ -47,10 +44,10 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
     }
 
     public String getSource() {
-        return source;
+        return source.getPropertyName();
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setSource(String source, NamespaceSupport namespaces) {
+        this.source = new AttributeExpressionImpl(source, namespaces);
     }
 }

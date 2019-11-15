@@ -8,15 +8,12 @@ import java.io.IOException;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
-import org.opengis.filter.expression.Expression;
 
 /**
  * This builder handle the writing of a Json array by invoking its children builders and setting the
  * context according to the $source specified in the template file.
  */
 public class IteratingBuilder extends SourceBuilder {
-
-    private Expression source;
 
     public IteratingBuilder(String key) {
         super(key);

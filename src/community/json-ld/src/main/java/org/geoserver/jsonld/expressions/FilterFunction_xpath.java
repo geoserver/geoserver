@@ -6,19 +6,21 @@ package org.geoserver.jsonld.expressions;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
-import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.builders.impl.XpathHandler;
 import org.geotools.feature.GeometryAttributeImpl;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.filter.capability.FunctionName;
+import org.opengis.filter.expression.Expression;
+import org.xml.sax.helpers.NamespaceSupport;
 
 public class FilterFunction_xpath extends FunctionExpressionImpl {
 
     public static FunctionName NAME =
             new FunctionNameImpl(
                     "xpath", parameter("result", Object.class), parameter("xpath", String.class));
+    private NamespaceSupport namespaces;
 
     public FilterFunction_xpath() {
         super(NAME);
@@ -28,8 +30,8 @@ public class FilterFunction_xpath extends FunctionExpressionImpl {
         String arg0;
         try { // attempt to evaluate xpath
             arg0 = (String) getExpression(0).evaluate(feature);
-            XpathHandler xpathHandler = new XpathHandler();
-            Object result = xpathHandler.evaluateXpath(RootBuilder.namespaces, feature, arg0);
+            Expression xpath = new AttributeExpressionImpl(arg0, namespaces);
+            Object result = xpath.evaluate(feature);
             if (result != null) {
                 if (!(result instanceof Geometry)) {
                     feature = ((GeometryAttributeImpl) result).getValue();
@@ -43,5 +45,13 @@ public class FilterFunction_xpath extends FunctionExpressionImpl {
                     "Filter Function problem for function strEndsWith argument #0 - expected type String");
         }
         return feature;
+    }
+
+    public NamespaceSupport getNamespaces() {
+        return namespaces;
+    }
+
+    public void setNamespaces(NamespaceSupport namespaces) {
+        this.namespaces = namespaces;
     }
 }

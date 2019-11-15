@@ -65,7 +65,7 @@ public class JsonLdConfigurationTest {
         for (JsonBuilder b : builder.getChildren()) {
             if (b instanceof DynamicValueBuilder) {
                 assertTrue(
-                        ((DynamicValueBuilder) b).getExpression() != null
+                        ((DynamicValueBuilder) b).getCql() != null
                                 || ((DynamicValueBuilder) b).getXpath() != null);
             } else if (b instanceof StaticBuilder) {
                 assertNotNull(((StaticBuilder) b).getStaticValue());

@@ -55,10 +55,14 @@ public class JsonLdConfiguration {
         CacheKey key = new CacheKey(resource, path);
         JsonLdTemplate template = templateCache.get(key);
         if (template.checkTemplate(resource)) templateCache.put(key, template);
-        if (template.getBuilderTree() == null)
+        RootBuilder root = template.getBuilderTree();
+        if (root == null)
             throw new RuntimeException(
                     "No Json-Ld template found for feature type " + resource.getName());
-        return template.getBuilderTree();
+        // ApplicationContext context =GeoServerApplication.get().getApplicationContext();
+        // context.getAutowireCapableBeanFactory().initializeBean(root.getNamespaces(),
+        // "AppSchema"+resource.getName());
+        return root;
     }
 
     public static JsonLdConfiguration get() {
@@ -95,8 +99,7 @@ public class JsonLdConfiguration {
             if (!(o instanceof CacheKey)) return false;
             CacheKey other = (CacheKey) o;
             if (!other.getPath().equals(path)) return false;
-            else if (!(other.getResource().getName().equals(resource.getName())))
-                    return false;
+            else if (!(other.getResource().getName().equals(resource.getName()))) return false;
             else if (!(other.getResource().getNamespace().equals(resource.getNamespace())))
                 return false;
             return true;

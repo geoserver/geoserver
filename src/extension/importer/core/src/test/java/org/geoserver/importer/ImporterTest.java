@@ -10,10 +10,13 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.resource.FileSystemWatcher;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Before;
 import org.junit.Test;
@@ -150,5 +153,28 @@ public class ImporterTest extends ImporterTestSupport {
         importer.calculateBounds(resource);
         assertFalse(resource.getNativeBoundingBox().isEmpty());
         assertTrue(bbox.equals(resource.getNativeBoundingBox()));
+    }
+
+    @Test
+    public void testImporterConfiguration() throws Exception {
+        // schedule for shorter delays
+        ((FileSystemWatcher) getResourceLoader().getResourceNotificationDispatcher())
+                .schedule(10, TimeUnit.MILLISECONDS);
+
+        // update the configuration
+        Resource props = getDataDirectory().get("importer/importer.properties");
+        ImporterInfoDAO dao = new ImporterInfoDAO();
+        ImporterInfo config = new ImporterInfoImpl();
+        config.setMaxAsynchronousImports(5);
+        config.setMaxSynchronousImports(7);
+        dao.write(config, props);
+
+        // forcing the importer to reload manually, as we don't know how fast the polling thread
+        // will be able to catch up
+        importer.reloadConfiguration();
+
+        // make sure the importer picked up the change
+        assertEquals(5, importer.asynchronousJobs.getMaximumPoolSize());
+        assertEquals(7, importer.synchronousJobs.getMaximumPoolSize());
     }
 }

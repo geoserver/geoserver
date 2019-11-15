@@ -37,8 +37,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterDataTest;
+import org.geoserver.importer.ImporterInfoDAO;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -747,7 +747,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         try {
             // Let's now override the external folder through the Environment variable. This takes
             // precedence on .properties
-            System.setProperty(Importer.UPLOAD_ROOT_KEY, "env_uploads");
+            System.setProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY, "env_uploads");
+            importer.reloadConfiguration();
             assertNotNull(importer.getUploadRoot());
 
             // the target layer is not there
@@ -781,8 +782,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
             if (dirFromEnv != null && dirFromEnv.exists()) {
                 FileUtils.deleteQuietly(dirFromEnv);
             }
-            if (System.getProperty(Importer.UPLOAD_ROOT_KEY) != null) {
-                System.clearProperty(Importer.UPLOAD_ROOT_KEY);
+            if (System.getProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY) != null) {
+                System.clearProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY);
             }
         }
     }

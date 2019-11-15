@@ -9,9 +9,12 @@
   <!-- 
    core importer setup
     -->
+
+  <bean id="importerInfoDao" class="org.geoserver.importer.ImporterInfoDAO"/>
   
   <bean id="importer" class="org.geoserver.importer.Importer">
     <constructor-arg ref="catalog"/>
+    <constructor-arg ref="importerInfoDao"/>
   </bean>
   
   <!--  format beans -->

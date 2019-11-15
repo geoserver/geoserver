@@ -51,13 +51,14 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     public void testLoad() {
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
+        print(tester.getLastRenderedPage(), true, true);
 
         tester.assertLabel("dataStoreForm:storeType", "Properties");
         tester.assertModelValue(
                 "dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", "cite");
         String expectedPath = new File(getTestData().getDataDirectoryRoot(), "cite").getPath();
         tester.assertModelValue(
-                "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue",
+                "dataStoreForm:parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
                 expectedPath);
     }
 
@@ -190,7 +191,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
             tester.executeAjaxEvent(wsDropDown, "change");
             form.setValue("dataStoreNamePanel:border:border_body:paramValue", "foo");
             form.setValue(
-                    "parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue",
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
                     "/foo");
             tester.clickLink("dataStoreForm:save", true);
             tester.assertNoErrorMessage();
@@ -223,7 +224,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
             tester.executeAjaxEvent(wsDropDown, "change");
             form.setValue("dataStoreNamePanel:border:border_body:paramValue", "foo");
             form.setValue(
-                    "parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue",
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
                     "/foo");
             tester.clickLink("dataStoreForm:save", true);
             tester.assertNoErrorMessage();

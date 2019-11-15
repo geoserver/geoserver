@@ -55,7 +55,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         FormTester ft = tester.newFormTester("dataStoreForm");
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
         ft.setValue(
-                "parametersPanel:url:border:border_body:paramValue",
+                "parametersPanel:url:fileInput:border:border_body:paramValue",
                 "file://" + new File("./target").getCanonicalPath());
         ft.select("workspacePanel:border:border_body:paramValue", 2);
         tester.executeAjaxEvent(
@@ -63,7 +63,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
 
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
         ft.setValue(
-                "parametersPanel:url:border:border_body:paramValue",
+                "parametersPanel:url:fileInput:border:border_body:paramValue",
                 "file://" + new File("./target").getCanonicalPath());
         ft.select("workspacePanel:border:border_body:paramValue", 2);
         ft.submit();

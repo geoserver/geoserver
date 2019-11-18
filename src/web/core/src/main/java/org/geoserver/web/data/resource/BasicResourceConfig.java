@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -41,7 +40,6 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSToCRSModel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.DataStoreUtils;
@@ -49,21 +47,14 @@ import org.vfny.geoserver.util.DataStoreUtils;
 /** A generic configuration panel for all basic ResourceInfo properties */
 public class BasicResourceConfig extends ResourceConfigurationPanel {
 
-    static final Logger LOGGER = Logging.getLogger(BasicResourceConfig.class);
-
     private static final long serialVersionUID = -552158739086379566L;
 
     DropDownChoice<ProjectionPolicy> projectionPolicy;
 
     CRSPanel declaredCRS;
 
-    transient CatalogBuilder cb;
-
     public BasicResourceConfig(String id, IModel<ResourceInfo> model) {
         super(id, model);
-
-        cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
-        cb.setStore(model.getObject().getStore());
 
         TextField<String> name = new TextField<String>("name");
         name.setRequired(true);
@@ -89,11 +80,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
-        boolean showComputeNativeBoundsLink =
-                model.getObject()
-                        .getSRS()
-                        .equalsIgnoreCase(getActualNativeSRSCode(model.getObject()));
-        refForm.add(computeNativeBoundsLink(refForm, nativeBBox, showComputeNativeBoundsLink));
+        AjaxSubmitLink nativeBoundsLink = computeNativeBoundsLink(refForm, nativeBBox);
 
         // lat/lon bbox
         final EnvelopePanel latLonPanel =
@@ -105,13 +92,14 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(latLonPanel);
         refForm.add(computeLatLonBoundsLink(refForm, nativeBBox, latLonPanel));
 
-        // check other native srs for Cascaded WFS or WMS resource
-        List<String> otherSRS = getOtherSRS(model.getObject());
-
-        // native srs , declared srs, and srs handling dropdown
+        // for resources coming from WMS and WFS Datastore
+        // then check if it has more than one SRS, then add FIND SRS button in Native SRS
+        // which will allow user to set other SRS as Native SRS
+        List<String> otherSRS = getOtherSRSFromWFSOrWMS(model.getObject());
         CRSPanel nativeCRS;
-
         if (otherSRS.isEmpty()) {
+            // normal behavior for resoureces not belonging to WFS and WMS Store
+            // or if WMS and WFS Store features dont have multiple SRS advertised
             // native srs , declared srs, and srs handling dropdown
             nativeCRS =
                     new CRSPanel(
@@ -119,77 +107,14 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"));
             nativeCRS.setReadOnly(true);
         } else {
-            // add other remotely supported srs in metadatamap
-            addOtherSRS(model.getObject());
-            // add actual native so that we can be back to native srs detected first time
-            String actualSRS = getActualNativeSRSCode(model.getObject());
-            if (!otherSRS.contains(actualSRS))
-                otherSRS.add(getActualNativeSRSCode(model.getObject()));
-            nativeCRS =
-                    new CRSPanel(
-                            "nativeSRS",
-                            new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"),
-                            otherSRS) {
-
-                        /** serialVersionUID */
-                        private static final long serialVersionUID = -7725670382699858126L;
-
-                        @Override
-                        protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
-
-                            super.onSRSUpdated(srs, target);
-                            try {
-                                CoordinateReferenceSystem crs = CRS.decode(srs);
-                                ReferencedEnvelope bounds =
-                                        cb.getNativeBounds(model.getObject()).transform(crs, false);
-                                nativeBBox.setModelObject(bounds);
-                                model.getObject().setSRS(srs);
-                                model.getObject().setNativeCRS(crs);
-                                model.getObject().setNativeBoundingBox(bounds);
-                                target.add(nativeBBox);
-
-                                // TODO do this in main constructor also
-                                // hide to stop user from calculating native bounds when custom
-                                // native is set
-                                refForm.get("computeNative")
-                                        .setVisible(isActualNative(crs, model.getObject()));
-                                refForm.add(refForm.get("computeNative"));
-                                target.add(refForm);
-
-                                // refForm.add(computeUserSelectedNativeBoundsLink(refForm,
-                                // nativeBBox));
-                                // nativeBBox.getParent().add(nativeBBox);
-                            } catch (Exception e) {
-                                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                            }
-                        }
-
-                        // checks if the selected SRS is actual native?
-                        private boolean isActualNative(
-                                CoordinateReferenceSystem crs, ResourceInfo resourceInfo) {
-
-                            try {
-                                CoordinateReferenceSystem resourceNativeCRS = null;
-                                if (resourceInfo instanceof FeatureTypeInfo) {
-                                    FeatureTypeInfo ft = (FeatureTypeInfo) resourceInfo;
-                                    resourceNativeCRS =
-                                            ft.getFeatureSource(null, null).getInfo().getCRS();
-                                } else {
-                                    ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
-                                    resourceNativeCRS = bounds.getCoordinateReferenceSystem();
-                                }
-                                return CRS.equalsIgnoreMetadata(crs, resourceNativeCRS);
-                            } catch (IOException e) {
-                                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                            }
-                            return false;
-                        }
-                    };
-
-            // show the find button but keep text field read only
-            nativeCRS.setFindLinkVisible(true);
+            // or resoureces belonging to WFS and WMS Store
+            // and with multiple advertised SRS
+            nativeCRS = getSelectableNativeCRSPanel(model, otherSRS, nativeBBox, refForm);
+            // show FIND button
+            nativeBoundsLink.setOutputMarkupId(true);
+            nativeBoundsLink.setVisible(true);
         }
-
+        refForm.add(nativeBoundsLink);
         refForm.add(nativeCRS);
         declaredCRS =
                 new CRSPanel(
@@ -216,42 +141,35 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(new ReprojectionIsPossibleValidator(nativeCRS, declaredCRS, projectionPolicy));
     }
 
-    AjaxSubmitLink computeNativeBoundsLink(
-            final Form refForm, final EnvelopePanel nativeBBox, boolean visible) {
-        AjaxSubmitLink link =
-                new AjaxSubmitLink("computeNative", refForm) {
+    AjaxSubmitLink computeNativeBoundsLink(final Form refForm, final EnvelopePanel nativeBBox) {
+        return new AjaxSubmitLink("computeNative", refForm) {
 
-                    private static final long serialVersionUID = 3106345307476297622L;
+            private static final long serialVersionUID = 3106345307476297622L;
 
-                    @Override
-                    public void onSubmit(final AjaxRequestTarget target, Form form) {
-                        // perform manual processing otherwise the component contents won't be
-                        // updated
-                        form.process(null);
-                        ResourceInfo resource =
-                                (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
-                        try {
-                            CatalogBuilder cb =
-                                    new CatalogBuilder(GeoServerApplication.get().getCatalog());
-                            ReferencedEnvelope bounds = cb.getNativeBounds(resource);
-                            resource.setNativeBoundingBox(bounds);
-                            nativeBBox.setModelObject(bounds);
-                        } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, "Error computing the native BBOX", e);
-                            error("Error computing the native BBOX:" + e.getMessage());
-                        }
-                        target.add(nativeBBox);
-                    }
+            @Override
+            public void onSubmit(final AjaxRequestTarget target, Form form) {
+                // perform manual processing otherwise the component contents won't be updated
+                form.process(null);
+                ResourceInfo resource =
+                        (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
+                try {
+                    CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                    ReferencedEnvelope bounds = cb.getNativeBounds(resource);
+                    resource.setNativeBoundingBox(bounds);
+                    nativeBBox.setModelObject(bounds);
+                } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, "Error computing the native BBOX", e);
+                    error("Error computing the native BBOX:" + e.getMessage());
+                }
+                target.add(nativeBBox);
+            }
 
-                    public boolean getDefaultFormProcessing() {
-                        // disable the default processing or the link won't trigger
-                        // when any validation fails
-                        return false;
-                    }
-                };
-        link.setOutputMarkupId(true);
-        link.setVisible(visible);
-        return link;
+            public boolean getDefaultFormProcessing() {
+                // disable the default processing or the link won't trigger
+                // when any validation fails
+                return false;
+            }
+        };
     }
 
     /**
@@ -331,55 +249,6 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         };
     }
 
-    public boolean addOtherSRS(ResourceInfo resourceInfo) {
-
-        // first check if its WFS-NG or WMSStore
-        List<String> otherSRS = getOtherSRS(resourceInfo);
-
-        if (otherSRS != null) {
-            if (!otherSRS.isEmpty()) {
-                resourceInfo
-                        .getMetadata()
-                        .put(FeatureTypeInfo.OTHER_SRS, String.join(",", otherSRS));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String getActualNativeSRSCode(ResourceInfo resourceInfo) {
-
-        try {
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo ft = (FeatureTypeInfo) resourceInfo;
-                return "EPSG:"
-                        + CRS.lookupEpsgCode(
-                                ft.getFeatureSource(null, null).getInfo().getCRS(), false);
-            } else {
-                ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
-                return "EPSG:" + CRS.lookupEpsgCode(bounds.getCoordinateReferenceSystem(), false);
-            }
-
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error getting actual Native SRS code for resource "
-                            + resourceInfo.getNativeName(),
-                    e);
-        }
-
-        return "";
-    }
-
-    private List<String> getOtherSRS(ResourceInfo resourceInfo) {
-        // first check if its WFS-NG
-        List<String> otherSRS = DataStoreUtils.getOtherSRSFromWfsNg(resourceInfo);
-        // second check if its wms
-        if (otherSRS.isEmpty()) otherSRS = DataStoreUtils.getOtherSRSFromWMSStore(resourceInfo);
-
-        return otherSRS;
-    }
-
     class ProjectionPolicyRenderer extends ChoiceRenderer<ProjectionPolicy> {
 
         private static final long serialVersionUID = -6593748590058977418L;
@@ -456,5 +325,118 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 }
             }
         }
+    }
+
+    public boolean addOtherSRS(ResourceInfo resourceInfo) {
+
+        // first check if its WFS-NG or WMSStore
+        List<String> otherSRS = getOtherSRSFromWFSOrWMS(resourceInfo);
+
+        if (otherSRS != null) {
+            if (!otherSRS.isEmpty()) {
+                resourceInfo
+                        .getMetadata()
+                        .put(FeatureTypeInfo.OTHER_SRS, String.join(",", otherSRS));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getActualNativeSRSCode(ResourceInfo resourceInfo) {
+
+        try {
+            CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
+            cb.setStore(resourceInfo.getStore());
+            return "EPSG:" + CRS.lookupEpsgCode(cb.getNativeCRS(resourceInfo), false);
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error getting actual Native SRS code for resource "
+                            + resourceInfo.getNativeName(),
+                    e);
+        }
+
+        return "";
+    }
+
+    private List<String> getOtherSRSFromWFSOrWMS(ResourceInfo resourceInfo) {
+        // first check if its WFS-NG
+        List<String> otherSRS = DataStoreUtils.getOtherSRSFromWfsNg(resourceInfo);
+        // second check if its wms
+        if (otherSRS.isEmpty()) otherSRS = DataStoreUtils.getOtherSRSFromWMSStore(resourceInfo);
+
+        return otherSRS;
+    }
+
+    /*
+     * returns CRS Panel which will allow selecting alternative SRS as Native SRS
+     * This is only used for WMS and WFS-NG resources
+     * */
+    private CRSPanel getSelectableNativeCRSPanel(
+            IModel<ResourceInfo> model,
+            List<String> otherSRS,
+            final EnvelopePanel nativeBBox,
+            final Form<ResourceInfo> refForm) {
+        addOtherSRS(model.getObject());
+        // add actual native so that we can be back to native srs detected first time
+        String actualSRS = getActualNativeSRSCode(model.getObject());
+        if (!otherSRS.contains(actualSRS)) otherSRS.add(getActualNativeSRSCode(model.getObject()));
+        CRSPanel nativeCRS =
+                new CRSPanel(
+                        "nativeSRS",
+                        new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"),
+                        otherSRS) {
+
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = -7725670382699858126L;
+
+                    @Override
+                    protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
+
+                        super.onSRSUpdated(srs, target);
+                        try {
+                            CoordinateReferenceSystem crs = CRS.decode(srs);
+                            ReferencedEnvelope bounds =
+                                    model.getObject().getNativeBoundingBox().transform(crs, false);
+                            nativeBBox.setModelObject(bounds);
+                            model.getObject().setSRS(srs);
+                            model.getObject().setNativeCRS(crs);
+                            model.getObject().setNativeBoundingBox(bounds);
+                            target.add(nativeBBox);
+
+                            refForm.get("computeNative")
+                                    .setVisible(isActualNative(crs, model.getObject()));
+                            refForm.add(refForm.get("computeNative"));
+                            target.add(refForm);
+                        } catch (Exception e) {
+                            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        }
+                    }
+
+                    // checks if the selected SRS is actual native?
+                    private boolean isActualNative(
+                            CoordinateReferenceSystem crs, ResourceInfo resourceInfo) {
+
+                        try {
+                            CatalogBuilder cb =
+                                    new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                            cb.setStore(resourceInfo.getStore());
+
+                            return CRS.equalsIgnoreMetadata(crs, cb.getNativeCRS(resourceInfo));
+                        } catch (Exception e) {
+                            LOGGER.log(
+                                    Level.SEVERE,
+                                    "Error getting actual Native SRS code for resource "
+                                            + resourceInfo.getNativeName(),
+                                    e);
+                        }
+                        return false;
+                    }
+                };
+
+        // show the find button but keep text field read only
+        nativeCRS.setFindLinkVisible(true);
+        return nativeCRS;
     }
 }

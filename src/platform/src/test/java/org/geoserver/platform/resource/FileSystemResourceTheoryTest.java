@@ -5,6 +5,7 @@
 package org.geoserver.platform.resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -12,9 +13,21 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.geoserver.platform.resource.ResourceNotification.Event;
@@ -27,6 +40,7 @@ import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.TestName;
 
 public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
@@ -35,6 +49,8 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     @Rule public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule public TestName testName = new TestName();
 
     @DataPoints
     public static String[] testPaths() {
@@ -116,6 +132,9 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
      * Changes the {@link File#lastModified() file.lastModified()} timestamp, making sure the result
      * differs from its current timestamp; may delay long enough to match file system resolution.
      *
+     * <p>Just like with the default behavior of the Unix touch command, if the file does not exist,
+     * creates a new, empty file.
+     *
      * <p>Example: Linux systems expect around 1 second resolution for file modification.
      *
      * @param file
@@ -124,7 +143,12 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     private long touch(File file) {
         long origional = file.lastModified();
         if (origional == 0l) {
-            return 0l; // cannot modify a file that does not exsist
+            try {
+                Files.createFile(file.toPath());
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+            return file.lastModified();
         }
         long after = origional;
         do {
@@ -193,6 +217,114 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         assertEquals("FileA", e.getPath());
 
         store.get(Paths.BASE).removeListener(listener);
+    }
+
+    @Test
+    public void emptyDirectoryCreateEventShouldNotBeRaised() throws Exception {
+        final String dirName = testName.getMethodName();
+        File watchedDir = Paths.toFile(store.baseDirectory, dirName);
+
+        FileSystemWatcher watcher = (FileSystemWatcher) store.getResourceNotificationDispatcher();
+        // set a shorter poll delay
+        watcher.schedule(100, TimeUnit.MILLISECONDS);
+
+        AwaitResourceListener listener = new AwaitResourceListener();
+
+        // listen to changes on a resource that doesn't yet exist
+        watcher.addListener(watchedDir.getName(), listener);
+        assertFalse(watchedDir.exists());
+        assertTrue(watchedDir.mkdir());
+
+        // empty directory create events are not raised since we're watching for
+        // directory contents
+        exception.expect(ConditionTimeoutException.class);
+        listener.await(500, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    public void directoryCreateEventWithContents() throws Exception {
+        final String dirName = testName.getMethodName();
+        File watchedDir = Paths.toFile(store.baseDirectory, dirName);
+        File fileA = new File(watchedDir, "FileA");
+
+        FileSystemWatcher watcher = (FileSystemWatcher) store.getResourceNotificationDispatcher();
+        // set a shorter poll delay
+        watcher.schedule(100, TimeUnit.MILLISECONDS);
+
+        AwaitResourceListener listener = new AwaitResourceListener();
+
+        // listen to changes on a resource that doesn't yet exist
+        watcher.addListener(watchedDir.getName(), listener);
+        assertFalse(watchedDir.exists());
+        assertTrue(watchedDir.mkdir());
+        touch(fileA);
+        assertTrue(fileA.exists());
+
+        ResourceNotification n = listener.await(500, TimeUnit.MILLISECONDS);
+        assertEquals(dirName, n.getPath());
+        assertEquals(Kind.ENTRY_CREATE, n.getKind());
+        assertEquals(1, n.events().size());
+        Event event = n.events().get(0);
+        assertEquals(Kind.ENTRY_CREATE, event.getKind());
+        assertEquals("FileA", event.getPath());
+    }
+
+    @Test
+    public void dynamicAsyncDirectoryEvents() throws Exception {
+        final String dirName = testName.getMethodName();
+        final File watchedDir = Paths.toFile(store.baseDirectory, dirName);
+
+        FileSystemWatcher watcher = (FileSystemWatcher) store.getResourceNotificationDispatcher();
+        // set a shorter poll delay
+        watcher.schedule(100, TimeUnit.MILLISECONDS);
+        List<ResourceNotification> notifications = new CopyOnWriteArrayList<>();
+        watcher.addListener(dirName, notifications::add);
+
+        final Set<String> files =
+                IntStream.range(0, 256)
+                        .mapToObj(i -> String.format("File%d", i))
+                        .collect(Collectors.toSet());
+        // async create files with delay
+        final BlockingQueue<String> names = new ArrayBlockingQueue<>(files.size(), true, files);
+        final Callable<Void> asyncFileModifier =
+                () -> {
+                    String resource;
+                    while ((resource = names.poll()) != null) {
+                        try {
+                            Thread.sleep(10);
+                            File f = new File(watchedDir, resource);
+                            f.getParentFile().mkdir(); // create parent if doesn't yet exist
+                            touch(f);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    return null;
+                };
+
+        final int nthreads = 8;
+        final ExecutorService executorService = Executors.newFixedThreadPool(nthreads);
+        try { // returns once all tasks finished
+            executorService.invokeAll(Collections.nCopies(nthreads, asyncFileModifier));
+        } finally {
+            executorService.shutdown();
+        }
+        // give file watcher a chance to catch up with latest events
+        Thread.sleep(200);
+
+        assertEquals(
+                1, notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_CREATE).count());
+        assertEquals(
+                notifications.size() - 1,
+                notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_MODIFY).count());
+
+        List<Event> fileEvents =
+                notifications
+                        .stream()
+                        .map(ResourceNotification::events)
+                        .flatMap(List::stream)
+                        .collect(Collectors.toList());
+        assertEquals(files.size(), fileEvents.size());
     }
 
     /** ResourceListener that traps the next ResourceNotification for testing */

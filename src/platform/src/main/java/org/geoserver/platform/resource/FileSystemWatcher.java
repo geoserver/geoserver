@@ -80,7 +80,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
                 List<String> removed,
                 List<String> modified) {
             this.context = context;
-            this.kind = Kind.ENTRY_MODIFY;
+            this.kind = kind;
             this.created = created == null ? Collections.emptyList() : created;
             this.removed = removed == null ? Collections.emptyList() : removed;
             this.modified = modified == null ? Collections.emptyList() : modified;
@@ -206,29 +206,21 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
             if (file.isFile()) {
                 return simpleFileCheck();
             }
+            // file exists and is a directory
             return pollDirectory();
         }
 
         private Delta pollDirectory() {
-            Objects.requireNonNull(this.children);
             final long fileModified = file.lastModified();
-            // REVISIT, with pollUpdatesOnly we could avoid scanning the directory
-            // (file.listFiles()) but then we'd miss added/deleted files that happened too
-            // fast for the directory's timestamp to be changed (given file.lastModified()
-            // generally lacks enough resolution)
-            // final boolean pollUpdatesOnly;
             final Kind kind;
-            if (this.last == fileModified) {
-                // this.file is a directory and its utime hasn't changed. This means no child
-                // has been added or removed, but can't know if some child's been changed
-                // pollUpdatesOnly = true;
+            if (this.exsists) {
                 kind = Kind.ENTRY_MODIFY;
             } else {
-                // pollUpdatesOnly = false;
-                kind = this.exsists ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE;
-                this.last = fileModified;
+                this.children = new HashSet<>();
+                kind = Kind.ENTRY_CREATE;
                 this.exsists = true;
             }
+            this.last = fileModified;
 
             long childrenMaxLastModified = this.childrenLastModifiedMax;
 

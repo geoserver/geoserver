@@ -57,11 +57,11 @@ The following table describes the meaning of each column in the metadata table.
    * - :guilabel:`table_schema`
      - Name of the database schema in which the table is located.
    * - :guilabel:`table_name`
-     - Name of the table to be published
+     - Name of the table or view to be published
    * - :guilabel:`pk_column`
      - Name of a column used to form the feature IDs
    * - :guilabel:`pk_column_idx`
-     - Index of the column in a multi-column key. In case multi column keys are needed multiple records with the same table schema and table name will be used.
+     - Index of the column in a multi-column key, else NULL. In case multi column keys are needed, multiple records with the same table schema and table name will be used.
    * - :guilabel:`pk_policy`
      - The new value generation policy, used in case a new feature needs to be added in the table (following a WFS-T insert operation). 
    * - :guilabel:`pk_sequence`

@@ -20,6 +20,6 @@ Installing the GeoServer GeoFence Server extension
 
  #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
 
-    .. warning:: By default GeoFence will store his data in a `H2 database <http://www.h2database.com/html/main.html>`_ and the database schema will be automatically managed by Hibernate. `GeoFence documentation <https://github.com/geoserver/geofence/wiki/GeoFence-configuration>`_ explains how to configure a different backed database and configure Hibernate behavior.
+    .. warning:: By default GeoFence will store this data in a `H2 database <http://www.h2database.com/html/main.html>`_ and the database schema will be automatically managed by Hibernate. The `GeoFence documentation <https://github.com/geoserver/geofence/wiki/GeoFence-configuration>`_ explains how to configure a different backed database and configure Hibernate behavior.
 
  #. Restart GeoServer

@@ -440,6 +440,9 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
                         .getDefaultModelObjectAsString();
         assertTrue(nativeSRSTextFieldValue.isEmpty());
+        // assert Find link is not visible
+        tester.assertInvisible(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:find");
     }
 
     @Test

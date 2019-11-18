@@ -157,6 +157,22 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
     }
 
     @Test
+    public void testFindNativeCRS() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));
+        CoordinateReferenceSystem resourceCRS = fti.getCRS();
+        assertNotNull(resourceCRS);
+        // make sure the srs is as expected, otherwise the rest of the tests don't make sense
+        assertEquals("EPSG:32615", fti.getSRS());
+        // change SRS of Resource
+        fti.setNativeCRS(CRS.decode("EPSG:26713"));
+        // catalog builder should return origin "EPSG:32615"
+        assertEquals(CRS.lookupEpsgCode(cb.getNativeCRS(fti), false), Integer.valueOf(32615));
+    }
+
+    @Test
     public void testFeatureType() throws Exception {
         // build a feature type (it's already in the catalog, but we just want to
         // check it's built as expected
@@ -259,6 +275,20 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cinfo.setNativeCRS(testCRS);
         cb.initCoverage(cinfo, "srs lookup");
         assertEquals("EPSG:4230", cinfo.getSRS());
+    }
+
+    @Test
+    public void testCoverageNativeSRSLookup() throws Exception {
+        Catalog cat = getCatalog();
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getCoverageStoreByName(MockData.WORLD.getLocalPart()));
+        CoverageInfo cinfo = cb.buildCoverage();
+        // change SRS of Resource to random
+        cinfo.setNativeCRS(CRS.decode("EPSG:26713"));
+        cinfo.setSRS("EPSG:26713");
+        // catalog builder should return origin "EPSG:4236"
+        assertEquals(CRS.lookupEpsgCode(cb.getNativeCRS(cinfo), false), Integer.valueOf(4326));
     }
 
     @Test
@@ -580,6 +610,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertTrue(layer.getStyles().isEmpty());
             assertTrue(layer.getDefaultStyle().getName().isEmpty());
 
+            // change SRS of Resource
+            layer.setNativeCRS(CRS.decode("EPSG:26713"));
+            // catalog builder should return origin "EPSG:4326"
+            assertEquals(CRS.lookupEpsgCode(cb.getNativeCRS(layer), false), Integer.valueOf(4326));
+
         } finally {
             TestHttpClientProvider.endTest();
         }
@@ -613,6 +648,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertTrue(!layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
             assertTrue(layer.getDefaultStyle().getName().isEmpty());
+
+            // change SRS of Resource
+            layer.setNativeCRS(CRS.decode("EPSG:26713"));
+            // catalog builder should return origin "EPSG:4326"
+            assertEquals(CRS.lookupEpsgCode(cb.getNativeCRS(layer), false), Integer.valueOf(4326));
         } finally {
             TestHttpClientProvider.endTest();
         }

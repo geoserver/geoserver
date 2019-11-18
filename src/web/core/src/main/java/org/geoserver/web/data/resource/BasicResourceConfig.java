@@ -81,7 +81,6 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
         AjaxSubmitLink nativeBoundsLink = computeNativeBoundsLink(refForm, nativeBBox);
-        refForm.add(nativeBoundsLink);
 
         // lat/lon bbox
         final EnvelopePanel latLonPanel =
@@ -114,8 +113,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             // show FIND button
             nativeBoundsLink.setOutputMarkupId(true);
             nativeBoundsLink.setVisible(true);
-            refForm.add(nativeBoundsLink);
         }
+        refForm.add(nativeBoundsLink);
         refForm.add(nativeCRS);
         declaredCRS =
                 new CRSPanel(
@@ -347,18 +346,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     private String getActualNativeSRSCode(ResourceInfo resourceInfo) {
 
         try {
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo ft = (FeatureTypeInfo) resourceInfo;
-                return "EPSG:"
-                        + CRS.lookupEpsgCode(
-                                ft.getFeatureSource(null, null).getInfo().getCRS(), false);
-            } else {
-                CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
-                cb.setStore(resourceInfo.getStore());
-                ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
-                return "EPSG:" + CRS.lookupEpsgCode(bounds.getCoordinateReferenceSystem(), false);
-            }
-
+            CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
+            cb.setStore(resourceInfo.getStore());
+            return "EPSG:" + CRS.lookupEpsgCode(cb.getNativeCRS(resourceInfo), false);
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -381,6 +371,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     /*
      * returns CRS Panel which will allow selecting alternative SRS as Native SRS
+     * This is only used for WMS and WFS-NG resources
      * */
     private CRSPanel getSelectableNativeCRSPanel(
             IModel<ResourceInfo> model,
@@ -428,20 +419,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             CoordinateReferenceSystem crs, ResourceInfo resourceInfo) {
 
                         try {
-                            CoordinateReferenceSystem resourceNativeCRS = null;
-                            if (resourceInfo instanceof FeatureTypeInfo) {
-                                FeatureTypeInfo ft = (FeatureTypeInfo) resourceInfo;
-                                resourceNativeCRS =
-                                        ft.getFeatureSource(null, null).getInfo().getCRS();
-                            } else {
-                                CatalogBuilder cb =
-                                        new CatalogBuilder(GeoServerApplication.get().getCatalog());
-                                cb.setStore(resourceInfo.getStore());
-                                ReferencedEnvelope bounds = cb.getNativeBounds(resourceInfo);
-                                resourceNativeCRS = bounds.getCoordinateReferenceSystem();
-                            }
-                            return CRS.equalsIgnoreMetadata(crs, resourceNativeCRS);
-                        } catch (IOException e) {
+                            CatalogBuilder cb =
+                                    new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                            cb.setStore(resourceInfo.getStore());
+
+                            return CRS.equalsIgnoreMetadata(crs, cb.getNativeCRS(resourceInfo));
+                        } catch (Exception e) {
                             LOGGER.log(
                                     Level.SEVERE,
                                     "Error getting actual Native SRS code for resource "

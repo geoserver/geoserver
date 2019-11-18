@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geotools.filter.AttributeExpressionImpl;
+import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Abstract class for builders that can set the context for their children through source xpath */
@@ -43,8 +44,12 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
         return children;
     }
 
-    public String getSource() {
-        return source.getPropertyName();
+    public Expression getSource() {
+        return source;
+    }
+
+    public String getStrSource() {
+        return source != null ? source.getPropertyName() : null;
     }
 
     public void setSource(String source, NamespaceSupport namespaces) {

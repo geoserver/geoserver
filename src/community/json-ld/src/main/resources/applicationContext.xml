@@ -16,6 +16,4 @@
         <constructor-arg ref="geoServer"/>
     </bean>
 
-    <bean id="jsonld_filter" class="org.geoserver.jsonld.request.JsonLdKvpParser"/>
-
 </beans>

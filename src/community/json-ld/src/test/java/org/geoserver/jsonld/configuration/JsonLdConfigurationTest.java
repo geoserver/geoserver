@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import org.easymock.EasyMock;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -21,7 +20,6 @@ import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
-import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
@@ -74,15 +72,6 @@ public class JsonLdConfigurationTest {
                 testChildrenBuilder(b);
             }
         }
-    }
-
-    @Test
-    public void dynamicReloadingTest() throws ExecutionException, IOException {
-        JsonLdConfiguration conf = JsonLdConfiguration.get();
-        RootBuilder root = conf.getTemplate(typeInfo, "path");
-        assertNotNull(root);
-        File f = new File(getClass().getResource("Station_gml31.json").getFile());
-        f.setLastModified(new Date().getTime());
     }
 
     public static GeoServerDataDirectory getGeoserverDD(

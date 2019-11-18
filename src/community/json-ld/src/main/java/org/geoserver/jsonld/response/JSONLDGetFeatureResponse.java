@@ -62,7 +62,7 @@ public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
                 if (writer != null && !writer.isClosed()) writer.close();
                 output.close();
             } catch (IOException ioex) {
-                ioex.printStackTrace();
+                throw new ServiceException(ioex);
             }
         }
     }

@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.validation.JsonLdValidation;
+import org.geoserver.jsonld.validation.JsonLdValidator;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
@@ -48,9 +48,8 @@ public class JsonLdTemplate {
                     try {
                         RootBuilder root = watcher.getJsonLdTemplateParser();
 
-                        /*JsonLdValidation validator =
-                                new JsonLdValidation(typeInfo.getFeatureType());*/
-                        boolean isValid = true; //validator.validateTemplate(root);
+                        JsonLdValidator validator = new JsonLdValidator(typeInfo.getFeatureType());
+                        boolean isValid = validator.validateTemplate(root);
                         if (isValid) {
                             this.builderTree = root;
                             return true;

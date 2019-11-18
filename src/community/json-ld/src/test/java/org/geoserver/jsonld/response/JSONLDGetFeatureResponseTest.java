@@ -14,19 +14,23 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.test.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     Catalog catalog;
     FeatureTypeInfo typeInfo;
+    GeoServerDataDirectory dd;
 
-    private void setUp() throws IOException {
+    @Before
+    public void setUp() throws IOException {
         catalog = getCatalog();
 
         typeInfo = catalog.getFeatureTypeByName("st_gml31", "Station_gml31");
-        GeoServerDataDirectory dd =
-                (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
+        dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
+
         File file =
                 dd.getResourceLoader()
                         .createFile(
@@ -41,7 +45,6 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testJsonLdResponse() throws Exception {
-        setUp();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=st_gml31:Station_gml31&outputFormat=");
         sb.append("application%2Fld%2Bjson");
@@ -68,6 +71,20 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
         assertEquals(secondGeom.get("wkt"), "POINT (1 -1)");
     }
 
+    @Test
+    public void testJsonLdQuery() throws Exception {
+        StringBuffer sb =
+                new StringBuffer("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=st_gml31:Station_gml31&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append("&cql_filter=st_gml31:measurements.name IS NULL");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.isEmpty());
+    }
+
     protected JSON getJsonLd(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals(response.getContentType(), "application/ld+json");
@@ -77,5 +94,19 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     @Override
     protected AbstractAppSchemaMockData createTestData() {
         return new StationsMockData();
+    }
+
+    @After
+    public void cleanup() {
+        dd.getResourceLoader()
+                .get(
+                        "workspaces/st_gml31/"
+                                + typeInfo.getStore().getName()
+                                + "/"
+                                + typeInfo.getName()
+                                + "/"
+                                + typeInfo.getName()
+                                + ".json")
+                .delete();
     }
 }

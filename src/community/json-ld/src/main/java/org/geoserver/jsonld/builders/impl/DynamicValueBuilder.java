@@ -10,8 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.expressions.FilterFunction_xpath;
 import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
+import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.expression.Expression;
@@ -106,8 +106,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         List<Expression> params = ((Function) expr).getParameters();
         if (params.size() > 0) {
             for (Expression e : params) {
-                if (e instanceof FilterFunction_xpath)
-                    ((FilterFunction_xpath) e).setNamespaces(namespaces);
+                if (e instanceof XPathFunction) ((XPathFunction) e).setNamespaces(namespaces);
                 else if (e instanceof Function) {
                     prepareXpathFilter(e);
                 }

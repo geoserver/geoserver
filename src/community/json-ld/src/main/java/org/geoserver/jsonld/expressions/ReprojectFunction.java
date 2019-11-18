@@ -17,7 +17,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
-public class FilterFunction_reproject extends FunctionExpressionImpl {
+public class ReprojectFunction extends FunctionExpressionImpl {
     public static FunctionName NAME =
             new FunctionNameImpl(
                     "reproject",
@@ -25,7 +25,7 @@ public class FilterFunction_reproject extends FunctionExpressionImpl {
                     parameter("targetCRS", String.class),
                     parameter("geometry", Geometry.class));
 
-    public FilterFunction_reproject() {
+    public ReprojectFunction() {
         super(NAME);
     }
 

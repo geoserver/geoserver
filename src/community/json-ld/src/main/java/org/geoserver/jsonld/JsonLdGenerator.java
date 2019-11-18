@@ -130,17 +130,7 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
      * @throws IOException
      */
     public void writeResult(Object result) throws IOException {
-        if (result instanceof String) {
-            writeString(String.valueOf(result));
-        } else if (result instanceof Long) {
-            writeNumber((Long) result);
-        } else if (result instanceof Double) {
-            writeNumber((Double) result);
-        } else if (result instanceof Integer) {
-            writeNumber((Integer) result);
-        } else if (result instanceof Float) {
-            writeNumber((Float) result);
-        } else if (result instanceof String) {
+        if (result instanceof String || result instanceof Number) {
             writeString(String.valueOf(result));
         } else if (result instanceof Geometry) {
             geometryHandler.writeGeometry(delegate, (Geometry) result);

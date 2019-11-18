@@ -15,14 +15,14 @@ import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
-public class FilterFunction_xpath extends FunctionExpressionImpl {
+public class XPathFunction extends FunctionExpressionImpl {
 
     public static FunctionName NAME =
             new FunctionNameImpl(
                     "xpath", parameter("result", Object.class), parameter("xpath", String.class));
     private NamespaceSupport namespaces;
 
-    public FilterFunction_xpath() {
+    public XPathFunction() {
         super(NAME);
     }
 

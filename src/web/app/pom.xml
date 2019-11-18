@@ -1772,7 +1772,7 @@
       </dependencies>
     </profile>
     <profile>
-      <id>jsonld</id>
+      <id>json-ld</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>

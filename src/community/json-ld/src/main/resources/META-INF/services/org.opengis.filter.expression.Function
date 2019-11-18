@@ -1,2 +1,2 @@
-org.geoserver.jsonld.expressions.FilterFunction_xpath
-org.geoserver.jsonld.expressions.FilterFunction_reproject
+org.geoserver.jsonld.expressions.XPathFunction
+org.geoserver.jsonld.expressions.ReprojectFunction

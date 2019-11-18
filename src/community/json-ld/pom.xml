@@ -14,7 +14,8 @@
     <artifactId>gs-json-ld</artifactId>
     <version>2.17-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>json-ld Module</name>
+    <name>JSON-LD Module</name>
+    <description>JSON-LD output format support plugin</description>
 
     <dependencies>
         <dependency>
@@ -131,6 +132,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <developers>
+        <developer>
+            <name>Marco Volpini</name>
+            <id>taba90</id>
+            <email>marco.volpini@geosolutions.it</email>
+            <organization>GeoSolutions S.A.S. </organization>
+            <roles>
+                <role>Java Developer</role>
+                <role>Module Maintainer</role>
+            </roles>
+        </developer>
+    </developers>
 
 
 

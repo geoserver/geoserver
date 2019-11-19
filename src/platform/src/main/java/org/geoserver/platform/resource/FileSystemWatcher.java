@@ -5,19 +5,33 @@
  */
 package org.geoserver.platform.resource;
 
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
@@ -35,41 +49,45 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
  */
 public class FileSystemWatcher implements ResourceNotificationDispatcher, DisposableBean {
 
-    interface FileExtractor {
-        public File getFile(String path);
-    }
+    private static final Logger LOGGER = Logging.getLogger(FileSystemWatcher.class);
 
     /** Change to file system */
     static class Delta {
+        /** Watched directory where changes occurred */
         final File context;
 
         final Kind kind;
 
-        final List<File> created;
+        /** Paths relative to the context directory that have been created */
+        final List<String> created;
 
-        final List<File> removed;
+        /** Paths relative to the context directory that have been removed */
+        final List<String> removed;
 
-        final List<File> modified;
+        /** Paths relative to the context directory that have been modified */
+        final List<String> modified;
 
         public Delta(File context, Kind kind) {
             this.context = context;
             this.kind = kind;
-            this.created = null;
-            this.removed = null;
-            this.modified = null;
+            this.created = this.removed = this.modified = Collections.emptyList();
         }
 
         public Delta(
                 File context,
                 Kind kind,
-                List<File> created,
-                List<File> removed,
-                List<File> modified) {
+                List<String> created,
+                List<String> removed,
+                List<String> modified) {
             this.context = context;
-            this.kind = Kind.ENTRY_MODIFY;
-            this.created = created != null ? created : (List<File>) Collections.EMPTY_LIST;
-            this.removed = removed != null ? removed : (List<File>) Collections.EMPTY_LIST;
-            this.modified = modified != null ? modified : (List<File>) Collections.EMPTY_LIST;
+            this.kind = kind;
+            this.created = created == null ? Collections.emptyList() : created;
+            this.removed = removed == null ? Collections.emptyList() : removed;
+            this.modified = modified == null ? Collections.emptyList() : modified;
+        }
+
+        public int size() {
+            return created.size() + removed.size() + modified.size();
         }
 
         @Override
@@ -94,7 +112,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         /** Path to use during notification */
         final String path;
 
-        List<ResourceListener> listeners = new CopyOnWriteArrayList<ResourceListener>();
+        final List<ResourceListener> listeners = new CopyOnWriteArrayList<ResourceListener>();
 
         /** When last notification was sent */
         long last = 0;
@@ -102,16 +120,33 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         /** Used to track resource creation / deletion */
         boolean exsists;
 
-        File[] contents; // directory contents at last check
+        private Set<File> children = null;
+        private long childrenLastModifiedMax = 0L;
 
         public Watch(File file, String path) {
+            Objects.requireNonNull(file);
+            Objects.requireNonNull(path);
             this.file = file;
             this.path = path;
             this.exsists = file.exists();
             this.last = exsists ? file.lastModified() : 0;
             if (file.isDirectory()) {
-                contents = file.listFiles();
+                this.children = loadDirectoryContents(file);
+                this.childrenLastModifiedMax =
+                        this.children
+                                .parallelStream()
+                                .mapToLong(File::lastModified)
+                                .max()
+                                .orElse(0L);
             }
+        }
+
+        private Set<File> loadDirectoryContents(File directory) {
+            File[] files = directory.listFiles();
+            if (files == null) {
+                return new HashSet<>();
+            }
+            return Arrays.stream(files).collect(Collectors.toSet());
         }
 
         public void addListener(ResourceListener listener) {
@@ -134,24 +169,18 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((file == null) ? 0 : file.hashCode());
-            result = prime * result + ((path == null) ? 0 : path.hashCode());
+            result = prime * result + file.hashCode();
+            result = prime * result + path.hashCode();
             return result;
         }
 
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
+            if (!(obj instanceof Watch)) return false;
+
             Watch other = (Watch) obj;
-            if (file == null) {
-                if (other.file != null) return false;
-            } else if (!file.equals(other.file)) return false;
-            if (path == null) {
-                if (other.path != null) return false;
-            } else if (!path.equals(other.path)) return false;
-            return true;
+            return file.equals(other.file) && path.equals(other.path);
         }
 
         @Override
@@ -172,115 +201,117 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
 
         public Delta changed(long now) {
             if (!file.exists()) {
-                if (exsists) {
-                    exsists = false;
-                    if (contents != null) {
-                        // delete directory
-                        List<File> deleted = Arrays.asList(contents);
-                        this.last = now;
-                        this.contents = null;
-                        return new Delta(file, Kind.ENTRY_DELETE, null, deleted, null);
-                    } else {
-                        // file has been deleted!
-                        this.last = now;
-                        return new Delta(file, Kind.ENTRY_DELETE);
-                    }
-                } else {
-                    return null; // no change file still deleted!
-                }
+                return watchedFileRemoved(now);
             }
             if (file.isFile()) {
-                long fileModified = file.lastModified();
-                if (fileModified > last || !exsists) {
-                    if (exsists) {
-                        this.last = fileModified;
-                        return new Delta(file, Kind.ENTRY_MODIFY);
-                    } else {
-                        exsists = true;
-                        this.last = fileModified;
-                        return new Delta(file, Kind.ENTRY_CREATE);
-                    }
-                } else {
-                    return null; // no change!
+                return simpleFileCheck();
+            }
+            // file exists and is a directory
+            return pollDirectory();
+        }
+
+        private Delta pollDirectory() {
+            final long fileModified = file.lastModified();
+            final Kind kind;
+            if (this.exsists) {
+                kind = Kind.ENTRY_MODIFY;
+            } else {
+                this.children = new HashSet<>();
+                kind = Kind.ENTRY_CREATE;
+                this.exsists = true;
+            }
+            this.last = fileModified;
+
+            long childrenMaxLastModified = this.childrenLastModifiedMax;
+
+            final CompletableFuture<File[]> contentsFuture =
+                    CompletableFuture.supplyAsync(() -> this.file.listFiles());
+
+            final Map<Kind, List<String>> itemsByType = new EnumMap<>(Kind.class);
+            // check for updates. Fastest path, no need to list current directory contents
+            // nor check for removed files here
+            Iterator<File> it = this.children.iterator();
+            while (it.hasNext()) {
+                File child = it.next();
+                long lastModified = child.lastModified();
+                if (0L == lastModified) { // removed
+                    it.remove();
+                    itemsByType
+                            .computeIfAbsent(Kind.ENTRY_DELETE, k -> new ArrayList<>())
+                            .add(child.getName());
+                } else if (lastModified > this.childrenLastModifiedMax) {
+                    childrenMaxLastModified = lastModified;
+                    itemsByType
+                            .computeIfAbsent(Kind.ENTRY_MODIFY, k -> new ArrayList<>())
+                            .add(child.getName());
                 }
             }
-            if (file.isDirectory()) {
-                Kind kind = null;
-                long fileModified = file.lastModified();
-                if (fileModified > last || !exsists) {
-                    kind = exsists ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE;
-                    exsists = true;
-                }
-                File[] files = file.listFiles();
-                if (files == null) {
-                    return null;
-                }
 
-                List<File> removed = new ArrayList<File>(files.length);
-                List<File> created = new ArrayList<File>(files.length);
-                List<File> modified = new ArrayList<File>(files.length);
-
-                removed.addAll(Arrays.asList(this.contents));
-                removed.removeAll(Arrays.asList(files));
-                if (!removed.isEmpty()) {
-                    fileModified = Math.max(fileModified, last + 1);
-                }
-
-                created.addAll(Arrays.asList(files));
-                created.removeAll(Arrays.asList(this.contents));
-                for (File check : created) {
-                    long checkModified = check.lastModified();
-                    fileModified = Math.max(fileModified, checkModified);
-                }
-                // check contents
-                List<File> review = new ArrayList<File>(files.length);
-                review.addAll(Arrays.asList(files));
-                review.removeAll(created); // no need to check these they are new
-                for (File check : review) {
-                    long checkModified = check.lastModified();
-                    if (checkModified > last) {
-                        modified.add(check);
-                        fileModified = Math.max(fileModified, checkModified);
+            final File[] contents = contentsFuture.join();
+            if (null != contents) {
+                // find new
+                for (File child : contents) {
+                    if (this.children.add(child)) {
+                        childrenMaxLastModified =
+                                Math.max(childrenMaxLastModified, child.lastModified());
+                        itemsByType
+                                .computeIfAbsent(Kind.ENTRY_CREATE, k -> new ArrayList<>())
+                                .add(child.getName());
                     }
                 }
-                if (kind == null) {
-                    if (removed.isEmpty() && created.isEmpty() && modified.isEmpty()) {
-                        // win only check of directory contents
-                        return null; // no change to directory contents
-                    } else {
-                        kind = Kind.ENTRY_MODIFY;
-                    }
-                }
+            }
+
+            if (itemsByType.isEmpty()) {
+                // win only check of directory contents
+                return null; // no change to directory contents
+            }
+            this.childrenLastModifiedMax = childrenMaxLastModified;
+            List<String> created = itemsByType.get(Kind.ENTRY_CREATE);
+            List<String> removed = itemsByType.get(Kind.ENTRY_DELETE);
+            List<String> modified = itemsByType.get(Kind.ENTRY_MODIFY);
+            Delta delta = new Delta(file, kind, created, removed, modified);
+            return delta;
+        }
+
+        private Delta simpleFileCheck() {
+            long fileModified = file.lastModified();
+            if (fileModified > last || !exsists) {
+                Kind kind = this.exsists ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE;
+                this.exsists = true;
                 this.last = fileModified;
-                this.contents = files;
-                return new Delta(file, kind, created, removed, modified);
+                return new Delta(file, kind);
+            } else {
+                return null; // no change!
             }
-            return null; // no change
+        }
+
+        private Delta watchedFileRemoved(long now) {
+            Delta delta = null;
+            if (this.exsists) {
+                if (this.children == null) {
+                    // file has been deleted!
+                    delta = new Delta(file, Kind.ENTRY_DELETE);
+                } else {
+                    // delete directory
+                    List<String> deleted =
+                            this.children.stream().map(File::getName).collect(Collectors.toList());
+                    delta = new Delta(file, Kind.ENTRY_DELETE, null, deleted, null);
+                }
+                this.last = now;
+                this.exsists = false;
+                this.children = null;
+            }
+            return delta;
         }
 
         public boolean isMatch(File file, String path) {
-            if (this.file == null) {
-                if (file != null) {
-                    return false;
-                }
-            } else if (!this.file.equals(file)) {
-                return false;
-            }
-
-            if (this.path == null) {
-                if (path != null) {
-                    return false;
-                }
-            } else if (!this.path.equals(path)) {
-                return false;
-            }
-            return true;
+            return this.file.equals(file) && this.path.equals(path);
         }
     }
 
     private ScheduledExecutorService pool;
 
-    private FileExtractor fileExtractor;
+    private final Function<String, File> fileExtractor;
 
     protected long lastmodified;
 
@@ -301,36 +332,77 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
                             watchers.remove(watch);
                             continue;
                         }
-                        Delta delta = watch.changed(now);
+                        final boolean directory = watch.file.isDirectory();
+                        Level level = Level.FINER;
+                        long start = System.nanoTime();
+                        if (directory) LOGGER.log(level, "polling contents of " + watch.file);
+                        Delta delta;
+                        try {
+                            delta = watch.changed(now);
+                        } catch (RuntimeException e) {
+                            LOGGER.log(Level.WARNING, "Error polling contents of " + watch.file, e);
+                            return;
+                        }
+                        if (directory && LOGGER.isLoggable(level)) {
+                            long ellapsedMicros =
+                                    MICROSECONDS.convert(System.nanoTime() - start, NANOSECONDS);
+                            long ellapsedMillis =
+                                    MILLISECONDS.convert(ellapsedMicros, MICROSECONDS);
+                            String unit = ellapsedMillis == 0L ? "us" : "ms";
+                            long time = ellapsedMillis == 0L ? ellapsedMicros : ellapsedMillis;
+                            LOGGER.log(
+                                    level,
+                                    String.format(
+                                            "delta computed in %,d%s for %s",
+                                            time, unit, watch.file));
+                        }
                         if (delta != null) {
-
-                            /** Created based on created/removed/modified files */
-                            List<ResourceNotification.Event> events =
-                                    ResourceNotification.delta(
-                                            watch.file,
-                                            delta.created,
-                                            delta.removed,
-                                            delta.modified);
-
-                            ResourceNotification notify =
-                                    new ResourceNotification(
-                                            watch.getPath(), delta.kind, watch.last, events);
-
-                            for (ResourceListener listener : watch.getListeners()) {
-                                try {
-                                    listener.changed(notify);
-                                } catch (Throwable t) {
-                                    Logger logger =
-                                            Logger.getLogger(
-                                                    listener.getClass().getPackage().getName());
-                                    logger.log(
-                                            Level.FINE,
-                                            "Unable to notify " + watch + ":" + t.getMessage(),
-                                            t);
-                                }
-                            }
+                            notify(watch, delta);
                         }
                     }
+                }
+
+                private void notify(Watch watch, Delta delta) {
+                    if (LOGGER.isLoggable(Level.INFO)) {
+                        LOGGER.info(
+                                String.format(
+                                        "Notifying %s change on %s. Created: %,d, removed: %,d, modified: %,d",
+                                        delta.kind,
+                                        delta.context,
+                                        delta.created.size(),
+                                        delta.removed.size(),
+                                        delta.modified.size()));
+                    }
+                    // do not call listeners on the watch thread, they may take a
+                    // considerable amount of time to process the events
+                    CompletableFuture.runAsync(
+                            () -> {
+                                /** Created based on created/removed/modified files */
+                                List<ResourceNotification.Event> events =
+                                        ResourceNotification.delta(
+                                                watch.file,
+                                                delta.created,
+                                                delta.removed,
+                                                delta.modified);
+
+                                ResourceNotification notify =
+                                        new ResourceNotification(
+                                                watch.getPath(), delta.kind, watch.last, events);
+
+                                for (ResourceListener listener : watch.getListeners()) {
+                                    try {
+                                        listener.changed(notify);
+                                    } catch (Throwable t) {
+                                        Logger logger =
+                                                Logger.getLogger(
+                                                        listener.getClass().getPackage().getName());
+                                        logger.log(
+                                                Level.FINE,
+                                                "Unable to notify " + watch + ":" + t.getMessage(),
+                                                t);
+                                    }
+                                }
+                            });
                 }
             };
 
@@ -338,7 +410,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
 
     private TimeUnit unit = TimeUnit.SECONDS;
 
-    private long delay = 10;
+    private long delay = 5;
 
     private static CustomizableThreadFactory tFactory;
 
@@ -352,25 +424,20 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
      *
      * <p>Internally a single threaded schedule executor is used to monitor files.
      */
-    FileSystemWatcher(FileExtractor fileExtractor) {
+    FileSystemWatcher(Function<String, File> fileExtractor) {
+        Objects.requireNonNull(fileExtractor);
         this.pool = Executors.newSingleThreadScheduledExecutor(tFactory);
         this.fileExtractor = fileExtractor;
     }
 
     FileSystemWatcher() {
-        this(
-                new FileExtractor() {
-                    @Override
-                    public File getFile(String path) {
-                        return new File(path.replace('/', File.separatorChar));
-                    }
-                });
+        this(path -> new File(path.replace('/', File.separatorChar)));
     }
 
     private Watch watch(File file, String path) {
-        if (file == null || path == null) {
-            return null;
-        }
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(path);
+
         for (Watch watch : watchers) {
             if (watch.isMatch(file, path)) {
                 return watch;
@@ -380,13 +447,9 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
     }
 
     public synchronized void addListener(String path, ResourceListener listener) {
-        File file = fileExtractor.getFile(path);
-        if (file == null) {
-            throw new NullPointerException("File to watch is required");
-        }
-        if (path == null) {
-            throw new NullPointerException("Path for notification is required");
-        }
+        Objects.requireNonNull(path, "Path for notification is required");
+        File file = fileExtractor.apply(path);
+        Objects.requireNonNull(file, "File to watch is required");
         Watch watch = watch(file, path);
         if (watch == null) {
             watch = new Watch(file, path);
@@ -399,13 +462,10 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
     }
 
     public synchronized boolean removeListener(String path, ResourceListener listener) {
-        File file = fileExtractor.getFile(path);
-        if (file == null) {
-            throw new NullPointerException("File to watch is required");
-        }
-        if (path == null) {
-            throw new NullPointerException("Path for notification is required");
-        }
+        Objects.requireNonNull(path, "Path for notification is required");
+        File file = fileExtractor.apply(path);
+        Objects.requireNonNull(file, "File to watch is required");
+
         Watch watch = watch(file, path);
         boolean removed = false;
         if (watch != null) {
@@ -441,6 +501,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
     @Override
     public void destroy() throws Exception {
         pool.shutdown();
+        monitor = null;
     }
 
     @Override

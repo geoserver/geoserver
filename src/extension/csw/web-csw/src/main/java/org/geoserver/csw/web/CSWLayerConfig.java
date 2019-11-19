@@ -32,7 +32,6 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         PropertyModel<MetadataMap> settingsMap =
                 new PropertyModel<MetadataMap>(model, "resource.metadata");
-        MetadataMap map = settingsMap.getObject();
 
         DirectDownloadSettings settings =
                 DirectDownloadSettings.getSettingsFromMetadata(settingsMap.getObject(), null);
@@ -47,7 +46,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         }
         IModel<DirectDownloadSettings> directDownloadModel =
                 new MetadataMapModel<DirectDownloadSettings>(
-                        map,
+                        settingsMap,
                         DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
                         DirectDownloadSettings.class);
 

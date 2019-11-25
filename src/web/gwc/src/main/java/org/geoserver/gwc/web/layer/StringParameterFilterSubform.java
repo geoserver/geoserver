@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.convert.IConverter;
+import org.geowebcache.filter.parameters.CaseNormalizer;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 
 /**
@@ -59,6 +60,8 @@ public class StringParameterFilterSubform
                 }
             };
 
+    private Component normalize;
+
     public StringParameterFilterSubform(String id, IModel<StringParameterFilter> model) {
         super(id, model);
 
@@ -88,6 +91,9 @@ public class StringParameterFilterSubform
         values.setConvertEmptyInputStringToNull(false);
         add(values);
 
-        addNormalize(model);
+        normalize =
+                new CaseNormalizerSubform(
+                        "normalize", new PropertyModel<CaseNormalizer>(model, "normalize"));
+        add(normalize);
     }
 }

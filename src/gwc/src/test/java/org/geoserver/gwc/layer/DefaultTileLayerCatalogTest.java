@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.util.SecureXStream;
@@ -48,13 +47,11 @@ public class DefaultTileLayerCatalogTest {
 
         new File(baseDirectory, "gwc-layers").mkdir();
 
-        Supplier<XStream> xStream =
-                () ->
-                        XMLConfiguration.getConfiguredXStreamWithContext(
-                                new SecureXStream(), (WebApplicationContext) null, Context.PERSIST);
+        XStream xStream =
+                XMLConfiguration.getConfiguredXStreamWithContext(
+                        new SecureXStream(), (WebApplicationContext) null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
-        catalog.initialize();
     }
 
     @Test

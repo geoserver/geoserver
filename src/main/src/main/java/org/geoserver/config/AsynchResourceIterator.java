@@ -34,7 +34,7 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
 
     static final Logger LOGGER = Logging.getLogger(AsynchResourceIterator.class);
 
-    public static final int ASYNCH_RESOURCE_THREADS;
+    static final int ASYNCH_RESOURCE_THREADS;
 
     static {
         String value = GeoServerExtensions.getProperty("org.geoserver.catalog.loadingThreads");

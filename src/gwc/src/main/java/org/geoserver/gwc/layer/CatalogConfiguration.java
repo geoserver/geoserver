@@ -89,6 +89,10 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             } finally {
                 lock.releaseReadLock();
             }
+            if (null == tileLayer) {
+                throw new IllegalArgumentException(
+                        "GeoServer layer or layer group '" + layerId + "' does not exist");
+            }
             return tileLayer;
         }
     }
@@ -714,7 +718,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         try {
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.reset();
-            this.tileLayerCatalog.initialize();
         } finally {
             lock.releaseWriteLock();
         }

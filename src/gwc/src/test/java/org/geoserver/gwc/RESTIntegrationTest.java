@@ -101,10 +101,8 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("true", "/GeoServerLayer/enabled", dom);
         assertXpathEvaluatesTo("image/png", "/GeoServerLayer/mimeFormats/string[1]", dom);
         assertXpathEvaluatesTo("image/jpeg", "/GeoServerLayer/mimeFormats/string[2]", dom);
-
-        assertXpathEvaluatesTo("2", "count(/GeoServerLayer/gridSubsets/gridSubset)", dom);
-        assertXpathExists("/GeoServerLayer/gridSubsets/gridSubset[gridSetName='EPSG:900913']", dom);
-        assertXpathExists("/GeoServerLayer/gridSubsets/gridSubset[gridSetName='EPSG:4326']", dom);
+        assertXpathEvaluatesTo(
+                "EPSG:900913", "/GeoServerLayer/gridSubsets/gridSubset[1]/gridSetName", dom);
         assertXpathNotExists("/GeoServerLayer/autoCacheStyles", dom);
     }
 

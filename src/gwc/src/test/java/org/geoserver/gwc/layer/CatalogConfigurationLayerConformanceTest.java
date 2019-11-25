@@ -162,6 +162,7 @@ public class CatalogConfigurationLayerConformanceTest extends LayerConfiguration
                 new XMLConfiguration(
                         context.getContextProvider(), (ConfigurationResourceProvider) null);
         TileLayerCatalog tlCatalog = new DefaultTileLayerCatalog(resourceLoader, xmlConfig);
+        tlCatalog.initialize();
 
         return new CatalogConfiguration(catalog, tlCatalog, gsBroker);
     }
@@ -179,7 +180,7 @@ public class CatalogConfigurationLayerConformanceTest extends LayerConfiguration
                 new XMLConfiguration(
                         context.getContextProvider(), (ConfigurationResourceProvider) null);
         TileLayerCatalog tlCatalog = new DefaultTileLayerCatalog(resourceLoader, xmlConfig);
-
+        tlCatalog.initialize();
         return new CatalogConfiguration(catalog, tlCatalog, gsBroker);
     }
 

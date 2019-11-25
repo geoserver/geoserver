@@ -15,6 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -54,6 +55,21 @@ public class StyleParameterFilter extends ParameterFilter {
 
     public StyleParameterFilter() {
         super("STYLES");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getKey(), this.allowedStyles);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof StyleParameterFilter)) {
+            return false;
+        }
+        StyleParameterFilter s = (StyleParameterFilter) o;
+        return Objects.equals(getKey(), s.getKey())
+                && Objects.equals(allowedStyles, s.allowedStyles);
     }
 
     @Override

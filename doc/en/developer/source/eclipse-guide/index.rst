@@ -135,7 +135,7 @@ in the GeoServer User Manual.
 Starting Jetty with an open SSL port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The SSL port used ``8843``. 
+The SSL port used ``8443``. 
 
   #. Open the ``Arguments`` panel of the ``Start`` configuration. 
   #. Specify the ``-Dssl.hostname`` parameter, setting it to the full qualified host name of the box 
@@ -148,7 +148,7 @@ The password is **changeit** and the key store contains a self signed certificat
 passed in the ``ssl.hostname`` parameter.
 
 Test the SSL connection by opening a browser and entering  
-**https://ux-desktop03.mc-home.local:8843/geoserver**. The browser should complain about the self 
+**https://ux-desktop03.mc-home.local:8443/geoserver**. The browser should complain about the self 
 singed certificate which does not hurt for test and development setups. 
 
 

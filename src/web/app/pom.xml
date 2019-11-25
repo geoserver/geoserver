@@ -1761,5 +1761,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>mbtiles-store</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-mbtiles</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

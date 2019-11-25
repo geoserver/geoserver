@@ -43,6 +43,7 @@
           <descriptor>release/ext-wms-eo.xml</descriptor>
           <descriptor>release/ext-colormap.xml</descriptor>
           <descriptor>release/ext-mbtiles.xml</descriptor>
+          <descriptor>release/ext-mbtiles-store.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>

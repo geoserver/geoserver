@@ -12,7 +12,7 @@
 		<UserStyle>
 		    <!-- they have names, titles and abstracts -->
 
-			<Title>A boring default style</Title>
+			<Title>simple red square</Title>
 			<Abstract>A sample style that just prints out a red square</Abstract>
 			<!-- FeatureTypeStyles describe how to render different features -->
 			<!-- a feature type for points -->

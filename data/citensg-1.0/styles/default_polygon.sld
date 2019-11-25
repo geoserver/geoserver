@@ -12,7 +12,7 @@
     <UserStyle>
         <!-- they have names, titles and abstracts -->
       
-      <Title>A boring default style</Title>
+      <Title>A simple default style</Title>
       <Abstract>A sample style that just prints out a transparent red interior with a red outline</Abstract>
       <!-- FeatureTypeStyles describe how to render different features -->
       <!-- a feature type for polygons -->

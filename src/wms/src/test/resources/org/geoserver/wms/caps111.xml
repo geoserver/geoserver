@@ -98,7 +98,7 @@
             <BoundingBox SRS="EPSG:26713" minx="589434.85646865" miny="4914006.33783702" maxx="609527.21021496" maxy="4928063.39801461"/>
             <Style>
               <Name>line1</Name>
-              <Title>A boring default style</Title>
+              <Title>simple blue line</Title>
               <Abstract>A sample style that just prints out a blue line</Abstract>
               <LegendURL width="20" height="20">
                 <Format>image/png</Format>
@@ -107,7 +107,7 @@
             </Style>
             <Style>
               <Name>line3</Name>
-              <Title>A boring default style</Title>
+              <Title>simple green line</Title>
               <Abstract>A sample style that just prints out a green line</Abstract>
               <LegendURL width="20" height="20">
                 <Format>image/png</Format>
@@ -116,7 +116,7 @@
             </Style>
             <Style>
               <Name>line2</Name>
-              <Title>A boring default style</Title>
+              <Title>simple red line</Title>
               <Abstract>A sample style that just prints out a red line</Abstract>
               <LegendURL width="20" height="20">
                 <Format>image/png</Format>
@@ -149,7 +149,7 @@
             <BoundingBox SRS="EPSG:4326" minx="-10" miny="-10" maxx="10" maxy="10"/>      
             <Style>
               <Name>line_group</Name>
-              <Title>A boring default style</Title>
+              <Title>simple blue line</Title>
               <Abstract>A sample style that just prints out a blue line</Abstract>
               <LegendURL width="20" height="20">
                 <Format>image/png</Format>
@@ -170,7 +170,7 @@
             <BoundingBox SRS="EPSG:4326" minx="0" miny="0" maxx="20" maxy="20"/>    
             <Style>
               <Name>line_group2</Name>
-              <Title>A boring default style</Title>
+              <Title>simple blue line</Title>
               <Abstract>A sample style that just prints out a blue line</Abstract>
               <LegendURL width="20" height="20">
                 <Format>image/png</Format>

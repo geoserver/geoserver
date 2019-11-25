@@ -110,7 +110,7 @@
        <BoundingBox maxy="4928063.39801461" maxx="609527.21021496" miny="4914006.33783702" minx="589434.85646865" CRS="EPSG:26713"/>
        <Style>
            <Name>line1</Name>
-           <Title>A boring default style</Title>
+           <Title>simple green line</Title>
            <Abstract>A sample style that just prints out a green line</Abstract>
            <LegendURL height="20" width="20">
            <Format>image/png</Format>
@@ -119,7 +119,7 @@
        </Style>
        <Style>
            <Name>line3</Name>
-           <Title>A boring default style</Title>
+           <Title>simple green line</Title>
            <Abstract>A sample style that just prints out a green line</Abstract>
            <LegendURL height="20" width="20">
            <Format>image/png</Format>
@@ -128,7 +128,7 @@
            </Style>
        <Style>
            <Name>line2</Name>
-           <Title>A boring default style</Title>
+           <Title>simple green line</Title>
            <Abstract>A sample style that just prints out a green line</Abstract>
            <LegendURL height="20" width="20">
            <Format>image/png</Format>

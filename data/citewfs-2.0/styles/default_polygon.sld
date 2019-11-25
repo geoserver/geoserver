@@ -21,7 +21,7 @@
         <!--FeatureTypeName>Feature</FeatureTypeName-->
         <Rule>
           <Name>Rule 1</Name>
-          <Title>GreyFill BlackOutline</Title>
+          <Title>Grey Fill and Black Outline</Title>
           <Abstract>Grey fill with a black outline 1 pixel in width</Abstract>
 
           <!-- like a linesymbolizer but with a fill too -->

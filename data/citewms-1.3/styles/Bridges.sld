@@ -10,8 +10,8 @@
         <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>title</sld:Title>
-          <sld:Abstract>Abstract</sld:Abstract>
+          <sld:Title>Default Marker</sld:Title>
+          <sld:Abstract>Default Marker with size of 6 pixels</sld:Abstract>
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>

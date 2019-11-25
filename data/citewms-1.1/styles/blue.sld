@@ -11,7 +11,7 @@ A styling layer used for the unit tests of sldstyler
 <UserStyle>
     <!-- again they have names, titles and abstracts -->
   <Name>Blue</Name>
-  <Title>A blue linestring style</Title>
+  <Title>Blue Polygon</Title>
   <Abstract>A sample style that uses a filter, printing only the
             lines with a LENGTH property of over 5000.  This will work
             with the default bc_roads layer</Abstract>

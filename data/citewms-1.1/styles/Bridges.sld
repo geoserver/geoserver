@@ -13,7 +13,7 @@
             <Rule>
                 <Name>name</Name>
                 <Abstract>Abstract</Abstract>
-                <Title>title</Title>
+                <Title>Grey Square Point</Title>
                 <PointSymbolizer>
                     <Graphic>
                         <Size>

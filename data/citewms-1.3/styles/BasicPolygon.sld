@@ -4,8 +4,8 @@
     <sld:Name>Blue</sld:Name>
     <sld:UserStyle>
       <sld:Name>Blue</sld:Name>
-      <sld:Title>A blue linestring style</sld:Title>
-      <sld:Abstract>A sample style that uses a filter, printing only the            lines with a LENGTH property of over 5000.  This will work            with the default bc_roads layer</sld:Abstract>
+      <sld:Title>Blue Polygon</sld:Title>
+      <sld:Abstract>A filled polygon with outline of 2 pixel width</sld:Abstract>
       <sld:FeatureTypeStyle>
         <sld:Name>name</sld:Name>
         <sld:Rule>

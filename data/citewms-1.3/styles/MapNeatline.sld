@@ -4,14 +4,14 @@
     <sld:Name>Default Styler</sld:Name>
     <sld:UserStyle>
       <sld:Name>Default Styler</sld:Name>
-      <sld:Title>Default Styler</sld:Title>
+      <sld:Title>Transparent Polygon</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Name>name</sld:Name>
         <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>title</sld:Title>
-          <sld:Abstract>Abstract</sld:Abstract>
+          <sld:Title>Transparent Polygon</sld:Title>
+          <sld:Abstract>Transparent Polygon with defult stroke</sld:Abstract>
           <sld:PolygonSymbolizer>
             <sld:Fill>
               <sld:CssParameter name="fill-opacity">0.0</sld:CssParameter>

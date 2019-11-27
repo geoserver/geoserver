@@ -12,7 +12,7 @@
     <UserStyle>
         <!-- they have names, titles and abstracts -->
       
-      <Title>A simple default style</Title>
+      <Title>Grey Polygon</Title>
       <Abstract>A sample style that just prints out a grey interior with a black outline</Abstract>
       <!-- FeatureTypeStyles describe how to render different features -->
       <!-- a feature type for polygons -->

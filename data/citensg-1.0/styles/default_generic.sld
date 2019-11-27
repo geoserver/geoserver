@@ -26,7 +26,7 @@
         </Rule>
         <Rule>
           <Name>Polygon</Name>
-          <Title>Polygon</Title>
+          <Title>Grey Polygon</Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:Function name="dimension">

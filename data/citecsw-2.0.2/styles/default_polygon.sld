@@ -18,7 +18,7 @@
         <Rule>
           <Name>rule1</Name>
           <Title>Grey Polygon with Black Outline</Title>
-          <Abstract>A polygon with a gray fill and a 1 pixel black outline</Abstract>
+          <Abstract>A polygon with a grey fill and a 1 pixel black outline</Abstract>
           <PolygonSymbolizer>
             <Fill>
               <CssParameter name="fill">#AAAAAA</CssParameter>

@@ -12,7 +12,7 @@
             <FeatureTypeName>Feature</FeatureTypeName>
             <Rule>
                 <Name>name</Name>
-                <Abstract>Abstract</Abstract>
+                <Abstract>Grey filled square shape with black dotted outline</Abstract>
                 <Title>Grey Square Point</Title>
                 <PointSymbolizer>
                     <Graphic>

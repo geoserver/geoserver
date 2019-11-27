@@ -45,20 +45,11 @@ A valid json-ld path comprises json-ld path field names separated by a ".". Havi
         "wkt": "$${toWKT(xpath('st_gml31:location'))}"
       },
       "st_gml31:measurements": [
-        {"$source": "st_gml31:measurements"},
         {
-          "name": "${../st_gml31:measurements[1]}",
-          "stillThePoint": {
-            "@type": "Point",
-            "wkt": "$${toWKT(xpath('../st_gml31:location'))}"
-          }
+          "name": "${st_gml31:measurements[1]}"
         },
         {
-          "name": "${../st_gml31:measurements[2]}",
-          "stillThePoint": {
-            "@type": "Point",
-            "wkt": "$${toWKT(xpath('../st_gml31:location'))}"
-          }
+          "name": "${st_gml31:measurements[2]}"
         }
       ]
     }
@@ -66,4 +57,4 @@ A valid json-ld path comprises json-ld path field names separated by a ".". Havi
  }
 
 
-a valid cql_filter with a json-ld path could be :code:`features.st_gml31:measurements.name IS NOT NULL`. The json-ld will be used to pick up the corresponding field value, namely the xpath :code:`../st_gml31:measurements[1]` and the store will be queried for features having the value obtained from this xpath evaluation as not null.
+a valid cql_filter with a json-ld path could be :code:`features.st_gml31:measurements.name IS NOT NULL`. The json-ld will be used to pick up the corresponding field value, namely the xpath :code:`st_gml31:name` and the store will be queried for features having the value obtained from this xpath evaluation as not null.

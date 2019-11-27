@@ -46,19 +46,18 @@ This is an example of a json-ld configuration file ..code-block: json::
         "wkt": "$${toWKT(xpath('st_gml31:location'))}"
       },
       "st_gml31:measurements": [
-        {"$source": "st_gml31:measurements"},
         {
-          "name": "${../st_gml31:measurements[1]}",
+          "name": "${st_gml31:measurements[1]}",
           "stillThePoint": {
             "@type": "Point",
-            "wkt": "$${toWKT(xpath('../st_gml31:location'))}"
+            "wkt": "$${toWKT(xpath('st_gml31:location'))}"
           }
         },
         {
-          "name": "${../st_gml31:measurements[2]}",
+          "name": "${st_gml31:measurements[2]}",
           "stillThePoint": {
             "@type": "Point",
-            "wkt": "$${toWKT(xpath('../st_gml31:location'))}"
+            "wkt": "$${toWKT(xpath('st_gml31:location'))}"
           }
         }
       ]
@@ -70,8 +69,8 @@ This is an example of a json-ld configuration file ..code-block: json::
 The content of the json-ld output depends on specified properties in json-ld template file, in a way that follows below rules:
 
 * xpath property interpolation can be invoked using a :code:`${xpath}` syntax;
-* in case complex operation are needed a CQL expression can be used throught a :code:`$${cql}` syntax;
+* in case complex operation are needed a CQL expression can be used throught a :code:`$${cql}` syntax (all CQL functions are supported);
 * properties without directives are reproduced in the output as-is;
 * a :code:`"$source":"xpath"` attribute can be added as the first element of an array or of an object;
-* if a :code:`"$source": "xpath"` attribute is present, it will act as a context against which all xpath expression will be evaluated (if source evaluates to null the entire object/array will be skipped);
+* if a :code:`"$source": "xpath"` attribute is present, it will act as a context against which all xpath expression will be evaluated. In the case of an array it will be use to iterate over a collection of element; if source evaluates to null the entire object/array will be skipped;
 * a :code:``../`` syntax in an xpath means that xpath evaluation will be relative to the previous :code:`$source`. Give the above template file, the xpath :code:`"../st_gml31:location"` will be evaluate not against the corresponding :code:`"$source":"st_gml31:Station_gml31"`, but against the parent one :code:`"st_gml31:Station_gml31"`.

@@ -14,7 +14,7 @@ From Geoserver UI it is possible to have a preview of the format by choosing JSO
 
 
 
-If wfs3 extension is enabled the output format is available from wfs3 collection page as well.
+If OGC Feature API extension is enabled the output format is available from wfs3 collection page as well.
 
 
 .. figure:: images/json-ld_wfs3.png

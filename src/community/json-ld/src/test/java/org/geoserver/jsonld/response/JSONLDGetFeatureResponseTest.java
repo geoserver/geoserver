@@ -22,14 +22,19 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     Catalog catalog;
     FeatureTypeInfo typeInfo;
+    FeatureTypeInfo typeInfo2;
     GeoServerDataDirectory dd;
 
     @Before
-    public void setUp() throws IOException {
+    public void before() {
         catalog = getCatalog();
 
         typeInfo = catalog.getFeatureTypeByName("st_gml31", "Station_gml31");
+        typeInfo2 = catalog.getFeatureTypeByName("st_gml32", "Station_gml32");
         dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
+    }
+
+    public void setUp() throws IOException {
 
         File file =
                 dd.getResourceLoader()
@@ -39,12 +44,25 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + typeInfo.getName(),
                                 typeInfo.getName() + ".json");
-        dd.getResourceLoader()
-                .copyFromClassPath("../configuration/Station_gml31.json", file, getClass());
+        dd.getResourceLoader().copyFromClassPath("Station_gml31.json", file, getClass());
+    }
+
+    public void setUpInvalid() throws IOException {
+
+        File file =
+                dd.getResourceLoader()
+                        .createFile(
+                                "workspaces/st_gml32/"
+                                        + typeInfo2.getStore().getName()
+                                        + "/"
+                                        + typeInfo2.getName(),
+                                typeInfo2.getName() + ".json");
+        dd.getResourceLoader().copyFromClassPath("Station_gml32_invalid.json", file, getClass());
     }
 
     @Test
     public void testJsonLdResponse() throws Exception {
+        setUp();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=st_gml31:Station_gml31&outputFormat=");
         sb.append("application%2Fld%2Bjson");
@@ -72,12 +90,13 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     }
 
     @Test
-    public void testJsonLdQuery() throws Exception {
-        StringBuffer sb =
-                new StringBuffer("wfs?request=GetFeature&version=2.0")
+    public void testJsonLdQueryWithGET() throws Exception {
+        setUp();
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=st_gml31:Station_gml31&outputFormat=")
                         .append("application%2Fld%2Bjson")
-                        .append("&cql_filter=st_gml31:measurements.name IS NULL");
+                        .append("&cql_filter=features.name IS NULL");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
@@ -85,8 +104,48 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
         assertTrue(features.isEmpty());
     }
 
+    @Test
+    public void testJsonLdQueryWithPOST() throws Exception {
+        setUp();
+        StringBuilder xml =
+                new StringBuilder("<wfs:GetFeature ")
+                        .append(" service=\"WFS\" ")
+                        .append(" outputFormat=\"application/ld+json\" ")
+                        .append(" version=\"1.0.0\" ")
+                        .append(" xmlns:st_gml31=\"http://www.stations_gml31.org/1.0\" ")
+                        .append(" xmlns:wfs=\"http://www.opengis.net/wfs\" ")
+                        .append(" xmlns:ogc=\"http://www.opengis.net/ogc\" ")
+                        .append(">")
+                        .append(" <wfs:Query typeName=\"st_gml31:Station_gml31\">")
+                        .append(" <ogc:Filter><ogc:PropertyIsNull> ")
+                        .append("<ogc:PropertyName>features.name</ogc:PropertyName>")
+                        .append("</ogc:PropertyIsNull></ogc:Filter></wfs:Query>")
+                        .append("</wfs:GetFeature>");
+        JSONObject result = (JSONObject) postJsonLd(xml.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.isEmpty());
+    }
+
+    @Test
+    public void testInvalidTemplateResponse() throws Exception {
+        setUpInvalid();
+        StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=st_gml32:Station_gml32&outputFormat=");
+        sb.append("application%2Fld%2Bjson");
+        MockHttpServletResponse response = getAsServletResponse(sb.toString());
+        assertTrue(response.getContentAsString().contains("Failed to validate json-ld template"));
+    }
+
     protected JSON getJsonLd(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals(response.getContentType(), "application/ld+json");
+        return json(response);
+    }
+
+    protected JSON postJsonLd(String xml) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
         assertEquals(response.getContentType(), "application/ld+json");
         return json(response);
     }
@@ -108,5 +167,8 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                 + typeInfo.getName()
                                 + ".json")
                 .delete();
+        dd = null;
+        catalog = null;
+        typeInfo = null;
     }
 }

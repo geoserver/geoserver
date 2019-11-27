@@ -36,7 +36,14 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
         String propertyValue = expression.getPropertyName();
         Object newExpression = null;
         if (extraData instanceof JsonBuilder) {
-            String[] eles = propertyValue.split("/");
+            String[] eles;
+            if (propertyValue.indexOf(".") != -1) {
+                /*((AttributeExpressionImpl) expression)
+                .setPropertyName(propertyValue.replaceAll("\\.", "/"));*/
+                eles = propertyValue.split("\\.");
+            } else {
+                eles = propertyValue.split("/");
+            }
             JsonBuilder builder = (JsonBuilder) extraData;
             try {
                 currentSource = null;
@@ -59,11 +66,17 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     private void workExpression(Object newExpression) {
         if (newExpression instanceof AttributeExpressionImpl) {
             AttributeExpressionImpl pn = (AttributeExpressionImpl) newExpression;
-            pn.setPropertyName(currentSource + "/" + pn.getPropertyName());
+            pn.setPropertyName(
+                    currentSource != null
+                            ? currentSource + "/" + pn.getPropertyName()
+                            : pn.getPropertyName());
         } else if (newExpression instanceof XPathFunction) {
             XPathFunction xpath = (XPathFunction) newExpression;
             LiteralExpressionImpl param = (LiteralExpressionImpl) xpath.getParameters().get(0);
-            param.setValue(currentSource + "/" + param.getValue());
+            param.setValue(
+                    currentSource != null
+                            ? currentSource + "/" + param.getValue()
+                            : param.getValue());
         } else if (newExpression instanceof FunctionExpressionImpl) {
             FunctionExpressionImpl function = (FunctionExpressionImpl) newExpression;
             for (Expression ex : function.getParameters()) {

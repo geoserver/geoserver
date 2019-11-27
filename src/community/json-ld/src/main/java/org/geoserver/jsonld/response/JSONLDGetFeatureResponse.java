@@ -49,9 +49,13 @@ public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
             rootBuilder.startJsonLd(writer);
             for (FeatureCollection collection : featureCollection.getFeature()) {
                 FeatureIterator iterator = collection.features();
-                while (iterator.hasNext()) {
-                    JsonBuilderContext context = new JsonBuilderContext(iterator.next());
-                    rootBuilder.evaluate(writer, context);
+                try {
+                    while (iterator.hasNext()) {
+                        JsonBuilderContext context = new JsonBuilderContext(iterator.next());
+                        rootBuilder.evaluate(writer, context);
+                    }
+                } finally {
+                    iterator.close();
                 }
             }
             rootBuilder.endJsonLd(writer);

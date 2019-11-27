@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
+import org.geoserver.jsonld.validation.JsonLdValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 
@@ -55,13 +56,20 @@ public class JsonLdConfiguration {
         CacheKey key = new CacheKey(resource, path);
         JsonLdTemplate template = templateCache.get(key);
         if (template.checkTemplate(resource)) templateCache.put(key, template);
+        boolean isValid;
         RootBuilder root = template.getBuilderTree();
-        if (root == null)
+        if (root != null) {
+            JsonLdValidator validator = new JsonLdValidator(resource);
+            isValid = validator.validateTemplate(root);
+            if (!isValid) {
+                throw new RuntimeException(
+                        "Failed to validate json-ld template for feature type "
+                                + resource.getName());
+            }
+        } else {
             throw new RuntimeException(
                     "No Json-Ld template found for feature type " + resource.getName());
-        // ApplicationContext context =GeoServerApplication.get().getApplicationContext();
-        // context.getAutowireCapableBeanFactory().initializeBean(root.getNamespaces(),
-        // "AppSchema"+resource.getName());
+        }
         return root;
     }
 

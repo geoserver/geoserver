@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.validation.JsonLdValidator;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
@@ -47,18 +46,7 @@ public class JsonLdTemplate {
                 if (watcher != null && watcher.isModified()) {
                     try {
                         RootBuilder root = watcher.getJsonLdTemplateParser();
-
-                        JsonLdValidator validator = new JsonLdValidator(typeInfo.getFeatureType());
-                        boolean isValid = validator.validateTemplate(root);
-                        if (isValid) {
-                            this.builderTree = root;
-                            return true;
-                        } else
-                            LOGGER.log(
-                                    Level.INFO,
-                                    "Json-ld template for feature type "
-                                            + typeInfo.getName()
-                                            + " didn't pass validation. Skipping loading");
+                        this.builderTree = root;
                     } catch (IOException ioe) {
                         throw new RuntimeException(ioe);
                     }

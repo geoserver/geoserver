@@ -6,6 +6,7 @@ package org.geoserver.wps.gs.download;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -21,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.resource.Resource;
@@ -40,6 +42,7 @@ import org.geotools.util.DateRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
 import org.jcodec.api.awt.AWTSequenceEncoder;
+import org.jcodec.api.awt.SequenceMuxer;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Rational;
 import org.opengis.util.ProgressListener;
@@ -146,8 +149,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         final Resource output = resourceManager.getTemporaryResource("mp4");
         Rational frameRate = getFrameRate(fps);
 
-        AWTSequenceEncoder enc =
-                new AWTSequenceEncoder(NIOUtils.writableChannel(output.file()), frameRate);
+        SequenceMuxer enc =
+                new SequenceMuxer(output.file());
 
         DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
         TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
@@ -178,10 +181,12 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 serverCache);
                 BufferedImage frame = toBufferedImage(image);
                 LOGGER.log(Level.FINE, "Got frame %s", frame);
+                File outputFile = new File(System.getProperty("java.io.tmpdir"), "saved.png");
+                ImageIO.write(frame, "png", outputFile);
                 Future<Void> future =
                         executor.submit(
                                 () -> {
-                                    enc.encodeImage(frame);
+                                    enc.encodeImage(outputFile);
                                     return (Void) null;
                                 });
                 futures.add(future);

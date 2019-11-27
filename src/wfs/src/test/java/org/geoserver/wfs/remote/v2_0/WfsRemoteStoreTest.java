@@ -61,7 +61,7 @@ public class WfsRemoteStoreTest extends WFS20TestSupport {
         registerHttpGetFromResource(
                 httpClient,
                 "/ows?PROPERTYNAME=the_geom"
-                        + "&TYPENAME=tiger%3Atiger_roads"
+                        + "&TYPENAMES=tiger%3Atiger_roads"
                         + "&REQUEST=GetFeature"
                         + "&RESULTTYPE=RESULTS"
                         + "&OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2"
@@ -72,7 +72,7 @@ public class WfsRemoteStoreTest extends WFS20TestSupport {
         registerHttpGetFromResource(
                 httpClient,
                 "/ows?PROPERTYNAME=the_geom%2CCFCC%2CNAME"
-                        + "&TYPENAME=tiger%3Atiger_roads"
+                        + "&TYPENAMES=tiger%3Atiger_roads"
                         + "&REQUEST=GetFeature"
                         + "&RESULTTYPE=RESULTS"
                         + "&OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2"
@@ -141,7 +141,7 @@ public class WfsRemoteStoreTest extends WFS20TestSupport {
         registerHttpGetFromResource(
                 httpClient,
                 "/ows?PROPERTYNAME=the_geom"
-                        + "&TYPENAME=tiger%3Atiger_roads"
+                        + "&TYPENAMES=tiger%3Atiger_roads"
                         + "&REQUEST=GetFeature"
                         + "&RESULTTYPE=RESULTS"
                         + "&OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2"
@@ -152,7 +152,7 @@ public class WfsRemoteStoreTest extends WFS20TestSupport {
         registerHttpGetFromResource(
                 httpClient,
                 "/ows?PROPERTYNAME=the_geom%2C%C3%A6nd%2C%C3%B8st%2Cn%C3%B8j"
-                        + "&TYPENAME=tiger%3Atiger_roads"
+                        + "&TYPENAMES=tiger%3Atiger_roads"
                         + "&REQUEST=GetFeature"
                         + "&RESULTTYPE=RESULTS"
                         + "&OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2"

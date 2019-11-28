@@ -426,4 +426,41 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("0.0", "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("0.0/3.0/0", "//wms:Layer/wms:Dimension", dom);
     }
+
+    @Test
+    public void testCustomDiscreteInterval() throws Exception {
+        setupVectorDimension(
+                "dim_custom",
+                "lwidth",
+                DimensionPresentation.DISCRETE_INTERVAL,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+        print(dom);
+
+        // check dimension has been declared
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("custom", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(UNITS, "//wms:Layer/wms:Dimension/@units", dom);
+        assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
+        // check we have the extent
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("custom", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("1", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo("1/4/1", "//wms:Layer/wms:Dimension", dom);
+    }
+
+    @Test
+    public void testCustomContinuousDate() throws Exception {
+        setupVectorDimension(
+                "dim_custom", "time", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+        assertXpathEvaluatesTo(
+                "2011-05-01T00:00:00Z",
+                "//wms:Layer[wms:Name/text() = \"sf:TimeElevation\"]/wms:Dimension/@default",
+                dom);
+        print(dom);
+    }
 }

@@ -10,7 +10,7 @@
         <sld:FeatureTypeName>Streams</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>>Blue Polygon</sld:Title>
+          <sld:Title>Blue Polygon</sld:Title>
           <sld:Abstract>Polygon with blue fill and 2 pixel wide stroke</sld:Abstract>
           <sld:LineSymbolizer>
             <sld:Stroke>

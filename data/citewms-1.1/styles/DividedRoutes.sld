@@ -6,14 +6,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <UserStyle>
         <Name>Default Styler</Name>
-        <Title>Default Styler</Title>
+        <Title>Black Line</Title>
         <Abstract></Abstract>
         <FeatureTypeStyle>
             <FeatureTypeName>Feature</FeatureTypeName>
             <Rule>
                 <Name>name</Name>
-                <Abstract>Abstract</Abstract>
-                <Title>title</Title>
+                <Abstract>Black Line with 5 pixels</Abstract>
+                <Title>Black Line</Title>
                 <LineSymbolizer>
                     <Stroke>
                         <CssParameter name="stroke">

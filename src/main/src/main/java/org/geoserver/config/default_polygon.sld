@@ -12,7 +12,7 @@
     <UserStyle>
         <!-- they have names, titles and abstracts -->
 
-      <Title>A boring default style</Title>
+      <Title>Grey Polygon</Title>
       <Abstract>A sample style that just prints out a grey interior with a black outline</Abstract>
       <!-- FeatureTypeStyles describe how to render different features -->
       <!-- a feature type for polygons -->
@@ -21,7 +21,7 @@
         <!--FeatureTypeName>Feature</FeatureTypeName-->
         <Rule>
           <Name>Rule 1</Name>
-          <Title>GreyFill BlackOutline</Title>
+          <Title>Grey Fill and Black Outline</Title>
           <Abstract>Grey fill with a black outline 1 pixel in width</Abstract>
 
           <!-- like a linesymbolizer but with a fill too -->

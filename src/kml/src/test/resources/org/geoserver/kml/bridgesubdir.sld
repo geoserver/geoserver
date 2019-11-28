@@ -8,7 +8,7 @@
   <NamedLayer>
     <Name>Default Point</Name>
     <UserStyle>
-      <Title>A boring default style</Title>
+      <Title>simple purple square</Title>
       <Abstract>A sample style that just prints out a purple square</Abstract>
       <FeatureTypeStyle>
         <Rule>

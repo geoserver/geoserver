@@ -11,8 +11,8 @@
     <UserStyle>
       <!-- they have names, titles and abstracts -->
 
-      <Title>A boring default style</Title>
-      <Abstract>A sample style that just prints out a purple square</Abstract>
+      <Title>Missing Graphic</Title>
+      <Abstract>A sample style that uses external graphic but does not point to any png file</Abstract>
       <!-- FeatureTypeStyles describe how to render different features -->
       <!-- a feature type for points -->
 
@@ -20,7 +20,7 @@
         <!--FeatureTypeName>Feature</FeatureTypeName-->
         <Rule>
           <Name>Rule 1</Name>
-          <Title>RedSquare</Title>
+          <Title>Missing Graphic</Title>
           <Abstract>Nothing there...</Abstract>
 
           <PointSymbolizer>

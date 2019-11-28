@@ -6,12 +6,12 @@
     <Name>Simple Streams</Name>
     <UserStyle>
 
-      <Title>Default Styler for streams segments</Title>
+      <Title>Streams</Title>
       <Abstract>Blue lines, 2px wide</Abstract>
       <FeatureTypeStyle>
         <FeatureTypeName>Feature</FeatureTypeName>
         <Rule>
-          <Title>Streams</Title>
+          <Title>Blue Line</Title>
           <LineSymbolizer>
             <Stroke>
               <CssParameter name="stroke">

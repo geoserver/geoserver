@@ -45,7 +45,9 @@ import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.type.Name;
 
 /** Configures {@link LayerInfo} WMS specific attributes */
 public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
@@ -63,10 +65,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         // styles block container
         WebMarkupContainer styleContainer = new WebMarkupContainer("styles");
         add(styleContainer);
-        ResourceInfo resource = layerModel.getObject().getResource();
+        LayerInfo layerInfo = layerModel.getObject();
+        ResourceInfo resource = layerInfo.getResource();
         styleContainer.setVisible(
                 resource instanceof CoverageInfo || resource instanceof FeatureTypeInfo);
-
+        String prefix =
+                resource.getNamespace() != null ? resource.getNamespace().getPrefix() : null;
+        Name layerName = new NameImpl(prefix, layerInfo.getName());
         // default style chooser. A default style is required
         StylesModel styles = new StylesModel();
         final PropertyModel<StyleInfo> defaultStyleModel =
@@ -76,7 +81,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "defaultStyle", defaultStyleModel, styles, new StyleChoiceRenderer());
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);
-
         final Image defStyleImg = new NonCachingImage("defaultStyleLegendGraphic");
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
@@ -86,7 +90,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         String wmsURL = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
 
         final LegendGraphicAjaxUpdater defaultStyleUpdater;
-        defaultStyleUpdater = new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
+        defaultStyleUpdater =
+                new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel, layerName);
 
         defaultStyle.add(
                 new OnChangeAjaxBehavior() {
@@ -94,7 +99,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        defaultStyleUpdater.updateStyleImage(target);
+                        defaultStyleUpdater.updateStyleImage(target, layerName);
                     }
                 });
 

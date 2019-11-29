@@ -173,6 +173,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /** The lookup table used for data type transformation (it's really the identity one) */
     private static LookupTableJAI IDENTITY_TABLE = new LookupTableJAI(getTable());
 
+    /** Show Chain key */
+    public static final String RASTER_CHAIN_DEBUG_KEY = "wms.raster.enableRasterChainDebug";
+
+    /** Show Chain */
+    private static Boolean RASTER_CHAIN_DEBUG = Boolean.getBoolean(RASTER_CHAIN_DEBUG_KEY);
+
     private Function<WMSMapContent, LabelCache> labelCache = null;
 
     private static byte[] getTable() {
@@ -1520,6 +1526,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     Level.FINE,
                     "Direct rendering path produced the following image chain:\n"
                             + RenderedImageBrowser.dumpChain(image));
+        }
+        Map<String, String> rawKvp = null;
+        if (RASTER_CHAIN_DEBUG
+                && ((rawKvp = mapContent.getRequest().getRawKvp()) != null)
+                && Boolean.valueOf(rawKvp.get("showchain"))) {
+            RenderedImageBrowser.showChain(image, true, true, "RenderedImageMapOutput", true);
         }
         return image;
     }

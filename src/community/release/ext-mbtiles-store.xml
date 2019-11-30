@@ -1,5 +1,5 @@
 <assembly>
-  <id>mbtiles-plugin</id>
+  <id>mbtiles-store-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -10,7 +10,6 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gt-mbtiles-*.jar</include>
-        <include>gs-mbtiles-*.jar</include>
         <include>sqlite*.jar</include>
         <include>jackson-core*.jar</include>
         <include>jackson-annotation*.jar</include>

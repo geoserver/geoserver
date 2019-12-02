@@ -40,17 +40,20 @@
       },
       "st_gml31:measurements": [
         {
-          "name": "${st_gml31:measurements[1]}",
+          "$source": "st_gml31:measurements"
+        },
+        {
+          "name": "${../st_gml31:measurements[1]}",
           "stillThePoint": {
             "@type": "Point",
-            "wkt": "$${toWKT(xpath('st_gml31:location'))}"
+            "wkt": "$${toWKT(xpath('../st_gml31:location'))}"
           }
         },
         {
-          "name": "${st_gml31:measurements[2]}",
+          "name": "${../st_gml31:measurements[2]}",
           "stillThePoint": {
             "@type": "Point",
-            "wkt": "$${toWKT(xpath('st_gml31:location'))}"
+            "wkt": "$${toWKT(xpath('../st_gml31:location'))}"
           }
         }
       ]

@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jsonld.validation;
 
 import java.io.IOException;
@@ -5,6 +9,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
+import org.geoserver.jsonld.builders.impl.IteratingBuilder;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.opengis.feature.type.AttributeType;
 
@@ -69,6 +74,8 @@ public class JsonLdValidator {
                             return false;
                         }
                     }
+                } else {
+                    if (sb instanceof IteratingBuilder) return false;
                 }
                 if (newType != null) {
                     ValidateExpressionVisitor.ValidationContext newContext =

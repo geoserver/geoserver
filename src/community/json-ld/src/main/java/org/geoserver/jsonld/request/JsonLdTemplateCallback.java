@@ -30,9 +30,12 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
 
     private GeoServer gs;
 
-    public JsonLdTemplateCallback(GeoServer gs) {
+    private JsonLdConfiguration configuration;
+
+    public JsonLdTemplateCallback(GeoServer gs, JsonLdConfiguration configuration) {
         this.gs = gs;
         this.catalog = gs.getCatalog();
+        this.configuration = configuration;
     }
 
     @Override
@@ -57,8 +60,8 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
                     if (typeInfo != null) {
                         try {
                             RootBuilder root =
-                                    JsonLdConfiguration.get()
-                                            .getTemplate(typeInfo, typeInfo.getName() + ".json");
+                                    configuration.getTemplate(
+                                            typeInfo, typeInfo.getName() + ".json");
                             JsonLdPathVisitor visitor = new JsonLdPathVisitor();
                             if (q.getFilter() != null) {
                                 Filter newFilter = (Filter) q.getFilter().accept(visitor, root);

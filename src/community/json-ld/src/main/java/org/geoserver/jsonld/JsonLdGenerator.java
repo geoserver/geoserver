@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.*;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
@@ -26,20 +25,8 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
 
     private com.fasterxml.jackson.core.JsonGenerator delegate;
 
-    private GeometryHandler geometryHandler;
-
     public JsonLdGenerator(com.fasterxml.jackson.core.JsonGenerator generator) {
         this.delegate = generator;
-        this.geometryHandler = new GeometryHandler();
-    }
-
-    public JsonLdGenerator(
-            com.fasterxml.jackson.core.JsonGenerator generator,
-            CRS.AxisOrder axisOrder,
-            int numDecimals,
-            boolean encodedMeasures) {
-        this.delegate = generator;
-        this.geometryHandler = new GeometryHandler(axisOrder, numDecimals, encodedMeasures);
     }
 
     /**
@@ -132,8 +119,6 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
     public void writeResult(Object result) throws IOException {
         if (result instanceof String || result instanceof Number) {
             writeString(String.valueOf(result));
-        } else if (result instanceof Geometry) {
-            geometryHandler.writeGeometry(delegate, (Geometry) result);
         } else if (result instanceof Date) {
             Date timeStamp = (Date) result;
             DateFormat df = new SimpleDateFormat("YYYY/MM/DD hh:mm:ss");

@@ -17,6 +17,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
+/** Cql function that allows to reproject geometry towards targetCRS */
 public class ReprojectFunction extends FunctionExpressionImpl {
     public static FunctionName NAME =
             new FunctionNameImpl(

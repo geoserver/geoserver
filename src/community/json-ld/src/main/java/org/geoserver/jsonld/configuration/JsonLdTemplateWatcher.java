@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import org.geoserver.jsonld.JsonLdTemplateReader;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
@@ -41,10 +40,10 @@ public class JsonLdTemplateWatcher extends FileWatcher<RootBuilder> {
         ObjectMapper mapper =
                 new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
         JsonLdTemplateReader reader = new JsonLdTemplateReader(mapper.readTree(in));
-        return reader.getBuilderTree();
+        return reader.getRootBuilder();
     }
 
-    public RootBuilder getJsonLdTemplateParser() throws IOException {
+    public RootBuilder getJsonLdTemplate() throws IOException {
         return read();
     }
 }

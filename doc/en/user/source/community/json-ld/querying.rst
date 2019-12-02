@@ -6,9 +6,17 @@ JSON-LD Querying
 
 
 The module allows to query data passing a json-ld path in cql_filter in all wfs getFeature request. Json-ld path will be resolved against the json-ld template to pick up corresponding value that could be a static one or a dynamic one (in that case the value is represented by a cql or xpath filter).
-A valid json-ld path comprises json-ld path field names separated by a ".". Having a json-ld template like the following ..code-block: json::
+A valid json-ld path comprises json-ld path field names separated by a ".". Having a json-ld template like the following
 
- {   
+
+.. code-block:: json
+
+
+ {  
+ "@hints": {
+    "st_gml31": "http://www.stations_gml31.org/1.0",
+    "ms_gml31": "http://www.stations_gml31.org/1.0:measurements"
+  }, 
   "@context": {
     "gsp": "http://www.opengis.net/ont/geosparql#",
     "sf": "http://www.opengis.net/ont/sf#",
@@ -45,6 +53,9 @@ A valid json-ld path comprises json-ld path field names separated by a ".". Havi
         "wkt": "$${toWKT(xpath('st_gml31:location'))}"
       },
       "st_gml31:measurements": [
+       {
+          "$source": "st_gml31:Measurements"
+        },
         {
           "name": "${st_gml31:measurements[1]}"
         },

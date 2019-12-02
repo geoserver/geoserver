@@ -24,20 +24,23 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 
+/** Encodes features in json-ld output format */
 public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
     /** The MIME type for a JSON-LD response* */
     public static final String MIME = "application/ld+json";
 
-    public JSONLDGetFeatureResponse(GeoServer gs) {
+    private JsonLdConfiguration configuration;
+
+    public JSONLDGetFeatureResponse(GeoServer gs, JsonLdConfiguration configuration) {
         super(gs, MIME);
+        this.configuration = configuration;
     }
 
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
-        JsonLdConfiguration configuration = JsonLdConfiguration.get();
         FeatureTypeInfo info =
                 getFeatureType(GetFeatureRequest.adapt(getFeature.getParameters()[0]));
         JsonLdGenerator writer = null;

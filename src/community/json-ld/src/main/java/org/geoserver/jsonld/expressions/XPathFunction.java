@@ -15,6 +15,7 @@ import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
+/** Cql functions that allows to evaluate an xpath against the object provided */
 public class XPathFunction extends FunctionExpressionImpl {
 
     public static FunctionName NAME =

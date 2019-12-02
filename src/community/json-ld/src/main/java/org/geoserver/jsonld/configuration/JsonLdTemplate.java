@@ -12,6 +12,11 @@ import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
+/**
+ * This class handles the management of a single json-ld template file, giving access to the ${@link
+ * RootBuilder} produced from the template file and issuing the reloading of the file when needed
+ * through ${@link JsonLdTemplateWatcher}
+ */
 public class JsonLdTemplate {
 
     private Resource templateFile;
@@ -24,7 +29,7 @@ public class JsonLdTemplate {
         this.templateFile = templateFile;
         this.watcher = new JsonLdTemplateWatcher(templateFile);
         try {
-            this.builderTree = watcher.getJsonLdTemplateParser();
+            this.builderTree = watcher.getJsonLdTemplate();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -45,7 +50,7 @@ public class JsonLdTemplate {
             synchronized (this) {
                 if (watcher != null && watcher.isModified()) {
                     try {
-                        RootBuilder root = watcher.getJsonLdTemplateParser();
+                        RootBuilder root = watcher.getJsonLdTemplate();
                         this.builderTree = root;
                     } catch (IOException ioe) {
                         throw new RuntimeException(ioe);
@@ -56,7 +61,7 @@ public class JsonLdTemplate {
         return false;
     }
 
-    public RootBuilder getBuilderTree() {
+    public RootBuilder getRootBuilder() {
         return builderTree;
     }
 }

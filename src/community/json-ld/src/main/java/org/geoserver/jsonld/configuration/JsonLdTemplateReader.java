@@ -2,15 +2,17 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.jsonld;
+package org.geoserver.jsonld.configuration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 import org.geoserver.jsonld.builders.*;
 import org.geoserver.jsonld.builders.impl.*;
+import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
@@ -21,6 +23,7 @@ public class JsonLdTemplateReader {
     public static final String CONTEXTKEY = "@context";
 
     public static final String EXPRSTART = "${";
+    private static final Logger LOGGER = Logging.getLogger(JsonLdTemplateReader.class);
 
     private JsonNode template;
 
@@ -30,23 +33,23 @@ public class JsonLdTemplateReader {
         this.template = template;
     }
 
-    public RootBuilder getBuilderTree() {
+    public RootBuilder getRootBuilder() {
         RootBuilder root = new RootBuilder();
-        workJson(null, template, root);
+        getBuilderFromJson(null, template, root);
         return root;
     }
 
-    private void workJson(String nodeName, JsonNode node, JsonBuilder currentBuilder) {
+    private void getBuilderFromJson(String nodeName, JsonNode node, JsonBuilder currentBuilder) {
         if (node.isObject()) {
-            workObjectNode(node, currentBuilder);
+            getBuilderFromJsonObject(node, currentBuilder);
         } else if (node.isArray()) {
-            workArrayNode(nodeName, node, currentBuilder);
+            getBuilderFromJsonArray(nodeName, node, currentBuilder);
         } else {
-            workValueNode(nodeName, node, currentBuilder);
+            getBuilderFromJsonAttribute(nodeName, node, currentBuilder);
         }
     }
 
-    private void workObjectNode(JsonNode node, JsonBuilder currentBuilder) {
+    private void getBuilderFromJsonObject(JsonNode node, JsonBuilder currentBuilder) {
         if (node.has(SOURCEKEY) && node.size() == 1) {
             String source = node.get(SOURCEKEY).asText();
             ((SourceBuilder) currentBuilder).setSource(source, namespaces);
@@ -79,19 +82,20 @@ public class JsonLdTemplateReader {
                     if (valueNode.isObject()) {
                         CompositeBuilder compositeBuilder = new CompositeBuilder(entryName);
                         currentBuilder.addChild(compositeBuilder);
-                        workObjectNode(valueNode, compositeBuilder);
-                        // else workValueNode(entryName, valueNode, currentBuilder);
+                        getBuilderFromJsonObject(valueNode, compositeBuilder);
                     } else if (valueNode.isArray()) {
-                        workArrayNode(entryName, valueNode, currentBuilder);
+                        getBuilderFromJsonArray(entryName, valueNode, currentBuilder);
                     } else {
-                        if (!jumpField) workValueNode(entryName, valueNode, currentBuilder);
+                        if (!jumpField)
+                            getBuilderFromJsonAttribute(entryName, valueNode, currentBuilder);
                     }
                 }
             }
         }
     }
 
-    private void workArrayNode(String nodeName, JsonNode node, JsonBuilder currentBuilder) {
+    private void getBuilderFromJsonArray(
+            String nodeName, JsonNode node, JsonBuilder currentBuilder) {
         IteratingBuilder iteratingBuilder = new IteratingBuilder(nodeName);
         currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART)) {
@@ -105,20 +109,21 @@ public class JsonLdTemplateReader {
                     if (!childNode.has(SOURCEKEY) && childNode.toString().contains(EXPRSTART)) {
                         CompositeBuilder compositeBuilder = new CompositeBuilder(null);
                         iteratingBuilder.addChild(compositeBuilder);
-                        workObjectNode(childNode, compositeBuilder);
+                        getBuilderFromJsonObject(childNode, compositeBuilder);
                     } else {
-                        workObjectNode(childNode, iteratingBuilder);
+                        getBuilderFromJsonObject(childNode, iteratingBuilder);
                     }
                 } else if (childNode.isArray()) {
-                    workArrayNode(nodeName, childNode, iteratingBuilder);
+                    getBuilderFromJsonArray(nodeName, childNode, iteratingBuilder);
                 } else {
-                    workValueNode(nodeName, node, iteratingBuilder);
+                    getBuilderFromJsonAttribute(nodeName, node, iteratingBuilder);
                 }
             }
         }
     }
 
-    private void workValueNode(String nodeName, JsonNode node, JsonBuilder currentBuilder) {
+    private void getBuilderFromJsonAttribute(
+            String nodeName, JsonNode node, JsonBuilder currentBuilder) {
         if (node.toString().contains(EXPRSTART) && !node.asText().equals("FeatureCollection")) {
             DynamicValueBuilder dynamicBuilder =
                     new DynamicValueBuilder(nodeName, node.asText(), namespaces);
@@ -142,7 +147,10 @@ public class JsonLdTemplateReader {
                         new URL(childNode.asText());
                         namespaces.declarePrefix(entryName, childNode.asText());
                     } catch (MalformedURLException ex) {
-                        //
+                        LOGGER.warning(
+                                "Malformed URL encountered while setting namespaces for json-ld template. "
+                                        + " Detail: "
+                                        + ex.getMessage());
                     }
                 }
             }

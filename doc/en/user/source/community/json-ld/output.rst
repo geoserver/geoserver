@@ -23,7 +23,9 @@ If OGC Feature API extension is enabled the output format is available from wfs3
 
 
 
-The output, given the template file showed in the configuration section, will look like ..code-block: json::
+The output, given the template file showed in the configuration section, will look like 
+
+.. code-block:: json
 
   {
     "@context": {

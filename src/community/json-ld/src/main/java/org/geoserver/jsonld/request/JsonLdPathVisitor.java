@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jsonld.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,8 +42,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
         if (extraData instanceof JsonBuilder) {
             String[] eles;
             if (propertyValue.indexOf(".") != -1) {
-                /*((AttributeExpressionImpl) expression)
-                .setPropertyName(propertyValue.replaceAll("\\.", "/"));*/
                 eles = propertyValue.split("\\.");
             } else {
                 eles = propertyValue.split("/");

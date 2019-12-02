@@ -14,7 +14,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.jsonld.validation.JsonLdValidator;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 
 /** Manage the cache and the retrieving of all json-ld template files related */
@@ -27,7 +26,7 @@ public class JsonLdConfiguration {
         this.dd = dd;
         templateCache =
                 CacheBuilder.newBuilder()
-                        .maximumSize(10)
+                        .maximumSize(100)
                         .initialCapacity(1)
                         .expireAfterAccess(120, TimeUnit.MINUTES)
                         .build(
@@ -57,7 +56,7 @@ public class JsonLdConfiguration {
         JsonLdTemplate template = templateCache.get(key);
         if (template.checkTemplate(resource)) templateCache.put(key, template);
         boolean isValid;
-        RootBuilder root = template.getBuilderTree();
+        RootBuilder root = template.getRootBuilder();
         if (root != null) {
             JsonLdValidator validator = new JsonLdValidator(resource);
             isValid = validator.validateTemplate(root);
@@ -73,11 +72,7 @@ public class JsonLdConfiguration {
         return root;
     }
 
-    public static JsonLdConfiguration get() {
-        return (JsonLdConfiguration) GeoServerExtensions.bean("jsonldConfiguration");
-    }
-
-    public static class CacheKey {
+    private class CacheKey {
         private FeatureTypeInfo resource;
         private String path;
 

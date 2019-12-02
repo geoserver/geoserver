@@ -47,7 +47,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
 
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
-        writeKey(writer);
         Object o = null;
         if (xpath != null) {
 
@@ -56,8 +55,10 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         } else if (cql != null) {
             o = evaluateExpressions(context);
         }
-
-        writer.writeResult(o);
+        if (o != null) {
+            writeKey(writer);
+            writer.writeResult(o);
+        }
     }
 
     public Expression getCql() {

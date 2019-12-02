@@ -90,6 +90,18 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     }
 
     @Test
+    public void testJsonLdResponseWithoutTemplate() throws Exception {
+        setUp();
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=ms_gml31:Measurement_gml31&outputFormat=");
+        sb.append("application%2Fld%2Bjson");
+        MockHttpServletResponse response = getAsServletResponse(sb.toString());
+        assertTrue(
+                response.getContentAsString()
+                        .contains("No Json-Ld template found for feature type"));
+    }
+
+    @Test
     public void testJsonLdQueryWithGET() throws Exception {
         setUp();
         StringBuilder sb =
@@ -165,6 +177,16 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                 + typeInfo.getName()
                                 + "/"
                                 + typeInfo.getName()
+                                + ".json")
+                .delete();
+        dd.getResourceLoader()
+                .get(
+                        "workspaces/st_gml32/"
+                                + typeInfo2.getStore().getName()
+                                + "/"
+                                + typeInfo2.getName()
+                                + "/"
+                                + typeInfo2.getName()
                                 + ".json")
                 .delete();
         dd = null;

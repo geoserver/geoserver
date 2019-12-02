@@ -5,11 +5,17 @@ Producing the template file
 ---------------------------
 
 JSON-LD template file, operate as a mapping level over the stream of features received by a store, transforming them in the desired output. 
-The template file will be managed directly through file system editing, without any UI or REST API. In order to associate it with a given feature type, it has to be placed in FeatureType folder in the GeoServer data directory named as the FeatureType, e.g. :code:`workspace/store/featuretype/featuretype.json`.
+The template file will be managed directly through file system editing, without any UI or REST API. In order to associate it with a given feature type, it has to be placed in FeatureType folder in the GeoServer data directory named as the FeatureType, e.g. :code:`workspace/store/featuretype/featuretype.json`. In case of complex feature, a json object named @hints listing namespaces has to be provided.
 If the client asks json-ld output format  for a feature type that does not have a json-ld template file, an error will be returned.
-This is an example of a json-ld configuration file ..code-block: json::
+This is an example of a json-ld configuration file 
+
+.. code-block:: json
 
   {   
+  "@hints": {
+    "st_gml31": "http://www.stations_gml31.org/1.0",
+    "ms_gml31": "http://www.stations_gml31.org/1.0:measurements"
+  },
   "@context": {
     "gsp": "http://www.opengis.net/ont/geosparql#",
     "sf": "http://www.opengis.net/ont/sf#",
@@ -46,6 +52,9 @@ This is an example of a json-ld configuration file ..code-block: json::
         "wkt": "$${toWKT(xpath('st_gml31:location'))}"
       },
       "st_gml31:measurements": [
+        {
+          "$source": "st_gml31:Measurements"
+        },
         {
           "name": "${st_gml31:measurements[1]}",
           "stillThePoint": {

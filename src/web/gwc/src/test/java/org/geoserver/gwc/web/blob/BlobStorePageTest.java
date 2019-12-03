@@ -205,7 +205,6 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testLayout() throws ConfigurationException {
-
         for (PathGeneratorType type : PathGeneratorType.values()) {
             BlobStorePage page = new BlobStorePage();
             tester.startPage(page);
@@ -215,7 +214,8 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
             formTester.setValue("name", "myblobstore");
             formTester.setValue("enabled", false);
             formTester.setValue(
-                    "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
+                    "blobSpecificPanel:baseDirectory:fileInput:border:border_body:paramValue",
+                    "/mydir");
             formTester.select("blobSpecificPanel:fileSystemLayout", type.ordinal());
             tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 

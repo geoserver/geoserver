@@ -385,6 +385,11 @@
      <artifactId>gs-importer-jdbc</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-json-ld</artifactId>
+     <version>${project.version}</version>
+   </dependency>
 </dependencies>
  <build>
   <plugins>

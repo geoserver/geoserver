@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="jsonldConfiguration" class="org.geoserver.jsonld.configuration.JsonLdConfiguration">
+        <constructor-arg ref="dataDirectory"/>
+    </bean>
+
+    <bean id="jsonldCallback" class="org.geoserver.jsonld.request.JsonLdTemplateCallback">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="jsonldConfiguration"/>
+    </bean>
+
+    <bean id="JSONLDGetFeatureResponse" class="org.geoserver.jsonld.response.JSONLDGetFeatureResponse">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="jsonldConfiguration"/>
+    </bean>
+
+</beans>

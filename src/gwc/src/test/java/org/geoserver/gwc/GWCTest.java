@@ -865,6 +865,20 @@ public class GWCTest {
     }
 
     @Test
+    public void testTruncateAll() throws Exception {
+
+        String layerName = tileLayer.getName();
+        when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
+        ArrayList<TileLayer> mockList = new ArrayList<TileLayer>();
+        mockList.add(tileLayer);
+        when(tileBreeder.getLayers()).thenReturn(mockList);
+        mediator.truncateAll();
+        verify(tileBreeder, times(1)).getLayers();
+        verify(tileBreeder, times(1)).findTileLayer(layerName);
+        verify(storageBroker, times(1)).delete(layerName);
+    }
+
+    @Test
     public void testLayerRemoved() throws Exception {
         mediator.layerRemoved("someLayer");
         verify(storageBroker, times(1)).delete(eq("someLayer"));

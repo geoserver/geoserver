@@ -135,6 +135,7 @@ import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.GWCTask.TYPE;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
+import org.geowebcache.seed.TruncateAllRequest;
 import org.geowebcache.seed.TruncateBboxRequest;
 import org.geowebcache.service.Service;
 import org.geowebcache.storage.BlobStore;
@@ -471,6 +472,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                                         layerName, gridSetId));
             }
         }
+    }
+
+    public TruncateAllRequest truncateAll() throws GeoWebCacheException, StorageException {
+        // creating a mock internal request
+        TruncateAllRequest truncateAll = new TruncateAllRequest();
+        // truncating everything
+        truncateAll.doTruncate(storageBroker, tileBreeder);
+        log.info("Mass Truncate Completed");
+        log.info("Truncated Layers : " + truncateAll.getTrucatedLayersList());
+        return truncateAll;
     }
 
     private BoundingBox getIntersectingBounds(

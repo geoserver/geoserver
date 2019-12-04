@@ -1258,6 +1258,11 @@ display: block;
 margin-bottom: 1em;
 }
 
+.gwc-clear {
+background: transparent url(../img/clear_cache.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
 /*----------------
   Page header
 -----------------*/

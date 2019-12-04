@@ -182,4 +182,25 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void testGWCClean() {
+        // This asserts GWC integration from GUI
+        CachedLayersPage page = new CachedLayersPage();
+
+        // load tiles layer list page
+        tester.startPage(page);
+        tester.assertRenderedPage(CachedLayersPage.class);
+
+        //        // click on the Empty All Link
+        tester.clickLink("headerPanel:clearGwcLink", true);
+
+        // assert the dialog shows up
+        tester.assertVisible("dialog");
+
+        // click submit
+        tester.clickLink("dialog:dialog:content:form:submit", true);
+
+        tester.assertNoErrorMessage();
+    }
 }

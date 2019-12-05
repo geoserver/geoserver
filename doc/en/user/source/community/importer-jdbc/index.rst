@@ -30,8 +30,8 @@ contents are suitable for a PostGIS database (PostGIS extensions mandatory, even
     host=localhost
     schema=public
 
-On connection the code will create the tables as well as suitable indexes on the one table used to
-track the imports. In case the user above is not allowed to create tables, the following SQL
+On connection the code will create one table and the suitable indexes to track the imports.
+In case the user above is not allowed to create tables, the following SQL
 statement can be used (adapt to the specific database):
 
 .. code-block:: sql

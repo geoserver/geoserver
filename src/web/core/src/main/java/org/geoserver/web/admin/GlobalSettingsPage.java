@@ -143,6 +143,12 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(webUIModeChoice);
 
+        form.add(
+                new CheckBox(
+                        "allowStoredQueriesPerWorkspace",
+                        new PropertyModel<Boolean>(
+                                globalInfoModel, "allowStoredQueriesPerWorkspace")));
+
         // Extension plugin for Global Settings
         // Loading of the settings from the Global Info
         ListView extensions =

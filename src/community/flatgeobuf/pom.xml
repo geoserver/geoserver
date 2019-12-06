@@ -17,19 +17,16 @@
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-flatgeobuf</artifactId>
-  <packaging>jar</packaging>
   <name>FlatGeobuf WFS custom output format</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.wololo</groupId>

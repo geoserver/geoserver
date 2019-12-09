@@ -3,7 +3,7 @@
 Windows installer
 =================
 
-.. warning:: Sadly we currently are unable to produce Windows Installers. However we've created `an instruction on this site <https://docs.geoserver.org/latest/en/developer/win-installer.html>`_ to create the installation youself.
+.. warning:: Sadly we currently are unable to produce Windows Installers. However we've created `an instruction on this site <../../developer/win-installer.html>`_ to create the installation youself.
 
 The Windows installer provides an easy way to set up GeoServer on your system, as it requires no configuration files to be edited or command line settings.
 

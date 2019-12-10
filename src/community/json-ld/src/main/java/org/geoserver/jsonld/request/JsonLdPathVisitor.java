@@ -40,19 +40,21 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
         String propertyValue = expression.getPropertyName();
         Object newExpression = null;
         if (extraData instanceof JsonBuilder) {
-            String[] eles;
+            String[] elements;
             if (propertyValue.indexOf(".") != -1) {
-                eles = propertyValue.split("\\.");
+                elements = propertyValue.split("\\.");
             } else {
-                eles = propertyValue.split("/");
+                elements = propertyValue.split("/");
             }
             JsonBuilder builder = (JsonBuilder) extraData;
             try {
                 currentSource = null;
                 currentEl = 0;
-                newExpression = findXpath(builder.getChildren(), eles);
+                newExpression = findXpath(builder.getChildren(), elements);
                 workExpression(newExpression);
-                if (newExpression != null) return newExpression;
+                if (newExpression != null) {
+                    return newExpression;
+                }
             } catch (Throwable ex) {
                 LOGGER.log(
                         Level.INFO,
@@ -92,11 +94,17 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
             for (JsonBuilder jb : children) {
                 if (((AbstractJsonBuilder) jb).getKey() != null
                         && ((AbstractJsonBuilder) jb).getKey().equals(eles[currentEl])) {
-                    if (jb instanceof SourceBuilder)
-                        currentSource =
-                                ((SourceBuilder) jb).getStrSource() != null
-                                        ? ((SourceBuilder) jb).getStrSource()
-                                        : currentSource;
+                    if (jb instanceof SourceBuilder) {
+                        String source = ((SourceBuilder) jb).getStrSource();
+                        if (source != null) {
+                            if (currentSource != null) {
+                                source = "/" + source;
+                                currentSource += source;
+                            } else {
+                                currentSource = source;
+                            }
+                        }
+                    }
                     if (jb instanceof DynamicValueBuilder) {
                         DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
                         if (currentEl + 1 != eles.length) throw new ServiceException("error");

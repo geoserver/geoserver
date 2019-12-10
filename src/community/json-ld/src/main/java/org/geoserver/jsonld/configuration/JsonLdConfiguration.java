@@ -63,7 +63,9 @@ public class JsonLdConfiguration {
             if (!isValid) {
                 throw new RuntimeException(
                         "Failed to validate json-ld template for feature type "
-                                + resource.getName());
+                                + resource.getName()
+                                + ". Failing attribute is "
+                                + validator.getFailingAttribute());
             }
         } else {
             throw new RuntimeException(

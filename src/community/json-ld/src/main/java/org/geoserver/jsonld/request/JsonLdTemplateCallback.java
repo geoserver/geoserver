@@ -4,12 +4,13 @@
  */
 package org.geoserver.jsonld.request;
 
-import java.util.Map;
+import java.util.List;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.jsonld.configuration.JsonLdConfiguration;
+import org.geoserver.jsonld.response.JSONLDGetFeatureResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -40,18 +41,15 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
 
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
-        FeatureTypeInfo typeInfo = null;
-        GetFeatureRequest getFeature = GetFeatureRequest.adapt(operation.getParameters()[0]);
-
-        if (getFeature != null) {
-            Map rawKvp = request.getRawKvp();
-            boolean jump =
-                    request.getHttpRequest().getMethod().equalsIgnoreCase("GET")
-                            && (rawKvp.get("CQL_FILTER") == null
-                                    || !rawKvp.get("CQL_FILTER").toString().contains("."));
-            if (!jump) {
-                for (int i = 0; i < getFeature.getQueries().size(); i++) {
-                    Query q = getFeature.getQueries().get(i);
+        if (!request.getHttpRequest().getServletPath().equals("/ogc")
+                && request.getOutputFormat().equals(JSONLDGetFeatureResponse.MIME)) {
+            FeatureTypeInfo typeInfo = null;
+            GetFeatureRequest getFeature = null;
+            getFeature = GetFeatureRequest.adapt(operation.getParameters()[0]);
+            List<Query> queries = getFeature.getQueries();
+            if (getFeature != null && queries != null && queries.size() > 0) {
+                for (int i = 0; i < queries.size(); i++) {
+                    Query q = queries.get(i);
                     QName type = q.getTypeNames().get(0);
 
                     typeInfo =
@@ -66,7 +64,6 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
                             if (q.getFilter() != null) {
                                 Filter newFilter = (Filter) q.getFilter().accept(visitor, root);
                                 q.setFilter(newFilter);
-                                getFeature.getQueries().set(i, q);
                             }
                         } catch (Exception e) {
                             throw new RuntimeException(e);
@@ -75,6 +72,6 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
                 }
             }
         }
-        return operation;
+        return super.operationDispatched(request, operation);
     }
 }

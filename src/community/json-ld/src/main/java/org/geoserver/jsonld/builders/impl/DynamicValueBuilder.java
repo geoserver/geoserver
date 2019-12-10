@@ -12,8 +12,11 @@ import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
 import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
 import org.geoserver.jsonld.expressions.XPathFunction;
+import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
+import org.opengis.feature.ComplexAttribute;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -55,7 +58,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         } else if (cql != null) {
             o = evaluateExpressions(context);
         }
-        if (o != null) {
+        if (canWriteValue(o)) {
             writeKey(writer);
             writer.writeResult(o);
         }
@@ -140,5 +143,20 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
             expression = expression.replaceAll("\\.\\./", "");
         }
         return expression;
+    }
+
+    private boolean canWriteValue(Object result) {
+        if (result instanceof ComplexAttributeImpl) {
+            return canWriteValue(((ComplexAttribute) result).getValue());
+        } else if (result instanceof Attribute) {
+            return canWriteValue(((Attribute) result).getValue());
+        } else if (result instanceof List && ((List) result).size() == 0) {
+            if (((List) result).size() == 0) return false;
+            else return true;
+        } else if (result == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

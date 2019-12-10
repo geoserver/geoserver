@@ -13,6 +13,7 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.*;
 import org.junit.After;
 import org.junit.Before;
@@ -23,77 +24,83 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     Catalog catalog;
     FeatureTypeInfo typeInfo;
     FeatureTypeInfo typeInfo2;
+    FeatureTypeInfo simpleFeatureType;
     GeoServerDataDirectory dd;
 
     @Before
-    public void before() {
+    public void before() throws IOException {
         catalog = getCatalog();
 
-        typeInfo = catalog.getFeatureTypeByName("st_gml31", "Station_gml31");
-        typeInfo2 = catalog.getFeatureTypeByName("st_gml32", "Station_gml32");
+        typeInfo = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        typeInfo2 = catalog.getFeatureTypeByName("gsml", "GeologicUnit");
+        simpleFeatureType = catalog.getFeatureTypeByName("cdf", "Fifteen");
         dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
     }
 
-    public void setUp() throws IOException {
-
-        File file =
+    private void setUpInvalid() throws IOException {
+        File file2 =
                 dd.getResourceLoader()
                         .createFile(
-                                "workspaces/st_gml31/"
-                                        + typeInfo.getStore().getName()
-                                        + "/"
-                                        + typeInfo.getName(),
-                                typeInfo.getName() + ".json");
-        dd.getResourceLoader().copyFromClassPath("Station_gml31.json", file, getClass());
-    }
-
-    public void setUpInvalid() throws IOException {
-
-        File file =
-                dd.getResourceLoader()
-                        .createFile(
-                                "workspaces/st_gml32/"
+                                "workspaces/gsml/"
                                         + typeInfo2.getStore().getName()
                                         + "/"
                                         + typeInfo2.getName(),
                                 typeInfo2.getName() + ".json");
-        dd.getResourceLoader().copyFromClassPath("Station_gml32_invalid.json", file, getClass());
+        dd.getResourceLoader().copyFromClassPath("GeoLogicUnit_invalid.json", file2, getClass());
+    }
+
+    private void setUpComplex() throws IOException {
+        File file =
+                dd.getResourceLoader()
+                        .createFile(
+                                "workspaces/gsml/"
+                                        + typeInfo.getStore().getName()
+                                        + "/"
+                                        + typeInfo.getName(),
+                                typeInfo.getName() + ".json");
+        dd.getResourceLoader().copyFromClassPath("MappedFeature.json", file, getClass());
     }
 
     @Test
     public void testJsonLdResponse() throws Exception {
-        setUp();
+        setUpComplex();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
-        sb.append("&TYPENAME=st_gml31:Station_gml31&outputFormat=");
+        sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        JSONObject feature = (JSONObject) features.get(0);
-        assertEquals(feature.get("@id"), "st.1");
-        assertEquals(feature.get("name"), "station1");
-        JSONObject geom = (JSONObject) feature.get("geometry");
-        assertEquals(geom.get("@type"), "Point");
-        assertEquals(geom.get("wkt"), "POINT (1 -1)");
-        JSONArray measurements = (JSONArray) feature.get("st_gml31:measurements");
-        JSONObject first = (JSONObject) measurements.get(0);
-        JSONObject second = (JSONObject) measurements.get(1);
-        assertEquals(first.get("name"), "temperature");
-        assertEquals(second.get("name"), "wind");
-        JSONObject firstGeom = (JSONObject) first.get("stillThePoint");
-        JSONObject secondGeom = (JSONObject) second.get("stillThePoint");
-        assertEquals(firstGeom.get("@type"), "Point");
-        assertEquals(firstGeom.get("wkt"), "POINT (1 -1)");
-        assertEquals(secondGeom.get("@type"), "Point");
-        assertEquals(secondGeom.get("wkt"), "POINT (1 -1)");
+        assertEquals(features.size(), 4);
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            checkMappedFeatureJSON(feature);
+        }
+    }
+
+    @Test
+    public void testJsonLdResponseOGCAPI() throws Exception {
+        setUpComplex();
+        String path =
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items?f=application%2Fld%2Bjson";
+        JSONObject result = (JSONObject) getJsonLd(path);
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(features.size(), 4);
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            checkMappedFeatureJSON(feature);
+        }
     }
 
     @Test
     public void testJsonLdResponseWithoutTemplate() throws Exception {
-        setUp();
+        setUpComplex();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
-        sb.append("&TYPENAME=ms_gml31:Measurement_gml31&outputFormat=");
+        sb.append("&TYPENAME=ex:FirstParentFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         assertTrue(
@@ -103,51 +110,99 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testJsonLdQueryWithGET() throws Exception {
-        setUp();
+        setUpComplex();
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=st_gml31:Station_gml31&outputFormat=")
+                        .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application%2Fld%2Bjson")
-                        .append("&cql_filter=features.name IS NULL");
+                        .append(
+                                "&cql_filter=features.gsml:GeologicUnit.description = 'Olivine basalt'");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.isEmpty());
+        assertTrue(features.size() == 1);
+        assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
+    }
+
+    @Test
+    public void testJsonLdQueryOGCAPI() throws Exception {
+        setUpComplex();
+        String path =
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items?f=application%2Fld%2Bjson";
+        path +=
+                "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value = 'name_2' ";
+        JSONObject result = (JSONObject) getJsonLd(path);
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.size() == 1);
+        assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
     }
 
     @Test
     public void testJsonLdQueryWithPOST() throws Exception {
-        setUp();
+        setUpComplex();
         StringBuilder xml =
                 new StringBuilder("<wfs:GetFeature ")
                         .append(" service=\"WFS\" ")
                         .append(" outputFormat=\"application/ld+json\" ")
                         .append(" version=\"1.0.0\" ")
-                        .append(" xmlns:st_gml31=\"http://www.stations_gml31.org/1.0\" ")
+                        .append(" xmlns:gsml=\"urn:cgi:xmlns:CGI:GeoSciML:2.0\" ")
                         .append(" xmlns:wfs=\"http://www.opengis.net/wfs\" ")
                         .append(" xmlns:ogc=\"http://www.opengis.net/ogc\" ")
                         .append(">")
-                        .append(" <wfs:Query typeName=\"st_gml31:Station_gml31\">")
-                        .append(" <ogc:Filter><ogc:PropertyIsNull> ")
-                        .append("<ogc:PropertyName>features.name</ogc:PropertyName>")
-                        .append("</ogc:PropertyIsNull></ogc:Filter></wfs:Query>")
+                        .append(" <wfs:Query typeName=\"gsml:MappedFeature\">")
+                        .append(" <ogc:Filter><ogc:PropertyIsEqualTo> ")
+                        .append(
+                                "<ogc:PropertyName>features.gsml:GeologicUnit.description</ogc:PropertyName>")
+                        .append("<ogc:Literal>Olivine basalt</ogc:Literal>")
+                        .append("</ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query>")
                         .append("</wfs:GetFeature>");
         JSONObject result = (JSONObject) postJsonLd(xml.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.isEmpty());
+        assertTrue(features.size() == 1);
+        assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
     }
 
     @Test
     public void testInvalidTemplateResponse() throws Exception {
         setUpInvalid();
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
-        sb.append("&TYPENAME=st_gml32:Station_gml32&outputFormat=");
+        sb.append("&TYPENAME=gsml:GeologicUnit&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         assertTrue(response.getContentAsString().contains("Failed to validate json-ld template"));
+    }
+
+    private void checkMappedFeatureJSON(JSONObject feature) {
+        assertNotNull(feature);
+        assertNotNull(feature.getString("@id"));
+        JSONObject geom = (JSONObject) feature.get("geometry");
+        assertNotNull(geom);
+        assertEquals(String.valueOf(geom.get("@type")), "Polygon");
+        assertNotNull(geom.get("wkt"));
+        JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
+        JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
+        assertTrue(composition.size() > 0);
+        for (int i = 0; i < composition.size(); i++) {
+            JSONArray compositionPart =
+                    (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
+            assertTrue(compositionPart.size() > 0);
+            for (int j = 0; j < compositionPart.size(); j++) {
+                JSONObject role = compositionPart.getJSONObject(j).getJSONObject("gsml:role");
+                assertNotNull(role);
+                JSONObject proportion =
+                        compositionPart.getJSONObject(j).getJSONObject("proportion");
+                assertNotNull(proportion);
+                JSONArray lithology = (JSONArray) compositionPart.getJSONObject(j).get("lithology");
+                assertTrue(lithology.size() > 0);
+            }
+        }
     }
 
     protected JSON getJsonLd(String path) throws Exception {
@@ -164,33 +219,33 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
 
     @Override
     protected AbstractAppSchemaMockData createTestData() {
-        return new StationsMockData();
+        return new FeatureChainingMockData();
     }
 
     @After
     public void cleanup() {
-        dd.getResourceLoader()
-                .get(
-                        "workspaces/st_gml31/"
-                                + typeInfo.getStore().getName()
-                                + "/"
-                                + typeInfo.getName()
-                                + "/"
-                                + typeInfo.getName()
-                                + ".json")
-                .delete();
-        dd.getResourceLoader()
-                .get(
-                        "workspaces/st_gml32/"
-                                + typeInfo2.getStore().getName()
-                                + "/"
-                                + typeInfo2.getName()
-                                + "/"
-                                + typeInfo2.getName()
-                                + ".json")
-                .delete();
-        dd = null;
-        catalog = null;
-        typeInfo = null;
+        Resource res =
+                dd.getResourceLoader()
+                        .get(
+                                "workspaces/gsml/"
+                                        + typeInfo.getStore().getName()
+                                        + "/"
+                                        + typeInfo.getName()
+                                        + "/"
+                                        + typeInfo.getName()
+                                        + ".json");
+        if (res != null) res.delete();
+
+        Resource res2 =
+                dd.getResourceLoader()
+                        .get(
+                                "workspaces/gsml/"
+                                        + typeInfo2.getStore().getName()
+                                        + "/"
+                                        + typeInfo2.getName()
+                                        + "/"
+                                        + typeInfo2.getName()
+                                        + ".json");
+        if (res2 != null) res2.delete();
     }
 }

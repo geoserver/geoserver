@@ -12,17 +12,14 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
 
     protected String key;
 
-    protected boolean isFeaturesField;
-
     public AbstractJsonBuilder(String key) {
-        this.isFeaturesField = key != null && key.equalsIgnoreCase("features");
         this.key = key;
     }
 
     public AbstractJsonBuilder() {}
 
     protected void writeKey(JsonLdGenerator writer) throws IOException {
-        if (key != null && !key.equals("") && !isFeaturesField) writer.writeFieldName(key);
+        if (key != null && !key.equals("")) writer.writeFieldName(key);
     }
 
     public String getKey() {

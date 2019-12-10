@@ -120,6 +120,7 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
+import org.geowebcache.seed.TruncateAllRequest;
 import org.geowebcache.service.Service;
 import org.geowebcache.storage.BlobStoreAggregator;
 import org.geowebcache.storage.CompositeBlobStore;
@@ -866,16 +867,19 @@ public class GWCTest {
 
     @Test
     public void testTruncateAll() throws Exception {
-
         String layerName = tileLayer.getName();
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
+
         ArrayList<TileLayer> mockList = new ArrayList<TileLayer>();
         mockList.add(tileLayer);
         when(tileBreeder.getLayers()).thenReturn(mockList);
-        mediator.truncateAll();
+        for (String grid : tileLayer.getGridSubsets())
+            when(storageBroker.deleteByGridSetId(layerName, grid)).thenReturn(true);
+
+        TruncateAllRequest truncateAll = mediator.truncateAll();
+
         verify(tileBreeder, times(1)).getLayers();
-        verify(tileBreeder, times(1)).findTileLayer(layerName);
-        verify(storageBroker, times(1)).delete(layerName);
+        assertTrue(truncateAll.getTrucatedLayersList().contains(layerName));
     }
 
     @Test

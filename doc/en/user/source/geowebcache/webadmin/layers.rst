@@ -67,7 +67,7 @@ To add in a layer from GeoServer (if it wasn't set up to be added automatically)
 Clearing GeoWebCache
 ---------------------------
 
-To wipe the GeoWebCache clean, instead of clicking Empty for each layers one at a time, simple click `Empty All` and confirm.
+The ``Empty all`` link allows to clear the entire cache, for all layers, grid sets and filter parameters combination.
 
 .. warning:: This will truncate all layers in GeoWebCache
 

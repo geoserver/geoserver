@@ -357,7 +357,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                         Label confirmLabel =
                                                 new Label(
                                                         id,
-                                                        "You are about to wipe GWC cache clean, Do you want to continue?");
+                                                        new ParamResourceModel(
+                                                                "confirmGWCClean",
+                                                                CachedLayersPage.this));
                                         confirmLabel.setEscapeModelStrings(
                                                 false); // allow some html inside, like
                                         // <b></b>, etc
@@ -373,7 +375,11 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                         try {
                                             truncateAllRequest = facade.truncateAll();
                                         } catch (Exception e) {
-                                            error(e.getMessage());
+                                            error(
+                                                    new ParamResourceModel(
+                                                                    "confirmGWCClean",
+                                                                    CachedLayersPage.this)
+                                                            .getString());
                                             log.error("An Error while clearing GWC cache", e);
                                             return false;
                                         }
@@ -385,13 +391,26 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                         target.add(table);
                                         if (truncateAllRequest != null)
                                             if (truncateAllRequest.getTrucatedLayers().length()
-                                                    == 0) warn("GWC Cache already empty");
+                                                    == 0)
+                                                warn(
+                                                        new ParamResourceModel(
+                                                                        "warnGWCClean",
+                                                                        CachedLayersPage.this)
+                                                                .getString());
                                             else
                                                 info(
-                                                        "Cleared GWC cache for "
-                                                                + truncateAllRequest
-                                                                        .getTrucatedLayersList());
-                                        else error("There was a problem, check logs");
+                                                        new ParamResourceModel(
+                                                                        "confirmGWCCleanInfo",
+                                                                        CachedLayersPage.this,
+                                                                        truncateAllRequest
+                                                                                .getTrucatedLayersList())
+                                                                .getString());
+                                        else
+                                            error(
+                                                    new ParamResourceModel(
+                                                                    "errorGWCClean2",
+                                                                    CachedLayersPage.this)
+                                                            .getString());
                                         setResponsePage(getPage());
                                     }
                                 });

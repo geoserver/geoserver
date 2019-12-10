@@ -199,12 +199,12 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         // UI should navigate to ResourceConfiguration Page with Tiles tab selected
         tester.assertComponent("publishedinfo:tabs:panel", LayerCacheOptionsTabPanel.class);
     }
-    
+
     @Test
     public void testGWCClean() {
         // This asserts GWC integration from GUI
         CachedLayersPage page = new CachedLayersPage();
-        
+
         // load tiles layer list page
         tester.startPage(page);
         tester.assertRenderedPage(CachedLayersPage.class);

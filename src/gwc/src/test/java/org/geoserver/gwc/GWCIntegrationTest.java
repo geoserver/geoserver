@@ -95,6 +95,7 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.geowebcache.seed.TruncateAllRequest;
 import org.geowebcache.service.wmts.WMTSService;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -2064,6 +2065,49 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "[@exceptionCode='InvalidParameterValue'][@locator='Style'])",
                         document);
         assertThat(Integer.parseInt(result), is(1));
+    }
+
+    @Test
+    public void testMassTruncateAll() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        // first request
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // second request
+        response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        waitTileBreederCompletion();
+
+        TruncateAllRequest truncateAll = gwc.truncateAll();
+        String truncatedLayers = truncateAll.getTrucatedLayersList();
+        assertTrue(truncatedLayers.contains(qualifiedName));
+
+        // checking for empty
+        response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
     }
 
     /** Helper method that creates a layer group using the provided name and layers names. */

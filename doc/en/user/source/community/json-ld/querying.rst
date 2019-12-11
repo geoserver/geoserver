@@ -12,60 +12,106 @@ A valid json-ld path comprises json-ld path field names separated by a ".". Havi
 .. code-block:: json
 
 
- {  
- "@hints": {
-    "st_gml31": "http://www.stations_gml31.org/1.0",
-    "ms_gml31": "http://www.stations_gml31.org/1.0:measurements"
-  }, 
-  "@context": {
-    "gsp": "http://www.opengis.net/ont/geosparql#",
-    "sf": "http://www.opengis.net/ont/sf#",
-    "schema": "https://schema.org/",
-    "dc": "http://purl.org/dc/terms/",
-    "Feature": "gsp:Feature",
-    "FeatureCollection": "schema:Collection",
-    "Point": "sf:Point",
-    "wkt": "gsp:asWKT",
-    "features": {
-      "@container": "@set",
-      "@id": "schema:hasPart"
-    },
-    "geometry": "sf:geometry",
-    "description": "dc:description",
-    "title": "dc:title",
-    "name": "schema:name"
-  },
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "$source": "st_gml31:Station_gml31"
-    },
-    {
-      "@id": "${@id}",
-      "@type": [
-        "Feature",
-        "st_gml31:Station_gml31",
-        "http://vocabulary.odm2.org/samplingfeaturetype/borehole"
-      ],
-      "name": "${st_gml31:name}",
-      "geometry": {
-        "@type": "Point",
-        "wkt": "$${toWKT(xpath('st_gml31:location'))}"
-      },
-      "st_gml31:measurements": [
-       {
-          "$source": "st_gml31:Measurements"
-        },
-        {
-          "name": "${st_gml31:measurements[1]}"
-        },
-        {
-          "name": "${st_gml31:measurements[2]}"
-        }
-      ]
-    }
-  ]
- }
+  {
+  "@hints": {
+     "gsml": "urn:cgi:xmlns:CGI:GeoSciML:2.0",
+     "om": "http://www.opengis.net/om/1.0",
+     "sa": "http://www.opengis.net/sampling/2.0",
+     "xlink": "http://www.w3.org/1999/xlink",
+     "gml": "http://www.opengis.net/gml"
+   },
+   "@context": {
+     "gsp": "http://www.opengis.net/ont/geosparql#",
+     "sf": "http://www.opengis.net/ont/sf#",
+     "schema": "https://schema.org/",
+     "dc": "http://purl.org/dc/terms/",
+     "Feature": "gsp:Feature",
+     "FeatureCollection": "schema:Collection",
+     "Point": "sf:Point",
+     "wkt": "gsp:asWKT",
+     "features": {
+       "@container": "@set",
+       "@id": "schema:hasPart"
+     },
+     "geometry": "sf:geometry",
+     "description": "dc:description",
+     "title": "dc:title",
+     "name": "schema:name"
+   },
+   "type": "FeatureCollection",
+   "features": [
+     {
+       "$source": "gsml:MappedFeature"
+     },
+     {
+       "@id": "${@id}",
+       "@type": [
+         "Feature",
+         "gsml:MappedFeature",
+         "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
+       ],
+       "name": "${gml:name}",
+       "gsml:positionalAccuracy": {
+         "type": "gsml:CGI_NumericValue",
+         "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
+       },
+       "gsml:GeologicUnit": {
+         "$source": "gsml:specification/gsml:GeologicUnit",
+         "@id": "${@id}",
+         "description": "${gml:description}",
+         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+         "gsml:composition": [
+           {
+             "$source": "gsml:composition"
+           },
+           {
+             "gsml:compositionPart": [
+               {
+                 "$source": "gsml:CompositionPart"
+               },
+               {
+                 "gsml:role": {
+                   "value": "${gsml:role}",
+                   "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                 },
+                 "proportion": {
+                   "$source": "gsml:proportion",
+                   "@dataType": "CGI_ValueProperty",
+                   "CGI_TermValue": {
+                     "@dataType": "CGI_TermValue",
+                     "value": {
+                       "value": "${gsml:CGI_TermValue}",
+                       "@codeSpace": "some:uri"
+                     }
+                   }
+                 },
+                 "lithology": [
+                   {
+                     "$source": "gsml:lithology"
+                   },
+                   {
+                     "@id": "${gsml:ControlledConcept/@id}",
+                     "name": {
+                       "value": "${gsml:ControlledConcept/gsml:name}",
+                       "@lang": "en"
+                     },
+                     "vocabulary": {
+                       "@href": "urn:ogc:def:nil:OGC::missing"
+                     }
+                   }
+                 ]
+               }
+             ]
+           }
+         ]
+       },
+       "geometry": {
+         "@type": "Polygon",
+         "wkt": "$${toWKT(xpath('gsml:shape'))}"
+       }
+     }
+   ]
+  }
 
 
-a valid cql_filter with a json-ld path could be :code:`features.st_gml31:measurements.name IS NOT NULL`. The json-ld will be used to pick up the corresponding field value, namely the xpath :code:`st_gml31:name` and the store will be queried for features having the value obtained from this xpath evaluation as not null.
+a valid cql_filter with a json-ld path could be :code:`features.gsml:GeologicUnit.description = 'some string value'`. The json-ld will be used to pick up the corresponding field value, namely the xpath :code:`gml:description` and the store will be queried for features having the value obtained from this xpath evaluation equals to the specified string.

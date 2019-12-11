@@ -14,12 +14,12 @@ From Geoserver UI it is possible to have a preview of the format by choosing JSO
 
 
 
-If OGC Feature API extension is enabled the output format is available from wfs3 collection page as well.
+If OGC Feature API extension is enabled the output format is available from the collection page as well.
 
 
 .. figure:: images/json-ld_wfs3.png
 
-   Dropdown menu in wfs3 collection page.
+   Dropdown menu in OGC Feature API collection page.
 
 
 
@@ -49,35 +49,91 @@ The output, given the template file showed in the configuration section, will lo
     "type": "FeatureCollection",
     "features": [
         {
-            "@id": "st.1",
+            "@id": "mf2",
             "@type": [
                 "Feature",
-                "st_gml31:Station_gml31",
-                "http://vocabulary.odm2.org/samplingfeaturetype/borehole"
+                "gsml:MappedFeature",
+                "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
             ],
-            "name": "station1",
-            "geometry": {
-                "@type": "Point",
-                "wkt": "POINT (1 -1)"
+            "name": "MERCIA MUDSTONE GROUP",
+            "gsml:positionalAccuracy": {
+                "value": "100.0"
             },
-            "st_gml31:measurements": [
-                {
-                    "name": "temperature",
-                    "stillThePoint": {
-                        "@type": "Point",
-                        "wkt": "POINT (1 -1)"
+            "gsml:GeologicUnit": {
+                "@id": "gu.25678",
+                "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+                "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+                "gsml:composition": [
+                    {
+                        "gsml:compositionPart": [
+                            {
+                                "gsml:role": {
+                                    "value": "interbedded component",
+                                    "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                                },
+                                "proportion": {
+                                    "@dataType": "CGI_ValueProperty",
+                                    "CGI_TermValue": {
+                                        "@dataType": "CGI_TermValue",
+                                        "value": {
+                                            "value": "significant",
+                                            "@codeSpace": "some:uri"
+                                        }
+                                    }
+                                },
+                                "lithology": [
+                                    {
+                                        "@id": "cc.3",
+                                        "name": {
+                                            "value": "name_cc_3",
+                                            "@lang": "en"
+                                        },
+                                        "vocabulary": {
+                                            "@href": "urn:ogc:def:nil:OGC::missing"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "gsml:compositionPart": [
+                            {
+                                "gsml:role": {
+                                    "value": "interbedded component",
+                                    "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                                },
+                                "proportion": {
+                                    "@dataType": "CGI_ValueProperty",
+                                    "CGI_TermValue": {
+                                        "@dataType": "CGI_TermValue",
+                                        "value": {
+                                            "value": "minor",
+                                            "@codeSpace": "some:uri"
+                                        }
+                                    }
+                                },
+                                "lithology": [
+                                    {
+                                        "@id": "cc.4",
+                                        "name": {
+                                            "value": "name_cc_4",
+                                            "@lang": "en"
+                                        },
+                                        "vocabulary": {
+                                            "@href": "urn:ogc:def:nil:OGC::missing"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
                     }
-                },
-                {
-                    "name": "wind",
-                    "stillThePoint": {
-                        "@type": "Point",
-                        "wkt": "POINT (1 -1)"
-                    }
-                }
-            ]
-        }
+                ]
+                "geometry": {
+                "@type": "Polygon",
+                "wkt": "POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2, 52.5 -1.2, 52.5 -1.3))"
+            }
+            }
+        } 
     ]
- }   
-
-
+ }

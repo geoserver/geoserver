@@ -7,6 +7,7 @@ package org.geoserver.jsonld.builders.impl;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
@@ -27,7 +28,7 @@ public class CompositeBuilder extends SourceBuilder {
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
         context = evaluateSource(context);
-        if (context.getCurrentObj() != null) {
+        if (context.getCurrentObj() != null && canWrite(context)) {
             writeKey(writer);
             writer.writeStartObject();
             for (JsonBuilder jb : children) {
@@ -35,6 +36,28 @@ public class CompositeBuilder extends SourceBuilder {
             }
             writer.writeEndObject();
         }
+    }
+
+    public boolean canWrite(JsonBuilderContext context) {
+        List<JsonBuilder> filtered =
+                children.stream()
+                        .filter(
+                                b ->
+                                        b instanceof DynamicValueBuilder
+                                                || b instanceof CompositeBuilder)
+                        .collect(Collectors.toList());
+        if (filtered.size() == children.size()) {
+            int falseCounter = 0;
+            for (JsonBuilder b : filtered) {
+                if (b instanceof CompositeBuilder) {
+                    if (!((CompositeBuilder) b).canWrite(context)) falseCounter++;
+                } else {
+                    if (!((DynamicValueBuilder) b).checkNotNullValue(context)) falseCounter++;
+                }
+            }
+            if (falseCounter == filtered.size()) return false;
+        }
+        return true;
     }
 
     @Override

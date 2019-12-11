@@ -13,6 +13,7 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.jsonld.configuration.JsonLdConfiguration;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.*;
 import org.junit.After;
@@ -24,16 +25,14 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
     Catalog catalog;
     FeatureTypeInfo typeInfo;
     FeatureTypeInfo typeInfo2;
-    FeatureTypeInfo simpleFeatureType;
     GeoServerDataDirectory dd;
 
     @Before
-    public void before() throws IOException {
+    public void before() {
         catalog = getCatalog();
 
         typeInfo = catalog.getFeatureTypeByName("gsml", "MappedFeature");
         typeInfo2 = catalog.getFeatureTypeByName("gsml", "GeologicUnit");
-        simpleFeatureType = catalog.getFeatureTypeByName("cdf", "Fifteen");
         dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
     }
 
@@ -45,7 +44,7 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                         + typeInfo2.getStore().getName()
                                         + "/"
                                         + typeInfo2.getName(),
-                                typeInfo2.getName() + ".json");
+                                JsonLdConfiguration.JSON_LD_NAME);
         dd.getResourceLoader().copyFromClassPath("GeoLogicUnit_invalid.json", file2, getClass());
     }
 
@@ -57,7 +56,7 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                         + typeInfo.getStore().getName()
                                         + "/"
                                         + typeInfo.getName(),
-                                typeInfo.getName() + ".json");
+                                JsonLdConfiguration.JSON_LD_NAME);
         dd.getResourceLoader().copyFromClassPath("MappedFeature.json", file, getClass());
     }
 
@@ -176,7 +175,11 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
         sb.append("&TYPENAME=gsml:GeologicUnit&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
-        assertTrue(response.getContentAsString().contains("Failed to validate json-ld template"));
+        assertTrue(
+                response.getContentAsString()
+                        .contains(
+                                "Failed to validate json-ld template for feature type GeologicUnit. "
+                                        + "Failing attribute is Key: @id Value: invalid/id"));
     }
 
     private void checkMappedFeatureJSON(JSONObject feature) {
@@ -232,8 +235,7 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + typeInfo.getName()
                                         + "/"
-                                        + typeInfo.getName()
-                                        + ".json");
+                                        + JsonLdConfiguration.JSON_LD_NAME);
         if (res != null) res.delete();
 
         Resource res2 =
@@ -244,8 +246,7 @@ public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + typeInfo2.getName()
                                         + "/"
-                                        + typeInfo2.getName()
-                                        + ".json");
+                                        + JsonLdConfiguration.JSON_LD_NAME);
         if (res2 != null) res2.delete();
     }
 }

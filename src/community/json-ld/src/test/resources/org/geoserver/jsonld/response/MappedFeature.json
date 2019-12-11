@@ -1,11 +1,4 @@
 {
-  "@hints": {
-    "gsml": "urn:cgi:xmlns:CGI:GeoSciML:2.0",
-    "om": "http://www.opengis.net/om/1.0",
-    "sa": "http://www.opengis.net/sampling/2.0",
-    "xlink": "http://www.w3.org/1999/xlink",
-    "gml": "http://www.opengis.net/gml"
-  },
   "@context": {
     "gsp": "http://www.opengis.net/ont/geosparql#",
     "sf": "http://www.opengis.net/ont/sf#",

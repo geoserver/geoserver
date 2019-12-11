@@ -29,8 +29,9 @@ public class JsonLdTemplateReader {
 
     private NamespaceSupport namespaces;
 
-    public JsonLdTemplateReader(JsonNode template) {
+    public JsonLdTemplateReader(JsonNode template, NamespaceSupport namespaces) {
         this.template = template;
+        this.namespaces = namespaces;
     }
 
     public RootBuilder getRootBuilder() {
@@ -63,7 +64,8 @@ public class JsonLdTemplateReader {
                 // before feature evaluation starts
                 boolean jumpField =
                         (entryName.equalsIgnoreCase("type")
-                                || entryName.equalsIgnoreCase("features"));
+                                        && valueNode.asText().equals("FeatureCollection"))
+                                || entryName.equalsIgnoreCase("features");
                 if (entryName.equals(SOURCEKEY)) {
                     String source = valueNode.asText();
                     if (currentBuilder instanceof SourceBuilder)
@@ -71,10 +73,6 @@ public class JsonLdTemplateReader {
                 } else if (entryName.equals(CONTEXTKEY)) {
                     RootBuilder rootBuilder = (RootBuilder) currentBuilder;
                     rootBuilder.setContextHeader(valueNode);
-                    // Since a the moment namespaces can't be retrieved from feature collection
-                    // it searches in the template file for a field named hints listing namespaces
-                } else if (entryName.equals("@hints")) {
-                    handleHints(valueNode);
                 } else if (!valueNode.toString().contains(EXPRSTART) && !jumpField) {
                     StaticBuilder builder = new StaticBuilder(entryName, valueNode);
                     currentBuilder.addChild(builder);

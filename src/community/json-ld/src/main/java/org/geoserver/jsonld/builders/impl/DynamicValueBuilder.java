@@ -159,4 +159,17 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
             return true;
         }
     }
+
+    public boolean checkNotNullValue(JsonBuilderContext context) {
+        Object o = null;
+        if (xpath != null) {
+
+            o = evaluateXPath(context);
+
+        } else if (cql != null) {
+            o = evaluateExpressions(context);
+        }
+        if (o == null) return false;
+        return true;
+    }
 }

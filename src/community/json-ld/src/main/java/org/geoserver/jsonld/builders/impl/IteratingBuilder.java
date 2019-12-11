@@ -5,11 +5,10 @@
 package org.geoserver.jsonld.builders.impl;
 
 import java.io.IOException;
+import java.util.List;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
-import org.geotools.filter.AttributeExpressionImpl;
-import org.opengis.filter.expression.PropertyName;
 
 /**
  * This builder handle the writing of a Json array by invoking its children builders and setting the
@@ -26,43 +25,29 @@ public class IteratingBuilder extends SourceBuilder {
 
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
-        if (context.getCurrentObj() != null) {
-            if (!isFeaturesField) {
+        if (!isFeaturesField) {
+            context = evaluateSource(context);
+            if (context.getCurrentObj() != null) {
                 writeKey(writer);
                 writer.writeStartArray();
-                evaluateCollection(writer, context);
+                if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
+                else evaluateInternal(writer, context);
                 writer.writeEndArray();
-            } else {
-                evaluateInternal(writer, context);
             }
+        } else {
+            evaluateInternal(writer, context);
         }
     }
 
     public void evaluateCollection(JsonLdGenerator writer, JsonBuilderContext context)
             throws IOException {
 
-        int i = 1;
-        Object srcObject = iterateSource(i, context);
-        if (srcObject != null) {
-            while (srcObject != null) {
-                JsonBuilderContext newContext = new JsonBuilderContext(srcObject);
-                newContext.setParent(context);
-                evaluateInternal(writer, newContext);
-                i++;
-                srcObject = iterateSource(i, context);
-            }
-        } else {
-            context = evaluateSource(context);
-            evaluateInternal(writer, context);
+        List elements = (List) context.getCurrentObj();
+        for (Object o : elements) {
+            JsonBuilderContext childContext = new JsonBuilderContext(o);
+            childContext.setParent(context.getParent());
+            evaluateInternal(writer, childContext);
         }
-    }
-
-    private Object iterateSource(int i, JsonBuilderContext context) {
-        String source = getStrSource() + "[" + i + "]";
-        PropertyName pn = (PropertyName) getSource();
-        AttributeExpressionImpl sourceXpath =
-                new AttributeExpressionImpl(source, pn.getNamespaceContext());
-        return sourceXpath.evaluate(context.getCurrentObj());
     }
 
     private void evaluateInternal(JsonLdGenerator writer, JsonBuilderContext context)

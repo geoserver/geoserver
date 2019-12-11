@@ -6,6 +6,8 @@ package org.geoserver.jsonld.expressions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -186,5 +188,26 @@ public class TemplateExpressionExtractor {
      */
     public static Expression extractCqlExpressions(String expression) {
         return catenateExpressions(splitCqlExpressions(expression));
+    }
+
+    public static String workXpathAttributeSyntax(String xpath) {
+        int atIndex = xpath.indexOf("@");
+        if (atIndex != -1) {
+            Pattern pattern = Pattern.compile("[^a-zA]");
+            String substring = xpath.substring(atIndex + 1);
+            StringBuilder xpathAttribute = new StringBuilder("@");
+            for (int i = 0; i < substring.length(); i++) {
+                char current = substring.charAt(i);
+                Matcher matcher = pattern.matcher(String.valueOf(current));
+                if (!matcher.matches()) {
+                    xpathAttribute.append(current);
+                } else {
+                    break;
+                }
+            }
+            return xpath.replaceAll(
+                    xpathAttribute.toString(), "\"" + xpathAttribute.toString() + "\"");
+        }
+        return xpath;
     }
 }

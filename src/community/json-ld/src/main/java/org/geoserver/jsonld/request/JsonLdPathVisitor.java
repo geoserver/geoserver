@@ -13,6 +13,7 @@ import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
+import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
 import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -70,17 +71,11 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     private void workExpression(Object newExpression) {
         if (newExpression instanceof AttributeExpressionImpl) {
             AttributeExpressionImpl pn = (AttributeExpressionImpl) newExpression;
-            pn.setPropertyName(
-                    currentSource != null
-                            ? currentSource + "/" + pn.getPropertyName()
-                            : pn.getPropertyName());
+            pn.setPropertyName(completeXPath(pn.getPropertyName()));
         } else if (newExpression instanceof XPathFunction) {
             XPathFunction xpath = (XPathFunction) newExpression;
             LiteralExpressionImpl param = (LiteralExpressionImpl) xpath.getParameters().get(0);
-            param.setValue(
-                    currentSource != null
-                            ? currentSource + "/" + param.getValue()
-                            : param.getValue());
+            param.setValue(completeXPath((String) param.getValue()));
         } else if (newExpression instanceof FunctionExpressionImpl) {
             FunctionExpressionImpl function = (FunctionExpressionImpl) newExpression;
             for (Expression ex : function.getParameters()) {
@@ -137,5 +132,10 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
             }
         }
         return null;
+    }
+
+    private String completeXPath(String xpath) {
+        if (currentSource != null) xpath = currentSource + "/" + xpath;
+        return TemplateExpressionExtractor.workXpathAttributeSyntax(xpath);
     }
 }

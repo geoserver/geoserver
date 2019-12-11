@@ -7,6 +7,8 @@ package org.geoserver.jsonld.configuration;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -15,12 +17,16 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.jsonld.validation.JsonLdValidator;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
+import org.geotools.feature.type.Types;
+import org.opengis.feature.type.FeatureType;
 
 /** Manage the cache and the retrieving of all json-ld template files related */
 public class JsonLdConfiguration {
 
     private final LoadingCache<CacheKey, JsonLdTemplate> templateCache;
     private GeoServerDataDirectory dd;
+    public static final String JSON_LD_NAME = "json-ld_template.json";
 
     public JsonLdConfiguration(GeoServerDataDirectory dd) {
         this.dd = dd;
@@ -33,9 +39,28 @@ public class JsonLdConfiguration {
                                 new CacheLoader<CacheKey, JsonLdTemplate>() {
                                     @Override
                                     public JsonLdTemplate load(CacheKey key) {
+                                        Map namespaces = null;
+                                        try {
+                                            FeatureType type = key.getResource().getFeatureType();
+                                            if (type instanceof ComplexFeatureTypeImpl) {
+                                                namespaces =
+                                                        (Map)
+                                                                type.getUserData()
+                                                                        .get(
+                                                                                Types
+                                                                                        .DECLARED_NAMESPACES_MAP);
+                                            }
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(
+                                                    "Error retrieving FeatureType "
+                                                            + key.getResource().getName()
+                                                            + "Exception is: "
+                                                            + e.getMessage());
+                                        }
                                         Resource resource =
                                                 dd.get(key.getResource(), key.getPath());
-                                        JsonLdTemplate template = new JsonLdTemplate(resource);
+                                        JsonLdTemplate template =
+                                                new JsonLdTemplate(resource, namespaces);
                                         return template;
                                     }
                                 });
@@ -45,31 +70,29 @@ public class JsonLdConfiguration {
      * Get the template related to the featureType. If template has benn modified updates the cache
      * with the new JsonLdTemplate
      *
-     * @param resource
-     * @param path
+     * @param typeInfo
      * @return
      * @throws ExecutionException
      */
-    public RootBuilder getTemplate(FeatureTypeInfo resource, String path)
-            throws ExecutionException {
-        CacheKey key = new CacheKey(resource, path);
+    public RootBuilder getTemplate(FeatureTypeInfo typeInfo) throws ExecutionException {
+        CacheKey key = new CacheKey(typeInfo, JSON_LD_NAME);
         JsonLdTemplate template = templateCache.get(key);
-        if (template.checkTemplate(resource)) templateCache.put(key, template);
+        if (template.checkTemplate()) templateCache.put(key, template);
         boolean isValid;
         RootBuilder root = template.getRootBuilder();
         if (root != null) {
-            JsonLdValidator validator = new JsonLdValidator(resource);
+            JsonLdValidator validator = new JsonLdValidator(typeInfo);
             isValid = validator.validateTemplate(root);
             if (!isValid) {
                 throw new RuntimeException(
                         "Failed to validate json-ld template for feature type "
-                                + resource.getName()
+                                + typeInfo.getName()
                                 + ". Failing attribute is "
                                 + validator.getFailingAttribute());
             }
         } else {
             throw new RuntimeException(
-                    "No Json-Ld template found for feature type " + resource.getName());
+                    "No Json-Ld template found for feature type " + typeInfo.getName());
         }
         return root;
     }
@@ -87,16 +110,8 @@ public class JsonLdConfiguration {
             return resource;
         }
 
-        public void setResource(FeatureTypeInfo resource) {
-            this.resource = resource;
-        }
-
         public String getPath() {
             return path;
-        }
-
-        public void setPath(String path) {
-            this.path = path;
         }
 
         @Override

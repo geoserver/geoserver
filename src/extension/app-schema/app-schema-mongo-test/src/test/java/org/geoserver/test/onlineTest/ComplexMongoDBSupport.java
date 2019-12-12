@@ -231,6 +231,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
                 "c",
                 "1482146935",
                 "25.0");
+        checkMeasurementNotExists(WFS11_XPATH_ENGINE, document, "station 3", "station3@mail.com");
     }
 
     @Test
@@ -302,7 +303,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         // check that we got the expected image back
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(getBinary(result)));
         ImageAssert.assertEquals(
-                URLs.urlToFile(getClass().getResource("/results/result1.png")), image, 10);
+                URLs.urlToFile(getClass().getResource("/results/result1.png")), image, 240);
     }
 
     @Test
@@ -429,10 +430,13 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         // insert stations data set in MongoDB
         File stationsFile1 = moveResourceToTempDir("/data/stations1.json", "stations1.json");
         File stationsFile2 = moveResourceToTempDir("/data/stations2.json", "stations2.json");
+        File stationsFile3 = moveResourceToTempDir("/data/stations3.json", "stations3.json");
         String stationsContent1 = new String(Files.readAllBytes(stationsFile1.toPath()));
         String stationsContent2 = new String(Files.readAllBytes(stationsFile2.toPath()));
+        String stationsContent3 = new String(Files.readAllBytes(stationsFile3.toPath()));
         insertJson(STATIONS_DATA_BASE_NAME, STATIONS_COLLECTION_NAME, stationsContent1);
         insertJson(STATIONS_DATA_BASE_NAME, STATIONS_COLLECTION_NAME, stationsContent2);
+        insertJson(STATIONS_DATA_BASE_NAME, STATIONS_COLLECTION_NAME, stationsContent3);
     }
 
     /** Load MongoDB connection properties. */
@@ -608,5 +612,26 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
                         measurementUnit,
                         measurementTimestamp,
                         measurementValue));
+    }
+
+    private void checkMeasurementNotExists(
+            XpathEngine xpathEngine, Document document, String stationName, String stationMail) {
+        // check that the station metadata is correct
+        checkCount(
+                xpathEngine,
+                document,
+                1,
+                String.format(
+                        "/wfs:FeatureCollection/gml:featureMembers"
+                                + "/st:StationFeature[st:name='%s']/st:contact[st:mail='%s']",
+                        stationName, stationMail));
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                0,
+                String.format(
+                        "/wfs:FeatureCollection/gml:featureMembers"
+                                + "/st:StationFeature[st:name='%s']/st:measurement",
+                        stationName));
     }
 }

@@ -421,10 +421,9 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
                 mappingsContent.replaceAll("\\{collectionName\\}", STATIONS_COLLECTION_NAME);
         mappingsContent = mappingsContent.replaceAll("\\{mongoHost\\}", hostAsString);
         mappingsContent = mappingsContent.replaceAll("\\{mongoPort\\}", portAsString);
+        Path schemaPath = new File(ROOT_DIRECTORY.toFile(), "schema-store").toPath();
         mappingsContent =
-                mappingsContent.replaceAll(
-                        "\\{schemaStore\\}",
-                        new File(ROOT_DIRECTORY.toFile(), "schema-store").getAbsolutePath());
+                mappingsContent.replaceAll("\\{schemaStore\\}", schemaPath.toUri().toString());
         Files.write(APP_SCHEMA_MAPPINGS.toPath(), mappingsContent.getBytes());
         // insert stations data set in MongoDB
         File stationsFile1 = moveResourceToTempDir("/data/stations1.json", "stations1.json");

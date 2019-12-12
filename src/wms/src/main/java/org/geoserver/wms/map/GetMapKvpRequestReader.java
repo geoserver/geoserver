@@ -1219,10 +1219,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             if (attName.evaluate(type) == null) {
                 throw new ServiceException(
                         "The requested Style can not be used with this layer.  The style specifies "
-                                + "an attribute of "
+                                + "an attribute named '"
                                 + attName
-                                + " and the layer is: "
-                                + mapLayerInfo.getName());
+                                + "', not found in the '"
+                                + mapLayerInfo.getName()
+                                + "' layer");
             }
         }
     }

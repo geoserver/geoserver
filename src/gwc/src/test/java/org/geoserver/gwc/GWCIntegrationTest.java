@@ -159,6 +159,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     private void prepareDataDirectory(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
+        catalog.setDefaultWorkspace(getCatalog().getWorkspaceByName(BASIC_POLYGONS.getPrefix()));
         testData.addWorkspace(TEST_WORKSPACE_NAME, TEST_WORKSPACE_URI, catalog);
         WorkspaceInfo wi = catalog.getWorkspaceByName(TEST_WORKSPACE_NAME);
         testData.addStyle(
@@ -2085,5 +2086,31 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());
         catalogBuilder.calculateLayerGroupBounds(layerGroup);
         getCatalog().add(layerGroup);
+    }
+
+    /**
+     * Test verifying that GWC integration will work when layer belongs to default workspace and
+     * layer name is passed without workspace being part of layer name or OWS request itself
+     */
+    @Test
+    public void testDirectDefaultWorkspaceWMSIntegration() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+        final String layerName = BASIC_POLYGONS.getLocalPart();
+
+        String request =
+                "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                        + "&layers="
+                        + layerName
+                        + "&srs=EPSG:4326&width=256&height=256&styles="
+                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertNotNull(response.getHeader("geowebcache-tile-index"));
+        assertTrue(response.getHeader("geowebcache-cache-result").equalsIgnoreCase("HIT"));
     }
 }

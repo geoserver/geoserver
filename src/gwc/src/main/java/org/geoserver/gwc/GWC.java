@@ -750,7 +750,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public final ConveyorTile dispatch(
             final GetMapRequest request, StringBuilder requestMistmatchTarget) {
 
-        final String layerName = request.getRawKvp().get("LAYERS");
+        String layerName = request.getRawKvp().get("LAYERS");
         /*
          * This is a quick way of checking if the request was for a single layer. We can't really
          * use request.getLayers() because in the event that a layerGroup was requested, the request
@@ -762,8 +762,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         if (!tld.layerExists(layerName)) {
-            requestMistmatchTarget.append("not a tile layer");
-            return null;
+            // GEOS-9431-check in catalog also if not found TileLayerDispatcher
+            LayerInfo layerInfo = catalog.getLayerByName(layerName);
+            if (layerInfo != null) layerName = layerInfo.prefixedName();
+            else {
+                requestMistmatchTarget.append("not a tile layer");
+                return null;
+            }
         }
 
         final TileLayer tileLayer;

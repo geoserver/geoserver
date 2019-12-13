@@ -307,7 +307,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                         + "Content-Type: text/plain\n"
                         + "\r\n\r\n"
                         + FileUtils.readFileToString(locations, "UTF-8")
-                        + "\r\n\r\n--AaB03x--";
+                        + "\r\n--AaB03x--";
 
         post("/rest/imports/" + importId + "/tasks", body, "multipart/form-data; boundary=AaB03x");
 
@@ -319,7 +319,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
 
-        TransformChain transformChain = task.getTransform();
+        TransformChain<?> transformChain = task.getTransform();
         assertThat(
                 transformChain.getTransforms().get(0),
                 CoreMatchers.instanceOf(AttributesToPointGeometryTransform.class));
@@ -345,8 +345,11 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(3, featureType.getAttributeCount());
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
                 fti.getFeatureSource(null, null);
+        org.geotools.data.ResourceInfo info = featureSource.getInfo();
+
         FeatureCollection<? extends FeatureType, ? extends Feature> features =
                 featureSource.getFeatures();
+
         assertEquals(9, features.size());
         FeatureIterator<? extends Feature> featureIterator = features.features();
         assertTrue("Expected features", featureIterator.hasNext());

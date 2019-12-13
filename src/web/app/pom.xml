@@ -327,6 +327,7 @@
           -->
           <!-- Make sure it's not looking for annotations everywhere -->
           <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
+          <useTestScope>true</useTestScope>
         </configuration>
       </plugin>
 	  <plugin>

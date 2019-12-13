@@ -42,7 +42,7 @@ GeoServer provides the ``format_options`` vendor-specific parameter to specify p
 
 ::
 
-    format-options=param1:value1;param2:value2;...
+    format_options=param1:value1;param2:value2;...
 
 .. _wfs_outputformat_shapezip:
 
@@ -50,7 +50,7 @@ Shapefile output
 ----------------
 
 The shapefile format has a number of limitations that would prevent turning data sources into an equivalent shapefile. In order to abide with such limitations
-the shape-zip output format will automatically apply some transformations on the source data, and eventually split the single colleciton into multiple
+the shape-zip output format will automatically apply some transformations on the source data, and eventually split the single collection into multiple
 shapefiles. In particular, the shape-zip format will:
 
 * Reduce attribute names to the DBF accepted length, making sure there are not conflicts (counters being added at the end of the attribute name to handle this).

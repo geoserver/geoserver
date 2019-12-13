@@ -853,7 +853,7 @@ public class GeofenceAccessManager
         String rawLayersParameter = (String) gsRequest.getRawKvp().get("LAYERS");
         if (rawLayersParameter != null) {
             List<String> layersNames = KvpUtils.readFlat(rawLayersParameter);
-            return new LayersParser()
+            return LayersParser.getInstance()
                     .parseLayers(layersNames, getMap.getRemoteOwsURL(), getMap.getRemoteOwsType());
         }
         return new ArrayList<>();
@@ -870,7 +870,14 @@ public class GeofenceAccessManager
     /** An helper that avoids duplicating the code to parse the layers parameter */
     static final class LayersParser extends GetMapKvpRequestReader {
 
-        public LayersParser() {
+        private static LayersParser singleton = null;
+
+        public static LayersParser getInstance() {
+            if (singleton == null) singleton = new LayersParser();
+            return singleton;
+        }
+
+        private LayersParser() {
             super(WMS.get());
         }
 

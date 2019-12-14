@@ -1,117 +1,127 @@
 JSON-LD Bacward Mapping
 ============================
 
-JSON-LD Querying
----------------------
+When performing queries, using CQL filters, against layers that support a JSON-LD output, it will be possible to reference the JSON-LD document attributes in the CQL expressions. The JSON-LD output format plugin will take care of interpreting the CQL filter a translate it, when possible, to a data source native filter. For example, if that data source is a relational database, the CQL filter will be translated to one or multiple SQL queries that will be used to retrieve only the needed data.    
 
-
-The module allows to query data passing a json-ld path in cql_filter in all wfs getFeature request. Json-ld path will be resolved against the json-ld template to pick up corresponding value that could be a static one or a dynamic one (in that case the value is represented by a cql or xpath filter).
-A valid json-ld path comprises json-ld path field names separated by a ".". Having a json-ld template like the following
-
+Consider the following JSON-LD output example:
 
 .. code-block:: json
 
-
   {
-  "@hints": {
-     "gsml": "urn:cgi:xmlns:CGI:GeoSciML:2.0",
-     "om": "http://www.opengis.net/om/1.0",
-     "sa": "http://www.opengis.net/sampling/2.0",
-     "xlink": "http://www.w3.org/1999/xlink",
-     "gml": "http://www.opengis.net/gml"
-   },
-   "@context": {
-     "gsp": "http://www.opengis.net/ont/geosparql#",
-     "sf": "http://www.opengis.net/ont/sf#",
-     "schema": "https://schema.org/",
-     "dc": "http://purl.org/dc/terms/",
-     "Feature": "gsp:Feature",
-     "FeatureCollection": "schema:Collection",
-     "Point": "sf:Point",
-     "wkt": "gsp:asWKT",
-     "features": {
-       "@container": "@set",
-       "@id": "schema:hasPart"
-     },
-     "geometry": "sf:geometry",
-     "description": "dc:description",
-     "title": "dc:title",
-     "name": "schema:name"
-   },
-   "type": "FeatureCollection",
-   "features": [
-     {
-       "$source": "gsml:MappedFeature"
-     },
-     {
-       "@id": "${@id}",
-       "@type": [
-         "Feature",
-         "gsml:MappedFeature",
-         "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
-       ],
-       "name": "${gml:name}",
-       "gsml:positionalAccuracy": {
-         "type": "gsml:CGI_NumericValue",
-         "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
-       },
-       "gsml:GeologicUnit": {
-         "$source": "gsml:specification/gsml:GeologicUnit",
-         "@id": "${@id}",
-         "description": "${gml:description}",
-         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
-         "gsml:composition": [
-           {
-             "$source": "gsml:composition"
-           },
-           {
-             "gsml:compositionPart": [
-               {
-                 "$source": "gsml:CompositionPart"
-               },
-               {
-                 "gsml:role": {
-                   "value": "${gsml:role}",
-                   "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
-                 },
-                 "proportion": {
-                   "$source": "gsml:proportion",
-                   "@dataType": "CGI_ValueProperty",
-                   "CGI_TermValue": {
-                     "@dataType": "CGI_TermValue",
-                     "value": {
-                       "value": "${gsml:CGI_TermValue}",
-                       "@codeSpace": "some:uri"
-                     }
-                   }
-                 },
-                 "lithology": [
-                   {
-                     "$source": "gsml:lithology"
-                   },
-                   {
-                     "@id": "${gsml:ControlledConcept/@id}",
-                     "name": {
-                       "value": "${gsml:ControlledConcept/gsml:name}",
-                       "@lang": "en"
-                     },
-                     "vocabulary": {
-                       "@href": "urn:ogc:def:nil:OGC::missing"
-                     }
-                   }
-                 ]
-               }
-             ]
-           }
-         ]
-       },
-       "geometry": {
-         "@type": "Polygon",
-         "wkt": "$${toWKT(xpath('gsml:shape'))}"
-       }
-     }
-   ]
-  }
+    "@context": {
+        "gsp": "http://www.opengis.net/ont/geosparql#",
+        "sf": "http://www.opengis.net/ont/sf#",
+        "schema": "https://schema.org/",
+        "dc": "http://purl.org/dc/terms/",
+        "Feature": "gsp:Feature",
+        "FeatureCollection": "schema:Collection",
+        "Point": "sf:Point",
+        "wkt": "gsp:asWKT",
+        "features": {
+            "@container": "@set",
+            "@id": "schema:hasPart"
+        },
+        "geometry": "sf:geometry",
+        "description": "dc:description",
+        "title": "dc:title",
+        "name": "schema:name"
+    },
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "@id": "mf2",
+            "@type": [
+                "Feature",
+                "gsml:MappedFeature",
+                "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
+            ],
+            "name": "MERCIA MUDSTONE GROUP",
+            "gsml:positionalAccuracy": {
+                "value": "100.0"
+            },
+            "gsml:GeologicUnit": {
+                "@id": "gu.25678",
+                "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+                "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+                "gsml:composition": [
+                    {
+                        "gsml:compositionPart": [
+                            {
+                                "gsml:role": {
+                                    "value": "interbedded component",
+                                    "@codeSpace": "urn:cgi:classi..."
+                                },
+                                "proportion": {
+                                    "@dataType": "CGI_ValueProperty",
+                                    "CGI_TermValue": {
+                                        "@dataType": "CGI_TermValue",
+                                        "value": {
+                                            "value": "significant",
+                                            "@codeSpace": "some:uri"
+                                        }
+                                    }
+                                },
+                                "lithology": [
+                                    {
+                                        "@id": "cc.3",
+                                        "name": {
+                                            "value": "name_cc_3",
+                                            "@lang": "en"
+                                        },
+                                        "vocabulary": {
+                                            "@href": "urn:ogc:def:nil:OGC::missing"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "gsml:compositionPart": [
+                            {
+                                "gsml:role": {
+                                    "value": "interbedded component",
+                                    "@codeSpace": "urn:cgi:class..."
+                                },
+                                "proportion": {
+                                    "@dataType": "CGI_ValueProperty",
+                                    "CGI_TermValue": {
+                                        "@dataType": "CGI_TermValue",
+                                        "value": {
+                                            "value": "minor",
+                                            "@codeSpace": "some:uri"
+                                        }
+                                    }
+                                },
+                                "lithology": [
+                                    {
+                                        "@id": "cc.4",
+                                        "name": {
+                                            "value": "name_cc_4",
+                                            "@lang": "en"
+                                        },
+                                        "vocabulary": {
+                                            "@href": "urn:ogc:def:nil:OGC::missing"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+                "geometry": {
+                "@type": "Polygon",
+                "wkt": "POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2, ..."
+            }
+        } 
+    ]
+ }
 
 
-a valid cql_filter with a json-ld path could be :code:`features.gsml:GeologicUnit.description = 'some string value'`. The json-ld will be used to pick up the corresponding field value, namely the xpath :code:`gml:description` and the store will be queried for features having the value obtained from this xpath evaluation equals to the specified string.
+The following are example of valid CQL filters:
+
+* features.gsml:GeologicUnit.description = 'some string value'
+* features."@id" = "3245"
+* features.name in ("MERCIA MUDSTONE", "UKNOWN") AND features.gsml:positionalAccuracy.value = "100"
+
+Is worth mentioning that, as demonstrated in the examples above, ``""`` can be used to escape the attributes path components.

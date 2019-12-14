@@ -69,7 +69,7 @@ The output, given the template file showed in the configuration section, will lo
                             {
                                 "gsml:role": {
                                     "value": "interbedded component",
-                                    "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                                    "@codeSpace": "urn:cgi:classi..."
                                 },
                                 "proportion": {
                                     "@dataType": "CGI_ValueProperty",
@@ -101,7 +101,7 @@ The output, given the template file showed in the configuration section, will lo
                             {
                                 "gsml:role": {
                                     "value": "interbedded component",
-                                    "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                                    "@codeSpace": "urn:cgi:class..."
                                 },
                                 "proportion": {
                                     "@dataType": "CGI_ValueProperty",
@@ -131,8 +131,7 @@ The output, given the template file showed in the configuration section, will lo
                 ]
                 "geometry": {
                 "@type": "Polygon",
-                "wkt": "POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2, 52.5 -1.2, 52.5 -1.3))"
-            }
+                "wkt": "POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2, ..."
             }
         } 
     ]

@@ -150,6 +150,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
      */
     private String completeXPath(String xpath) {
         if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
-        return ExpressionsUtils.workXpathAttributeSyntax(xpath);
+        return ExpressionsUtils.quoteXpathAttribute(xpath);
     }
 }

@@ -193,21 +193,22 @@ public class ExpressionsUtils {
     }
 
     /**
-     * Wrap attribute selector syntax in a xpath with "" to make it suitable by cql compiler.
+     * Wrap attribute selector syntax in a xpath with quotation marks to make it suitable by cql
+     * compiler.
      *
      * @param xpath
      * @return
      */
-    public static String workXpathAttributeSyntax(String xpath) {
+    public static String quoteXpathAttribute(String xpath) {
         int atIndex = xpath.indexOf("@");
         if (atIndex != -1) {
-            Pattern pattern = Pattern.compile("[^a-zA]");
+            Pattern pattern = Pattern.compile("[a-zA-Z()<>.\\-1-9*]");
             String substring = xpath.substring(atIndex + 1);
             StringBuilder xpathAttribute = new StringBuilder("@");
             for (int i = 0; i < substring.length(); i++) {
                 char current = substring.charAt(i);
                 Matcher matcher = pattern.matcher(String.valueOf(current));
-                if (!matcher.matches()) {
+                if (matcher.matches()) {
                     xpathAttribute.append(current);
                 } else {
                     break;
@@ -234,5 +235,20 @@ public class ExpressionsUtils {
             }
         }
         return namespaceSupport;
+    }
+
+    public static String removeQuotes(String cqlFilter) {
+        cqlFilter = cqlFilter.replaceFirst("\"", "");
+        StringBuilder strBuilder = new StringBuilder();
+        for (int i = 0; i < cqlFilter.length(); i++) {
+            char curr = cqlFilter.charAt(i);
+            if (curr != '\"') {
+                strBuilder.append(curr);
+            } else {
+                if (i != cqlFilter.length() && cqlFilter.charAt(i + 1) != ' ')
+                    strBuilder.append(curr);
+            }
+        }
+        return strBuilder.toString();
     }
 }

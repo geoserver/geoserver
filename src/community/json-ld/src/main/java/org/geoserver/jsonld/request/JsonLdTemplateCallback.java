@@ -41,7 +41,8 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
 
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
-        if (!request.getHttpRequest().getServletPath().equals("/ogc")
+        if ("WFS".equalsIgnoreCase(request.getService())
+                && request.getOutputFormat() != null
                 && request.getOutputFormat().equals(JSONLDGetFeatureResponse.MIME)) {
             FeatureTypeInfo typeInfo = null;
             GetFeatureRequest getFeature = null;

@@ -49,7 +49,7 @@ public class JSONLDGetSimpleFeaturesResponseTest extends GeoServerSystemTestSupp
 
     @Test
     public void testJsonLdResponse() throws Exception {
-        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=cite:NamedPlaces&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
@@ -62,11 +62,11 @@ public class JSONLDGetSimpleFeaturesResponseTest extends GeoServerSystemTestSupp
 
     @Test
     public void testJsonLdResponseOGCAPI() throws Exception {
-        String path =
-                "ogc/features/collections/"
-                        + "cite:NamedPlaces"
-                        + "/items?f=application%2Fld%2Bjson";
-        JSONObject result = (JSONObject) getJsonLd(path);
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("cite:NamedPlaces")
+                        .append("/items?f=application%2Fld%2Bjson");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
@@ -100,7 +100,8 @@ public class JSONLDGetSimpleFeaturesResponseTest extends GeoServerSystemTestSupp
                 new StringBuilder("ogc/features/collections/")
                         .append("cite:NamedPlaces")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter= features.id = '118'");
+                        .append("&filter= features.id = '118'")
+                        .append("&filter-lang=cql-text");
         JSONObject result = (JSONObject) getJsonLd(path.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);

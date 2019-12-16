@@ -127,13 +127,15 @@ public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestS
     @Test
     public void testJsonLdQueryOGCAPI() throws Exception {
         setUpComplex();
-        String path =
-                "ogc/features/collections/"
-                        + "gsml:MappedFeature"
-                        + "/items?f=application%2Fld%2Bjson";
-        path +=
-                "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value = 'name_2' ";
-        JSONObject result = (JSONObject) getJsonLd(path);
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&filter-lang=cql-text")
+                        .append(
+                                "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value")
+                        .append(" = 'name_2' ");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");

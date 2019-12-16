@@ -140,8 +140,11 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
                 }
                 writeEndArray();
             }
-        } else {
+        } else if (result == null) {
             writeNull();
+        } else {
+            throw new RuntimeException(
+                    "We can't handle the provided object o type '" + result.getClass() + "'.");
         }
     }
 

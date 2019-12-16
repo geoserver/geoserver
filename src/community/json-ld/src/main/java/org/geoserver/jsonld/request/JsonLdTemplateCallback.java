@@ -58,7 +58,8 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
                     if (typeInfo != null) {
                         try {
                             RootBuilder root = configuration.getTemplate(typeInfo);
-                            JsonLdPathVisitor visitor = new JsonLdPathVisitor();
+                            JsonLdPathVisitor visitor =
+                                    new JsonLdPathVisitor(typeInfo.getFeatureType());
                             if (q.getFilter() != null) {
                                 Filter newFilter = (Filter) q.getFilter().accept(visitor, root);
                                 q.setFilter(newFilter);

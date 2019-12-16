@@ -69,4 +69,9 @@ public class CompositeBuilder extends SourceBuilder {
     public List<JsonBuilder> getChildren() {
         return children;
     }
+
+    @Override
+    protected void writeKey(JsonLdGenerator writer) throws IOException {
+        if (key != null && !key.equals("")) writer.writeFieldName(key);
+    }
 }

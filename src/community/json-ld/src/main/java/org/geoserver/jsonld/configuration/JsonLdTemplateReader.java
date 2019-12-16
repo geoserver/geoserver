@@ -5,8 +5,6 @@
 package org.geoserver.jsonld.configuration;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -129,29 +127,6 @@ public class JsonLdTemplateReader {
         } else {
             StaticBuilder staticBuilder = new StaticBuilder(nodeName, node);
             currentBuilder.addChild(staticBuilder);
-        }
-    }
-
-    public void handleHints(JsonNode hints) {
-        if (hints != null) {
-            namespaces = new NamespaceSupport();
-            Iterator<Map.Entry<String, JsonNode>> iterator = hints.fields();
-            while (iterator.hasNext()) {
-                Map.Entry<String, JsonNode> nodEntry = iterator.next();
-                String entryName = nodEntry.getKey();
-                JsonNode childNode = nodEntry.getValue();
-                if (childNode.isValueNode()) {
-                    try {
-                        new URI(childNode.asText());
-                        namespaces.declarePrefix(entryName, childNode.asText());
-                    } catch (URISyntaxException ex) {
-                        LOGGER.warning(
-                                "Malformed URL encountered while setting namespaces for json-ld template. "
-                                        + " Detail: "
-                                        + ex.getMessage());
-                    }
-                }
-            }
         }
     }
 }

@@ -8,25 +8,24 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.validation.JsonLdValidator;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
-import org.geotools.feature.type.Types;
 import org.opengis.feature.type.FeatureType;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /** Manage the cache and the retrieving of all json-ld template files related */
 public class JsonLdConfiguration {
 
     private final LoadingCache<CacheKey, JsonLdTemplate> templateCache;
     private GeoServerDataDirectory dd;
-    public static final String JSON_LD_NAME = "json-ld_template.json";
+    public static final String JSON_LD_NAME = "json-ld-template.json";
 
     public JsonLdConfiguration(GeoServerDataDirectory dd) {
         this.dd = dd;
@@ -39,17 +38,10 @@ public class JsonLdConfiguration {
                                 new CacheLoader<CacheKey, JsonLdTemplate>() {
                                     @Override
                                     public JsonLdTemplate load(CacheKey key) {
-                                        Map namespaces = null;
+                                        NamespaceSupport namespaces = null;
                                         try {
                                             FeatureType type = key.getResource().getFeatureType();
-                                            if (type instanceof ComplexFeatureTypeImpl) {
-                                                namespaces =
-                                                        (Map)
-                                                                type.getUserData()
-                                                                        .get(
-                                                                                Types
-                                                                                        .DECLARED_NAMESPACES_MAP);
-                                            }
+                                            namespaces = ExpressionsUtils.declareNamespaces(type);
                                         } catch (IOException e) {
                                             throw new RuntimeException(
                                                     "Error retrieving FeatureType "

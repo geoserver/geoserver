@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class JSONLDGetFeatureResponseTest extends AbstractAppSchemaTestSupport {
+public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestSupport {
     Catalog catalog;
     FeatureTypeInfo typeInfo;
     FeatureTypeInfo typeInfo2;

@@ -5,12 +5,12 @@
 package org.geoserver.jsonld.configuration;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class handles the management of a single json-ld template file, giving access to the ${@link
@@ -25,7 +25,7 @@ public class JsonLdTemplate {
 
     private static final Logger LOGGER = Logging.getLogger(JsonLdTemplate.class);
 
-    public JsonLdTemplate(Resource templateFile, Map namespaces) {
+    public JsonLdTemplate(Resource templateFile, NamespaceSupport namespaces) {
         this.templateFile = templateFile;
         this.watcher = new JsonLdTemplateWatcher(templateFile, namespaces);
         try {

@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class JSONLDGetFeatureSimpleFeatureTest extends GeoServerSystemTestSupport {
+public class JSONLDGetSimpleFeaturesResponseTest extends GeoServerSystemTestSupport {
     Catalog catalog;
     FeatureTypeInfo typeInfo;
     GeoServerDataDirectory dd;
@@ -72,6 +72,26 @@ public class JSONLDGetFeatureSimpleFeatureTest extends GeoServerSystemTestSuppor
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 2);
         checkFeature((JSONObject) features.get(0));
+    }
+
+    @Test
+    public void testJsonLdResponseWithFilter() throws Exception {
+        StringBuilder path =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=cite:NamedPlaces")
+                        .append("&outputFormat=application%2Fld%2Bjson")
+                        .append("&cql_filter= features.id = '118'");
+        JSONObject result = (JSONObject) getJsonLd(path.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(features.size(), 1);
+        JSONObject feature = (JSONObject) features.get(0);
+        assertEquals(feature.getString("id"), "118");
+        assertNotNull(feature.getString("name"), "Goose Island");
+        JSONObject geometry = (JSONObject) feature.get("geometry");
+        assertEquals(geometry.getString("@type"), "MultiPolygon");
+        assertNotNull(geometry.getString("wkt"));
     }
 
     @Test

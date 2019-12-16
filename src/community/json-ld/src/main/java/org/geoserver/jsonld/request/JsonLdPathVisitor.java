@@ -13,7 +13,7 @@ import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
-import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -22,6 +22,8 @@ import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.ows.ServiceException;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
@@ -36,6 +38,11 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     private String currentSource;
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     static final Logger LOGGER = Logging.getLogger(JsonLdPathVisitor.class);
+    boolean isSimple;
+
+    public JsonLdPathVisitor(FeatureType type) {
+        this.isSimple = type instanceof SimpleFeatureType;
+    }
 
     public Object visit(PropertyName expression, Object extraData) {
         String propertyValue = expression.getPropertyName();
@@ -134,8 +141,15 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
         return null;
     }
 
+    /**
+     * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
+     * Features only
+     *
+     * @param xpath
+     * @return
+     */
     private String completeXPath(String xpath) {
-        if (currentSource != null) xpath = currentSource + "/" + xpath;
-        return TemplateExpressionExtractor.workXpathAttributeSyntax(xpath);
+        if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
+        return ExpressionsUtils.workXpathAttributeSyntax(xpath);
     }
 }

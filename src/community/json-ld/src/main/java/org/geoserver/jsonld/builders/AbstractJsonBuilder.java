@@ -16,10 +16,9 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
         this.key = key;
     }
 
-    public AbstractJsonBuilder() {}
-
     protected void writeKey(JsonLdGenerator writer) throws IOException {
         if (key != null && !key.equals("")) writer.writeFieldName(key);
+        else throw new RuntimeException("Cannot write null key value");
     }
 
     public String getKey() {

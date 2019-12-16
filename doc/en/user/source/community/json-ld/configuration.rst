@@ -5,20 +5,13 @@ Producing the template file
 ---------------------------
 
 JSON-LD template file, operate as a mapping level over the stream of features received by a store, transforming them in the desired output. 
-The template file will be managed directly through file system editing, without any UI or REST API. In order to associate it with a given feature type, it has to be placed in FeatureType folder in the GeoServer data directory named as the FeatureType, e.g. :code:`workspace/store/featuretype/featuretype.json`. In case of complex feature, a json object named @hints listing namespaces has to be provided.
+The template file will be managed directly through file system editing, without any UI or REST API. In order to associate it with a given feature type, it has to be placed in FeatureType folder in the GeoServer data directory named as json-ld-template.json, e.g. :code:`workspace/store/featuretype/json-ld-template.json`.
 If the client asks json-ld output format  for a feature type that does not have a json-ld template file, an error will be returned.
 This is an example of a json-ld configuration file 
 
 .. code-block:: json
 
   {
-  "@hints": {
-     "gsml": "urn:cgi:xmlns:CGI:GeoSciML:2.0",
-     "om": "http://www.opengis.net/om/1.0",
-     "sa": "http://www.opengis.net/sampling/2.0",
-     "xlink": "http://www.w3.org/1999/xlink",
-     "gml": "http://www.opengis.net/gml"
-   },
    "@context": {
      "gsp": "http://www.opengis.net/ont/geosparql#",
      "sf": "http://www.opengis.net/ont/sf#",

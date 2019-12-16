@@ -12,12 +12,14 @@ import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class perform a validation of the json-ld template by evaluating dynamic and source fields
@@ -108,15 +110,19 @@ public class JsonLdValidator {
     }
 
     private PropertyName extractXpath(Expression expression) {
+        NamespaceSupport namespaces = null;
+        try {
+            namespaces = ExpressionsUtils.declareNamespaces(type.getFeatureType());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to retrieve FeatureType for " + type.getName());
+        }
         PropertyName pn = null;
         if (expression instanceof AttributeExpressionImpl) {
             pn = (AttributeExpressionImpl) expression;
         } else if (expression instanceof XPathFunction) {
             XPathFunction xpath = (XPathFunction) expression;
             LiteralExpressionImpl param = (LiteralExpressionImpl) xpath.getParameters().get(0);
-            pn =
-                    new AttributeExpressionImpl(
-                            String.valueOf(param.getValue()), xpath.getNamespaces());
+            pn = new AttributeExpressionImpl(String.valueOf(param.getValue()), namespaces);
         } else if (expression instanceof FunctionExpressionImpl) {
             FunctionExpressionImpl function = (FunctionExpressionImpl) expression;
             for (Expression ex : function.getParameters()) {

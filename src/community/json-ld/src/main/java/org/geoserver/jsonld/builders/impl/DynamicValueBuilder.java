@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -38,11 +38,9 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         super(key);
         this.namespaces = namespaces;
         if (expression.startsWith("$${")) {
-            this.cql =
-                    TemplateExpressionExtractor.extractCqlExpressions(
-                            workXpathFunction(expression));
+            this.cql = ExpressionsUtils.extractCqlExpressions(workXpathFunction(expression));
         } else if (expression.startsWith("${")) {
-            String strXpath = TemplateExpressionExtractor.extractXpath(expression);
+            String strXpath = ExpressionsUtils.extractXpath(expression);
             strXpath = determineContextPos(strXpath);
             this.xpath = new AttributeExpressionImpl(strXpath, namespaces);
         }
@@ -133,6 +131,12 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return xpath;
     }
 
+    /**
+     * Extract xpath from a cql expression if present
+     *
+     * @param expression
+     * @return
+     */
     private String workXpathFunction(String expression) {
         // extract xpath from cql expression if present
         int xpathI = expression.indexOf("xpath(");
@@ -145,6 +149,13 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return expression;
     }
 
+    /**
+     * A value can only be wrote if it is non NULL and not an empty list. This method supports *
+     * complex features attributes, this method will be invoked recursively on the attribute value.
+     *
+     * @param result
+     * @return
+     */
     private boolean canWriteValue(Object result) {
         if (result instanceof ComplexAttributeImpl) {
             return canWriteValue(((ComplexAttribute) result).getValue());

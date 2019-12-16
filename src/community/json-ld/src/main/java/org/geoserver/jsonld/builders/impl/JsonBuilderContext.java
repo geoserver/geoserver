@@ -25,10 +25,6 @@ public class JsonBuilderContext {
         return currentObj;
     }
 
-    public void setCurrentObj(Object currentObj) {
-        this.currentObj = currentObj;
-    }
-
     public JsonBuilderContext getParent() {
         return parent;
     }
@@ -39,9 +35,5 @@ public class JsonBuilderContext {
 
     public String getCurrentSource() {
         return currentSource;
-    }
-
-    public void setCurrentSource(String currentSource) {
-        this.currentSource = currentSource;
     }
 }

@@ -128,11 +128,12 @@ The output, given the template file showed in the configuration section, will lo
                             }
                         ]
                     }
-                ]
+                ],
                 "geometry": {
-                "@type": "Polygon",
-                "wkt": "POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2, ..."
+                    "@type": "Polygon",
+                    "wkt": "POLYGON ((52.5 -1.3, 52.6 -1.3, 52.6 -1.2,...))"
+                }
             }
-        } 
+        }
     ]
- }
+    }

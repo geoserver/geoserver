@@ -19,12 +19,6 @@ public class StaticBuilder extends AbstractJsonBuilder {
         this.staticValue = value;
     }
 
-    public StaticBuilder(JsonNode value) {
-        this.staticValue = value;
-    }
-
-    public StaticBuilder() {}
-
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
         if (staticValue.isObject()) {
@@ -38,9 +32,5 @@ public class StaticBuilder extends AbstractJsonBuilder {
 
     public JsonNode getStaticValue() {
         return staticValue;
-    }
-
-    public void setStaticValue(JsonNode staticValue) {
-        this.staticValue = staticValue;
     }
 }

@@ -9,7 +9,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.jsonld.configuration.JsonLdConfiguration;
-import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.response.JSONLDGetFeatureResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
@@ -51,10 +51,15 @@ public class JsonLdTemplateCallBackOGC extends AbstractDispatcherCallback {
                             getFeatureType((String) operation.getParameters()[0]);
                     RootBuilder root = configuration.getTemplate(typeInfo);
                     if (root != null) {
-                        JsonLdPathVisitor visitor = new JsonLdPathVisitor();
+                        JsonLdPathVisitor visitor =
+                                new JsonLdPathVisitor(typeInfo.getFeatureType());
+                        /* Todo find a better way to replace json-ld path with corresponding template attribute*/
+                        // Get filter from string in order to make it accept the visitor
                         Filter f = (Filter) XCQL.toFilter(strFilter).accept(visitor, root);
+                        // Taking back a string from Function cause
+                        // OGC API get a string cql filter from query string
                         String newFilter = ECQL.toCQL(f).replaceAll("\"", "").replaceAll("/", ".");
-                        newFilter = TemplateExpressionExtractor.workXpathAttributeSyntax(newFilter);
+                        newFilter = ExpressionsUtils.workXpathAttributeSyntax(newFilter);
                         for (int i = 0; i < operation.getParameters().length; i++) {
                             Object p = operation.getParameters()[i];
                             if (p != null

@@ -116,6 +116,12 @@ public class ClassifierTest extends SLDServiceBaseTest {
     static final QName SFDEM_MOSAIC =
             new QName(SystemTestData.CITE_URI, "sfdem_mosaic", SystemTestData.CITE_PREFIX);
 
+    static final QName SINGLE_FLOAT =
+            new QName(SystemTestData.CITE_URI, "singleFloatNoData", SystemTestData.CITE_PREFIX);
+
+    static final QName SINGLE_BYTE =
+            new QName(SystemTestData.CITE_URI, "singleByteNoData", SystemTestData.CITE_PREFIX);
+
     private static final String sldPrefix =
             "<StyledLayerDescriptor><NamedLayer><Name>feature</Name><UserStyle><FeatureTypeStyle>";
     private static final String sldPostfix =
@@ -155,6 +161,12 @@ public class ClassifierTest extends SLDServiceBaseTest {
         testData.addRasterLayer(DEM_FLOAT, "dem_float.tif", "tif", null, this.getClass(), catalog);
 
         testData.addRasterLayer(SRTM, "srtm.tif", "tif", null, this.getClass(), catalog);
+
+        testData.addRasterLayer(
+                SINGLE_FLOAT, "singleFloatNoData.tif", "tif", null, this.getClass(), catalog);
+
+        testData.addRasterLayer(
+                SINGLE_BYTE, "singleByteNoData.tif", "tif", null, this.getClass(), catalog);
 
         // for coverage view band selection testing
         testData.addDefaultRasterLayer(SystemTestData.MULTIBAND, catalog);
@@ -1687,5 +1699,64 @@ public class ClassifierTest extends SLDServiceBaseTest {
         } finally {
             EnvFunction.clearLocalValues();
         }
+    }
+
+    @Test
+    public void testClassifyRasterSingleFloat() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleFloatNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=quantile"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        assertEquals(ColorMap.TYPE_INTERVALS, cm.getType());
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        ColorMapEntry cm0 = cm.getColorMapEntry(0);
+        assertThat(cm0.getQuantity().evaluate(null, Float.class), Matchers.lessThanOrEqualTo(10f));
+        assertEquals("#FF071C", cm0.getColor().evaluate(null, String.class));
+        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        ColorMapEntry cm1 = cm.getColorMapEntry(1);
+        assertThat(
+                cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
+        assertEquals("#FF071C", cm1.getColor().evaluate(null, String.class));
+        assertEquals(1, cm1.getOpacity().evaluate(null, Double.class), 0);
+    }
+
+    /**
+     * Was hoping for a simpler solution for integer data (single entry, type "values"), but the
+     * output does not really render when tested, unsure why... keeping the code to cover both types
+     * of data anyways
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testClassifyRasterSingleByte() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&fullSLD=true&method=quantile"
+                        + "&colors=0xFF071C,0xFFA92E&ramp=custom";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        assertEquals(ColorMap.TYPE_INTERVALS, cm.getType());
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        ColorMapEntry cm0 = cm.getColorMapEntry(0);
+        assertThat(cm0.getQuantity().evaluate(null, Float.class), Matchers.lessThanOrEqualTo(10f));
+        assertEquals("#FF071C", cm0.getColor().evaluate(null, String.class));
+        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+        ColorMapEntry cm1 = cm.getColorMapEntry(1);
+        assertThat(
+                cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
+        assertEquals("#FF071C", cm1.getColor().evaluate(null, String.class));
+        assertEquals(1, cm1.getOpacity().evaluate(null, Double.class), 0);
     }
 }

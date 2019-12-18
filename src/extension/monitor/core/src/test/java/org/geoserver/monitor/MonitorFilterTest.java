@@ -271,6 +271,36 @@ public class MonitorFilterTest {
         assertEquals(data.getLabellingProcessingTime().longValue(), statistics.getLabellingTime());
     }
 
+    @Test
+    public void testDisableReverseDNSProcessor() throws Exception {
+        // step 1 : verify DND lookup working without configuration option
+        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+        RequestData data = testRemoteUser(principal);
+        assertNotNull(data.getRemoteHost());
+        try {
+            // step 2 : verify DND lookup is disabled when run with ignore option
+            filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
+            filter.monitor.config.props.put("ignorePostProcessors", "reverseDNS");
+            chain =
+                    new MockFilterChain(
+                            new HttpServlet() {
+                                @Override
+                                public void service(ServletRequest req, ServletResponse res)
+                                        throws ServletException, IOException {
+                                    req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                                    res.getOutputStream().write(new byte[0]);
+                                }
+                            });
+
+            principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+            data = testRemoteUser(principal);
+            assertNull(data.getRemoteHost());
+        } finally {
+            // reset
+            filter.monitor.config.props.remove("ignorePostProcessors");
+        }
+    }
+
     RenderTimeStatistics createStatistcis() {
         RenderTimeStatistics stats = createMock(RenderTimeStatistics.class);
         expect(stats.getRenderingLayersIdxs()).andReturn(Arrays.asList(0)).anyTimes();
@@ -282,7 +312,7 @@ public class MonitorFilterTest {
         return stats;
     }
 
-    private void testRemoteUser(Object principal) throws Exception {
+    private RequestData testRemoteUser(Object principal) throws Exception {
         try {
             Authentication authentication = new TestingAuthenticationToken(principal, null);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -297,6 +327,7 @@ public class MonitorFilterTest {
             RequestData data = dao.getLast();
             assertEquals("username", data.getRemoteUser());
             assertEquals(authentication, authFuture.get());
+            return data;
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
             filter.setExecutionAudit(null);

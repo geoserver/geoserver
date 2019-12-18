@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.security.oauth2.services.GeoNodeTokenServices;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,8 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.util.MultiValueMap;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
@@ -139,5 +142,40 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
         assertTrue(kvp.containsKey("access_token"));
         assertTrue("12345".equals(kvp.get("access_token")));
+    }
+
+    @Test
+    public void testAccessTokenConverter() throws Exception {
+        final String path = "http://foo.url";
+        final String accessToken = "access_token Nah-nah-na-nah-nah";
+
+        GeoNodeTokenServices accessTokenServices = new MockGeoNodeTokenServices(accessToken);
+
+        accessTokenServices.checkTokenEndpointUrl = path;
+        accessTokenServices.setClientId("1234");
+        accessTokenServices.setClientSecret("56789-10");
+
+        OAuth2Authentication auth = accessTokenServices.loadAuthentication(accessToken);
+        assertEquals("1234", auth.getOAuth2Request().getClientId());
+    }
+
+    class MockGeoNodeTokenServices extends GeoNodeTokenServices {
+
+        final String accessToken;
+
+        public MockGeoNodeTokenServices(String accessToken) {
+            this.accessToken = accessToken;
+        }
+
+        protected Map<String, Object> postForMap(
+                String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
+
+            assertTrue(headers.containsKey("Authorization"));
+            assertEquals(getAuthorizationHeader(accessToken), headers.get("Authorization").get(0));
+
+            Map<String, Object> body = new HashMap<String, Object>();
+            body.put("client_id", clientId);
+            return body;
+        }
     }
 }

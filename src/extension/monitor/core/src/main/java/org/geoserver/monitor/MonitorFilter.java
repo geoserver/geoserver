@@ -290,10 +290,12 @@ public class MonitorFilter implements GeoServerFilter {
                 List<RequestPostProcessor> pp = new ArrayList();
                 pp.add(new ReverseDNSPostProcessor());
                 pp.addAll(GeoServerExtensions.extensions(RequestPostProcessor.class));
+                List<String> ignoreList = this.monitor.getConfig().getIgnorePostProcessors();
 
                 for (RequestPostProcessor p : pp) {
                     try {
-                        p.run(data, request, response);
+                        if (!ignoreList.contains(p.getName())) p.run(data, request, response);
+
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Post process task failed", e);
                     }

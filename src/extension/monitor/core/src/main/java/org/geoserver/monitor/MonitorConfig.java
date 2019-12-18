@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -128,6 +130,15 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
             return null;
         }
         return BboxMode.valueOf(mode.toUpperCase());
+    }
+
+    public List<String> getIgnorePostProcessors() {
+        String list = props.getProperty("ignorePostProcessors");
+
+        if (list == null) return Collections.emptyList();
+        else if (list.isEmpty()) return Collections.emptyList();
+
+        return Arrays.asList(list.split(","));
     }
 
     public boolean isEnabled() {

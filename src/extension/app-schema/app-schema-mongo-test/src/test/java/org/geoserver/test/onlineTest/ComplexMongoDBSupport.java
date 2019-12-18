@@ -303,7 +303,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         // check that we got the expected image back
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(getBinary(result)));
         ImageAssert.assertEquals(
-                URLs.urlToFile(getClass().getResource("/results/result1.png")), image, 10);
+                URLs.urlToFile(getClass().getResource("/results/result1.png")), image, 240);
     }
 
     @Test

@@ -6,7 +6,10 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -15,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
+import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -38,8 +42,14 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.*;
+import org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
@@ -50,8 +60,11 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -1304,5 +1317,33 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String request2 = request + "&EXCLUDE_NODATA_RESULT=true";
         result = getAsString(request2);
         assertTrue(result.indexOf("NaN") > 0);
+    }
+
+    @Test
+    public void testClipParam() throws Exception {
+        // a polygon away from the click area
+        Polygon geom = JTS.toGeometry(new Envelope(0.003, 0.004, -0.002, 0.002));
+        String wkt = geom.toText();
+        String layer = getLayerId(MockData.FORESTS);
+
+        CoordinateReferenceSystem crs =
+                getCatalog().getLayerByName(MockData.FORESTS.getLocalPart()).getResource().getCRS();
+        int srid = CRS.lookupEpsgCode(crs, false);
+        String request =
+                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                        + "&info_format=application/json&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20&x=10&y=10"
+                        + "&srs=EPSG:"
+                        + srid
+                        + "&clip="
+                        + wkt;
+        String result = getAsString(request);
+        assertNotNull(result);
+        // assert no features were returned
+        JSONObject responseJson = JSONObject.fromObject(result);
+        assertTrue(responseJson.getJSONArray("features").isEmpty());
     }
 }

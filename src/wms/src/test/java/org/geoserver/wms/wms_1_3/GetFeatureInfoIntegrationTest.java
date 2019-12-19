@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -40,8 +41,13 @@ import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.filter.v1_1.OGC;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Polygon;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 /**
@@ -1207,5 +1213,33 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // System.out.println(result);
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
+    }
+
+    @Test
+    public void testClipParam() throws Exception {
+        // a polygon away from the click area
+        Polygon geom = JTS.toGeometry(new Envelope(0.003, 0.004, -0.002, 0.002));
+        String wkt = geom.toText();
+        String layer = getLayerId(MockData.FORESTS);
+
+        CoordinateReferenceSystem crs =
+                getCatalog().getLayerByName(MockData.FORESTS.getLocalPart()).getResource().getCRS();
+        int srid = CRS.lookupEpsgCode(crs, false);
+        String request =
+                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                        + "&info_format=application/json&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20&x=10&y=10"
+                        + "&srs=EPSG:"
+                        + srid
+                        + "&clip="
+                        + wkt;
+        String result = getAsString(request);
+        assertNotNull(result);
+        // assert no features were returned
+        JSONObject responseJson = JSONObject.fromObject(result);
+        assertTrue(responseJson.getJSONArray("features").isEmpty());
     }
 }

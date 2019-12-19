@@ -322,4 +322,38 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
             getCatalog().save(groupLayer1WMSResource);
         }
     }
+
+    @Test
+    public void testVendorOptionClip() throws Exception {
+        URL exptectedResponse = this.getClass().getResource("../wms_clip_cascaded.png");
+        BufferedImage expectedImage = ImageIO.read(exptectedResponse);
+        String rasterMask =
+                "POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))";
+        BufferedImage response =
+                getAsImage(
+                        "wms?bbox=-180,-90,180,90"
+                                + "&styles=&layers="
+                                + WORLD4326_110
+                                + "&Format=image/png&request=GetMap"
+                                + "&width=180&height=90&srs=EPSG:4326"
+                                + "&clip="
+                                + rasterMask,
+                        "image/png");
+        ImageAssert.assertEquals(expectedImage, response, 100);
+        //        ImageIO.write(response, "png", new File("D://wms_clip_cascaded.png"));
+        String rasterMask900913 =
+                "srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))";
+        response =
+                getAsImage(
+                        "wms?bbox=-180,-90,180,90"
+                                + "&styles=&layers="
+                                + WORLD4326_110
+                                + "&Format=image/png&request=GetMap"
+                                + "&width=180&height=90&srs=EPSG:4326"
+                                + "&clip="
+                                + rasterMask900913,
+                        "image/png");
+        ImageAssert.assertEquals(expectedImage, response, 100);
+        // ImageIO.write(response, "png", new File("D://wms_clip_cascaded.png"));
+    }
 }

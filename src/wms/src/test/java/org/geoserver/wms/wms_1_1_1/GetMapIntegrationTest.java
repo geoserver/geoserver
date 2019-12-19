@@ -1828,4 +1828,103 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 wfsNGImage,
                 300);
     }
+
+    @Test
+    public void testVendorOptionClipVector() throws Exception {
+        URL exptectedResponse = this.getClass().getResource("../wms_clip_vector.png");
+        BufferedImage expectedImage = ImageIO.read(exptectedResponse);
+
+        String polygonWkt =
+                "POLYGON((-103.81153231351766%2038.73789567417218,-105.74512606351766%2031.78525172547746,-95.28614168851766%2028.053665204466157,-91.33106356351766%2031.260810654461146,-96.42871981351766%2038.66930662128952,-103.81153231351766%2038.73789567417218))";
+
+        BufferedImage response =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326"
+                                + "&version=1.1.1"
+                                + "&clip="
+                                + polygonWkt,
+                        "image/png");
+        ImageAssert.assertEquals(expectedImage, response, 10);
+        // ImageIO.write(response, "png", new File("D://wms_clip_vector.png"));
+
+        String polygonWkt900913 =
+                "srid=900913;POLYGON ((-11556246.91561025 4684196.6150700655, -11771493.587261306 3735154.4718813156, -10607204.772421502 3255741.4304766906, -10166927.489498887 3666666.8945377995, -10734395.987488035 4674412.675449564, -11556246.91561025 4684196.6150700655))";
+        response =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&styles=&layers="
+                                + layers
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326"
+                                + "&version=1.1.1"
+                                + "&clip="
+                                + polygonWkt900913,
+                        "image/png");
+        ImageAssert.assertEquals(expectedImage, response, 10);
+        // ImageIO.write(response, "png", new File("D://wms_clip_vector_900913.png"));
+    }
+
+    @Test
+    public void testVendorOptionClipRaster() throws Exception {
+
+        URL exptectedResponse = this.getClass().getResource("../wms_clip_raster.png");
+        BufferedImage expectedImage = ImageIO.read(exptectedResponse);
+
+        // EU south of Schengen
+        String rasterMask =
+                "POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))";
+        String worldBbox = "-53.384768,4.769752,80.121092,57.719733";
+
+        BufferedImage response =
+                getAsImage(
+                        "wms?bbox="
+                                + worldBbox
+                                + "&styles=&layers="
+                                + "wcs:World"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326"
+                                + "&version=1.1.1"
+                                + "&clip="
+                                + rasterMask,
+                        "image/png");
+        ImageAssert.assertEquals(expectedImage, response, 100);
+        // ImageIO.write(response, "expectedImage", new File("D://wms_clip_raster.png"));
+
+        String rasterMask900913 =
+                "srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))";
+
+        response =
+                getAsImage(
+                        "wms?bbox="
+                                + worldBbox
+                                + "&styles=&layers="
+                                + "wcs:World"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326"
+                                + "&version=1.1.1"
+                                + "&clip="
+                                + rasterMask900913,
+                        "image/png");
+
+        ImageAssert.assertEquals(expectedImage, response, 100);
+        // ImageIO.write(response, "png", new File("D://wms_clip_raster_900913.png"));
+    }
 }

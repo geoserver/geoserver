@@ -600,6 +600,16 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         this.optionalParams.scaleMethod = scaleMethod;
     }
 
+    /** @return the clip */
+    public String getClip() {
+        return this.optionalParams.clip;
+    }
+
+    /** @param clip the clip to set */
+    public void setClip(String clip) {
+        this.optionalParams.clip = clip;
+    }
+
     private class MandatoryParameters implements Cloneable {
         /** ordered list of requested layers */
         List<MapLayerInfo> layers = Collections.emptyList();
@@ -734,6 +744,9 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         /** by layer interpolation methods * */
         List<Interpolation> interpolationMethods = Collections.EMPTY_LIST;
+
+        /** polgon wkt to clip WMS response * */
+        String clip;
 
         @Override
         public Object clone() throws CloneNotSupportedException {

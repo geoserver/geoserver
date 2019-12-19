@@ -5,13 +5,10 @@
  */
 package org.geoserver.wfs.flatgeobuf;
 
-import org.wololo.flatgeobuf.geotools.FeatureCollectionConversions;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.json.JSONException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -21,6 +18,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.wololo.flatgeobuf.geotools.FeatureCollectionConversions;
 
 /**
  * A GetFeatureInfo response handler specialized in producing FlatGeobuf data for a GetFeatureInfo
@@ -64,10 +62,10 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
         if (LOGGER.isLoggable(Level.INFO)) LOGGER.info("about to encode FlatGeobuf");
 
         if (isComplexFeature(featureCollection))
-        	throw new RuntimeException("FlatGeobuf does not support complex features");
-        
+            throw new RuntimeException("FlatGeobuf does not support complex features");
+
         long featureCount = featureCollection.getTotalNumberOfFeatures().longValue();
-        
+
         SimpleFeatureCollection fc =
                 (SimpleFeatureCollection) featureCollection.getFeature().get(0);
         FeatureCollectionConversions.serialize(fc, featureCount, output);

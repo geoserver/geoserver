@@ -9,7 +9,11 @@
             <directory>release/target/dependency</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>gs-flatgeobuf*.jar</include>		
+                <include>gs-flatgeobuf*.jar</include>
+                <include>flatgeobuf*.jar</include>
+                <include>flatbuffers-java*.jar</include>
+                <include>json*.jar</include>
+                <include>jts-core*.jar</include>
             </includes>
         </fileSet>
     </fileSets>

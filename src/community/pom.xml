@@ -366,13 +366,13 @@
         <module>dyndimension</module>
 	  </modules>
     </profile>
-	<profile>
     <profile>
       <id>flatgeobuf</id>
       <modules>
         <module>flatgeobuf</module>
       </modules>
     </profile>
+	<profile>
       <id>rest-ext</id>
 	  <activation>
         <property><name>rest-ext</name></property>

@@ -47,6 +47,7 @@
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
+          <descriptor>release/ext-flatgeobuf.xml</descriptor>
           <!-- If you are re-enabling this, remember to re-add the documentation -->
           <!-- <descriptor>release/ext-rest-ext.xml</descriptor> -->
           <descriptor>release/ext-kmlppio.xml</descriptor>

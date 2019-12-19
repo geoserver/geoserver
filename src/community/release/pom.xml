@@ -86,6 +86,12 @@
      <artifactId>gs-dyndimension</artifactId>
      <version>${project.version}</version>
    </dependency>
+   </dependency>
+    <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-flatgeobuf</artifactId>
+     <version>${project.version}</version>
+   </dependency>
    <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-rest-ext</artifactId>

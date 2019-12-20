@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
@@ -290,7 +291,7 @@ public class MonitorFilter implements GeoServerFilter {
                 List<RequestPostProcessor> pp = new ArrayList();
                 pp.add(new ReverseDNSPostProcessor());
                 pp.addAll(GeoServerExtensions.extensions(RequestPostProcessor.class));
-                List<String> ignoreList = this.monitor.getConfig().getIgnorePostProcessors();
+                Set<String> ignoreList = this.monitor.getConfig().getIgnorePostProcessors();
 
                 for (RequestPostProcessor p : pp) {
                     try {

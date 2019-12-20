@@ -273,11 +273,27 @@ public class MonitorFilterTest {
 
     @Test
     public void testDisableReverseDNSProcessor() throws Exception {
+        // step 1 : verify DND lookup working without configuration option
+        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+        RequestData data = testRemoteUser(principal);
+        assertNotNull(data.getRemoteHost());
         try {
-            // disabling should not have the remote host populated
+            // step 2 : verify DND lookup is disabled when run with ignore option
+            filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
             filter.monitor.config.props.put("ignorePostProcessors", "reverseDNS");
-            Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
-            RequestData data = testRemoteUser(principal);
+            chain =
+                    new MockFilterChain(
+                            new HttpServlet() {
+                                @Override
+                                public void service(ServletRequest req, ServletResponse res)
+                                        throws ServletException, IOException {
+                                    req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                                    res.getOutputStream().write(new byte[0]);
+                                }
+                            });
+
+            principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+            data = testRemoteUser(principal);
             assertNull(data.getRemoteHost());
         } finally {
             // reset

@@ -401,9 +401,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                                 info(
                                                         new ParamResourceModel(
                                                                         "confirmGWCCleanInfo",
-                                                                        CachedLayersPage.this,
-                                                                        truncateAllRequest
-                                                                                .getTrucatedLayersList())
+                                                                        CachedLayersPage.this)
                                                                 .getString());
                                         else
                                             error(

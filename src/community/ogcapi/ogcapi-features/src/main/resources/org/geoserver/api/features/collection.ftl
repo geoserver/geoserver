@@ -2,7 +2,8 @@
        <h2>${model.id}</h2>
        <#assign collection=model>
        <#include "collection_include.ftl">
-       
+
+
        <h2>Feature schema</h2>
        <#if model.schema??>
        <ul>

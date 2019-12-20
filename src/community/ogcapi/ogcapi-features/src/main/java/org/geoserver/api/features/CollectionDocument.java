@@ -93,7 +93,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
                         + "/queryables",
                 QueryablesDocument.class,
                 "Queryable attributes as ",
-                null,
+                "queryables",
                 null,
                 "queryables");
 

@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.features;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,9 +19,11 @@ import org.springframework.http.MediaType;
 @JsonPropertyOrder({"queryables", "links"})
 public class QueryablesDocument extends AbstractDocument {
 
+    private final String collectionId;
     List<Queryable> queryables = new ArrayList();
 
     public QueryablesDocument(FeatureTypeInfo fti) throws IOException {
+        this.collectionId = fti.prefixedName();
         SimpleFeatureType ft = (SimpleFeatureType) fti.getFeatureType();
         this.queryables =
                 ft.getAttributeDescriptors()
@@ -37,7 +40,8 @@ public class QueryablesDocument extends AbstractDocument {
         return queryables;
     }
 
-    public void setQueryables(List<Queryable> queryables) {
-        this.queryables = queryables;
+    @JsonIgnore // only for HTML representation
+    public String getCollectionId() {
+        return collectionId;
     }
 }

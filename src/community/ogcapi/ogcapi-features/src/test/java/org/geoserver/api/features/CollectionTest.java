@@ -5,8 +5,7 @@
 package org.geoserver.api.features;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Collection;
@@ -129,5 +128,13 @@ public class CollectionTest extends FeaturesTestSupport {
         assertThat(readSingle(json, "queryables[?(@.id == 'the_geom')].type"), equalTo("geometry"));
         assertThat(readSingle(json, "queryables[?(@.id == 'FID')].type"), equalTo("string"));
         assertThat(readSingle(json, "queryables[?(@.id == 'NAME')].type"), equalTo("string"));
+    }
+
+    @Test
+    public void testQueryablesHTML() throws Exception {
+        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        org.jsoup.nodes.Document document =
+                getAsJSoup("cite/ogc/features/collections/" + roadSegments + "/queryables?f=html");
+        assertEquals("the_geom: geometry", document.select("#queryables li:eq(0)").text());
     }
 }

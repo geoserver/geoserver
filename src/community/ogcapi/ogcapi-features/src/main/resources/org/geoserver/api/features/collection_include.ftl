@@ -21,6 +21,9 @@
       <option value="${link.href}">${link.type}</option>
       </#list>
       </select>
+      </li>
+      <li>Queryables as <a id="html_${collection.htmlId}_queryables" href="${collection.getLinkUrl('queryables', 'text/html')!}">HTML</a>.
+      </li>
       <#if collection.mapPreviewURL??>
       <li>The layer can also be explored in this <a href="${collection.mapPreviewURL}">map preview</a></li>
       </#if>

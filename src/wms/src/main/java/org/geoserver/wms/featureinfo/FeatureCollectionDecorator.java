@@ -104,13 +104,14 @@ public class FeatureCollectionDecorator implements FeatureCollection<FeatureType
     public int size() {
         // overriding size implementation
         // simply counting!
-        FeatureIterator iterator = features();
-        int count = 0;
-        while (iterator.hasNext()) {
-            count++;
-            iterator.next();
+        try (FeatureIterator iterator = features()) {
+            int count = 0;
+            while (iterator.hasNext()) {
+                count++;
+                iterator.next();
+            }
+            return count;
         }
-        return count;
     }
 
     public Object[] toArray() {

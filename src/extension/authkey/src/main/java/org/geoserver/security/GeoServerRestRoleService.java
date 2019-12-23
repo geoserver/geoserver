@@ -506,80 +506,70 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
         try {
             // If the key wasn't in the "easy to compute" group, we need to
             // do things the hard way.
-            final String cachedResponse =
-                    cachedResponses.get(
-                            hash,
-                            new Callable<String>() {
+            Callable<String> authorization =
+                    new Callable<String>() {
 
-                                @Override
-                                public String call() throws Exception {
+                        @Override
+                        public String call() throws Exception {
 
-                                    LOGGER.fine(
-                                            "GeoServer REST Role Service CACHE MISS for '"
-                                                    + restEndPoint
-                                                    + "'");
+                            LOGGER.fine(
+                                    "GeoServer REST Role Service CACHE MISS for '"
+                                            + restEndPoint
+                                            + "'");
 
-                                    ClientHttpRequest clientRequest = null;
-                                    ClientHttpResponse clientResponse = null;
-                                    try {
-                                        final URI baseURI = new URI(roleRESTBaseURL);
+                            ClientHttpRequest req = null;
+                            ClientHttpResponse res = null;
+                            try {
+                                final URI baseURI = new URI(roleRESTBaseURL);
 
-                                        URL url = baseURI.resolve(roleRESTEndpoint).toURL();
+                                URL url = baseURI.resolve(roleRESTEndpoint).toURL();
 
-                                        clientRequest =
-                                                getRestTemplate()
-                                                        .getRequestFactory()
-                                                        .createRequest(url.toURI(), HttpMethod.GET);
+                                req =
+                                        getRestTemplate()
+                                                .getRequestFactory()
+                                                .createRequest(url.toURI(), HttpMethod.GET);
 
-                                        if (authApiKey != null) {
-                                            clientRequest
-                                                    .getHeaders()
-                                                    .add("Authorization", "ApiKey " + authApiKey);
-                                        }
-                                        clientResponse = clientRequest.execute();
-                                        int status = clientResponse.getRawStatusCode();
-
-                                        switch (status) {
-                                            case 200:
-                                            case 201:
-                                                BufferedReader br =
-                                                        new BufferedReader(
-                                                                new InputStreamReader(
-                                                                        clientResponse.getBody()));
-                                                StringBuilder sb = new StringBuilder();
-                                                String line;
-                                                while ((line = br.readLine()) != null) {
-                                                    sb.append(line + "\n");
-                                                }
-                                                br.close();
-
-                                                String json = sb.toString();
-
-                                                return json;
-                                        }
-                                    } catch (MalformedURLException ex) {
-                                        Logger.getLogger(getClass().getName())
-                                                .log(Level.FINEST, null, ex);
-                                    } catch (IOException ex) {
-                                        Logger.getLogger(getClass().getName())
-                                                .log(Level.FINEST, null, ex);
-                                    } catch (URISyntaxException ex) {
-                                        Logger.getLogger(getClass().getName())
-                                                .log(Level.FINEST, null, ex);
-                                    } finally {
-                                        if (clientResponse != null) {
-                                            try {
-                                                clientResponse.close();
-                                            } catch (Exception ex) {
-                                                Logger.getLogger(getClass().getName())
-                                                        .log(Level.SEVERE, null, ex);
-                                            }
-                                        }
-                                    }
-
-                                    return null;
+                                if (authApiKey != null) {
+                                    req.getHeaders().add("Authorization", "ApiKey " + authApiKey);
                                 }
-                            });
+                                res = req.execute();
+                                int status = res.getRawStatusCode();
+
+                                switch (status) {
+                                    case 200:
+                                    case 201:
+                                        try (BufferedReader br =
+                                                new BufferedReader(
+                                                        new InputStreamReader(res.getBody()))) {
+                                            StringBuilder sb = new StringBuilder();
+                                            String line;
+                                            while ((line = br.readLine()) != null) {
+                                                sb.append(line + "\n");
+                                            }
+                                            return sb.toString();
+                                        }
+                                }
+                            } catch (MalformedURLException ex) {
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
+                            } catch (IOException ex) {
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
+                            } catch (URISyntaxException ex) {
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
+                            } finally {
+                                if (res != null) {
+                                    try {
+                                        res.close();
+                                    } catch (Exception ex) {
+                                        Logger.getLogger(getClass().getName())
+                                                .log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                            }
+
+                            return null;
+                        }
+                    };
+            final String cachedResponse = cachedResponses.get(hash, authorization);
 
             return callback.executeWithContext(cachedResponse);
         } catch (ExecutionException e) {

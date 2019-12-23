@@ -61,9 +61,9 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                     while (urls.hasMoreElements()) {
                         URL url = urls.nextElement();
 
-                        InputStream in = url.openStream();
-                        properties.load(in);
-                        in.close();
+                        try (InputStream in = url.openStream()) {
+                            properties.load(in);
+                        }
                     }
 
                     // transform the properties to a stream

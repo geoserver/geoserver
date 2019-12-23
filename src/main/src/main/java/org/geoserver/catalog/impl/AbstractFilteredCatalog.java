@@ -773,8 +773,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
         Filter securityFilter = securityFilter(of, filter);
 
-        CloseableIterator<T> filtered;
-        filtered = delegate.list(of, securityFilter, offset, count, sortBy);
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
+        CloseableIterator<T> filtered = delegate.list(of, securityFilter, offset, count, sortBy);
 
         // create secured decorators on-demand
         final Function<T, T> securityWrapper = securityWrapper(of);

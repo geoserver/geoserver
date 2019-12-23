@@ -688,19 +688,17 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      *     parsing error occurs
      */
     private Style[] loadRemoteStyle(String sldUrl) throws ServiceException {
-        InputStream in;
-
         try {
             URL url = new URL(sldUrl);
-            in = url.openStream();
+            try (InputStream in = url.openStream()) {
+                return parseSld(new InputStreamReader(in));
+            }
         } catch (MalformedURLException e) {
             throw new ServiceException(
                     e, "Not a valid URL to an SLD document " + sldUrl, "loadRemoteStyle");
         } catch (IOException e) {
             throw new ServiceException(e, "Can't open the SLD URL " + sldUrl, "loadRemoteStyle");
         }
-
-        return parseSld(new InputStreamReader(in));
     }
 
     /**

@@ -65,14 +65,14 @@ public abstract class CasAuthenticationHelper {
     }
 
     protected String readResponse(HttpURLConnection conn) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line = "";
-        StringBuffer buff = new StringBuffer();
-        while ((line = in.readLine()) != null) {
-            buff.append(line);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String line = "";
+            StringBuffer buff = new StringBuffer();
+            while ((line = in.readLine()) != null) {
+                buff.append(line);
+            }
+            return buff.toString();
         }
-        in.close();
-        return buff.toString();
     }
 
     protected List<String> getResponseHeaderValues(HttpURLConnection conn, String hName) {
@@ -114,19 +114,18 @@ public abstract class CasAuthenticationHelper {
 
     protected void writeParamsForPostAndSend(HttpURLConnection conn, Map<String, String> paramMap)
             throws IOException {
-        DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+        try (DataOutputStream out = new DataOutputStream(conn.getOutputStream())) {
+            StringBuffer buff = new StringBuffer();
+            for (Entry<String, String> entry : paramMap.entrySet()) {
+                if (buff.length() > 0) buff.append("&");
+                buff.append(entry.getKey())
+                        .append("=")
+                        .append(URLEncoder.encode(entry.getValue(), "utf-8"));
+            }
 
-        StringBuffer buff = new StringBuffer();
-        for (Entry<String, String> entry : paramMap.entrySet()) {
-            if (buff.length() > 0) buff.append("&");
-            buff.append(entry.getKey())
-                    .append("=")
-                    .append(URLEncoder.encode(entry.getValue(), "utf-8"));
+            out.writeBytes(buff.toString());
+            out.flush();
         }
-
-        out.writeBytes(buff.toString());
-        out.flush();
-        out.close();
     }
 
     public HttpCookie getTicketGrantingCookie() {

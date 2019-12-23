@@ -24,6 +24,11 @@ public class WPSException extends ServiceException {
         super(message, code);
     }
 
+    public WPSException(String code, String message, Throwable cause) {
+        super(message, code);
+        initCause(cause);
+    }
+
     public WPSException(String message, String code, String locator) {
         super(message, code, locator);
     }

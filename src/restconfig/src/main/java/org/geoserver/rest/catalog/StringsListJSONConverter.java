@@ -43,6 +43,7 @@ public class StringsListJSONConverter extends BaseMessageConverter<StringsList> 
     // writing
     //
     @Override
+    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     public void writeInternal(StringsList stringsList, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         Map<String, Object> values =

@@ -12,7 +12,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.io.Closeables;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -291,22 +290,10 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         }
         final String resource = "CatalogPropertyAccessor_FullTextProperties.properties";
         Properties properties = new Properties();
-        InputStream stream = CatalogPropertyAccessor.class.getResourceAsStream(resource);
-        try {
+        try (InputStream stream = CatalogPropertyAccessor.class.getResourceAsStream(resource)) {
             properties.load(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            try {
-                Closeables.close(stream, false);
-            } catch (IOException e) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Ignoring exception thrown while closing "
-                                + resource
-                                + " in CatalogPropertyAccessor",
-                        e);
-            }
         }
         Map<String, String> map = Maps.fromProperties(properties);
         for (Map.Entry<String, String> e : map.entrySet()) {

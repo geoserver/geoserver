@@ -82,8 +82,7 @@ public class CSVPPIO extends CDataPPIO {
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
         store.createSchema(collection.getSchema());
         String name = store.getTypeName().getLocalPart();
-        Transaction transaction = Transaction.AUTO_COMMIT;
-        SimpleFeatureSource featureSource = store.getFeatureSource(name, transaction);
+        SimpleFeatureSource featureSource = store.getFeatureSource(name, Transaction.AUTO_COMMIT);
         if (featureSource instanceof FeatureStore) {
             CSVFeatureStore csvFeatureStore = (CSVFeatureStore) featureSource;
 

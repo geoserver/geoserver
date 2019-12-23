@@ -1314,6 +1314,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             ImportTask task, DataStoreInfo store, VectorFormat format, VectorTransformChain tx)
             throws Throwable {
         ImportData data = task.getData();
+        @SuppressWarnings("PMD.CloseResource") // conditionally created, then closed
         FeatureReader reader = null;
 
         // using this exception to throw at the end
@@ -1534,7 +1535,6 @@ public class Importer implements DisposableBean, ApplicationListener {
             FeatureDataConverter featureDataConverter,
             VectorTransformChain tx)
             throws IOException {
-        FeatureWriter writer = null;
         Throwable error = null;
         ProgressMonitor monitor = task.progress();
 
@@ -1548,10 +1548,9 @@ public class Importer implements DisposableBean, ApplicationListener {
         task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
 
         LOGGER.fine("begining import - lowlevel api");
-        try {
-            writer =
-                    dataStoreDestination.getFeatureWriterAppend(
-                            uniquifiedFeatureTypeName, transaction);
+        try (FeatureWriter writer =
+                dataStoreDestination.getFeatureWriterAppend(
+                        uniquifiedFeatureTypeName, transaction)) {
 
             while (reader.hasNext()) {
                 if (monitor.isCanceled()) {

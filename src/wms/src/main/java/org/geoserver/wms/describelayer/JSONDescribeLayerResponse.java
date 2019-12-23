@@ -52,31 +52,26 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
     }
 
     /** Actually write the passed DescribeLayerModel on the OutputStream */
+    @SuppressWarnings("PMD.CloseResource") // just creates wrappers, actual out managed by servlet
     public void write(DescribeLayerModel layers, DescribeLayerRequest request, OutputStream output)
             throws ServiceException, IOException {
 
         switch (type) {
             case JSON:
-                OutputStreamWriter osw = null;
-                Writer outWriter = null;
-                try {
-                    osw =
-                            new OutputStreamWriter(
-                                    output, wms.getGeoServer().getSettings().getCharset());
-                    outWriter = new BufferedWriter(osw);
+                OutputStreamWriter osw =
+                        new OutputStreamWriter(
+                                output, wms.getGeoServer().getSettings().getCharset());
+                Writer outWriter = new BufferedWriter(osw);
 
-                    writeJSON(outWriter, layers);
-                } finally {
-                    if (outWriter != null) {
-                        outWriter.flush();
-                    }
-                }
+                writeJSON(outWriter, layers);
+                outWriter.flush();
                 break;
             case JSONP:
                 writeJSONP(output, layers);
         }
     }
 
+    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     private void writeJSONP(OutputStream out, DescribeLayerModel layers) throws IOException {
         // prepare to write out
         OutputStreamWriter osw =

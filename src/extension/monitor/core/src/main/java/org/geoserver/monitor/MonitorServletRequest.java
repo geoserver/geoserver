@@ -28,12 +28,14 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
     }
 
     public byte[] getBodyContent() throws IOException {
+        @SuppressWarnings("PMD.CloseResource") // wraps the servlet one
         MonitorInputStream stream = getInputStream();
         return stream.getData();
     }
 
     public long getBytesRead() {
         try {
+            @SuppressWarnings("PMD.CloseResource") // wraps the servlet one
             MonitorInputStream stream = getInputStream();
             return stream.getBytesRead();
         } catch (IOException ex) {
@@ -44,6 +46,7 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
     @Override
     public MonitorInputStream getInputStream() throws IOException {
         if (input == null) {
+            @SuppressWarnings("PMD.CloseResource") // managed by servlet container
             ServletInputStream delegateTo = super.getInputStream();
             input = new MonitorInputStream(delegateTo, maxSize);
         }

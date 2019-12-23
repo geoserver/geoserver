@@ -6,7 +6,12 @@
 package org.geoserver.catalog.impl;
 
 import com.thoughtworks.xstream.XStream;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamClass;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -159,9 +164,8 @@ class ModificationProxyCloner {
 
     static <T extends Serializable> T cloneSerializable(T source) {
         byte[] bytes = SerializationUtils.serialize(source);
-        try {
-            ObjectInputStream input =
-                    new ModProxyObjectInputStream(new ByteArrayInputStream(bytes));
+        try (ObjectInputStream input =
+                new ModProxyObjectInputStream(new ByteArrayInputStream(bytes))) {
             return (T) input.readObject();
         } catch (Exception e) {
             throw new RuntimeException("Error cloning serializable object", e);

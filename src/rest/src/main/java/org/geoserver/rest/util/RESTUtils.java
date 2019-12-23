@@ -170,6 +170,7 @@ public class RESTUtils {
         org.geoserver.platform.resource.Resource newFile = directory.get(itemPath.toString());
 
         // get the URL for this file to upload
+        @SuppressWarnings("PMD.CloseResource") // managed by servlet container
         final InputStream inStream = request.getInputStream();
         final String stringURL = IOUtils.getStringFromStream(inStream);
         final URL fileURL = new URL(stringURL);
@@ -179,9 +180,10 @@ public class RESTUtils {
         // Now do the real upload
         //
         ////
-        final InputStream inputStream = fileURL.openStream();
-        final OutputStream outStream = newFile.out();
-        IOUtils.copyStream(inputStream, outStream, true, true);
+        try (InputStream inputStream = fileURL.openStream();
+                OutputStream outStream = newFile.out()) {
+            IOUtils.copyStream(inputStream, outStream, true, true);
+        }
 
         return newFile;
     }
@@ -272,10 +274,11 @@ public class RESTUtils {
         if (outputDirectory == null) {
             outputDirectory = zipFile.parent();
         }
-        ZipFile archive = new ZipFile(zipFile.file());
-
-        IOUtils.inflate(archive, outputDirectory, null, workspace, store, files, external, true);
-        zipFile.delete();
+        try (ZipFile archive = new ZipFile(zipFile.file())) {
+            IOUtils.inflate(
+                    archive, outputDirectory, null, workspace, store, files, external, true);
+            zipFile.delete();
+        }
     }
 
     /**

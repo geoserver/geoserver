@@ -571,9 +571,10 @@ public class ReaderUtils {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             tx.transform(new DOMSource(xml), new StreamResult(output));
 
-            InputStreamReader reader =
-                    new InputStreamReader(new ByteArrayInputStream(output.toByteArray()));
-            validate(reader, errorHandler, targetNamespace, schemaLocation);
+            try (InputStreamReader reader =
+                    new InputStreamReader(new ByteArrayInputStream(output.toByteArray()))) {
+                validate(reader, errorHandler, targetNamespace, schemaLocation);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

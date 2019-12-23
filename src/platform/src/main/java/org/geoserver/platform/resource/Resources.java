@@ -62,10 +62,8 @@ public class Resources {
      * @return true If resource is not UNDEFINED
      */
     public static boolean canRead(Resource resource) {
-        try {
-            InputStream is = resource.in();
+        try (InputStream is = resource.in()) {
             is.read();
-            is.close();
             return true;
         } catch (IOException | IllegalStateException e) {
             return false;

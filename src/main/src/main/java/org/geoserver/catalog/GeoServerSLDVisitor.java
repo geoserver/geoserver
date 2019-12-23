@@ -19,7 +19,12 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.ServiceException;
-import org.geotools.data.*;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
@@ -39,7 +44,6 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
 import org.geotools.util.factory.Hints;
 import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
@@ -385,14 +389,17 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
             SimpleFeatureType currFt = ul.getInlineFeatureType();
             Query q = new Query(currFt.getTypeName(), Filter.INCLUDE);
-            FeatureReader<SimpleFeatureType, SimpleFeature> ilReader;
+
             DataStore inlineFeatureDatastore = ul.getInlineFeatureDatastore();
-            ilReader = inlineFeatureDatastore.getFeatureReader(q, Transaction.AUTO_COMMIT);
             CoordinateReferenceSystem crs =
                     (fallbackCrs == null) ? DefaultGeographicCRS.WGS84 : fallbackCrs;
             String typeName = inlineFeatureDatastore.getTypeNames()[0];
             MemoryDataStore reTypedDS =
-                    new MemoryDataStore(new ForceCoordinateSystemFeatureReader(ilReader, crs));
+                    new MemoryDataStore(
+                            new ForceCoordinateSystemFeatureReader(
+                                    inlineFeatureDatastore.getFeatureReader(
+                                            q, Transaction.AUTO_COMMIT),
+                                    crs));
 
             featureSource = reTypedDS.getFeatureSource(typeName);
         } else {

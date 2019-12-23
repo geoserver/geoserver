@@ -94,6 +94,7 @@ public class TestWfsPost extends HttpServlet {
         boolean doGet = (requestString == null) || requestString.trim().equals("");
 
         if ((urlString == null)) {
+            @SuppressWarnings("PMD.CloseResource") // managed by the servlet
             PrintWriter out = response.getWriter();
             StringBuffer urlInfo = request.getRequestURL();
 
@@ -223,9 +224,9 @@ public class TestWfsPost extends HttpServlet {
                     }
                     responseContent.append("</servlet-exception>\n");
 
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     PrintWriter out = response.getWriter();
                     out.print(responseContent.toString());
-                    out.close();
                 } else {
                     // xmlIn = new BufferedReader(new InputStreamReader(
                     // acon.getInputStream()));
@@ -237,14 +238,12 @@ public class TestWfsPost extends HttpServlet {
                     response.setHeader(
                             "Content-disposition", acon.getHeaderField("Content-disposition"));
 
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     OutputStream output = response.getOutputStream();
                     int c;
-                    InputStream in = acon.getInputStream();
-
-                    while ((c = in.read()) != -1) output.write(c);
-
-                    in.close();
-                    output.close();
+                    try (InputStream in = acon.getInputStream()) {
+                        while ((c = in.read()) != -1) output.write(c);
+                    }
                 }
 
                 // while ((line = xmlIn.readLine()) != null) {
@@ -252,9 +251,9 @@ public class TestWfsPost extends HttpServlet {
                 // }
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, "Failure dealing with the request", e);
+                @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                 PrintWriter out = response.getWriter();
                 out.print(errorResponse(e));
-                out.close();
             } finally {
                 try {
                     if (xmlIn != null) {
@@ -262,9 +261,9 @@ public class TestWfsPost extends HttpServlet {
                     }
                 } catch (Exception e1) {
                     LOGGER.log(Level.FINE, "Internal failure dealing with the request", e1);
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     PrintWriter out = response.getWriter();
                     out.print(errorResponse(e1));
-                    out.close();
                 }
 
                 try {
@@ -273,9 +272,9 @@ public class TestWfsPost extends HttpServlet {
                     }
                 } catch (Exception e2) {
                     LOGGER.log(Level.FINE, "Internal failure dealing with the request", e2);
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     PrintWriter out = response.getWriter();
                     out.print(errorResponse(e2));
-                    out.close();
                 }
             }
         }

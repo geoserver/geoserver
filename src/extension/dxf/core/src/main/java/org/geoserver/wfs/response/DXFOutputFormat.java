@@ -151,6 +151,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      *     java.io.OutputStream, org.geoserver.platform.Operation)
      */
     @Override
+    @SuppressWarnings("PMD.CloseResource") // only wrappers created, out is managed by the servlet
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException, ServiceException {

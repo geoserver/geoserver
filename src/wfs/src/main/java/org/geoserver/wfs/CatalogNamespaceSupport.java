@@ -29,6 +29,7 @@ public class CatalogNamespaceSupport extends NamespaceSupport {
 
     @Override
     public Enumeration getPrefixes() {
+        @SuppressWarnings("PMD.CloseResource") // best effort closing
         final CloseableIterator<NamespaceInfo> it =
                 catalog.list(NamespaceInfo.class, Predicates.acceptAll());
         return new Enumeration() {

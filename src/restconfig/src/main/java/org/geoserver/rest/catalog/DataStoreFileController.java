@@ -216,13 +216,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             throw new RestException("No files for datastore " + storeName, HttpStatus.NOT_FOUND);
         }
 
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            BufferedOutputStream bufferedOutputStream =
-                    new BufferedOutputStream(byteArrayOutputStream);
-            ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream);
-
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                BufferedOutputStream bufferedOutputStream =
+                        new BufferedOutputStream(byteArrayOutputStream);
+                ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream)) {
             // packing files
             File[] files = directory.listFiles();
             if (files != null) {
@@ -230,11 +227,9 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                     // new zip entry and copying inputstream with file to zipOutputStream, after all
                     // closing streams
                     zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-                    FileInputStream fileInputStream = new FileInputStream(file);
-
-                    IOUtils.copy(fileInputStream, zipOutputStream);
-
-                    fileInputStream.close();
+                    try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                        IOUtils.copy(fileInputStream, zipOutputStream);
+                    }
                     zipOutputStream.closeEntry();
                 }
             }
@@ -412,11 +407,12 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                         continue;
                     }
 
+                    @SuppressWarnings("PMD.CloseResource") // no try-with-resource to rollback
                     Transaction tx = new DefaultTransaction();
-                    FeatureStore featureStore = (FeatureStore) featureSource;
-                    featureStore.setTransaction(tx);
-
                     try {
+                        FeatureStore featureStore = (FeatureStore) featureSource;
+                        featureStore.setTransaction(tx);
+
                         // figure out update mode, whether we should kill existing data or append
                         if ("overwrite".equalsIgnoreCase(update)) {
                             LOGGER.fine("Removing existing features from " + featureTypeName);

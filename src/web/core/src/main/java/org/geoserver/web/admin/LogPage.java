@@ -118,6 +118,7 @@ public class LogPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClick() {
+                        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
                         IResourceStream stream =
                                 new FileResourceStream(logFile) {
                                     public String getContentType() {

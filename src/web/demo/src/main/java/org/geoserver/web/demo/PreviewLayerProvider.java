@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.demo;
 
-import static org.geoserver.catalog.Predicates.*;
+import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
@@ -189,9 +189,9 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         }
 
         Filter filter = getFilter();
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         CloseableIterator<PublishedInfo> pi =
                 catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
-
         return CloseableIteratorAdapter.transform(
                 pi,
                 new Function<PublishedInfo, PreviewLayer>() {

@@ -44,6 +44,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual input managed by servlet
     public Map<?, ?> readInternal(Class<? extends Map<?, ?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         // TODO: character set
@@ -58,6 +59,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     public void writeInternal(Map<?, ?> map, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         // TODO: character set

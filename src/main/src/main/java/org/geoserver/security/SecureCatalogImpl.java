@@ -1482,14 +1482,15 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
         Filter securityFilter = securityFilter(of, filter);
 
-        CloseableIterator<T> filtered;
-        filtered = delegate.list(of, securityFilter, offset, count, sortBy);
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
+        CloseableIterator<T> filtered = delegate.list(of, securityFilter, offset, count, sortBy);
 
         // create secured decorators on-demand. Assume this method is used only for listing, not
         // for accessing a single resource by name/id, thus use hide policy for mixed mode
         final Function<T, T> securityWrapper = securityWrapper(of, MixedModeBehavior.HIDE);
-        final CloseableIterator<T> filteredWrapped;
-        filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
+        final CloseableIterator<T> filteredWrapped =
+                CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         // wrap the iterator in a notNull filter to ensure any filtered
         // layers (result is null) don't get passed on from the securityWrapper
@@ -1504,15 +1505,17 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortBy) {
         Filter securityFilter = securityFilter(of, filter);
 
-        CloseableIterator<T> filtered;
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         // HACK here, go straigth to the facade of the delegate to get a method supporting sortby[]
-        filtered = delegate.getFacade().list(of, securityFilter, offset, count, sortBy);
+        CloseableIterator<T> filtered =
+                delegate.getFacade().list(of, securityFilter, offset, count, sortBy);
 
         // create secured decorators on-demand. Assume this method is used only for listing, not
         // for accessing a single resource by name/id, thus use hide policy for mixed mode
         final Function<T, T> securityWrapper = securityWrapper(of, MixedModeBehavior.HIDE);
-        final CloseableIterator<T> filteredWrapped;
-        filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
+        final CloseableIterator<T> filteredWrapped =
+                CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         // wrap the iterator in a notNull filter to ensure any filtered
         // layers (result is null) don't get passed on from the securityWrapper

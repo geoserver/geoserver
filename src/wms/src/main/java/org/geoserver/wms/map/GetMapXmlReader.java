@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms.map;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -160,18 +160,16 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 // make tempfile
                 temp = File.createTempFile("getMapPost", "xml");
 
-                FileOutputStream fos = new FileOutputStream(temp);
-                BufferedOutputStream out = new BufferedOutputStream(fos);
-
-                int c;
-
-                while (-1 != (c = xml.read())) {
-                    out.write(c);
+                try (FileOutputStream fos = new FileOutputStream(temp);
+                        BufferedOutputStream out = new BufferedOutputStream(fos)) {
+                    int c;
+                    while (-1 != (c = xml.read())) {
+                        out.write(c);
+                    }
+                    out.flush();
+                } finally {
+                    xml.close();
                 }
-
-                xml.close();
-                out.flush();
-                out.close();
                 xml = new BufferedReader(new FileReader(temp)); // pretend like nothing has happened
             }
 
@@ -515,8 +513,10 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
             SimpleFeatureType currFt = ul.getInlineFeatureType();
             Query q = new Query(currFt.getTypeName(), Filter.INCLUDE);
-            FeatureReader<SimpleFeatureType, SimpleFeature> ilReader;
-            ilReader = inlineDatastore.getFeatureReader(q, Transaction.AUTO_COMMIT);
+            @SuppressWarnings("PMD.CloseResource") // closed in the memory data store
+            FeatureReader<SimpleFeatureType, SimpleFeature> ilReader =
+                    inlineDatastore.getFeatureReader(q, Transaction.AUTO_COMMIT);
+            @SuppressWarnings("PMD.CloseResource") // closed in the memory data store
             ForceCoordinateSystemFeatureReader reader =
                     new ForceCoordinateSystemFeatureReader(ilReader, requestCrs);
             MemoryDataStore reTypedDS = new MemoryDataStore(reader);

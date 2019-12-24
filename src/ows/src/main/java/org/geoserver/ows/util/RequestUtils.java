@@ -213,6 +213,7 @@ public class RequestUtils {
         XmlCharsetDetector.getCharsetAwareReader(input, encoding);
 
         // call this method to create the reader
+        @SuppressWarnings("PMD.CloseResource") // just a wrapper
         Reader reader = XmlCharsetDetector.createReader(input, encoding);
 
         // rest the input

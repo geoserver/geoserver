@@ -359,16 +359,14 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     public String writeFile(File inputFile) throws IOException {
         LOGGER.finest("writing file " + inputFile);
 
-        String finalOutput = "";
+        StringBuilder sb = new StringBuilder();
 
-        try {
-            // File inputFile = new File(inputFileName);
-            FileInputStream inputStream = new FileInputStream(inputFile);
+        try (FileInputStream inputStream = new FileInputStream(inputFile)) {
             byte[] fileBuffer = new byte[inputStream.available()];
 
             while (inputStream.read(fileBuffer) != -1) {
                 String tempOutput = new String(fileBuffer);
-                finalOutput = finalOutput + tempOutput;
+                sb.append(tempOutput);
             }
         } catch (IOException e) {
             // REVISIT: should things fail if there are featureTypes that
@@ -382,7 +380,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
                             .initCause(e);
         }
 
-        return finalOutput;
+        return sb.toString();
     }
 
     /**

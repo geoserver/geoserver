@@ -154,11 +154,11 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
         Iterator it = collections.iterator();
         while (it.hasNext()) {
             FeatureCollection col = (FeatureCollection) it.next();
-            FeatureIterator it2 = col.features();
-            while (it2.hasNext()) {
-                list.add(it.next());
+            try (FeatureIterator it2 = col.features()) {
+                while (it2.hasNext()) {
+                    list.add(it.next());
+                }
             }
-            it2.close();
         }
 
         return list.toArray(arg0);

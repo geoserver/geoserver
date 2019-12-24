@@ -19,7 +19,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.util.IOUtils;
 
 /** Checks the specified file exists on the file system, including checks in the data directory */
 @SuppressWarnings("serial")
@@ -57,19 +56,16 @@ public class FileExistsValidator implements IValidator<String> {
             if (uri.getScheme() != null && !"file".equals(uri.getScheme())) {
                 if (delegate != null) {
                     delegate.validate(validatable);
-                    InputStream is = null;
                     try {
                         URLConnection connection = uri.toURL().openConnection();
                         connection.setConnectTimeout(10000);
-                        is = connection.getInputStream();
+                        try (InputStream is = connection.getInputStream()) {}
                     } catch (Exception e) {
                         IValidationError err =
                                 new ValidationError("FileExistsValidator.unreachable")
                                         .addKey("FileExistsValidator.unreachable")
                                         .setVariable("file", uriSpec);
                         validatable.error(err);
-                    } finally {
-                        IOUtils.closeQuietly(is);
                     }
                 }
                 return;

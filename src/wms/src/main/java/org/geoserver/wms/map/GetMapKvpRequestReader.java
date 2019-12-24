@@ -373,19 +373,21 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             }
 
             if (getMap.getValidateSchema().booleanValue()) {
-                StringReader reader = new StringReader(getMap.getSldBody());
-                List errors = validateStyle(reader, getMap);
+                try (StringReader reader = new StringReader(getMap.getSldBody())) {
+                    List errors = validateStyle(reader, getMap);
 
-                if (errors.size() != 0) {
-                    throw new ServiceException(
-                            SLDValidator.getErrorMessage(
-                                    new StringReader(getMap.getSldBody()), errors));
+                    if (errors.size() != 0) {
+                        throw new ServiceException(
+                                SLDValidator.getErrorMessage(
+                                        new StringReader(getMap.getSldBody()), errors));
+                    }
                 }
             }
 
-            StringReader input = new StringReader(getMap.getSldBody());
-            StyledLayerDescriptor sld = parseStyle(getMap, input);
-            processSld(getMap, requestedLayerInfos, sld, styleNameList);
+            try (StringReader input = new StringReader(getMap.getSldBody())) {
+                StyledLayerDescriptor sld = parseStyle(getMap, input);
+                processSld(getMap, requestedLayerInfos, sld, styleNameList);
+            }
 
             // set filter in, we'll check consistency later
             getMap.setFilter(filters);

@@ -304,10 +304,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         inputNotNull(source, destination);
         if (!source.isOpen() || !destination.isOpen())
             throw new IllegalStateException("Source and destination channels must be open.");
-        FileLock lock = null;
-        try {
-
-            lock = destination.lock();
+        try (FileLock lock = destination.lock()) { // auto-close releases lock
             final long sourceSize = source.size();
             long pos = 0;
             while (pos < sourceSize) {
@@ -317,15 +314,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                 destination.transferFrom(source, pos, mappedZoneSize);
                 // update zone
                 pos += mappedZoneSize;
-            }
-        } finally {
-            if (lock != null) {
-                try {
-                    lock.release();
-                } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.INFO))
-                        LOGGER.log(Level.INFO, t.getLocalizedMessage(), t);
-                }
             }
         }
     }
@@ -383,10 +371,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             throw new IllegalStateException("Source and destination channels must be open.");
 
         final java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(bufferSize);
-        FileLock lock = null;
-        try {
-            lock = destination.lock();
-
+        try (FileLock lock = destination.lock()) { // auto-close releases lock
             // Move destination to position
             destination.position(initialWritePosition);
 
@@ -397,15 +382,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                 while (buffer.hasRemaining()) writedByte = writedByte + destination.write(buffer);
                 // clear
                 buffer.clear();
-            }
-        } finally {
-            if (lock != null) {
-                try {
-                    lock.release();
-                } catch (Throwable t) {
-                    if (LOGGER.isLoggable(Level.INFO))
-                        LOGGER.log(Level.INFO, t.getLocalizedMessage(), t);
-                }
             }
         }
         return writedByte;
@@ -678,15 +654,15 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @throws IOException in case something bad happens.
      */
     public static String getStringFromStreamSource(StreamSource src) throws IOException {
-
         inputNotNull(src);
-        InputStream inputStream = src.getInputStream();
-        if (inputStream != null) {
-            return getStringFromStream(inputStream);
-        } else {
-
-            final Reader r = src.getReader();
-            return getStringFromReader(r);
+        try (InputStream inputStream = src.getInputStream()) {
+            if (inputStream != null) {
+                return getStringFromStream(inputStream);
+            } else {
+                try (Reader r = src.getReader()) {
+                    return getStringFromReader(r);
+                }
+            }
         }
     }
 
@@ -774,30 +750,33 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                 if (!entry.isDirectory()) {
                     final String name = entry.getName();
                     final String ext = FilenameUtils.getExtension(name);
-                    final InputStream in = new BufferedInputStream(archive.getInputStream(entry));
-                    // Builder associated to the path for the item
-                    StringBuilder itemPath =
-                            fileName != null
-                                    ? new StringBuilder(fileName).append(".").append(ext)
-                                    : new StringBuilder(name);
-                    // String associated to the filename
-                    String initialFileName =
-                            fileName != null ? fileName + "." + ext : FilenameUtils.getName(name);
-                    // If the RESTUploadPathMapper are present then the output file position is
-                    // changed
-                    if (!external) {
-                        Map<String, String> storeParams = new HashMap<>();
-                        RESTUtils.remapping(
-                                workspace, store, itemPath, initialFileName, storeParams);
-                    }
+                    try (InputStream in = new BufferedInputStream(archive.getInputStream(entry))) {
+                        // Builder associated to the path for the item
+                        StringBuilder itemPath =
+                                fileName != null
+                                        ? new StringBuilder(fileName).append(".").append(ext)
+                                        : new StringBuilder(name);
+                        // String associated to the filename
+                        String initialFileName =
+                                fileName != null
+                                        ? fileName + "." + ext
+                                        : FilenameUtils.getName(name);
+                        // If the RESTUploadPathMapper are present then the output file position is
+                        // changed
+                        if (!external) {
+                            Map<String, String> storeParams = new HashMap<>();
+                            RESTUtils.remapping(
+                                    workspace, store, itemPath, initialFileName, storeParams);
+                        }
 
-                    final Resource outFile = outputDirectory.get(itemPath.toString());
-                    final OutputStream out = new BufferedOutputStream(outFile.out());
-
-                    IOUtils.copyStream(in, out, true, true);
-                    // If the file must be listed, then the file is added to the list
-                    if (saveFile && files != null) {
-                        files.add(outFile);
+                        final Resource outFile = outputDirectory.get(itemPath.toString());
+                        try (OutputStream out = new BufferedOutputStream(outFile.out())) {
+                            IOUtils.copyStream(in, out, true, true);
+                            // If the file must be listed, then the file is added to the list
+                            if (saveFile && files != null) {
+                                files.add(outFile);
+                            }
+                        }
                     }
                 }
             }

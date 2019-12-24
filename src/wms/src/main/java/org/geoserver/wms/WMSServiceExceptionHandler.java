@@ -237,6 +237,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             } else {
                 response.setContentType(format);
             }
+            @SuppressWarnings("PMD.CloseResource") // managed by servlet container
             final ServletOutputStream os = response.getOutputStream();
             ImageIO.write(img, IMAGEIO_FORMATS.get(format), os);
             os.flush();
@@ -262,6 +263,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 response.setContentType(format);
             }
 
+            @SuppressWarnings("PMD.CloseResource") // managed by servlet container
             final ServletOutputStream os = response.getOutputStream();
             ImageIO.write(map.getImage(), IMAGEIO_FORMATS.get(format), os);
             os.flush();

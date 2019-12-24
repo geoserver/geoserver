@@ -48,6 +48,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         this.root = basePath;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // complex but apparently correct handling
     public Resource.Lock acquire(final String lockKey) {
         // first off, synchronize among threads in the same jvm (the nio locks won't lock
         // threads in the same JVM)

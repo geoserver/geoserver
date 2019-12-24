@@ -91,14 +91,12 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     }
 
     @Override
+    @SuppressWarnings(
+            "PMD.CloseResource") // the output stream is managed outside, only wrappers here
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
         if (LOGGER.isLoggable(Level.INFO)) LOGGER.info("about to encode JSON");
-
-        // prepare to write out
-        OutputStreamWriter osw = null;
-        Writer outWriter = null;
 
         // get feature count for request
         BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
@@ -108,8 +106,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         : totalNumberOfFeatures;
 
         try {
-            osw = new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
-            outWriter = new BufferedWriter(osw);
+            OutputStreamWriter osw =
+                    new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
+            Writer outWriter = new BufferedWriter(osw);
 
             if (jsonp) {
                 outWriter.write(getCallbackFunction() + "(");

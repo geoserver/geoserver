@@ -95,6 +95,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.GML;
 import org.geotools.measure.Measure;
 import org.geotools.ows.wms.Layer;
@@ -833,18 +834,18 @@ public class ResourcePool {
             File oldSchemaFile = Resources.file(dd.get(ft, "schema.xml"));
             if (oldSchemaFile != null) {
                 schemaFile = new File(oldSchemaFile.getParentFile(), "schema.xsd");
-                BufferedWriter out =
+                try (BufferedWriter out =
                         new BufferedWriter(
-                                new OutputStreamWriter(new FileOutputStream(schemaFile)));
-                out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
-                out.write(" xmlns:gml='http://www.opengis.net/gml'");
-                out.write(">");
-                try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
-                    IOUtils.copy(fis, out, "UTF-8");
+                                new OutputStreamWriter(new FileOutputStream(schemaFile)))) {
+                    out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
+                    out.write(" xmlns:gml='http://www.opengis.net/gml'");
+                    out.write(">");
+                    try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
+                        IOUtils.copy(fis, out, "UTF-8");
+                    }
+                    out.write("</xs:schema>");
+                    out.flush();
                 }
-                out.write("</xs:schema>");
-                out.flush();
-                out.close();
             }
         }
 
@@ -2471,6 +2472,7 @@ public class ResourcePool {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
+                @SuppressWarnings("PMD.CloseResource") // actually closing here
                 Closeable closeable = (Closeable) client;
                 try {
                     closeable.close();
@@ -2493,6 +2495,7 @@ public class ResourcePool {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
+                @SuppressWarnings("PMD.CloseResource") // actually closing here
                 Closeable closeable = (Closeable) client;
                 try {
                     closeable.close();

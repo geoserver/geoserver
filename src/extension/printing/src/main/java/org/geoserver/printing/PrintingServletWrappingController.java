@@ -38,8 +38,9 @@ public class PrintingServletWrappingController extends ServletWrappingController
             Resource config = loader.get(configPath);
 
             if (config.getType() == Type.UNDEFINED) {
-                InputStream conf = getClass().getResourceAsStream("default-config.yaml");
-                IOUtils.copy(conf, config.out());
+                try (InputStream conf = getClass().getResourceAsStream("default-config.yaml")) {
+                    IOUtils.copy(conf, config.out());
+                }
             }
             if (!Resources.canRead(config)) {
                 LOG.warning(

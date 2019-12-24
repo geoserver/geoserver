@@ -203,6 +203,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
             // actually parse the data
             if (input != null) {
+                @SuppressWarnings("PMD.CloseResource") // just a wrapper
                 CancellingInputStream is = new CancellingInputStream(input, listener);
                 Object result = complexPPIO.decode(is);
                 if (result == null || complexPPIO.getType().isInstance(result)) {

@@ -263,6 +263,7 @@ public enum JSONType {
                         exception, request, response.getOutputStream(), charset, verbose);
             } else {
                 // json
+                @SuppressWarnings("PMD.CloseResource") // wrapper, actual stream managed outside
                 OutputStreamWriter outWriter = null;
                 try {
                     outWriter = new OutputStreamWriter(response.getOutputStream(), charset);

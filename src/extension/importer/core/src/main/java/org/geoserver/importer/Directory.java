@@ -451,28 +451,25 @@ public class Directory extends FileData {
             output = new File(archiveDir, outputName + id + ".zip");
             id++;
         }
-        ZipOutputStream zout =
-                new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
+        try (ZipOutputStream zout =
+                new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)))) {
 
-        // don't call zout.close in finally block, if an error occurs and the zip
-        // file is empty by chance, the second error will mask the first
-        try {
-            IOUtils.zipDirectory(file, zout, null);
-        } catch (Exception ex) {
+            // don't call zout.close in finally block, if an error occurs and the zip
+            // file is empty by chance, the second error will mask the first
             try {
-                zout.close();
-            } catch (Exception ex2) {
-                // nothing, we're totally aborting
+                IOUtils.zipDirectory(file, zout, null);
+            } catch (Exception ex) {
+                try {
+                    zout.close();
+                } catch (Exception ex2) {
+                    // nothing, we're totally aborting
+                }
+                output.delete();
+                if (ex instanceof IOException) throw (IOException) ex;
+                throw (IOException) new IOException("Error archiving").initCause(ex);
             }
-            output.delete();
-            if (ex instanceof IOException) throw (IOException) ex;
-            throw (IOException) new IOException("Error archiving").initCause(ex);
-        }
-
-        // if we get here, the zip is properly written
-        try {
-            zout.close();
         } finally {
+            // if we get here, the zip is properly written
             cleanup();
         }
     }

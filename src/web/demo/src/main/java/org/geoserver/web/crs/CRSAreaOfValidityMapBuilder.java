@@ -329,54 +329,53 @@ class CRSAreaOfValidityMapBuilder {
 
         ds.createSchema(type);
 
-        FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-        writer = ds.getFeatureWriterAppend("latlon", Transaction.AUTO_COMMIT);
+        try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                ds.getFeatureWriterAppend("latlon", Transaction.AUTO_COMMIT)) {
+            for (int lon = -180; lon < 180; lon += 5) {
+                for (int lat = -90; lat < 90; lat += 5) {
+                    LineString geom;
+                    int level;
 
-        for (int lon = -180; lon < 180; lon += 5) {
-            for (int lat = -90; lat < 90; lat += 5) {
-                LineString geom;
-                int level;
+                    geom =
+                            gf.createLineString(
+                                    new Coordinate[] {
+                                        new Coordinate(lon, lat), new Coordinate(lon, lat + 5)
+                                    });
 
-                geom =
-                        gf.createLineString(
-                                new Coordinate[] {
-                                    new Coordinate(lon, lat), new Coordinate(lon, lat + 5)
-                                });
+                    level = 1;
+                    if (lon % 10 == 0) {
+                        level = 10;
+                    }
+                    if (lon % 30 == 0) {
+                        level = 30;
+                    }
 
-                level = 1;
-                if (lon % 10 == 0) {
-                    level = 10;
+                    SimpleFeature f;
+                    f = writer.next();
+                    f.setAttribute(0, geom);
+                    f.setAttribute(1, Integer.valueOf(level));
+                    writer.write();
+
+                    geom =
+                            gf.createLineString(
+                                    new Coordinate[] {
+                                        new Coordinate(lon, lat), new Coordinate(lon + 5, lat)
+                                    });
+
+                    level = 1;
+                    if (lat % 10 == 0) {
+                        level = 10;
+                    }
+                    if (lat % 30 == 0) {
+                        level = 30;
+                    }
+                    f = writer.next();
+                    f.setAttribute(0, geom);
+                    f.setAttribute(1, Integer.valueOf(level));
+                    writer.write();
                 }
-                if (lon % 30 == 0) {
-                    level = 30;
-                }
-
-                SimpleFeature f;
-                f = writer.next();
-                f.setAttribute(0, geom);
-                f.setAttribute(1, Integer.valueOf(level));
-                writer.write();
-
-                geom =
-                        gf.createLineString(
-                                new Coordinate[] {
-                                    new Coordinate(lon, lat), new Coordinate(lon + 5, lat)
-                                });
-
-                level = 1;
-                if (lat % 10 == 0) {
-                    level = 10;
-                }
-                if (lat % 30 == 0) {
-                    level = 30;
-                }
-                f = writer.next();
-                f.setAttribute(0, geom);
-                f.setAttribute(1, Integer.valueOf(level));
-                writer.write();
             }
         }
-        writer.close();
 
         return ds;
     }

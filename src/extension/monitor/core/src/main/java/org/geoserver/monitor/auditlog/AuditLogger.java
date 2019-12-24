@@ -261,7 +261,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
         /** Loop to be run during the virtual machine lifetime. */
         @Override
         public void run() {
-
+            @SuppressWarnings("PMD.CloseResource") // closing the writer, just not immediate to see
             BufferedWriter writer = null;
             try {
                 while (true) {

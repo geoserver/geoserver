@@ -519,6 +519,7 @@ public class KmlEncodingContext {
         }
     }
 
+    @SuppressWarnings("PMD.CloseResource") // actually closing iterators here
     public void closeIterators() {
         // clean up any un-closed iterator
         for (FeatureIterator fi : iterators.keySet()) {

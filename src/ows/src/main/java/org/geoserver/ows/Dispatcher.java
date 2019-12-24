@@ -1014,6 +1014,7 @@ public class Dispatcher extends AbstractController {
 
             setHeaders(req, opDescriptor, result, response);
 
+            @SuppressWarnings("PMD.CloseResource") // managed by the output strategy
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
             boolean abortResponse = true;
             try {

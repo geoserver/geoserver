@@ -1026,10 +1026,10 @@ public abstract class GeoServerLoader {
 
     /** Helper method which uses xstream to persist an object as xml on disk. */
     void persist(XStreamPersister xp, Object obj, Resource f) throws Exception {
-        BufferedOutputStream out = new BufferedOutputStream(f.out());
-        xp.save(obj, out);
-        out.flush();
-        out.close();
+        try (BufferedOutputStream out = new BufferedOutputStream(f.out())) {
+            xp.save(obj, out);
+            out.flush();
+        }
     }
 
     /** Helper method which uses xstream to depersist an object as xml from disk. */

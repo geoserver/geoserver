@@ -77,10 +77,11 @@ public class DataAccessLimits extends AccessLimits {
      */
     protected void writeFilter(Filter filter, ObjectOutputStream out) throws IOException {
         if (filter != null) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            Encoder encoder = new Encoder(CONFIGURATION);
-            encoder.encode(filter, OGC.Filter, bos);
-            out.writeObject(bos.toByteArray());
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                Encoder encoder = new Encoder(CONFIGURATION);
+                encoder.encode(filter, OGC.Filter, bos);
+                out.writeObject(bos.toByteArray());
+            }
         } else {
             out.writeObject(null);
         }

@@ -91,8 +91,7 @@ public class TransformController extends AbstractCatalogController {
     @GetMapping(path = "{transform}", produces = MediaTypeExtensions.APPLICATION_XSLT_VALUE)
     public void getTransforms(
             @PathVariable(name = "transform") String transformInfoName, OutputStream output) {
-        InputStream transform = getTransform(transformInfoName);
-        try {
+        try (InputStream transform = getTransform(transformInfoName)) {
             IOUtils.copy(transform, output);
         } catch (Exception exception) {
             throw new RestException(

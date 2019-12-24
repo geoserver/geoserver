@@ -217,11 +217,11 @@ public class EditableUserDAO implements UserDetailsService {
             prop.setProperty(key, value);
         }
 
-        OutputStream os = new BufferedOutputStream(getUserFile().out());
-
-        prop.store(
-                os,
-                "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
+        try (OutputStream os = new BufferedOutputStream(getUserFile().out())) {
+            prop.store(
+                    os,
+                    "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
+        }
     }
 
     /**

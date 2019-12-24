@@ -72,6 +72,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     public void formatImageOutputStream(
             RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {

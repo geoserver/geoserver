@@ -10,7 +10,7 @@ GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE). Th
 
 Tested:
 
-* Java 11 - GeoServer 2.15.x and above (OpenJDK tested)
+* Java 11 and Java 8 - GeoServer 2.15.x and above (OpenJDK tested)
 * Java 8 - GeoServer 2.9.x and above (OpenJDK and Oracle JRE tested)
 * Java 7 - GeoServer 2.6.x to GeoServer 2.8.x (OpenJDK and Oracle JRE tested)
 * Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)

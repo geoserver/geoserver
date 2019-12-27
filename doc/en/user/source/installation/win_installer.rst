@@ -7,7 +7,7 @@ Windows installer
 
 The Windows installer provides an easy way to set up GeoServer on your system, as it requires no configuration files to be edited or command line settings.
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment. The Oracle JRE is preferred, but OpenJDK has been known to work adequately. You can `download JRE 8 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment. You can `download JRE 8 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
 
    .. note:: Java 9 is not currently supported.
 

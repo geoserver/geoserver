@@ -3,9 +3,9 @@
 Windows binary
 ==============
 
-.. note:: For the wizard-based installer on Windows, please see the section on the :ref:`installation_windows_installer`. For installing on Windows with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
+.. note:: For installing on Windows with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
 
-An alternate way of installing GeoServer on Windows is to use the platform-independent binary. This version is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`_, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
+The other way of installing GeoServer on Windows is to use the platform-independent binary. This version is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`_, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
 
 Installation
 ------------

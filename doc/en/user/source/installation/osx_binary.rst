@@ -3,7 +3,7 @@
 Mac OS X binary
 ===============
 
-.. note:: For the installer on OS X, please see the section on the :ref:`installation_osx_installer`. For installing on OS X with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
+.. note::  For installing on OS X with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
 
 An alternate way of installing GeoServer on OS X is to use the platform-independent binary. This version is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`_, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
 

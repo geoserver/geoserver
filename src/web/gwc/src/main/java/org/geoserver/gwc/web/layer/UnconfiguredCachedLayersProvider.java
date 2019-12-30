@@ -5,16 +5,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -75,17 +71,34 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     static final List<Property<TileLayer>> PROPERTIES =
             Collections.unmodifiableList(Arrays.asList(TYPE, NAME, ENABLED));
 
-    private static final String KEY_SIZE = "key.size";
-    private final Cache<String, Integer> cache;
-
     private GWCConfig defaults;
+
+    /**
+     * Simple cache for the last computed size based on the keywords, which in turn are the sole
+     * input for the filter (at the moment, at least)
+     */
+    private class CachedSize {
+        private static final long NOT_CACHED = Long.MIN_VALUE;
+        private String[] cachedSizeKeywords;
+        private long cachedSize = NOT_CACHED;
+
+        public long get() {
+            if (cachedSize == NOT_CACHED || !Arrays.equals(keywords, cachedSizeKeywords)) {
+                long size = size(getFilter());
+                cachedSize = size;
+                cachedSizeKeywords =
+                        keywords == null ? null : Arrays.copyOf(keywords, keywords.length);
+                return size;
+            } else {
+                return cachedSize;
+            }
+        }
+    }
+
+    private CachedSize cachedSize = new CachedSize();
 
     public UnconfiguredCachedLayersProvider() {
         super();
-        // Initialization of an inner cache in order to avoid to calculate several times
-        // the size() method in a time minor than a second
-        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        cache = builder.expireAfterWrite(1, TimeUnit.SECONDS).build();
 
         defaults = GWC.get().getConfig().saneConfig().clone();
         defaults.setCacheLayersByDefault(true);
@@ -100,6 +113,11 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
      */
     @Override
     public Iterator<TileLayer> iterator(long first, long count) {
+        final Stream<TileLayer> stream = tileLayerStream(first, count);
+        return new CloseableIteratorAdapter<TileLayer>(stream.iterator(), () -> stream.close());
+    }
+
+    private Stream<TileLayer> tileLayerStream(long first, long count) {
         final SortParam<Object> sort = getSort();
         final Filter filter = getFilter();
         final Stream<TileLayer> stream;
@@ -118,7 +136,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
                             .skip(first)
                             .limit(count);
         }
-        return new CloseableIteratorAdapter<TileLayer>(stream.iterator(), () -> stream.close());
+        return stream;
     }
 
     @Override
@@ -128,11 +146,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     @Override
     public long size() {
-        try {
-            return cache.get(KEY_SIZE, () -> size(getFilter()));
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
-        }
+        return cachedSize.get();
     }
 
     private int size(Filter filter) {
@@ -145,8 +159,8 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     @Override
     protected List<TileLayer> getFilteredItems() {
-        throw new UnsupportedOperationException(
-                "should not be called, iterator(int, int) and size() overridden");
+        LOGGER.info("Should not be called, iterator() overridden");
+        return tileLayerStream(0, Long.MAX_VALUE).collect(Collectors.toList());
     }
 
     /**
@@ -157,7 +171,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
      */
     @Override
     protected List<TileLayer> getItems() {
-        LOGGER.info("should not be called, fullSize() and getFilteredItems() overridden");
+        LOGGER.info("should not be called, fullSize() and iterator() overridden");
         return unconfiguredLayers(Predicates.acceptAll())
                 .map(this::createUnconfiguredTileLayer)
                 .collect(Collectors.toList());
@@ -167,6 +181,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
         return new GeoServerTileLayer(info, defaults, GWC.get().getGridSetBroker());
     }
 
+    @SuppressWarnings("PMD.CloseResource") // the two closeable iterators are wrapped and returned
     private Stream<PublishedInfo> unconfiguredLayers(Filter filter) {
         final Catalog catalog = getCatalog();
         final CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, filter);

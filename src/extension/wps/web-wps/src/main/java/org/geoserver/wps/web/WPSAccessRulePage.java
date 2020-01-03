@@ -41,6 +41,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * A page listing all WPS groups, allowing enable/disable single groups and add/remove roles to
@@ -71,7 +72,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
         try {
             for (GeoServerRole r : roleService.getRoles()) {
-                availableRoles.add(r.getAuthority());
+                availableRoles.add(HtmlUtils.htmlEscape(r.getAuthority()));
             }
         } catch (IOException e1) {
             LOGGER.log(Level.FINER, e1.getMessage(), e1);

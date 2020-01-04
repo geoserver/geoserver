@@ -409,7 +409,7 @@ public class ScriptManager implements InitializingBean {
 
     public boolean hasEngineForExtension(Resource ext) {
         for (ScriptEngineFactory f : engineMgr.getEngineFactories()) {
-            if (f.getExtensions().contains(ext)) {
+            if (f.getExtensions().contains(ext.name())) {
                 return true;
             }
         }

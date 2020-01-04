@@ -50,6 +50,14 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testToolPageAllowsAccessWhenLoggedIn() {
+        login();
+        tester.startPage(ToolPage.class);
+        tester.assertRenderedPage(ToolPage.class);
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
     public void testSessionFixationAvoidance() throws Exception {
         tester.startPage(GeoServerHomePage.class);
         final WebSession session = WebSession.get();

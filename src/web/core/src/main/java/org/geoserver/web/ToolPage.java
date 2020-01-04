@@ -19,8 +19,13 @@ public class ToolPage extends GeoServerSecuredPage {
     @SuppressWarnings("serial")
     public ToolPage() {
         List links = getGeoServerApplication().getBeansOfType(ToolLinkInfo.class);
-        links.addAll(getGeoServerApplication().getBeansOfType(ToolLinkExternalInfo.class));
-
+        for (ToolLinkExternalInfo link :
+                getGeoServerApplication().getBeansOfType(ToolLinkExternalInfo.class)) {
+            if (link.getDescriptionKey() == null) {
+                continue;
+            }
+            links.add(link);
+        }
         links = filterByAuth(links);
 
         add(

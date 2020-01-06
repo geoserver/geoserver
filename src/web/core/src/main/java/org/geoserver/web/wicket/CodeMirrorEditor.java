@@ -55,7 +55,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                 new PackageResourceReference(
                         CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
                 new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/css/show-hint.css")
+                        CodeMirrorEditor.class, "js/codemirror/css/show-hint.css"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
             };
 
     public static final PackageResourceReference[] MODES =
@@ -72,7 +76,18 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                         CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
                 new PackageResourceReference(
                         CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js"),
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js")
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
+                new PackageResourceReference(
+                        CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
             };
 
     private TextArea<String> editor;

@@ -699,6 +699,21 @@ background: url(../img/icons/silk/text_align_right.png) no-repeat;
 display: block;
 }
 
+.button-group .button-find span {
+background: url(../img/icons/silk/find.png) no-repeat;
+display: block;
+}
+
+.button-group .button-find-next span {
+background: url(../img/icons/silk/find_next.png) no-repeat;
+display: block;
+}
+
+.button-group .button-replace span {
+background: url(../img/icons/silk/text_replace.png) no-repeat;
+display: block;
+}
+
 .button-group .button-picture span {
 background: url(../img/icons/silk/photo.png) no-repeat;
 display: block;

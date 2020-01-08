@@ -300,7 +300,7 @@ public class RasterizerController extends BaseSLDServiceController {
         }
 
         rasterSymbolizer.setColorMap(resampledColorMap);
-        Style style = sb.createStyle(layerName, rasterSymbolizer);
+        Style style = sb.createStyle("Feature", rasterSymbolizer);
 
         return style;
     }

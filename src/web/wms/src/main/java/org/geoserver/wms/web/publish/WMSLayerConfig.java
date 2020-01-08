@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -186,16 +188,28 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerModel.getObject().getResource();
         // for new only
-        if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
-        else {
-            wmsLayerInfo.getAllAvailableRemoteStyles().clear();
+        try {
+            if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
+            else {
+                // pull latest styles from remote WMS
+                wmsLayerInfo.getAllAvailableRemoteStyles().clear();
+                wmsLayerInfo
+                        .getAllAvailableRemoteStyles()
+                        .addAll(wmsLayerInfo.getRemoteStyleInfos());
+            }
+        } catch (Exception e) {
+            error("unable to fetch remote styles for " + wmsLayerInfo.getNativeName());
+            LOGGER.log(
+                    Level.SEVERE,
+                    e.getMessage()
+                            + ":unable to fetch remote styles for "
+                            + wmsLayerInfo.getNativeName(),
+                    e);
         }
-        // reload latest styles
-        wmsLayerInfo.getAllAvailableRemoteStyles().addAll(wmsLayerInfo.getRemoteStyleInfos());
         // empty string to use whatever default remote server has
         List<String> remoteSyles = new ArrayList<String>();
         remoteSyles.add("");
-        remoteSyles.addAll(wmsLayerInfo.remoteStyles());
+        remoteSyles.addAll(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles()));
         DropDownChoice<String> remotStyles =
                 new DropDownChoice<String>(
                         "remoteStylesDropDown",
@@ -211,7 +225,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Palette<String>(
                         "extraRemoteStyles",
                         stylesModel,
-                        new CollectionModel<String>(wmsLayerInfo.remoteStyles()),
+                        new CollectionModel<String>(
+                                getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
                         new SimpleChoiceRenderer<String>(),
                         10,
                         true);
@@ -243,5 +258,9 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
+    }
+
+    private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {
+        return styleInfoList.stream().map(s -> s.getName()).collect(Collectors.toSet());
     }
 }

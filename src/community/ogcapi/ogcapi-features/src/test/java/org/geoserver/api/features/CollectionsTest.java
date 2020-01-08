@@ -4,24 +4,31 @@
  */
 package org.geoserver.api.features;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wfs.WFSInfo;
+import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -36,10 +43,13 @@ public class CollectionsTest extends FeaturesTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
+        // customize metadata and set custom CRS too
         FeatureTypeInfo basicPolygons =
                 getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         basicPolygons.setTitle(BASIC_POLYGONS_TITLE);
         basicPolygons.setAbstract(BASIC_POLYGONS_DESCRIPTION);
+        basicPolygons.setOverridingServiceSRS(true);
+        basicPolygons.getResponseSRS().addAll(Arrays.asList("3857", "32632"));
         getCatalog().save(basicPolygons);
     }
 
@@ -67,6 +77,38 @@ public class CollectionsTest extends FeaturesTestSupport {
             Map item = (Map) items.get(0);
             assertEquals("items", item.get("rel"));
         }
+
+        // check the global crs list
+        List<String> crs = json.read("crs");
+        assertThat(
+                crs.size(),
+                Matchers.greaterThan(
+                        5000)); // lots... the list is growing, hopefully will stay above 5k
+        assertThat(
+                crs,
+                hasItems(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/4326",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857"));
+        crs.remove("http://www.opengis.net/def/crs/OGC/1.3/CRS84");
+        for (String c : crs) {
+            assertThat(c, Matchers.startsWith("http://www.opengis.net/def/crs/EPSG/0"));
+            assertTrue(
+                    c + " is not using a numeric code",
+                    c.substring("http://www.opengis.net/def/crs/EPSG/0/".length()).matches("\\d+"));
+        }
+
+        // check that collections point back to the global CRS list
+        List<String> collectionCRS = json.read("collections[?(@.id == 'cite:Bridges')].crs");
+        assertThat(collectionCRS, contains(Arrays.asList("#/crs")));
+        // check one that is specific instead
+        assertThat(
+                json.read("collections[?(@.id=='cite:BasicPolygons')].crs"),
+                contains(
+                        Arrays.asList(
+                                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                                "http://www.opengis.net/def/crs/EPSG/0/3857",
+                                "http://www.opengis.net/def/crs/EPSG/0/32632")));
     }
 
     @Test
@@ -132,5 +174,30 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
                 document.select("#" + basicPolygonsHtmlId + "_description").text());
+    }
+
+    @Test
+    public void testCustomCRSList() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        List<String> srs = wfs.getSRS();
+        srs.add("3857");
+        srs.add("32632");
+        try {
+            gs.save(wfs);
+
+            // check the global CRS list changed
+            DocumentContext json = getAsJSONPath("cdf/ogc/features/collections", 200);
+            List<String> crs = json.read("crs");
+            assertThat(
+                    crs,
+                    contains(
+                            "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                            "http://www.opengis.net/def/crs/EPSG/0/3857",
+                            "http://www.opengis.net/def/crs/EPSG/0/32632"));
+        } finally {
+            wfs.getSRS().clear();
+            gs.save(wfs);
+        }
     }
 }

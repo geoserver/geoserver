@@ -7,16 +7,26 @@ package org.geoserver.api.features;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
-import org.geoserver.api.*;
+import org.geoserver.api.APIBBoxParser;
+import org.geoserver.api.APIDispatcher;
+import org.geoserver.api.APIException;
+import org.geoserver.api.APIRequestInfo;
+import org.geoserver.api.APIService;
+import org.geoserver.api.ConformanceDocument;
+import org.geoserver.api.DefaultContentType;
+import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -29,12 +39,15 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +68,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class FeatureService {
 
+    static final Pattern INTEGER = Pattern.compile("\\d+");
+
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
     public static final String HTML = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
     public static final String GEOJSON =
@@ -72,6 +87,9 @@ public class FeatureService {
     public static final String CQL_JSON_ARRAY =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-array";
 
+    public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
+    public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+
     public static String ITEM_ID = "OGCFeatures:ItemId";
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -82,6 +100,44 @@ public class FeatureService {
 
     public FeatureService(GeoServer geoServer) {
         this.geoServer = geoServer;
+    }
+
+    /** Returns the provided CRS list, unless the feature type has its own local override */
+    public static List<String> getFeatureTypeCRS(
+            FeatureTypeInfo featureType, List<String> defaultCRS) {
+        // by default use the provided list, unless there is an override
+        if (featureType.isOverridingServiceSRS()) {
+            List<String> result =
+                    featureType
+                            .getResponseSRS()
+                            .stream()
+                            .map(c -> CRS_PREFIX + c)
+                            .collect(Collectors.toList());
+            result.remove(FeatureService.DEFAULT_CRS);
+            result.add(0, FeatureService.DEFAULT_CRS);
+            return result;
+        }
+        return defaultCRS;
+    }
+
+    protected List<String> getServiceCRSList() {
+        List<String> result = getService().getSRS();
+
+        if (result == null || result.isEmpty()) {
+            // consult the EPSG databasee
+            result =
+                    CRS.getSupportedCodes("EPSG")
+                            .stream()
+                            .filter(c -> INTEGER.matcher(c).matches())
+                            .map(c -> CRS_PREFIX + c)
+                            .collect(Collectors.toList());
+        } else {
+            // the configured ones are just numbers, prefix
+            result = result.stream().map(c -> CRS_PREFIX + c).collect(Collectors.toList());
+        }
+        // the Features API default CRS (cannot be contained due to the different prefixing)
+        result.add(0, DEFAULT_CRS);
+        return result;
     }
 
     public WFSInfo getService() {
@@ -118,7 +174,7 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
     public CollectionsDocument getCollections() {
-        return new CollectionsDocument(geoServer);
+        return new CollectionsDocument(geoServer, getServiceCRSList());
     }
 
     @GetMapping(path = "filter-capabilities", name = "getFilterCapabilities")
@@ -136,7 +192,8 @@ public class FeatureService {
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        CollectionDocument collection = new CollectionDocument(geoServer, ft);
+        CollectionDocument collection =
+                new CollectionDocument(geoServer, ft, getFeatureTypeCRS(ft, getServiceCRSList()));
 
         return collection;
     }
@@ -178,10 +235,12 @@ public class FeatureService {
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
+            @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
             @RequestParam(name = "time", required = false) String time,
-            @PathVariable(name = "itemId") String itemId)
+            @PathVariable(name = "itemId") String itemId,
+            @RequestParam(name = "crs", required = false) String crs)
             throws Exception {
-        return items(collectionId, startIndex, limit, bbox, time, null, null, itemId);
+        return items(collectionId, startIndex, limit, bbox, bboxCRS, crs, time, null, null, itemId);
     }
 
     @GetMapping(path = "collections/{collectionId}/items", name = "getFeatures")
@@ -193,9 +252,11 @@ public class FeatureService {
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
+            @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
+            @RequestParam(name = "crs", required = false) String crs,
             String itemId)
             throws Exception {
         // build the request in a way core WFS machinery can understand it
@@ -206,7 +267,11 @@ public class FeatureService {
         query.setTypeNames(Arrays.asList(new QName(ft.getNamespace().getURI(), ft.getName())));
         List<Filter> filters = new ArrayList<>();
         if (bbox != null) {
-            filters.add(APIBBoxParser.toFilter(bbox));
+            CoordinateReferenceSystem queryCRS = DefaultGeographicCRS.WGS84;
+            if (bboxCRS != null) {
+                queryCRS = CRS.decode(bboxCRS);
+            }
+            filters.add(APIBBoxParser.toFilter(bbox, queryCRS));
         }
         if (datetime != null) {
             filters.add(buildTimeFilter(ft, datetime));
@@ -224,6 +289,11 @@ public class FeatureService {
             filters.add(ECQL.toFilter(filter));
         }
         query.setFilter(mergeFiltersAnd(filters));
+        if (crs != null) {
+            query.setSrsName(new URI(crs));
+        } else {
+            query.setSrsName(new URI("EPSG:4326"));
+        }
         request.setStartIndex(startIndex);
         request.setMaxFeatures(limit);
         request.setBaseUrl(APIRequestInfo.get().getBaseURL());

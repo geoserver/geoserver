@@ -5,15 +5,20 @@
 package org.geoserver.api.features;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.*;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.api.APIDispatcher;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
@@ -23,6 +28,18 @@ import org.springframework.http.MediaType;
 import org.w3c.dom.Document;
 
 public class CollectionTest extends FeaturesTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // customize metadata and set custom CRS too
+        FeatureTypeInfo basicPolygons =
+                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        basicPolygons.setOverridingServiceSRS(true);
+        basicPolygons.getResponseSRS().addAll(Arrays.asList("3857", "32632"));
+        getCatalog().save(basicPolygons);
+    }
 
     @Test
     public void testCollectionJson() throws Exception {
@@ -60,6 +77,43 @@ public class CollectionTest extends FeaturesTestSupport {
                         json, "links[?(@.rel=='queryables' && @.type=='application/json')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/queryables?f=application%2Fjson"));
+
+        // check the CRS list, this feature type shares the top level list
+        List<String> crs = json.read("crs");
+        assertThat(
+                crs.size(),
+                Matchers.greaterThan(
+                        5000)); // lots... the list is growing, hopefully will stay above 5k
+        assertThat(
+                crs,
+                hasItems(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/4326",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857"));
+        crs.remove("http://www.opengis.net/def/crs/OGC/1.3/CRS84");
+        for (String c : crs) {
+            assertThat(c, Matchers.startsWith("http://www.opengis.net/def/crs/EPSG/0"));
+            assertTrue(
+                    c + " is not using a numeric code",
+                    c.substring("http://www.opengis.net/def/crs/EPSG/0/".length()).matches("\\d+"));
+        }
+    }
+
+    @Test
+    public void testCollectionJsonCustomCRSList() throws Exception {
+        String roadSegments = getLayerId(MockData.BASIC_POLYGONS);
+        DocumentContext json = getAsJSONPath("ogc/features/collections/" + roadSegments, 200);
+
+        assertEquals("cite:BasicPolygons", json.read("$.id", String.class));
+
+        // check the CRS list, this feature type shares the top level list
+        List<String> crs = json.read("crs");
+        assertThat(
+                crs,
+                contains(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857",
+                        "http://www.opengis.net/def/crs/EPSG/0/32632"));
     }
 
     private List<MediaType> getFeaturesResponseFormats() {

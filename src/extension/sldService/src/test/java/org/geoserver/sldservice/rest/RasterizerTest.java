@@ -80,6 +80,22 @@ public class RasterizerTest extends SLDServiceBaseTest {
     }
 
     @Test
+    public void testRasterizeFeatureTypeName() throws Exception {
+        LayerInfo l = getCatalog().getLayerByName("wcs:World");
+        assertEquals("raster", l.getDefaultStyle().getName());
+        final String restPath =
+                RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        assertTrue(
+                baos.toString().indexOf("<sld:FeatureTypeName>Feature</sld:FeatureTypeName>") > 0);
+        checkColorMap(baos.toString(), 100);
+    }
+
+    @Test
     public void testRasterizeOptions() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("wcs:World");
         assertEquals("raster", l.getDefaultStyle().getName());

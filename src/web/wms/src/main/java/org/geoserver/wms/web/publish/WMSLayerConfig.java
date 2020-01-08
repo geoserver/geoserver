@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -198,16 +200,28 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerModel.getObject().getResource();
         // for new only
-        if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
-        else {
-            wmsLayerInfo.getAllAvailableRemoteStyles().clear();
+        try {
+            if (layerModel.getObject().getId() == null) wmsLayerInfo.reset();
+            else {
+                // pull latest styles from remote WMS
+                wmsLayerInfo.getAllAvailableRemoteStyles().clear();
+                wmsLayerInfo
+                        .getAllAvailableRemoteStyles()
+                        .addAll(wmsLayerInfo.getRemoteStyleInfos());
+            }
+        } catch (Exception e) {
+            error("unable to fetch remote styles for " + wmsLayerInfo.getNativeName());
+            LOGGER.log(
+                    Level.SEVERE,
+                    e.getMessage()
+                            + ":unable to fetch remote styles for "
+                            + wmsLayerInfo.getNativeName(),
+                    e);
         }
-        // reload latest styles
-        wmsLayerInfo.getAllAvailableRemoteStyles().addAll(wmsLayerInfo.getRemoteStyleInfos());
         // empty string to use whatever default remote server has
         List<String> remoteSyles = new ArrayList<String>();
         remoteSyles.add("");
-        remoteSyles.addAll(wmsLayerInfo.remoteStyles());
+        remoteSyles.addAll(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles()));
         DropDownChoice<String> remotStyles =
                 new DropDownChoice<String>(
                         "remoteStylesDropDown",
@@ -223,7 +237,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Palette<String>(
                         "extraRemoteStyles",
                         stylesModel,
-                        new CollectionModel<String>(wmsLayerInfo.remoteStyles()),
+                        new CollectionModel<String>(
+                                getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
                         new SimpleChoiceRenderer<String>(),
                         10,
                         true);
@@ -259,5 +274,63 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new CheckBox(
                         "respectMetadataBBoxChkBox",
                         new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
+        // scale denominators
+        TextField<Double> minScale =
+                new TextField(
+                        "minScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
+                        Double.class);
+        scaleDenominatorContainer.add(minScale);
+        TextField<Double> maxScale =
+                new TextField(
+                        "maxScale",
+                        new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
+                        Double.class);
+        scaleDenominatorContainer.add(maxScale);
+
+        minScale.add(new ScalesValidator(minScale, maxScale));
+    }
+
+    private Set<String> getRemoteStyleNames(final List<StyleInfo> styleInfoList) {
+        return styleInfoList.stream().map(s -> s.getName()).collect(Collectors.toSet());
+    }
+
+    // validator to make sure min scale smaller than max scale and vice-versa
+    private class ScalesValidator implements IValidator {
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1349568700386246273L;
+
+        TextField<Double> minScale;
+        TextField<Double> maxScale;
+
+        public ScalesValidator(TextField<Double> minScale, TextField<Double> maxScale) {
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+
+        private Double safeGet(String input, Double defaultValue) {
+            if (input == null || input.isEmpty()) return defaultValue;
+            else return Double.valueOf(input);
+        }
+
+        @Override
+        public void validate(IValidatable validatable) {
+            if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
+                // negative check
+                if (Double.valueOf(minScale.getInput()) < 0
+                        || Double.valueOf(maxScale.getInput()) < 0) {
+                    validatable.error(new ValidationError("Scale denominator cannot be Negative"));
+                }
+                // if both are set perform check min < max
+
+                if (safeGet(minScale.getInput(), 0d)
+                        >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
+                    validatable.error(
+                            new ValidationError(
+                                    "Minimum Scale cannot be greater than Maximum Scale"));
+                }
+            }
+        }
     }
 }

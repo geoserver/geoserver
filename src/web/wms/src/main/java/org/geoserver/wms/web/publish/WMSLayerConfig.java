@@ -29,6 +29,9 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -175,7 +178,6 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
         // remote formats
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
-
         WebMarkupContainer metaDataCheckBoxContainer =
                 new WebMarkupContainer("metaDataCheckBoxContainer");
         WebMarkupContainer scaleDenominatorContainer =

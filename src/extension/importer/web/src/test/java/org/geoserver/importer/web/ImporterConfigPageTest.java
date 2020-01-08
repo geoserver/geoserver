@@ -5,9 +5,11 @@
 package org.geoserver.importer.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.wicket.serialize.java.JavaSerializer;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.importer.Importer;
@@ -51,5 +53,20 @@ public class ImporterConfigPageTest extends GeoServerWicketTestSupport {
         assertEquals(newUploadRoot, newConfiguration.getUploadRoot());
         assertEquals(2, newConfiguration.getMaxSynchronousImports());
         assertEquals(1, newConfiguration.getMaxAsynchronousImports());
+    }
+
+    @Test
+    public void testImporterConfigPageSerialization() {
+        // acquire wicket javaSerializer
+        JavaSerializer javaSeializer =
+                new JavaSerializer(getGeoServerApplication().getApplicationKey());
+
+        login();
+        // int the page
+        ImporterConfigPage page = tester.startPage(ImporterConfigPage.class);
+
+        // JavaSerializer logs an exception and returns null in case there are serialization errors
+        byte[] bytes = javaSeializer.serialize(page);
+        assertNotNull(bytes);
     }
 }

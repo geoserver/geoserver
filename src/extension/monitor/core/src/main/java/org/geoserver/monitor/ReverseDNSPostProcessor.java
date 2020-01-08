@@ -20,6 +20,8 @@ public class ReverseDNSPostProcessor implements RequestPostProcessor {
 
     static Map<String, String> reverseLookupCache = new SoftValueHashMap<String, String>(100);
 
+    static final String PROCESSOR_NAME = "reverseDNS";
+
     public void run(RequestData data, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         String host = reverseLookupCache.get(data.getRemoteAddr());
@@ -33,5 +35,10 @@ public class ReverseDNSPostProcessor implements RequestPostProcessor {
         }
 
         data.setRemoteHost(host);
+    }
+
+    @Override
+    public String getName() {
+        return PROCESSOR_NAME;
     }
 }

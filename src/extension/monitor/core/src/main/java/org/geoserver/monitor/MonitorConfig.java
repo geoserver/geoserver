@@ -9,8 +9,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServerPluginConfigurator;
@@ -128,6 +132,14 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
             return null;
         }
         return BboxMode.valueOf(mode.toUpperCase());
+    }
+
+    public Set<String> getIgnorePostProcessors() {
+        String list = props.getProperty("ignorePostProcessors");
+
+        if (list == null || list.isEmpty()) return Collections.EMPTY_SET;
+
+        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(list.split(","))));
     }
 
     public boolean isEnabled() {

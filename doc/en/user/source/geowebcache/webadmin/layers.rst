@@ -63,8 +63,22 @@ To add in a layer from GeoServer (if it wasn't set up to be added automatically)
 .. figure:: img/newcachedlayer.png
 
    Adding a new cached layer
+   
+Clearing GeoWebCache
+---------------------------
 
+The ``Empty all`` link allows to clear the entire cache, for all layers, grid sets and filter parameters combination.
 
+.. warning:: This will truncate all layers in GeoWebCache
+
+.. figure:: img/gwc_confirm.png
+
+   Confirmation to GeoWebCache 
+
+A confirmation will appear on the page as message with names of cleared Tile layers.
+
+.. figure:: img/gwc_clean.png
+   
 Configuring a cached layer
 --------------------------
 

@@ -198,6 +198,8 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         WMSLayerInfo wmsLayer = cb.buildWMSLayer("roads");
         wmsLayer.setName("roads");
         wmsLayer.reset();
+        // keep track of remote style count before loading the model
+        int remoteStyleCount = wmsLayer.getAllAvailableRemoteStyles().size();
         getCatalog().add(wmsLayer);
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
@@ -222,7 +224,8 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(
                 "form:panel:remotestyles:extraRemoteStyles",
                 new HashSet<String>(wmsLayer.remoteStyles()));
-
+        // make sure remote styles on are not duplicated when loaded on page
+        assertTrue(wmsLayer.remoteStyles().size() == remoteStyleCount);
         // asserting Remote Style UI fields
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());

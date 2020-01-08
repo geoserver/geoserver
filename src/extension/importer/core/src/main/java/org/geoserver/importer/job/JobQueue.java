@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -39,8 +38,7 @@ public class JobQueue {
     ConcurrentHashMap<Long, Task<?>> jobs = new ConcurrentHashMap<Long, Task<?>>();
 
     /** job runner */
-    // ExecutorService pool = Executors.newCachedThreadPool();
-    ExecutorService pool =
+    ThreadPoolExecutor pool =
             new ThreadPoolExecutor(
                     0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()) {
                 protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
@@ -138,5 +136,13 @@ public class JobQueue {
     public void shutdown() {
         cleaner.shutdownNow();
         pool.shutdownNow();
+    }
+
+    public void setMaximumPoolSize(int maximumPoolSize) {
+        pool.setMaximumPoolSize(maximumPoolSize);
+    }
+
+    public int getMaximumPoolSize() {
+        return pool.getMaximumPoolSize();
     }
 }

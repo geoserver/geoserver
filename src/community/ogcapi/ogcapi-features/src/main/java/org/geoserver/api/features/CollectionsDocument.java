@@ -7,6 +7,7 @@ package org.geoserver.api.features;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.api.AbstractDocument;
@@ -26,10 +27,13 @@ import org.opengis.filter.Filter;
 public class CollectionsDocument extends AbstractDocument {
 
     private final GeoServer geoServer;
+    private final List<String> crs;
     /* private final List<WFS3Extension> extensions; */
 
-    public CollectionsDocument(GeoServer geoServer /* List<WFS3Extension> extensions */) {
+    public CollectionsDocument(
+            GeoServer geoServer, List<String> crsList /* List<WFS3Extension> extensions */) {
         this.geoServer = geoServer;
+        this.crs = crsList;
         /* this.extensions = extensions; */
 
         // build the self links
@@ -63,8 +67,11 @@ public class CollectionsDocument extends AbstractDocument {
                 } else {
                     try {
                         FeatureTypeInfo featureType = featureTypes.next();
+                        List<String> crs =
+                                FeatureService.getFeatureTypeCRS(
+                                        featureType, Collections.singletonList("#/crs"));
                         CollectionDocument collection =
-                                new CollectionDocument(geoServer, featureType);
+                                new CollectionDocument(geoServer, featureType, crs);
                         /* decorateWithExtensions(collection); */
 
                         next = collection;
@@ -84,5 +91,9 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+    }
+
+    public List<String> getCrs() {
+        return crs;
     }
 }

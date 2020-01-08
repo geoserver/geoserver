@@ -6,7 +6,7 @@ package org.geoserver.api.features;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -151,13 +151,15 @@ public class ApiTest extends FeaturesTestSupport {
                 parameters.stream().map(p -> p.get$ref()).collect(Collectors.toList());
         assertThat(
                 itemGetParamNames,
-                contains(
+                containsInAnyOrder(
                         "#/components/parameters/collectionId",
                         "#/components/parameters/limit",
                         "#/components/parameters/bbox",
                         "#/components/parameters/datetime",
                         "#/components/parameters/filter",
                         "#/components/parameters/filter-lang",
+                        "#/components/parameters/crs",
+                        "#/components/parameters/bbox-crs",
                         "#/components/parameters/otherParameters"));
 
         // ... feature

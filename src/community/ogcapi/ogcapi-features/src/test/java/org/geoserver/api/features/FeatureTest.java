@@ -4,9 +4,12 @@
  */
 package org.geoserver.api.features;
 
+import static org.geoserver.api.features.FeatureService.CRS_PREFIX;
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -23,9 +26,13 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends FeaturesTestSupport {
@@ -42,8 +49,13 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testGetLayerAsGeoJson() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
-        DocumentContext json =
-                getAsJSONPath("ogc/features/collections/" + roadSegments + "/items", 200);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "ogc/features/collections/" + roadSegments + "/items", 200);
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84; axisOrder=Lon,Lat",
+                response.getHeader(FeatureResponseMessageConverter.CRS_RESPONSE_HEADER));
+        DocumentContext json = getAsJSONPath(response);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(5, (int) json.read("features.length()", Integer.class));
         // check self link
@@ -64,6 +76,37 @@ public class FeatureTest extends FeaturesTestSupport {
                         "http://localhost:8080/geoserver/ogc/features/collections/"
                                 + roadSegments
                                 + "?"));
+    }
+
+    @Test
+    public void testGetLayerAsGeoJsonReproject() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?crs="
+                                + CRS_PREFIX
+                                + "3857",
+                        200);
+        assertEquals(
+                "http://www.opengis.net/def/crs/EPSG/0/3857; axisOrder=X,Y",
+                response.getHeader(FeatureResponseMessageConverter.CRS_RESPONSE_HEADER));
+        DocumentContext json = getAsJSONPath(response);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(5, (int) json.read("features.length()", Integer.class));
+        // get ordinates of RoadSegments.1107532045091, returns array[array[array[double]]]
+        List result =
+                readSingle(
+                        json,
+                        "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
+        // original feature:
+        // RoadSegments.1107532045091=MULTILINESTRING ((-0.0014 -0.0024, -0.0014 0.0002))|
+        //                            106|Dirt Road by Green Forest
+        List<Double> ordinate0 = (List) ((List) result.get(0)).get(0);
+        List<Double> ordinate1 = (List) ((List) result.get(0)).get(1);
+        assertThat(ordinate0, contains(closeTo(-156, 1), closeTo(-267, 1)));
+        assertThat(ordinate1, contains(closeTo(-156, 1), closeTo(22, 1)));
     }
 
     @Test
@@ -111,6 +154,38 @@ public class FeatureTest extends FeaturesTestSupport {
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
         assertEquals(
                 1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
+    public void testBBoxCRSFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(35, 60, 0, 3, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?"
+                                + bboxCrsQueryParameters(wmBox),
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f002 and f003
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    private String bboxCrsQueryParameters(ReferencedEnvelope re) throws FactoryException {
+        String boxValue =
+                re.getMinX() + "," + re.getMinY() + "," + re.getMaxX() + "," + re.getMaxY();
+        String crsValue =
+                CRS.equalsIgnoreMetadata(
+                                re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
+                        ? FeatureService.DEFAULT_CRS
+                        : CRS_PREFIX + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
+        return "bbox=" + boxValue + "&bbox-crs=" + crsValue;
     }
 
     @Test

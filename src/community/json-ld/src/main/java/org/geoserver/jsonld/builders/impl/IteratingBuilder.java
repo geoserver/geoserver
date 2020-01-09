@@ -5,6 +5,7 @@
 package org.geoserver.jsonld.builders.impl;
 
 import java.io.IOException;
+import java.util.List;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
@@ -15,20 +16,44 @@ import org.geoserver.jsonld.builders.SourceBuilder;
  */
 public class IteratingBuilder extends SourceBuilder {
 
+    private boolean isFeaturesField;
+
     public IteratingBuilder(String key) {
         super(key);
+        this.isFeaturesField = key != null && key.equalsIgnoreCase("features");
     }
 
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
-        context = evaluateSource(context);
-        if (context.getCurrentObj() != null) {
-            writeKey(writer);
-            if (!isFeaturesField) writer.writeStartArray();
-            for (JsonBuilder child : children) {
-                child.evaluate(writer, context);
+        if (!isFeaturesField) {
+            context = evaluateSource(context);
+            if (context.getCurrentObj() != null) {
+                writeKey(writer);
+                writer.writeStartArray();
+                if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
+                else evaluateInternal(writer, context);
+                writer.writeEndArray();
             }
-            if (!isFeaturesField) writer.writeEndArray();
+        } else {
+            evaluateInternal(writer, context);
+        }
+    }
+
+    public void evaluateCollection(JsonLdGenerator writer, JsonBuilderContext context)
+            throws IOException {
+
+        List elements = (List) context.getCurrentObj();
+        for (Object o : elements) {
+            JsonBuilderContext childContext = new JsonBuilderContext(o);
+            childContext.setParent(context.getParent());
+            evaluateInternal(writer, childContext);
+        }
+    }
+
+    private void evaluateInternal(JsonLdGenerator writer, JsonBuilderContext context)
+            throws IOException {
+        for (JsonBuilder child : children) {
+            child.evaluate(writer, context);
         }
     }
 }

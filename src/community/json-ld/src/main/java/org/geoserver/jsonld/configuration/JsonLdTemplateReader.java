@@ -5,8 +5,6 @@
 package org.geoserver.jsonld.configuration;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -29,8 +27,9 @@ public class JsonLdTemplateReader {
 
     private NamespaceSupport namespaces;
 
-    public JsonLdTemplateReader(JsonNode template) {
+    public JsonLdTemplateReader(JsonNode template, NamespaceSupport namespaces) {
         this.template = template;
+        this.namespaces = namespaces;
     }
 
     public RootBuilder getRootBuilder() {
@@ -63,18 +62,15 @@ public class JsonLdTemplateReader {
                 // before feature evaluation starts
                 boolean jumpField =
                         (entryName.equalsIgnoreCase("type")
-                                || entryName.equalsIgnoreCase("features"));
+                                        && valueNode.asText().equals("FeatureCollection"))
+                                || entryName.equalsIgnoreCase("features");
                 if (entryName.equals(SOURCEKEY)) {
-                    String source = "/" + valueNode.asText();
+                    String source = valueNode.asText();
                     if (currentBuilder instanceof SourceBuilder)
                         ((SourceBuilder) currentBuilder).setSource(source, namespaces);
                 } else if (entryName.equals(CONTEXTKEY)) {
                     RootBuilder rootBuilder = (RootBuilder) currentBuilder;
                     rootBuilder.setContextHeader(valueNode);
-                    // Since a the moment namespaces can't be retrieved from feature collection
-                    // it searches in the template file for a field named hints listing namespaces
-                } else if (entryName.equals("@hints")) {
-                    handleHints(valueNode);
                 } else if (!valueNode.toString().contains(EXPRSTART) && !jumpField) {
                     StaticBuilder builder = new StaticBuilder(entryName, valueNode);
                     currentBuilder.addChild(builder);
@@ -131,29 +127,6 @@ public class JsonLdTemplateReader {
         } else {
             StaticBuilder staticBuilder = new StaticBuilder(nodeName, node);
             currentBuilder.addChild(staticBuilder);
-        }
-    }
-
-    public void handleHints(JsonNode hints) {
-        if (hints != null) {
-            namespaces = new NamespaceSupport();
-            Iterator<Map.Entry<String, JsonNode>> iterator = hints.fields();
-            while (iterator.hasNext()) {
-                Map.Entry<String, JsonNode> nodEntry = iterator.next();
-                String entryName = nodEntry.getKey();
-                JsonNode childNode = nodEntry.getValue();
-                if (childNode.isValueNode()) {
-                    try {
-                        new URL(childNode.asText());
-                        namespaces.declarePrefix(entryName, childNode.asText());
-                    } catch (MalformedURLException ex) {
-                        LOGGER.warning(
-                                "Malformed URL encountered while setting namespaces for json-ld template. "
-                                        + " Detail: "
-                                        + ex.getMessage());
-                    }
-                }
-            }
         }
     }
 }

@@ -45,7 +45,7 @@ public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
                 getFeatureType(GetFeatureRequest.adapt(getFeature.getParameters()[0]));
         JsonLdGenerator writer = null;
         try {
-            RootBuilder rootBuilder = configuration.getTemplate(info, info.getName() + ".json");
+            RootBuilder rootBuilder = configuration.getTemplate(info);
             writer =
                     new JsonLdGenerator(
                             new JsonFactory().createGenerator(output, JsonEncoding.UTF8));

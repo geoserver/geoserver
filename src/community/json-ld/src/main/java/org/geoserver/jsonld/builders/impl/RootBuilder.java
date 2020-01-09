@@ -74,14 +74,6 @@ public class RootBuilder implements JsonBuilder {
         return children;
     }
 
-    public void setChildren(List<JsonBuilder> children) {
-        this.children = children;
-    }
-
-    public JsonNode getContextHeader() {
-        return contextHeader;
-    }
-
     public void setContextHeader(JsonNode contextHeader) {
         this.contextHeader = contextHeader;
     }

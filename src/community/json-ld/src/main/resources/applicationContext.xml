@@ -13,6 +13,11 @@
         <constructor-arg ref="jsonldConfiguration"/>
     </bean>
 
+    <bean id="jsonldCallbackOGC" class="org.geoserver.jsonld.request.JsonLdTemplateCallBackOGC">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="jsonldConfiguration"/>
+    </bean>
+
     <bean id="JSONLDGetFeatureResponse" class="org.geoserver.jsonld.response.JSONLDGetFeatureResponse">
         <constructor-arg ref="geoServer"/>
         <constructor-arg ref="jsonldConfiguration"/>

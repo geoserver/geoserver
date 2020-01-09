@@ -10,10 +10,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.expressions.TemplateExpressionExtractor;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.expressions.XPathFunction;
+import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
+import org.opengis.feature.ComplexAttribute;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -35,11 +38,9 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         super(key);
         this.namespaces = namespaces;
         if (expression.startsWith("$${")) {
-            this.cql =
-                    TemplateExpressionExtractor.extractCqlExpressions(
-                            workXpathFunction(expression));
+            this.cql = ExpressionsUtils.extractCqlExpressions(workXpathFunction(expression));
         } else if (expression.startsWith("${")) {
-            String strXpath = TemplateExpressionExtractor.extractXpath(expression);
+            String strXpath = ExpressionsUtils.extractXpath(expression);
             strXpath = determineContextPos(strXpath);
             this.xpath = new AttributeExpressionImpl(strXpath, namespaces);
         }
@@ -55,7 +56,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         } else if (cql != null) {
             o = evaluateExpressions(context);
         }
-        if (o != null) {
+        if (canWriteValue(o)) {
             writeKey(writer);
             writer.writeResult(o);
         }
@@ -130,6 +131,12 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return xpath;
     }
 
+    /**
+     * Extract xpath from a cql expression if present
+     *
+     * @param expression
+     * @return
+     */
     private String workXpathFunction(String expression) {
         // extract xpath from cql expression if present
         int xpathI = expression.indexOf("xpath(");
@@ -140,5 +147,40 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
             expression = expression.replaceAll("\\.\\./", "");
         }
         return expression;
+    }
+
+    /**
+     * A value can only be wrote if it is non NULL and not an empty list. This method supports *
+     * complex features attributes, this method will be invoked recursively on the attribute value.
+     *
+     * @param result
+     * @return
+     */
+    private boolean canWriteValue(Object result) {
+        if (result instanceof ComplexAttributeImpl) {
+            return canWriteValue(((ComplexAttribute) result).getValue());
+        } else if (result instanceof Attribute) {
+            return canWriteValue(((Attribute) result).getValue());
+        } else if (result instanceof List && ((List) result).size() == 0) {
+            if (((List) result).size() == 0) return false;
+            else return true;
+        } else if (result == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkNotNullValue(JsonBuilderContext context) {
+        Object o = null;
+        if (xpath != null) {
+
+            o = evaluateXPath(context);
+
+        } else if (cql != null) {
+            o = evaluateExpressions(context);
+        }
+        if (o == null) return false;
+        return true;
     }
 }

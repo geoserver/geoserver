@@ -7,12 +7,12 @@ package org.geoserver.jsonld.configuration;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class extends {@link FileWatcher} to provide functionalities to reload dynamically a json-ld
@@ -20,12 +20,11 @@ import org.geoserver.platform.resource.Resource;
  */
 public class JsonLdTemplateWatcher extends FileWatcher<RootBuilder> {
 
-    public JsonLdTemplateWatcher(Resource resource) {
-        super(resource);
-    }
+    private NamespaceSupport namespaces;
 
-    public JsonLdTemplateWatcher(File file) {
-        super(file);
+    public JsonLdTemplateWatcher(Resource resource, NamespaceSupport namespaces) {
+        super(resource);
+        this.namespaces = namespaces;
     }
 
     /**
@@ -39,7 +38,7 @@ public class JsonLdTemplateWatcher extends FileWatcher<RootBuilder> {
     public RootBuilder parseFileContents(InputStream in) throws IOException {
         ObjectMapper mapper =
                 new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-        JsonLdTemplateReader reader = new JsonLdTemplateReader(mapper.readTree(in));
+        JsonLdTemplateReader reader = new JsonLdTemplateReader(mapper.readTree(in), namespaces);
         return reader.getRootBuilder();
     }
 

@@ -1,0 +1,39 @@
+{
+  "@context": {
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "schema": "https://schema.org/",
+    "dc": "http://purl.org/dc/terms/",
+    "Feature": "gsp:Feature",
+    "FeatureCollection": "schema:Collection",
+    "Point": "sf:Point",
+    "wkt": "gsp:asWKT",
+    "features": {
+      "@container": "@set",
+      "@id": "schema:hasPart"
+    },
+    "geometry": "sf:geometry",
+    "description": "dc:description",
+    "title": "dc:title",
+    "name": "schema:name"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "cite:NamedPlaces"
+    },
+    {
+      "id": "${cite:FID}",
+      "@type": [
+        "Feature",
+        "cite:NamedPlaces",
+        "http://vocabulary.odm2.org/samplingfeaturetype/namedplaces"
+      ],
+      "name": "${cite:NAME}",
+      "geometry": {
+        "@type": "MultiPolygon",
+        "wkt": "$${toWKT(xpath('cite:the_geom'))}"
+      }
+    }
+  ]
+}

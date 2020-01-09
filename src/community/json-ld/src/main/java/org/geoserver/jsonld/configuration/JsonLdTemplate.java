@@ -7,10 +7,10 @@ package org.geoserver.jsonld.configuration;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class handles the management of a single json-ld template file, giving access to the ${@link
@@ -25,9 +25,9 @@ public class JsonLdTemplate {
 
     private static final Logger LOGGER = Logging.getLogger(JsonLdTemplate.class);
 
-    public JsonLdTemplate(Resource templateFile) {
+    public JsonLdTemplate(Resource templateFile, NamespaceSupport namespaces) {
         this.templateFile = templateFile;
-        this.watcher = new JsonLdTemplateWatcher(templateFile);
+        this.watcher = new JsonLdTemplateWatcher(templateFile, namespaces);
         try {
             this.builderTree = watcher.getJsonLdTemplate();
         } catch (IOException ioe) {
@@ -36,12 +36,11 @@ public class JsonLdTemplate {
     }
 
     /**
-     * Check if json-ld template file has benn modified an eventually reload it
+     * Check if json-ld template file has benn modified an eventually reload it.
      *
-     * @param typeInfo
      * @return
      */
-    public boolean checkTemplate(FeatureTypeInfo typeInfo) {
+    public boolean checkTemplate() {
         if (watcher != null && watcher.isModified()) {
             LOGGER.log(
                     Level.INFO,

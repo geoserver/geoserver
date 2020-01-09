@@ -13,6 +13,7 @@ import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -21,6 +22,8 @@ import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.ows.ServiceException;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
@@ -35,24 +38,31 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     private String currentSource;
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     static final Logger LOGGER = Logging.getLogger(JsonLdPathVisitor.class);
+    boolean isSimple;
+
+    public JsonLdPathVisitor(FeatureType type) {
+        this.isSimple = type instanceof SimpleFeatureType;
+    }
 
     public Object visit(PropertyName expression, Object extraData) {
         String propertyValue = expression.getPropertyName();
         Object newExpression = null;
         if (extraData instanceof JsonBuilder) {
-            String[] eles;
+            String[] elements;
             if (propertyValue.indexOf(".") != -1) {
-                eles = propertyValue.split("\\.");
+                elements = propertyValue.split("\\.");
             } else {
-                eles = propertyValue.split("/");
+                elements = propertyValue.split("/");
             }
             JsonBuilder builder = (JsonBuilder) extraData;
             try {
                 currentSource = null;
                 currentEl = 0;
-                newExpression = findXpath(builder.getChildren(), eles);
+                newExpression = findXpath(builder.getChildren(), elements);
                 workExpression(newExpression);
-                if (newExpression != null) return newExpression;
+                if (newExpression != null) {
+                    return newExpression;
+                }
             } catch (Throwable ex) {
                 LOGGER.log(
                         Level.INFO,
@@ -68,17 +78,11 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     private void workExpression(Object newExpression) {
         if (newExpression instanceof AttributeExpressionImpl) {
             AttributeExpressionImpl pn = (AttributeExpressionImpl) newExpression;
-            pn.setPropertyName(
-                    currentSource != null
-                            ? currentSource + "/" + pn.getPropertyName()
-                            : pn.getPropertyName());
+            pn.setPropertyName(completeXPath(pn.getPropertyName()));
         } else if (newExpression instanceof XPathFunction) {
             XPathFunction xpath = (XPathFunction) newExpression;
             LiteralExpressionImpl param = (LiteralExpressionImpl) xpath.getParameters().get(0);
-            param.setValue(
-                    currentSource != null
-                            ? currentSource + "/" + param.getValue()
-                            : param.getValue());
+            param.setValue(completeXPath((String) param.getValue()));
         } else if (newExpression instanceof FunctionExpressionImpl) {
             FunctionExpressionImpl function = (FunctionExpressionImpl) newExpression;
             for (Expression ex : function.getParameters()) {
@@ -92,11 +96,17 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
             for (JsonBuilder jb : children) {
                 if (((AbstractJsonBuilder) jb).getKey() != null
                         && ((AbstractJsonBuilder) jb).getKey().equals(eles[currentEl])) {
-                    if (jb instanceof SourceBuilder)
-                        currentSource =
-                                ((SourceBuilder) jb).getStrSource() != null
-                                        ? ((SourceBuilder) jb).getStrSource()
-                                        : currentSource;
+                    if (jb instanceof SourceBuilder) {
+                        String source = ((SourceBuilder) jb).getStrSource();
+                        if (source != null) {
+                            if (currentSource != null) {
+                                source = "/" + source;
+                                currentSource += source;
+                            } else {
+                                currentSource = source;
+                            }
+                        }
+                    }
                     if (jb instanceof DynamicValueBuilder) {
                         DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
                         if (currentEl + 1 != eles.length) throw new ServiceException("error");
@@ -129,5 +139,17 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
             }
         }
         return null;
+    }
+
+    /**
+     * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
+     * Features only
+     *
+     * @param xpath
+     * @return
+     */
+    private String completeXPath(String xpath) {
+        if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
+        return ExpressionsUtils.quoteXpathAttribute(xpath);
     }
 }

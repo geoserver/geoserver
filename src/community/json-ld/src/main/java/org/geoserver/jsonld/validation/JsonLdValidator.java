@@ -10,8 +10,16 @@ import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
+import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.opengis.feature.type.AttributeType;
+import org.geoserver.jsonld.expressions.ExpressionsUtils;
+import org.geoserver.jsonld.expressions.XPathFunction;
+import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.filter.FunctionExpressionImpl;
+import org.geotools.filter.LiteralExpressionImpl;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.PropertyName;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class perform a validation of the json-ld template by evaluating dynamic and source fields
@@ -23,42 +31,50 @@ public class JsonLdValidator {
 
     private FeatureTypeInfo type;
 
+    private String failingAttribute;
+
     public JsonLdValidator(FeatureTypeInfo type) {
         visitor = new ValidateExpressionVisitor();
         this.type = type;
     }
 
-    public JsonLdValidator() {
-        visitor = new ValidateExpressionVisitor();
-    }
-
     public boolean validateTemplate(RootBuilder root) {
         try {
-            return validateExpressions(
-                    root, new ValidateExpressionVisitor.ValidationContext(type.getFeatureType()));
+            return validateExpressions(root, new JsonBuilderContext(type.getFeatureType()));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    private boolean validateExpressions(
-            JsonBuilder builder, ValidateExpressionVisitor.ValidationContext context) {
+    private boolean validateExpressions(JsonBuilder builder, JsonBuilderContext context) {
         for (JsonBuilder jb : builder.getChildren()) {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder djb = (DynamicValueBuilder) jb;
                 if (djb.getCql() != null) {
                     try {
-                        if (!(boolean) djb.getCql().accept(visitor, null)) return false;
+                        PropertyName pn = extractXpath(djb.getCql());
+                        if (pn != null && pn.accept(visitor, context) == null) {
+                            failingAttribute =
+                                    "Key: " + djb.getKey() + " Value: " + djb.getCql().toString();
+                            return false;
+                        }
                     } catch (Exception e) {
+                        failingAttribute = "Exception: " + e.getMessage();
                         return false;
                     }
                 } else if (djb.getXpath() != null) {
                     try {
                         if (djb.getXpath().accept(visitor, context) == null) {
+                            failingAttribute =
+                                    "Key: "
+                                            + djb.getKey()
+                                            + " Value: "
+                                            + ((PropertyName) djb.getXpath()).getPropertyName();
                             return false;
                         }
                     } catch (Exception e) {
+                        failingAttribute = "Exception: " + e.getMessage();
                         return false;
                     }
                 }
@@ -71,6 +87,7 @@ public class JsonLdValidator {
                     if (!type.getName().contains(typeName)) {
                         newType = sb.getSource().accept(visitor, context);
                         if (newType == null) {
+                            failingAttribute = "Source: " + sb.getStrSource();
                             return false;
                         }
                     }
@@ -78,15 +95,41 @@ public class JsonLdValidator {
                     if (sb instanceof IteratingBuilder) return false;
                 }
                 if (newType != null) {
-                    ValidateExpressionVisitor.ValidationContext newContext =
-                            new ValidateExpressionVisitor.ValidationContext(
-                                    (AttributeType) newType);
-                    newContext.setParentContext(context);
+                    JsonBuilderContext newContext = new JsonBuilderContext(newType);
+                    newContext.setParent(context);
                     context = newContext;
                 }
                 return validateExpressions(jb, context);
             }
         }
         return true;
+    }
+
+    public String getFailingAttribute() {
+        return failingAttribute;
+    }
+
+    private PropertyName extractXpath(Expression expression) {
+        NamespaceSupport namespaces = null;
+        try {
+            namespaces = ExpressionsUtils.declareNamespaces(type.getFeatureType());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to retrieve FeatureType for " + type.getName());
+        }
+        PropertyName pn = null;
+        if (expression instanceof AttributeExpressionImpl) {
+            pn = (AttributeExpressionImpl) expression;
+        } else if (expression instanceof XPathFunction) {
+            XPathFunction xpath = (XPathFunction) expression;
+            LiteralExpressionImpl param = (LiteralExpressionImpl) xpath.getParameters().get(0);
+            pn = new AttributeExpressionImpl(String.valueOf(param.getValue()), namespaces);
+        } else if (expression instanceof FunctionExpressionImpl) {
+            FunctionExpressionImpl function = (FunctionExpressionImpl) expression;
+            for (Expression ex : function.getParameters()) {
+                if (pn == null) pn = extractXpath(ex);
+                else break;
+            }
+        }
+        return pn;
     }
 }

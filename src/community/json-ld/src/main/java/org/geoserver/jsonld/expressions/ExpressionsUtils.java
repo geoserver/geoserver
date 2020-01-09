@@ -5,23 +5,27 @@
 package org.geoserver.jsonld.expressions;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.type.Types;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Helper class that allows the extraction of CQL and Xpath expressions out of a plain text string
- * using special separators. Parsing rules are:
- *
- * <ul>
- *   <li>whatever is between <code>${</code> and <code>}</code> is considered an Xpath expression
- *   <li>whatever is between <code>$${</code> and <code>}</code> is considered a CQL expression
- * </ul>
+ * Helper class that mainly allows the extraction of CQL and Xpath expressions out of a plain text
+ * string using special separators. It also provides some Utility methods to handle namespaces and
+ * xpath syntax
  */
-public class TemplateExpressionExtractor {
+public class ExpressionsUtils {
 
     static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
@@ -186,5 +190,65 @@ public class TemplateExpressionExtractor {
      */
     public static Expression extractCqlExpressions(String expression) {
         return catenateExpressions(splitCqlExpressions(expression));
+    }
+
+    /**
+     * Wrap attribute selector syntax in a xpath with quotation marks to make it suitable by cql
+     * compiler.
+     *
+     * @param xpath
+     * @return
+     */
+    public static String quoteXpathAttribute(String xpath) {
+        int atIndex = xpath.indexOf("@");
+        if (atIndex != -1) {
+            Pattern pattern = Pattern.compile("[a-zA-Z()<>.\\-1-9*]");
+            String substring = xpath.substring(atIndex + 1);
+            StringBuilder xpathAttribute = new StringBuilder("@");
+            for (int i = 0; i < substring.length(); i++) {
+                char current = substring.charAt(i);
+                Matcher matcher = pattern.matcher(String.valueOf(current));
+                if (matcher.matches()) {
+                    xpathAttribute.append(current);
+                } else {
+                    break;
+                }
+            }
+            return xpath.replaceAll(
+                    xpathAttribute.toString(), "\"" + xpathAttribute.toString() + "\"");
+        }
+        return xpath;
+    }
+
+    public static NamespaceSupport declareNamespaces(FeatureType type) {
+        NamespaceSupport namespaceSupport = null;
+        if (type instanceof ComplexFeatureTypeImpl) {
+            Map namespaces = (Map) type.getUserData().get(Types.DECLARED_NAMESPACES_MAP);
+            if (namespaces != null) {
+                namespaceSupport = new NamespaceSupport();
+                for (Iterator it = namespaces.entrySet().iterator(); it.hasNext(); ) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String prefix = (String) entry.getKey();
+                    String namespace = (String) entry.getValue();
+                    namespaceSupport.declarePrefix(prefix, namespace);
+                }
+            }
+        }
+        return namespaceSupport;
+    }
+
+    public static String removeQuotes(String cqlFilter) {
+        cqlFilter = cqlFilter.replaceFirst("\"", "");
+        StringBuilder strBuilder = new StringBuilder();
+        for (int i = 0; i < cqlFilter.length(); i++) {
+            char curr = cqlFilter.charAt(i);
+            if (curr != '\"') {
+                strBuilder.append(curr);
+            } else {
+                if (i != cqlFilter.length() && cqlFilter.charAt(i + 1) != ' ')
+                    strBuilder.append(curr);
+            }
+        }
+        return strBuilder.toString();
     }
 }

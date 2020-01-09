@@ -117,7 +117,7 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
      * @throws IOException
      */
     public void writeResult(Object result) throws IOException {
-        if (result instanceof String || result instanceof Number) {
+        if (result instanceof String || result instanceof Number || result instanceof Boolean) {
             writeString(String.valueOf(result));
         } else if (result instanceof Date) {
             Date timeStamp = (Date) result;
@@ -140,8 +140,11 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
                 }
                 writeEndArray();
             }
-        } else {
+        } else if (result == null) {
             writeNull();
+        } else {
+            throw new RuntimeException(
+                    "We can't handle the provided object o type '" + result.getClass() + "'.");
         }
     }
 

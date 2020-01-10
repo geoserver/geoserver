@@ -24,17 +24,17 @@ The example will configure 2 endpoints.
 
     geonetworks:
         - name: Geonetwork DOV production
-          url: https://www.dov.vlaanderen.be/geonetwork/
+          url: https://www.dov.vlaanderen.be/geonetwork/srv/api/records/${UUID}/formatters/xml?attachment=true
         - name: Geonetwork test
-          url: https://geonetwork-opensource.org/test
+          url: https://geonetwork-opensource.org/test/srv/api/records/${UUID}/formatters/xml?attachment=true
 
 
 
 ================  ========  ============================
 Key               Required  Description
 ================  ========  ============================
-**name**           yes       The name fof the geonetwork endpoint that will be shown in the dropdown
-**url**            yes       The url of the geonetwork
+**name**           yes       The name of the Geonetwork endpoint that will be shown in the dropdown.
+**url**            yes       The url of the XML export of the metadata in the Geonetwork, where ``${UUID}`` will be replaced by the metadata's UUID.
 ================  ========  ============================
 
 Geonetwork mapping configuration

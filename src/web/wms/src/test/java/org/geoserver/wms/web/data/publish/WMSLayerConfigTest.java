@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -74,6 +75,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.select("panel:styles:defaultStyle", 0);
         ft.submit();
         tester.assertModelValue("form:panel:styles:defaultStyle", target);
+        assertFalse(cascadedControlsVisible(tester));
     }
 
     @Test
@@ -106,6 +108,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.select("panel:styles:defaultStyle", 0);
         ft.submit();
         assertFalse(layerConfig.getFeedbackMessages().hasMessage(FeedbackMessage.ERROR));
+        assertFalse(cascadedControlsVisible(tester));
     }
 
     @Test
@@ -141,6 +144,8 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
         assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=cite:Ponds"));
+
+        assertFalse(cascadedControlsVisible(tester));
     }
 
     @Test
@@ -174,6 +179,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.submit();
 
         tester.assertModelValue("form:panel:defaultInterpolationMethod", WMSInterpolation.Bicubic);
+        assertFalse(cascadedControlsVisible(tester));
     }
 
     @Test
@@ -243,5 +249,16 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.submit();
         // there should be an error
         tester.assertErrorMessages("Minimum Scale cannot be greater than Maximum Scale");
+        assertTrue(cascadedControlsVisible(tester));
+    }
+
+    private boolean cascadedControlsVisible(WicketTester tester) {
+        // check visibility of all cscaded controls
+        return tester.getComponentFromLastRenderedPage("form:panel:remotestyles") != null
+                && tester.getComponentFromLastRenderedPage("form:panel:remoteformats") != null
+                && tester.getComponentFromLastRenderedPage("form:panel:scaleDenominatorContainer")
+                        != null
+                && tester.getComponentFromLastRenderedPage("form:panel:metaDataCheckBoxContainer")
+                        != null;
     }
 }

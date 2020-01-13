@@ -752,14 +752,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             return null;
         }
 
-        if (!tld.layerExists(layerName)) {
+        // GEOS-9431 acquire prefixed name if not prefixed already
+        final String getPrefixedName =
+                (!layerName.contains(":")) ? getPrefixedName(layerName) : layerName;
+
+        if (!tld.layerExists(getPrefixedName)) {
             requestMistmatchTarget.append("not a tile layer");
             return null;
         }
 
         final TileLayer tileLayer;
         try {
-            tileLayer = this.tld.getTileLayer(layerName);
+            tileLayer = this.tld.getTileLayer(getPrefixedName);
         } catch (GeoWebCacheException e) {
             throw new RuntimeException(e);
         }
@@ -804,6 +808,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             log.log(Level.INFO, "Error dispatching tile request to GeoServer", e);
         }
         return tileResp;
+    }
+
+    private String getPrefixedName(String layerName) {
+        PublishedInfo info = catalog.getLayerByName(layerName);
+        if (info == null) info = catalog.getLayerGroupByName(layerName);
+        if (info != null) return info.prefixedName();
+        if (log.isLoggable(Level.INFO)) log.info("Unable to find a prefix for : " + layerName);
+        return layerName;
     }
 
     ConveyorTile prepareRequest(

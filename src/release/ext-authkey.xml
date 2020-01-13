@@ -16,6 +16,7 @@
         <include>json-smart*</include>
         <include>httpcore*</include>
         <include>httpclient*</include>
+        <include>accessors-smart*</include>
       </includes>
     </fileSet>
   </fileSets>

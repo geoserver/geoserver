@@ -35,7 +35,6 @@ import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.web.FilteredProcessesProvider.FilteredProcess;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  * A page listing all WPS process for specific group, allowing enable/disable single process and
@@ -70,7 +69,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
         try {
             for (GeoServerRole r : roleService.getRoles()) {
-                availableRoles.add(HtmlUtils.htmlEscape(r.getAuthority()));
+                availableRoles.add(r.getAuthority());
             }
         } catch (IOException e1) {
             LOGGER.log(Level.FINER, e1.getMessage(), e1);

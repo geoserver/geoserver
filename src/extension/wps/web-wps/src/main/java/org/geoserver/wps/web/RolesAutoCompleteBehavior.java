@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Implements auto complete behavior to manage the roles choice as a list of string separated by ";"
@@ -54,7 +55,7 @@ public class RolesAutoCompleteBehavior extends AutoCompleteBehavior<String> {
                     || role.startsWith(realInput.toLowerCase())) {
                 List<String> sr = Arrays.asList(selectedRoles.toString().split(";"));
                 if (!sr.contains(role)) {
-                    completions.add(role + ";");
+                    completions.add(HtmlUtils.htmlEscape(role) + ";");
                 }
             }
         }

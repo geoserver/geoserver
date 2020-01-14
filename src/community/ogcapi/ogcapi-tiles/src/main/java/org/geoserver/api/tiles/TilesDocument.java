@@ -19,7 +19,7 @@ import org.geowebcache.mime.MimeType;
 
 public class TilesDocument extends AbstractDocument {
 
-    public static final String TILE_REL = "tile";
+    public static final String TILE_REL = "item";
 
     public enum Type {
         RenderedTiles,

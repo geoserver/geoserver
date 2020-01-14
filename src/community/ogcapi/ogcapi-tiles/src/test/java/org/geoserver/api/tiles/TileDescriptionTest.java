@@ -102,7 +102,7 @@ public class TileDescriptionTest extends TilesTestSupport {
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=application%2Fvnd.mapbox-vector-tile",
                 readSingle(
                         json,
-                        "$.links[?(@.rel=='tile' && @.type=='application/vnd.mapbox-vector-tile')].href"));
+                        "$.links[?(@.rel=='item' && @.type=='application/vnd.mapbox-vector-tile')].href"));
 
         // test self link and links to alternate formats and
         assertThat(
@@ -167,10 +167,10 @@ public class TileDescriptionTest extends TilesTestSupport {
         // check the rendered tiles links
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fpng",
-                readSingle(json, "$.links[?(@.rel=='tile' && @.type=='image/png')].href"));
+                readSingle(json, "$.links[?(@.rel=='item' && @.type=='image/png')].href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fjpeg",
-                readSingle(json, "$.links[?(@.rel=='tile' && @.type=='image/jpeg')].href"));
+                readSingle(json, "$.links[?(@.rel=='item' && @.type=='image/jpeg')].href"));
         // check the info links for the rendered outputs
         List<String> infoFormats =
                 ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();

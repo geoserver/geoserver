@@ -26,17 +26,18 @@ public class CollectionsTest extends ImagesTestSupport {
     @Test
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/images/collections", 200);
-        testCollectionsJson(json);
+        testCollectionsJson(json, MediaType.APPLICATION_JSON);
     }
 
     @Test
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("ogc/images/collections/?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
-        testCollectionsJson(json);
+        testCollectionsJson(json, MediaType.parseMediaType("application/x-yaml"));
     }
 
-    private void testCollectionsJson(DocumentContext json) throws Exception {
+    private void testCollectionsJson(DocumentContext json, MediaType defaultFormat)
+            throws Exception {
         int expected = (int) getStructuredCoverages().count();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
@@ -52,7 +53,11 @@ public class CollectionsTest extends ImagesTestSupport {
             // check rel
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
-            assertEquals("collection", item.get("rel"));
+            if (defaultFormat.equals(format)) {
+                assertEquals("self", item.get("rel"));
+            } else {
+                assertEquals("alternate", item.get("rel"));
+            }
         }
 
         // check one well known collection is there

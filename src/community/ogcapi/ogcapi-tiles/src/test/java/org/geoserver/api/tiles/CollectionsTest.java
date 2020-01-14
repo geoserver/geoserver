@@ -49,10 +49,11 @@ public class CollectionsTest extends TilesTestSupport {
     @Test
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/tiles/collections", 200);
-        testCollectionsJson(json);
+        testCollectionsJson(json, MediaType.APPLICATION_JSON);
     }
 
-    private void testCollectionsJson(DocumentContext json) throws Exception {
+    private void testCollectionsJson(DocumentContext json, MediaType defaultFormat)
+            throws Exception {
         int expected = getGWC().getTileLayerNames().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
@@ -68,7 +69,11 @@ public class CollectionsTest extends TilesTestSupport {
             // check title and rel
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
-            assertEquals("collection", item.get("rel"));
+            if (defaultFormat.equals(format)) {
+                assertEquals("self", item.get("rel"));
+            } else {
+                assertEquals("alternate", item.get("rel"));
+            }
         }
     }
 
@@ -86,7 +91,7 @@ public class CollectionsTest extends TilesTestSupport {
         assertThat(json.read("collections[?(@.id=='cdf__Deletes')]"), empty());
         // check the url points to a ws qualified url
         final String deleteHrefPath =
-                "collections[?(@.id=='Deletes')].links[?(@.rel=='collection' && @.type=='application/json')].href";
+                "collections[?(@.id=='Deletes')].links[?(@.rel=='self' && @.type=='application/json')].href";
         assertEquals(
                 "http://localhost:8080/geoserver/cdf/ogc/tiles/collections/Deletes?f=application%2Fjson",
                 ((JSONArray) json.read(deleteHrefPath)).get(0));
@@ -104,7 +109,7 @@ public class CollectionsTest extends TilesTestSupport {
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("ogc/tiles/collections/?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
-        testCollectionsJson(json);
+        testCollectionsJson(json, MediaType.parseMediaType("application/x-yaml"));
     }
 
     @Test

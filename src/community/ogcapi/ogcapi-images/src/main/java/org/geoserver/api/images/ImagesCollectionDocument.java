@@ -49,31 +49,8 @@ public class ImagesCollectionDocument extends AbstractCollectionDocument {
         String baseURL = APIRequestInfo.get().getBaseURL();
         this.extent = new CollectionExtents(coverage.getLatLonBoundingBox());
 
-        if (summary) {
-            // links to the collection description in each format
-            Collection<MediaType> metadataFormats =
-                    APIRequestInfo.get()
-                            .getProducibleMediaTypes(ImagesCollectionDocument.class, true);
-            for (MediaType format : metadataFormats) {
-                String metadataURL =
-                        buildURL(
-                                baseURL,
-                                "ogc/images/collections/" + id,
-                                Collections.singletonMap("f", format.toString()),
-                                URLMangler.URLType.SERVICE);
-
-                Link link =
-                        new Link(
-                                metadataURL,
-                                "collection",
-                                format.toString(),
-                                "The collection metadata as " + format);
-                addLink(link);
-            }
-        } else {
-            // backlinks in same and other formats
-            addSelfLinks("ogc/images/collections/" + id);
-        }
+        // backlinks in same and other formats
+        addSelfLinks("ogc/images/collections/" + id);
 
         // add links to the images resource
         Collection<MediaType> imagesFormats =

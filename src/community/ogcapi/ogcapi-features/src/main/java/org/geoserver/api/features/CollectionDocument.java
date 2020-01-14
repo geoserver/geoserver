@@ -67,6 +67,7 @@ public class CollectionDocument extends AbstractCollectionDocument {
                             collectionId + " items as " + format.toString(),
                             "items"));
         }
+        addSelfLinks("ogc/features/collections/" + id);
 
         // describedBy as GML schema
         String describedByHref =

@@ -4,14 +4,10 @@
  */
 package org.geoserver.api.tiles;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +17,6 @@ import org.geoserver.api.APIException;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
-import org.geoserver.api.Link;
 import org.geoserver.api.StyleDocument;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -30,7 +25,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
-import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -45,7 +39,6 @@ import org.geowebcache.mime.MimeType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links", "styles"})
@@ -89,31 +82,10 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
             this.extent = getExtentFromGridsets(tileLayer);
         }
 
-        if (summary) {
-            // links to the collection description in each format
-            Collection<MediaType> metadataFormats =
-                    APIRequestInfo.get()
-                            .getProducibleMediaTypes(TiledCollectionDocument.class, true);
-            for (MediaType format : metadataFormats) {
-                String metadataURL =
-                        buildURL(
-                                baseURL,
-                                "ogc/tiles/collections/" + id,
-                                Collections.singletonMap("f", format.toString()),
-                                URLMangler.URLType.SERVICE);
+        // backlinks in same and other formats
+        addSelfLinks("ogc/tiles/collections/" + id);
 
-                Link link =
-                        new Link(
-                                metadataURL,
-                                "collection",
-                                format.toString(),
-                                "The collection metadata as " + format);
-                addLink(link);
-            }
-        } else {
-            // backlinks in same and other formats
-            addSelfLinks("ogc/tiles/collections/" + id);
-
+        if (!summary) {
             // raw tiles links, if any (if the vector tiles plugin is missing or formats not
             // configured, will be empty)
             List<MimeType> tileTypes = tileLayer.getMimeTypes();

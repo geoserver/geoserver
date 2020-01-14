@@ -39,7 +39,8 @@ public class LandingPageTest extends ImagesTestSupport {
                         "getImage",
                         "getAsset",
                         "addImage",
-                        "deleteImage"));
+                        "deleteImage",
+                        "updateImage"));
     }
 
     @Test

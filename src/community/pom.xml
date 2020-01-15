@@ -99,6 +99,7 @@
           <descriptor>release/ext-ogcapi.xml</descriptor>
           <descriptor>release/ext-geostyler.xml</descriptor>
           <descriptor>release/ext-csw-iso.xml</descriptor>
+          <descriptor>release/ext-json-ld.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -277,6 +278,7 @@
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>csw-iso</module>
+        <module>json-ld</module>
       </modules>
     </profile>
     <profile>
@@ -638,5 +640,11 @@
         <module>csw-iso</module>
       </modules>
     </profile>
-  </profiles>  
+    <profile>
+      <id>json-ld</id>
+      <modules>
+        <module>json-ld</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

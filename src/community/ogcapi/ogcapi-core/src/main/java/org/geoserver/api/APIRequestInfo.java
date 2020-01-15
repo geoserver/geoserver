@@ -5,10 +5,14 @@
 
 package org.geoserver.api;
 
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.URLMangler;
@@ -51,10 +55,7 @@ public class APIRequestInfo {
         this.response = response;
 
         // http://host:port/appName
-        baseURL =
-                request.getRequestURL()
-                        .toString()
-                        .replace(request.getRequestURI(), request.getContextPath());
+        baseURL = ResponseUtils.baseURL(request);
     }
 
     /** Gets the base URL of the server, e.g. "http://localhost:8080/geoserver" */
@@ -172,5 +173,30 @@ public class APIRequestInfo {
     /** Returns the {@link HttpServletResponse} for the current API request */
     public HttpServletResponse getResponse() {
         return response;
+    }
+
+    public List<Link> getLinksFor(
+            String path,
+            Class<?> responseType,
+            String titlePrefix,
+            String classification,
+            BiConsumer<MediaType, Link> linkUpdater,
+            String rel,
+            boolean includeHTML) {
+        List<Link> result = new ArrayList<>();
+        for (MediaType mediaType :
+                APIRequestInfo.get().getProducibleMediaTypes(responseType, includeHTML)) {
+            String format = mediaType.toString();
+            Map<String, String> params = Collections.singletonMap("f", format);
+            String url = buildURL(baseURL, path, params, URLMangler.URLType.SERVICE);
+            String linkTitle = titlePrefix + format;
+            Link link = new Link(url, rel, format, linkTitle);
+            link.setClassification(classification);
+            if (linkUpdater != null) {
+                linkUpdater.accept(mediaType, link);
+            }
+            result.add(link);
+        }
+        return result;
     }
 }

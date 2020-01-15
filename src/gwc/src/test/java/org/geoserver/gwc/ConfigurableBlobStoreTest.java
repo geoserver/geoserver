@@ -5,13 +5,20 @@
  */
 package org.geoserver.gwc;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -49,13 +56,15 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
     /** Name of the test directory */
     public static final String TEST_BLOB_DIR_NAME = "gwcTestBlobs";
 
+    public static final String LAYER_NAME = "test:123123 112";
+
     /** {@link CacheProvider} object used for testing purposes */
     private static CacheProvider cache;
 
     private BlobStore defaultStore;
 
     /** {@link ConfigurableBlobStore} object to test */
-    private static ConfigurableBlobStore blobStore;
+    private ConfigurableBlobStore blobStore;
 
     /** Directory containing files for the {@link FileBlobStore} */
     private File directory;
@@ -88,6 +97,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
     @After
     public void after() throws IOException {
         // Delete the created directory
+        blobStore.destroy();
         if (directory.exists()) {
             FileUtils.deleteDirectory(directory);
         }
@@ -114,13 +124,13 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         parameters.put("b", "ø");
         TileObject to =
                 TileObject.createCompleteTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 =
                 TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check formats
@@ -163,13 +173,13 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         parameters.put("b", "ø");
         TileObject to =
                 TileObject.createCompleteTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 =
                 TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check formats
@@ -188,6 +198,18 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         is = to.getBlob().getInputStream();
         InputStream is3 = to3.getBlob().getInputStream();
         checkInputStreams(is, is3);
+
+        // check the layer is known
+        assertThat(blobStore.layerExists(LAYER_NAME), equalTo(true));
+
+        // check the parameters can be listed
+        Map<String, Optional<Map<String, String>>> parametersMapping =
+                blobStore.getParametersMapping(LAYER_NAME);
+        assertThat(parametersMapping.size(), equalTo(1));
+        Optional<Map<String, String>> value = parametersMapping.values().iterator().next();
+        assertThat(value.isPresent(), equalTo(true));
+        assertThat(value.get(), hasEntry("a", "x"));
+        assertThat(value.get(), hasEntry("b", "ø"));
     }
 
     @Test
@@ -208,13 +230,13 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         long[] xyz = {5L, 6L, 7L};
         TileObject to =
                 TileObject.createCompleteTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 =
                 TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check if the resources are equals
@@ -225,13 +247,80 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Remove TileObject
         TileObject to3 =
                 TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.delete(to3);
 
         // Ensure TileObject is no more present
         TileObject to4 =
                 TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
+        assertFalse(blobStore.get(to4));
+    }
+
+    @Test
+    public void testTileDeleteByParameters() throws Exception {
+
+        GWCConfig gwcConfig = new GWCConfig();
+        gwcConfig.setInnerCachingEnabled(false);
+        blobStore.setChanged(gwcConfig, false);
+
+        assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("a", "x");
+        parameters.put("b", "ø");
+
+        // Put a TileObject
+        Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
+        long[] xyz = {5L, 6L, 7L};
+        TileObject to =
+                TileObject.createCompleteTileObject(
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
+
+        blobStore.put(to);
+
+        // Remove tile objects by parameters
+        blobStore.deleteByParameters(LAYER_NAME, parameters);
+
+        // Ensure TileObject is no more present
+        TileObject to4 =
+                TileObject.createQueryTileObject(
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
+        assertFalse(blobStore.get(to4));
+    }
+
+    @Test
+    public void testTileDeleteByParametersId() throws Exception {
+
+        GWCConfig gwcConfig = new GWCConfig();
+        gwcConfig.setInnerCachingEnabled(false);
+        blobStore.setChanged(gwcConfig, false);
+
+        assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("a", "x");
+        parameters.put("b", "ø");
+
+        // Put a TileObject
+        Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
+        long[] xyz = {5L, 6L, 7L};
+        TileObject to =
+                TileObject.createCompleteTileObject(
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
+
+        blobStore.put(to);
+
+        // get the parameters is
+        String parametersId = blobStore.getParametersMapping(LAYER_NAME).keySet().iterator().next();
+
+        // Remove tile objects by parameters
+        blobStore.deleteByParametersId(LAYER_NAME, parametersId);
+
+        // Ensure TileObject is no more present
+        TileObject to4 =
+                TileObject.createQueryTileObject(
+                        LAYER_NAME, xyz, "EPSG:4326", "image/jpeg", parameters);
         assertFalse(blobStore.get(to4));
     }
 

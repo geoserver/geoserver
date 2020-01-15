@@ -21,11 +21,9 @@ public class AbstractLandingPageDocument extends AbstractDocument {
 
     public AbstractLandingPageDocument(String title, String description, String serviceBase) {
         final APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
 
         // self and alternate representations of landing page
         addLinksFor(
-                baseUrl,
                 serviceBase + "/",
                 AbstractLandingPageDocument.class,
                 "This document as ",
@@ -47,22 +45,24 @@ public class AbstractLandingPageDocument extends AbstractDocument {
                 Link.REL_ALTERNATE);
         // api
         addLinksFor(
-                baseUrl,
                 serviceBase + "/api",
                 OpenAPI.class,
                 "API definition for this endpoint as ",
                 "api",
-                null,
-                Link.REL_SERVICE);
+                (format, link) -> {
+                    if (MediaType.TEXT_HTML.equals(format)) {
+                        link.setRel(Link.REL_SERVICE_DOC);
+                    }
+                },
+                Link.REL_SERVICE_DESC);
         // conformance
         addLinksFor(
-                baseUrl,
                 serviceBase + "/conformance",
                 ConformanceDocument.class,
                 "Conformance declaration as ",
                 "conformance",
                 null,
-                "conformance");
+                Link.REL_CONFORMANCE);
         this.title = title;
         this.description = description;
     }

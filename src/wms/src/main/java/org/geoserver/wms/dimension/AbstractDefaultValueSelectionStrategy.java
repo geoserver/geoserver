@@ -44,8 +44,18 @@ public abstract class AbstractDefaultValueSelectionStrategy
             retval = numberValue.toString();
         } else {
             Object value = getDefaultValue(resource, dimensionName, dimensionInfo, Object.class);
-            retval = value.toString();
+            retval = stringRepresentation(value);
         }
         return retval;
+    }
+
+    private String stringRepresentation(Object value) {
+        if (value == null) return "";
+        if (value instanceof Date) {
+            Date dateValue = (Date) value;
+            return DateUtil.serializeDateTime(dateValue.getTime(), true);
+        } else {
+            return value.toString();
+        }
     }
 }

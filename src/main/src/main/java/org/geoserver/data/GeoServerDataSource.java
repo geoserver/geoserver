@@ -86,9 +86,9 @@ public class GeoServerDataSource extends BasicDataSource {
                 }
                 db.putAll(defaultParameters);
             } else {
-                InputStream in = dbprops.in();
-                db.load(in);
-                in.close();
+                try (InputStream in = dbprops.in()) {
+                    db.load(in);
+                }
             }
 
             // TODO: check for nulls

@@ -5,7 +5,7 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -95,6 +95,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.GML;
 import org.geotools.measure.Measure;
 import org.geotools.ows.wms.Layer;
@@ -177,6 +178,7 @@ public class ResourcePool {
     /** Hint to specify additional joined attributes when loading a feature type */
     public static Hints.Key JOINS = new Hints.Key(List.class);
 
+    public static Hints.Key MAP_CRS = new Hints.Key(CoordinateReferenceSystem.class);
     /** logging */
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog");
 
@@ -832,18 +834,18 @@ public class ResourcePool {
             File oldSchemaFile = Resources.file(dd.get(ft, "schema.xml"));
             if (oldSchemaFile != null) {
                 schemaFile = new File(oldSchemaFile.getParentFile(), "schema.xsd");
-                BufferedWriter out =
+                try (BufferedWriter out =
                         new BufferedWriter(
-                                new OutputStreamWriter(new FileOutputStream(schemaFile)));
-                out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
-                out.write(" xmlns:gml='http://www.opengis.net/gml'");
-                out.write(">");
-                try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
-                    IOUtils.copy(fis, out, "UTF-8");
+                                new OutputStreamWriter(new FileOutputStream(schemaFile)))) {
+                    out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
+                    out.write(" xmlns:gml='http://www.opengis.net/gml'");
+                    out.write(">");
+                    try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
+                        IOUtils.copy(fis, out, "UTF-8");
+                    }
+                    out.write("</xs:schema>");
+                    out.flush();
                 }
-                out.write("</xs:schema>");
-                out.flush();
-                out.close();
             }
         }
 
@@ -1304,10 +1306,19 @@ public class ResourcePool {
             CoordinateReferenceSystem nativeCRS =
                     gd != null ? gd.getCoordinateReferenceSystem() : null;
 
-            if (ppolicy == ProjectionPolicy.NONE && nativeCRS != null) {
+            if (ppolicy == ProjectionPolicy.NONE
+                    && info.getNativeCRS() != null
+                    && info.getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null)
+                resultCRS = info.getNativeCRS();
+            else if (ppolicy == ProjectionPolicy.NONE && nativeCRS != null) {
                 resultCRS = nativeCRS;
             } else {
                 resultCRS = getCRS(info.getSRS());
+                // force remoting re-projection incase of WFS-NG only
+                if (hints != null)
+                    if (hints.get(ResourcePool.MAP_CRS) != null
+                            && info.getMetadata().get(FeatureTypeInfo.OTHER_SRS) != null)
+                        resultCRS = (CoordinateReferenceSystem) hints.get(ResourcePool.MAP_CRS);
             }
 
             // make sure we create the appropriate schema, with the right crs
@@ -2461,6 +2472,7 @@ public class ResourcePool {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
+                @SuppressWarnings("PMD.CloseResource") // actually closing here
                 Closeable closeable = (Closeable) client;
                 try {
                     closeable.close();
@@ -2483,6 +2495,7 @@ public class ResourcePool {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
+                @SuppressWarnings("PMD.CloseResource") // actually closing here
                 Closeable closeable = (Closeable) client;
                 try {
                     closeable.close();

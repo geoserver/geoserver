@@ -37,8 +37,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterDataTest;
+import org.geoserver.importer.ImporterInfoDAO;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -307,7 +307,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                         + "Content-Type: text/plain\n"
                         + "\r\n\r\n"
                         + FileUtils.readFileToString(locations, "UTF-8")
-                        + "\r\n\r\n--AaB03x--";
+                        + "\r\n--AaB03x--";
 
         post("/rest/imports/" + importId + "/tasks", body, "multipart/form-data; boundary=AaB03x");
 
@@ -319,7 +319,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
 
-        TransformChain transformChain = task.getTransform();
+        TransformChain<?> transformChain = task.getTransform();
         assertThat(
                 transformChain.getTransforms().get(0),
                 CoreMatchers.instanceOf(AttributesToPointGeometryTransform.class));
@@ -345,8 +345,11 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(3, featureType.getAttributeCount());
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
                 fti.getFeatureSource(null, null);
+        org.geotools.data.ResourceInfo info = featureSource.getInfo();
+
         FeatureCollection<? extends FeatureType, ? extends Feature> features =
                 featureSource.getFeatures();
+
         assertEquals(9, features.size());
         FeatureIterator<? extends Feature> featureIterator = features.features();
         assertTrue("Expected features", featureIterator.hasNext());
@@ -714,13 +717,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         MockHttpServletResponse resp =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        RestBaseController.ROOT_PATH
+                                + "/imports/"
+                                + context.getId()
+                                + "/tasks/0/transforms",
                         json,
                         "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
-        context = importer.getContext(0);
+        context = importer.getContext(context.getId());
         importer.run(context);
 
         // check created type, layer and database table
@@ -744,7 +750,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         try {
             // Let's now override the external folder through the Environment variable. This takes
             // precedence on .properties
-            System.setProperty(Importer.UPLOAD_ROOT_KEY, "env_uploads");
+            System.setProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY, "env_uploads");
+            importer.reloadConfiguration();
             assertNotNull(importer.getUploadRoot());
 
             // the target layer is not there
@@ -757,7 +764,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
             importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
             // run it
-            context = importer.getContext(0);
+            context = importer.getContext(context.getId());
             importer.run(context);
 
             // check the layer has been created
@@ -778,8 +785,8 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
             if (dirFromEnv != null && dirFromEnv.exists()) {
                 FileUtils.deleteQuietly(dirFromEnv);
             }
-            if (System.getProperty(Importer.UPLOAD_ROOT_KEY) != null) {
-                System.clearProperty(Importer.UPLOAD_ROOT_KEY);
+            if (System.getProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY) != null) {
+                System.clearProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY);
             }
         }
     }
@@ -817,13 +824,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         MockHttpServletResponse resp =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        RestBaseController.ROOT_PATH
+                                + "/imports/"
+                                + context.getId()
+                                + "/tasks/0/transforms",
                         json,
                         "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
-        context = importer.getContext(0);
+        context = importer.getContext(context.getId());
         importer.run(context);
 
         // check the layer has been created
@@ -868,13 +878,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         MockHttpServletResponse resp =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        RestBaseController.ROOT_PATH
+                                + "/imports/"
+                                + context.getId()
+                                + "/tasks/0/transforms",
                         json,
                         "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
-        context = importer.getContext(0);
+        context = importer.getContext(context.getId());
         importer.run(context);
 
         // check the layer has been created
@@ -886,7 +899,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     }
 
     @Test
-    public void testRunWithTimeDimention() throws Exception {
+    public void testRunWithTimeDimension() throws Exception {
         Catalog cat = getCatalog();
 
         DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming");
@@ -915,13 +928,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         MockHttpServletResponse resp =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/0/tasks/0/transforms",
+                        RestBaseController.ROOT_PATH
+                                + "/imports/"
+                                + context.getId()
+                                + "/tasks/0/transforms",
                         json,
                         "application/json");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
         // run it
-        context = importer.getContext(0);
+        context = importer.getContext(context.getId());
         ImportTask task = context.getTasks().get(0);
         task.setDirect(false);
         task.setStore(ds);
@@ -1174,6 +1190,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.COMPLETE, context.getState());
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
 
-        assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+        assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.shp").exists());
+        assertTrue(new File(context.getUploadDirectory().getFile(), "bad_char.dbf").exists());
     }
 }

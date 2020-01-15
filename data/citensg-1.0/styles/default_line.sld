@@ -12,7 +12,7 @@
 		<UserStyle>
 		    <!-- they have names, titles and abstracts -->
 		  
-			<Title>A boring default style</Title>
+			<Title>Blue Line</Title>
 			<Abstract>A sample style that just prints out a green line</Abstract>
 			<!-- FeatureTypeStyles describe how to render different features -->
 			<!-- a feature type for lines -->
@@ -21,8 +21,8 @@
 				<!--FeatureTypeName>Feature</FeatureTypeName-->
 				<Rule>
 					<Name>Rule 1</Name>
-					<Title>Green Line</Title>
-					<Abstract>A green line with a 2 pixel width</Abstract>
+					<Title>Blue Line</Title>
+					<Abstract>A blue line with a 1 pixel width</Abstract>
 
 					<!-- like a polygonsymbolizer -->
 					<LineSymbolizer>

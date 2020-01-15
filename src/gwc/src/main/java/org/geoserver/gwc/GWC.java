@@ -82,6 +82,7 @@ import org.geoserver.security.DataAccessLimits;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -134,6 +135,7 @@ import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.GWCTask.TYPE;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
+import org.geowebcache.seed.TruncateAllRequest;
 import org.geowebcache.seed.TruncateBboxRequest;
 import org.geowebcache.service.Service;
 import org.geowebcache.storage.BlobStore;
@@ -472,6 +474,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
     }
 
+    public TruncateAllRequest truncateAll() throws GeoWebCacheException, StorageException {
+        // creating a mock internal request
+        TruncateAllRequest truncateAll = new TruncateAllRequest();
+        // truncating everything
+        truncateAll.doTruncate(storageBroker, tileBreeder);
+        log.info("Mass Truncate Completed");
+        log.info("Truncated Layers : " + truncateAll.getTrucatedLayersList());
+        return truncateAll;
+    }
+
     private BoundingBox getIntersectingBounds(
             String layerName, GridSubset layerGrid, ReferencedEnvelope bounds) {
         final GridSet gridSet = layerGrid.getGridSet();
@@ -760,14 +772,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             return null;
         }
 
-        if (!tld.layerExists(layerName)) {
+        // GEOS-9431 acquire prefixed name if not prefixed already
+        final String getPrefixedName =
+                (!layerName.contains(":")) ? getPrefixedName(layerName) : layerName;
+
+        if (!tld.layerExists(getPrefixedName)) {
             requestMistmatchTarget.append("not a tile layer");
             return null;
         }
 
         final TileLayer tileLayer;
         try {
-            tileLayer = this.tld.getTileLayer(layerName);
+            tileLayer = this.tld.getTileLayer(getPrefixedName);
         } catch (GeoWebCacheException e) {
             throw new RuntimeException(e);
         }
@@ -812,6 +828,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             log.log(Level.INFO, "Error dispatching tile request to GeoServer", e);
         }
         return tileResp;
+    }
+
+    private String getPrefixedName(String layerName) {
+        PublishedInfo info = catalog.getLayerByName(layerName);
+        if (info == null) info = catalog.getLayerGroupByName(layerName);
+        if (info != null) return info.prefixedName();
+        if (log.isLoggable(Level.INFO)) log.info("Unable to find a prefix for : " + layerName);
+        return layerName;
     }
 
     ConveyorTile prepareRequest(
@@ -1380,6 +1404,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
+        ThreadLocalsTransfer tx = new ThreadLocalsTransfer();
         try {
             owsDispatcher.handleRequest(req, resp);
         } finally {
@@ -1389,6 +1414,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             } else {
                 Dispatcher.REQUEST.remove();
             }
+            // reset thread locals
+            tx.apply();
         }
         return new ByteArrayResource(resp.getBytes());
     }

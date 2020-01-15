@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- 
+<!--
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.17-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -27,8 +27,8 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
-   </dependency>   
-   
+   </dependency>
+
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
@@ -86,6 +86,11 @@
      <artifactId>gs-dyndimension</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-flatgeobuf</artifactId>
+     <version>${project.version}</version>
+   </dependency>
    <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-rest-ext</artifactId>
@@ -120,12 +125,12 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-web-solr</artifactId>
      <version>${project.version}</version>
-   </dependency>     
+   </dependency>
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-gwc-distributed</artifactId>
      <version>${project.version}</version>
-   </dependency>  
+   </dependency>
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-gwc-s3</artifactId>
@@ -150,12 +155,12 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-params-extractor</artifactId>
      <version>${project.version}</version>
-   </dependency> 
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-remote</artifactId>
      <version>${project.version}</version>
-   </dependency>   
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-jdbc</artifactId>
@@ -165,7 +170,7 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcstore</artifactId>
      <version>${project.version}</version>
-   </dependency> 
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-gwc-sqlite</artifactId>
@@ -334,17 +339,17 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-taskmanager-s3</artifactId>
      <version>${project.version}</version>
-   </dependency>   
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-qos</artifactId>
      <version>${project.version}</version>
-   </dependency> 
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-web-ogr</artifactId>
      <version>${project.version}</version>
-   </dependency>  
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-ogcapi-features</artifactId>
@@ -361,11 +366,36 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-ogcapi-images</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-ogcapi-changeset</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-geostyler</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
      <groupId>org.geoserver.csw</groupId>
      <artifactId>gs-csw-iso</artifactId>
      <version>${project.version}</version>
-   </dependency>  
- </dependencies>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-importer-jdbc</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-json-ld</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+</dependencies>
  <build>
   <plugins>
    <plugin>

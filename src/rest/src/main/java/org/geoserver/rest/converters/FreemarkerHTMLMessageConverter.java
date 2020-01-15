@@ -69,6 +69,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
      * @throws HttpMessageNotWritableException in case of conversion errors
      */
     @Override
+    @SuppressWarnings("PMD.CloseResource") // actual stream managed by servlet
     protected void writeInternal(RestWrapper<?> wrapper, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType contentType = outputMessage.getHeaders().getContentType();

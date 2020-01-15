@@ -164,10 +164,11 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
                     Resource layers = securityDir.get(propertyFileName);
                     if (layers.getType() == Type.UNDEFINED) {
                         // try to load a template and copy it over
-                        InputStream in =
-                                getClass().getResourceAsStream(propertyFileName + ".template");
-                        if (in != null) {
-                            IOUtils.copy(in, layers.out());
+                        try (InputStream in =
+                                getClass().getResourceAsStream(propertyFileName + ".template")) {
+                            if (in != null) {
+                                IOUtils.copy(in, layers.out());
+                            }
                         }
                     }
 

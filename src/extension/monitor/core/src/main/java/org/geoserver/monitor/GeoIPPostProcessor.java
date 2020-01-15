@@ -24,6 +24,8 @@ public class GeoIPPostProcessor implements RequestPostProcessor {
     /** cached geoip lookup service */
     static volatile LookupService geoIPLookup;
 
+    static final String PROCESSOR_NAME = "geoIp";
+
     // TODO: cache by IP address
 
     GeoServerResourceLoader loader;
@@ -88,5 +90,10 @@ public class GeoIPPostProcessor implements RequestPostProcessor {
             LOGGER.log(Level.WARNING, "Error occured looking up GeoIP database", e);
             return null;
         }
+    }
+
+    @Override
+    public String getName() {
+        return PROCESSOR_NAME;
     }
 }

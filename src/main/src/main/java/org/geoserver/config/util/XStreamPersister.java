@@ -25,7 +25,6 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.SortableFieldKeySorter;
 import com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider;
 import com.thoughtworks.xstream.core.ClassLoaderReference;
-import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -914,7 +913,7 @@ public class XStreamPersister {
                         reader.moveDown();
                     }
 
-                    value = readItem(reader, context, map);
+                    value = readBareItem(reader, context, map);
 
                     if (old) {
                         reader.moveUp();
@@ -928,7 +927,7 @@ public class XStreamPersister {
         }
 
         @Override
-        protected Object readItem(
+        protected Object readBareItem(
                 HierarchicalStreamReader reader, UnmarshallingContext context, Object current) {
             return reader.getValue();
         }
@@ -1033,11 +1032,11 @@ public class XStreamPersister {
             Object value;
             try {
                 reader.moveDown();
-                key = readItem(reader, context, map);
+                key = readBareItem(reader, context, map);
                 reader.moveUp();
 
                 reader.moveDown();
-                value = readItem(reader, context, map);
+                value = readBareItem(reader, context, map);
             } catch (CannotResolveClassException e) {
                 LOGGER.log(
                         Level.WARNING,
@@ -1102,7 +1101,7 @@ public class XStreamPersister {
                     if (v != null) {
                         writer.startNode("entry");
                         writer.addAttribute("key", key.toString());
-                        writeItem(v, context, writer);
+                        writeCompleteItem(v, context, writer);
                         writer.endNode();
                     }
                 }
@@ -1118,7 +1117,7 @@ public class XStreamPersister {
                 // in this case we also support complex objects
                 while (reader.hasMoreChildren()) {
                     reader.moveDown();
-                    value = readItem(reader, context, map);
+                    value = readBareItem(reader, context, map);
                     reader.moveUp();
                 }
                 reader.moveUp();
@@ -1256,7 +1255,7 @@ public class XStreamPersister {
         }
 
         @Override
-        protected void writeItem(
+        protected void writeCompleteItem(
                 Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
             ClassAliasingMapper cam =
                     (ClassAliasingMapper) mapper().lookupMapperOfType(ClassAliasingMapper.class);
@@ -1312,7 +1311,7 @@ public class XStreamPersister {
         }
 
         @Override
-        protected Object readItem(
+        protected Object readBareItem(
                 HierarchicalStreamReader reader, UnmarshallingContext context, Object current) {
             Class theClass = clazz;
             if (subclasses != null) {
@@ -1332,10 +1331,10 @@ public class XStreamPersister {
         }
 
         @Override
-        protected void writeItem(
+        protected void writeCompleteItem(
                 Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
 
-            super.writeItem(unwrapProxies(item), context, writer);
+            super.writeCompleteItem(unwrapProxies(item), context, writer);
         }
     }
 
@@ -2406,15 +2405,15 @@ public class XStreamPersister {
         }
 
         @Override
-        protected Object readItem(
+        protected Object readBareItem(
                 HierarchicalStreamReader reader, UnmarshallingContext context, Object current) {
             return context.convertAnother(current, Keyword.class);
         }
 
         @Override
-        protected void writeItem(
+        protected void writeCompleteItem(
                 Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
-            ExtendedHierarchicalStreamWriterHelper.startNode(writer, "string", Keyword.class);
+            writer.startNode("string");
             context.convertAnother(item);
             writer.endNode();
         }

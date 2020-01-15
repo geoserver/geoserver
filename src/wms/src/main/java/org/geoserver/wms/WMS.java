@@ -5,9 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.geoserver.wms.NearestMatchWarningAppender.WarningType.Nearest;
-import static org.geoserver.wms.NearestMatchWarningAppender.WarningType.NotFound;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -16,9 +13,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -47,14 +46,15 @@ import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
+import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
-import org.geoserver.wms.dimension.DimensionFilterBuilder;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
@@ -1113,7 +1113,8 @@ public class WMS implements ApplicationContextAware {
                 // nearest time support
                 if (timeInfo.isNearestMatchEnabled()) {
                     fixedTimes =
-                            getNearestMatches(coverage, timeInfo, fixedTimes, ResourceInfo.TIME);
+                            getNearestTimeMatch(
+                                    coverage, timeInfo, fixedTimes, getMaxRenderingTime());
                 }
             }
             // pass down the parameters
@@ -1272,6 +1273,50 @@ public class WMS implements ApplicationContextAware {
         }
         ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
         return dimensions.getTimeDomain(queryRange, maxAnimationSteps);
+    }
+
+    /**
+     * Query and returns the requested times for the given layer
+     *
+     * @throws IOException
+     */
+    public TreeSet<Date> queryCoverageNearestMatchTimes(
+            CoverageInfo coverage, List<Object> queryRanges) throws IOException {
+        DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        final TreeSet<Date> foundDates = new TreeSet<Date>();
+        if (time == null || !time.isEnabled()) {
+            throw new ServiceException(
+                    "Coverage " + coverage.prefixedName() + " does not have time support enabled");
+        }
+
+        List<Object> dates =
+                getNearestTimeMatch(coverage, time, queryRanges, getMaxRenderingTime());
+        dates.stream()
+                .forEach(
+                        d -> {
+                            Date date = (Date) d;
+                            foundDates.add(date);
+                        });
+        return foundDates;
+    }
+
+    private static List<Object> getNearestTimeMatch(
+            ResourceInfo coverage,
+            DimensionInfo dimension,
+            List<Object> queryRanges,
+            int maxRenderingTime)
+            throws IOException {
+        NearestMatchFinder finder = NearestMatchFinder.get(coverage, dimension, ResourceInfo.TIME);
+        if (finder != null) {
+            return finder.getMatches(
+                    coverage.prefixedName(),
+                    dimension,
+                    queryRanges,
+                    ResourceInfo.TIME,
+                    maxRenderingTime);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /** Query and returns the times for the given layer, in the given time range */
@@ -1617,7 +1662,8 @@ public class WMS implements ApplicationContextAware {
 
             if (timeInfo.isNearestMatchEnabled()) {
                 List<Object> nearestMatchedTimes =
-                        getNearestMatches(typeInfo, timeInfo, defaultedTimes, ResourceInfo.TIME);
+                        getNearestTimeMatch(
+                                typeInfo, timeInfo, defaultedTimes, getMaxRenderingTime());
                 builder.appendFilters(
                         timeInfo.getAttribute(), timeInfo.getEndAttribute(), nearestMatchedTimes);
             } else {
@@ -1646,55 +1692,29 @@ public class WMS implements ApplicationContextAware {
         return result;
     }
 
-    private List<Object> getNearestMatches(
-            ResourceInfo resourceInfo,
-            DimensionInfo dimension,
-            List<Object> values,
-            String dimensionName)
-            throws IOException {
-        // if there is a max rendering time set, use it on this match, as the input request might
-        // make the
-        // code go through a lot of nearest match queries
-        int maxRenderingTime = getMaxRenderingTime();
-        long maxTime =
-                maxRenderingTime > 0 ? System.currentTimeMillis() + maxRenderingTime * 1000 : -1;
-        NearestMatchFinder finder = NearestMatchFinder.get(resourceInfo, dimension, dimensionName);
-        List<Object> result = new ArrayList<>();
-        for (Object value : values) {
-            Object nearest = finder.getNearest(value);
-            if (nearest == null) {
-                // no way to specify there is no match yet, so we'll use the original value, which
-                // will not match
-                NearestMatchWarningAppender.addWarning(
-                        resourceInfo.prefixedName(),
-                        dimensionName,
-                        null,
-                        dimension.getUnits(),
-                        NotFound);
-                result.add(value);
-            } else if (value.equals(nearest)) {
-                result.add(value);
-            } else {
-                NearestMatchWarningAppender.addWarning(
-                        resourceInfo.prefixedName(),
-                        dimensionName,
-                        nearest,
-                        dimension.getUnits(),
-                        Nearest);
-                result.add(nearest);
-            }
-
-            // check timeout
-            if (maxTime > 0 && System.currentTimeMillis() > maxTime) {
-                throw new ServiceException(
-                        "Nearest matching dimension values required more time than allowed and has been forcefully stopped. "
-                                + "The max rendering time is "
-                                + (maxRenderingTime)
-                                + "s");
-            }
-        }
-
-        return result;
+    /**
+     * Builds the custom dimensions filter in base to type info and KVP.
+     *
+     * @param rawKVP Request KVP map
+     * @param typeInfo Feature type info instance
+     * @return builded filter
+     */
+    public Filter getDimensionsToFilter(
+            final Map<String, String> rawKVP, final FeatureTypeInfo typeInfo) {
+        CustomDimensionFilterConverter.DefaultValueStrategyFactory defaultValueStrategyFactory =
+                new CustomDimensionFilterConverter.DefaultValueStrategyFactory() {
+                    @Override
+                    public DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(
+                            ResourceInfo resource,
+                            String dimensionName,
+                            DimensionInfo dimensionInfo) {
+                        return WMS.this.getDefaultValueStrategy(
+                                resource, dimensionName, dimensionInfo);
+                    }
+                };
+        final CustomDimensionFilterConverter converter =
+                new CustomDimensionFilterConverter(defaultValueStrategyFactory, ff);
+        return converter.getDimensionsToFilter(rawKVP, typeInfo);
     }
 
     /**
@@ -1877,5 +1897,41 @@ public class WMS implements ApplicationContextAware {
         }
 
         return false;
+    }
+
+    /**
+     * Returns available values for a custom dimension.
+     *
+     * @param typeInfo feature type info that holds the custom dimension.
+     * @param dimensionInfo Custom dimension name.
+     * @return values list.
+     */
+    public TreeSet<Object> getDimensionValues(FeatureTypeInfo typeInfo, DimensionInfo dimensionInfo)
+            throws IOException {
+        final FeatureCollection fcollection = getDimensionCollection(typeInfo, dimensionInfo);
+
+        final TreeSet<Object> result = new TreeSet<>();
+        if (dimensionInfo.getPresentation() == DimensionPresentation.LIST
+                || (dimensionInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL
+                        && dimensionInfo.getResolution() == null)) {
+            final UniqueVisitor uniqueVisitor = new UniqueVisitor(dimensionInfo.getAttribute());
+            fcollection.accepts(uniqueVisitor, null);
+            Set<Object> uniqueValues = uniqueVisitor.getUnique();
+            for (Object obj : uniqueValues) {
+                result.add(obj);
+            }
+        } else {
+            final MinVisitor minVisitor = new MinVisitor(dimensionInfo.getAttribute());
+            fcollection.accepts(minVisitor, null);
+            final CalcResult minResult = minVisitor.getResult();
+            if (minResult != CalcResult.NULL_RESULT) {
+                result.add(minResult.getValue());
+                final MaxVisitor maxVisitor = new MaxVisitor(dimensionInfo.getAttribute());
+                fcollection.accepts(maxVisitor, null);
+                result.add(maxVisitor.getMax());
+            }
+        }
+
+        return result;
     }
 }

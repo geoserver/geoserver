@@ -77,4 +77,31 @@ public interface PublishedInfo extends CatalogInfo {
      * @see AttributionInfo
      */
     void setAttribution(AttributionInfo attribution);
+
+    /**
+     * Flag indicating wether the layer is enabled or not.
+     *
+     * @uml.property name="enabled"
+     */
+    boolean isEnabled();
+
+    /**
+     * Sets the flag indicating wether the layer is enabled or not.
+     *
+     * @uml.property name="enabled"
+     */
+    void setEnabled(boolean enabled);
+
+    /**
+     * Returns true if the layer existence should be advertised (true by default, unless otherwise
+     * set)
+     */
+    boolean isAdvertised();
+
+    /**
+     * Set to true if the layer should be advertised, false otherwise
+     *
+     * @param advertised
+     */
+    void setAdvertised(boolean advertised);
 }

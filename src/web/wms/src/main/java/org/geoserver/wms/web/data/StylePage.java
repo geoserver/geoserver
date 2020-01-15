@@ -19,6 +19,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -51,6 +52,16 @@ public class StylePage extends GeoServerSecuredPage {
                                 }
                                 if (property == StyleProvider.WORKSPACE) {
                                     return workspaceLink(id, itemModel);
+                                }
+                                if (property == StyleProvider.MODIFIED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            StyleProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
+                                }
+                                if (property == StyleProvider.CREATED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            StyleProvider.CREATED_TIMESTAMP.getModel(itemModel));
                                 }
                                 return null;
                             }

@@ -30,11 +30,13 @@ import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.wms.WMS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterFilter;
+import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
@@ -89,7 +91,7 @@ public class TilesService {
                 (service.getAbstract() == null) ? "" : service.getAbstract());
     }
 
-    private TilesServiceInfo getService() {
+    public TilesServiceInfo getService() {
         return geoServer.getService(TilesServiceInfo.class);
     }
 
@@ -115,6 +117,28 @@ public class TilesService {
         return new ConformanceDocument(classes);
     }
 
+    @GetMapping(path = "tileMatrixSets", name = "getTileMatrixSets")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tileMatrixSets.ftl", fileName = "tileMatrixSets.html")
+    public TileMatrixSets getTileMatrixSets() {
+        return new TileMatrixSets(gwc);
+    }
+
+    @GetMapping(path = "tileMatrixSets/{tileMatrixSetId}", name = "getTileMatrixSet")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tileMatrixSet.ftl", fileName = "tileMatrixSet.html")
+    public TileMatrixSetDocument getTileMatrixSet(
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId) {
+        GridSet gridSet = gwc.getGridSetBroker().get(tileMatrixSetId);
+        if (gridSet == null) {
+            throw new APIException(
+                    "NotFound",
+                    "Tile matrix set " + tileMatrixSetId + " not recognized",
+                    HttpStatus.NOT_FOUND);
+        }
+        return new TileMatrixSetDocument(gridSet, false);
+    }
+
     @GetMapping(path = "collections", name = "getCollections")
     @ResponseBody
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
@@ -122,16 +146,26 @@ public class TilesService {
         return new TiledCollectionsDocument(geoServer, wms, gwc);
     }
 
-    @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
+    @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTiles")
     @ResponseBody
-    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public TiledCollectionDocument collection(
-            @PathVariable(name = "collectionId") String collectionId)
+    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
+    public TilesDocument describeTiles(@PathVariable(name = "collectionId") String collectionId)
             throws FactoryException, TransformException, IOException {
         TileLayer tileLayer = getTileLayer(collectionId);
-        TiledCollectionDocument collection = new TiledCollectionDocument(wms, tileLayer, false);
+        TilesDocument tiles = new TilesDocument(wms, tileLayer, TilesDocument.Type.RawTiles);
 
-        return collection;
+        return tiles;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/map/tiles", name = "describeMapTiles")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
+    public TilesDocument describeMapTiles(@PathVariable(name = "collectionId") String collectionId)
+            throws FactoryException, TransformException, IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        TilesDocument tiles = new TilesDocument(wms, tileLayer, TilesDocument.Type.RenderedTiles);
+
+        return tiles;
     }
 
     private TileLayer getTileLayer(String collectionId) {
@@ -146,10 +180,22 @@ public class TilesService {
         }
     }
 
+    @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
+    public TiledCollectionDocument collection(
+            @PathVariable(name = "collectionId") String collectionId)
+            throws FactoryException, TransformException, IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        TiledCollectionDocument collection = new TiledCollectionDocument(wms, tileLayer, false);
+
+        return collection;
+    }
+
     @GetMapping(
         path =
                 "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getRawTile"
+        name = "getTile"
     )
     @ResponseBody
     public ResponseEntity<byte[]> getRawTile(
@@ -165,8 +211,8 @@ public class TilesService {
 
     @GetMapping(
         path =
-                "/collections/{collectionId}/maps/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-        name = "getRenderedTile"
+                "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+        name = "getMapTile"
     )
     @ResponseBody
     public ResponseEntity<byte[]> getRenderedTile(
@@ -195,12 +241,18 @@ public class TilesService {
         if (styleId != null) {
             validateStyle(tileLayer, styleId);
         }
-        MimeType requestedFormat = getRequestedFormat(tileLayer, renderedTile);
+        MimeType requestedFormat =
+                getRequestedFormat(
+                        tileLayer, renderedTile, APIRequestInfo.get().getRequestedMediaTypes());
         long[] tileIndex = getTileIndex(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer);
+        String name =
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName();
         ConveyorTile tile =
                 new ConveyorTile(
                         storageBroker,
-                        tileLayer.getName(), // using the tile id won't work with storage broker
+                        name, // using the tile id won't work with storage broker
                         tileMatrixSetId,
                         tileIndex,
                         requestedFormat,
@@ -246,6 +298,12 @@ public class TilesService {
         GWC.setConditionalGetHeaders(
                 tmpHeaders, tile, etag, httpRequest.getHeader("If-Modified-Since"));
         GWC.setCacheMetadataHeaders(tmpHeaders, tile, tileLayer);
+        // override for workspace specific services
+        tmpHeaders.put(
+                "geowebcache-layer",
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName());
         HttpHeaders headers = new HttpHeaders();
         tmpHeaders.forEach((k, v) -> headers.add(k, v));
         // content type and disposition
@@ -257,7 +315,7 @@ public class TilesService {
         return new ResponseEntity(tileBytes, headers, HttpStatus.OK);
     }
 
-    private void validateStyle(TileLayer tileLayer, String styleId) {
+    public static void validateStyle(TileLayer tileLayer, String styleId) {
         // is it the default style? if so, nothing to check
         if (styleId.equalsIgnoreCase(tileLayer.getStyles())) {
             return;
@@ -278,6 +336,25 @@ public class TilesService {
         }
     }
 
+    /**
+     * Checks the specified griset is supported by the tile layer, and returns it
+     *
+     * @param tileLayer
+     * @param tileMatrixSetId
+     * @return
+     */
+    public static GridSubset getGridSubset(TileLayer tileLayer, String tileMatrixSetId) {
+        GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixSetId);
+        if (gridSubset == null) {
+            throw new APIException(
+                    "InvalidParameterValue",
+                    "Invalid tileMatrixSetId " + tileMatrixSetId,
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        return gridSubset;
+    }
+
     private Map<String, String> filterParameters(String styleId) {
         return styleId != null
                 ? Collections.singletonMap("styles", styleId)
@@ -291,7 +368,11 @@ public class TilesService {
             @PathVariable(name = "tileCol") long tileCol,
             TileLayer tileLayer,
             ConveyorTile tile) {
-        return tileLayer.getName()
+        String layerName =
+                tileLayer instanceof GeoServerTileLayer
+                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                        : tileLayer.getName();
+        return layerName
                 + "_"
                 + getExternalZIndex(tileMatrixSetId, tileMatrix, tileLayer)
                 + "_"
@@ -350,8 +431,8 @@ public class TilesService {
         return gridSubset.getGridIndex(tileMatrix);
     }
 
-    private MimeType getRequestedFormat(TileLayer tileLayer, boolean renderedTile) {
-        List<MediaType> requestedTypes = APIRequestInfo.get().getRequestedMediaTypes();
+    public static MimeType getRequestedFormat(
+            TileLayer tileLayer, boolean renderedTile, List<MediaType> requestedTypes) {
         Map<MediaType, MimeType> layerTypes =
                 tileLayer
                         .getMimeTypes()
@@ -359,13 +440,30 @@ public class TilesService {
                         .filter(mt -> renderedTile ? !mt.isVector() : mt.isVector())
                         .collect(
                                 Collectors.toMap(
-                                        mt -> MediaType.parseMediaType(mt.toString()), mt -> mt));
-        // process the requested types in order, return the first compatible layer type
-        for (MediaType requestedType : requestedTypes) {
-            for (Map.Entry<MediaType, MimeType> layerType : layerTypes.entrySet()) {
-                if (requestedType.isCompatibleWith(layerType.getKey())) {
-                    // requested types can be generic, layer types are specific
-                    return layerType.getValue();
+                                        mt -> MediaType.parseMediaType(mt.getFormat()),
+                                        mt -> mt,
+                                        (a, b) -> a,
+                                        LinkedHashMap::new));
+        if (layerTypes.isEmpty()) {
+            throw new APIException(
+                    "InvalidParameterValue",
+                    "The layer does not seem to have any cached format suitable for "
+                            + "this type of resource, check the resource is listed "
+                            + "among the tiled collection links",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (requestedTypes == null || requestedTypes.isEmpty()) {
+            // default to the first found
+            return layerTypes.values().iterator().next();
+        } else {
+            // process the requested types in order, return the first compatible layer type
+            for (MediaType requestedType : requestedTypes) {
+                for (Map.Entry<MediaType, MimeType> layerType : layerTypes.entrySet()) {
+                    if (requestedType.equals(layerType.getKey())) {
+                        // requested types can be generic, layer types are specific
+                        return layerType.getValue();
+                    }
                 }
             }
         }

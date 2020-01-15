@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
@@ -29,14 +28,6 @@ import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OGCApiTestSupport extends GeoServerSystemTestSupport {
-
-    protected String getEncodedName(QName qName) {
-        if (qName.getPrefix() != null) {
-            return qName.getPrefix() + "__" + qName.getLocalPart();
-        } else {
-            return qName.getLocalPart();
-        }
-    }
 
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse(path, expectedHttpCode);
@@ -108,13 +99,18 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Retuns a single element out of an array, checking that there is just one */
-    protected Object getSingle(DocumentContext json, String path) {
+    protected <T> T readSingle(DocumentContext json, String path) {
         List items = json.read(path);
         assertEquals(
-                "Found " + items.size() + " items for this path, but was expecting one: " + path,
+                "Found "
+                        + items.size()
+                        + " items for this path, but was expecting one: "
+                        + path
+                        + "\n"
+                        + items,
                 1,
                 items.size());
-        return items.get(0);
+        return (T) items.get(0);
     }
 
     /** Checks the specified jsonpath exists in the document */

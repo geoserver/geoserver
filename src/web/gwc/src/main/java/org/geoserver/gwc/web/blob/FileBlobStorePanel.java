@@ -4,8 +4,10 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.util.Arrays;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -13,6 +15,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
+import org.geoserver.web.wicket.EnumChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geowebcache.config.FileBlobStoreInfo;
 
@@ -55,5 +58,12 @@ public class FileBlobStorePanel extends Panel {
                         .add(
                                 new AttributeModifier(
                                         "title", new ResourceModel("fileSystemBlockSize.title"))));
+        DropDownChoice<FileBlobStoreInfo.PathGeneratorType> layouts =
+                new DropDownChoice<>(
+                        "fileSystemLayout",
+                        new PropertyModel<>(getDefaultModel(), "pathGeneratorType"),
+                        Arrays.asList(FileBlobStoreInfo.PathGeneratorType.values()));
+        layouts.setChoiceRenderer(new EnumChoiceRenderer(layouts));
+        add(layouts);
     }
 }

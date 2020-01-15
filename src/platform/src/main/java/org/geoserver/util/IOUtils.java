@@ -413,15 +413,14 @@ public class IOUtils {
                 continue;
             }
 
-            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f))) {
+                int n = -1;
+                while ((n = zin.read(buffer)) != -1) {
+                    out.write(buffer, 0, n);
+                }
 
-            int n = -1;
-            while ((n = zin.read(buffer)) != -1) {
-                out.write(buffer, 0, n);
+                out.flush();
             }
-
-            out.flush();
-            out.close();
         }
     }
 

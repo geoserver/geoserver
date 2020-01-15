@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <ul>
+        <li>
+            <legend>
+                <wicket:message key="GenerateDomainPanel.header"/>
+            </legend>
+            <fieldset>
+                <label for="method"><wicket:message key="method"></wicket:message></label>
+                <select id="method" wicket:id="method" />
+                <label for="tableName"><wicket:message key="tableName"></wicket:message></label>
+                <select id="tableName" wicket:id="tableName" />
+                <label for="valueAttributeName"><wicket:message key="valueAttributeName"></wicket:message></label>
+                <select id="valueAttributeName" wicket:id="valueAttributeName" />
+                <label for="defAttributeName"><wicket:message key="defAttributeName"></wicket:message></label>
+                <select id="defAttributeName" wicket:id="defAttributeName" />
+			</fieldset>
+        </li>
+        <li>
+            <wicket:message key="confirmGenerate"/>
+        </li>
+        <li>
+            <span wicket:id="generateFeedback"></span>
+        </li>
+    </ul>
+
+</wicket:panel>
+</body>
+</html>

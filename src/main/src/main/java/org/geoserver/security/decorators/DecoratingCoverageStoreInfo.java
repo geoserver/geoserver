@@ -7,6 +7,7 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
@@ -122,5 +123,25 @@ public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStore
     public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
             throws IOException {
         return delegate.getGridCoverageReader(listener, hints);
+    }
+
+    @Override
+    public Date getDateModified() {
+        return delegate.getDateModified();
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return delegate.getDateCreated();
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        delegate.setDateCreated(dateCreated);
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        delegate.setDateModified(dateModified);
     }
 }

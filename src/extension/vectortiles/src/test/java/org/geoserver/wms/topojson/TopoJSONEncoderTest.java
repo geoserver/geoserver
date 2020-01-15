@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.output.NullOutputStream;
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
 import org.junit.Test;
 import org.locationtech.jts.geom.LineString;
@@ -38,7 +39,7 @@ public class TopoJSONEncoderTest {
         layers.put("topp:states", layer);
 
         Topology topology = new Topology(identity, arcs, layers);
-        Writer writer = new OutputStreamWriter(System.out);
+        Writer writer = new OutputStreamWriter(new NullOutputStream());
         encoder.encode(topology, writer);
     }
 
@@ -67,7 +68,7 @@ public class TopoJSONEncoderTest {
         layers.put("topp:states", layer);
         Topology topology = new Topology(tx, arcs, layers);
 
-        Writer writer = new OutputStreamWriter(System.out);
+        Writer writer = new OutputStreamWriter(new NullOutputStream());
         encoder.encode(topology, writer);
     }
 

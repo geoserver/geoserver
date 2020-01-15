@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import org.geoserver.api.Link;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
@@ -35,8 +36,12 @@ public class LandingPageTest extends TilesTestSupport {
                         "getCollections",
                         "getLandingPage",
                         "getConformanceDeclaration",
-                        "getRawTile",
-                        "getRenderedTile"));
+                        "describeTiles",
+                        "describeMapTiles",
+                        "getTile",
+                        "getMapTile",
+                        "getTileMatrixSet",
+                        "getTileMatrixSets"));
     }
 
     @Test
@@ -64,6 +69,7 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     @Test
+    @Ignore
     public void testLandingPageXML() throws Exception {
         Document dom = getAsDOM("ogc/tiles?f=application/xml");
         print(dom);
@@ -83,8 +89,6 @@ public class LandingPageTest extends TilesTestSupport {
                 json,
                 "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/tiles\\/\\?.*/)].rel",
                 "alternate",
-                "alternate",
-                "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
     }
@@ -102,9 +106,8 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testLandingPageHTMLInWorkspace() throws Exception {
-        org.jsoup.nodes.Document document = getAsJSoup("sf/ogc/features?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("sf/ogc/tiles?f=html");
         // check a couple of links
         assertEquals(
                 "http://localhost:8080/geoserver/sf/ogc/tiles/collections?f=text%2Fhtml",
@@ -115,7 +118,7 @@ public class LandingPageTest extends TilesTestSupport {
     }
 
     static void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(20, (int) json.read("links.length()", Integer.class));
+        assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -124,8 +127,6 @@ public class LandingPageTest extends TilesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/\\?.*/)].rel",
-                "alternate",
-                "alternate",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -136,26 +137,20 @@ public class LandingPageTest extends TilesTestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/tiles\\/api.*/)].rel",
-                "service",
-                "service",
-                "service",
-                "service",
-                "service");
+                Link.REL_SERVICE_DESC,
+                Link.REL_SERVICE_DESC,
+                Link.REL_SERVICE_DOC);
         // check conformance links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/tiles\\/conformance.*/)].rel",
-                "conformance",
-                "conformance",
-                "conformance",
-                "conformance",
-                "conformance");
+                Link.REL_CONFORMANCE,
+                Link.REL_CONFORMANCE,
+                Link.REL_CONFORMANCE);
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*ogc\\/tiles\\/collections.*/)].rel",
-                "data",
-                "data",
                 "data",
                 "data",
                 "data");

@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geotools.util.logging.Logging;
 
 public class LayerInfoImpl implements LayerInfo {
@@ -87,6 +89,10 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected WMSInterpolation defaultWMSInterpolationMethod;
 
+    protected Date dateCreated;
+
+    protected Date dateModified;
+
     @Override
     public String getId() {
         return id;
@@ -147,6 +153,17 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public StyleInfo getDefaultStyle() {
+        if (getResource() instanceof WMSLayerInfo) {
+            StyleInfo remoteDefaultStyleInfo = ((WMSLayerInfo) getResource()).getDefaultStyle();
+            // will be null if remote capability document
+            // does not have any Style tags
+            if (remoteDefaultStyleInfo != null) return remoteDefaultStyleInfo;
+            else
+                LOGGER.warning(
+                        "No Default Style found on cascaded WMS Resource"
+                                + ((WMSLayerInfo) getResource()).getName());
+        }
+
         return defaultStyle;
     }
 
@@ -156,6 +173,17 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     public Set<StyleInfo> getStyles() {
+        if (getResource() instanceof WMSLayerInfo) {
+            Set<StyleInfo> remoteStyles = ((WMSLayerInfo) getResource()).getStyles();
+            // will be null if remote capability document
+            // does not have any Style tags
+            if (remoteStyles != null) return remoteStyles;
+            else
+                LOGGER.warning(
+                        "No Default Styles found on cascaded WMS Resource"
+                                + ((WMSLayerInfo) getResource()).getName());
+        }
+
         return styles;
     }
 
@@ -231,6 +259,7 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public MetadataMap getMetadata() {
+        checkMetadataNotNull();
         return metadata;
     }
 
@@ -413,5 +442,29 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public void setDefaultWMSInterpolationMethod(WMSInterpolation interpolationMethod) {
         this.defaultWMSInterpolationMethod = interpolationMethod;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return this.dateModified;
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
+
+    private void checkMetadataNotNull() {
+        if (metadata == null) metadata = new MetadataMap();
     }
 }

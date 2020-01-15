@@ -79,10 +79,7 @@ import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.renderer.lite.LabelCache;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.renderer.lite.RenderingTransformationHelper;
-import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.renderer.lite.*;
 import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.styling.RasterSymbolizer;
@@ -175,6 +172,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
     /** The lookup table used for data type transformation (it's really the identity one) */
     private static LookupTableJAI IDENTITY_TABLE = new LookupTableJAI(getTable());
+
+    /** Show Chain key */
+    public static final String RASTER_CHAIN_DEBUG_KEY = "wms.raster.enableRasterChainDebug";
+
+    /** Show Chain */
+    private static Boolean RASTER_CHAIN_DEBUG = Boolean.getBoolean(RASTER_CHAIN_DEBUG_KEY);
 
     private Function<WMSMapContent, LabelCache> labelCache = null;
 
@@ -344,8 +347,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // TODO: handle color conversions
         // TODO: handle meta-tiling
         // TODO: how to handle timeout here? I guess we need to move it into the dispatcher?
-
         RenderedImage image = null;
+
         // fast path for pure coverage rendering
         if (DefaultWebMapService.isDirectRasterPathEnabled()
                 && mapContent.layers().size() == 1
@@ -357,12 +360,17 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 if (request.getInterpolations() != null && request.getInterpolations().size() > 0) {
                     interpolation = request.getInterpolations().get(0);
                 }
+
                 image = directRasterRender(mapContent, 0, renderedCoverages, interpolation);
+
             } catch (Exception e) {
                 throw new ServiceException("Error rendering coverage on the fast path", e);
             }
 
             if (image != null) {
+                image = new RenderedImageTimeDecorator(image);
+                // setting the layer triggers layerStartEvent
+                ((RenderedImageTimeDecorator) image).setLayer(mapContent.layers().get(0));
                 return buildMap(mapContent, image);
             }
         }
@@ -570,7 +578,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final RenderExceptionStrategy nonIgnorableExceptionListener;
         nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
-
+        RenderTimeStatistics statistics = null;
+        if (!request.getRequest().equalsIgnoreCase("GETFEATUREINFO")) {
+            statistics = new RenderTimeStatistics();
+            renderer.addRenderListener(statistics);
+        }
         onBeforeRender(renderer);
 
         int maxRenderingTime = wms.getMaxRenderingTime(request);
@@ -655,6 +667,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } finally {
             timeout.stop();
             graphic.dispose();
+            if (statistics != null) {
+                statistics.renderingComplete();
+            }
         }
         throw serviceException;
     }
@@ -1359,7 +1374,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
 
         // in case of component color model
-        boolean noDataTransparencyOnGrayByte = false;
+        boolean noDataTransparencyApplied = false;
         if (cm instanceof ComponentColorModel) {
 
             // convert to RGB if necessary
@@ -1405,7 +1420,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             bgValues = new double[] {mapToGrayColor(bgColor, ccm), 0};
                         } else {
                             image = transparentImage;
-                            noDataTransparencyOnGrayByte = true;
+                            noDataTransparencyApplied = true;
                         }
                     } else {
                         bgValues = new double[] {mapToGrayColor(bgColor, ccm)};
@@ -1429,7 +1444,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 hasAlpha = cm.hasAlpha();
             }
 
-            if (bgValues == null && !noDataTransparencyOnGrayByte) {
+            if (bgValues == null && !noDataTransparencyApplied) {
                 if (hasAlpha) {
                     // get alpha
                     final ImageWorker iw = new ImageWorker(image);
@@ -1449,10 +1464,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     }
                 } else {
                     if (transparent) {
-                        image = addAlphaChannel(image);
-                        // this will work fine for all situation where the color components are <= 3
-                        // e.g., one band rasters with no colormap will have only one usually
-                        bgValues = new double[] {0, 0, 0, 0};
+                        // If nodata is available, let's try to make it transparent when rgb.
+                        RenderedImage imageTransparent = rgbNoDataTransparent(image);
+                        if (imageTransparent != null) {
+                            image = imageTransparent;
+                            noDataTransparencyApplied = true;
+                        } else {
+                            image = addAlphaChannel(image);
+                            // this will work fine for all situation where the color components are
+                            // <= 3
+                            // e.g., one band rasters with no colormap will have only one usually
+                            bgValues = new double[] {0, 0, 0, 0};
+                        }
                     } else {
                         // TODO: handle the case where the component color model is not RGB
                         // We cannot use ImageWorker as is because it basically seems to assume
@@ -1486,7 +1509,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             transparencyType,
                             iw,
                             roiCandidate,
-                            noDataTransparencyOnGrayByte);
+                            noDataTransparencyApplied);
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea)
@@ -1503,6 +1526,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     Level.FINE,
                     "Direct rendering path produced the following image chain:\n"
                             + RenderedImageBrowser.dumpChain(image));
+        }
+        Map<String, String> rawKvp = null;
+        if (RASTER_CHAIN_DEBUG
+                && ((rawKvp = mapContent.getRequest().getRawKvp()) != null)
+                && Boolean.valueOf(rawKvp.get("showchain"))) {
+            RenderedImageBrowser.showChain(image, true, true, "RenderedImageMapOutput", true);
         }
         return image;
     }
@@ -1627,12 +1656,32 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * Optmized method for Gray Scale Byte images to turn noData value to transparent.
+     * Optimized method for RGB images to turn noData value to transparent.
+     *
+     * @param image
+     * @return
+     */
+    private RenderedImage rgbNoDataTransparent(RenderedImage image) {
+        return makeNoDataTransparent(image, 3);
+    }
+
+    /**
+     * Optimized method for Gray Scale Byte images to turn noData value to transparent.
      *
      * @param image
      * @return
      */
     private RenderedImage grayNoDataTransparent(RenderedImage image) {
+        return makeNoDataTransparent(image, 1);
+    }
+
+    /**
+     * Optimized method to turn noData value to transparent.
+     *
+     * @param image
+     * @return
+     */
+    private RenderedImage makeNoDataTransparent(RenderedImage image, final int numBands) {
         // Using an ImageWorker
         ImageWorker iw = new ImageWorker(image);
         Range noData = iw.getNoData();
@@ -1640,12 +1689,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final int numColorBands = cm.getNumColorComponents();
         if (noData != null
                 && image.getSampleModel().getDataType() == DataBuffer.TYPE_BYTE
-                && numColorBands == 1
+                && numColorBands == numBands
                 && cm instanceof ComponentColorModel) {
             int minValue = noData.getMin().intValue();
             int maxValue = noData.getMax().intValue();
             if (minValue == maxValue && minValue >= Byte.MIN_VALUE && minValue <= Byte.MAX_VALUE) {
-                // Optimization on gray images with noData value. Make that value transparent
+                // Optimization on images with noData value. Make that value transparent
                 Color transparentColor = new Color(minValue, minValue, minValue);
                 iw.makeColorTransparent(transparentColor);
                 return iw.getRenderedImage();

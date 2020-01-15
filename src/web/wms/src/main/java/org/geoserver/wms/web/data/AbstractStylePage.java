@@ -828,22 +828,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     public void setRawStyle(Reader in) throws IOException {
-        BufferedReader bin = null;
-        if (in instanceof BufferedReader) {
-            bin = (BufferedReader) in;
-        } else {
-            bin = new BufferedReader(in);
-        }
+        try (BufferedReader bin =
+                in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in)) {
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = bin.readLine()) != null) {
+                builder.append(line).append("\n");
+            }
 
-        StringBuilder builder = new StringBuilder();
-        String line = null;
-        while ((line = bin.readLine()) != null) {
-            builder.append(line).append("\n");
+            this.rawStyle = builder.toString();
+            editor.setModelObject(rawStyle);
         }
-
-        this.rawStyle = builder.toString();
-        editor.setModelObject(rawStyle);
-        in.close();
     }
 
     /**

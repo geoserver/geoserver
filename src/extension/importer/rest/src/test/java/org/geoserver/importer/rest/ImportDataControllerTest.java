@@ -42,7 +42,7 @@ public class ImportDataControllerTest extends ImporterTestSupport {
     public void testGetFile() throws Exception {
         JSONObject json =
                 (JSONObject) getAsJSON(ROOT_PATH + "/imports/0/data/files/archsites.shp", 200);
-        System.out.println(json);
+        // System.out.println(json);
         assertEquals("archsites.shp", json.getString("file"));
         assertEquals("archsites.prj", json.getString("prj"));
     }

@@ -1,0 +1,2 @@
+org.geoserver.jsonld.expressions.XPathFunction
+org.geoserver.jsonld.expressions.ReprojectFunction

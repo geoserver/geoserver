@@ -14,13 +14,12 @@ import io.swagger.v3.oas.models.media.BinarySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -126,31 +125,26 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     protected void declareGetResponseFormats(OpenAPI api, String path, Class<?> binding) {
         PathItem pi = api.getPaths().get(path);
         Operation get = pi.getGet();
-        Content content = get.getResponses().get("200").getContent();
+        ApiResponse okResponse = get.getResponses().get("200");
+        Content content = new Content();
+        okResponse.setContent(content);
         List<String> formats =
                 APIRequestInfo.get()
                         .getProducibleMediaTypes(binding, true)
                         .stream()
                         .map(mt -> mt.toString())
                         .collect(Collectors.toList());
-        // first remove the ones missing
-        Set<String> missingFormats = new HashSet<>(content.keySet());
-        missingFormats.removeAll(formats);
-        missingFormats.forEach(f -> content.remove(f));
-        // then add the ones not already declared
-        Set<String> extraFormats = new HashSet<>(formats);
-        extraFormats.removeAll(content.keySet());
-        for (String extraFormat : extraFormats) {
+        for (String format : formats) {
             MediaType mediaType = new MediaType();
-            if (extraFormat.contains("yaml") && content.get("application/json") != null) {
+            if (format.contains("yaml") && content.get("application/json") != null) {
                 // same schema as JSON
                 mediaType.schema(content.get("application/json").getSchema());
-            } else if (extraFormat.contains("text")) {
+            } else if (format.contains("text")) {
                 mediaType.schema(new StringSchema());
             } else {
                 mediaType.schema(new BinarySchema());
             }
-            content.addMediaType(extraFormat, mediaType);
+            content.addMediaType(format, mediaType);
         }
     }
 

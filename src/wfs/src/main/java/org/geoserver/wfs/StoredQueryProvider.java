@@ -5,17 +5,25 @@
  */
 package org.geoserver.wfs;
 
+import static java.util.Optional.ofNullable;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.wfs20.StoredQueryDescriptionType;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.exception.GeoServerRuntimException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.util.logging.Logging;
@@ -48,9 +56,26 @@ public class StoredQueryProvider {
     /** file system access */
     GeoServerResourceLoader loader;
 
+    final WFSInfo wfsInfo;
+
+    final boolean allowPerWorkspace;
+    final String workspaceName;
+
     public StoredQueryProvider(Catalog catalog) {
+        this(catalog, null, false, null);
+    }
+
+    public StoredQueryProvider(Catalog catalog, WFSInfo wfsInfo, boolean allowPerWorkspace) {
+        this(catalog, wfsInfo, allowPerWorkspace, null);
+    }
+
+    public StoredQueryProvider(
+            Catalog catalog, WFSInfo wfsInfo, boolean allowPerWorkspace, String workspaceName) {
         this.catalog = catalog;
         this.loader = catalog.getResourceLoader();
+        this.wfsInfo = wfsInfo;
+        this.allowPerWorkspace = allowPerWorkspace;
+        this.workspaceName = workspaceName;
     }
 
     /** The language/type of stored query the provider handles. */
@@ -60,24 +85,42 @@ public class StoredQueryProvider {
 
     /** Lists all the stored queries provided. */
     public List<StoredQuery> listStoredQueries() {
-        Parser p = new Parser(new WFSConfiguration());
-
-        List<StoredQuery> queries = new ArrayList();
+        final List<StoredQuery> queries = new ArrayList<>();
 
         // add the default as mandated by spec
         queries.add(StoredQuery.DEFAULT);
 
         // add user created ones
-        Resource dir = storedQueryDir();
-        for (Resource f : dir.list()) {
-            try {
-                queries.add(parseStoredQuery(f, p));
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Error occured parsing stored query: " + f, e);
-            }
+        final Resource dir = storedQueryDir();
+        final List<StoredQuery> globalQueries = getStoredQueryByResource(dir);
+        final List<StoredQuery> localQueries = getLocalWorkspaceStoredQueries();
+        // add all global queries don't collide with local ones names
+        if (shouldProcessGlobalQueries()) {
+            globalQueries
+                    .stream()
+                    .filter(q -> checkQueryNotExists(q, localQueries))
+                    .forEach(q -> queries.add(q));
         }
+        // add available local queries
+        queries.addAll(localQueries);
 
         return queries;
+    }
+
+    private boolean checkQueryNotExists(StoredQuery query, List<StoredQuery> localQueries) {
+        return localQueries
+                .stream()
+                .noneMatch(local -> Objects.equals(query.getName(), local.getName()));
+    }
+
+    private boolean shouldProcessGlobalQueries() {
+        // if executed in global
+        if (getLocalWorkspace() == null) {
+            return true;
+        } else {
+            // is executed inside a local workspace
+            return isGlobalQueriesAllowedOnLocalWorkspace();
+        }
     }
 
     /**
@@ -109,12 +152,25 @@ public class StoredQueryProvider {
      * @param query The stored query
      */
     public void removeStoredQuery(StoredQuery query) {
-        storedQueryDir().get(toFilename(query.getName())).delete();
+        final String filename = toFilename(query.getName());
+        Resource resource = storedQueryDirByContext().get(filename);
+        // resource exists? Delete it
+        if (resource.getType() == Type.RESOURCE) {
+            resource.delete();
+        } else {
+            // resource doesn't exists
+            // are we inside a virtual service and global query exists ?
+            if (localWorkspaceDir() != null
+                    && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
+                throw new GeoServerRuntimException(
+                        "Global query can not be deleted from a virtual service.");
+            }
+        }
     }
 
     /** Removes all stored queries. */
     public void removeAll() {
-        for (Resource file : storedQueryDir().list()) {
+        for (Resource file : storedQueryDirByContext().list()) {
             file.delete();
         }
     }
@@ -131,9 +187,9 @@ public class StoredQueryProvider {
         }
 
         try {
-            Resource res = storedQueryDir().get(toFilename(name));
+            Resource res = getResourceByContext(toFilename(name));
 
-            if (res.getType() != Type.RESOURCE) {
+            if (res == null || res.getType() != Type.RESOURCE) {
                 return null;
             }
 
@@ -143,6 +199,21 @@ public class StoredQueryProvider {
         }
     }
 
+    private Resource getResourceByContext(String filename) {
+        Resource res = storedQueryDirByContext().get(filename);
+        if (res.getType() == Type.RESOURCE) {
+            return res;
+        }
+        // if local workspace was evaluated, now check on global one if allowed
+        if (getLocalWorkspace() != null && isGlobalQueriesAllowedOnLocalWorkspace()) {
+            res = storedQueryDir().get(filename);
+            if (res.getType() == Type.RESOURCE) {
+                return res;
+            }
+        }
+        return null;
+    }
+
     /**
      * Persists a stored query, overwriting it if the query already exists.
      *
@@ -150,7 +221,7 @@ public class StoredQueryProvider {
      */
     public void putStoredQuery(StoredQuery query) {
         try {
-            Resource dir = storedQueryDir();
+            Resource dir = storedQueryDirByContext();
             Resource f = dir.get(toFilename(query.getName()));
             // if (f.getType() != Type.UNDEFINED) {
             // TODO: back up the old file in case there is an error during encoding
@@ -200,5 +271,60 @@ public class StoredQueryProvider {
 
     public boolean supportsLanguage(String language) {
         return LANGUAGE_20.equalsIgnoreCase(language) || LANGUAGE_20_PRE.equalsIgnoreCase(language);
+    }
+
+    /**
+     * Provides the current local workspace name for the OWS request.
+     *
+     * @return The workspace name, or NULL if local workspace is not available.
+     */
+    private String getLocalWorkspace() {
+        if (!allowPerWorkspace) return null;
+        if (workspaceName != null) return workspaceName;
+        return ofNullable(LocalWorkspace.get()).map(WorkspaceInfo::getName).orElse(null);
+    }
+
+    private List<StoredQuery> getLocalWorkspaceStoredQueries() {
+        Resource dir = localWorkspaceStoredQueryDir();
+        if (dir == null) {
+            return Collections.emptyList();
+        }
+        return getStoredQueryByResource(dir);
+    }
+
+    private List<StoredQuery> getStoredQueryByResource(Resource dir) {
+        Objects.requireNonNull(dir);
+        final Parser p = new Parser(new WFSConfiguration());
+        final List<StoredQuery> queries = new ArrayList<>();
+        for (Resource f : dir.list()) {
+            try {
+                queries.add(parseStoredQuery(f, p));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error occured parsing stored query: " + f, e);
+            }
+        }
+        return queries;
+    }
+
+    private String localWorkspaceDir() {
+        final String localWorkspace = getLocalWorkspace();
+        if (StringUtils.isBlank(localWorkspace)) {
+            return null;
+        }
+        return "workspaces/" + localWorkspace + "/wfs/query";
+    }
+
+    private Resource localWorkspaceStoredQueryDir() {
+        String localWorkspaceDir = localWorkspaceDir();
+        if (StringUtils.isBlank(localWorkspaceDir)) return null;
+        return loader.get(localWorkspaceDir);
+    }
+
+    private Resource storedQueryDirByContext() {
+        return ofNullable(localWorkspaceStoredQueryDir()).orElse(storedQueryDir());
+    }
+
+    private boolean isGlobalQueriesAllowedOnLocalWorkspace() {
+        return wfsInfo == null ? true : wfsInfo.getAllowGlobalQueries();
     }
 }

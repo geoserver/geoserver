@@ -1,0 +1,24 @@
+{
+  "_id": { "$oid" : "58e5889ce4b02461ad5af082"},
+  "id": "3",
+  "name": "station 3",
+  "inferredAttribute": "ok",
+  "contact": {
+    "mail": "station3@mail.com"
+  },
+  "geometry": {
+    "coordinates": [
+      60,
+      70
+    ],
+    "type": "Point"
+  },
+  "measurements": [
+    {
+      "values": []
+    },
+    {
+      "values": []
+    }
+  ]
+}

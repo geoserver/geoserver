@@ -12,19 +12,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.geotools.data.complex.util.ComplexFeatureConstants;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.LenientFeatureFactoryImpl;
+import org.geotools.feature.type.AttributeDescriptorImpl;
+import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.Types;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -41,8 +45,9 @@ public class GenericRecordBuilder implements RecordBuilder {
      */
     public static final String ORIGINAL_BBOXES = "RecordOriginalBounds";
 
+    private static final Pattern PATTERN_ATT_WITH_INDEX = Pattern.compile("([^\\[]*)\\[(.*)\\]");
+
     protected ComplexFeatureBuilder fb;
-    protected AttributeBuilder ab = new AttributeBuilder(new LenientFeatureFactoryImpl());
     protected List<ReferencedEnvelope> boxes = new ArrayList<ReferencedEnvelope>();
     protected RecordDescriptor recordDescriptor;
     protected Map<Name, Name> substitutionMap = new HashMap<Name, Name>();
@@ -55,33 +60,25 @@ public class GenericRecordBuilder implements RecordBuilder {
         AttributeDescriptor descriptor = null;
 
         public abstract TreeNode clone();
-    }
 
-    protected abstract static class TreeLeaf extends TreeNode {
-        public Map<Object, Object> userData;
-    }
-
-    protected static class ComplexTreeLeaf extends TreeLeaf {
-        public Map<String, Object> value = new HashMap<String, Object>();
-
-        @Override
-        public ComplexTreeLeaf clone() {
-            ComplexTreeLeaf leaf = new ComplexTreeLeaf();
-            leaf.value.putAll(value);
-            leaf.userData = userData;
-            leaf.descriptor = descriptor;
-            return leaf;
+        public boolean cleanUp() {
+            // by default, do nothing
+            return false;
         }
     }
 
-    protected static class SimpleTreeLeaf extends TreeLeaf {
+    protected static class TreeLeaf extends TreeNode {
         public Object value;
+        public Map<Object, Object> userData;
 
         @Override
-        public SimpleTreeLeaf clone() {
-            SimpleTreeLeaf leaf = new SimpleTreeLeaf();
+        public TreeLeaf clone() {
+            TreeLeaf leaf = new TreeLeaf();
             leaf.value = value;
-            leaf.userData.putAll(userData);
+            if (userData != null) {
+                leaf.userData = new HashMap<Object, Object>();
+                leaf.userData.putAll(userData);
+            }
             leaf.descriptor = descriptor;
             return leaf;
         }
@@ -101,6 +98,22 @@ public class GenericRecordBuilder implements RecordBuilder {
             }
             branch.descriptor = descriptor;
             return branch;
+        }
+
+        @Override
+        public boolean cleanUp() {
+            boolean empty = true;
+            for (List<TreeNode> child : children.values()) {
+                Iterator<TreeNode> it = child.iterator();
+                while (it.hasNext()) {
+                    if (it.next().cleanUp()) {
+                        it.remove();
+                    } else {
+                        empty = false;
+                    }
+                }
+            }
+            return empty;
         }
     }
 
@@ -140,6 +153,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param value
      * @param userData
      */
+    @SuppressWarnings("unchecked")
     private void createAttribute(
             TreeBranch branch,
             int index,
@@ -147,10 +161,10 @@ public class GenericRecordBuilder implements RecordBuilder {
             String[] path,
             List<Object> value,
             Map<Object, Object> userData,
-            int splitIndex) {
+            int[] splitIndex) {
 
         AttributeDescriptor descriptor =
-                (AttributeDescriptor) Types.findDescriptor(type, path[index]);
+                (AttributeDescriptor) Types.findDescriptor(type, attName(path[index]));
 
         if (descriptor == null) {
             throw new IllegalArgumentException(
@@ -167,46 +181,71 @@ public class GenericRecordBuilder implements RecordBuilder {
             branch.children.put(path[index], treenodes);
         }
 
-        if (index == path.length - 1) { // can only happen if there is a path with size 1
-
-            for (Object item : value) {
-                SimpleTreeLeaf leaf = new SimpleTreeLeaf();
-                leaf.userData = userData;
-
-                leaf.descriptor = descriptor;
-                leaf.value = item;
-                leaf.userData = userData;
-
-                treenodes.add(leaf);
-            }
-
-        } else if (index == path.length - 2) {
-
-            if (treenodes.isEmpty()) {
-                for (int i = 0; i < value.size(); i++) {
-                    ComplexTreeLeaf leaf = new ComplexTreeLeaf();
-                    treenodes.add(leaf);
-                    leaf.descriptor = descriptor;
+        if (index == path.length - 1) {
+            if (descriptor.getType() instanceof ComplexType) {
+                if (treenodes.isEmpty()) {
+                    for (int i = 0; i < value.size(); i++) {
+                        TreeNode child = new TreeBranch();
+                        child.descriptor = descriptor;
+                        treenodes.add(child);
+                    }
+                } else if (treenodes.size() == 1) {
+                    for (int i = 1; i < value.size(); i++) {
+                        treenodes.add(treenodes.get(0).clone());
+                    }
+                } else if (value.size() != 1 && treenodes.size() != value.size()) {
+                    throw new IllegalArgumentException(
+                            "Error in mapping: Number of values not matching.");
                 }
-            } else if (treenodes.size() == 1) {
-                for (int i = 1; i < value.size(); i++) {
-                    treenodes.add(treenodes.get(0).clone());
+                // wrap simple content in complex attribute
+                AttributeType simpleType =
+                        new AttributeTypeImpl(
+                                ComplexFeatureConstants.SIMPLE_CONTENT,
+                                String.class,
+                                false,
+                                false,
+                                null,
+                                null,
+                                null);
+                AttributeDescriptor simpleDescriptor =
+                        new AttributeDescriptorImpl(
+                                simpleType,
+                                ComplexFeatureConstants.SIMPLE_CONTENT,
+                                1,
+                                1,
+                                true,
+                                (Object) null);
+                for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
+                    Object item = value.size() == 1 ? value.get(0) : value.get(i);
+                    if (item != null) {
+                        TreeLeaf leaf = new TreeLeaf();
+                        leaf.userData = userData;
+                        leaf.descriptor = simpleDescriptor;
+                        leaf.value = value.size() == 1 ? value.get(0) : value.get(i);
+                        leaf.userData = userData;
+                        ((TreeBranch) treenodes.get(i))
+                                .children.put(
+                                        ComplexFeatureConstants.SIMPLE_CONTENT.getLocalPart(),
+                                        Collections.singletonList(leaf));
+                    }
                 }
-            } else if (value.size() != 1 && treenodes.size() != value.size()) {
-                throw new IllegalArgumentException(
-                        "Error in mapping: Number of values not matching.");
+
+            } else {
+                for (Object item : value) {
+                    if (value != null) {
+                        TreeLeaf leaf = new TreeLeaf();
+                        leaf.userData = userData;
+
+                        leaf.descriptor = descriptor;
+                        leaf.value = item;
+                        leaf.userData = userData;
+
+                        treenodes.add(leaf);
+                    }
+                }
             }
-
-            for (int i = 0; i < value.size(); i++) {
-                ComplexTreeLeaf leaf = (ComplexTreeLeaf) treenodes.get(i);
-
-                leaf.value.put(path[index + 1], value.size() == 1 ? value.get(0) : value.get(i));
-                leaf.userData = userData;
-            }
-
         } else {
-
-            if (index != splitIndex) {
+            if (index < path.length - 2 && Arrays.binarySearch(splitIndex, index) < 0) {
                 if (treenodes.isEmpty()) {
                     TreeNode child = new TreeBranch();
                     child.descriptor = descriptor;
@@ -233,22 +272,36 @@ public class GenericRecordBuilder implements RecordBuilder {
                     for (int i = 1; i < value.size(); i++) {
                         treenodes.add(treenodes.get(0).clone());
                     }
-                } else if (treenodes.size() != value.size()) {
+                } else if (value.size() != 1 && treenodes.size() != value.size()) {
                     throw new IllegalArgumentException(
                             "Error in mapping: Number of values not matching.");
                 }
 
-                for (int i = 0; i < value.size(); i++) {
-                    createAttribute(
-                            (TreeBranch) treenodes.get(i),
-                            index + 1,
-                            (ComplexType) descriptor.getType(),
-                            path,
-                            Collections.singletonList(value.get(i)),
-                            userData,
-                            splitIndex);
+                for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
+                    Object item = value.size() == 1 ? value.get(0) : value.get(i);
+                    if (item != null) {
+                        createAttribute(
+                                (TreeBranch) treenodes.get(i),
+                                index + 1,
+                                (ComplexType) descriptor.getType(),
+                                path,
+                                item instanceof List
+                                        ? (List<Object>) item
+                                        : Collections.singletonList(item),
+                                userData,
+                                splitIndex);
+                    }
                 }
             }
+        }
+    }
+
+    private String attName(String attWithIndex) {
+        Matcher matcher = PATTERN_ATT_WITH_INDEX.matcher(attWithIndex);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        } else {
+            return attWithIndex;
         }
     }
 
@@ -260,7 +313,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param userData the user data
      */
     public void addElement(
-            String name, List<Object> value, Map<Object, Object> userData, int splitIndex) {
+            String name, List<Object> value, Map<Object, Object> userData, int[] splitIndex) {
 
         createAttribute(
                 root,
@@ -278,8 +331,8 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param name path of property with dots
      * @param values the value(s) to be inserted
      */
-    public void addElement(String name, String... values) {
-        addElement(name, Arrays.asList((Object[]) values), null, -1);
+    public void addElement(String name, Object... values) {
+        addElement(name, Arrays.asList((Object[]) values), null, new int[0]);
     }
 
     /**
@@ -288,7 +341,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param name path of property with dots
      * @param values the value(s) to be inserted
      */
-    public void addElement(String name, int splitIndex, String... values) {
+    public void addElement(String name, int[] splitIndex, Object... values) {
         addElement(name, Arrays.asList((Object[]) values), null, splitIndex);
     }
 
@@ -332,16 +385,19 @@ public class GenericRecordBuilder implements RecordBuilder {
             geom = geom.getFactory().createMultiPolygon(new Polygon[] {(Polygon) geom});
         }
 
-        Map<Object, Object> userData =
-                Collections.singletonMap(
-                        (Object) ORIGINAL_BBOXES,
-                        (Object) new ArrayList<ReferencedEnvelope>(boxes));
-        addElement(
-                recordDescriptor.getBoundingBoxPropertyName(),
-                Collections.singletonList((Object) geom),
-                userData,
-                -1);
+        if (recordDescriptor.getBoundingBoxPropertyName() != null) {
+            Map<Object, Object> userData =
+                    Collections.singletonMap(
+                            (Object) ORIGINAL_BBOXES,
+                            (Object) new ArrayList<ReferencedEnvelope>(boxes));
+            addElement(
+                    recordDescriptor.getBoundingBoxPropertyName(),
+                    Collections.singletonList((Object) geom),
+                    userData,
+                    new int[0]);
+        }
 
+        root.cleanUp(); // remove empty tags
         for (List<TreeNode> nodes : root.children.values()) {
             for (TreeNode node : nodes) {
                 Attribute att = buildNode(node);
@@ -362,67 +418,28 @@ public class GenericRecordBuilder implements RecordBuilder {
      */
     private Attribute buildNode(TreeNode node) {
 
+        AttributeBuilder ab = new AttributeBuilder(new LenientFeatureFactoryImpl());
+
         if (node instanceof TreeLeaf) {
 
-            if (node instanceof ComplexTreeLeaf) {
+            TreeLeaf leaf = (TreeLeaf) node;
 
-                ComplexTreeLeaf leaf = (ComplexTreeLeaf) node;
-
-                ComplexType type = (ComplexType) node.descriptor.getType();
-
-                ab.setDescriptor(node.descriptor);
-
-                for (Entry<String, Object> entry : leaf.value.entrySet()) {
-
-                    PropertyDescriptor descriptor = Types.findDescriptor(type, entry.getKey());
-
-                    if (descriptor == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot find descriptor for attribute "
-                                        + entry.getKey()
-                                        + " in type "
-                                        + type.getName().toString());
-                    }
-
-                    ab.add(null, entry.getValue(), descriptor.getName());
-                }
-
-                Attribute att = ab.build();
-
-                if (leaf.userData != null) {
-                    for (Entry<String, Object> entry : leaf.value.entrySet()) {
-                        ((ComplexAttribute) att)
-                                .getProperty(entry.getKey())
-                                .getUserData()
-                                .putAll(leaf.userData);
-                    }
-                }
-
-                return att;
-            } else {
-
-                SimpleTreeLeaf leaf = (SimpleTreeLeaf) node;
-
-                ab.setDescriptor(node.descriptor);
-                Attribute att = ab.buildSimple(null, leaf.value);
-
-                if (leaf.userData != null) {
-                    att.getUserData().putAll(leaf.userData);
-                }
-
-                return att;
+            ab.setDescriptor(node.descriptor);
+            Attribute att = ab.buildSimple(null, leaf.value);
+            if (leaf.userData != null) {
+                att.getUserData().putAll(leaf.userData);
             }
+            return att;
 
         } else if (node instanceof TreeBranch) {
 
+            ab.setDescriptor(node.descriptor);
             List<Attribute> list = new ArrayList<Attribute>();
-
             for (List<TreeNode> nodes : ((TreeBranch) node).children.values()) {
                 for (TreeNode child : nodes) {
                     list.add(buildNode(child));
                 }
             }
-
             return ab.createComplexAttribute(list, null, node.descriptor, null);
         }
 

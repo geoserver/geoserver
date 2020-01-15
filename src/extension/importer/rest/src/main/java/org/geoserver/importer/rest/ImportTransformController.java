@@ -6,6 +6,7 @@ package org.geoserver.importer.rest;
 
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import org.apache.commons.lang3.NotImplementedException;
 import org.geoserver.importer.ImportTask;
@@ -43,11 +44,13 @@ public class ImportTransformController extends ImportBaseController {
             @PathVariable Long importId,
             @PathVariable Integer taskId,
             @RequestBody ImportTransform importTransform,
-            UriComponentsBuilder builder) {
+            UriComponentsBuilder builder)
+            throws IOException {
 
         ImportTransform tx = importTransform;
         ImportTask task = task(importId, taskId);
         task.getTransform().add(tx);
+        importer.changed(task);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(
@@ -91,13 +94,15 @@ public class ImportTransformController extends ImportBaseController {
             @PathVariable Integer taskId,
             @PathVariable Integer transformId,
             @RequestParam(value = "expand", required = false) String expand,
-            @RequestBody ImportTransform importTransform) {
+            @RequestBody ImportTransform importTransform)
+            throws IOException {
 
-        ImportTransform orig = transform(importId, taskId, transformId);
+        ImportTask task = task(importId, taskId);
+        ImportTransform orig = transform(task, transformId, false);
         OwsUtils.copy(importTransform, orig, (Class) orig.getClass());
+        importer.changed(task);
 
         return (writer, builder, converter) -> {
-            ImportTask task = task(importId, taskId);
             int index = task.getTransform().getTransforms().indexOf(orig);
 
             converter.transform(builder, orig, index, task, true, converter.expand(expand, 1));
@@ -108,13 +113,15 @@ public class ImportTransformController extends ImportBaseController {
     public ResponseEntity deleteTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,
-            @PathVariable Integer transformId) {
+            @PathVariable Integer transformId)
+            throws IOException {
 
         ImportTask task = task(importId, taskId);
-        ImportTransform tx = transform(importId, taskId, transformId);
+        ImportTransform tx = transform(task, transformId, true);
         boolean result = task.getTransform().remove(tx);
 
         if (result) {
+            importer.changed(task);
             return new ResponseEntity<String>("", HttpStatus.OK);
         } else {
             return new ResponseEntity<String>("", HttpStatus.NOT_FOUND);

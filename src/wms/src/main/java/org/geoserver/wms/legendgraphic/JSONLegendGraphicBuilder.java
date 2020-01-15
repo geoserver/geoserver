@@ -309,7 +309,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             ArrayList<JSONObject> jRules = new ArrayList<>();
             if (legend instanceof CascadedLegendRequest) {
                 CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
-                JSONArray cascadedRules = cascadedLegend.getCascadedJSONRules();
+                JSONArray cascadedRules = null;
+
+                cascadedRules = cascadedLegend.getCascadedJSONRules();
+
                 // if null or empty..go back to default behavior
                 if (cascadedRules != null) {
                     if (!cascadedRules.isEmpty()) {

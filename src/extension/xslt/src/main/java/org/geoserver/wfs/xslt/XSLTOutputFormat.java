@@ -198,6 +198,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
 
         // prepare the stream connections, so that we can do the transformation on the fly
         PipedInputStream pis = new PipedInputStream();
+        @SuppressWarnings("PMD.CloseResource") // these operates in memory
         final PipedOutputStream pos = new PipedOutputStream(pis);
 
         // submit the source output format execution, tracking exceptions

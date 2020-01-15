@@ -3,14 +3,14 @@
 Windows binary
 ==============
 
-.. note:: For the wizard-based installer on Windows, please see the section on the :ref:`installation_windows_installer`. For installing on Windows with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
+.. note:: For installing on Windows with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
 
-An alternate way of installing GeoServer on Windows is to use the platform-independent binary. This version is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`_, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
+The other way of installing GeoServer on Windows is to use the platform-independent binary. This version is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`_, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment. The Oracle JRE is preferred, but OpenJDK has been known to work adequately. You can `download JRE 8 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment.  You can `download JRE 8 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
 
    .. note:: Java 9 is not currently supported.
 

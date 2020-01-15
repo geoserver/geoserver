@@ -4,7 +4,6 @@
  */
 package org.geoserver.api.styles;
 
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractLandingPageDocument;
 
 /** Landing page for the styles service */
@@ -15,17 +14,13 @@ public class StylesLandingPage extends AbstractLandingPageDocument {
     public StylesLandingPage(String title, String description) {
         super(title, description, STYLES_SERVICE_BASE);
 
-        final APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
-
         // collections
         addLinksFor(
-                baseUrl,
                 STYLES_SERVICE_BASE + "/styles",
                 StylesDocument.class,
                 "Styles Metadata as ",
                 "styles",
                 null,
-                "data");
+                "styles");
     }
 }

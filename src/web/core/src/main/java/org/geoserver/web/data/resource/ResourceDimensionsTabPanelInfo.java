@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -21,6 +22,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
@@ -37,7 +39,8 @@ import org.geotools.util.logging.Logging;
  *
  * @author Alessio
  */
-public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo> {
+public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo>
+        implements MetadataMapValidator {
 
     private static final long serialVersionUID = 4702596541385329270L;
 
@@ -58,7 +61,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         if (time.getObject() == null) {
             time.setObject(new DimensionInfoImpl());
         }
-        add(new DimensionEditor("time", time, resource, Date.class, true));
+        add(new DimensionEditor("time", time, resource, Date.class, true, true));
 
         // elevation
         IModel elevation =
@@ -124,6 +127,44 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                 };
         add(customDimensionsEditor);
         customDimensionsEditor.setVisible(customDimensionModels.size() > 0);
+
+        // vector custom dimensions panel
+        buildVectorCustomDimensionsPanel(model, resource);
+    }
+
+    private void buildVectorCustomDimensionsPanel(
+            IModel<LayerInfo> model, final ResourceInfo resource) {
+        WebMarkupContainer vectorCustomDimPanel;
+        // vector custom dimensions panel
+        if (resource instanceof FeatureTypeInfo) {
+            final PropertyModel<FeatureTypeInfo> typeInfoModel =
+                    new PropertyModel<FeatureTypeInfo>(model, "resource");
+            vectorCustomDimPanel =
+                    new VectorCustomDimensionsPanel("vectorCustomDimPanel", typeInfoModel);
+        } else {
+            vectorCustomDimPanel = new WebMarkupContainer("vectorCustomDimPanel");
+            vectorCustomDimPanel.setVisible(false);
+        }
+        this.add(vectorCustomDimPanel);
+    }
+
+    @Override
+    public void validate(MetadataMap map) {
+        if (metadataContainsRepeatedDimension("time", map)
+                || metadataContainsRepeatedDimension("elevation", map)) {
+            throw new IllegalArgumentException("Repeated dimensions names not allowed.");
+        }
+    }
+
+    private boolean metadataContainsRepeatedDimension(String name, MetadataMap map) {
+        return isDimensionEnabled(name, map) && isDimensionEnabled("dim_" + name, map);
+    }
+
+    private boolean isDimensionEnabled(String name, MetadataMap map) {
+        Serializable object = map.get(name);
+        if (object == null || !(object instanceof DimensionInfo)) return false;
+        DimensionInfo info = (DimensionInfo) object;
+        return info.isEnabled();
     }
 
     class RasterDimensionModel extends MetadataMapModel {

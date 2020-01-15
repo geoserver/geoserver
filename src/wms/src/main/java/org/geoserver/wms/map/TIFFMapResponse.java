@@ -75,6 +75,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
      * @throws ServiceException not really.
      * @throws IOException if the image writing fails.
      */
+    @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
     public void formatImageOutputStream(
             RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {

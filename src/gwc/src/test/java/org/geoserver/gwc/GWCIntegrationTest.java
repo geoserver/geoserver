@@ -95,6 +95,7 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.geowebcache.seed.TruncateAllRequest;
 import org.geowebcache.service.wmts.WMTSService;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -2066,6 +2067,49 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(Integer.parseInt(result), is(1));
     }
 
+    @Test
+    public void testMassTruncateAll() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        // first request
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // second request
+        response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        waitTileBreederCompletion();
+
+        TruncateAllRequest truncateAll = gwc.truncateAll();
+        String truncatedLayers = truncateAll.getTrucatedLayersList();
+        assertTrue(truncatedLayers.contains(qualifiedName));
+
+        // checking for empty
+        response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+    }
+
     /** Helper method that creates a layer group using the provided name and layers names. */
     private void createLayerGroup(String layerGroupName, QName... layersNames) throws Exception {
         // get layers that match the layers names
@@ -2085,5 +2129,83 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());
         catalogBuilder.calculateLayerGroupBounds(layerGroup);
         getCatalog().add(layerGroup);
+    }
+
+    /**
+     * Test verifying that GWC integration will work when layer belongs to default workspace and
+     * layer name is passed without workspace being part of layer name or OWS request itself.
+     */
+    @Test
+    public void testDirectDefaultWorkspaceWMSIntegration() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+        final String layerName = BASIC_POLYGONS.getLocalPart();
+
+        String request =
+                "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                        + "&layers="
+                        + layerName
+                        + "&srs=EPSG:4326&width=256&height=256&styles="
+                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertNotNull(response.getHeader("geowebcache-tile-index"));
+        assertTrue(response.getHeader("geowebcache-cache-result").equalsIgnoreCase("HIT"));
+
+        // with virtual services
+        request =
+                MockData.CITE_PREFIX
+                        + "/wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                        + "&layers="
+                        + layerName
+                        + "&srs=EPSG:4326&width=256&height=256&styles="
+                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        response = getAsServletResponse(request);
+
+        response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertNotNull(response.getHeader("geowebcache-tile-index"));
+        assertTrue(response.getHeader("geowebcache-cache-result").equalsIgnoreCase("HIT"));
+    }
+
+    @Test
+    public void testDirectDefaultWorkspaceWMSIntegrationLayerGroup() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+        // build a layer group in the test workspace
+        LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
+        lg.setName(WORKSPACED_LAYER_GROUP);
+        String bpLayerId = getLayerId(MockData.BASIC_POLYGONS);
+        String mpLayerId = getLayerId(MockData.LAKES);
+        lg.getLayers().add(getCatalog().getLayerByName(bpLayerId));
+        lg.getLayers().add(getCatalog().getLayerByName(mpLayerId));
+        lg.getStyles().add(null);
+        lg.getStyles().add(null);
+
+        lg.setWorkspace(getCatalog().getWorkspaceByName(MockData.BASIC_POLYGONS.getPrefix()));
+        new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
+        getCatalog().add(lg);
+
+        String request =
+                MockData.BASIC_POLYGONS.getPrefix()
+                        + "/wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                        + "&layers="
+                        + WORKSPACED_LAYER_GROUP
+                        + "&srs=EPSG:4326&width=256&height=256&styles="
+                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertNotNull(response.getHeader("geowebcache-tile-index"));
+        assertTrue(response.getHeader("geowebcache-cache-result").equalsIgnoreCase("HIT"));
     }
 }

@@ -137,6 +137,10 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
 In summary, use **Force Declared** as your primary option, **Reproject from native** only if your source data does not match any EPSG code, and **Keep Native**
 only if you really know what you're doing.
 
+For WMS Server and WFS-NG layers with multiple supported CRS in capability document, the Native CRS can be selected from clicking Find button next to Native SRS field
+
+.. figure:: img/cascade_srs.png
+
 Bounding Boxes
 ^^^^^^^^^^^^^^
 
@@ -354,6 +358,7 @@ For each enabled dimension the following configuration options are available:
 
 * **Reference value**—The default value specifier. Only shown for the default value strategies where its used.
 * **Nearest match**—Whether to enable, or not, WMS nearest match support on this dimension. Currently supported only on the time dimension.
+* **Nearest match on raw data**—Whether to enable, or not, nearest match support on this dimension for raw data requests (WCS for coverage layers, WFS for feature layers). Currently supported only on the time dimension for WCS service.
 * **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled).
   Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range. Time distances should specified using the ISO period syntax. For example, ``PT1H/PT0H`` allows to search up to one hour before the user specified value,
@@ -366,3 +371,42 @@ Only for the "Reference value" strategy, and limited to times, it's also possibl
 is copied verbatim into the capabilities document, and as a result, not all client might be recognizing that syntax.
 
 .. note:: For more information on specifying times, please see the section on :ref:`wms_time`.
+
+Vector Custom Dimensions
+^^^^^^^^^^^^^^^^^^^^^^^^
+GeoServer also supports adding custom dimensions to vector layers, defining their names and configurations. 
+
+.. figure:: img/data_layers_dimension_editor_custom.png
+
+   Custom dimension enabled for a vector layer
+
+For each enabled dimension the following configuration options are available:
+
+* **Name**—Custom dimension name.
+* **Attribute**—Attribute name for picking the value for this dimension (vector only). This is treated at start of the range if **End attribute** is also given.
+* **End attribute**—Attribute name for picking the end of the value range for this dimension (optional, vector only).
+* **Presentation**—The presentation type for the available values in the capabilities document. Either *each value separately (list)*, *interval and resolution*, or *continuous interval*.
+* **Default value**—Default value to use for this dimension if none is provided with the request. Select one of from four strategies:
+
+  * **smallest domain value**—Uses the smallest available value from the data
+  * **biggest domain value**—Uses the biggest available value from the data
+  * **nearest to the reference value**—Selects the data value closest to the given reference value
+  * **reference value**—Tries to use the given reference value as-is, regardless of whether its actually available in the data or not.
+
+* **Reference value**—The default value specifier. Only shown for the default value strategies where its used.
+* **Nearest match**—Whether to enable, or not, WMS nearest match support on this dimension.
+* **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled).
+  Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
+  specify an asymmetric search range.
+
+Edit Layer: Security
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
+
+Sets data access rules at layer level.
+
+.. figure:: img/data_layers_security_editor.png
+
+To create/edit layer's data access rules simply check/uncheck checkboxes according to desidered access mode and role. 
+The Grant access to any role checkboxe grant each role for each access mode.

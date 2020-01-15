@@ -35,21 +35,21 @@ public class ValidationTest extends TestCase {
 		pluginConfig.setClassName(GazetteerNameValidation.class.getName());
 		testConfig.setPlugIn(pluginConfig);
 
-		System.out.println(testConfig.toString());
-		System.out.println("--------------------------------------");
-		for (int i = 0; i < testConfig.getPropertyDescriptors().length; i++) {
-			
-			System.out.println(testConfig.getPropertyDescriptors()[i].getClass().getName());
-			System.out.println(testConfig.getPropertyDescriptors()[i].getDisplayName());
-			System.out.println(testConfig.getPropertyDescriptors()[i].getShortDescription());
-			
-			System.out.println(testConfig.getPropertyDescriptors()[i].attributeNames());
-			System.out.println("--------------------------------------");
-		}
-
-		System.out.println("--------------------------------------");
-		System.out.println("--------------------------------------");
-		System.out.println("--------------------------------------");
+//		System.out.println(testConfig.toString());
+//		System.out.println("--------------------------------------");
+//		for (int i = 0; i < testConfig.getPropertyDescriptors().length; i++) {
+//			
+//			System.out.println(testConfig.getPropertyDescriptors()[i].getClass().getName());
+//			System.out.println(testConfig.getPropertyDescriptors()[i].getDisplayName());
+//			System.out.println(testConfig.getPropertyDescriptors()[i].getShortDescription());
+//			
+//			System.out.println(testConfig.getPropertyDescriptors()[i].attributeNames());
+//			System.out.println("--------------------------------------");
+//		}
+//
+//		System.out.println("--------------------------------------");
+//		System.out.println("--------------------------------------");
+//		System.out.println("--------------------------------------");
 		
 		
 		testConfig = new TestConfig();
@@ -61,16 +61,16 @@ public class ValidationTest extends TestCase {
 
 		PropertyDescriptor [] pd = pluginConfig.getPropertyDescriptors();
 		
-		System.out.println(pluginConfig.toString());
-		System.out.println("--------------------------------------");
-		for (int i = 0; i < pluginConfig.getPropertyDescriptors().length; i++) {
-			
-			System.out.println(pd[i].getClass().getName());
-			System.out.println(ArgumentConfig.getDisplayName(pd[i]));
-			System.out.println(ArgumentConfig.getDescription(pd[i]));
-			
-			System.out.println("--------------------------------------");
-		}
+//		System.out.println(pluginConfig.toString());
+//		System.out.println("--------------------------------------");
+//		for (int i = 0; i < pluginConfig.getPropertyDescriptors().length; i++) {
+//			
+//			System.out.println(pd[i].getClass().getName());
+//			System.out.println(ArgumentConfig.getDisplayName(pd[i]));
+//			System.out.println(ArgumentConfig.getDescription(pd[i]));
+//			
+//			System.out.println("--------------------------------------");
+//		}
 		
 
 

@@ -19,6 +19,8 @@ import org.geoserver.catalog.NamespaceInfo;
  */
 public class LayerNameNormalizer implements RequestPostProcessor {
 
+    static final String PROCESSOR_NAME = "layerNameNormalizer";
+
     Catalog cat;
 
     public LayerNameNormalizer(Catalog cat) {
@@ -58,5 +60,10 @@ public class LayerNameNormalizer implements RequestPostProcessor {
                 }
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return PROCESSOR_NAME;
     }
 }

@@ -8,6 +8,7 @@ import static org.geoserver.api.styles.StylesService.ValidationMode.only;
 import static org.geoserver.api.styles.StylesService.ValidationMode.yes;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.api.APIContentNegotiationManager;
@@ -27,7 +30,6 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
@@ -60,7 +62,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -102,16 +103,23 @@ public class StylesService {
 
     private final GeoServer geoServer;
     private final GeoServerDataDirectory dataDirectory;
-    Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
-    List<MediaType> mediaTypes = new ArrayList<>();
-    APIContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
+    private final SampleDataSupport sampleDataSupport;
+    private ThumbnailBuilder thumbnailBuilder;
+    private Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
+    private List<MediaType> mediaTypes = new ArrayList<>();
+    private APIContentNegotiationManager contentNegotiationManager =
+            new APIContentNegotiationManager();
 
     public StylesService(
             GeoServer geoServer,
             GeoServerExtensions extensions,
-            GeoServerDataDirectory dataDirectory) {
+            GeoServerDataDirectory dataDirectory,
+            SampleDataSupport sampleDataSupport,
+            ThumbnailBuilder thumbnailBuilder) {
         this.geoServer = geoServer;
         this.dataDirectory = dataDirectory;
+        this.sampleDataSupport = sampleDataSupport;
+        this.thumbnailBuilder = thumbnailBuilder;
         List<StyleHandler> handlers = extensions.extensions(StyleHandler.class);
         for (StyleHandler sh : handlers) {
             for (Version ver : sh.getVersions()) {
@@ -210,8 +218,8 @@ public class StylesService {
     }
 
     private StyleInfo getStyleInfo(String styleId, boolean failIfNotFound) {
-        List<StyleInfo> styles = NCNameResourceCodec.getStyles(geoServer.getCatalog(), styleId);
-        if (styles == null || styles.isEmpty()) {
+        StyleInfo style = geoServer.getCatalog().getStyleByName(styleId);
+        if (style == null) {
             if (failIfNotFound) {
                 throw new APIException(
                         "StyleNotFound", "Could not locate style " + styleId, HttpStatus.NOT_FOUND);
@@ -219,14 +227,7 @@ public class StylesService {
                 return null;
             }
         }
-        if (styles.size() > 1) {
-            throw new RestException(
-                    "More than one style can be matched to "
-                            + styleId
-                            + " please contact the service administrator about this",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return styles.get(0);
+        return style;
     }
 
     public void writeNativeToResponse(
@@ -276,7 +277,31 @@ public class StylesService {
     public StyleMetadataDocument getStyleMetadata(@PathVariable(name = "styleId") String styleId)
             throws IOException {
         StyleInfo styleInfo = getStyleInfo(styleId, true);
-        return new StyleMetadataDocument(styleInfo, geoServer);
+        return new StyleMetadataDocument(styleInfo, geoServer, sampleDataSupport, thumbnailBuilder);
+    }
+
+    @GetMapping(
+        path = "styles/{styleId}/thumbnail",
+        name = "getStyleThumbnail",
+        produces = "image/png"
+    )
+    @ResponseBody
+    public void getStyleThumbnail(
+            @PathVariable(name = "styleId") String styleId, HttpServletResponse response)
+            throws IOException {
+        StyleInfo styleInfo = getStyleInfo(styleId, true);
+        // TODO: return webmap instead and allow all GetMap encoders to work?
+        RenderedImage image = thumbnailBuilder.buildThumbnailFor(styleInfo);
+        if (image == null) {
+            throw new APIException(
+                    "InternalError",
+                    "Failed to build thumbnail, WMS returned no image",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // TODO: allow any other type of image, leverage the WMS output formats
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "image/png");
+        ImageIO.write(image, "PNG", response.getOutputStream());
     }
 
     @PostMapping(
@@ -289,14 +314,15 @@ public class StylesService {
             InputStream inputStream,
             @RequestParam(name = "validate", required = false, defaultValue = "no")
                     ValidationMode validate,
-            @RequestHeader("Content-Type") String contentType)
+            HttpServletRequest request)
             throws IOException {
         // Extracting mimeType and charset
-        MediaType mediaType = MediaType.parseMediaType(contentType);
+        MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
 
         byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
-        String content = new String(rawData, mediaType.getCharset().toString());
+        String charsetName = getCharacterEncoding(request);
+        String content = new String(rawData, charsetName);
         StyleHandler handler = getHandler(mimeType);
 
         // validation
@@ -338,6 +364,22 @@ public class StylesService {
     }
 
     /**
+     * Gets the charset from the content type, or uses the default configured charset, of if even
+     * that is missing, returns UTF-8 as a default
+     *
+     * @param mediaType
+     * @return
+     */
+    private String getCharacterEncoding(HttpServletRequest request) {
+        return Optional.ofNullable(request.getCharacterEncoding())
+                .map(Object::toString)
+                .orElseGet(
+                        () ->
+                                Optional.ofNullable(geoServer.getSettings().getCharset())
+                                        .orElse("UTF-8"));
+    }
+
+    /**
      * Tries to get a style identifier from the style name itself, if not found, generates a random
      * one
      */
@@ -365,14 +407,15 @@ public class StylesService {
             @PathVariable String styleId,
             @RequestParam(name = "validate", required = false, defaultValue = "no")
                     ValidationMode validate,
-            @RequestHeader("Content-Type") String contentType)
+            HttpServletRequest request)
             throws IOException {
         // Extracting mimeType and charset
-        MediaType mediaType = MediaType.parseMediaType(contentType);
+        MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         String mimeType = mediaType.getType() + "/" + mediaType.getSubtype();
 
         byte[] rawData = org.geoserver.rest.util.IOUtils.toByteArray(inputStream);
-        String content = new String(rawData, mediaType.getCharset().toString());
+        String charsetName = getCharacterEncoding(request);
+        String content = new String(rawData, charsetName);
         StyleHandler handler = getHandler(mimeType);
 
         // validation

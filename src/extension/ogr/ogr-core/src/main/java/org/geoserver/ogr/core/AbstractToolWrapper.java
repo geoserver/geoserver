@@ -223,14 +223,16 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
         if (environment != null) builder.environment().putAll(environment);
         builder.redirectErrorStream(true);
         Process p = builder.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            if (sb != null) {
-                sb.append("\n");
-                sb.append(line);
+        try (BufferedReader reader =
+                new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (sb != null) {
+                    sb.append("\n");
+                    sb.append(line);
+                }
             }
+            return p.waitFor();
         }
-        return p.waitFor();
     }
 }

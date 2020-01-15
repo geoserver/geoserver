@@ -105,6 +105,22 @@ public interface DimensionInfo extends Serializable {
     public void setNearestMatchEnabled(boolean nearestMatch);
 
     /**
+     * Returns true if the nearest match behavior is implemented for raw data requests. Right now
+     * it's only available for the TIME dimension, support for other dimensions might come later.
+     * Raw Nearest Match means nearest match on WCS when dealing with a coverage layer or WFS for
+     * feature layer. Right now it's only available for WCS, support for other services might come
+     * later.
+     */
+    public boolean isRawNearestMatchEnabled();
+
+    /**
+     * Enables/disables raw nearest match.
+     *
+     * @param rawNearestMatch
+     */
+    public void setRawNearestMatchEnabled(boolean rawNearestMatch);
+
+    /**
      * Returns a string specifying the search range. Can be empty, a single value (to be parsed in
      * the data type of the dimension, in particular, it will be a ISO period for times) or a
      * {code}before/after{code} range specifying how far to search from the requested value (e.g.,

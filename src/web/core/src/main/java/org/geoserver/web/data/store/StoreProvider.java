@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -28,6 +29,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.opengis.coverage.grid.Format;
@@ -96,6 +98,12 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     static final Property<StoreInfo> ENABLED = new BeanProperty<StoreInfo>("enabled", "enabled");
 
+    static final Property<StoreInfo> MODIFIED_TIMESTAMP =
+            new BeanProperty<>("datemodfied", "dateModified");
+
+    static final Property<StoreInfo> CREATED_TIMESTAMP =
+            new BeanProperty<>("datecreated", "dateCreated");
+
     final List<Property<StoreInfo>> PROPERTIES =
             Arrays.asList(DATA_TYPE, WORKSPACE, NAME, TYPE, ENABLED);
 
@@ -117,7 +125,20 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     @Override
     protected List<Property<StoreInfo>> getProperties() {
-        return PROPERTIES;
+        List<Property<StoreInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+        // check geoserver properties
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowCreatedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        return modifiedPropertiesList;
     }
 
     @Override

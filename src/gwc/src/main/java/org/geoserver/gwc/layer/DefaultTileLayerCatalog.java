@@ -26,14 +26,21 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.AsynchResourceIterator;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.Resources;
@@ -49,11 +56,46 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private static final String LAYERINFO_DIRECTORY = "gwc-layers";
 
+    /**
+     * Thread factory used to load {@link GeoServerTileLayerInfo} objects at {@link
+     * #initialize()}/{@link #reset()}. A short lived {@link ForkJoinPool} will be created with this
+     * factory and the configured {@link #INITIALIZATION_PARALLELISM parallelism}
+     */
+    private static final ForkJoinWorkerThreadFactory INITIALLIZATION_THREAD_FACTORY =
+            new ForkJoinWorkerThreadFactory() {
+                private AtomicInteger threadIdSeq = new AtomicInteger();
+
+                public @Override ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+                    String name =
+                            String.format(
+                                    "ForkJoinPool.%s-%d",
+                                    DefaultTileLayerCatalog.class.getSimpleName(),
+                                    threadIdSeq.incrementAndGet());
+                    ForkJoinWorkerThread thread =
+                            ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+                    thread.setName(name);
+                    return thread;
+                }
+            };
+
+    /**
+     * Reuse the value initialized for I/O parallelism through the {@code
+     * org.geoserver.catalog.loadingThreads} System property
+     */
+    private static final int INITIALIZATION_PARALLELISM =
+            AsynchResourceIterator.ASYNCH_RESOURCE_THREADS;
+    /**
+     * Thread local of XStream used during initialization parallel execution, to circumvent the
+     * terrible concurrency of XStream
+     */
+    private static ThreadLocal<XStream> INITIALIZATION_SERIALIZER = new ThreadLocal<>();
+
     private ConcurrentMap<String, GeoServerTileLayerInfo> layersById;
 
     /** View of layer ids by name */
     private Map<String, String> layersByName;
 
+    private final Supplier<XStream> xstreamProvider;
     private final XStream serializer;
 
     private final GeoServerResourceLoader resourceLoader;
@@ -69,11 +111,13 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             throws IOException {
         this(
                 resourceLoader,
-                xmlPersisterFactory.getConfiguredXStreamWithContext(
-                        new SecureXStream(), Context.PERSIST));
+                () ->
+                        xmlPersisterFactory.getConfiguredXStreamWithContext(
+                                new SecureXStream(), Context.PERSIST));
     }
 
-    DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader, XStream configuredXstream)
+    DefaultTileLayerCatalog(
+            GeoServerResourceLoader resourceLoader, Supplier<XStream> xstreamProvider)
             throws IOException {
 
         this.resourceLoader = resourceLoader;
@@ -85,14 +129,22 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         this.initialized = false;
 
         // setup xstream security for local classes
-        this.serializer = configuredXstream;
-        this.serializer.allowTypeHierarchy(GeoServerTileLayerInfo.class);
-        // have to use a string here because UnmodifiableSet is private
-        this.serializer.allowTypes(new String[] {"java.util.Collections$UnmodifiableSet"});
+        this.xstreamProvider = xstreamProvider;
+        this.serializer = newXStream();
         // automatically reload configuration on change
-        resourceLoader
-                .get(baseDirectory)
-                .addListener(evt -> evt.events().forEach(this::handleBaseDirectoryResourceEvent));
+        resourceLoader.get(baseDirectory).addListener(this::handleBaseDirectoryResourceEvent);
+    }
+
+    private XStream newXStream() {
+        XStream serializer = this.xstreamProvider.get();
+        serializer.allowTypeHierarchy(GeoServerTileLayerInfo.class);
+        // have to use a string here because UnmodifiableSet is private
+        serializer.allowTypes(new String[] {"java.util.Collections$UnmodifiableSet"});
+        return serializer;
+    }
+
+    private void handleBaseDirectoryResourceEvent(ResourceNotification notify) {
+        notify.events().forEach(this::handleBaseDirectoryResourceEvent);
     }
 
     private void handleBaseDirectoryResourceEvent(Event event) {
@@ -172,9 +224,52 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         LOGGER.info("Loading tile layers from " + baseDir.path());
         Stopwatch sw = Stopwatch.createStarted();
         ExtensionFilter xmlFilter = new Resources.ExtensionFilter("XML");
-        baseDir.list().parallelStream().filter(r -> xmlFilter.accept(r)).forEach(this::load);
+        // do not thrash the filesystem if there are several cores by using the common
+        // pool
+        ForkJoinPool pool =
+                new ForkJoinPool(
+                        INITIALIZATION_PARALLELISM, INITIALLIZATION_THREAD_FACTORY, null, false);
+        try {
+            pool.submit(
+                            () ->
+                                    baseDir.list()
+                                            .parallelStream()
+                                            .filter(r -> xmlFilter.accept(r))
+                                            .forEach(this::initializationLoad))
+                    .join();
+        } finally {
+            pool.shutdownNow();
+        }
         LOGGER.info(String.format("Loaded %,d tile layers in %s", layersById.size(), sw.stop()));
         this.initialized = true;
+    }
+
+    /**
+     * Called during initialization, inside a forkjoinpool thread. Uses {@link
+     * #INITIALIZATION_SERIALIZER} ThreadLocal safely, it'll be cleaned as the threads in the
+     * forkjoinpool die
+     */
+    private GeoServerTileLayerInfoImpl initializationLoad(Resource res) {
+        XStream unmarshaller = INITIALIZATION_SERIALIZER.get();
+        if (unmarshaller == null) {
+            unmarshaller = newXStream();
+            INITIALIZATION_SERIALIZER.set(unmarshaller);
+        }
+        GeoServerTileLayerInfoImpl info;
+        try {
+            info = depersist(res, unmarshaller);
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error depersisting tile layer information from file " + res.name(),
+                    e);
+            return null;
+        }
+        saveInternal(info);
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
+        }
+        return info;
     }
 
     @Override
@@ -184,10 +279,14 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         return layer == null ? null : layer.clone();
     }
 
-    private synchronized void checkInitialized() {
-        if (!initialized) {
-            initialize();
-        }
+    /**
+     * Precondition check all public methods should make before proceeding to ensure they've been
+     * called on an initialized state
+     *
+     * @throws IllegalStateException if this layer catalog has not been initialized yet
+     */
+    private void checkInitialized() {
+        Preconditions.checkState(this.initialized, "DefaultTileLayerCatalog is not initialized");
     }
 
     @Override
@@ -286,24 +385,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         return oldValue;
     }
 
-    private GeoServerTileLayerInfoImpl load(Resource res) {
-        GeoServerTileLayerInfoImpl info;
-        try {
-            info = depersist(res);
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error depersisting tile layer information from file " + res.name(),
-                    e);
-            return null;
-        }
-        saveInternal(info);
-        if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
-        }
-        return info;
-    }
-
     private void saveInternal(GeoServerTileLayerInfoImpl info) {
         layersByName.put(info.getName(), info.getId());
         layersById.put(info.getId(), info);
@@ -370,22 +451,18 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     }
 
     private GeoServerTileLayerInfoImpl depersist(final Resource res) throws IOException {
+        return depersist(res, this.serializer);
+    }
+
+    private GeoServerTileLayerInfoImpl depersist(final Resource res, final XStream unmarshaller)
+            throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Depersisting GeoServerTileLayerInfo from " + res.path());
         }
         GeoServerTileLayerInfoImpl info;
         try (Reader reader =
                 new InputStreamReader(new ByteArrayInputStream(res.getContents()), "UTF-8")) {
-            info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
-        }
-
-        return info;
-    }
-
-    private GeoServerTileLayerInfoImpl depersist(final byte[] contents) throws IOException {
-        GeoServerTileLayerInfoImpl info;
-        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(contents), "UTF-8")) {
-            info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
+            info = (GeoServerTileLayerInfoImpl) unmarshaller.fromXML(reader);
         }
 
         return info;

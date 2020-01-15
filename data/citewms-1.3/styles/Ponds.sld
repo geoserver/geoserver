@@ -4,14 +4,14 @@
     <sld:Name>Default Styler</sld:Name>
     <sld:UserStyle>
       <sld:Name>Default Styler</sld:Name>
-      <sld:Title>Default Styler</sld:Title>
+      <sld:Title>Cyan Polygon</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Name>name</sld:Name>
         <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>title</sld:Title>
-          <sld:Abstract>Abstract</sld:Abstract>
+          <sld:Title>Cyan Polygon</sld:Title>
+          <sld:Abstract>Polygon with Cyan color fill and default stroke</sld:Abstract>
           <sld:PolygonSymbolizer>
             <sld:Fill>
               <sld:CssParameter name="fill">#00FFFF</sld:CssParameter>

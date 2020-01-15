@@ -247,13 +247,14 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * @throws IOException
      */
     protected void loadFromResource(String resource) throws IOException {
-        final InputStream tpl =
-                this.getClass().getClassLoader().getResourceAsStream(resource + ".dxf");
-
-        if (tpl != null) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(tpl));
-            String line = null;
-            while ((line = reader.readLine()) != null) writer.write(line + EOL);
+        try (InputStream tpl =
+                this.getClass().getClassLoader().getResourceAsStream(resource + ".dxf")) {
+            if (tpl != null) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(tpl))) {
+                    String line = null;
+                    while ((line = reader.readLine()) != null) writer.write(line + EOL);
+                }
+            }
         }
     }
 

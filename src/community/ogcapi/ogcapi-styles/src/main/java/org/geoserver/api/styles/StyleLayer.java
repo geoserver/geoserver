@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,9 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -27,8 +26,6 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.ows.URLMangler;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.PointSymbolizer;
@@ -46,11 +43,11 @@ import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.MultiValuedFilter;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.geometry.coordinate.Polygon;
 import org.opengis.style.Symbolizer;
-import org.springframework.http.MediaType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StyleLayer implements Serializable {
@@ -67,69 +64,46 @@ public class StyleLayer implements Serializable {
 
     String id;
     LayerType type;
-    Link sampleData;
+    List<Link> sampleData = new ArrayList<>();
     List<StyleAttribute> attributes;
+    SampleDataSupport sampleDataSupport;
 
-    public StyleLayer(StyleInfo si, StyledLayer source, Catalog catalog) {
+    public StyleLayer(
+            StyleInfo si,
+            StyledLayer source,
+            Catalog catalog,
+            SampleDataSupport sampleDataSupport,
+            boolean filterOnStyleLayerName) {
+        this.sampleDataSupport = sampleDataSupport;
         this.id = Optional.ofNullable(source.getName()).orElse("layer");
 
-        // look for layer associations
-        try (CloseableIterator<LayerInfo> layers =
-                catalog.list(
-                        LayerInfo.class,
-                        Predicates.or(
-                                Predicates.equal("defaultStyle", si),
-                                Predicates.equal(
-                                        "styles", si, MultiValuedFilter.MatchAction.ANY)))) {
-            while (layers.hasNext()) {
-                LayerInfo layer = layers.next();
-                try {
-                    ResourceInfo resource = layer.getResource();
-                    String resourceId = NCNameResourceCodec.encode(resource);
-                    if (resource instanceof FeatureTypeInfo) {
-                        FeatureType featureType = ((FeatureTypeInfo) resource).getFeatureType();
-                        this.type = getLayerType(featureType);
-                        // link to Features API
-                        String href =
-                                ResponseUtils.buildURL(
-                                        APIRequestInfo.get().getBaseURL(),
-                                        "ogc/features/collections/" + resourceId,
-                                        null,
-                                        URLMangler.URLType.SERVICE);
-                        this.sampleData =
-                                new Link(href, "data", MediaType.APPLICATION_JSON_VALUE, null);
-
-                        this.attributes = getAttributes(source, featureType);
-                    } else if (resource instanceof CoverageInfo) {
-                        type = LayerType.raster;
-                        // link to an hyphotetical Coverages API
-                        String href =
-                                ResponseUtils.buildURL(
-                                        APIRequestInfo.get().getBaseURL(),
-                                        "ogc/coverages/collections/"
-                                                + resourceId
-                                                + "/coverages/"
-                                                + resourceId,
-                                        null,
-                                        URLMangler.URLType.SERVICE);
-                        this.sampleData =
-                                new Link(
-                                        href,
-                                        "data",
-                                        MediaType.APPLICATION_JSON_VALUE,
-                                        "Coveages API not yet implemented, this is just a sample URL sorry!");
-                    }
-
-                    // found at least one?
-                    if (sampleData != null) {
-                        break;
-                    }
-                } catch (IOException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Could not grab type information from layer "
-                                    + layer.prefixedName()
-                                    + ", skipping and moving on");
+        if (filterOnStyleLayerName) {
+            // style group case, we look for layers by name
+            LayerInfo layer;
+            if (si.getWorkspace() == null) {
+                layer = catalog.getLayerByName(source.getName());
+            } else {
+                if (source.getName().contains(":")) {
+                    layer = catalog.getLayerByName(source.getName());
+                } else {
+                    layer =
+                            catalog.getLayerByName(
+                                    si.getWorkspace().getName() + ":" + source.getName());
+                }
+            }
+            if (layer != null) {
+                addLayerInfo(source, sampleDataSupport, layer);
+            }
+        } else {
+            // common style case, look for layer associations
+            Filter layerFilter =
+                    Predicates.or(
+                            Predicates.equal("defaultStyle", si),
+                            Predicates.equal("styles", si, MultiValuedFilter.MatchAction.ANY));
+            try (CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, layerFilter)) {
+                while (layers.hasNext()) {
+                    LayerInfo layer = layers.next();
+                    addLayerInfo(source, sampleDataSupport, layer);
                 }
             }
         }
@@ -141,6 +115,34 @@ public class StyleLayer implements Serializable {
             this.type = guessLayerType(source);
             this.attributes = getAttributes(source, null);
         }
+    }
+
+    public void addLayerInfo(
+            StyledLayer source, SampleDataSupport sampleDataSupport, LayerInfo layer) {
+        // determine type from first usable match
+        if (type == null) {
+            try {
+                ResourceInfo resource = layer.getResource();
+                if (resource instanceof FeatureTypeInfo) {
+                    FeatureType featureType = ((FeatureTypeInfo) resource).getFeatureType();
+                    this.type = getLayerType(featureType);
+                    this.attributes = getAttributes(source, featureType);
+                } else if (resource instanceof CoverageInfo) {
+                    type = LayerType.raster;
+                }
+
+            } catch (IOException e) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Could not grab type information from layer "
+                                + layer.prefixedName()
+                                + ", skipping and moving on");
+            }
+        }
+
+        // add sample data links for all layers
+        List<Link> sampleDataLinks = sampleDataSupport.getSampleDataFor(layer);
+        this.sampleData.addAll(sampleDataLinks);
     }
 
     private LayerType guessLayerType(StyledLayer source) {
@@ -241,7 +243,8 @@ public class StyleLayer implements Serializable {
         return type;
     }
 
-    public Link getSampleData() {
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public List<Link> getSampleData() {
         return sampleData;
     }
 

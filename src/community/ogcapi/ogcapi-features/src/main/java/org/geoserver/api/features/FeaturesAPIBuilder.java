@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.api.ConformanceDocument;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 
 /** Builds the OGC Features OpenAPI document */
 public class FeaturesAPIBuilder extends org.geoserver.api.OpenAPIBuilder<WFSInfo> {
@@ -44,12 +42,9 @@ public class FeaturesAPIBuilder extends org.geoserver.api.OpenAPIBuilder<WFSInfo
         declareGetResponseFormats(api, "/conformance", ConformanceDocument.class);
         declareGetResponseFormats(api, "/collections", CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionsDocument.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/items", FeaturesResponse.class);
         declareGetResponseFormats(
-                api, "/collections/{collectionId}/items", FeatureCollectionResponse.class);
-        declareGetResponseFormats(
-                api,
-                "/collections/{collectionId}/items/{featureId}",
-                FeatureCollectionResponse.class);
+                api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
@@ -58,7 +53,7 @@ public class FeaturesAPIBuilder extends org.geoserver.api.OpenAPIBuilder<WFSInfo
         List<String> validCollectionIds =
                 catalog.getFeatureTypes()
                         .stream()
-                        .map(ft -> NCNameResourceCodec.encode(ft))
+                        .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 

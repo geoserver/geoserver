@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.tiles;
 
+import java.util.Set;
 import org.geoserver.api.OGCApiTestSupport;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -16,6 +17,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geowebcache.mime.ApplicationMime;
+import org.geowebcache.mime.ImageMime;
 
 public class TilesTestSupport extends OGCApiTestSupport {
 
@@ -34,7 +36,12 @@ public class TilesTestSupport extends OGCApiTestSupport {
         // add vector tiles as a format
         String roadId = getLayerId(MockData.ROAD_SEGMENTS);
         GeoServerTileLayer roadTiles = (GeoServerTileLayer) getGWC().getTileLayerByName(roadId);
-        roadTiles.getInfo().getMimeFormats().add(ApplicationMime.mapboxVector.getMimeType());
+        Set<String> formats = roadTiles.getInfo().getMimeFormats();
+        formats.add(ApplicationMime.mapboxVector.getFormat());
+        formats.add(ApplicationMime.topojson.getFormat());
+        formats.add(ApplicationMime.geojson.getFormat());
+        // also add png8
+        formats.add(ImageMime.png8.getFormat());
         getGWC().save(roadTiles);
 
         // reduce it to its actual bounding box to see grid subsets
@@ -54,6 +61,17 @@ public class TilesTestSupport extends OGCApiTestSupport {
         FeatureTypeInfo lakes =
                 catalog.getResourceByName(getLayerId(MockData.LAKES), FeatureTypeInfo.class);
         lakes.getMetadata().put(ResourceInfo.CACHING_ENABLED, true);
+
+        // prepare a layer with vector formats only
+        String forestsId = getLayerId(MockData.FORESTS);
+        GeoServerTileLayer forestTiles =
+                (GeoServerTileLayer) getGWC().getTileLayerByName(forestsId);
+        Set<String> forestFormats = forestTiles.getInfo().getMimeFormats();
+        forestFormats.clear();
+        forestFormats.add(ApplicationMime.mapboxVector.getFormat());
+        forestFormats.add(ApplicationMime.geojson.getFormat());
+        forestFormats.add(ApplicationMime.topojson.getFormat());
+        getGWC().save(forestTiles);
     }
 
     protected GWC getGWC() {

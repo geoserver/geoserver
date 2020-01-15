@@ -152,3 +152,23 @@ This should yield the following result::
       </csw:DomainValues>
     </csw:GetDomainResponse>
 
+To request more than the first 10 records or for more complex queries you can use a HTTP POST request with an XML query as the request body. For example, using the maxRecords option in the following request it is possible to return the first 50 layers with "ImageMosaic" in a keyword::
+  
+  http://localhost:8080/geoserver/csw
+  
+Postbody::
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <GetRecords service="CSW" version="2.0.2" maxRecords="50" startPosition="1" resultType="results" outputFormat="application/xml" outputSchema="http://www.opengis.net/cat/csw/2.0.2" xmlns="http://www.opengis.net/cat/csw/2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 ../../../csw/2.0.2/CSW-discovery.xsd">
+      <Query typeNames="csw:Record">
+      	<ElementSetName typeNames="csw:Record">full</ElementSetName>
+      	<Constraint version="1.1.0">
+      	  <ogc:Filter>
+      	    <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+      	      <ogc:PropertyName>dc:subject</ogc:PropertyName>
+      	      <ogc:Literal>%ImageMosaic%</ogc:Literal>
+      	    </ogc:PropertyIsLike>
+      	  </ogc:Filter>
+      	</Constraint>
+      </Query>
+    </GetRecords>

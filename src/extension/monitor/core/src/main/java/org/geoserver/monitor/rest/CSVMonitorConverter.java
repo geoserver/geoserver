@@ -81,6 +81,7 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
         String[] fields = results.getFields();
         Monitor monitor = results.getMonitor();
 
+        @SuppressWarnings("PMD.CloseResource") // managed by servlet container
         OutputStream os = outputMessage.getBody();
         writeCSVfile(result, fields, monitor, os);
     }

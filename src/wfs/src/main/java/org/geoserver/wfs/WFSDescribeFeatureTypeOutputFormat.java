@@ -82,4 +82,14 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse
     protected abstract void write(
             FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException;
+
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        FeatureTypeInfo[] infos = (FeatureTypeInfo[]) value;
+        if (infos.length == 1) {
+            return infos[0].prefixedName().replace(":", "-") + ".xsd";
+        } else {
+            return "schema.xsd";
+        }
+    }
 }

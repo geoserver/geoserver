@@ -108,7 +108,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
             }
         }
         mosaic.mkdir();
-        System.out.println(mosaic.getAbsolutePath());
+        // System.out.println(mosaic.getAbsolutePath());
 
         // build the reference coverage into a byte array
         GridCoverageFactory factory = new GridCoverageFactory();

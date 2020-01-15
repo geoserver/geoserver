@@ -5,8 +5,6 @@
 
 package org.geoserver.api;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
@@ -31,6 +28,7 @@ public class AbstractDocument {
     protected static final Logger LOGGER = Logging.getLogger(AbstractDocument.class);
 
     protected String id;
+    protected String htmlTitle;
     protected final List<Link> links = new ArrayList<>();
 
     /**
@@ -70,28 +68,36 @@ public class AbstractDocument {
                 .collect(Collectors.toList());
     }
 
-    /** Builds service links for the given response types */
+    /**
+     * Builds service links for the given response types
+     *
+     * @param path The path of the resource, typically starting with "ogc/<service>"
+     * @param responseType The class of the response object in the controller
+     * @param titlePrefix The code will add the format name to this prefix and make it the link
+     *     title
+     * @param classification The link classification, if any (optional)
+     * @param linkUpdater An optional callback to update the link object
+     * @param rel The rel of the link object (the updater can modify it, to handle for example
+     *     "self" relationships)
+     */
     protected void addLinksFor(
-            String baseUrl,
             String path,
             Class<?> responseType,
             String titlePrefix,
             String classification,
             BiConsumer<MediaType, Link> linkUpdater,
             String rel) {
-        for (MediaType mediaType :
-                APIRequestInfo.get().getProducibleMediaTypes(responseType, true)) {
-            String format = mediaType.toString();
-            Map<String, String> params = Collections.singletonMap("f", format);
-            String url = buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
-            String linkTitle = titlePrefix + format;
-            Link link = new Link(url, rel, format, linkTitle);
-            link.setClassification(classification);
-            if (linkUpdater != null) {
-                linkUpdater.accept(mediaType, link);
-            }
-            addLink(link);
-        }
+        List<Link> links =
+                APIRequestInfo.get()
+                        .getLinksFor(
+                                path,
+                                responseType,
+                                titlePrefix,
+                                classification,
+                                linkUpdater,
+                                rel,
+                                true);
+        this.links.addAll(links);
     }
 
     /**
@@ -143,6 +149,16 @@ public class AbstractDocument {
     }
 
     /**
+     * Returns the document id, as is
+     *
+     * @return
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String getId() {
+        return id;
+    }
+
+    /**
      * Returns a URL encoded id (or null if the id is missing), useful to encode links in HTML
      *
      * @return
@@ -167,5 +183,19 @@ public class AbstractDocument {
             return null;
         }
         return id.replace(":", "__");
+    }
+
+    /**
+     * Returns the title for HTML pages. If not set, uses the id, if also missing, an empty string
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getHtmlTitle() {
+        return htmlTitle != null ? htmlTitle : id != null ? id : "";
+    }
+
+    public void setHtmlTitle(String htmlTitle) {
+        this.htmlTitle = htmlTitle;
     }
 }

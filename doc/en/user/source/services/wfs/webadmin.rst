@@ -112,6 +112,13 @@ is not selected, OGC WKT format will be used. If this checkbox is selected, ESRI
 
 Note: this requires an ``esri.properties`` file to be provided in the ``user_projections`` subdirectory of the GeoServer data directory. This may be obtained from the GeoTools EPSG extension.
 
+Stored Queries
+--------------
+
+.. figure:: img/global-queries.png
+
+Selecting the :guilabel:`Allow Global Stored Queries` checkbox determines if global stored queries will included for usage in workspace virtual services, or not. When disabled, only stored queries created inside the workspace will be visible.
+
 Override GML 3.2 MIME type
 --------------------------
 
@@ -122,3 +129,16 @@ Option :guilabel:`Override MIME Type` allows the selection of the MIME type that
 .. figure:: img/services_WFS_mimetype.png
 
 The available MIME types are: ``application/gml+xml; version=3.2``, ``text/xml; subtype=gml/3.2`` and ``text/xml``. 
+
+Configure XML Entity Expansion limit on WFS XML readers
+-------------------------------------------------------
+
+By default WFS XML readers sets Entity Expansion limit to 100, but it can be configured via the ``org.geoserver.wfs.xml.entityExpansionLimit`` system property / web.xml init parameter / Environment variable.
+
+For example on command line we can adjust adding parameter:
+
+    -Dorg.geoserver.wfs.xml.entityExpansionLimit=50
+	
+Or in Tomcat properties file (``{TOMCAT_HOME}/conf/catalina.properties``) adding the line:
+
+    org.geoserver.wfs.xml.entityExpansionLimit=50

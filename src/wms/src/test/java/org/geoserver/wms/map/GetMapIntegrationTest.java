@@ -38,6 +38,7 @@ import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.styling.Style;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -451,5 +452,53 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // last channel
         bi = getAsImage(request + "&env=band:9", "image/png");
         ImageAssert.assertEquals(new File(BASE, "csLastChannel.png"), bi, 0);
+    }
+
+    @Test
+    public void testRenderTimeStatisticsVectorsIntegrationTest() throws Exception {
+
+        String bbox = "-180,-90,180,90";
+        String layer = getLayerId(CiteTestData.POINTS);
+        String layer2 = getLayerId(CiteTestData.POLYGONS);
+        MockHttpServletRequest request =
+                createRequest(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers="
+                                + layer
+                                + ","
+                                + layer2
+                                + "&style_format="
+                                + PropertyStyleHandler.FORMAT
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        MockHttpServletResponse response = dispatch(request);
+        RenderTimeStatistics statistics =
+                (RenderTimeStatistics) request.getAttribute(RenderTimeStatistics.ID);
+        assertEquals(statistics.getLayerNames().size(), 2);
+        assertNotNull(statistics.getRenderingTime(0));
+        assertNotNull(statistics.getRenderingTime(1));
+        assertNotNull(statistics.getLabellingTime());
+        checkImage(response);
+    }
+
+    @Test
+    public void testRenderTimeStatisticsRasterIntegrationTest() throws Exception {
+        MockHttpServletRequest request =
+                createRequest(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false&CQL_FILTER=location like 'green%25'");
+        request.setMethod("GET");
+        MockHttpServletResponse response = dispatch(request);
+        RenderTimeStatistics statistics =
+                (RenderTimeStatistics) request.getAttribute(RenderTimeStatistics.ID);
+        assertEquals(statistics.getLayerNames().size(), 1);
+        assertNotNull(statistics.getRenderingTime(0));
+        checkImage(response);
     }
 }

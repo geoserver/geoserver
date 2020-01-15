@@ -39,6 +39,7 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         final boolean body = fields.remove("Body");
         final boolean error = fields.remove("Error");
 
+        @SuppressWarnings("PMD.CloseResource") // managed by servlet container
         final ZipOutputStream zout = new ZipOutputStream(outputMessage.getBody());
 
         // create the csv entry

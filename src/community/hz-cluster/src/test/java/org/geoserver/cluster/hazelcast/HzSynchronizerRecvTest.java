@@ -183,7 +183,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt =
-                    new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(
+                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -221,7 +222,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtGs =
-                    new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(
+                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
             ConfigChangeEvent evtLayer =
                     new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
 
@@ -264,7 +266,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtGs =
-                    new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(
+                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -296,7 +299,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtGs =
-                    new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(
+                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -450,7 +454,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt =
-                    new ConfigChangeEvent(settingsId, null, SettingsInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(
+                            settingsId, null, SettingsInfoImpl.class, Type.POST_MODIFY);
             evt.setWorkspaceId(workspaceId);
 
             // Mock a message coming in from the cluster
@@ -484,7 +489,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt =
-                    new ConfigChangeEvent(settingsId, null, LoggingInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(
+                            settingsId, null, LoggingInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -518,7 +524,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync.initialize(configWatcher);
 
             ConfigChangeEvent evt =
-                    new ConfigChangeEvent(serviceId, null, WMSInfoImpl.class, Type.MODIFY);
+                    new ConfigChangeEvent(serviceId, null, WMSInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 

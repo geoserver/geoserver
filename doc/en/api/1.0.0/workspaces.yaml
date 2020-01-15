@@ -115,6 +115,11 @@ paths:
           in: path
           required: true
           type: string
+        - name: quietOnNotFound
+          in: query
+          required: false
+          description: The quietOnNotFound parameter avoids logging an exception when the workspace is not present. Note that 404 status code will still be returned.
+          type: boolean
       responses:
         200:  
           description: OK

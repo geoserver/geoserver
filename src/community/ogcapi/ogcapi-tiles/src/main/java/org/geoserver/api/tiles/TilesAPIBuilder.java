@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.api.OpenAPIBuilder;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 
 /** Builds the OpenAPI definition for the iles service */
 public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
@@ -45,7 +46,11 @@ public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
 
         List<String> validCollectionIds =
                 Streams.stream(gwc.getTileLayers())
-                        .map(tl -> tl.getName())
+                        .map(
+                                tl ->
+                                        tl instanceof GeoServerTileLayer
+                                                ? ((GeoServerTileLayer) tl).getContextualName()
+                                                : tl.getName())
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 

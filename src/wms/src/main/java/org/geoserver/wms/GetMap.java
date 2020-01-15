@@ -9,11 +9,24 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.RenderedImageList;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -512,7 +525,7 @@ public class GetMap {
                 //
                 // /////////////////////////////////////////////////////////
                 try {
-                    source = mapLayerInfo.getFeatureSource(true);
+                    source = mapLayerInfo.getFeatureSource(true, request.getCrs());
 
                     if (layerSort != null) {
                         // filter gets validated down in the renderer, but
@@ -552,7 +565,7 @@ public class GetMap {
 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter =
-                        wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
+                        buildDimensionFilter(times, elevations, mapLayerInfo, request);
                 Filter filter =
                         SimplifyingFilterVisitor.simplify(
                                 Filters.and(ff, layerFilter, dimensionFilter));
@@ -651,8 +664,24 @@ public class GetMap {
                 }
             } else if (layerType == MapLayerInfo.TYPE_WMS) {
                 WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
+                if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) continue;
                 WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
                 Layer gt2Layer = wmsLayer.getWMSLayer(null);
+                if (wmsLayer.isMetadataBBoxRespected()) {
+                    boolean isInsideBounnds =
+                            checkEnvelopOverLapWithNativeBounds(
+                                    mapContent.getViewport().getBounds(),
+                                    wmsLayer.getNativeBoundingBox());
+                    if (!isInsideBounnds) {
+                        if (LOGGER.isLoggable(Level.FINE))
+                            LOGGER.fine(
+                                    "Get Map Request BBOX is outside Layer "
+                                            + request.getLayers().get(i).getName()
+                                            + " metada BoundsIgnoring Layer,Ignoring");
+
+                        continue;
+                    }
+                }
 
                 // see if we can merge this layer with the previous one
                 boolean merged = false;
@@ -669,7 +698,26 @@ public class GetMap {
                     }
                 }
                 if (!merged) {
-                    WMSLayer Layer = new WMSLayer(wms, gt2Layer);
+                    WMSLayer Layer = null;
+
+                    String style = request.getStyles().get(i).getName();
+                    style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
+                    String imageFormat = request.getFormat();
+                    // if passed style does not exist in remote, throw exception
+                    if (!wmsLayer.isSelectedRemoteStyles(style))
+                        throw new IllegalArgumentException(
+                                "Unknown remote style "
+                                        + style
+                                        + " in cascaded layer "
+                                        + wmsLayer.getName()
+                                        + ", , re-configure the layer and WMS Store");
+
+                    // if the format is not selected then fall back to preffered
+                    if (!wmsLayer.isFormatValid(imageFormat))
+                        imageFormat = wmsLayer.getPreferredFormat();
+
+                    Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+
                     Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }
@@ -717,6 +765,20 @@ public class GetMap {
         }
 
         return map;
+    }
+
+    protected Filter buildDimensionFilter(
+            List<Object> times,
+            List<Object> elevations,
+            final MapLayerInfo mapLayerInfo,
+            final GetMapRequest request)
+            throws IOException {
+        final Filter dimensionFilter =
+                wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
+        final Filter customDimensionsfilter =
+                wms.getDimensionsToFilter(request.getRawKvp(), mapLayerInfo.getFeature());
+        return SimplifyingFilterVisitor.simplify(
+                Filters.and(ff, dimensionFilter, customDimensionsfilter));
     }
 
     private void validateSort(
@@ -941,5 +1003,35 @@ public class GetMap {
             throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
+    }
+
+    private boolean checkWMSLayerMinMaxScale(WMSLayerInfo wmsLayerInfo, double mapScale) {
+
+        // if none configured
+        if (wmsLayerInfo.getMinScale() == null && wmsLayerInfo.getMaxScale() == null) return true;
+        // return false map scale is below min
+        if (wmsLayerInfo.getMinScale() != null && mapScale < wmsLayerInfo.getMinScale())
+            return false;
+        // return false map scale is above max
+        if (wmsLayerInfo.getMaxScale() != null && mapScale > wmsLayerInfo.getMaxScale())
+            return false;
+
+        return true;
+    }
+
+    private boolean checkEnvelopOverLapWithNativeBounds(
+            ReferencedEnvelope requestEnevelope, ReferencedEnvelope layerEnevelope) {
+
+        try {
+            // transform requested enevelope to resource`s native bounds
+            ReferencedEnvelope transformedRequestEnv;
+            transformedRequestEnv =
+                    requestEnevelope.transform(layerEnevelope.getCoordinateReferenceSystem(), true);
+            return !layerEnevelope.intersection(transformedRequestEnv).isEmpty();
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.SEVERE, "Error in WMSLayerInfo.checkEnvelopOverLapWithNativeBounds", e);
+        }
+        return false;
     }
 }

@@ -17,6 +17,7 @@ This section will discuss the Importer extension.
    :maxdepth: 1
 
    installing
+   configuring
    using
    guireference
    formats

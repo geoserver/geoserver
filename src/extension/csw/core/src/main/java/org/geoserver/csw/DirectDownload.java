@@ -10,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
@@ -63,16 +62,14 @@ public class DirectDownload {
          * and matching hash will be added to the list
          */
         private void collectSubset(String fileId, List<File> result) {
-            CloseableIterator<FileGroup> files = null;
-            try {
-                String hash = fileId;
-                // SHA-1 are 20 bytes in length
-                String fileBaseName = hash.substring(41);
-                Query query = new Query();
+            String hash = fileId;
+            // SHA-1 are 20 bytes in length
+            String fileBaseName = hash.substring(41);
+            Query query = new Query();
 
-                // Look for files in the catalog having the same base name
-                query.setFilter(FF.like(FF.property("location"), "*" + fileBaseName + "*"));
-                files = fileGroupProvider.getFiles(query);
+            // Look for files in the catalog having the same base name
+            query.setFilter(FF.like(FF.property("location"), "*" + fileBaseName + "*"));
+            try (CloseableIterator<FileGroup> files = fileGroupProvider.getFiles(query)) {
                 while (files.hasNext()) {
                     FileGroup fileGroup = files.next();
                     File mainFile = fileGroup.getMainFile();
@@ -94,16 +91,12 @@ public class DirectDownload {
             } catch (IOException e) {
                 throw new ServiceException(
                         "Exception occurred while looking for raw files for :" + fileId, e);
-            } finally {
-                closeIterator(files);
             }
         }
 
         /** Collect all files from the fileGroupProvider */
         void collectFull(List<File> result) {
-            CloseableIterator<FileGroup> files = null;
-            try {
-                files = fileGroupProvider.getFiles(null);
+            try (CloseableIterator<FileGroup> files = fileGroupProvider.getFiles(null)) {
                 while (files.hasNext()) {
                     FileGroup fileGroup = files.next();
                     result.add(fileGroup.getMainFile());
@@ -112,8 +105,8 @@ public class DirectDownload {
                         result.addAll(supportFile);
                     }
                 }
-            } finally {
-                closeIterator(files);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -287,27 +280,6 @@ public class DirectDownload {
             return new DecimalFormat("#.##").format(bytes / 1048576.0) + "MB";
         } else {
             return new DecimalFormat("#.##").format(bytes / 1073741824.0) + "GB";
-        }
-    }
-
-    /**
-     * Gently close a {@link CloseableIterator}
-     *
-     * @param files
-     */
-    private void closeIterator(CloseableIterator<FileGroup> files) {
-        if (files != null) {
-            try {
-                // Make sure to close the iterator
-                files.close();
-            } catch (Throwable t) {
-                // Simply log it at finer level
-                if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer(
-                            "Exception occurred while closing the file iterator:\n "
-                                    + t.getLocalizedMessage());
-                }
-            }
         }
     }
 

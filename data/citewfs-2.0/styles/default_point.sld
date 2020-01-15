@@ -12,8 +12,8 @@
 		<UserStyle>
 		    <!-- they have names, titles and abstracts -->
 		  
-			<Title>A boring default style</Title>
-			<Abstract>A sample style that just prints out a purple square</Abstract>
+			<Title>Red Square Point</Title>
+			<Abstract>A sample style that just prints out a red square</Abstract>
 			<!-- FeatureTypeStyles describe how to render different features -->
 			<!-- a feature type for points -->
 
@@ -21,8 +21,8 @@
 				<!--FeatureTypeName>Feature</FeatureTypeName-->
 				<Rule>
 					<Name>Rule 1</Name>
-					<Title>RedSquare</Title>
-					<Abstract>A red fill with an 11 pixel size</Abstract>
+					<Title>Red Square Point</Title>
+					<Abstract>A red square of 6 pixel size</Abstract>
 
 					<!-- like a linesymbolizer but with a fill too -->
 					<PointSymbolizer>

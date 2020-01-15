@@ -426,7 +426,8 @@ public class ImportJSONReader {
             if (json.has("charsetEncoding")) {
                 // check if charsetEncoding is supported
                 // dont upload a charset which not supported
-                Charset.isSupported(json.getString("charsetEncoding"));
+                if (!Charset.isSupported(json.getString("charsetEncoding")))
+                    throw new IOException(json.getString("charsetEncoding") + " is not supported");
                 importFileData.setCharsetEncoding(json.getString("charsetEncoding"));
             }
             return importFileData;

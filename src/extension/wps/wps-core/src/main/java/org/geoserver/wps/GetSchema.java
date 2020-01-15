@@ -7,6 +7,7 @@
 package org.geoserver.wps;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
@@ -41,7 +42,6 @@ public class GetSchema {
 
             if ("identifier".equalsIgnoreCase(i)) {
                 name = request.getParameter(i);
-
                 break;
             }
         }
@@ -50,32 +50,24 @@ public class GetSchema {
             throw new WPSException("NoApplicableCode", "No Identifier key and value.");
         }
 
-        InputStream stream = org.geoserver.wps.schemas.Stub.class.getResourceAsStream(name);
-
-        if (null == stream) {
-            throw new WPSException("NoApplicableCode", "No Schema '" + name + "'.");
-        }
-
-        BufferedReader bufReader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder schema = new StringBuilder();
-        String line = null;
-
-        try {
-            while (null != (line = bufReader.readLine())) {
-                schema.append(line + "\n");
+        try (InputStream stream = org.geoserver.wps.schemas.Stub.class.getResourceAsStream(name)) {
+            if (null == stream) {
+                throw new WPSException("NoApplicableCode", "No Schema '" + name + "'.");
             }
 
-            bufReader.close();
-        } catch (Exception e) {
-            throw new WPSException("NoApplicableCode", "Error reading schema on server.");
-        }
+            try (BufferedReader bufReader = new BufferedReader(new InputStreamReader(stream))) {
+                StringBuilder schema = new StringBuilder();
+                String line = null;
 
-        response.setContentType("text/xml");
+                while (null != (line = bufReader.readLine())) {
+                    schema.append(line + "\n");
+                }
 
-        try {
-            response.getOutputStream().print(schema.toString());
-        } catch (Exception e) {
-            throw new WPSException("NoApplicableCode", "Could not write schema to output.");
+                response.setContentType("text/xml");
+                response.getOutputStream().print(schema.toString());
+            }
+        } catch (IOException e) {
+            throw new WPSException("NoApplicableCode", "Error producing schema", e);
         }
     }
 }

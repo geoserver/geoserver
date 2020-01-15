@@ -27,7 +27,7 @@
         </Parameter>
         <Parameter>
           <name>schema_store</name>
-          <value>file:{schemaStore}</value>
+          <value>{schemaStore}</value>
         </Parameter>
         <Parameter>
           <name>data_store_type</name>

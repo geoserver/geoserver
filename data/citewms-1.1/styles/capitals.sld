@@ -14,7 +14,7 @@
 			<Rule>
 				<Name>name</Name>
 				<Abstract>Abstract</Abstract>
-				<Title>title</Title>
+				<Title>Black Circle Point</Title>
 				<PointSymbolizer>
 					<Graphic>
 						<Size>

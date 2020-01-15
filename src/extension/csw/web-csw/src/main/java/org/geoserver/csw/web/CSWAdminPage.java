@@ -41,14 +41,16 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void build(final IModel info, Form form) {
 
-        CSWInfo model = (CSWInfo) info.getObject();
-        MetadataMap metadata = model.getMetadata();
+        final PropertyModel<MetadataMap> metadata =
+                new PropertyModel<MetadataMap>(info, "metadata");
+        if (metadata.getObject() == null) {
+            metadata.setObject(new MetadataMap());
+        }
 
         DirectDownloadSettings settings =
-                DirectDownloadSettings.getSettingsFromMetadata(metadata, null);
-        metadata = metadata == null ? new MetadataMap() : metadata;
+                DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
         if (settings == null) {
-            metadata.getMap()
+            metadata.getObject()
                     .put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
         }
 

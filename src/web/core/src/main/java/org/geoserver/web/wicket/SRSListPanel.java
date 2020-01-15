@@ -53,10 +53,15 @@ public abstract class SRSListPanel extends Panel {
 
     /** Creates the new SRS list panel. */
     public SRSListPanel(String id) {
+        this(id, new SRSProvider());
+    }
+
+    /** Creates the new SRS list panel using SRS provider */
+    public SRSListPanel(String id, SRSProvider srsProvider) {
         super(id);
 
         table =
-                new GeoServerTablePanel<SRS>("table", new SRSProvider()) {
+                new GeoServerTablePanel<SRS>("table", srsProvider) {
 
                     private static final long serialVersionUID = 6182776235846912573L;
 

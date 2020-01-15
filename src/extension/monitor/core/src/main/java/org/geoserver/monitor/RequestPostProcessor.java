@@ -29,4 +29,7 @@ public interface RequestPostProcessor {
      */
     void run(RequestData data, HttpServletRequest request, HttpServletResponse response)
             throws Exception;
+
+    /** @return name for the implementation */
+    String getName();
 }

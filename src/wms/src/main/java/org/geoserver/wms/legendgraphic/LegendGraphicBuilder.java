@@ -114,8 +114,11 @@ public abstract class LegendGraphicBuilder {
         }
 
         if (Boolean.TRUE.equals(
-                request.getLegendOption(
-                        GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))) {
+                        request.getLegendOption(
+                                GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))
+                || Boolean.TRUE.equals(
+                        request.getLegendOption(
+                                GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
             countProcessor = new FeatureCountProcessor(request);
         }
         layers = request.getLegends();

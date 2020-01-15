@@ -31,18 +31,23 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ImportControllerTest extends ImporterTestSupport {
 
+    private Long firstId;
+    private Long secondId;
+    private Long thirdId;
+
     @Before
     public void prepareData() throws Exception {
         // prepare the contexts used in thsi test
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
-        importer.createContext(new Directory(dir));
+        this.firstId = importer.createContext(new Directory(dir)).getId();
 
         dir = unpack("geotiff/EmissiveCampania.tif.bz2");
-        importer.createContext(new Directory(dir));
+        this.secondId = importer.createContext(new Directory(dir)).getId();
 
         dir = unpack("shape/archsites_no_crs.zip");
-        importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
+        this.thirdId =
+                importer.createContext(new SpatialFile(new File(dir, "archsites.shp"))).getId();
     }
 
     @After
@@ -61,16 +66,16 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertEquals(3, imports.size());
 
         JSONObject imprt = imports.getJSONObject(0);
-        assertEquals(0, imprt.getInt("id"));
-        assertTrue(imprt.getString("href").endsWith("/imports/0"));
+        assertEquals(firstId, (Long) imprt.getLong("id"));
+        assertTrue(imprt.getString("href").endsWith("/imports/" + firstId));
 
         imprt = imports.getJSONObject(1);
-        assertEquals(1, imprt.getInt("id"));
-        assertTrue(imprt.getString("href").endsWith("/imports/1"));
+        assertEquals(secondId, (Long) imprt.getLong("id"));
+        assertTrue(imprt.getString("href").endsWith("/imports/" + secondId));
 
         imprt = imports.getJSONObject(2);
-        assertEquals(2, imprt.getInt("id"));
-        assertTrue(imprt.getString("href").endsWith("/imports/2"));
+        assertEquals(thirdId, (Long) imprt.getLong("id"));
+        assertTrue(imprt.getString("href").endsWith("/imports/" + thirdId));
     }
 
     @Test
@@ -83,12 +88,13 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetImport() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0", 200);
+        JSONObject json =
+                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + firstId, 200);
 
         assertNotNull(json.get("import"));
 
         JSONObject imprt = json.optJSONObject("import");
-        assertEquals(0, imprt.getInt("id"));
+        assertEquals(firstId, (Long) imprt.getLong("id"));
 
         JSONArray tasks = imprt.getJSONArray("tasks");
         assertEquals(2, tasks.size());
@@ -100,13 +106,15 @@ public class ImportControllerTest extends ImporterTestSupport {
     @Test
     public void testGetImportExpandChildren() throws Exception {
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/0?expand=2");
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH + "/imports/" + firstId + "?expand=2");
 
         JSONObject source = json.getJSONObject("import").getJSONObject("data");
         assertEquals("directory", source.getString("type"));
         assertEquals("Shapefile", source.getString("format"));
 
-        ImportContext context = importer.getContext(0);
+        ImportContext context = importer.getContext(firstId);
         assertEquals(
                 ((Directory) context.getData()).getFile().getPath(), source.getString("location"));
 
@@ -126,11 +134,14 @@ public class ImportControllerTest extends ImporterTestSupport {
     @Test
     public void testGetImport2() throws Exception {
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/1?expand=3", 200);
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH + "/imports/" + secondId + "?expand=3",
+                                200);
         assertNotNull(json.get("import"));
 
         JSONObject imprt = json.optJSONObject("import");
-        assertEquals(1, imprt.getInt("id"));
+        assertEquals(secondId, (Long) imprt.getLong("id"));
 
         JSONArray tasks = imprt.getJSONArray("tasks");
         assertEquals(1, tasks.size());
@@ -142,7 +153,7 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertEquals("file", source.getString("type"));
         assertEquals("GeoTIFF", source.getString("format"));
 
-        ImportContext context = importer.getContext(1);
+        ImportContext context = importer.getContext(secondId);
         assertEquals(
                 ((SpatialFile) context.getTasks().get(0).getData())
                         .getFile()
@@ -156,11 +167,13 @@ public class ImportControllerTest extends ImporterTestSupport {
     @Test
     public void testGetImport3() throws Exception {
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/2?expand=2");
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH + "/imports/" + thirdId + "?expand=2");
         assertNotNull(json.get("import"));
 
         JSONObject imprt = json.optJSONObject("import");
-        assertEquals(2, imprt.getInt("id"));
+        assertEquals(thirdId, (Long) imprt.getLong("id"));
 
         JSONArray tasks = imprt.getJSONArray("tasks");
         assertEquals(1, tasks.size());
@@ -184,7 +197,12 @@ public class ImportControllerTest extends ImporterTestSupport {
         importer.createContext(new Database(params));
 
         JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/3?expand=2");
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/imports/"
+                                        + lastId()
+                                        + "?expand=2");
 
         assertNotNull(json.get("import"));
 
@@ -342,16 +360,17 @@ public class ImportControllerTest extends ImporterTestSupport {
     @Test
     public void testContentNegotiation() throws Exception {
         MockHttpServletResponse res =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/imports/0");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/imports/" + firstId);
         assertEquals("application/json", res.getContentType());
 
-        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/0");
+        MockHttpServletRequest req =
+                createRequest(RestBaseController.ROOT_PATH + "/imports/" + firstId);
         req.setMethod("GET");
         req.addHeader("Accept", "text/html");
 
         res = dispatch(req);
         assertEquals(200, res.getStatus());
-        System.out.println(res.getContentAsString());
+        // System.out.println(res.getContentAsString());
         assertEquals("text/html", res.getContentType());
     }
 

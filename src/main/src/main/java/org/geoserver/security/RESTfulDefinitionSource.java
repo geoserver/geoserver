@@ -98,131 +98,134 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
         */
         delegate.setConvertUrlToLowercaseBeforeComparison(true);
 
-        BufferedReader br = new BufferedReader(new StringReader(pathToRoleList));
-        int counter = 0;
-        String line;
+        try (BufferedReader br = new BufferedReader(new StringReader(pathToRoleList))) {
+            int counter = 0;
+            String line;
 
-        List<RESTfulDefinitionSourceMapping> mappings =
-                new ArrayList<RESTfulDefinitionSourceMapping>();
+            List<RESTfulDefinitionSourceMapping> mappings =
+                    new ArrayList<RESTfulDefinitionSourceMapping>();
 
-        while (true) {
-            counter++;
-            try {
-                line = br.readLine();
-            } catch (IOException ioe) {
-                throw new IllegalArgumentException(ioe.getMessage());
-            }
+            while (true) {
+                counter++;
+                try {
+                    line = br.readLine();
+                } catch (IOException ioe) {
+                    throw new IllegalArgumentException(ioe.getMessage());
+                }
 
-            if (line == null) {
-                break;
-            }
+                if (line == null) {
+                    break;
+                }
 
-            line = line.trim();
+                line = line.trim();
 
-            if (log.isDebugEnabled()) {
-                log.debug("Line " + counter + ": " + line);
-            }
+                if (log.isDebugEnabled()) {
+                    log.debug("Line " + counter + ": " + line);
+                }
 
-            if (line.startsWith("//")) {
-                continue;
-            }
+                if (line.startsWith("//")) {
+                    continue;
+                }
 
-            // Skip lines that are not directives
-            if (line.lastIndexOf('=') == -1) {
-                continue;
-            }
+                // Skip lines that are not directives
+                if (line.lastIndexOf('=') == -1) {
+                    continue;
+                }
 
-            if (line.lastIndexOf("==") != -1) {
-                throw new IllegalArgumentException(
-                        "Only single equals should be used in line " + line);
-            }
+                if (line.lastIndexOf("==") != -1) {
+                    throw new IllegalArgumentException(
+                            "Only single equals should be used in line " + line);
+                }
 
-            // Tokenize the line into its name/value tokens
-            // As per SEC-219, use the LAST equals as the delimiter between LHS and RHS
+                // Tokenize the line into its name/value tokens
+                // As per SEC-219, use the LAST equals as the delimiter between LHS and RHS
 
-            String name = substringBeforeLast(line, "=");
-            String value = substringAfterLast(line, "=");
+                String name = substringBeforeLast(line, "=");
+                String value = substringAfterLast(line, "=");
 
-            if (!StringUtils.hasText(name) || !StringUtils.hasText(value)) {
-                throw new IllegalArgumentException(
-                        "Failed to parse a valid name/value pair from " + line);
-            }
+                if (!StringUtils.hasText(name) || !StringUtils.hasText(value)) {
+                    throw new IllegalArgumentException(
+                            "Failed to parse a valid name/value pair from " + line);
+                }
 
-            String antPath = name;
-            String methods = null;
+                String antPath = name;
+                String methods = null;
 
-            int firstColonIndex = name.indexOf(":");
-            if (log.isDebugEnabled())
-                log.debug("~~~~~~~~~~ name= " + name + " firstColonIndex= " + firstColonIndex);
+                int firstColonIndex = name.indexOf(":");
+                if (log.isDebugEnabled())
+                    log.debug("~~~~~~~~~~ name= " + name + " firstColonIndex= " + firstColonIndex);
 
-            if (firstColonIndex != -1) {
-                antPath = name.substring(0, firstColonIndex);
-                methods = name.substring((firstColonIndex + 1), name.length());
-            }
-            if (log.isDebugEnabled())
-                log.debug(
-                        "~~~~~~~~~~ name= "
-                                + name
-                                + " antPath= "
-                                + antPath
-                                + " methods= "
-                                + methods);
+                if (firstColonIndex != -1) {
+                    antPath = name.substring(0, firstColonIndex);
+                    methods = name.substring((firstColonIndex + 1), name.length());
+                }
+                if (log.isDebugEnabled())
+                    log.debug(
+                            "~~~~~~~~~~ name= "
+                                    + name
+                                    + " antPath= "
+                                    + antPath
+                                    + " methods= "
+                                    + methods);
 
-            String[] methodList = null;
-            if (methods != null) {
-                methodList = methods.split(",");
+                String[] methodList = null;
+                if (methods != null) {
+                    methodList = methods.split(",");
 
-                // Verify methodList is valid
-                for (int ii = 0; ii < methodList.length; ii++) {
-                    boolean matched = false;
-                    for (int jj = 0; jj < validMethodNames.length; jj++) {
-                        if (methodList[ii].equals(validMethodNames[jj])) {
-                            matched = true;
-                            break;
+                    // Verify methodList is valid
+                    for (int ii = 0; ii < methodList.length; ii++) {
+                        boolean matched = false;
+                        for (int jj = 0; jj < validMethodNames.length; jj++) {
+                            if (methodList[ii].equals(validMethodNames[jj])) {
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if (!matched) {
+                            throw new IllegalArgumentException(
+                                    "The HTTP Method Name ("
+                                            + methodList[ii]
+                                            + " does NOT equal a valid name (GET,PUT,POST,DELETE)");
                         }
                     }
-                    if (!matched) {
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("methodList = " + Arrays.toString(methodList));
+                }
+
+                // Should all be lowercase; check each character
+                // We only do this for Ant (regexp have control chars)
+                for (int i = 0; i < antPath.length(); i++) {
+                    String character = antPath.substring(i, i + 1);
+                    if (!character.toLowerCase().equals(character)) {
                         throw new IllegalArgumentException(
-                                "The HTTP Method Name ("
-                                        + methodList[ii]
-                                        + " does NOT equal a valid name (GET,PUT,POST,DELETE)");
+                                "You are using Ant Paths, yet you have specified an uppercase character in line: "
+                                        + line
+                                        + " (character '"
+                                        + character
+                                        + "')");
                     }
                 }
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("methodList = " + Arrays.toString(methodList));
-            }
 
-            // Should all be lowercase; check each character
-            // We only do this for Ant (regexp have control chars)
-            for (int i = 0; i < antPath.length(); i++) {
-                String character = antPath.substring(i, i + 1);
-                if (!character.toLowerCase().equals(character)) {
-                    throw new IllegalArgumentException(
-                            "You are using Ant Paths, yet you have specified an uppercase character in line: "
-                                    + line
-                                    + " (character '"
-                                    + character
-                                    + "')");
+                RESTfulDefinitionSourceMapping mapping = new RESTfulDefinitionSourceMapping();
+                mapping.setUrl(antPath);
+                mapping.setHttpMethods(methodList);
+
+                String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
+
+                for (int i = 0; i < tokens.length; i++) {
+                    mapping.addConfigAttribute(new SecurityConfig(tokens[i].trim()));
                 }
+                mappings.add(mapping);
             }
 
-            RESTfulDefinitionSourceMapping mapping = new RESTfulDefinitionSourceMapping();
-            mapping.setUrl(antPath);
-            mapping.setHttpMethods(methodList);
-
-            String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
-
-            for (int i = 0; i < tokens.length; i++) {
-                mapping.addConfigAttribute(new SecurityConfig(tokens[i].trim()));
-            }
-            mappings.add(mapping);
+            // This will call the addSecureUrl in RESTfulPathBasedFilterInvocationDefinitionMap
+            //   which is how this whole convoluted beast gets wired together
+            // source.setMappings(mappings);
+            setMappings(mappings);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        // This will call the addSecureUrl in RESTfulPathBasedFilterInvocationDefinitionMap
-        //   which is how this whole convoluted beast gets wired together
-        // source.setMappings(mappings);
-        setMappings(mappings);
     }
 
     public void setMappings(List<RESTfulDefinitionSourceMapping> mappings) {

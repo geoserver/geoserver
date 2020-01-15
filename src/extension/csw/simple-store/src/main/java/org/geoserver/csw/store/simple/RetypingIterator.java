@@ -104,7 +104,13 @@ class RetypingIterator implements Iterator<Feature>, Closeable {
             }
         }
 
-        return builder.buildFeature(original.getIdentifier().getID());
+        Feature feature = builder.buildFeature(original.getIdentifier().getID());
+
+        if (original.hasUserData()) {
+            feature.getUserData().putAll(original.getUserData());
+        }
+
+        return feature;
     }
 
     @Override

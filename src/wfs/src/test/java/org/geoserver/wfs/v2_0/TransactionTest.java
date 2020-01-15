@@ -26,6 +26,7 @@ import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -38,6 +39,7 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class TransactionTest extends WFS20TestSupport {
@@ -1019,7 +1021,7 @@ public class TransactionTest extends WFS20TestSupport {
 
         MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
         assertEquals("application/soap+xml", resp.getContentType());
-        System.out.println(resp.getContentAsString());
+        // System.out.println(resp.getContentAsString());
         Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:TransactionResponse").getLength());
@@ -1296,5 +1298,56 @@ public class TransactionTest extends WFS20TestSupport {
             gml.setOverrideGMLAttributes(true);
             getGeoServer().save(wfs);
         }
+    }
+
+    /** Tests XML entity expansion limit on parsing with system property configuration. */
+    @Test
+    public void testEntityExpansionLimitOnTransaction() throws Exception {
+        try {
+            System.getProperties().setProperty(WFSXmlUtils.ENTITY_EXPANSION_LIMIT, "1");
+            Document dom = postAsDOM("wfs", xmlEntityExpansionLimitBody());
+            NodeList serviceExceptionList = dom.getElementsByTagName("ows:ExceptionText");
+            assertEquals(1, serviceExceptionList.getLength());
+            Node serviceException = serviceExceptionList.item(0);
+            // the service exception should contain the JAXP00010001 error code, that means entity
+            // expansion limit is working.
+            assertTrue(serviceException.getTextContent().contains("JAXP00010001"));
+        } finally {
+            System.getProperties().remove(WFSXmlUtils.ENTITY_EXPANSION_LIMIT);
+        }
+    }
+
+    private String xmlEntityExpansionLimitBody() {
+        return "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                + "<!DOCTYPE convert [ <!ENTITY lol \"lol\"><!ENTITY lol1 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;\"> ]>"
+                + "<wfs:Transaction service='WFS' version='2.0.0' "
+                + " xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:gml='"
+                + GML.NAMESPACE
+                + "' "
+                + " xmlns:sf='http://cite.opengeospatial.org/gmlsf'>"
+                + "<wfs:Insert handle='insert-1'>"
+                + " <sf:PrimitiveGeoFeatureId gml:id='PrimitiveGeoFeatureId.gmlsf0-f01'>"
+                + "  <gml:description>"
+                + "Fusce tellus ante, tempus nonummy, ornare sed, accumsan nec, leo."
+                + "Vivamus pulvinar molestie nisl."
+                + "</gml:description>"
+                + "<gml:name>Aliquam condimentum felis sit amet est.</gml:name>"
+                + "<gml:identifier codeSpace=\"fooBar\">PrimitiveGeoFeatureId.gmlsf0-f01</gml:identifier>"
+                // + "<gml:name
+                // codeSpace='http://cite.opengeospatial.org/gmlsf'>cite.gmlsf0-f01</gml:name>"
+                + "<sf:curveProperty>"
+                + "  <gml:LineString gml:id='cite.gmlsf0-g01' srsName='urn:x-fes:def:crs:EPSG:6.11.2:4326'>"
+                + "   <gml:posList>&lol1;</gml:posList>"
+                + " </gml:LineString>"
+                + "</sf:curveProperty>"
+                + "<sf:intProperty>1025</sf:intProperty>"
+                + "<sf:measurand>7.405E2</sf:measurand>"
+                + "<sf:dateTimeProperty>2006-06-23T12:43:12+01:00</sf:dateTimeProperty>"
+                + "<sf:decimalProperty>90.62</sf:decimalProperty>"
+                + "</sf:PrimitiveGeoFeatureId>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
     }
 }

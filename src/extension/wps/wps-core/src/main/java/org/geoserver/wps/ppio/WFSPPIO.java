@@ -60,9 +60,10 @@ public class WFSPPIO extends XMLPPIO {
         if (LOGGER.isLoggable(Level.FINEST)) {
             // allow WFS result to be logged for debugging purposes
             // WFS result can be large, so use only for debugging
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ByteStreams.copy(input, outputStream);
-            streamBytes = outputStream.toByteArray();
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                ByteStreams.copy(input, outputStream);
+                streamBytes = outputStream.toByteArray();
+            }
             input = new ByteArrayInputStream(streamBytes);
         }
         Object result = p.parse(input);

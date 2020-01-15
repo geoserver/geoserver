@@ -26,10 +26,13 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.Feature;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.vfny.geoserver.global.GeoServerFeatureLocking;
 
 public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
 
@@ -162,5 +165,32 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
         assertTrue(
                 CRS.equalsIgnoreMetadata(
                         CRS.decode("EPSG:4326"), r.getCoordinateReferenceSystem()));
+    }
+
+    @Test
+    public void testOtherSRS() throws Exception {
+
+        CoordinateReferenceSystem requestCRS = CRS.decode("EPSG:4326");
+        Catalog catalog = getCatalog();
+        final ResourcePool rpool = catalog.getResourcePool();
+
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName("Lines");
+
+        String otherSRS = "EPSG:4326,EPSG:3857";
+        // put other SRS
+        ft.getMetadata().put(FeatureTypeInfo.OTHER_SRS, otherSRS);
+        // set to DECLARED
+        ft.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+
+        Hints hints = new Hints(ResourcePool.MAP_CRS, requestCRS);
+        // obtain feature source
+        GeoServerFeatureLocking gsFL = (GeoServerFeatureLocking) rpool.getFeatureSource(ft, hints);
+
+        // verify that feature source is configured to make queries using EPSG:4326 and not the
+        // native EPSG:3004
+        assertTrue(
+                CRS.equalsIgnoreMetadata(
+                        requestCRS,
+                        gsFL.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem()));
     }
 }

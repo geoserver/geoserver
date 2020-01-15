@@ -28,12 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -130,12 +128,12 @@ public class ApiTest extends FeaturesTestSupport {
         // ... conformance
         PathItem conformance = paths.get("/conformance");
         assertNotNull(conformance);
-        assertThat(conformance.getGet().getOperationId(), equalTo("getRequirementsClasses"));
+        assertThat(conformance.getGet().getOperationId(), equalTo("getConformanceDeclaration"));
 
         // ... collections
         PathItem collections = paths.get("/collections");
         assertNotNull(collections);
-        assertThat(collections.getGet().getOperationId(), equalTo("describeCollections"));
+        assertThat(collections.getGet().getOperationId(), equalTo("getCollections"));
 
         // ... collection
         PathItem collection = paths.get("/collections/{collectionId}");
@@ -156,7 +154,9 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/collectionId",
                         "#/components/parameters/limit",
                         "#/components/parameters/bbox",
-                        "#/components/parameters/time"));
+                        "#/components/parameters/datetime",
+                        "#/components/parameters/filter",
+                        "#/components/parameters/filter-lang"));
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");
@@ -171,7 +171,7 @@ public class ApiTest extends FeaturesTestSupport {
                 getCatalog()
                         .getFeatureTypes()
                         .stream()
-                        .map(ft -> NCNameResourceCodec.encode(ft))
+                        .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
 
@@ -185,7 +185,6 @@ public class ApiTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // workspace specific services not working yet
     public void testWorkspaceQualifiedAPI() throws Exception {
         MockHttpServletRequest request = createRequest("cdf/ogc/features/api");
         request.setMethod("GET");
@@ -195,6 +194,8 @@ public class ApiTest extends FeaturesTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("application/x-yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+
+        // System.out.println(yaml);
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);

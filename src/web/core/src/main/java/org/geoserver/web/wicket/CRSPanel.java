@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
@@ -65,6 +66,8 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     /** the wkt link that contains the wkt label * */
     protected GeoServerAjaxFormLink wktLink;
 
+    protected SRSProvider srsProvider = new SRSProvider();
+
     /**
      * Constructs the CRS panel.
      *
@@ -106,6 +109,19 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         super(id, new CRSModel(crs));
         initComponents();
         setConvertedInput(crs);
+    }
+
+    /**
+     * Constructs the CRS panel with an explicit model.
+     *
+     * @param id The component id.
+     * @param model The model, usually a {@link PropertyModel}.
+     * @param otherSRS list of srs to show in popup
+     */
+    public CRSPanel(String id, IModel<CoordinateReferenceSystem> model, List<String> otherSRS) {
+        super(id, model);
+        this.srsProvider = new SRSProvider(otherSRS);
+        initComponents();
     }
 
     /*
@@ -224,6 +240,14 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         return this;
     }
 
+    /** Show Find EPGS button but keep text field read only */
+    public CRSPanel setFindLinkVisible(boolean show) {
+        srsTextField.add(READ_ONLY);
+        findLink.setVisible(show);
+
+        return this;
+    }
+
     /**
      * Returns the underlying CRS for the panel.
      *
@@ -272,7 +296,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      */
     protected SRSListPanel srsListPanel() {
         SRSListPanel srsList =
-                new SRSListPanel(popupWindow.getContentId()) {
+                new SRSListPanel(popupWindow.getContentId(), srsProvider) {
 
                     @Override
                     protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {

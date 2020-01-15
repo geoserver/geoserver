@@ -15,6 +15,13 @@
        <#list model.getLinksExcept("api", "application/json") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
        </p>
        
+       <h2>Tile matrix sets</h2>
+       <p>Tiles are cached on <a id="tileMatrixSetsLink" href="${model.getLinkUrl('tileMatrixSets', 'text/html')!}">tile matrix sets</a>, defining tile layouts and zoom levels.
+       <br/> 
+       This page is also available as
+       <#list model.getLinksExcept("tileMatrixSets", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+       </p> 
+       
        <h2>Tiled Collections</h2>
        <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('collections', 'text/html')!}"> collections page</a> provides a list of all the tiled collections available in this service. 
        <br/> 

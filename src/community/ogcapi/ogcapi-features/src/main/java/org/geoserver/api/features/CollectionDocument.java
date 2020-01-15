@@ -6,28 +6,23 @@ package org.geoserver.api.features;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.api.APIRequestInfo;
-import org.geoserver.api.AbstractDocument;
+import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -36,29 +31,26 @@ import org.springframework.http.MediaType;
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
 @JacksonXmlRootElement(localName = "Collection", namespace = "http://www.opengis.net/wfs/3.0")
-public class CollectionDocument extends AbstractDocument {
+public class CollectionDocument extends AbstractCollectionDocument {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 
-    String id;
-    String title;
-    String description;
-    CollectionExtents extent;
     FeatureTypeInfo featureType;
     String mapPreviewURL;
 
     public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType) {
+        super(featureType);
         // basic info
-        String collectionId = NCNameResourceCodec.encode(featureType);
-        setId(collectionId);
-        setTitle(featureType.getTitle());
-        setDescription(featureType.getAbstract());
+        String collectionId = featureType.prefixedName();
+        this.id = collectionId;
+        this.title = featureType.getTitle();
+        this.description = featureType.getAbstract();
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
         setExtent(new CollectionExtents(bbox));
         this.featureType = featureType;
 
         // links
         Collection<MediaType> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+                APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
         String baseUrl = APIRequestInfo.get().getBaseURL();
         for (MediaType format : formats) {
             String apiUrl =
@@ -70,11 +62,41 @@ public class CollectionDocument extends AbstractDocument {
             addLink(
                     new Link(
                             apiUrl,
-                            Link.REL_ITEM,
+                            Link.REL_ITEMS,
                             format.toString(),
                             collectionId + " items as " + format.toString(),
                             "items"));
         }
+        addSelfLinks("ogc/features/collections/" + id);
+
+        // describedBy as GML schema
+        String describedByHref =
+                ResponseUtils.buildURL(
+                        baseUrl,
+                        "wfs",
+                        new HashMap<String, String>() {
+                            {
+                                put("service", "WFS");
+                                put("version", "2.0");
+                                put("request", "DescribeFeatureType");
+                                put("typenames", featureType.prefixedName());
+                            }
+                        },
+                        URLMangler.URLType.SERVICE);
+        Link describedBy =
+                new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
+        addLink(describedBy);
+
+        // queryables
+        addLinksFor(
+                "ogc/features/collections/"
+                        + ResponseUtils.urlEncode(featureType.prefixedName())
+                        + "/queryables",
+                QueryablesDocument.class,
+                "Queryable attributes as ",
+                "queryables",
+                null,
+                "queryables");
 
         // map preview
         if (isWMSAvailable(geoServer)) {
@@ -95,47 +117,6 @@ public class CollectionDocument extends AbstractDocument {
                         .findFirst()
                         .orElse(null);
         return si != null;
-    }
-
-    @JacksonXmlProperty(localName = "Id")
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String collectionId) {
-        id = collectionId;
-    }
-
-    @JacksonXmlProperty(localName = "Title")
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @JacksonXmlProperty(localName = "Description")
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public CollectionExtents getExtent() {
-        return extent;
-    }
-
-    public void setExtent(CollectionExtents extent) {
-        this.extent = extent;
-    }
-
-    @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    public List<Link> getLinks() {
-        return links;
     }
 
     @JsonIgnore

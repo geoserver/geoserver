@@ -18,14 +18,12 @@ import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.NCNameResourceCodec;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,10 +49,11 @@ public class CollectionsTest extends TilesTestSupport {
     @Test
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/tiles/collections", 200);
-        testCollectionsJson(json);
+        testCollectionsJson(json, MediaType.APPLICATION_JSON);
     }
 
-    private void testCollectionsJson(DocumentContext json) throws Exception {
+    private void testCollectionsJson(DocumentContext json, MediaType defaultFormat)
+            throws Exception {
         int expected = getGWC().getTileLayerNames().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
@@ -62,7 +61,7 @@ public class CollectionsTest extends TilesTestSupport {
         Collection<MediaType> formats =
                 GeoServerExtensions.bean(
                                 APIDispatcher.class, GeoServerSystemTestSupport.applicationContext)
-                        .getProducibleMediaTypes(FeatureCollectionResponse.class, true);
+                        .getProducibleMediaTypes(TiledCollectionDocument.class, true);
         assertThat(
                 formats.size(),
                 lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
@@ -70,12 +69,15 @@ public class CollectionsTest extends TilesTestSupport {
             // check title and rel
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
             Map item = (Map) items.get(0);
-            assertEquals("collection", item.get("rel"));
+            if (defaultFormat.equals(format)) {
+                assertEquals("self", item.get("rel"));
+            } else {
+                assertEquals("alternate", item.get("rel"));
+            }
         }
     }
 
     @Test
-    @Ignore // workspace specific
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("cdf/ogc/tiles/collections", 200);
         long expected =
@@ -85,17 +87,18 @@ public class CollectionsTest extends TilesTestSupport {
         // check the filtering
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
         // check the workspace prefixes have been removed
-        assertThat(json.read("collections[?(@.name=='Deletes')]"), not(empty()));
-        assertThat(json.read("collections[?(@.name=='cdf__Deletes')]"), empty());
+        assertThat(json.read("collections[?(@.id=='Deletes')]"), not(empty()));
+        assertThat(json.read("collections[?(@.id=='cdf__Deletes')]"), empty());
         // check the url points to a ws qualified url
         final String deleteHrefPath =
-                "collections[?(@.name=='Deletes')].links[?(@.rel=='data' && @.type=='application/json')].href";
+                "collections[?(@.id=='Deletes')].links[?(@.rel=='self' && @.type=='application/json')].href";
         assertEquals(
-                "http://localhost:8080/geoserver/cdf/ogc/tiles/collections/Deletes/?f=application%2Fjson",
+                "http://localhost:8080/geoserver/cdf/ogc/tiles/collections/Deletes?f=application%2Fjson",
                 ((JSONArray) json.read(deleteHrefPath)).get(0));
     }
 
     @Test
+    @Ignore
     public void testCollectionsXML() throws Exception {
         Document dom = getAsDOM("ogc/tiles/collections?f=application/xml");
         print(dom);
@@ -106,7 +109,7 @@ public class CollectionsTest extends TilesTestSupport {
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("ogc/tiles/collections/?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
-        testCollectionsJson(json);
+        testCollectionsJson(json, MediaType.parseMediaType("application/x-yaml"));
     }
 
     @Test
@@ -127,7 +130,7 @@ public class CollectionsTest extends TilesTestSupport {
         // go and check a specific collection title and description
         FeatureTypeInfo basicPolygons =
                 getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
-        String basicPolygonsName = NCNameResourceCodec.encode(basicPolygons);
+        String basicPolygonsName = basicPolygons.prefixedName().replace(":", "__");
         assertEquals(
                 BASIC_POLYGONS_TITLE, document.select("#" + basicPolygonsName + "_title").text());
         assertEquals(

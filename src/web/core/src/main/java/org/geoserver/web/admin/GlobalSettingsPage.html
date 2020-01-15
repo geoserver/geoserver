@@ -19,6 +19,10 @@
         <input id="globalServices" type="checkbox" wicket:id="globalServices" />
         <label for="globalServices"><wicket:message key="globalServices">Enable Global Services</wicket:message></label>
       </li>
+      <li class="choiceItem">
+      	<input type="checkbox" id="allowStoredQueriesPerWorkspace" wicket:id="allowStoredQueriesPerWorkspace"></input>
+        <label><wicket:message key="allowStoredQueriesPerWorkspace">Allow Per-Workspace Stored Queries</wicket:message></label>
+      </li>
     </ul>
   </fieldset>
   <fieldset>
@@ -109,6 +113,16 @@
     <li wicket:id="extensions">
       <fieldset wicket:id="content"></fieldset>
     </li>
+  </ul>
+  <ul>
+      <li class="choiceItem">
+        <input id="showCreatedTimeCols" type="checkbox" wicket:id="showCreatedTimeCols" />
+        <label><wicket:message key="timeCreatedColChkBox">Display creation timestamps on administration lists</wicket:message></label>
+      </li>
+      <li class="choiceItem">
+        <input id="showModifiedTimeCols" type="checkbox" wicket:id="showModifiedTimeCols" />
+        <label><wicket:message key="timeModifiedColChkBox">Display modification timestamps on administration lists</wicket:message></label>
+      </li>
   </ul>
   <ul>
     <li class="button-group selfclear">

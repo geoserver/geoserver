@@ -50,50 +50,51 @@ public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
 
         @Override
         public void encode(Object o) throws IllegalArgumentException {
-            CloseableIterator<String> response = (CloseableIterator<String>) o;
+            try (CloseableIterator<String> response = (CloseableIterator<String>) o) {
 
-            AttributesImpl attributes = new AttributesImpl();
-            addAttribute(attributes, "xmlns:csw", CSW.NAMESPACE);
-            addAttribute(attributes, "xmlns:dc", DC.NAMESPACE);
-            addAttribute(attributes, "xmlns:dct", DCT.NAMESPACE);
-            addAttribute(attributes, "xmlns:ows", OWS.NAMESPACE);
-            addAttribute(attributes, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+                AttributesImpl attributes = new AttributesImpl();
+                addAttribute(attributes, "xmlns:csw", CSW.NAMESPACE);
+                addAttribute(attributes, "xmlns:dc", DC.NAMESPACE);
+                addAttribute(attributes, "xmlns:dct", DCT.NAMESPACE);
+                addAttribute(attributes, "xmlns:ows", OWS.NAMESPACE);
+                addAttribute(attributes, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
-            String locationAtt = "xsi:schemaLocation";
-            StringBuilder locationDef = new StringBuilder();
-            locationDef.append(CSW.NAMESPACE).append(" ");
-            locationDef.append(cswSchemaLocation("CSW-discovery.xsd"));
-            addAttribute(attributes, locationAtt, locationDef.toString());
+                String locationAtt = "xsi:schemaLocation";
+                StringBuilder locationDef = new StringBuilder();
+                locationDef.append(CSW.NAMESPACE).append(" ");
+                locationDef.append(cswSchemaLocation("CSW-discovery.xsd"));
+                addAttribute(attributes, locationAtt, locationDef.toString());
 
-            start("csw:GetDomainResponse", attributes);
+                start("csw:GetDomainResponse", attributes);
 
-            String domainValuesElement = "csw:DomainValues";
-            AttributesImpl domainValuesElementAtts = new AttributesImpl();
-            addAttribute(domainValuesElementAtts, "type", "csw:Record");
-            start(domainValuesElement, domainValuesElementAtts);
+                String domainValuesElement = "csw:DomainValues";
+                AttributesImpl domainValuesElementAtts = new AttributesImpl();
+                addAttribute(domainValuesElementAtts, "type", "csw:Record");
+                start(domainValuesElement, domainValuesElementAtts);
 
-            if (((GetDomainType) request).getParameterName() != null
-                    && !((GetDomainType) request).getParameterName().isEmpty()) {
-                String parameterNameElement = "csw:ParameterName";
-                element(parameterNameElement, ((GetDomainType) request).getParameterName());
-            } else if (((GetDomainType) request).getPropertyName() != null
-                    && !((GetDomainType) request).getPropertyName().isEmpty()) {
-                String propertyNameElement = "csw:PropertyName";
-                element(propertyNameElement, ((GetDomainType) request).getPropertyName());
+                if (((GetDomainType) request).getParameterName() != null
+                        && !((GetDomainType) request).getParameterName().isEmpty()) {
+                    String parameterNameElement = "csw:ParameterName";
+                    element(parameterNameElement, ((GetDomainType) request).getParameterName());
+                } else if (((GetDomainType) request).getPropertyName() != null
+                        && !((GetDomainType) request).getPropertyName().isEmpty()) {
+                    String propertyNameElement = "csw:PropertyName";
+                    element(propertyNameElement, ((GetDomainType) request).getPropertyName());
+                }
+
+                String valuesElementType = "csw:ListOfValues";
+                start(valuesElementType);
+
+                while (response.hasNext()) {
+                    String value = response.next();
+                    element("csw:Value", value);
+                }
+
+                end(valuesElementType);
+
+                end(domainValuesElement);
+                end("csw:GetDomainResponse");
             }
-
-            String valuesElementType = "csw:ListOfValues";
-            start(valuesElementType);
-
-            while (response.hasNext()) {
-                String value = response.next();
-                element("csw:Value", value);
-            }
-
-            end(valuesElementType);
-
-            end(domainValuesElement);
-            end("csw:GetDomainResponse");
         }
     }
 

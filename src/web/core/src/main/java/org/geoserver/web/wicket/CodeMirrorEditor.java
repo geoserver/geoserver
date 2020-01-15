@@ -319,12 +319,16 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         }
 
         private String getInitJavascript() {
-            InputStream is = CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js");
-            String js = convertStreamToString(is);
-            js = js.replaceAll("\\$componentId", editor.getMarkupId());
-            js = js.replaceAll("\\$mode", mode);
-            js = js.replaceAll("\\$container", container.getMarkupId());
-            return js;
+            try (InputStream is =
+                    CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js")) {
+                String js = convertStreamToString(is);
+                js = js.replaceAll("\\$componentId", editor.getMarkupId());
+                js = js.replaceAll("\\$mode", mode);
+                js = js.replaceAll("\\$container", container.getMarkupId());
+                return js;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         public String convertStreamToString(InputStream is) {

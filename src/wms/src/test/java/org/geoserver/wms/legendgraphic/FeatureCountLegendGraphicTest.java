@@ -386,6 +386,50 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
     }
 
     @Test
+    public void testStatesCqlFilterHideEmptyRules() throws Exception {
+        runGetLegendGraphics(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                        + "&layer="
+                        + getLayerId(SF_STATES)
+                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                        + "&bbox="
+                        + "-130,24,-66,50"
+                        + "&legend_options="
+                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                        + ":true;"
+                        + GetLegendGraphicRequest.HIDE_EMPTY_RULES
+                        + ":true"
+                        + "&CQL_FILTER=PERSONS < 2000000");
+        assertEquals(1, ruleSets.size());
+        Rule[] rules = ruleSets.get(0);
+        logLabels(rules);
+        assertEquals(2, rules.length);
+        assertLabel("< 2M (16)", rules[0]);
+        assertLabel("(16)", rules[1]);
+    }
+
+    @Test
+    public void testStatesCqlFilterHideEmptyRulesWithoutCount() throws Exception {
+        runGetLegendGraphics(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                        + "&layer="
+                        + getLayerId(SF_STATES)
+                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                        + "&bbox="
+                        + "-130,24,-66,50"
+                        + "&legend_options="
+                        + GetLegendGraphicRequest.HIDE_EMPTY_RULES
+                        + ":true"
+                        + "&CQL_FILTER=PERSONS < 2000000");
+        assertEquals(1, ruleSets.size());
+        Rule[] rules = ruleSets.get(0);
+        logLabels(rules);
+        assertEquals(2, rules.length);
+        assertLabel("< 2M", rules[0]);
+        assertLabel("", rules[1]);
+    }
+
+    @Test
     public void testStatesMatchFirst() throws Exception {
         String requestURL =
                 "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"

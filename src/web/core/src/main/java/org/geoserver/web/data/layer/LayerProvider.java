@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -19,6 +20,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -53,6 +55,12 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     static final Property<LayerInfo> NAME = new BeanProperty<>("name", "name");
 
     static final Property<LayerInfo> TITLE = new BeanProperty<>("title", "title");
+
+    static final Property<LayerInfo> MODIFIED_TIMESTAMP =
+            new BeanProperty<>("datemodfied", "dateModified");
+
+    static final Property<LayerInfo> CREATED_TIMESTAMP =
+            new BeanProperty<>("datecreated", "dateCreated");
 
     /**
      * A custom property that uses the derived enabled() property instead of isEnabled() to account
@@ -103,7 +111,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
             };
 
     static final List<Property<LayerInfo>> PROPERTIES =
-            Arrays.asList(TYPE, TITLE, NAME, STORE, ENABLED, SRS);
+            Arrays.asList(TYPE, TITLE, NAME, STORE, ENABLED, SRS); //
 
     @Override
     protected List<LayerInfo> getItems() {
@@ -114,7 +122,20 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     @Override
     protected List<Property<LayerInfo>> getProperties() {
-        return PROPERTIES;
+        List<Property<LayerInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+        // check geoserver properties
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowCreatedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        return modifiedPropertiesList;
     }
 
     @Override

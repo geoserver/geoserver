@@ -58,4 +58,15 @@ public class PublishedEditTabPanel<T extends PublishedInfo> extends Panel {
                 });
         return this;
     }
+
+    /**
+     * Called by {@link ResourceConfigurationPage} to perform any actions before the published info
+     * is saved.
+     *
+     * <p>
+     */
+    public void beforeSave() {
+        // do nothing by default
+
+    }
 }

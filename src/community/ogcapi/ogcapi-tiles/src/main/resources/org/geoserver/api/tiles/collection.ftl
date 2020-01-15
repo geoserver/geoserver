@@ -7,11 +7,24 @@
 <#if model.description??>
 <li><b>Description</b>: <span id="${model.htmlId}_description">${model.description!}</span><br/></li>
 </#if>
-<#assign se = model.extent.spatial>
-<li><b>Geographic extents</b>: ${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
+<#assign spatial = model.extent.spatial>
+<li><b>Geographic extents</b>:
+<ul>
+<#list spatial as se>
+<li>${se.getMinX()}, ${se.getMinY()}, ${se.getMaxX()}, ${se.getMaxY()}.</li>
+</#list>
+</ul>
+</li>
 </ul>
 
-TODO: add a OpenLayers preview using the tiles API here
-
+Tiles available for this collection:
+<ul>
+<#if model.dataTiles>
+<li><a href="${model.getLinkUrl('dataTiles', 'text/html')!}">Data tiles</a></li> 
+</#if>
+<#if model.mapTiles>
+<li><a href="${model.getLinkUrl('mapTiles', 'text/html')!}">Map tiles</a></li>
+</#if>
+</ul>
 
 <#include "common-footer.ftl">

@@ -12,7 +12,7 @@
 		<UserStyle>
 		    <!-- they have names, titles and abstracts -->
 
-			<Title>A boring default style</Title>
+			<Title>Blue Line</Title>
 			<Abstract>A sample style that just prints out a blue line</Abstract>
 			<!-- FeatureTypeStyles describe how to render different features -->
 			<!-- a feature type for lines -->

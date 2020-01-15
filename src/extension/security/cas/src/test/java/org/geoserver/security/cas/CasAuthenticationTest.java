@@ -49,7 +49,6 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
@@ -167,11 +166,11 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                     "logoutRequest", paramValue.substring(paramValue.indexOf("=") + 1));
             try {
                 GeoServerSecurityFilterChainProxy proxy = getProxy();
-                System.out.println("SERVCIE: " + service);
-                System.out.println("URL: " + request.getRequestURL().toString());
-                for (SecurityFilterChain c : proxy.getFilterChains()) {
-                    System.out.println(c.toString());
-                }
+                //                System.out.println("SERVCIE: " + service);
+                //                System.out.println("URL: " + request.getRequestURL().toString());
+                //                for (SecurityFilterChain c : proxy.getFilterChains()) {
+                //                    System.out.println(c.toString());
+                //                }
                 proxy.doFilter(request, response, chain);
             } catch (ServletException e) {
                 throw new RuntimeException(e);

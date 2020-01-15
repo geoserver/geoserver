@@ -82,6 +82,7 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate
                             .toString());
         }
 
+        @SuppressWarnings("PMD.CloseResource") // just a wrapper, output closing managed outside
         GZIPOutputStream gzipOut = null;
         if (isOutputCompressed(outputFormat)) {
             gzipOut = new GZIPOutputStream(output);

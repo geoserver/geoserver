@@ -8,15 +8,19 @@ package org.geoserver.web.data.layergroup;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -32,6 +36,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
     SelectionRemovalLink removal;
 
     public LayerGroupPage() {
+        final CatalogIconFactory icons = CatalogIconFactory.get();
         LayerGroupProvider provider = new LayerGroupProvider();
         add(
                 table =
@@ -50,6 +55,33 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                                 }
                                 if (property == LayerGroupProvider.WORKSPACE) {
                                     return workspaceLink(id, itemModel);
+                                }
+                                if (property == LayerGroupProvider.MODIFIED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            LayerGroupProvider.MODIFIED_TIMESTAMP.getModel(
+                                                    itemModel));
+                                }
+                                if (property == LayerGroupProvider.CREATED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            LayerGroupProvider.CREATED_TIMESTAMP.getModel(
+                                                    itemModel));
+                                }
+                                if (property == LayerGroupProvider.ENABLED) {
+                                    LayerGroupInfo layerGroupInfo = itemModel.getObject();
+                                    // ask for enabled() instead of isEnabled() to account for
+                                    // disabled
+                                    // resource/store
+                                    boolean enabled = layerGroupInfo.isEnabled();
+                                    PackageResourceReference icon =
+                                            enabled
+                                                    ? icons.getEnabledIcon()
+                                                    : icons.getDisabledIcon();
+                                    Fragment f =
+                                            new Fragment(id, "iconFragment", LayerGroupPage.this);
+                                    f.add(new Image("layerIcon", icon));
+                                    return f;
                                 }
                                 return null;
                             }
@@ -76,6 +108,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
                                 target.add(removal);
                             }
                         });
+
         table.setOutputMarkupId(true);
         add(table);
 

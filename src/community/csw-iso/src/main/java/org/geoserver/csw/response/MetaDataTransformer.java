@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw.response;
 
+import com.google.common.base.Strings;
 import java.util.Collection;
 import java.util.List;
 import net.opengis.cat.csw20.RequestBaseType;
@@ -53,6 +54,7 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
 
         public MetaDataTranslator(ContentHandler handler) {
             super(handler);
+            getNamespaceSupport().declarePrefix("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         }
 
         public void encode(CSWRecordsResult response, Feature f) {
@@ -74,10 +76,32 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                         MetaDataDescriptor.NAMESPACES.getPrefix(p.getName().getNamespaceURI());
 
                 AttributesImpl atts = new AttributesImpl();
+                if (p.isNillable()) {
+                    Property prop =
+                            ((ComplexAttribute) p)
+                                    .getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                    boolean nil =
+                            prop == null || prop.getValue() == null || prop.getValue().equals("");
+                    atts.addAttribute(
+                            "http://www.w3.org/2001/XMLSchema-instance",
+                            "nil",
+                            "xsi:nil",
+                            "",
+                            nil ? "true" : "false");
+                }
+
                 for (Property p2 : ((ComplexAttribute) p).getProperties()) {
                     if (p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         String name = p2.getName().getLocalPart().substring(1);
-                        atts.addAttribute("", name, name, "", p2.getValue().toString());
+                        String ns = p2.getName().getNamespaceURI();
+                        String qName =
+                                ns == null
+                                        ? name
+                                        : MetaDataDescriptor.NAMESPACES.getPrefix(
+                                                        p2.getName().getNamespaceURI())
+                                                + ":"
+                                                + name;
+                        atts.addAttribute(ns, name, qName, "", p2.getValue().toString());
                     }
                 }
 
@@ -156,6 +180,14 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
             String name = dn.getLocalPart();
             String prefix = MetaDataDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
             AttributesImpl attributes = new AttributesImpl();
+            if (p.isNillable()) {
+                attributes.addAttribute(
+                        "http://www.w3.org/2001/XMLSchema-instance",
+                        "nil",
+                        "xsi:nil",
+                        "",
+                        Strings.isNullOrEmpty(value) ? "true" : "false");
+            }
             element(prefix + ":" + name, value, attributes);
         }
     }

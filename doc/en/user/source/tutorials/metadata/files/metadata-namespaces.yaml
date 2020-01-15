@@ -1,0 +1,11 @@
+namespaces:
+  - prefix: gco
+    uri: http://www.isotc211.org/2005/gco
+  - prefix: gmd
+    uri: http://www.isotc211.org/2005/gmd
+  - prefix: gmx
+    uri: http://www.isotc211.org/2005/gmx
+  - prefix: gml
+    uri: http://www.opengis.net/gml 
+  - prefix: xlink
+    uri:  http://www.w3.org/1999/xlink  

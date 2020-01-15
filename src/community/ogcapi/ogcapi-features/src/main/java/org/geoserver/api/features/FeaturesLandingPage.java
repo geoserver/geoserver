@@ -5,8 +5,8 @@
 package org.geoserver.api.features;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractLandingPageDocument;
+import org.geoserver.api.Link;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.WFSInfo;
 
@@ -20,16 +20,22 @@ public class FeaturesLandingPage extends AbstractLandingPageDocument {
                 (wfs.getAbstract() == null) ? "" : wfs.getAbstract(),
                 "ogc/features");
 
-        final APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
         // collections
         addLinksFor(
-                baseUrl,
                 featuresBase + "/collections",
                 CollectionsDocument.class,
                 "Collections Metadata as ",
                 "collections",
                 null,
-                "data");
+                Link.REL_DATA);
+
+        // filter capabilities
+        addLinksFor(
+                featuresBase + "/filter-capabilities",
+                FilterCapabilitiesDocument.class,
+                "Filter capabilities as ",
+                "filter-capabilities",
+                null,
+                Link.REL_DATA);
     }
 }

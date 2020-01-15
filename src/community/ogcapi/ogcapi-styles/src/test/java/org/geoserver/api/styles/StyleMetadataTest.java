@@ -1,3 +1,7 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.api.styles;
 
 import static junit.framework.TestCase.assertEquals;
@@ -13,12 +17,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
+import org.geowebcache.mime.ApplicationMime;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +47,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     public static final String BUILDINGS_LABEL_ASSOCIATED_STYLE = "BuildingsLabelAssociated";
     public static final String BUILDINGS_LABEL_STYLE = "BuildingsLabel";
     public static final String TASMANIA = "tasmania";
+    public static final String BUILDINGS_LAKES = "buildingsLakes";
 
     @Before
     public void clearMetadata() {
@@ -66,7 +77,7 @@ public class StyleMetadataTest extends StylesTestSupport {
                 StyleMetadataTest.class,
                 getCatalog());
         testData.addVectorLayer(
-                BUILDINGS,
+                BUILDINGS_LABEL,
                 new HashMap() {
                     {
                         put(SystemTestData.LayerProperty.STYLE, BUILDINGS_LABEL_ASSOCIATED_STYLE);
@@ -76,8 +87,24 @@ public class StyleMetadataTest extends StylesTestSupport {
                 StyleMetadataTest.class,
                 getCatalog());
 
+        // add vector tiles as a format for it
+        String buildingsLabelId = getLayerId(BUILDINGS_LABEL);
+        GWC gwc = GeoServerExtensions.bean(GWC.class);
+        GeoServerTileLayer buildingTiles =
+                (GeoServerTileLayer) gwc.getTileLayerByName(buildingsLabelId);
+        Set<String> formats = buildingTiles.getInfo().getMimeFormats();
+        formats.add(ApplicationMime.mapboxVector.getFormat());
+        formats.add(ApplicationMime.topojson.getFormat());
+        formats.add(ApplicationMime.geojson.getFormat());
+        gwc.save(buildingTiles);
+
         // a multi-layer style
         testData.addStyle(TASMANIA, "tasmania.sld", StyleMetadataTest.class, getCatalog());
+
+        // a style group kind, with the layers that it needs
+        testData.addVectorLayer(MockData.LAKES, getCatalog());
+        testData.addStyle(
+                BUILDINGS_LAKES, "buildingsLakes.sld", StyleMetadataTest.class, getCatalog());
     }
 
     @Test
@@ -145,11 +172,19 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals(Integer.valueOf(1), (Integer) json.read("layers.size()"));
         assertEquals("Buildings", json.read("layers[0].id"));
         assertEquals("polygon", json.read("layers[0].type"));
-        assertEquals("data", json.read("layers[0].sampleData.rel"));
+
+        // sample data, vector items
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__BuildingsLabels",
-                json.read("layers[0].sampleData.href"));
-        assertEquals("application/json", json.read("layers[0].sampleData.type"));
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildingsLabels/items?f=application%2Fgeo%2Bjson",
+                readSingle(
+                        json,
+                        "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'data' && @.type == 'application/geo+json')].href"));
+        // sample data, tiles
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ABuildingsLabels%2Ftiles?f=application%2Fvnd.mapbox-vector-tile",
+                readSingle(
+                        json,
+                        "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'tiles' && @.type == 'application/vnd.mapbox-vector-tile')].href"));
 
         // attributes
         assertEquals("FID", json.read("layers[0].attributes[0].id"));
@@ -193,10 +228,33 @@ public class StyleMetadataTest extends StylesTestSupport {
     }
 
     @Test
+    public void testGetMetadataMultilayerSampleData() throws Exception {
+        DocumentContext json =
+                getAsJSONPath("ogc/styles/styles/" + BUILDINGS_LAKES + "/metadata", 200);
+        assertEquals("buildingsLakes", json.read("id"));
+        assertEquals(Integer.valueOf(2), (Integer) json.read("layers.size()"));
+
+        // Water Bodies
+        assertEquals("Lakes", json.read("layers[0].id"));
+        assertEquals("polygon", json.read("layers[0].type"));
+        // ... check the sample data link, make sure there is only one (there used to be extra
+        // layers)
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ALakes/items?f=application%2Fgeo%2Bjson",
+                readSingle(json, "layers[0].sampleData[?(@.type=='application/geo+json')].href"));
+
+        // BasicPolygons
+        assertEquals("Buildings", json.read("layers[1].id"));
+        assertEquals("polygon", json.read("layers[1].type"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildings/items?f=application%2Fgeo%2Bjson",
+                readSingle(json, "layers[1].sampleData[?(@.type=='application/geo+json')].href"));
+    }
+
+    @Test
     public void testMetadataSerialization() throws Exception {
         Resource styleResource = getDataDirectory().getStyles("polygon.xml");
         Document dom = dom(styleResource.in(), true);
-        print(dom);
         String metadataPath =
                 "//metadata/entry[@key='" + StyleMetadataInfo.METADATA_KEY + "']/styleMetadata";
         assertXpathExists(metadataPath, dom);
@@ -235,23 +293,26 @@ public class StyleMetadataTest extends StylesTestSupport {
                 json.read("stylesheets.size()", Integer.class), Matchers.greaterThanOrEqualTo(3));
 
         // sld 1.is not native, CSS is
-        assertEquals(false, getSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
-        assertEquals(true, getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
+        assertEquals(
+                false,
+                (boolean) readSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
+        assertEquals(
+                true, (boolean) readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
 
         // some checks on the CSS one
         assertEquals(
                 "Stylesheet as CSS 1.0.0",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].title"));
-        assertEquals("1.0.0", getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].version"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].title"));
+        assertEquals("1.0.0", readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].version"));
         assertEquals(
                 "https://docs.geoserver.org/latest/en/user/styling/css/index.html",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].specification"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].specification"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/styles/cssSample?f=application%2Fvnd.geoserver.geocss%2Bcss",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.href"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.href"));
         assertEquals(
                 "application/vnd.geoserver.geocss+css",
-                getSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.type"));
+                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.type"));
     }
 
     @Test
@@ -312,5 +373,22 @@ public class StyleMetadataTest extends StylesTestSupport {
         StyleDates dates = metadata.getDates();
         assertEquals(parseDate("2019-05-17T11:46:12Z"), dates.getRevision());
         assertNull(dates.getValidTill());
+    }
+
+    /**
+     * Read and put back, check it can be written as it was produced
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testRoundTrip() throws Exception {
+        String metadatPath = "ogc/styles/styles/raster/metadata";
+        String payload = getAsString(metadatPath);
+        MockHttpServletResponse response =
+                putAsServletResponse(metadatPath, payload, "application/json");
+        assertEquals(response.getContentAsString(), 204, response.getStatus());
+
+        // check nothing changed
+        testGetMetadataFromRasterStyle();
     }
 }

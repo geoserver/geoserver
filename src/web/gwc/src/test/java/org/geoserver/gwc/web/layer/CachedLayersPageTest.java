@@ -182,4 +182,42 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void testAutoTileCachingTabSelection() {
+        // this tests asserts that when a layer is clicked on Tile Layer page
+        // the resulting navigation page should have the 'Tile Caching' tab selected by itself
+        CachedLayersPage page = new CachedLayersPage();
+
+        // load tiles layer list page
+        tester.startPage(page);
+        tester.assertRenderedPage(CachedLayersPage.class);
+
+        // click on the first layer
+        tester.clickLink("table:listContainer:items:1:itemProperties:1:component:link", true);
+
+        // UI should navigate to ResourceConfiguration Page with Tiles tab selected
+        tester.assertComponent("publishedinfo:tabs:panel", LayerCacheOptionsTabPanel.class);
+    }
+
+    @Test
+    public void testGWCClean() {
+        // This asserts GWC integration from GUI
+        CachedLayersPage page = new CachedLayersPage();
+
+        // load tiles layer list page
+        tester.startPage(page);
+        tester.assertRenderedPage(CachedLayersPage.class);
+
+        //        // click on the Empty All Link
+        tester.clickLink("headerPanel:clearGwcLink", true);
+
+        // assert the dialog shows up
+        tester.assertVisible("dialog");
+
+        // click submit
+        tester.clickLink("dialog:dialog:content:form:submit", true);
+
+        tester.assertNoErrorMessage();
+    }
 }

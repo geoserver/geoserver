@@ -20,7 +20,6 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -28,7 +27,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testGetLayerAsGeoJson() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         DocumentContext json =
                 getAsJSONPath("ogc/features/collections/" + roadSegments + "/items", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
@@ -54,7 +53,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @Ignore // workspace qualified does not work yet
     public void testWorkspaceQualified() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =
@@ -88,7 +86,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testBBoxFilter() throws Exception {
-        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/" + roadSegments + "/items?bbox=35,0,60,3", 200);
@@ -103,7 +101,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testBBoxDatelineCrossingFilter() throws Exception {
-        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/" + roadSegments + "/items?bbox=170,0,60,3", 200);
@@ -117,11 +115,41 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    public void testTimeFilter() throws Exception {
-        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+    public void testCqlFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
-                        "ogc/features/collections/" + roadSegments + "/items?time=2006-10-25", 200);
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=name='name-f001'",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
+    public void testCqlFilterInvalidLanguage() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=name='name-f001'&filter-lang=foo-bar",
+                        400);
+        assertEquals("InvalidParameterValue", json.read("code", String.class));
+        assertThat(json.read("description", String.class), Matchers.containsString("foo-bar"));
+    }
+
+    @Test
+    public void testTimeFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/" + roadSegments + "/items?datetime=2006-10-25",
+                        200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -131,12 +159,12 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testTimeRangeFilter() throws Exception {
-        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/"
                                 + roadSegments
-                                + "/items?time=2006-09-01/2006-10-23",
+                                + "/items?datetime=2006-09-01/2006-10-23",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -148,12 +176,12 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testTimeDurationFilter() throws Exception {
-        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/"
                                 + roadSegments
-                                + "/items?time=2006-09-01/P1M23DT12H31M12S",
+                                + "/items?datetime=2006-09-01/P1M23DT12H31M12S",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -165,12 +193,12 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testCombinedSpaceTimeFilter() throws Exception {
-        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/"
                                 + roadSegments
-                                + "/items?time=2006-09-01/2006-10-23&bbox=35,0,60,3",
+                                + "/items?datetime=2006-09-01/2006-10-23&bbox=35,0,60,3",
                         200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -180,7 +208,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testSingleFeatureAsGeoJson() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/features/collections/"
@@ -195,7 +223,7 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals("self", selfRels.get(0));
         String href = (String) ((List) json.read(geoJsonLinkPath + "href")).get(0);
         String expected =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments"
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments"
                         + "/items/RoadSegments.1107532045088?f=application%2Fgeo%2Bjson";
         assertEquals(expected, href);
         // check alternate link
@@ -208,9 +236,9 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testFirstPage() throws Exception {
         String expectedNextURL =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?startIndex=3&limit=3";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?startIndex=3&limit=3";
 
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse(
                         "ogc/features/collections/" + roadSegments + "/items?limit=3", 200);
@@ -232,11 +260,11 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testMiddlePage() throws Exception {
         String expectedPrevURL =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?startIndex=2&limit=1";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?startIndex=2&limit=1";
         String expectedNextURL =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?startIndex=4&limit=1";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?startIndex=4&limit=1";
 
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse(
                         "ogc/features/collections/" + roadSegments + "/items?startIndex=3&limit=1",
@@ -264,9 +292,9 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testLastPage() throws Exception {
         String expectedPrevLink =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite__RoadSegments/items?startIndex=0&limit=3";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?startIndex=0&limit=3";
 
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =
                 getAsMockHttpServletResponse(
                         "ogc/features/collections/" + roadSegments + "/items?startIndex=3&limit=3",
@@ -288,7 +316,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testErrorHandling() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =
                 getAsJSONPath("ogc/features/collections/" + roadSegments + "/items?limit=abc", 400);
         assertEquals("InvalidParameterValue", json.read("code"));
@@ -298,7 +326,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testGetLayerAsHTML() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         String url = "ogc/features/collections/" + roadSegments + "/items?f=html";
         Document document = getAsJSoup(url);
         assertEquals(5, document.select("td:matches(RoadSegments\\..*)").size());
@@ -310,7 +338,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testGetLayerAsHTMLPagingLinks() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         String urlBase = "ogc/features/collections/" + roadSegments + "/items?f=html";
         String expectedBase =
                 "http://localhost:8080/geoserver/ogc/features/collections/"
@@ -357,7 +385,7 @@ public class FeatureTest extends FeaturesTestSupport {
         getCatalog().save(genericEntity);
         try {
             String encodedLocalName = URLEncoder.encode(genericEntity.getName(), "UTF-8");
-            String typeName = MockData.GENERICENTITY.getPrefix() + "__" + encodedLocalName;
+            String typeName = URLEncoder.encode(genericEntity.prefixedName());
             String encodedFeatureId = encodedLocalName + ".f004";
             DocumentContext json =
                     getAsJSONPath(

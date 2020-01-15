@@ -164,6 +164,7 @@ public class SLDHandler extends StyleHandler {
             Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
 
+        @SuppressWarnings("PMD.CloseResource") // conditionally initialized, actually gets closed
         Reader reader = null;
         try {
             // we need to close the reader if we grab one, but if it's a file it has
@@ -326,6 +327,7 @@ public class SLDHandler extends StyleHandler {
     /** Helper method for finding which style handler/version to use from the actual content. */
     Object[] getVersionAndReader(Object input) throws IOException {
         // need to determine version of sld from actual content
+        @SuppressWarnings("PMD.CloseResource") // returned as part of the response
         BufferedReader reader = null;
 
         if (input instanceof InputStream) {

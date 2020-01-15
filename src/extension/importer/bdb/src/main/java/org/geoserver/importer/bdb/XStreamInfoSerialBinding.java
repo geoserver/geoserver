@@ -79,26 +79,29 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
     }
 
     public void objectToEntry(final T info, DatabaseEntry entry) {
+        try (FastOutputStream serialOutput = super.getSerialOutput(info)) {
+            @SuppressWarnings("PMD.CloseResource") // just wrappers
+            OutputStream out = serialOutput;
+            if (compress) {
+                out = new LZFOutputStream(serialOutput);
+            }
+            if (DEBUG) {
+                out = new TeeOutputStream(out, System.out);
+            }
+            try {
+                xstreamPersister.save(info, out);
+                out.flush();
+                out.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-        FastOutputStream serialOutput = super.getSerialOutput(info);
-        OutputStream out = serialOutput;
-        if (compress) {
-            out = new LZFOutputStream(serialOutput);
-        }
-        if (DEBUG) {
-            out = new TeeOutputStream(out, System.out);
-        }
-        try {
-            xstreamPersister.save(info, out);
-            out.flush();
-            out.close();
+            final byte[] bytes = serialOutput.getBufferBytes();
+            final int offset = 0;
+            final int length = serialOutput.getBufferLength();
+            entry.setData(bytes, offset, length);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        final byte[] bytes = serialOutput.getBufferBytes();
-        final int offset = 0;
-        final int length = serialOutput.getBufferLength();
-        entry.setData(bytes, offset, length);
     }
 }

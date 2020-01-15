@@ -112,17 +112,19 @@ public class PaletteManager {
                     return icm;
                 }
             } else {
-                ImageInputStream iis = ImageIO.createImageInputStream(resource.in());
-                final Iterator it = ImageIO.getImageReaders(iis);
-                if (it.hasNext()) {
-                    final ImageReader reader = (ImageReader) it.next();
-                    reader.setInput(iis);
-                    final ColorModel cm =
-                            ((ImageTypeSpecifier) reader.getImageTypes(0).next()).getColorModel();
-                    if (cm instanceof IndexColorModel) {
-                        final IndexColorModel icm = (IndexColorModel) cm;
-                        paletteCache.put(name, new PaletteCacheEntry(resource, icm));
-                        return icm;
+                try (ImageInputStream iis = ImageIO.createImageInputStream(resource.in())) {
+                    final Iterator it = ImageIO.getImageReaders(iis);
+                    if (it.hasNext()) {
+                        final ImageReader reader = (ImageReader) it.next();
+                        reader.setInput(iis);
+                        final ColorModel cm =
+                                ((ImageTypeSpecifier) reader.getImageTypes(0).next())
+                                        .getColorModel();
+                        if (cm instanceof IndexColorModel) {
+                            final IndexColorModel icm = (IndexColorModel) cm;
+                            paletteCache.put(name, new PaletteCacheEntry(resource, icm));
+                            return icm;
+                        }
                     }
                 }
             }

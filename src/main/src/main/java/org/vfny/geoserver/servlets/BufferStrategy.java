@@ -49,6 +49,7 @@ public class BufferStrategy implements ServiceStrategy {
             return; // should we throw an Exception here
         }
 
+        @SuppressWarnings("PMD.CloseResource") // managed by servlet container
         OutputStream out = response.getOutputStream();
         buffer.writeTo(out);
 

@@ -50,7 +50,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xmlpull.v1.XmlPullParser;
@@ -115,7 +114,7 @@ public class GMLFileFormat extends VectorFormat {
         // we need to get the feature type, to use for the particular parse through the file
         // since we put it on the metadata from the list method, we first check if that's still
         // available
-        SimpleFeatureType ft = (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
+        SimpleFeatureType ft = task.getFeatureType();
         GMLVersion version = (GMLVersion) task.getMetadata().get(GML_VERSION_KEY);
         if (version == null) {
             version = GMLVersion.GML3;
@@ -194,7 +193,7 @@ public class GMLFileFormat extends VectorFormat {
 
         ImportTask task = new ImportTask(data);
         task.setLayer(layer);
-        task.getMetadata().put(FeatureType.class, featureType);
+        task.setFeatureType(featureType);
         task.getMetadata().put(GML_VERSION_KEY, featureType.getUserData().get(GML_VERSION_KEY));
 
         // in case the native CRS was not usable

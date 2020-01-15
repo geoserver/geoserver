@@ -7,6 +7,7 @@ package org.geoserver.api.tiles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
+import org.geowebcache.mime.ApplicationMime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -43,16 +45,20 @@ public class GetTileTest extends TilesTestSupport {
                 getAsServletResponse(
                         "ogc/tiles/collections/"
                                 + layerId
-                                + "/maps/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+                                + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
+        checkRootTileHeaders(sr, "cite:BasicPolygons");
+    }
 
+    public void checkRootTileHeaders(MockHttpServletResponse sr, String layerName)
+            throws IOException {
         // check the headers
         assertEquals("EPSG:4326", sr.getHeader("geowebcache-gridset"));
         assertEquals("EPSG:4326", sr.getHeader("geowebcache-crs"));
         assertEquals("[0, 0, 0]", sr.getHeader("geowebcache-tile-index"));
         assertEquals("-180.0,-90.0,0.0,90.0", sr.getHeader("geowebcache-tile-bounds"));
-        assertEquals("cite:BasicPolygons", sr.getHeader("geowebcache-layer"));
+        assertEquals(layerName, sr.getHeader("geowebcache-layer"));
         assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
         assertEquals("no-cache", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
@@ -61,12 +67,27 @@ public class GetTileTest extends TilesTestSupport {
     }
 
     @Test
+    public void testPngIntegrationWorkspaceSpecific() throws Exception {
+        String layerId = MockData.BASIC_POLYGONS.getLocalPart();
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        MockData.BASIC_POLYGONS.getPrefix()
+                                + "/ogc/tiles/collections/"
+                                + layerId
+                                + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+
+        checkRootTileHeaders(sr, "BasicPolygons");
+    }
+
+    @Test
     public void testPngMissHit() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         String path =
                 "ogc/tiles/collections/"
                         + layerId
-                        + "/maps/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+                        + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -89,7 +110,7 @@ public class GetTileTest extends TilesTestSupport {
         String path =
                 "ogc/tiles/collections/"
                         + layerId
-                        + "/maps/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+                        + "/map/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -151,6 +172,54 @@ public class GetTileTest extends TilesTestSupport {
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
 
         // check the headers
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a vector tile
+        VectorTileDecoder.FeatureIterable features =
+                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        // one road is before greenwich, not included in this tile
+        assertEquals(4, features.asList().size());
+    }
+
+    @Test
+    public void testJsonTile() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                                + ApplicationMime.geojson.getFormat());
+        assertEquals(200, sr.getStatus());
+        assertEquals(ApplicationMime.json.getFormat(), sr.getContentType());
+
+        // check the headers
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a geojson tile
+        DocumentContext json = getAsJSONPath(sr);
+        assertEquals("FeatureCollection", json.read("type"));
+    }
+
+    @Test
+    public void testPng8Tile() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/map/RoadSegments/tiles/EPSG:900913/EPSG:900913:10/511/512?f=image/png8");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a PNG
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(sr.getContentAsByteArray()));
+        assertNotBlank("testPng8Tile", image, null);
+    }
+
+    public void checkRoadGwcHeaders(String layerId, MockHttpServletResponse sr) {
+        // check the headers
         assertEquals("EPSG:900913", sr.getHeader("geowebcache-gridset"));
         assertEquals("EPSG:900913", sr.getHeader("geowebcache-crs"));
         // gwc has y axis inverted, mind
@@ -162,11 +231,5 @@ public class GetTileTest extends TilesTestSupport {
         assertEquals("no-cache", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
         assertNotNull(sr.getHeader("Last-Modified"));
-
-        // check it can actually be read as a vector tile
-        VectorTileDecoder.FeatureIterable features =
-                new VectorTileDecoder().decode(sr.getContentAsByteArray());
-        // one road is before greenwich, not included in this tile
-        assertEquals(4, features.asList().size());
     }
 }

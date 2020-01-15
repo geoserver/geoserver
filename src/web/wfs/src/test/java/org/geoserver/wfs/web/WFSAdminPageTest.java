@@ -46,6 +46,13 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         assertEquals("testValue2 = 0", 0, (int) wfs.getMaxNumberOfFeaturesForPreview());
+        // test allowGlobalQueries
+        tester.startPage(WFSAdminPage.class);
+        ft = tester.newFormTester("form");
+        ft.setValue("allowGlobalQueries", false);
+        ft.submit("submit");
+        wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
+        assertEquals("allowGlobalQueries = false", false, wfs.getAllowGlobalQueries());
     }
 
     @Test

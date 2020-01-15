@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.geoserver.data.test.CiteTestData.STREAMS;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,6 +25,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -112,6 +114,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.IllegalAttributeException;
 import org.opengis.parameter.GeneralParameterValue;
@@ -125,10 +128,17 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     public static QName TAZ_BYTE = new QName(MockData.WCS_URI, "tazbyte", MockData.WCS_PREFIX);
 
+    public static QName SIX_BANDS = new QName(MockData.WCS_URI, "sixbands", MockData.WCS_PREFIX);
+
     static final QName STRAIGHT_VERTICAL_LINE =
             new QName(MockData.CITE_URI, "STRAIGHT_VERTICAL_LINE", MockData.CITE_PREFIX);
 
     static final String STRAIGHT_VERTICAL_LINE_STYLE = "verticalline";
+
+    static final QName NORMALIZED =
+            new QName(MockData.CITE_URI, "NORMALIZED", MockData.CITE_PREFIX);
+
+    static final String NORMALIZED_STYLE = "normalized";
 
     static final QName CROSS_DATELINE =
             new QName(MockData.CITE_URI, "CROSS_DATELINE", MockData.CITE_PREFIX);
@@ -850,6 +860,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         super.onSetUp(testData);
         testData.addDefaultRasterLayer(MockData.TASMANIA_DEM, getCatalog());
         testData.addRasterLayer(TAZ_BYTE, "tazbyte.tiff", null, getCatalog());
+        testData.addRasterLayer(SIX_BANDS, "6b.tiff", null, getCatalog());
+        testData.addStyle(NORMALIZED_STYLE, "normalized.sld", getClass(), getCatalog());
         testData.addRasterLayer(
                 TIFF_3035,
                 "3035.zip",
@@ -910,7 +922,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_NEAREST)));
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageNearest = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsNearest", imageNearest);
@@ -930,7 +943,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         request.setFormat(getMapFormat());
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        op = (RenderedOp) imageMap.getImage();
+        op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageBicubic = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
@@ -978,7 +991,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageNearest = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsNearest", imageNearest);
@@ -998,7 +1012,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        op = (RenderedOp) imageMap.getImage();
+        op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageBicubic = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsBicubic", imageBicubic);
@@ -1076,7 +1090,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        op = (RenderedOp) imageMap.getImage();
+        op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageServiceDefault = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationServiceDefault", imageServiceDefault);
@@ -1123,12 +1137,19 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     private void addRasterToMap(final WMSMapContent map, final QName typeName)
             throws IOException, FactoryRegistryException, TransformException, SchemaException {
+        addRasterToMap(map, typeName, null);
+    }
+
+    private void addRasterToMap(final WMSMapContent map, final QName typeName, Style style)
+            throws IOException, FactoryRegistryException, TransformException, SchemaException {
         final CoverageInfo coverageInfo =
                 getCatalog().getCoverageByName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
         List<LayerInfo> layers = getCatalog().getLayers(coverageInfo);
-        StyleInfo defaultStyle = layers.get(0).getDefaultStyle();
-        Style style = defaultStyle.getStyle();
+        if (style == null) {
+            StyleInfo defaultStyle = layers.get(0).getDefaultStyle();
+            style = defaultStyle.getStyle();
+        }
 
         SimpleFeatureCollection fc =
                 FeatureUtilities.wrapGridCoverageReader(
@@ -1509,13 +1530,57 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage image = op.getAsBufferedImage();
         imageMap.dispose();
 
         // check that a pixel in nodata area is transparent
         assertEquals(0, image.getRaster().getSample(40, 400, 0));
         assertEquals(0, image.getRaster().getSample(40, 400, 1));
+    }
+
+    @Test
+    public void testGetMapOnByteNodataChannelSelectAndContrastEnhancement() throws Exception {
+        GetMapRequest request = new GetMapRequest();
+        CoverageInfo coverageInfo =
+                getCatalog().getCoverageByName(SIX_BANDS.getPrefix(), SIX_BANDS.getLocalPart());
+        ReferencedEnvelope bbox = coverageInfo.getNativeBoundingBox();
+        GridEnvelope gridRange = coverageInfo.getGrid().getGridRange();
+
+        final int width = gridRange.getHigh(0) + 1;
+        final int height = gridRange.getHigh(1) + 1;
+        request.setBbox(bbox);
+        request.setWidth(width);
+        request.setHeight(height);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+        request.setTransparent(true);
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapWidth(width);
+        map.setMapHeight(height);
+        map.setTransparent(true);
+        map.getViewport().setBounds(bbox);
+        Style normalized = getCatalog().getStyleByName(NORMALIZED_STYLE).getStyle();
+        addRasterToMap(map, SIX_BANDS, normalized);
+        map.getViewport().setBounds(bbox);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        BufferedImage image = op.getAsBufferedImage();
+        imageMap.dispose();
+
+        // check that a pixel in nodata area is transparent
+        int[] pixel = new int[4];
+        WritableRaster raster = image.getRaster();
+        raster.getPixel(0, 0, pixel);
+        assertArrayEquals(new int[] {0, 0, 0, 0}, pixel);
+        raster.getPixel(6, 7, pixel);
+
+        // Checking a valid pixel is opaque
+        assertEquals(255, pixel[3]);
     }
 
     /**
@@ -1666,7 +1731,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op = (RenderedOp) imageMap.getImage();
+        RenderedOp op =
+                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         Point[] tileIndices = op.getTileIndices(new Rectangle(0, 0, mapWidth, mapHeight));
 
         // Assert we are getting more than a single huge tile.

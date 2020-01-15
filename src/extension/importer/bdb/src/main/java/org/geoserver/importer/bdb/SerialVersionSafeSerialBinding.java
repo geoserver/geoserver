@@ -29,18 +29,17 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
 
     @Override
     public void objectToEntry(T e, DatabaseEntry entry) {
-        FastOutputStream serialOutput = super.getSerialOutput(e);
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(serialOutput);
+        try (FastOutputStream serialOutput = super.getSerialOutput(e);
+                ObjectOutputStream out = new ObjectOutputStream(serialOutput)) {
             out.writeObject(e);
+
+            final byte[] bytes = serialOutput.getBufferBytes();
+            final int offset = 0;
+            final int length = serialOutput.getBufferLength();
+            entry.setData(bytes, offset, length);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-
-        final byte[] bytes = serialOutput.getBufferBytes();
-        final int offset = 0;
-        final int length = serialOutput.getBufferLength();
-        entry.setData(bytes, offset, length);
     }
 
     static class SafeInputStream extends ObjectInputStream {

@@ -53,12 +53,11 @@ public class GeoJSONFormat extends VectorFormat {
 
     @Override
     public FeatureReader read(ImportData data, ImportTask item) throws IOException {
-        final SimpleFeatureType featureType =
-                (SimpleFeatureType) item.getMetadata().get(FeatureType.class);
+        final SimpleFeatureType featureType = item.getFeatureType();
         FeatureJSON json = new FeatureJSON();
         json.setFeatureType(featureType);
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         final FeatureIterator it = json.streamFeatureCollection(file(data, item));
-
         return new FeatureReader() {
 
             @Override
@@ -202,7 +201,7 @@ public class GeoJSONFormat extends VectorFormat {
         ImportTask task = new ImportTask(data);
         task.setLayer(layer);
 
-        task.getMetadata().put(FeatureType.class, featureType);
+        task.setFeatureType(featureType);
 
         return task;
     }

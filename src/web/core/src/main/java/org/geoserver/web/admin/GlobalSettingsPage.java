@@ -143,12 +143,28 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(webUIModeChoice);
 
+        form.add(
+                new CheckBox(
+                        "allowStoredQueriesPerWorkspace",
+                        new PropertyModel<Boolean>(
+                                globalInfoModel, "allowStoredQueriesPerWorkspace")));
+
         // Extension plugin for Global Settings
         // Loading of the settings from the Global Info
         ListView extensions =
                 SettingsPluginPanelInfo.createExtensions(
                         "extensions", settingsModel, getGeoServerApplication());
         form.add(extensions);
+
+        form.add(
+                new CheckBox(
+                        "showCreatedTimeCols",
+                        new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
+
+        form.add(
+                new CheckBox(
+                        "showModifiedTimeCols",
+                        new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
 
         Button submit =
                 new Button("submit") {

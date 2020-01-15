@@ -124,23 +124,37 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         FileUtils.deleteQuietly(dir);
 
         try {
-            if (System.getProperty(Importer.UPLOAD_ROOT_KEY) != null) {
-                System.clearProperty(Importer.UPLOAD_ROOT_KEY);
+            if (System.getProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY) != null) {
+                System.clearProperty(ImporterInfoDAO.UPLOAD_ROOT_KEY);
             }
         } catch (Exception e) {
             LOGGER.log(
                     Level.WARNING,
-                    "Could not remove System ENV variable {" + Importer.UPLOAD_ROOT_KEY + "}",
+                    "Could not remove System ENV variable {"
+                            + ImporterInfoDAO.UPLOAD_ROOT_KEY
+                            + "}",
                     e);
         }
     }
 
     @Before
     public void setupImporterField() {
+        setupImporterFieldInternal();
+    }
+
+    /**
+     * Override this method in case a subclass has other @Before that need to run after {@link
+     * #setupImporterField()}
+     */
+    protected void setupImporterFieldInternal() {
         importer = (Importer) applicationContext.getBean("importer");
         // clean up the import history (to isolate tests from each other)
-        MemoryImportStore store = (MemoryImportStore) importer.getStore();
-        store.destroy();
+        if (importer.getStore() instanceof MemoryImportStore) {
+            MemoryImportStore store = (MemoryImportStore) importer.getStore();
+            store.destroy();
+        } else {
+            importer.getStore().removeAll();
+        }
     }
 
     protected File tmpDir() throws Exception {
@@ -281,12 +295,11 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
 
     protected int lastId() {
         Iterator<ImportContext> ctx = importer.getAllContexts();
-        int id = -1;
+        long max = 0;
         while (ctx.hasNext()) {
-            ctx.next();
-            id++;
+            max = Math.max(ctx.next().getId(), max);
         }
-        return id;
+        return (int) max;
     }
 
     public static class JSONObjectBuilder extends JSONBuilder {

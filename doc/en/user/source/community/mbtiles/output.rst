@@ -11,6 +11,8 @@ The following additional parameters can be passed on using :ref:`format_options`
   * ``tileset_name``: name to be used for tileset in mbtiles file (default is name of layer(s)).
   * ``min_zoom``, ``max_zoom``, ``min_column``, ``max_column``, ``min_row``, ``max_row``: set the minimum and maximum zoom level, column, and rows
   * ``gridset``: name of gridset to use (otherwise default for CRS is used)
+
+.. warning:: The GetMap request won't be subject to any execution time limit, a client can thus make request that will takes very long times to execute by providing a high max_zoom value.
   
 MBTiles WPS Process
 ----------------------
@@ -27,3 +29,5 @@ It is possible to generate an ``mbtiles`` file by calling the WPS process ``gs:M
   * ``stylename``, ``stylepath``, ``stylebody``: *(Optional)* style to associate to the layer. Only one of these 3 parameters can be used.
   
 The process returns an URL containing the path of the generated file.
+
+.. warning:: The process implementation does not currently support cancellation, a client can thus make request that will takes very long times to execute by providing a high max_zoom value.

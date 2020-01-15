@@ -109,6 +109,17 @@ file.
    When using database persistence it is important to ensure that the size of the body 
    field in the database can accommodate the ``maxBodySize`` property.
 
+Ignore Post Processors
+----------------------
+
+The monitor passes request information through post processors which enrich the request
+information with DNS lookup, Location using IP database etc. It is possible to disable
+these post processors if some enrichments are not required with ``ignorePostProcessors``
+property of the ``monitor.properties`` file.
+
+This parameter takes comma separated names of known post processors.
+The valid values are ``reverseDNS,geoIp,layerNameNormalizer``
+
 .. _request_filters:
 
 Request Filters

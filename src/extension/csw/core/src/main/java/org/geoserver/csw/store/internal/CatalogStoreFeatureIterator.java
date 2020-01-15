@@ -5,17 +5,19 @@
  */
 package org.geoserver.csw.store.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang.ObjectUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
@@ -54,11 +56,11 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     protected RecordBuilder builder;
 
-    protected Iterator<ResourceInfo> layerIt;
+    protected Iterator<? extends ResourceInfo> layerIt;
 
     protected ResourceInfo nextResource;
 
-    protected Iterator<LayerGroupInfo> layerGroupIt;
+    protected Iterator<? extends LayerGroupInfo> layerGroupIt;
 
     protected LayerGroupInfo nextLayerGroup;
 
@@ -80,7 +82,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     protected Comparator<Info> comparator;
 
-    private RecordDescriptor recordDescriptor;
+    private RecordDescriptor outputRecordDescriptor;
 
     public CatalogStoreFeatureIterator(
             int offset,
@@ -89,7 +91,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             Filter filter,
             Catalog catalog,
             CatalogStoreMapping mapping,
-            RecordDescriptor recordDescriptor,
+            RecordDescriptor outputRecordDescriptor,
             Map<String, String> interpolationProperties) {
         this.interpolationProperties = interpolationProperties;
         this.offset = offset;
@@ -104,8 +106,10 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         layerIt =
                 catalogFacade.list(
                         ResourceInfo.class, ff.and(filter, advertised), null, null, sortOrder);
-        nextLayer();
+
         layerGroupIt = catalogFacade.list(LayerGroupInfo.class, filter, null, null, sortOrder);
+
+        nextLayer();
         nextLayerGroup();
 
         comparator =
@@ -116,8 +120,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         while (index < offset && hasNext()) {
             nextInternal();
         }
-        this.recordDescriptor = recordDescriptor;
-        builder = new GenericRecordBuilder(recordDescriptor);
+        this.outputRecordDescriptor = outputRecordDescriptor;
+        builder = new GenericRecordBuilder(outputRecordDescriptor);
     }
 
     @Override
@@ -127,9 +131,16 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     public ResourceInfo nextLayer() {
         ResourceInfo result = nextResource;
+        String id;
 
         if (layerIt.hasNext()) {
-            nextResource = layerIt.next();
+            do {
+                nextResource = layerIt.next();
+                id = id(nextResource);
+            } while (id == null && layerIt.hasNext());
+            if (id == null) {
+                nextResource = null;
+            }
         } else {
             nextResource = null;
         }
@@ -139,9 +150,16 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     public LayerGroupInfo nextLayerGroup() {
         LayerGroupInfo result = nextLayerGroup;
+        String id;
 
         if (layerGroupIt.hasNext()) {
-            nextLayerGroup = layerGroupIt.next();
+            do {
+                nextLayerGroup = layerGroupIt.next();
+                id = id(nextLayerGroup);
+            } while (id == null && layerGroupIt.hasNext());
+            if (id == null) {
+                nextLayerGroup = null;
+            }
         } else {
             nextLayerGroup = null;
         }
@@ -189,33 +207,50 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     private String mapProperties(CatalogInfo resource) {
         String id = null;
         for (CatalogStoreMapping.CatalogStoreMappingElement mappingElement : mapping.elements()) {
-            Object value = mappingElement.getContent().evaluate(resource);
+            Object value;
+            try {
+                value = mappingElement.getContent().evaluate(resource);
 
-            if (value != null) {
-                if (value instanceof Collection) {
-                    ((Collection) value).removeAll(Collections.singleton(null));
-                    if (((Collection) value).size() > 0) {
-                        String[] elements = new String[((Collection) value).size()];
-                        int i = 0;
-                        for (Object element : (Collection) value) {
-                            elements[i++] =
-                                    interpolate(interpolationProperties, element.toString());
+                if (value != null || mappingElement.isRequired()) {
+                    if (value instanceof Collection) {
+                        List<Object> elements =
+                                interpolate(interpolationProperties, (Collection<?>) value);
+                        if (elements != null) {
+                            builder.addElement(
+                                    mappingElement.getKey(),
+                                    mappingElement.getSplitIndex(),
+                                    elements.toArray(new Object[elements.size()]));
                         }
+                    } else {
                         builder.addElement(
-                                mappingElement.getKey(), mappingElement.getSplitIndex(), elements);
+                                mappingElement.getKey(),
+                                interpolate(interpolationProperties, ObjectUtils.toString(value)));
                     }
-                } else {
-                    builder.addElement(
-                            mappingElement.getKey(),
-                            interpolate(interpolationProperties, value.toString()));
+
+                    if (mappingElement == mapping.getIdentifierElement()) {
+                        id = interpolate(interpolationProperties, ObjectUtils.toString(value));
+                    }
                 }
 
-                if (mappingElement == mapping.getIdentifierElement()) {
-                    id = interpolate(interpolationProperties, value.toString());
-                }
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "Failed mapping property '"
+                                + mappingElement.getKey()
+                                + "': "
+                                + e.getMessage(),
+                        e);
             }
         }
         return id;
+    }
+
+    private String id(CatalogInfo resource) {
+        Object val = mapping.getIdentifierElement().getContent().evaluate(resource);
+        if (val != null) {
+            return interpolate(interpolationProperties, val.toString());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -242,7 +277,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             }
 
             if (directDownloadEnabled) {
-                String typeName = recordDescriptor.getFeatureType().getName().getLocalPart();
+                String typeName = outputRecordDescriptor.getFeatureType().getName().getLocalPart();
                 // customizer = FeatureCustomizer.getCustomizer(typeName);
                 customizer = FeatureCustomizer.getCustomizer(typeName);
                 if (customizer == null) {
@@ -259,43 +294,54 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
 
     private Feature convertToFeature(ResourceInfo resource) {
+        try {
+            String id = mapProperties(resource);
 
-        String id = mapProperties(resource);
-
-        // move on to the bounding boxes
-        if (mapping.isIncludeEnvelope()) {
-            ReferencedEnvelope bbox = null;
-            try {
-                bbox = resource.boundingBox();
-            } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+            // move on to the bounding boxes
+            if (mapping.isIncludeEnvelope()) {
+                ReferencedEnvelope bbox = null;
+                try {
+                    bbox = resource.boundingBox();
+                } catch (Exception e) {
+                    LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+                }
+                if (bbox != null) {
+                    builder.addBoundingBox(bbox);
+                }
             }
-            if (bbox != null) {
-                builder.addBoundingBox(bbox);
+            Feature feature = builder.build(id);
+            FeatureCustomizer customizer = getCustomizer(resource);
+            if (customizer != null) {
+                customizer.customizeFeature(feature, ModificationProxy.unwrap(resource));
             }
+            return feature;
+        } catch (IllegalArgumentException e) {
+            String message = "Error mapping resource " + resource.getName() + ": " + e.getMessage();
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new IllegalArgumentException(message, e);
         }
-        Feature feature = builder.build(id);
-        FeatureCustomizer customizer = getCustomizer(resource);
-        if (customizer != null) {
-            customizer.customizeFeature(feature, ModificationProxy.unwrap(resource));
-        }
-        return feature;
     }
 
     private Feature convertToFeature(LayerGroupInfo resource) {
+        try {
+            String id = mapProperties(resource);
 
-        String id = mapProperties(resource);
-
-        // move on to the bounding boxes
-        if (mapping.isIncludeEnvelope()) {
-            ReferencedEnvelope bbox = null;
-            bbox = resource.getBounds();
-            if (bbox != null) {
-                builder.addBoundingBox(bbox);
+            // move on to the bounding boxes
+            if (mapping.isIncludeEnvelope()) {
+                ReferencedEnvelope bbox = null;
+                bbox = resource.getBounds();
+                if (bbox != null) {
+                    builder.addBoundingBox(bbox);
+                }
             }
-        }
 
-        return builder.build(id);
+            return builder.build(id);
+        } catch (IllegalArgumentException e) {
+            String message =
+                    "Error mapping layer group " + resource.getName() + ": " + e.getMessage();
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new IllegalArgumentException(message, e);
+        }
     }
 
     @Override
@@ -322,5 +368,22 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             }
         }
         return result;
+    }
+
+    protected static List<Object> interpolate(Map<String, String> properties, Collection<?> value) {
+        if (((Collection<?>) value).size() > 0) {
+            List<Object> elements = new ArrayList<Object>();
+            for (Object element : value) {
+                Object result = null;
+                if (element instanceof Collection<?>) {
+                    result = interpolate(properties, (Collection<?>) element);
+                } else if (element != null) {
+                    result = interpolate(properties, element.toString());
+                }
+                elements.add(result);
+            }
+            return elements;
+        }
+        return null;
     }
 }

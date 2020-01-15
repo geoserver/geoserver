@@ -433,10 +433,11 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
 
         // try to find a template with the same name
-        InputStream is = this.getClass().getResourceAsStream(fileName);
-        if (is != null) IOUtils.copy(is, resource.out());
-        else // use the default template
-        FileUtils.copyURLToFile(getClass().getResource(defaultResource), file);
+        try (InputStream is = this.getClass().getResourceAsStream(fileName)) {
+            if (is != null) IOUtils.copy(is, resource.out());
+            else // use the default template
+            FileUtils.copyURLToFile(getClass().getResource(defaultResource), file);
+        }
 
         return resource;
     }

@@ -1,0 +1,40 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+<form wicket:id="form" style="padding-top: 1em;">
+    <ul>
+        <li>
+            <fieldset>
+                <legend><span><wicket:message key="upload">Upload</wicket:message></span></legend>
+                <ul>
+                    <li>
+                        <label for="enabled"><wicket:message key="uploadRoot">root</wicket:message></label>
+                        <div wicket:id="uploadRoot" class="field text"/>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+        <li>
+            <fieldset>
+                <legend><span><wicket:message key="concurrency">Concurrency</wicket:message></span></legend>
+                <ul>
+                    <li>
+                        <label><wicket:message key="maxSync">maxSync</wicket:message></label>
+                        <input wicket:id="maxSync" class="field text"/>
+                    </li>
+                    <li>
+                        <label><wicket:message key="maxAsync">maxAsync</wicket:message></label>
+                        <input wicket:id="maxAsync" class="field text"/>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+        <li class="button-group selfclear">
+            <button wicket:id="submit" type="submit"><wicket:message key="submit"/></button>
+            <button wicket:id="cancel" type="submit"><wicket:message key="cancel"/></button>
+        </li>
+    </ul>
+</form>
+</wicket:extend>
+</body>
+</html>

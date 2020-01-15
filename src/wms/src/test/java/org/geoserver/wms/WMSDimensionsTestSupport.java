@@ -40,6 +40,8 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName TIMERANGES =
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    protected static QName TIMESERIES =
+            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     protected static final String UNITS = "foot";
     protected static final String UNIT_SYMBOL = "ft";
@@ -136,6 +138,9 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 "temperature", "temperature.sld", WMSDimensionsTestSupport.class, catalog);
         Map propertyMap = new HashMap();
         propertyMap.put(LayerProperty.STYLE, "temperature");
+        // a raster layer with times
+        testData.addRasterLayer(
+                TIMESERIES, "timeseries.zip", null, null, SystemTestData.class, catalog);
         // a raster layer with time and elevation
         testData.addRasterLayer(
                 WATTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);

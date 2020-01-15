@@ -18,7 +18,6 @@ import java.util.Properties;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -36,12 +35,9 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Before
     public void addDataStores() throws IOException {
+        removeStore("sf", "newDataStore"); // may have been created by other tests
         // the store configuration gets ruined by tests in more than one way, let's recreate it
-        DataStoreInfo sfStore = getCatalog().getDataStoreByName("sf");
-        if (sfStore != null) {
-            CascadeDeleteVisitor remover = new CascadeDeleteVisitor(getCatalog());
-            remover.visit(sfStore);
-        }
+        removeStore("sf", "sf");
         getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
         getTestData().addVectorLayer(SystemTestData.AGGREGATEGEOFEATURE, catalog);
         getTestData().addVectorLayer(SystemTestData.GENERICENTITY, catalog);
@@ -190,15 +186,19 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     }
 
     File setupNewDataStore() throws Exception {
+        return setupNewDataStore("newDataStore");
+    }
+
+    File setupNewDataStore(String name) throws Exception {
         Properties props = new Properties();
         props.put("_", "name:StringpointProperty:Point");
         props.put("NewDataStore.0", "'zero'|POINT(0 0)");
         props.put("NewDataStore.1", "'one'|POINT(1 1)");
 
-        File dir = new File("./target/nds");
-        dir.mkdir();
+        File dir = new File("./target/nds/" + name);
+        dir.mkdirs();
 
-        File file = new File(dir, "newDataStore.properties");
+        File file = new File(dir, name + ".properties");
         file.deleteOnExit();
         dir.deleteOnExit();
 
@@ -233,6 +233,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
+        assertNotNull(newDataStore.getDateCreated());
 
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
@@ -263,6 +264,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
+        assertNotNull(newDataStore.getDateCreated());
 
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
@@ -295,6 +297,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
+        assertNotNull(newDataStore.getDateCreated());
 
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
@@ -326,6 +329,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/dataStore/enabled", dom);
 
         assertFalse(catalog.getDataStoreByName("sf", "sf").isEnabled());
+        assertNotNull(catalog.getDataStoreByName("sf", "sf").getDateModified());
     }
 
     @Test
@@ -354,6 +358,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertEquals(2, ds.getConnectionParameters().size());
         assertTrue(ds.getConnectionParameters().containsKey("one"));
         assertTrue(ds.getConnectionParameters().containsKey("two"));
+        assertNotNull(ds.getDateModified());
     }
 
     @Test
@@ -443,6 +448,67 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                 fail();
             }
         }
+    }
+
+    @Test // GEOS-9189
+    public void testDeleteNonEmptyNonRecursiveNonUniqueStoreOnWorkspace() throws Exception {
+        // create two additional stores besides "sf" on workspace "sf", one that would
+        // be sorted before and one after "sf". Failure is order dependent, if the store
+        // to be deleted is the first one returned by catalog.getStoresByWorkspace(...)
+        // then no failure occurs
+        String store1 = "aa_sf";
+        String store2 = "zz_sf";
+        createDataStore("sf", store1);
+        createDataStore("sf", store2);
+        try {
+            List<DataStoreInfo> dataStoresByWorkspace = catalog.getDataStoresByWorkspace("sf");
+            assertEquals(3, dataStoresByWorkspace.size());
+
+            assertEquals(
+                    200,
+                    deleteAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/" + store1)
+                            .getStatus());
+            assertEquals(
+                    200,
+                    deleteAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/" + store2)
+                            .getStatus());
+            assertNull(catalog.getDataStoreByName("sf", store1));
+            assertNull(catalog.getDataStoreByName("sf", store2));
+        } finally {
+            removeStore("sf", store1);
+            removeStore("sf", store2);
+        }
+    }
+
+    private void createDataStore(String workspace, String name) throws Exception {
+        removeStore(workspace, name);
+        File dir = setupNewDataStore(name);
+        String xml =
+                "<dataStore>"
+                        + "<name>"
+                        + name
+                        + "</name>"
+                        + "<connectionParameters>"
+                        + "<entry>"
+                        + "<string>namespace</string>"
+                        + "<string>"
+                        + workspace
+                        + "</string>"
+                        + "</entry>"
+                        + "<entry>"
+                        + "<string>directory</string>"
+                        + "<string>"
+                        + dir.getAbsolutePath()
+                        + "</string>"
+                        + "</entry>"
+                        + "</connectionParameters>"
+                        + "<workspace>"
+                        + workspace
+                        + "</workspace>"
+                        + "</dataStore>";
+        MockHttpServletResponse response =
+                postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
+        assertEquals(201, response.getStatus());
     }
 
     @Test

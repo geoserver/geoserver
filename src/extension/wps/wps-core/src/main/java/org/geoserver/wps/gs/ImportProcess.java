@@ -615,6 +615,7 @@ public class ImportProcess implements GeoServerProcess {
         // start a transaction and fill the target with the input features
         SimpleFeatureStore fstore =
                 (SimpleFeatureStore) ds.getFeatureSource(targetType.getTypeName());
+        @SuppressWarnings("PMD.CloseResource") // cannot use in try/resource, just to rollback
         Transaction t = new DefaultTransaction();
         fstore.setTransaction(t);
         boolean complete = false;

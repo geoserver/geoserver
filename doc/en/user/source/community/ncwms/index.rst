@@ -198,6 +198,37 @@ The TIME parameter accepts a time range as defined for other operations in the W
   * `TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z`
   * `TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z`
 
+Since GeoServer 2.17, TIME parameter also supports 2 additional syntax even if not expressly supported by ncWMS specification:
+
+  #. A List of Times:
+
+     * Example: `TIME=2014-01,2015-01,2016-01,2017-01,2018-01`
+     * Example: `TIME=2017-01-01T00:00:00Z,2017-02-01T00:00:00Z,2017-01-03T00:00:00Z`
+
+
+  #. A periodic time within a range:
+
+     * Example: `TIME=2015-01/2019-01/P1Y`
+
+    .. note::
+
+         * Shortened time specifications in a list are parsed as time ranges by GeoServer. Therefore, a Time like 2014-01 will represent the whole month of January 2014, so a time range: 2014-01-01T00:00:00/2014-01-31T23:59:59.
+
+         * Months and Years expressed through a Period specification (as an instance P2M, P1Y) are considered made of 30 days and 365.25 days respectively. Therefore a periodic interval like 2000-04/2000-12/P1M will be parsed as the list of time instants starting from April 2000 through December 2000 with a period of 30 days:
+
+             * Apr 01 00:00:00 2000
+             * May 01 00:00:00 2000
+             * May **31** 00:00:00 2000
+             * Jun **30** 00:00:00 2000
+             * Jul **30** 00:00:00 2000
+             * Aug **29** 00:00:00 2000
+             * Sep **28** 00:00:00 2000
+             * Oct **28** 00:00:00 2000
+             * Nov **27** 00:00:00 2000
+             * Dec **27** 00:00:00 2000
+             * Therefore if your original dataset has an entry for the the first day of each month, this request will only return 2 values: Apr 01 and May 01. In that case, you might consider enabling nearest match on Layer's time dimension.
+
+
 Sample CSV output:
 
 .. code-block:: none
@@ -214,3 +245,18 @@ Sample chart output:
 
 .. figure:: images/geoserver-GetTimeSeries.png
    :align: center
+
+**Note:** Since GeoServer 2.17, nodata pixels will not be reported in the result chart. Moreover, entries in CSV list related to nodata pixels will report time but will have no pixel value reported, as in the example below for times 2014-02-01 and 2014-05-01:
+
+
+.. code-block:: none
+
+    # Latitude: 40.396728515625
+    # Longitude: -0.6921386718750019
+    Time (UTC),Temperature (degrees)
+    2014-01-01T00:00:00.000Z,0.4194810092449188
+    2014-02-01T00:00:00.000Z,
+    2014-03-01T00:00:00.000Z,3.1670899391174316
+    2014-04-01T00:00:00.000Z,4.932330131530762
+    2014-05-01T00:00:00.000Z,
+    2014-06-01T00:00:00.000Z,0.8373379707336426

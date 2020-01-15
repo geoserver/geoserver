@@ -6,14 +6,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <UserStyle>
         <Name>Default Styler</Name>
-        <Title>Default Styler</Title>
+        <Title>Dashed Outline</Title>
         <Abstract></Abstract>
         <FeatureTypeStyle>
             <FeatureTypeName>Feature</FeatureTypeName>
             <Rule>
                 <Name>name</Name>
-                <Abstract>Abstract</Abstract>
-                <Title>title</Title>
+                <Abstract>White Polygon with outline of 2 width using butt line cap</Abstract>
+                <Title>Dashed Outline</Title>
                 <PolygonSymbolizer>
                     <Fill>
                         <CssParameter name="fill">

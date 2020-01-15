@@ -5,8 +5,8 @@ http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
 	<Name>raster_layer</Name>
 	<UserStyle>
 		<Name>raster</Name>
-		<Title>A boring default style</Title>
-		<Abstract>A sample style for rasters</Abstract>
+		<Title>Opaque Raster</Title>
+		<Abstract>A sample style for rasters visible between 300000 and 1000000 map scale</Abstract>
 		<FeatureTypeStyle>
 	        <FeatureTypeName>Feature</FeatureTypeName>
 			<Rule>

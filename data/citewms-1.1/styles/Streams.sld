@@ -11,9 +11,9 @@
         <FeatureTypeStyle>
             <FeatureTypeName>Streams</FeatureTypeName>
             <Rule>
-                <Name>name</Name>
-                <Abstract>Abstract</Abstract>
-                <Title>title</Title>
+                <Name>A Blue line with width of 2 pixels and dashed stroke</Name>
+                <Abstract>Dashed Blue Line</Abstract>
+                <Title>Dashed Blue Line</Title>
                 <LineSymbolizer>
                     <Stroke>
                         <CssParameter name="stroke">

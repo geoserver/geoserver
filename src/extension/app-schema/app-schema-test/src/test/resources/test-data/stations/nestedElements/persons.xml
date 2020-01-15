@@ -11,6 +11,10 @@
             <prefix>xlink</prefix>
             <uri>http://www.w3.org/1999/xlink</uri>
         </Namespace>
+        <Namespace>
+            <prefix>per</prefix>
+            <uri>http://www.person.org/1.0</uri>
+        </Namespace>
     </namespaces>
     <sourceDataStores>
         <DataStore>

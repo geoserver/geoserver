@@ -271,7 +271,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             for (Iterator m = metas.iterator(); m.hasNext(); ) {
                 ResourceInfo ri = (ResourceInfo) m.next();
                 if (ri instanceof FeatureTypeInfo) {
-                    FeatureTypeInfo meta = (FeatureTypeInfo) ri;
+                    final FeatureTypeInfo meta = (FeatureTypeInfo) ri;
                     FeatureType featureType = meta.getFeatureType();
                     Object userSchemaLocation = featureType.getUserData().get("schemaURI");
                     if (userSchemaLocation != null && userSchemaLocation instanceof Map) {

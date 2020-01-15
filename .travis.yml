@@ -12,7 +12,7 @@ before_script:
   - wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.0/apache-maven-3.6.0-bin.tar.gz
   - tar zxf apache-maven-3.6.0-bin.tar.gz
   - export M2_HOME=$PWD/apache-maven-3.6.0
-  - wget -P $M2_HOME/lib/ext http://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
+  - wget -P $M2_HOME/lib/ext https://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
   - export PATH=$M2_HOME/bin:$PATH
 install:
   - if [ "$ACTION" == "docs" ]; then sudo pip install sphinx requests; fi

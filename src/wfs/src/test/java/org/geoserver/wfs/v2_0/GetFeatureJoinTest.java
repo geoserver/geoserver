@@ -21,6 +21,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
@@ -295,6 +296,49 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists(
                 "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Lakes/gs:NAME[text() = 'Green Lake']",
                 dom);
+    }
+
+    /**
+     * Both {@code cdf:Forests} and {@code gs:Forests} exist. The default workspace is {@code cdf},
+     * but the request calls for the {@code gs} local workspace with unqualified type names. At the
+     * time the KVP is parsed, the {@code LocalWorkspace} is not set, so it resolves {@code Forests}
+     * based on the default namespace. Further down the request processing chain, {@link
+     * WFSWorkspaceQualifier} figures out the original request was meant to use the typename in the
+     * local workspace instead and amends the KVP.
+     */
+    @Test
+    public void testSpatialJoinGETWorkspaceQualifier() throws Exception {
+        Catalog catalog = getCatalog();
+        // change the default workspace to make sure WFSWorkspaceQualifier did its job (i.e.
+        // TypeNamesKvpParser resolved to cdf:Forests and then WFSWorkspaceQualifier had to override
+        // as gs:Forests, since at the time the kvp parser runs the LocalWorkspace is not set)
+        WorkspaceInfo gs = catalog.getWorkspaceByName("gs");
+        WorkspaceInfo cdf = catalog.getWorkspaceByName("cdf");
+        catalog.setDefaultWorkspace(cdf);
+        try {
+            Document dom =
+                    getAsDOM(
+                            "gs/wfs?service=WFS&version=2.0.0&request=getFeature&typenames=Forests,Lakes&aliases=a,b&filter=<Filter><Intersects><ValueReference>a/the_geom</ValueReference><ValueReference>b/the_geom</ValueReference></Intersects></Filter>");
+
+            XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
+
+            XMLAssert.assertXpathExists(
+                    "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']",
+                    dom);
+            XMLAssert.assertXpathExists(
+                    "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']",
+                    dom);
+
+            XMLAssert.assertXpathExists(
+                    "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']",
+                    dom);
+            XMLAssert.assertXpathExists(
+                    "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Lakes/gs:NAME[text() = 'Green Lake']",
+                    dom);
+        } finally {
+            // restore default workspace
+            catalog.setDefaultWorkspace(gs);
+        }
     }
 
     @Test

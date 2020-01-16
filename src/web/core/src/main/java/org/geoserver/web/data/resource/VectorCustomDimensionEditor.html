@@ -1,0 +1,73 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+  <wicket:panel>
+
+    <ul>
+      <li><input type="checkbox" wicket:id="enabled"/>
+      <wicket:message key="enabled">enabled</wicket:message>
+        &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em>
+        <label for="customDimName"><wicket:message key="customDimName" /></label>
+        <input wicket:id="customDimName" id="customDimName" type="text" size="40"/>
+        <button type="button" wicket:id="removeButton">
+        	<wicket:message key="removeButton">Remove</wicket:message>
+        </button>
+      </li>
+      <li wicket:id="configContainer">
+        <ul wicket:id="configs">
+          <li wicket:id="attributeContainer">
+            <label for="attribute">
+              <wicket:message key="attribute">attribute</wicket:message>
+            </label>
+            <select id="attribute" wicket:id="attribute"></select>
+            <label for="endAttribute">
+              <wicket:message key="endAttribute">endAttribute</wicket:message>
+            </label>
+            <select id="endAttribute" wicket:id="endAttribute"></select>
+          </li>
+          <li wicket:id="unitsContainer">
+            <label for="units"><wicket:message key="units">units</wicket:message></label>
+            <input type="text" wicket:id="units" class="field text" />
+            <label for="unitSymbol">
+              <wicket:message key="unitSymbol">unitSymbol</wicket:message>
+            </label>
+            <input type="text" wicket:id="unitSymbol" class="field text" />
+          </li>
+          <li><label><wicket:message key="presentation">presentation</wicket:message></label>
+            <select wicket:id="presentation"></select>
+          </li>
+          <li wicket:id="resolutionContainer">
+            <div wicket:id="resolutions">
+              <label><wicket:message key="resolution">resolution</wicket:message></label>
+              <input type="text" wicket:id="resElevation"
+                class="field text" />
+              <div wicket:id="resTime" />
+            </div>
+          </li>
+          <li wicket:id="defaultValueContainer">
+            <label for="strategy">
+              <wicket:message key="defaultValueStrategy">defaultValue</wicket:message>
+            </label>
+            <select wicket:id="strategy"></select>
+			<div wicket:id="referenceValueContainer">
+              <label for="referenceValue">
+                <wicket:message key="referenceValue">referenceValue</wicket:message>
+              </label>
+              <input type="text" wicket:id="referenceValue" class="field text" />
+              &nbsp;&nbsp;<em><span class="error" wicket:id="refValueValidationMsg"></span></em>
+			</div>
+          </li>
+          <li wicket:id="nearestMatchContainer">
+            <input type="checkbox" id="nearestMatchEnabled" wicket:id="nearestMatchEnabled"/><wicket:message key="nearestMatch">nearestMatch</wicket:message>
+            <div wicket:id="acceptableIntervalEditor">
+              <label><wicket:message key="acceptableInterval">acceptableInterval</wicket:message></label>
+              <input type="text" wicket:id="acceptableInterval" class="field text" />
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+  </wicket:panel>
+</body>
+</html>

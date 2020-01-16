@@ -69,7 +69,9 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
                     @Override
                     public void onSubmit() {
                         try {
-                            importer.setConfiguration(info);
+                            Importer singleton =
+                                    getGeoServerApplication().getBeanOfType(Importer.class);
+                            singleton.setConfiguration(info);
                             doReturn();
                         } catch (Exception e) {
                             error(e);

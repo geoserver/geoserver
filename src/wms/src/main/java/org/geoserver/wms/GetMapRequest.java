@@ -26,6 +26,7 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -601,12 +602,12 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /** @return the clip */
-    public String getClip() {
+    public Geometry getClip() {
         return this.optionalParams.clip;
     }
 
     /** @param clip the clip to set */
-    public void setClip(String clip) {
+    public void setClip(Geometry clip) {
         this.optionalParams.clip = clip;
     }
 
@@ -746,7 +747,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         List<Interpolation> interpolationMethods = Collections.EMPTY_LIST;
 
         /** polgon wkt to clip WMS response * */
-        String clip;
+        Geometry clip;
 
         @Override
         public Object clone() throws CloneNotSupportedException {

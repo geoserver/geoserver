@@ -378,7 +378,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         GetMapRequest getMap = params.getGetMapRequest();
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
-                layer.getFeatureSource(true, getMap.getCrs());
+                super.handleClipParam(params, layer.getFeatureSource(true, getMap.getCrs()));
         final Query definitionQuery = new Query(featureSource.getSchema().getName().getLocalPart());
         definitionQuery.setVersion(getMap.getFeatureVersion());
         definitionQuery.setFilter(filter);

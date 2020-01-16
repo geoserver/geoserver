@@ -1,4 +1,4 @@
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -91,7 +91,18 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
     @Override
     public GeneralEnvelope getOriginalEnvelope() {
-        return GeneralEnvelope.toGeneralEnvelope(JTS.toEnvelope(roiGeom));
+        GeneralEnvelope originalEnvelope = super.getOriginalEnvelope();
+        try {
+            // clip original envelope with ROI
+            Geometry envIntersection =
+                    roiGeom.intersection(JTS.toGeometry(originalEnvelope.toRectangle2D()));
+            envIntersection.setSRID(
+                    CRS.lookupEpsgCode(originalEnvelope.getCoordinateReferenceSystem(), false));
+            return GeneralEnvelope.toGeneralEnvelope(JTS.toEnvelope(envIntersection));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return originalEnvelope;
     }
 
     private static synchronized GridCoverage2D getCroppedGrid(

@@ -1841,7 +1841,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 getAsImage(
                         "wms?bbox="
                                 + bbox
-                                + "&styles=&layers="
+                                + "&styles=polygon&layers="
                                 + layers
                                 + "&Format=image/png"
                                 + "&request=GetMap"
@@ -1852,8 +1852,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&clip="
                                 + polygonWkt,
                         "image/png");
-        ImageAssert.assertEquals(expectedImage, response, 10);
-        // ImageIO.write(response, "png", new File("D://wms_clip_vector.png"));
+
+        ImageAssert.assertEquals(expectedImage, response, 100);
 
         String polygonWkt900913 =
                 "srid=900913;POLYGON ((-11556246.91561025 4684196.6150700655, -11771493.587261306 3735154.4718813156, -10607204.772421502 3255741.4304766906, -10166927.489498887 3666666.8945377995, -10734395.987488035 4674412.675449564, -11556246.91561025 4684196.6150700655))";
@@ -1861,7 +1861,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 getAsImage(
                         "wms?bbox="
                                 + bbox
-                                + "&styles=&layers="
+                                + "&styles=polygon&layers="
                                 + layers
                                 + "&Format=image/png"
                                 + "&request=GetMap"
@@ -1872,8 +1872,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&clip="
                                 + polygonWkt900913,
                         "image/png");
-        ImageAssert.assertEquals(expectedImage, response, 10);
-        // ImageIO.write(response, "png", new File("D://wms_clip_vector_900913.png"));
+        ImageAssert.assertEquals(expectedImage, response, 100);
     }
 
     @Test
@@ -1884,7 +1883,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         // EU south of Schengen
         String rasterMask =
-                "POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))";
+                "POLYGON((-0.4455465239619838 49.03915485780325,27.679453476038034 48.692256255310134,34.53492222603802 32.400173313532584,5.355234726038036 37.161881019039605,-0.4455465239619838 49.03915485780325))";
         String worldBbox = "-53.384768,4.769752,80.121092,57.719733";
 
         BufferedImage response =
@@ -1903,10 +1902,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + rasterMask,
                         "image/png");
         ImageAssert.assertEquals(expectedImage, response, 100);
-        // ImageIO.write(response, "expectedImage", new File("D://wms_clip_raster.png"));
 
         String rasterMask900913 =
-                "srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))";
+                "srid=900913;POLYGON ((-49598.01217216109 6281507.767506711, 3081262.66638866 6222804.1297836965, 3844409.956787858 3815954.983140064, 596142.0027810101 4461694.998093233, -49598.01217216109 6281507.767506711))";
 
         response =
                 getAsImage(
@@ -1925,6 +1923,5 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         "image/png");
 
         ImageAssert.assertEquals(expectedImage, response, 100);
-        // ImageIO.write(response, "png", new File("D://wms_clip_raster_900913.png"));
     }
 }

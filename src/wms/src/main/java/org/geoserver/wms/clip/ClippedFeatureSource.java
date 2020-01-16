@@ -1,4 +1,4 @@
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -53,7 +53,8 @@ public class ClippedFeatureSource extends DecoratingFeatureSource {
 
     @Override
     public ReferencedEnvelope getBounds() throws IOException {
-        return this.getFeatures().getBounds();
+        ReferencedEnvelope orignalBounds = super.getBounds();
+        return JTS.toEnvelope(clip.intersection(JTS.toGeometry(orignalBounds)));
     }
 
     @Override

@@ -8,13 +8,11 @@ package org.geoserver.wms;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geoserver.wms.featureinfo.LayerIdentifier;
 import org.geotools.data.DataUtilities;
@@ -65,9 +63,9 @@ public class GetFeatureInfo {
         FeatureInfoRequestParameters requestParams = new FeatureInfoRequestParameters(request);
         // if url has a clip param and the clicked point is outside
         // then abort and return empty list
-        if (!ClipWMSGetMapCallBack.validateClipParam(requestParams)) {
-            return Collections.EMPTY_LIST;
-        }
+        //        if (!ClipWMSGetMapCallBack.validateClipParam(requestParams)) {
+        //            return Collections.EMPTY_LIST;
+        //        }
 
         List<FeatureCollection> results = new ArrayList<FeatureCollection>(requestedLayers.size());
 

@@ -60,6 +60,7 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSErrorCode;
 import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -664,6 +665,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if ((getMap.getElevation() != null && getMap.getElevation().size() > 1)
                 && (getMap.getTime() != null && getMap.getTime().size() > 1)) {
             throw new ServiceException("TIME and ELEVATION values cannot be both multivalued");
+        }
+
+        if (rawKvp.get("clip") != null) {
+            getMap.setClip(ClipWMSGetMapCallBack.getClipGeometry(getMap));
         }
 
         return getMap;

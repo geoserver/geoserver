@@ -4,27 +4,21 @@
  */
 package org.geoserver.wms.clip;
 
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.beanutils.BeanUtilsBean2;
-import org.geoserver.wms.FeatureInfoRequestParameters;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapCallback;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
-import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
-import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -115,7 +109,9 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
         Geometry geom = reader.read(wktContents[wktContents.length - 1]);
         // geom.setSRID(CRS.lookupEpsgCode(mapCRS, false));
         if (!(geom.getClass().isAssignableFrom(Polygon.class)
-                || geom.getClass().isAssignableFrom(MultiPolygon.class))) return null;
+                || geom.getClass().isAssignableFrom(MultiPolygon.class)))
+            throw new ServiceException(
+                    "Clip must be a polygon or multipolygon", "InvalidParameterValue", "clip");
         // parse SRID if passed
         // looking for a pattern srid=4326:Polygon(...)
         if (wktContents.length == 2 && SRID_REGEX.matcher(wktContents[0].toUpperCase()).matches()) {
@@ -136,9 +132,11 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
 
     public static Geometry getClipGeometry(GetMapRequest getMapRequest) {
 
-        String wktString = getMapRequest.getClip();
-        // not found or request has no crs
-        if (wktString == null || getMapRequest.getCrs() == null) return null;
+        // no raw kvp or request has no crs
+        if (getMapRequest.getRawKvp() == null || getMapRequest.getCrs() == null) return null;
+        String wktString = getMapRequest.getRawKvp().get("clip");
+        // not found
+        if (wktString == null) return null;
         try {
             Geometry geom = readGeometry(wktString, getMapRequest.getCrs());
 
@@ -150,27 +148,5 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         return null;
-    }
-
-    public static boolean validateClipParam(FeatureInfoRequestParameters params) throws Exception {
-
-        final Geometry clipGeom = getClipGeometry(params.getGetMapRequest());
-        // if no clip param found do nothing
-        if (clipGeom == null) return true;
-        // else check if user clicked inside the polygon
-        ReferencedEnvelope bbox = params.getRequestedBounds();
-
-        AffineTransform at =
-                RendererUtilities.worldToScreenTransform(
-                        bbox,
-                        new Rectangle(
-                                params.getGetMapRequest().getWidth(),
-                                params.getGetMapRequest().getHeight()));
-        Point2D screenPos = new Point2D.Double(params.getX(), params.getY());
-        Point2D worldPos = new Point2D.Double(params.getX(), params.getY());
-        at.inverseTransform(screenPos, worldPos);
-        DirectPosition2D fromPos = new DirectPosition2D(worldPos.getX(), worldPos.getY());
-
-        return clipGeom.contains(JTS.toGeometry(fromPos, null));
     }
 }

@@ -8,21 +8,25 @@ package org.geoserver.api;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.oas.models.OpenAPI;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /** A custom JSON converter that uses the Open API mime type */
 @Component
 public class OpenAPIMessageConverter extends AbstractJackson2HttpMessageConverter {
 
-    public static final String OPEN_API_VALUE = "application/openapi+json;version=3.0";
-    public static final MediaType OPEN_API = MediaType.parseMediaType(OPEN_API_VALUE);
+    public static final String OPEN_API_MEDIA_TYPE_VALUE =
+            "application/vnd.oai.openapi+json;version=3.0";
+    public static final MediaType OPEN_API_MEDIA_TYPE =
+            MediaType.parseMediaType(OPEN_API_MEDIA_TYPE_VALUE);
 
     public OpenAPIMessageConverter() {
-        super(getMapper(), OPEN_API);
+        super(getMapper(), OPEN_API_MEDIA_TYPE);
     }
 
     public static ObjectMapper getMapper() {
@@ -34,11 +38,13 @@ public class OpenAPIMessageConverter extends AbstractJackson2HttpMessageConverte
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
-        return OPEN_API.isCompatibleWith(mediaType) && OpenAPI.class.isAssignableFrom(clazz);
+        return OPEN_API_MEDIA_TYPE.isCompatibleWith(mediaType)
+                && OpenAPI.class.isAssignableFrom(clazz);
     }
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        return OPEN_API.isCompatibleWith(mediaType) && OpenAPI.class.isAssignableFrom(clazz);
+        return (mediaType == null || OPEN_API_MEDIA_TYPE.isCompatibleWith(mediaType))
+                && OpenAPI.class.isAssignableFrom(clazz);
     }
 }

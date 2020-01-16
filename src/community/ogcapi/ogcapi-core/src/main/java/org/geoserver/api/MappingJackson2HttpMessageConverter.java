@@ -7,6 +7,8 @@ package org.geoserver.api;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import org.springframework.http.MediaType;
 
+import io.swagger.v3.oas.models.OpenAPI;
+
 /**
  * GeoServer extension of MappingJackson2HttpMessageConverter allowing to mark a bean so that it
  * won't get serialized
@@ -16,7 +18,7 @@ public class MappingJackson2HttpMessageConverter
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        if (clazz.getAnnotation(JsonIgnoreType.class) != null) {
+        if (clazz.getAnnotation(JsonIgnoreType.class) != null || OpenAPI.class.isAssignableFrom(clazz)) {
             return false;
         }
         return super.canWrite(clazz, mediaType);

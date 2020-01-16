@@ -4,6 +4,7 @@
  */
 package org.geoserver.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.util.function.BiConsumer;

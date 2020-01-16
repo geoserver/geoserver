@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  targetNamespace="http://cite.opengeospatial.org/gmlsf"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  elementFormDefault="qualified"
+  version="2006.12">
+  
+  <xsd:import namespace="http://www.opengis.net/gml"/>
+
+  <xsd:element name="EntitéGénérique" type="sf:EntitéGénériqueType"
+    substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+    Simple feature with a generic geometry property that includes characters
+    outside of the range U+0000..U+007F (Basic Latin). Acceptable geometry
+    representations include any of the following: gml:Point, gml:LineString,
+    gml:Curve, gml:Polygon, gml:Surface, gml:MultiPoint, gml:MultiCurve, and
+    gml:MultiSurface.
+    </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="EntitéGénériqueType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="attribut.Géométrie" type="gml:GeometryPropertyType" />
+          <xsd:element name="boolProperty" type="xsd:boolean" />
+          <xsd:element name="str4Property" type="sf:String4PropertyType" />
+          <xsd:element name="featureRef" type="xsd:NCName" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:simpleType name="String4PropertyType">
+    <xsd:restriction base="xsd:string">
+      <xsd:length value="4" />
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>
+

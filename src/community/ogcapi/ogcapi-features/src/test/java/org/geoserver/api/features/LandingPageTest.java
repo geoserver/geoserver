@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.util.List;
 import org.geoserver.api.Link;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
@@ -19,8 +19,6 @@ import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
-
-import java.util.List;
 
 public class LandingPageTest extends FeaturesTestSupport {
 

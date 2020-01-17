@@ -64,7 +64,6 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
      */
     public OpenAPI build(T service) {
         GeoServerOpenAPI api = readTemplate();
-        api.setServiceBase(serviceBase);
         addAPIInfo(service, api);
         addServers(api);
         addBasePathFormats(api);

@@ -99,7 +99,7 @@ public class TilesService {
         path = "api",
         name = "getApi",
         produces = {
-            OpenAPIMessageConverter.OPEN_API_VALUE,
+            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
             "application/x-yaml",
             MediaType.TEXT_XML_VALUE
         }

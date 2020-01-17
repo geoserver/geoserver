@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.geoserver.api.Link;
+import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
@@ -115,7 +116,7 @@ public class LandingPageTest extends FeaturesTestSupport {
                 document.select("#htmlApiLink").attr("href"));
     }
 
-    static void checkJSONLandingPage(DocumentContext json) {
+    void checkJSONLandingPage(DocumentContext json) {
         assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
@@ -130,7 +131,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         checkJSONLandingPageShared(json);
     }
 
-    static void checkJSONLandingPageShared(DocumentContext json) {
+    void checkJSONLandingPageShared(DocumentContext json) {
         // check API links
         assertJSONList(
                 json,
@@ -138,6 +139,14 @@ public class LandingPageTest extends FeaturesTestSupport {
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DESC,
                 Link.REL_SERVICE_DOC);
+        // check API with right API mime type
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
+                readSingle(
+                        json,
+                        "links[?(@.type=='"
+                                + OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE
+                                + "')].href"));
         // check conformance links
         assertJSONList(
                 json,

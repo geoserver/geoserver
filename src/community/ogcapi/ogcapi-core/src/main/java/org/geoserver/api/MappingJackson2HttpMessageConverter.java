@@ -5,6 +5,7 @@
 package org.geoserver.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.http.MediaType;
 
 /**
@@ -16,7 +17,8 @@ public class MappingJackson2HttpMessageConverter
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        if (clazz.getAnnotation(JsonIgnoreType.class) != null) {
+        if (clazz.getAnnotation(JsonIgnoreType.class) != null
+                || OpenAPI.class.isAssignableFrom(clazz)) {
             return false;
         }
         return super.canWrite(clazz, mediaType);

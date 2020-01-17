@@ -80,4 +80,9 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
         WFSInfo wfs = getInfo();
         return wfs.isFeatureBounding();
     }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "fgb";
+    }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.gwc.GWC;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class ApiTest extends TilesTestSupport {
         MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/api", 200);
         assertThat(
                 response.getContentType(),
-                CoreMatchers.startsWith("application/openapi+json;version=3.0"));
+                CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
@@ -77,7 +78,7 @@ public class ApiTest extends TilesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/tiles/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0\""));
+                        "url: \"http://localhost:8080/geoserver/ogc/tiles/api?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test

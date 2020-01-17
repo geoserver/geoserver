@@ -15,6 +15,7 @@ public class GeoServerOpenAPI extends OpenAPI {
 
     private String serviceBase;
 
+    @JsonIgnore
     public String getServiceBase() {
         return serviceBase;
     }

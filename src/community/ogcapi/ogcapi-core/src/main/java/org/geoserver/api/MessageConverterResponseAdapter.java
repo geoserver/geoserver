@@ -6,6 +6,7 @@ package org.geoserver.api;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -87,6 +88,7 @@ public class MessageConverterResponseAdapter<T>
     protected void writeResponse(
             T value, HttpOutputMessage httpOutputMessage, Operation operation, Response response)
             throws IOException {
+        setHeaders(value, operation, response, httpOutputMessage);
         response.write(value, httpOutputMessage.getBody(), operation);
     }
 
@@ -136,5 +138,65 @@ public class MessageConverterResponseAdapter<T>
                             }
                         })
                 .map(f -> MediaType.parseMediaType(f));
+    }
+
+    /**
+     * Allows response to set headers like in the OGC Dispatcher, controls content disposition
+     * override based on query parameters too
+     */
+    protected void setHeaders(
+            Object result, Operation operation, Response response, HttpOutputMessage message) {
+        // get the basics using the new api
+        String disposition = response.getPreferredDisposition(result, operation);
+        String filename = response.getAttachmentFileName(result, operation);
+
+        // get user overrides, if any
+        Request request = Dispatcher.REQUEST.get();
+        if (request != null && request.getRawKvp() != null) {
+            Map rawKvp = request.getRawKvp();
+            // check if the filename and content disposition were provided
+            if (rawKvp.get("FILENAME") != null) {
+                filename = (String) rawKvp.get("FILENAME");
+            }
+            if (rawKvp.get("CONTENT-DISPOSITION") != null) {
+                disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
+            }
+        }
+
+        // make sure the disposition obtained so far is valid
+        // check and prevent invalid header injection
+        if (disposition != null
+                && !Response.DISPOSITION_ATTACH.equals(disposition)
+                && !Response.DISPOSITION_INLINE.equals(disposition)) {
+            disposition = null;
+        }
+
+        // set any extra headers, other than the mime-type
+        String[][] headers = response.getHeaders(result, operation);
+        boolean contentDispositionProvided = false;
+        if (headers != null) {
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i][0].equalsIgnoreCase("Content-Disposition")) {
+                    contentDispositionProvided = true;
+                    if (disposition == null) {
+                        message.getHeaders().set(headers[i][0], headers[i][1]);
+                    }
+                } else {
+                    message.getHeaders().set(headers[i][0], headers[i][1]);
+                }
+            }
+        }
+
+        // default disposition value and set if not forced by the user and not set
+        // directly by the response
+        if (!contentDispositionProvided) {
+            if (disposition == null) {
+                disposition = Response.DISPOSITION_INLINE;
+            }
+
+            // override any existing header
+            String disp = disposition + "; filename=" + filename;
+            message.getHeaders().set("Content-Disposition", disp);
+        }
     }
 }

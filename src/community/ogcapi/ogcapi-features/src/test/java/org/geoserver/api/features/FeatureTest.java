@@ -4,10 +4,15 @@
  */
 package org.geoserver.api.features;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.both;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.net.URLEncoder;
@@ -24,6 +29,15 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends FeaturesTestSupport {
+
+    @Test
+    public void testContentDisposition() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response =
+                getAsServletResponse("ogc/features/collections/" + roadSegments + "/items");
+        assertEquals(200, response.getStatus());
+        assertEquals("inline; filename=features.json", response.getHeader("Content-Disposition"));
+    }
 
     @Test
     public void testGetLayerAsGeoJson() throws Exception {

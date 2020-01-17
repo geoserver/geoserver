@@ -41,6 +41,7 @@ public class FeatureResponseMessageConverter
             Operation operation,
             Response response)
             throws IOException {
+        setHeaders(value.getResponse(), operation, response, httpOutputMessage);
         response.write(value.getResponse(), httpOutputMessage.getBody(), operation);
     }
 

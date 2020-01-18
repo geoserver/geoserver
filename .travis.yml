@@ -8,16 +8,10 @@ before_install:
 env:
   global:
     - MAVEN_OPTS=-Xmx512m
-before_script:
-  - wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.0/apache-maven-3.6.0-bin.tar.gz
-  - tar zxf apache-maven-3.6.0-bin.tar.gz
-  - export M2_HOME=$PWD/apache-maven-3.6.0
-  - wget -P $M2_HOME/lib/ext https://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
-  - export PATH=$M2_HOME/bin:$PATH
 install:
   - if [ "$ACTION" == "docs" ]; then sudo pip install sphinx requests; fi
 script:
-  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install --builder smart $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install --builder smart $COMMUNITY_ARGS; fi
+  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install $COMMUNITY_ARGS; fi
   - if [ "$ACTION" == "build" ]; then grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50; fi
   - if [ "$ACTION" == "docs" ]; then mvn -f doc/en install; fi
   - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:attached -nsu; mvn -f src/community/pom.xml assembly:attached -nsu; fi

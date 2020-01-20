@@ -280,8 +280,9 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         List<ResourceNotification> notifications = new CopyOnWriteArrayList<>();
         watcher.addListener(dirName, notifications::add);
 
+        int fileCount = 256;
         final Set<String> files =
-                IntStream.range(0, 256)
+                IntStream.range(0, fileCount)
                         .mapToObj(i -> String.format("File%d", i))
                         .collect(Collectors.toSet());
         // async create files with delay
@@ -309,8 +310,19 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         } finally {
             executorService.shutdown();
         }
-        // give file watcher a chance to catch up with latest events
-        Thread.sleep(200);
+        // give file watcher a chance to catch up with latest events, allow time for slow platforms
+        // while exiting soon for faster ones
+        for (int step = 0; step < 2000; step++) {
+            Thread.sleep(20);
+            if (notifications
+                            .stream()
+                            .map(ResourceNotification::events)
+                            .flatMap(List::stream)
+                            .count()
+                    == fileCount) {
+                break;
+            }
+        }
 
         assertEquals(
                 1, notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_CREATE).count());

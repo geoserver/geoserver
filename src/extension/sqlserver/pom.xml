@@ -26,21 +26,4 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>sqlServerDriver</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.microsoft</groupId>
-          <artifactId>sqljdbc4</artifactId>
-          <version>${sqlServerDriverVersion}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
-  <properties>
-    <sqlServerDriverVersion>4.0</sqlServerDriverVersion>
-  </properties>
-
 </project>

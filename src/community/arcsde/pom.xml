@@ -10,41 +10,17 @@
 
    <parent>
       <groupId>org.geoserver</groupId>
-      <artifactId>extension</artifactId>
+      <artifactId>community</artifactId>
       <version>2.17-SNAPSHOT</version>
    </parent>
 
-   <groupId>org.geoserver.extension</groupId>
+   <groupId>org.geoserver.community</groupId>
    <artifactId>gs-arcsde</artifactId>
    <packaging>jar</packaging>
-   <name>ArcSDE DataStore Extension</name>
+   <name>ArcSDE DataStore Plugin</name>
 
    <dependencies>
-      <dependency>
-         <groupId>org.geoserver.web</groupId>
-         <artifactId>gs-web-core</artifactId>
-         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.geoserver.web</groupId>
-         <artifactId>gs-web-core</artifactId>
-         <version>${project.version}</version>
-         <classifier>tests</classifier>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.springframework</groupId>
-         <artifactId>spring-test</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.geoserver</groupId>
-         <artifactId>gs-main</artifactId>
-         <version>${project.version}</version>
-         <classifier>tests</classifier>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
+       <dependency>
          <groupId>org.geotools</groupId>
          <artifactId>gt-arcsde-common</artifactId>
       </dependency>
@@ -56,6 +32,30 @@
          <groupId>com.ibm.icu</groupId>
          <artifactId>icu4j</artifactId>
       </dependency>
+     <dependency>
+         <groupId>org.geoserver.web</groupId>
+         <artifactId>gs-web-core</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.geoserver.web</groupId>
+         <artifactId>gs-web-core</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.geoserver</groupId>
+         <artifactId>gs-main</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+      </dependency>
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <scope>test</scope>
+     </dependency>
    </dependencies>
 
    <profiles>

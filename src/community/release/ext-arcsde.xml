@@ -6,10 +6,10 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
 		<fileSet>
-			<directory>release/extensions/arcsde</directory>
+			<directory>arcsde</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>README.*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -21,13 +21,6 @@
 				<include>commons-pool*.jar</include>
 				<include>jsqlparser*.jar</include>
 				<include>icu4j*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>release/extensions</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>LICENSE.txt</include>
 			</includes>
 		</fileSet>
 	</fileSets>

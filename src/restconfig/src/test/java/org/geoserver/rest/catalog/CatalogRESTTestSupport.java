@@ -12,6 +12,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.config.CatalogTimeStampUpdater;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -40,6 +41,8 @@ public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport 
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
+        // attach time stamp listener
+        new CatalogTimeStampUpdater(catalog);
     }
 
     protected final void setUpUsers(Properties props) {}

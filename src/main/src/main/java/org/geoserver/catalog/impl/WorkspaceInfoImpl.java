@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.Serializable;
+import java.util.Date;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -19,6 +20,10 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
     protected MetadataMap metadata = new MetadataMap();
 
     private boolean isolated = false;
+
+    protected Date dateCreated;
+
+    protected Date dateModified;
 
     public String getId() {
         return id;
@@ -95,5 +100,25 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
 
     public void setIsolated(boolean isolated) {
         this.isolated = isolated;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return this.dateModified;
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 }

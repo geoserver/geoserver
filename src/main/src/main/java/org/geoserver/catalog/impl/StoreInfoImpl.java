@@ -7,6 +7,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,6 +42,10 @@ public abstract class StoreInfoImpl implements StoreInfo {
     protected Throwable error;
 
     protected boolean _default;
+
+    protected Date dateCreated;
+
+    protected Date dateModified;
 
     protected StoreInfoImpl() {}
 
@@ -202,5 +207,25 @@ public abstract class StoreInfoImpl implements StoreInfo {
             if (other.getWorkspace() != null) return false;
         } else if (!workspace.equals(other.getWorkspace())) return false;
         return true;
+    }
+
+    @Override
+    public Date getDateModified() {
+        return this.dateModified;
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return this.dateCreated;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 }

@@ -27,6 +27,7 @@ import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -91,6 +92,10 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             Fragment f = new Fragment(id, "iconFragment", this);
             f.add(new Image("storeIcon", enabledIcon));
             return f;
+        } else if (property == StoreProvider.MODIFIED_TIMESTAMP) {
+            return new DateTimeLabel(id, StoreProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
+        } else if (property == StoreProvider.CREATED_TIMESTAMP) {
+            return new DateTimeLabel(id, StoreProvider.CREATED_TIMESTAMP.getModel(itemModel));
         }
         return null;
     }

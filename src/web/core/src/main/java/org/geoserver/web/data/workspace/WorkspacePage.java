@@ -20,6 +20,7 @@ import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
+import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -58,6 +59,16 @@ public class WorkspacePage extends GeoServerSecuredPage {
                                     if (itemModel.getObject().isIsolated())
                                         return new Icon(id, CatalogIconFactory.ENABLED_ICON);
                                     else return new Label(id, "");
+                                } else if (property == WorkspaceProvider.MODIFIED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(
+                                                    itemModel));
+                                } else if (property == WorkspaceProvider.CREATED_TIMESTAMP) {
+                                    return new DateTimeLabel(
+                                            id,
+                                            WorkspaceProvider.CREATED_TIMESTAMP.getModel(
+                                                    itemModel));
                                 }
 
                                 throw new IllegalArgumentException(

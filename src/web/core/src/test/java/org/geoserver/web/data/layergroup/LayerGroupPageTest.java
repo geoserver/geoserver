@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Test;
 
@@ -33,5 +34,29 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
         assertEquals(getCatalog().getLayerGroups().size(), dv.size());
         LayerGroupInfo lg = (LayerGroupInfo) dv.getDataProvider().iterator(0, 1).next();
         assertEquals(getCatalog().getLayerGroups().get(0), lg);
+    }
+
+    @Test
+    public void testTimeColumnsToggle() {
+        GeoServerInfo info = getGeoServerApplication().getGeoServer().getGlobal();
+        info.getSettings().setShowCreatedTimeColumnsInAdminList(true);
+        info.getSettings().setShowModifiedTimeColumnsInAdminList(true);
+        getGeoServerApplication().getGeoServer().save(info);
+
+        login();
+
+        tester.assertRenderedPage(LayerGroupPage.class);
+        tester.assertNoErrorMessage();
+
+        @SuppressWarnings("unchecked")
+        DataView<LayerGroupInfo> dv =
+                (DataView<LayerGroupInfo>)
+                        tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        LayerGroupProvider provider = (LayerGroupProvider) dv.getDataProvider();
+
+        // should have these columns
+        assertTrue(provider.getProperties().contains(LayerGroupProvider.CREATED_TIMESTAMP));
+        assertTrue(provider.getProperties().contains(LayerGroupProvider.MODIFIED_TIMESTAMP));
     }
 }

@@ -161,7 +161,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
         assertNotNull(ws);
-
+        assertNotNull(ws.getDateCreated());
         // check corresponding namespace creation
         NamespaceInfo ns = getCatalog().getNamespaceByPrefix("foo");
         assertNotNull(ns);
@@ -192,6 +192,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
         assertNotNull(ws);
+        assertNotNull(ws.getDateCreated());
     }
 
     @Test
@@ -497,6 +498,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         WorkspaceInfo workspace = getCatalog().getWorkspaceByName("isolated_workspace");
         assertThat(workspace, notNullValue());
         assertThat(workspace.isIsolated(), is(true));
+        assertNotNull(workspace.getDateCreated());
         // check that the created namespace is isolated
         NamespaceInfo namespace = getCatalog().getNamespaceByPrefix("isolated_workspace");
         assertThat(namespace, notNullValue());
@@ -517,6 +519,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         workspace = getCatalog().getWorkspaceByName("isolated_workspace");
         assertThat(workspace, notNullValue());
         assertThat(workspace.isIsolated(), is(false));
+        assertNotNull(workspace.getDateModified());
         // check that the namespace was correctly updated
         namespace = getCatalog().getNamespaceByPrefix("isolated_workspace");
         assertThat(namespace, notNullValue());

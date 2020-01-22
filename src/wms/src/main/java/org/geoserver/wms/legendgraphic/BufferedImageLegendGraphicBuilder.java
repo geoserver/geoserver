@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.CascadedLegendRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.map.ImageUtils;
@@ -156,8 +159,9 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             final boolean useProvidedLegend = layer != null && legend.getLayerInfo() != null;
 
             RenderedImage legendImage = null;
-            if (useProvidedLegend) {
-                legendImage = getLayerLegend(legend, w, h, transparent, request);
+            if (useProvidedLegend || legend instanceof CascadedLegendRequest) {
+                boolean forceResize = !(legend instanceof CascadedLegendRequest);
+                legendImage = getLayerLegend(legend, w, h, transparent, forceResize, request);
             }
 
             if (useProvidedLegend && legendImage != null) {
@@ -175,6 +179,10 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                     }
                     layersImages.add(image);
                 }
+            } else if (legend instanceof CascadedLegendRequest) {
+                // coming from cascading wms service
+                if (titleImage != null) layersImages.add(titleImage);
+                if (legendImage != null) layersImages.add(legendImage);
             } else {
                 final Feature sampleFeature;
                 if (layer == null || hasVectorTransformation) {
@@ -480,6 +488,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
      * @param w width for the image (hint)
      * @param h height for the image (hint)
      * @param transparent (should the image be transparent)
+     * @param forceDimensions (should the image be resized if response does not match w,h)
      * @param request GetLegendGraphicRequest being built
      */
     private RenderedImage getLayerLegend(
@@ -487,6 +496,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             int w,
             int h,
             boolean transparent,
+            boolean forceDimensions,
             GetLegendGraphicRequest request) {
 
         LegendInfo legendInfo = legend.getLegendInfo();
@@ -507,9 +517,10 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         try {
             BufferedImage image = ImageIO.read(url);
 
-            if (image.getWidth() == w && image.getHeight() == h) {
+            if ((image.getWidth() == w && image.getHeight() == h) || !forceDimensions) {
                 return image;
             }
+
             final BufferedImage rescale =
                     ImageUtils.createImage(w, h, (IndexColorModel) null, true);
 

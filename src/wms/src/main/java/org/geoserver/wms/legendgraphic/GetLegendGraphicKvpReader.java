@@ -29,6 +29,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.KvpRequestReader;
@@ -36,6 +38,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.wms.CascadedLegendRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -46,6 +49,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
+import org.geotools.ows.wms.WebMapServer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.URLs;
@@ -155,10 +159,15 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             try {
                 LayerInfo layerInfo = wms.getLayerByName(layer);
                 if (layerInfo != null) {
-                    // layer found, fill in LegendRequest details
-                    LegendRequest legend = addLayer(layerInfo, request);
+                    LegendRequest legend = null;
+                    // for WMS cascaded layer
+                    if (layerInfo.getResource() instanceof WMSLayerInfo)
+                        legend = getCascadeLegendRequest(layerInfo, request);
+                    else {
+                        // layer found, fill in LegendRequest details
+                        legend = addLayer(layerInfo, request);
+                    }
                     legend.setLayer(layer);
-
                     layers.add(legend);
                     infoObject = layerInfo;
                 } else {
@@ -167,9 +176,13 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     if (layerGroupInfo != null) {
                         // add all single layers of the group
                         for (LayerInfo singleLayer : layerGroupInfo.layers()) {
-                            LegendRequest legend = addLayer(singleLayer, request);
-                            legend.setLayerGroupInfo(layerGroupInfo);
+                            LegendRequest legend = null;
+                            // for WMS cascaded layer
+                            if (singleLayer.getResource() instanceof WMSLayerInfo)
+                                legend = getCascadeLegendRequest(singleLayer, request);
+                            else legend = addLayer(singleLayer, request);
 
+                            legend.setLayerGroupInfo(layerGroupInfo);
                             layers.add(legend);
                         }
                         infoObject = layerGroupInfo;
@@ -212,6 +225,50 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         }
 
         return request;
+    }
+
+    /**
+     * Create a Legend request to fetch Legend from cascaded WMS service
+     *
+     * @param layerInfo of Cascaded Layer, should WMSLayerInfo
+     * @param request should be instance of GetLegendGraphicRequest
+     * @return GetCascadedLegendGraphicRequest
+     * @throws IOException
+     */
+    private LegendRequest getCascadeLegendRequest(
+            LayerInfo layerInfo, GetLegendGraphicRequest request) throws IOException {
+        WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
+        WMSStoreInfo wmsStoreInfo = wmsLayerInfo.getStore();
+        WebMapServer wmsServer = wmsStoreInfo.getWebMapServer(null);
+
+        org.geotools.ows.wms.request.GetLegendGraphicRequest remoteLegendGraphicRequest;
+
+        if (wmsServer.getCapabilities().getVersion().equalsIgnoreCase("1.3.0")) {
+            // WebMapServer under 1.3.0 version does not create GetLegendGraphicRequest
+            // since the XML tag <GetLegendGraphic> is not present under the <Capability>
+            // HACK HACK HACK
+            // taking a 1.3.0 GetMap request and forcefully turning it into a GetLegend Request
+            remoteLegendGraphicRequest =
+                    new CascadedLegendRequest.GetLegendGraphicRequestV1_3_0(
+                            wmsServer.createGetMapRequest().getFinalURL(), "1.3.0");
+            remoteLegendGraphicRequest.toString();
+
+        } else {
+            // other than 1.3.0
+            remoteLegendGraphicRequest = wmsServer.createGetLegendGraphicRequest();
+        }
+
+        // setting up remote request
+        remoteLegendGraphicRequest.setLayer(wmsLayerInfo.getNativeName());
+
+        CascadedLegendRequest legend = new CascadedLegendRequest(request);
+
+        legend.setRemoteLegendGraphicRequest(remoteLegendGraphicRequest);
+        legend.setLayer(layerInfo.getName());
+        legend.setTitle(layerInfo.getTitle());
+        legend.setLayerInfo(layerInfo);
+
+        return legend;
     }
 
     /**

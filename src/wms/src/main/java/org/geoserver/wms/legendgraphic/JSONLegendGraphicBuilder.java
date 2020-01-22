@@ -22,6 +22,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.CascadedLegendRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMS;
@@ -306,6 +307,22 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             }
 
             ArrayList<JSONObject> jRules = new ArrayList<>();
+            if (legend instanceof CascadedLegendRequest) {
+                CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
+                JSONArray cascadedRules = cascadedLegend.getCascadedJSONRules();
+                // if null or empty..go back to default behavior
+                if (cascadedRules != null) {
+                    if (!cascadedRules.isEmpty()) {
+                        for (int i = 0; i < cascadedRules.size(); i++)
+                            jRules.add(cascadedRules.getJSONObject(i));
+                        // we have all the rules from cascaded JSON request
+                        // no need to loop
+                        layerName = cascadedLegend.getLayer();
+                        // erase rules to skip the next for loop
+                        applicableRules = new Rule[] {};
+                    }
+                }
+            }
             for (Rule rule : applicableRules) {
                 ruleName = rule.getName();
                 JSONObject jRule = new JSONObject();

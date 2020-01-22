@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -19,11 +22,14 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.styling.FeatureTypeConstraint;
 import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -38,6 +44,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Gabriel Roldan
  */
 public final class MapLayerInfo {
+
+    private static final Logger LOGGER = Logging.getLogger(MapLayerInfo.class);
+
     public static int TYPE_VECTOR = PublishedType.VECTOR.getCode();
 
     public static int TYPE_RASTER = PublishedType.RASTER.getCode();
@@ -261,9 +270,12 @@ public final class MapLayerInfo {
      * reprojection. This method is build especially for the rendering subsystem that should be able
      * to perform a full reprojection on its own, and do generalization before reprojection (thus
      * avoid to reproject all of the original coordinates)
+     *
+     * @param coordinateReferenceSystem
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
-            boolean skipReproject) throws IOException {
+            boolean skipReproject, CoordinateReferenceSystem coordinateReferenceSystem)
+            throws IOException {
         if (type != TYPE_VECTOR) {
             throw new IllegalArgumentException("Layer type is not vector");
         }
@@ -288,6 +300,12 @@ public final class MapLayerInfo {
         }
 
         Hints hints = new Hints(ResourcePool.REPROJECT, Boolean.valueOf(!skipReproject));
+
+        if (userMapCRSForWFSNG(resource, coordinateReferenceSystem)) {
+            // a hint for wfs-ng featuresource to keep the crs in query
+            // to skip un-necessary re-projection
+            hints.put(ResourcePool.MAP_CRS, coordinateReferenceSystem);
+        }
 
         return resource.getFeatureSource(null, hints);
     }
@@ -335,6 +353,43 @@ public final class MapLayerInfo {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + type;
         return result;
+    }
+
+    private boolean userMapCRSForWFSNG(
+            FeatureTypeInfo resource, CoordinateReferenceSystem coordinateReferenceSystem)
+            throws IOException {
+        // verify the resource is WFS-NG and contains Other SRS in feature metadata
+        if (resource.getStore().getConnectionParameters().get(WFSDataStoreFactory.USEDEFAULTSRS.key)
+                        == null
+                || resource.getMetadata().get(FeatureTypeInfo.OTHER_SRS) == null) return false;
+        // do nothing if datastore is configure to stay with native remote srs
+        if (Boolean.valueOf(
+                resource.getStore()
+                        .getConnectionParameters()
+                        .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
+                        .toString())) return false;
+
+        // check if map crs is part of other srs, if yes send put it sindie hend
+        // read all identifiers of this CRS into a list
+        List<String> identifiers =
+                coordinateReferenceSystem
+                        .getIdentifiers()
+                        .stream()
+                        .map(r -> r.toString())
+                        .collect(Collectors.toList());
+        String otherSRSList = (String) resource.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+        // check if mapCRS is supported in remote wfs layer
+        for (String crs : identifiers)
+            if (otherSRSList.contains(crs)) {
+                // also verify axis order if matched
+                try {
+                    return CRS.equalsIgnoreMetadata(CRS.decode(crs), coordinateReferenceSystem);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+
+        return false;
     }
 
     @Override

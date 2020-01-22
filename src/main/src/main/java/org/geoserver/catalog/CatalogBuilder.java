@@ -382,6 +382,25 @@ public class CatalogBuilder {
             LOGGER.log(Level.WARNING, "Metadata lookup failed", e);
         }
 
+        // check other supported SRS in source also
+        try {
+            if (featureSource.getInfo() instanceof org.geotools.data.wfs.internal.FeatureTypeInfo) {
+                org.geotools.data.wfs.internal.FeatureTypeInfo info =
+                        (org.geotools.data.wfs.internal.FeatureTypeInfo) featureSource.getInfo();
+                // read all identifiers of this CRS into a an comma seperated string
+                if (info.getOtherSRS() != null) {
+                    if (!info.getOtherSRS().isEmpty())
+                        ftinfo.getMetadata()
+                                .put(
+                                        FeatureTypeInfo.OTHER_SRS,
+                                        String.join(",", info.getOtherSRS()));
+                }
+            }
+
+        } catch (UnsupportedOperationException ue) {
+            LOGGER.warning("Other SRS not read from Feature Source");
+        }
+
         return ftinfo;
     }
 
@@ -612,6 +631,36 @@ public class CatalogBuilder {
         }
 
         return bounds;
+    }
+
+    /*
+     * Helper method used to get NativeCRS of resource bypassing the Catalog
+     */
+    public CoordinateReferenceSystem getNativeCRS(ResourceInfo rinfo) throws Exception {
+        CoordinateReferenceSystem nativeCRS = null;
+        if (rinfo instanceof FeatureTypeInfo) {
+            FeatureTypeInfo ftinfo = (FeatureTypeInfo) rinfo;
+            nativeCRS =
+                    ftinfo.getStore()
+                            .getDataStore(null)
+                            .getFeatureSource(rinfo.getQualifiedNativeName())
+                            .getSchema()
+                            .getCoordinateReferenceSystem();
+
+        } else if (rinfo instanceof CoverageInfo) {
+
+            CoverageInfo cinfo = buildCoverage(rinfo.getNativeName());
+            return cinfo.getNativeCRS();
+
+        } else if (rinfo instanceof WMSLayerInfo) {
+            WMSLayerInfo rebuilt = buildWMSLayer(rinfo.getStore(), rinfo.getNativeName());
+            nativeCRS = rebuilt.getNativeCRS();
+
+        } else if (rinfo instanceof WMTSLayerInfo) {
+            WMTSLayerInfo rebuilt = buildWMTSLayer(rinfo.getStore(), rinfo.getNativeName());
+            return rebuilt.getNativeCRS();
+        }
+        return nativeCRS;
     }
 
     /**

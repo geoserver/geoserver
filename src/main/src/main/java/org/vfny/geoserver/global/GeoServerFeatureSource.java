@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.data.DataSourceException;
@@ -210,7 +211,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             Query defQuery = new Query(query);
             defQuery.setFilter(filter);
             defQuery.setPropertyNames(propNames);
-
+            defQuery.setCoordinateSystem(query.getCoordinateSystem());
             // set sort by
             if (query.getSortBy() != null) {
                 defQuery.setSortBy(query.getSortBy());
@@ -451,7 +452,17 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             // the native one usually, but it's the declared on in the force case (since in
             // that case we completely ignore the native one)
             CoordinateReferenceSystem nativeCRS = geom.getCoordinateReferenceSystem();
-            if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
+
+            if (srsHandling == ProjectionPolicy.NONE
+                    && metadata.get(FeatureTypeInfo.OTHER_SRS) != null) {
+                // a feature type with multiple native srs (cascaded feature from WFS-NG or
+                // WMSStore)
+                // and policy is set to keep native
+                // do not re-project at query
+                defaultCRS = source.getInfo().getCRS();
+                query.setCoordinateSystem(declaredCRS);
+                return query;
+            } else if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
                 defaultCRS = declaredCRS;
                 nativeFeatureType = FeatureTypes.transform(nativeFeatureType, declaredCRS);
             } else if (srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED) {
@@ -473,6 +484,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
 
             Query reprojectedQuery = new Query(query);
             reprojectedQuery.setFilter(reprojectedFilter);
+            reprojectedQuery.setCoordinateSystem(declaredCRS);
             return reprojectedQuery;
         } catch (Exception e) {
             throw new DataSourceException("Had troubles handling filter reprojection...", e);
@@ -570,7 +582,8 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         if (newQuery.getCoordinateSystemReproject() != null) {
             newQuery.setCoordinateSystemReproject(null);
         }
-        if (newQuery.getCoordinateSystem() != null) {
+        if (newQuery.getCoordinateSystem() != null
+                && metadata.get(FeatureTypeInfo.OTHER_SRS) == null) {
             newQuery.setCoordinateSystem(null);
         }
         return newQuery;

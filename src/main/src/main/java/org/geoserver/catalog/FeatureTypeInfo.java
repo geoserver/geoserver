@@ -30,6 +30,9 @@ public interface FeatureTypeInfo extends ResourceInfo {
     /** The cascaded stored query configuration */
     static final String STORED_QUERY_CONFIGURATION = "WFS_NG_STORED_QUERY_CONFIGURATION";
 
+    /** ONLY FOR WFS-NG Feature Types */
+    static final String OTHER_SRS = "OTHER_SRS";
+
     /**
      * The data store the feature type is a part of.
      *

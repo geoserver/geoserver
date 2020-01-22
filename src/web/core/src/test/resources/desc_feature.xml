@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsd:schema targetNamespace="http://www.topp.com"
+	elementFormDefault="qualified" xmlns:topp="http://www.topp.com"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:import
+		schemaLocation="http://mock.test.geoserver.org/schemas/gml/3.1.1/base/gml.xsd"
+		namespace="http://www.opengis.net/gml" />
+	<xsd:complexType name="roads22Type">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element type="gml:MultiLineStringPropertyType"
+						name="the_geom" nillable="true" minOccurs="0" maxOccurs="1" />
+					<xsd:element type="xsd:long" name="cat" nillable="true"
+						minOccurs="0" maxOccurs="1" />
+					<xsd:element type="xsd:string" name="label"
+						nillable="true" minOccurs="0" maxOccurs="1" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element type="topp:roads22Type" name="roads22"
+		substitutionGroup="gml:_Feature" />
+</xsd:schema>

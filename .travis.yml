@@ -10,14 +10,8 @@ before_install:
 env:
   global:
     - MAVEN_OPTS=-Xmx512m
-before_script:
-  - wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.0/apache-maven-3.6.0-bin.tar.gz
-  - tar zxf apache-maven-3.6.0-bin.tar.gz
-  - export M2_HOME=$PWD/apache-maven-3.6.0
-  - wget -P $M2_HOME/lib/ext https://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
-  - export PATH=$M2_HOME/bin:$PATH
 script:
-  - mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install --builder smart $ARGS && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install --builder smart $COMMUNITY_ARGS
+  - mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install $ARGS && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install $COMMUNITY_ARGS
   - grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50
 before-caching:
   - rm -rf $HOME/.m2/repository/org/geotools

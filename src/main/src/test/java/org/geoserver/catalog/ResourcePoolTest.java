@@ -61,6 +61,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -70,6 +72,9 @@ import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;
+import org.geotools.data.ows.ControlledHttpClient;
+import org.geotools.data.ows.URLChecker;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
@@ -85,6 +90,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.WebMapServer;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
@@ -890,5 +896,62 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         // the CoverageReaderFileConverter should have successfully converted the URL string to a
         // File object
         assertTrue(reader.getSource() instanceof File);
+    }
+
+    @Test
+    public void testSecuredHttpClient() throws Exception {
+
+        // init all factories
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class)
+                .get(0)
+                .initialize(getGeoServer());
+        
+        //register URLChecker to allow calls to "http://mock.test.geoserver.org"
+        URLChecker mockUrlChecker =
+                new URLChecker() {
+
+                    @Override
+                    public boolean isEnabled() {
+                        return true;
+                    }
+
+                    @Override
+                    public String getName() {
+                        return "mock";
+                    }
+                    @Override
+                    public boolean evaluate(String url) {
+
+                        return url.startsWith(TestHttpClientProvider.MOCKSERVER);
+                    }
+                };
+        try {
+
+            URLCheckers.addURLChecker(mockUrlChecker);
+            MockHttpClient wms11Client = new MockHttpClient();
+            URL wms13BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
+            URL capsDocument = getClass().getResource("caps111.xml");
+            String caps = wms13BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
+
+            wms11Client.expectGet(new URL(caps), new MockHttpResponse(capsDocument, "text/xml"));
+
+            TestHttpClientProvider.bind(wms11Client, caps);
+
+            ResourcePool rp = getCatalog().getResourcePool();
+
+            WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+            info.setCapabilitiesURL(caps);
+            info.setEnabled(true);
+            // the connection pooling client does not support file references, disable it
+            info.setUseConnectionPooling(false);
+            // enable controlled http client
+            info.setUseSecuredHttp(true);
+            // configure a URLChecker to enable security on HttpClient
+
+            WebMapServer wms = rp.getWebMapServer(info);
+            assertTrue(wms.getHTTPClient() instanceof ControlledHttpClient);
+        } finally {
+            URLCheckers.removeURLChecker(mockUrlChecker);
+        }
     }
 }

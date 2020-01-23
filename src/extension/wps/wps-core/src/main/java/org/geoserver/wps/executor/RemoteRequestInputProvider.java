@@ -12,10 +12,6 @@ import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.opengis.wps10.HeaderType;
-import net.opengis.wps10.InputReferenceType;
-import net.opengis.wps10.InputType;
-import net.opengis.wps10.MethodType;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
@@ -28,10 +24,15 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
+import org.geotools.data.ows.URLCheckerFactory;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
 import org.springframework.http.HttpHeaders;
+import net.opengis.wps10.HeaderType;
+import net.opengis.wps10.InputReferenceType;
+import net.opengis.wps10.InputType;
+import net.opengis.wps10.MethodType;
 
 /**
  * Handles an internal reference to a remote location
@@ -60,7 +61,8 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
     protected Object getValueInternal(ProgressListener listener) throws Exception {
         InputReferenceType ref = input.getReference();
         URL destination = new URL(ref.getHref());
-
+        if(destination.getProtocol().toLowerCase().startsWith("http"))
+            URLCheckerFactory.evaluate(destination);        
         HttpMethod method = null;
         GetMethod refMethod = null;
         InputStream input = null;

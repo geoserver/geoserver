@@ -16,7 +16,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.security.urlchecker.URLEntry;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
@@ -227,5 +230,36 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertNotNull(
                 request.getLegend(new NameImpl("http://www.opengis.net/cite", "Lakes")).getTitle());
+    }
+
+    @org.junit.Test
+    public void testRemoteSLDURLEvaluation() throws Exception {
+
+        URLEntry googleOnly =
+                new URLEntry(
+                        "google only",
+                        "only allow url starting with http://www.google.com",
+                        "^(http://www.google).*$");
+        addURLEntryGeoserverURLConfigService(googleOnly);
+        // GeoserverURLConfigService.getSingleton().addAndsave(googleOnly);
+        // tests static methods in  org.vfny.geoserver.util.Requests
+        enableGeoserverURLConfigService(true);
+
+        // Geoserver URLChecker implementation works with REST calls only
+        Dispatcher.REQUEST.set(new Request());
+
+        final String remoteSldUrl = "http://www.unallowed.com/sld.xml";
+        this.allParameters.put("SLD", remoteSldUrl);
+
+        this.allParameters.put("LAYER", "cite:Ponds");
+        this.allParameters.put("STYLE", "Ponds");
+
+        try {
+            GetLegendGraphicRequest request =
+                    requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("Evaluation Failure"));
+        }
     }
 }

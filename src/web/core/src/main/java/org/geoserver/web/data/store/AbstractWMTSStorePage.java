@@ -208,6 +208,12 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
                         namePanel.getFormComponent(),
                         store.getId());
         form.add(storeNameValidator);
+
+        form.add(
+                new CheckBoxParamPanel(
+                        "useSecuredHttpPanel",
+                        new PropertyModel(model, "useSecuredHttp"),
+                        new ResourceModel("useSecuredHttpLabel", "Use secured HTTP Access")));
     }
 
     private AjaxSubmitLink saveLink() {

@@ -319,4 +319,9 @@
   <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">
     <constructor-arg ref="catalog"/>
   </bean>
+    
+    <bean id="geoserverURLConfigService" class="org.geoserver.security.urlchecker.GeoserverURLConfigService">
+        <constructor-arg ref="resourceLoader"/>
+        <constructor-arg ref="xstreamPersisterFactory"/>
+    </bean>
 </beans>

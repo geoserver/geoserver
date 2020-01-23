@@ -1305,6 +1305,11 @@ background: transparent url(../img/clear_cache.png) scroll no-repeat left center
 padding: 2px 0px 2px 20px;
 }
 
+.control-service {
+background: transparent url(../img/icons/silk/shield.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
 /*----------------
   Page header
 -----------------*/

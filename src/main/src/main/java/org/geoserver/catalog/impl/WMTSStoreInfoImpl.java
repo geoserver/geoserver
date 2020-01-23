@@ -27,6 +27,7 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     private int maxConnections;
     private int readTimeout;
     private int connectTimeout;
+    boolean useSecuredHttp;
 
     // Map<String, String> headers;
     private String headerName; // todo: replace with Map<String, String>
@@ -132,5 +133,15 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     @Override
     public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
         getMetadata().put("useConnectionPooling", Boolean.valueOf(useHttpConnectionPooling));
+    }
+
+    @Override
+    public boolean isUseSecuredHttp() {
+        return useSecuredHttp;
+    }
+
+    @Override
+    public void setUseSecuredHttp(boolean useSecuredHttp) {
+        this.useSecuredHttp = useSecuredHttp;
     }
 }

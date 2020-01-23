@@ -43,10 +43,14 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.urlchecker.GeoserverURLConfigService;
+import org.geoserver.security.urlchecker.URLEntry;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
@@ -748,6 +752,43 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
         assertXpathEvaluatesTo(
                 "Failed to retrieve value for input features",
+                "/wps:ExecuteResponse/wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
+                d);
+    }
+    
+    @Test
+    public void testHttpSecutiry() throws Exception {
+        URLEntry googleOnly =
+                new URLEntry(
+                        "google only",
+                        "only allow url starting with http://www.google.com",
+                        "^(http://www.google).*$");
+        addURLEntryGeoserverURLConfigService(googleOnly);
+        //GeoserverURLConfigService.getSingleton().addAndsave(googleOnly);
+        //tests static methods in  org.vfny.geoserver.util.Requests
+        enableGeoserverURLConfigService(true);
+        //WPS process should  through exception when evaluating this resource
+        String externalNotAllowedURL = "http://www.unallowed.com/resource.xml";
+        String request =
+                "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection"
+                        + "&DataInputs="
+                        + urlEncode(
+                                "features=@mimetype=application/wfs-collection-1.1@xlink:href="
+                                        + externalNotAllowedURL
+                                        + ";distance=10")
+                        + "&ResponseDocument="
+                        + urlEncode("result");
+        
+        Document d = getAsDOM(request);
+        // print(d);
+        checkValidationErrors(d);
+        
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+        
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
+        assertXpathEvaluatesTo(
+                "Failed to retrieve value for input features\n" + 
+                "&gt;&gt;&gt;Evaluation Failure: http://www.unallowed.com/resource.xml: did not pass security evaluation",
                 "/wps:ExecuteResponse/wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
                 d);
     }

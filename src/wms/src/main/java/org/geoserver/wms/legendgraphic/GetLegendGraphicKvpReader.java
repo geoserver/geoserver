@@ -45,6 +45,7 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
@@ -676,6 +677,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     private Style[] loadRemoteStyle(String sldUrl) throws ServiceException {
         try {
             URL url = new URL(sldUrl);
+            URLCheckers.evaluate(url);
             try (InputStream in = url.openStream()) {
                 return parseSld(new InputStreamReader(in));
             }

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -113,6 +113,8 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
+import org.geoserver.security.urlchecker.GeoserverURLConfigService;
+import org.geoserver.security.urlchecker.URLEntry;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -198,6 +200,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     /** Cached dispatcher, it has its own app context, so it's expensive to build */
     protected static DispatcherServlet dispatcher;
+
+    /** URL Profiling service, it will be disabled by default */
+    protected static GeoserverURLConfigService geoserverURLConfigServiceBean;
 
     /**
      * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this
@@ -320,6 +325,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            initEmptyGeoserverURLConfigServiceBean();
 
             onSetUp(testData);
         }
@@ -328,7 +334,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected final void tearDown(SystemTestData testData) throws Exception {
         if (testData.isTestDataAvailable()) {
             onTearDown(testData);
-
             destroyGeoServer();
 
             TestHttpClientProvider.endTest();
@@ -2523,5 +2528,33 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         catalog.add(copyLayerInfo);
         // retrieve the cloned layer by name
         return catalog.getLayerByName(new NameImpl(targetNameSpace.getPrefix(), targetLayerName));
+    }
+
+    public void initEmptyGeoserverURLConfigServiceBean() throws Exception {
+        geoserverURLConfigServiceBean = GeoServerExtensions.bean(GeoserverURLConfigService.class);
+    }
+
+    @Before
+    public void emptyGeoserverURLConfigServiceBean() throws Exception {
+        try {
+            geoserverURLConfigServiceBean.removeAndsave(
+                    geoserverURLConfigServiceBean.getGeoserverURLChecker().getRegexList());
+            enableGeoserverURLConfigService(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addURLEntryGeoserverURLConfigService(URLEntry urlEntry) throws Exception {
+        geoserverURLConfigServiceBean.addAndsave(urlEntry);
+    }
+
+    public void removeURLEntry(URLEntry urlEntry) throws Exception {
+        geoserverURLConfigServiceBean.removeAndsave(Arrays.asList(urlEntry));
+    }
+
+    public void enableGeoserverURLConfigService(boolean enabled) throws Exception {
+        geoserverURLConfigServiceBean.getGeoserverURLChecker().setEnabled(enabled);
+        geoserverURLConfigServiceBean.save();
     }
 }

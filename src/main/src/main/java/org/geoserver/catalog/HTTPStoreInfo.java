@@ -65,4 +65,8 @@ public interface HTTPStoreInfo extends StoreInfo {
      * @see #setMaxConnections(int)
      */
     public void setUseConnectionPooling(boolean useHttpConnectionPooling);
+
+    public boolean isUseSecuredHttp();
+
+    public void setUseSecuredHttp(boolean useSecuredHttp);
 }

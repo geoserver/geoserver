@@ -27,6 +27,7 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     private int maxConnections;
     private int readTimeout;
     private int connectTimeout;
+    boolean useSecuredHttp;
 
     protected WMSStoreInfoImpl() {}
 
@@ -109,5 +110,15 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     @Override
     public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
         getMetadata().put("useConnectionPooling", Boolean.valueOf(useHttpConnectionPooling));
+    }
+
+    @Override
+    public boolean isUseSecuredHttp() {
+        return useSecuredHttp;
+    }
+
+    @Override
+    public void setUseSecuredHttp(boolean useSecuredHttp) {
+        this.useSecuredHttp = useSecuredHttp;
     }
 }

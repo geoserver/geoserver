@@ -18,7 +18,6 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geoserver.wms.clip.ClippedFeatureCollection;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -188,7 +187,7 @@ public class WMSLayerIdentifier implements LayerIdentifier<FeatureCollection> {
 
     public FeatureCollection<FeatureType, Feature> handleClipParam(
             FeatureInfoRequestParameters params, FeatureCollection fc) {
-        Geometry clipGeometry = ClipWMSGetMapCallBack.getClipGeometry(params.getGetMapRequest());
+        Geometry clipGeometry = params.getGetMapRequest().getClip();
         if (clipGeometry == null) return fc;
 
         return new ClippedFeatureCollection(fc, clipGeometry);

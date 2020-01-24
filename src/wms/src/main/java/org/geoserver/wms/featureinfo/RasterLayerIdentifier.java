@@ -25,7 +25,6 @@ import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geoserver.wms.clip.CroppedGridCoverage2DReader;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -384,7 +383,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     @Override
     public GridCoverage2DReader handleClipParam(
             FeatureInfoRequestParameters params, GridCoverage2DReader reader) {
-        Geometry roiGeom = ClipWMSGetMapCallBack.getClipGeometry(params.getGetMapRequest());
+        Geometry roiGeom = params.getGetMapRequest().getClip();
         if (roiGeom == null) return reader;
         return new CroppedGridCoverage2DReader(reader, roiGeom);
     }

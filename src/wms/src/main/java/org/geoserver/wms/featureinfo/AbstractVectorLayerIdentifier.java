@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geoserver.wms.clip.ClippedFeatureSource;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.FeatureTypeStyle;
@@ -54,7 +53,7 @@ abstract class AbstractVectorLayerIdentifier
     public FeatureSource<? extends FeatureType, ? extends Feature> handleClipParam(
             FeatureInfoRequestParameters params,
             FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {
-        Geometry clipGeom = ClipWMSGetMapCallBack.getClipGeometry(params.getGetMapRequest());
+        Geometry clipGeom = params.getGetMapRequest().getClip();
         if (clipGeom == null) return featureSource;
         return new ClippedFeatureSource(featureSource, clipGeom);
     }

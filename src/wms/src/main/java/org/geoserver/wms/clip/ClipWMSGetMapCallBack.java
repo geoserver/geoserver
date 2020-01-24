@@ -101,7 +101,7 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
     @Override
     public void failed(Throwable t) {}
 
-    private static synchronized Geometry readGeometry(
+    public static synchronized Geometry readGeometry(
             final String wkt, final CoordinateReferenceSystem mapCRS) throws Exception {
         String[] wktContents = wkt.split(";");
         Geometry geom = reader.read(wktContents[wktContents.length - 1]);
@@ -125,25 +125,5 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
         // finally assign map crs
         geom.setSRID(CRS.lookupEpsgCode(mapCRS, false));
         return geom;
-    }
-
-    public static Geometry getClipGeometry(GetMapRequest getMapRequest) {
-
-        // no raw kvp or request has no crs
-        if (getMapRequest.getRawKvp() == null || getMapRequest.getCrs() == null) return null;
-        String wktString = getMapRequest.getRawKvp().get("clip");
-        // not found
-        if (wktString == null) return null;
-        try {
-            Geometry geom = readGeometry(wktString, getMapRequest.getCrs());
-
-            if (LOGGER.isLoggable(Level.FINE) && geom != null)
-                LOGGER.fine("parsed Clip param to geometry " + geom.toText());
-            return geom;
-        } catch (Exception e) {
-            LOGGER.severe("Ignoring clip param,Error parsing wkt in clip parameter : " + wktString);
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return null;
     }
 }

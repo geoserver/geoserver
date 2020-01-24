@@ -75,6 +75,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -668,7 +669,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
 
         if (rawKvp.get("clip") != null) {
-            getMap.setClip(ClipWMSGetMapCallBack.getClipGeometry(getMap));
+            getMap.setClip(getClipGeometry(getMap));
         }
 
         return getMap;
@@ -1473,5 +1474,25 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (o == null) return false;
         else if (!(o instanceof LayerInfo)) return false;
         else return ((LayerInfo) o).getResource() instanceof WMSLayerInfo;
+    }
+
+    private Geometry getClipGeometry(GetMapRequest getMapRequest) {
+
+        // no raw kvp or request has no crs
+        if (getMapRequest.getRawKvp() == null || getMapRequest.getCrs() == null) return null;
+        String wktString = getMapRequest.getRawKvp().get("clip");
+        // not found
+        if (wktString == null) return null;
+        try {
+            Geometry geom = ClipWMSGetMapCallBack.readGeometry(wktString, getMapRequest.getCrs());
+
+            if (LOGGER.isLoggable(Level.FINE) && geom != null)
+                LOGGER.fine("parsed Clip param to geometry " + geom.toText());
+            return geom;
+        } catch (Exception e) {
+            LOGGER.severe("Ignoring clip param,Error parsing wkt in clip parameter : " + wktString);
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
     }
 }

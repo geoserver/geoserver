@@ -15,6 +15,7 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
+import org.geoserver.api.QueryablesDocument;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;

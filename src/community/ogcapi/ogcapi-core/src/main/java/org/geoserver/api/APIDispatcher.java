@@ -42,7 +42,6 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -360,7 +359,7 @@ public class APIDispatcher extends AbstractController {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
-            throw new APIException(null, msg, HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(msg);
         }
         Object handler = chain.getHandler();
         if (!handlerAdapter.supports(handler)) {
@@ -373,7 +372,7 @@ public class APIDispatcher extends AbstractController {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
-            throw new APIException(null, msg, HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(msg);
         }
         return (HandlerMethod) handler;
     }

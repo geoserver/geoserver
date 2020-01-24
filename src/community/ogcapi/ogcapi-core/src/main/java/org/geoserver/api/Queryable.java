@@ -2,8 +2,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api;
 
+/** A queryable describes an attribute that can be queried by the filter extension */
 public class Queryable {
 
     String id;

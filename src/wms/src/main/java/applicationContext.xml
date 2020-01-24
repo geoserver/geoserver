@@ -841,5 +841,7 @@
   <bean id="UTFGridMapProducer" class="org.geoserver.wms.utfgrid.UTFGridMapOutputFormat">
     <constructor-arg ref="wms"/>
   </bean>
+  
+  <bean id="clipWMSGetMapCallBack" class="org.geoserver.wms.clip.ClipWMSGetMapCallBack"/>
 
 </beans>

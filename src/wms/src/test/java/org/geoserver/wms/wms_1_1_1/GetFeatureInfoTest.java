@@ -6,15 +6,23 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -38,8 +46,14 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.*;
+import org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
@@ -50,8 +64,13 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -1304,5 +1323,167 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String request2 = request + "&EXCLUDE_NODATA_RESULT=true";
         result = getAsString(request2);
         assertTrue(result.indexOf("NaN") > 0);
+    }
+
+    @Test
+    public void testClipParam() throws Exception {
+        // for simplicity the mask covers 4th quadrant of bbox
+        Polygon geom = JTS.toGeometry(new Envelope(0, 0.002, 0, -0.002));
+        String wkt = geom.toText();
+        String layer = getLayerId(MockData.FORESTS);
+
+        CoordinateReferenceSystem crs =
+                getCatalog().getLayerByName(MockData.FORESTS.getLocalPart()).getResource().getCRS();
+        int srid = CRS.lookupEpsgCode(crs, false);
+        // click outside mask geom
+        String insideXY =
+                "&x=18&y=18"; // click area inside clip mask and geometry:should return geom
+        String outsideXY =
+                "&x=5&y=20"; // click area outside clip mask and inside geometry:-should not return
+        // geom
+        String clipBorderXY = "&x=10&y=10"; // click area bordering clip mask and inside geometry
+        String request =
+                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                        + "&info_format=application/json&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + insideXY
+                        + "&srs=EPSG:"
+                        + srid
+                        + "&clip="
+                        + wkt;
+        String result = getAsString(request);
+        assertNotNull(result);
+        // assert a feature was returned
+        JSONObject responseJson = JSONObject.fromObject(result);
+        assertFalse(responseJson.getJSONArray("features").isEmpty());
+
+        // click outside
+        request =
+                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                        + "&info_format=application/json&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + outsideXY
+                        + "&srs=EPSG:"
+                        + srid
+                        + "&clip="
+                        + wkt;
+        result = getAsString(request);
+        assertNotNull(result);
+        // assert no features were returned
+        responseJson = JSONObject.fromObject(result);
+        assertTrue(responseJson.getJSONArray("features").isEmpty());
+
+        // click border
+        request =
+                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                        + "&info_format=application/json&request=GetFeatureInfo&layers="
+                        + layer
+                        + "&query_layers="
+                        + layer
+                        + "&width=20&height=20"
+                        + clipBorderXY
+                        + "&srs=EPSG:"
+                        + srid
+                        + "&clip="
+                        + wkt;
+        result = getAsString(request);
+        assertNotNull(result);
+        //  assert a feature was returned
+        responseJson = JSONObject.fromObject(result);
+        assertFalse(responseJson.getJSONArray("features").isEmpty());
+
+        // asserting that the returned geometry is clipped
+        JSONObject geoJson = responseJson.getJSONArray("features").getJSONObject(0);
+        JSONArray coordsArray =
+                geoJson.getJSONObject("geometry")
+                        .getJSONArray("coordinates")
+                        .getJSONArray(0)
+                        .getJSONArray(0);
+        final GeometryFactory gf = new GeometryFactory();
+        Coordinate[] coordinates =
+                Arrays.stream(coordsArray.toArray())
+                        .map(
+                                new Function<Object, Coordinate>() {
+                                    @Override
+                                    public Coordinate apply(Object t) {
+                                        JSONArray cArray = (JSONArray) t;
+                                        return new Coordinate(
+                                                cArray.getDouble(0), cArray.getDouble(1));
+                                    }
+                                })
+                        .toArray(Coordinate[]::new);
+
+        // the clipped feature geometry
+        Polygon clippedPolygon = gf.createPolygon(coordinates);
+        // should be empty since clip mask is completely inside clipped polygon
+        assertTrue(clippedPolygon.difference(geom).isEmpty());
+    }
+
+    @Test
+    public void testCoverageClipParam() throws Exception {
+        // for simplicity the mask covers 4th quadrant of bbox
+        Polygon geom = JTS.toGeometry(new Envelope(147.25, 148.0, -43.75, -44.5));
+        String wkt = geom.toText();
+        String insideXY = "&x=400&y=400"; // click area inside clip mask, should return results
+        String outsideXY = "&x=5&y=5"; // click area outside clip mask , should not return results
+        String clipBorderXY =
+                "&x=300&y=300"; // click area bordering clip mask should return results
+        String layer = getLayerId(TASMANIA_BM);
+        String request =
+                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
+                        + "&layers="
+                        + layer
+                        + "&styles=&bbox=146.5,-44.5,148,-43&width=600&height=600"
+                        + "&info_format=application/json&query_layers="
+                        + layer
+                        + insideXY
+                        + "&srs=EPSG:4326"
+                        + "&clip="
+                        + wkt;
+        String json = getAsString(request);
+        assertNotNull(json);
+        // assert features were returned
+        JSONObject responseJson = JSONObject.fromObject(json);
+        assertFalse(responseJson.getJSONArray("features").isEmpty());
+
+        request =
+                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
+                        + "&layers="
+                        + layer
+                        + "&styles=&bbox=146.5,-44.5,148,-43&width=600&height=600"
+                        + "&info_format=application/json&query_layers="
+                        + layer
+                        + clipBorderXY
+                        + "&srs=EPSG:4326"
+                        + "&clip="
+                        + wkt;
+        json = getAsString(request);
+        assertNotNull(json);
+        // assert features were returned
+        responseJson = JSONObject.fromObject(json);
+        assertFalse(responseJson.getJSONArray("features").isEmpty());
+
+        request =
+                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
+                        + "&layers="
+                        + layer
+                        + "&styles=&bbox=146.5,-44.5,148,-43&width=600&height=600"
+                        + "&info_format=application/json&query_layers="
+                        + layer
+                        + outsideXY
+                        + "&srs=EPSG:4326"
+                        + "&clip="
+                        + wkt;
+        json = getAsString(request);
+        assertNotNull(json);
+        // assert no features were returned
+        responseJson = JSONObject.fromObject(json);
+        assertTrue(responseJson.getJSONArray("features").isEmpty());
     }
 }

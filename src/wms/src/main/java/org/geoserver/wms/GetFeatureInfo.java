@@ -58,14 +58,8 @@ public class GetFeatureInfo {
 
     @SuppressWarnings("rawtypes")
     private List<FeatureCollection> execute(GetFeatureInfoRequest request) throws Exception {
-
         final List<MapLayerInfo> requestedLayers = request.getQueryLayers();
         FeatureInfoRequestParameters requestParams = new FeatureInfoRequestParameters(request);
-        // if url has a clip param and the clicked point is outside
-        // then abort and return empty list
-        //        if (!ClipWMSGetMapCallBack.validateClipParam(requestParams)) {
-        //            return Collections.EMPTY_LIST;
-        //        }
 
         List<FeatureCollection> results = new ArrayList<FeatureCollection>(requestedLayers.size());
 

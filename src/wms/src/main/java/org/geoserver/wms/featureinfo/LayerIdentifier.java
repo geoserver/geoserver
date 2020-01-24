@@ -42,5 +42,5 @@ public interface LayerIdentifier<T> {
      * @param params The request parameters
      * @param fs source to be clipped if GetFeatureInfo includes WMS Vendor parameter `clip`
      */
-    public T handleClipParam(FeatureInfoRequestParameters params, T fs);
+    T handleClipParam(FeatureInfoRequestParameters params, T fs);
 }

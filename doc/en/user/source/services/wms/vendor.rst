@@ -371,4 +371,4 @@ Here are two examples, the first one using WKT, the second using EWKT::
 
 .. note::  
   The Axis order of WKT must be East/North regardless of WMS version.
-  This parameter does not for Complex features.
+  Currently this parameter is ignored for layers with Complex features.

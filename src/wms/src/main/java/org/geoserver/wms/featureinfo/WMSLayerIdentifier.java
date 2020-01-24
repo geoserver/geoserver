@@ -186,7 +186,6 @@ public class WMSLayerIdentifier implements LayerIdentifier<FeatureCollection> {
         return wms;
     }
 
-    @Override
     public FeatureCollection<FeatureType, Feature> handleClipParam(
             FeatureInfoRequestParameters params, FeatureCollection fc) {
         Geometry clipGeometry = ClipWMSGetMapCallBack.getClipGeometry(params.getGetMapRequest());

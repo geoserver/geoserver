@@ -51,7 +51,6 @@ abstract class AbstractVectorLayerIdentifier
         return result;
     }
 
-    @Override
     public FeatureSource<? extends FeatureType, ? extends Feature> handleClipParam(
             FeatureInfoRequestParameters params,
             FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {

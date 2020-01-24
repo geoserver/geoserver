@@ -29,7 +29,6 @@ import org.opengis.referencing.operation.MathTransform;
 /** @author ImranR */
 public class ClipWMSGetMapCallBack implements GetMapCallback {
 
-    //  private static Set<ProcessFactory> processFactories = Processors.getProcessFactories();
     private static final Logger LOGGER = Logging.getLogger(ClipWMSGetMapCallBack.class.getName());
 
     private static final WKTReader2 reader = new WKTReader2();
@@ -47,9 +46,8 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
     @Override
     public Layer beforeLayer(WMSMapContent mapContent, Layer layer) {
 
-        // find and parse WKT geometry from WMS request
-        //
-        Geometry wktGeom = getClipGeometry(mapContent.getRequest());
+        // read geometry from WMS request
+        Geometry wktGeom = mapContent.getRequest().getClip();
         if (wktGeom == null) return layer;
 
         Geometry bboxGeom = JTS.toGeometry(mapContent.getRequest().getBbox());
@@ -107,7 +105,6 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
             final String wkt, final CoordinateReferenceSystem mapCRS) throws Exception {
         String[] wktContents = wkt.split(";");
         Geometry geom = reader.read(wktContents[wktContents.length - 1]);
-        // geom.setSRID(CRS.lookupEpsgCode(mapCRS, false));
         if (!(geom.getClass().isAssignableFrom(Polygon.class)
                 || geom.getClass().isAssignableFrom(MultiPolygon.class)))
             throw new ServiceException(

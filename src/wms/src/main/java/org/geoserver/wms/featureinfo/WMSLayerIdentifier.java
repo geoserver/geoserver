@@ -18,6 +18,7 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.clip.ClippedFeatureCollection;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReTypingFeatureCollection;
@@ -31,7 +32,10 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
 import org.geotools.xsd.Parser;
+import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -39,7 +43,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class WMSLayerIdentifier implements LayerIdentifier {
+public class WMSLayerIdentifier implements LayerIdentifier<FeatureCollection> {
 
     static final Logger LOGGER = Logging.getLogger(WMSLayerIdentifier.class);
 
@@ -113,7 +117,9 @@ public class WMSLayerIdentifier implements LayerIdentifier {
                     builder.setNamespaceURI(info.getNamespace().getURI());
 
                     SimpleFeatureType targetFeatureType = builder.buildFeatureType();
-                    FeatureCollection rfc = new ReTypingFeatureCollection(fc, targetFeatureType);
+                    FeatureCollection rfc =
+                            handleClipParam(
+                                    params, new ReTypingFeatureCollection(fc, targetFeatureType));
 
                     // if possible force a CRS to be defined
                     results.add(forceCrs(rfc));
@@ -177,5 +183,13 @@ public class WMSLayerIdentifier implements LayerIdentifier {
             wms = GeoServerExtensions.bean(WMS.class);
         }
         return wms;
+    }
+
+    public FeatureCollection<FeatureType, Feature> handleClipParam(
+            FeatureInfoRequestParameters params, FeatureCollection fc) {
+        Geometry clipGeometry = params.getGetMapRequest().getClip();
+        if (clipGeometry == null) return fc;
+
+        return new ClippedFeatureCollection(fc, clipGeometry);
     }
 }

@@ -357,3 +357,18 @@ An example with XML POST:
                xmlns:gml="http://www.opengis.net/gml"
       version="1.1.1" service="WMS" rootLayer="false">
    </ogc:GetCapabilities>
+
+   
+clip
+------
+
+The ``clip`` parameter can be used to clip WMS response using a Polygon mask represented by a valid WKT String.
+
+Here are two examples, the first one using WKT, the second using EWKT::
+
+   clip=POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))
+   clip=srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))
+
+.. note::  
+  The Axis order of WKT must be East/North regardless of WMS version.
+  Currently this parameter is ignored for layers with Complex features.

@@ -30,7 +30,7 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DReader {
 
-    GridCoverage2DReader delegate;
+    protected GridCoverage2DReader delegate;
 
     public DecoratingGridCoverage2DReader(GridCoverage2DReader delegate) {
         this.delegate = delegate;

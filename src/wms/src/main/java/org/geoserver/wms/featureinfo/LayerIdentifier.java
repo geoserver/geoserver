@@ -16,7 +16,7 @@ import org.geotools.feature.FeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public interface LayerIdentifier {
+public interface LayerIdentifier<T> {
 
     /** Returns true if the identifier can handle this layer, false otherwise */
     boolean canHandle(MapLayerInfo layer);
@@ -31,4 +31,12 @@ public interface LayerIdentifier {
      */
     List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
             throws Exception;
+
+    /**
+     * Returns a clipped feature or grid source
+     *
+     * @param params The request parameters
+     * @param fs source to be clipped if GetFeatureInfo includes WMS Vendor parameter `clip`
+     */
+    T handleClipParam(FeatureInfoRequestParameters params, T fs);
 }

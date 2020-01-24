@@ -2,14 +2,15 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.api.features;
+package org.geoserver.api;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.math.BigDecimal;
 import java.sql.Date;
 import org.locationtech.jts.geom.Geometry;
 
-enum AttributeType {
+/** Types of attributes, used in {@link Queryable} */
+public enum AttributeType {
     string,
     uri,
     enumeration("enum"),

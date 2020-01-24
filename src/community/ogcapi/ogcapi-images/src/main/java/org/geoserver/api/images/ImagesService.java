@@ -36,6 +36,7 @@ import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.api.ResourceNotFoundException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.config.GeoServer;
@@ -189,8 +190,7 @@ public class ImagesService implements ApplicationContextAware {
             return coverageInfo;
         }
 
-        throw new APIException(
-                "NotFound", "Could not locate " + collectionId, HttpStatus.NOT_FOUND);
+        throw new ResourceNotFoundException("Could not locate " + collectionId);
     }
 
     @GetMapping(path = "collections/{collectionId}/images", name = "getImages")
@@ -248,13 +248,11 @@ public class ImagesService implements ApplicationContextAware {
 
         // if single image is not found, throw a 400
         if (imageId != null && granules.isEmpty()) {
-            throw new APIException(
-                    "NotFound",
+            throw new ResourceNotFoundException(
                     "Image with id "
                             + imageId
                             + " could not be found in collection "
-                            + collectionId,
-                    HttpStatus.NOT_FOUND);
+                            + collectionId);
         }
 
         // transforms granule source attribute names
@@ -288,10 +286,11 @@ public class ImagesService implements ApplicationContextAware {
         SimpleFeature granule = getFeatureForImageId(collectionId, imageId);
         Object fileGroupCandidate = granule.getUserData().get(GranuleSource.FILES);
         if (!(fileGroupCandidate instanceof FileGroupProvider.FileGroup)) {
-            throw new APIException(
-                    "NotFound",
-                    "Could not find assets for image " + imageId + " in collection " + collectionId,
-                    HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(
+                    "Could not find assets for image "
+                            + imageId
+                            + " in collection "
+                            + collectionId);
         }
 
         // look for the right file

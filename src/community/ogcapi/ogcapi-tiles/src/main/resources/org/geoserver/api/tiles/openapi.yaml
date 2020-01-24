@@ -292,6 +292,23 @@ paths:
           $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
         '500':
           $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}/queryables':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        lists the queryable attributes for the feature collection with id `collectionId`
+      operationId: getQueryables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}':
     get:
       tags:
@@ -308,6 +325,8 @@ paths:
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
         - $ref: '#/components/parameters/f-png-jpeg-vector'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
       responses:
         '200':
           description: A tile of the collection.
@@ -351,6 +370,8 @@ paths:
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
         - $ref: '#/components/parameters/f-png-jpeg-vector'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
       responses:
         '200':
           description: A tile of the collection.
@@ -501,6 +522,38 @@ components:
             - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/examples/link-collection-info'
             - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-collection-tiles'
             - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-collection-info'
+    queryables:
+      type: object
+      required:
+        - queryables
+      properties:
+        queryables:
+          description: list of queryable properties
+          type: array
+          items:
+            $ref: "#/components/schemas/queryable"
+    queryable:
+      type:  object
+      required:
+        - name
+        - type
+      properties:
+        id:
+          description: identifier of the attribute that can be used in CQL filters
+          type: string
+          example: address
+        type:
+          description: the property type
+          type: string
+          enum:
+            - string
+            - uri
+            - number
+            - integer
+            - date
+            - dateTime
+            - boolean
+            - geometry
   parameters:
     collectionId:
       name: collectionId
@@ -617,4 +670,34 @@ components:
           - image/jpeg
           - image/gif
       example: image/png
-  responses: {}
+    filter:
+      name: filter
+      in: query
+      description: Defines a filter that will be applied on items, only items matching the filter will be returned
+      schema:
+        type: string
+    filter-lang:
+      name: filter-lang
+      in: query
+      description: Filter encoding used in the filter parameter
+      schema:
+        type: string
+        enum:
+          - cql-text
+        default: cql-text
+    otherParameters:
+      style: form
+      in: query
+      name: otherParameters
+      description: Allows unrecognized parameters to be added in the query string without getting a 400 back (e.g., cache busters)
+      schema:
+        type: object
+        additionalProperties: true
+  responses:
+    Queryables:
+      description: |-
+        Information about the feature collection queryable properties
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/queryables'

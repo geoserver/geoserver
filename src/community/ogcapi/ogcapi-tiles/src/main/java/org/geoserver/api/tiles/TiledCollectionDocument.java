@@ -17,6 +17,7 @@ import org.geoserver.api.APIException;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
+import org.geoserver.api.QueryablesDocument;
 import org.geoserver.api.StyleDocument;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -137,6 +138,17 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
                     this.styles.add(
                             new StyleDocument(DEFAULT_STYLE_NAME, "The layer default style"));
                 }
+            }
+
+            // filtering support
+            if (TilesService.supportsFiltering(tileLayer)) {
+                addLinksFor(
+                        "ogc/tiles/collections/" + id + "/queryables",
+                        QueryablesDocument.class,
+                        "Collection queryables",
+                        "queryables",
+                        null,
+                        "queryables");
             }
         }
     }

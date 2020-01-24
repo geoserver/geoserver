@@ -20,13 +20,14 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.api.APIBBoxParser;
 import org.geoserver.api.APIDispatcher;
-import org.geoserver.api.APIException;
+import org.geoserver.api.APIFilterParser;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.api.QueryablesDocument;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -38,7 +39,6 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
@@ -48,7 +48,6 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,11 +94,13 @@ public class FeatureService {
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     private final GeoServer geoServer;
+    private final APIFilterParser filterParser;
 
     private TimeParser timeParser = new TimeParser();
 
-    public FeatureService(GeoServer geoServer) {
+    public FeatureService(GeoServer geoServer, APIFilterParser filterParser) {
         this.geoServer = geoServer;
+        this.filterParser = filterParser;
     }
 
     /** Returns the provided CRS list, unless the feature type has its own local override */
@@ -280,13 +281,7 @@ public class FeatureService {
             filters.add(FF.id(FF.featureId(itemId)));
         }
         if (filter != null) {
-            if (filterLanguage != null && !filterLanguage.equals("cql-text")) {
-                throw new APIException(
-                        "InvalidParameterValue",
-                        "Unsupported filter language: " + filterLanguage,
-                        HttpStatus.BAD_REQUEST);
-            }
-            filters.add(ECQL.toFilter(filter));
+            filters.add(filterParser.parse(filter, filterLanguage));
         }
         query.setFilter(mergeFiltersAnd(filters));
         if (crs != null) {

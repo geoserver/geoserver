@@ -41,7 +41,8 @@ public class LandingPageTest extends TilesTestSupport {
                         "getTile",
                         "getMapTile",
                         "getTileMatrixSet",
-                        "getTileMatrixSets"));
+                        "getTileMatrixSets",
+                        "getQueryables"));
     }
 
     @Test

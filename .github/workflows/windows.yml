@@ -24,5 +24,4 @@ jobs:
       run: mvn -B clean install -Dall -T1C -Prelease --file src/pom.xml
     - name: Remove SNAPSHOT jars from repository
       run: |
-        del /s /q *SNAPSHOT*
-        rmdir /s /q *SNAPSHOT*
+        cmd --% /c for /f %i in ('dir /a:d /s /b %userprofile%\*SNAPSHOT*') do rd /s /q %i

@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.SerializationUtils;
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -294,29 +296,11 @@ public final class IntegrationTestsUtils {
 
     /** Remove info object from the provided GeoServer instance. */
     private static void remove(GeoServer geoServer, Catalog catalog, Info info) {
-        if (info instanceof WorkspaceInfo) {
-            catalog.remove((WorkspaceInfo) info);
-        } else if (info instanceof NamespaceInfo) {
-            catalog.remove((NamespaceInfo) info);
-        } else if (info instanceof DataStoreInfo) {
-            catalog.remove((DataStoreInfo) info);
-        } else if (info instanceof CoverageStoreInfo) {
-            catalog.remove((CoverageStoreInfo) info);
-        } else if (info instanceof WMSStoreInfo) {
-            catalog.remove((WMSStoreInfo) info);
-        } else if (info instanceof FeatureTypeInfo) {
-            catalog.remove((FeatureTypeInfo) info);
-        } else if (info instanceof CoverageInfo) {
-            catalog.remove((CoverageInfo) info);
-        } else if (info instanceof LayerInfo) {
-            catalog.remove((LayerInfo) info);
-        } else if (info instanceof StyleInfo) {
-            catalog.remove((StyleInfo) info);
-        } else if (info instanceof LayerGroupInfo) {
-            catalog.remove((LayerGroupInfo) info);
-        } else if (info instanceof WMSLayerInfo) {
-            catalog.remove((WMSLayerInfo) info);
-        } else if (info instanceof SettingsInfo) {
+        if (info instanceof CatalogInfo) {
+            ((CatalogInfo) info).accept(new CascadeDeleteVisitor(catalog));
+            return;
+        }
+        if (info instanceof SettingsInfo) {
             geoServer.remove((SettingsInfo) info);
         } else if (info instanceof ServiceInfo) {
             geoServer.remove((ServiceInfo) info);

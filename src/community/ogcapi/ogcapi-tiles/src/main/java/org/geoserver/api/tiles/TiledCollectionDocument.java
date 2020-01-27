@@ -4,6 +4,7 @@
  */
 package org.geoserver.api.tiles;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
     List<StyleDocument> styles = new ArrayList<>();
     boolean dataTiles;
     boolean mapTiles;
+    boolean queryable;
 
     /**
      * Builds a description of a tiled collection
@@ -142,6 +144,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
 
             // filtering support
             if (TilesService.supportsFiltering(tileLayer)) {
+                this.queryable = true;
                 addLinksFor(
                         "ogc/tiles/collections/" + id + "/queryables",
                         QueryablesDocument.class,
@@ -242,5 +245,10 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
 
     public boolean isMapTiles() {
         return mapTiles;
+    }
+
+    @JsonIgnore
+    public boolean isQueryable() {
+        return queryable;
     }
 }

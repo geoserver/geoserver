@@ -144,6 +144,21 @@ public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestS
     }
 
     @Test
+    public void testJsonLdQueryPointingToExpr() throws Exception {
+        setUpComplex();
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append("&cql_filter= features.geometry.wkt IS NULL");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.size() == 0);
+    }
+
+    @Test
     public void testJsonLdQueryWithPOST() throws Exception {
         setUpComplex();
         StringBuilder xml =

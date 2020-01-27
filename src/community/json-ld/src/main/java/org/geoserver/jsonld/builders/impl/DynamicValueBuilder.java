@@ -4,21 +4,24 @@
  */
 package org.geoserver.jsonld.builders.impl;
 
+import static org.geoserver.jsonld.expressions.ExpressionsUtils.*;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.expressions.ExpressionsUtils;
-import org.geoserver.jsonld.expressions.XPathFunction;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.filter.FunctionExpression;
+import org.geotools.filter.MathExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
+import org.opengis.filter.expression.*;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Evaluates xpath and cql functions, writing their results to the output. */
@@ -38,12 +41,43 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         super(key);
         this.namespaces = namespaces;
         if (expression.startsWith("$${")) {
-            this.cql = ExpressionsUtils.extractCqlExpressions(workXpathFunction(expression));
+            strCqlToExpression(expression);
         } else if (expression.startsWith("${")) {
-            String strXpath = ExpressionsUtils.extractXpath(expression);
-            strXpath = determineContextPos(strXpath);
-            this.xpath = new AttributeExpressionImpl(strXpath, namespaces);
+            strXpathToPropertyName(expression);
         }
+    }
+
+    /**
+     * Takes a str cql as $${cql} and makes all the necessary operation to convert it to a valid
+     * Expression
+     *
+     * @param cql
+     */
+    private void strCqlToExpression(String cql) {
+        // takes xpath fun from cql
+        String strXpathFun = extractXpathFromCQL(cql);
+        if (strXpathFun.indexOf(XPATH_FUN_START) != -1)
+            this.contextPos = determineContextPos(strXpathFun);
+        // takes the literal argument of xpathFun
+        String literalXpath = getLiteralXpath(strXpathFun);
+
+        // clean the function to obtain a cql expression without xpath() syntax
+        this.cql = extractCqlExpressions(cleanCQLExpression(cql, strXpathFun, literalXpath));
+        // replace the xpath literal inside the expression with a PropertyName
+        literalXpathToPropertyName(this.cql, removeBackDots(literalXpath));
+    }
+
+    /**
+     * Takes a str xpath as ${xpath} and makes all the necessary operation to produce a valid
+     * PropertyName
+     *
+     * @param xpath
+     */
+    private void strXpathToPropertyName(String xpath) {
+        String strXpath = extractXpath(xpath);
+        this.contextPos = determineContextPos(strXpath);
+        strXpath = removeBackDots(strXpath);
+        this.xpath = new AttributeExpressionImpl(strXpath, namespaces);
     }
 
     @Override
@@ -96,7 +130,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
                 context = context.getParent();
                 i++;
             }
-            if (namespaces != null) prepareXpathFilter(cql);
             result = cql.evaluate(context.getCurrentObj());
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Unable to evaluate expression. Exception: {0}", e.getMessage());
@@ -104,49 +137,58 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return result;
     }
 
-    private void prepareXpathFilter(Expression expr) {
-        List<Expression> params = ((Function) expr).getParameters();
-        if (params.size() > 0) {
-            for (Expression e : params) {
-                if (e instanceof XPathFunction) ((XPathFunction) e).setNamespaces(namespaces);
-                else if (e instanceof Function) {
-                    prepareXpathFilter(e);
+    /**
+     * Searches for one or more literal xpath inside the expression. If found, substitutes it/them
+     * with a ${@link PropertyName}
+     *
+     * @param expr
+     * @param literalXpath
+     */
+    private void literalXpathToPropertyName(Expression expr, String literalXpath) {
+        List<Expression> params = null;
+        if (expr instanceof Function) {
+            params = ((Function) expr).getParameters();
+        } else if (expr instanceof BinaryExpression) {
+            params =
+                    Arrays.asList(
+                            ((BinaryExpression) expr).getExpression1(),
+                            ((BinaryExpression) expr).getExpression2());
+        }
+        if (params != null) {
+            int size = params.size();
+            List<Expression> newParams = new ArrayList<>(size);
+            if (size > 0) {
+                for (int i = 0; i < size; i++) {
+                    Expression e = params.get(i);
+                    if (e instanceof Literal) {
+                        e = xpathLiteralToPropertyName((Literal) e, literalXpath);
+                        newParams.add(i, e);
+                    } else if (e instanceof Function) {
+                        newParams.add(e);
+                        literalXpathToPropertyName(e, literalXpath);
+                    }
                 }
             }
+            setParamsToExpression(expr, newParams);
         }
     }
 
-    /**
-     * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
-     * xpath, and cleans it from ../ notation.
-     *
-     * @param xpath
-     * @return
-     */
-    private String determineContextPos(String xpath) {
-        while (xpath.contains("../")) {
-            contextPos++;
-            xpath = xpath.replaceFirst("\\.\\./", "");
+    private Expression xpathLiteralToPropertyName(Literal literal, String literalXpath) {
+        String unquoted = literalXpath.replaceAll("'", "");
+        if (String.valueOf(literal.getValue()).equals(unquoted)) {
+            return new AttributeExpressionImpl(unquoted, namespaces);
+        } else {
+            return literal;
         }
-        return xpath;
     }
 
-    /**
-     * Extract xpath from a cql expression if present
-     *
-     * @param expression
-     * @return
-     */
-    private String workXpathFunction(String expression) {
-        // extract xpath from cql expression if present
-        int xpathI = expression.indexOf("xpath(");
-        if (xpathI != -1) {
-            int xpathI2 = expression.indexOf(")", xpathI);
-            String xpath = expression.substring(xpathI, xpathI2 + 1);
-            determineContextPos(xpath);
-            expression = expression.replaceAll("\\.\\./", "");
+    private void setParamsToExpression(Expression expr, List<Expression> params) {
+        if (expr instanceof FunctionExpression) {
+            ((FunctionExpression) expr).setParameters(params);
+        } else if (expr instanceof MathExpressionImpl) {
+            ((MathExpressionImpl) expr).setExpression1(params.get(0));
+            ((MathExpressionImpl) expr).setExpression2(params.get(1));
         }
-        return expression;
     }
 
     /**
@@ -182,5 +224,9 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         }
         if (o == null) return false;
         return true;
+    }
+
+    public NamespaceSupport getNamespaces() {
+        return namespaces;
     }
 }

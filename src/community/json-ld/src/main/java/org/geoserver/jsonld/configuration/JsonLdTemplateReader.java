@@ -103,6 +103,7 @@ public class JsonLdTemplateReader {
                 JsonNode childNode = arrayIterator.next();
                 if (childNode.isObject()) {
                     if (!childNode.has(SOURCEKEY) && childNode.toString().contains(EXPRSTART)) {
+                        // CompositeBuilder child of Iterating has no key
                         CompositeBuilder compositeBuilder = new CompositeBuilder(null);
                         iteratingBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(childNode, compositeBuilder);

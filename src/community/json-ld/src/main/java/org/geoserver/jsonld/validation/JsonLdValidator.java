@@ -12,14 +12,10 @@ import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.expressions.ExpressionsUtils;
-import org.geoserver.jsonld.expressions.XPathFunction;
-import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.FunctionExpressionImpl;
-import org.geotools.filter.LiteralExpressionImpl;
+import org.geotools.filter.FunctionExpression;
+import org.opengis.filter.expression.BinaryExpression;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
-import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This class perform a validation of the json-ld template by evaluating dynamic and source fields
@@ -52,31 +48,10 @@ public class JsonLdValidator {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder djb = (DynamicValueBuilder) jb;
                 if (djb.getCql() != null) {
-                    try {
-                        PropertyName pn = extractXpath(djb.getCql());
-                        if (pn != null && pn.accept(visitor, context) == null) {
-                            failingAttribute =
-                                    "Key: " + djb.getKey() + " Value: " + djb.getCql().toString();
-                            return false;
-                        }
-                    } catch (Exception e) {
-                        failingAttribute = "Exception: " + e.getMessage();
-                        return false;
-                    }
+                    if (!validateCQL(djb.getCql(), context, djb.getKey())) return false;
                 } else if (djb.getXpath() != null) {
-                    try {
-                        if (djb.getXpath().accept(visitor, context) == null) {
-                            failingAttribute =
-                                    "Key: "
-                                            + djb.getKey()
-                                            + " Value: "
-                                            + ((PropertyName) djb.getXpath()).getPropertyName();
-                            return false;
-                        }
-                    } catch (Exception e) {
-                        failingAttribute = "Exception: " + e.getMessage();
+                    if (!validatePropertyName((PropertyName) djb.getXpath(), context, djb.getKey()))
                         return false;
-                    }
                 }
             } else if (jb instanceof SourceBuilder) {
                 Object newType = null;
@@ -109,27 +84,36 @@ public class JsonLdValidator {
         return failingAttribute;
     }
 
-    private PropertyName extractXpath(Expression expression) {
-        NamespaceSupport namespaces = null;
-        try {
-            namespaces = ExpressionsUtils.declareNamespaces(type.getFeatureType());
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to retrieve FeatureType for " + type.getName());
-        }
-        PropertyName pn = null;
-        if (expression instanceof AttributeExpressionImpl) {
-            pn = (AttributeExpressionImpl) expression;
-        } else if (expression instanceof XPathFunction) {
-            XPathFunction xpath = (XPathFunction) expression;
-            LiteralExpressionImpl param = (LiteralExpressionImpl) xpath.getParameters().get(0);
-            pn = new AttributeExpressionImpl(String.valueOf(param.getValue()), namespaces);
-        } else if (expression instanceof FunctionExpressionImpl) {
-            FunctionExpressionImpl function = (FunctionExpressionImpl) expression;
-            for (Expression ex : function.getParameters()) {
-                if (pn == null) pn = extractXpath(ex);
-                else break;
+    private boolean validateCQL(Expression expression, JsonBuilderContext context, String key) {
+        PropertyName pn;
+        if (expression instanceof PropertyName) {
+            pn = (PropertyName) expression;
+            if (!validatePropertyName(pn, context, key)) return false;
+        } else if (expression instanceof FunctionExpression) {
+            FunctionExpression function = (FunctionExpression) expression;
+            if (function.getParameters().size() > 0) {
+                for (Expression ex : function.getParameters()) {
+                    if (!validateCQL(ex, context, key)) return false;
+                }
             }
+        } else if (expression instanceof BinaryExpression) {
+            BinaryExpression binary = (BinaryExpression) expression;
+            if (!validateCQL(binary.getExpression1(), context, key)) return false;
+            if (!validateCQL(binary.getExpression2(), context, key)) return false;
         }
-        return pn;
+        return true;
+    }
+
+    private boolean validatePropertyName(PropertyName pn, JsonBuilderContext context, String key) {
+        try {
+            if (pn != null && pn.accept(visitor, context) == null) {
+                failingAttribute = "Key: " + key + " Value: " + pn.getPropertyName();
+                return false;
+            }
+        } catch (Exception e) {
+            failingAttribute = "Exception: " + e.getMessage();
+            return false;
+        }
+        return true;
     }
 }

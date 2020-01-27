@@ -19,7 +19,7 @@ before_script:
 install:
   - if [ "$ACTION" == "docs" ]; then sudo pip install sphinx requests; fi
 script:
-  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install --builder smart $ARGS && mvn -f src/community/pom.xml -B -U -T3 -fae -DskipTests -Prelease -PcommunityRelease clean install --builder smart $COMMUNITY_ARGS; fi
+  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install --builder smart $ARGS && mvn -f src/community/pom.xml -B -U -T5 -fae -DskipTests -Prelease -PcommunityRelease clean install --builder smart $COMMUNITY_ARGS; fi
   - if [ "$ACTION" == "build" ]; then grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50; fi
   - if [ "$ACTION" == "docs" ]; then mvn -f doc/en install; fi
   - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:attached -nsu; mvn -f src/community/pom.xml assembly:attached -nsu; fi

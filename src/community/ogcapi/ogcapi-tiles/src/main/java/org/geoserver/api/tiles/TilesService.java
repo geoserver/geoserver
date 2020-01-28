@@ -51,6 +51,7 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
+import org.geowebcache.storage.TileObject;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -307,6 +308,10 @@ public class TilesService {
             VolatileGeoServerTileLayer volatileLayer =
                     new VolatileGeoServerTileLayer((GeoServerTileLayer) tileLayer);
             volatileLayer.getTile(tile);
+            TileObject so = tile.getStorageObject();
+            if (so != null) {
+                so.setCreated(System.currentTimeMillis());
+            }
         }
 
         if (tile == null) {
@@ -331,8 +336,7 @@ public class TilesService {
         // Handle Etags
         HttpServletRequest httpRequest = APIRequestInfo.get().getRequest();
         final String ifNoneMatch = httpRequest.getHeader("If-None-Match");
-        final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
-        final String etag = GWC.getETag(tileBytes);
+        final String etag = getETag(tileBytes);
         if (etag.equals(ifNoneMatch)) {
             // Client already has the current version
             LOGGER.finer("ETag matches, returning 304");
@@ -368,6 +372,14 @@ public class TilesService {
                 getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
 
         return new ResponseEntity(tileBytes, headers, HttpStatus.OK);
+    }
+
+    private String getETag(byte[] tileBytes) throws NoSuchAlgorithmException {
+        if (tileBytes == null) {
+            return "EMPTY_TILE";
+        }
+        final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
+        return GWC.getETag(tileBytes);
     }
 
     private String toCQLSpecification(TileLayer tileLayer, Filter filter) {

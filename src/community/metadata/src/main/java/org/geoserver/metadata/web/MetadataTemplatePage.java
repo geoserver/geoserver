@@ -6,6 +6,7 @@
 package org.geoserver.metadata.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -17,9 +18,13 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -31,11 +36,12 @@ import org.geoserver.metadata.data.model.impl.GlobalModel;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
+import org.geoserver.metadata.web.panel.LinkedLayersPanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.metadata.web.panel.ProgressPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerBasePage;
+import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -46,7 +52,7 @@ import org.geotools.util.logging.Logging;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
  */
-public class MetadataTemplatePage extends GeoServerBasePage {
+public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplatePage.class);
 
@@ -116,15 +122,30 @@ public class MetadataTemplatePage extends GeoServerBasePage {
                         new PropertyModel<String>(metadataTemplateModel, "description"));
         form.add(desicription);
 
-        MetadataPanel metadataTemplatePanel =
-                new MetadataPanel("metadataTemplatePanel", metadataModel, null, null);
-        form.add(metadataTemplatePanel);
+        List<ITab> tabs = new ArrayList<>();
+        tabs.add(
+                new AbstractTab(new ResourceModel("editMetadata")) {
+                    private static final long serialVersionUID = 4375160438369461475L;
+
+                    public Panel getPanel(String panelId) {
+                        return new MetadataPanel(panelId, metadataModel, null, null);
+                    }
+                });
+        tabs.add(
+                new AbstractTab(new ResourceModel("linkedLayers")) {
+                    private static final long serialVersionUID = 871647379377450152L;
+
+                    public Panel getPanel(String panelId) {
+                        return new LinkedLayersPanel(panelId, metadataTemplateModel);
+                    }
+                });
+        form.add(new TabbedPanel<ITab>("metadataTabs", tabs));
 
         this.add(form);
     }
 
     protected ComponentAuthorizer getPageAuthorizer() {
-        return ComponentAuthorizer.AUTHENTICATED;
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
     private TextField<String> createNameField(final Form<?> form, final AjaxSubmitLink saveButton) {

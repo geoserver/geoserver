@@ -22,6 +22,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MetaDataRestServiceTest extends AbstractMetadataTest {
 
     @Autowired private MetaDataRestService restService;
+
+    @After
+    public void after() throws Exception {
+        restoreLayers();
+    }
 
     @Test
     public void testImportGeonetwork() throws IOException {
@@ -122,7 +128,7 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
                         (Map<String, Serializable>)
                                 rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
 
-        Assert.assertEquals(2, map.size("referencesystem-object-list"));
+        Assert.assertEquals(3, map.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = map.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = map.subMap("referencesystem-object-list", 1);
         Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());

@@ -37,8 +37,9 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Autowired private GeoServerDataDirectory dataDirectory;
 
     @After
-    public void after() throws IOException {
+    public void after() throws Exception {
         restoreTemplates();
+        restoreLayers();
     }
 
     @Test
@@ -117,7 +118,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Assert.assertEquals("template-identifier", initial.getMetadata().get("identifier-single"));
         Assert.assertTrue(initial.getLinkedLayers().contains("mylayerFeatureId"));
 
-        initial.getMetadata().put("identifier-single", "updated value");
+        initial.getMetadata().put("identifier-single", "updated-value");
 
         // check if the linked metadata is updated.
         LayerInfo initialMyLayer = geoServer.getCatalog().getLayer("myLayerId");
@@ -133,7 +134,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         templateService.update(initial, null);
 
         MetadataTemplate actual = templateService.findByName("simple fields");
-        Assert.assertEquals("updated value", actual.getMetadata().get("identifier-single"));
+        Assert.assertEquals("updated-value", actual.getMetadata().get("identifier-single"));
 
         // check if the linked metadata is updated.
         LayerInfo myLayer = geoServer.getCatalog().getLayer("myLayerId");
@@ -144,7 +145,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
                         new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
 
         Assert.assertEquals(
-                "updated value",
+                "updated-value",
                 metadataModel.getObject().get(String.class, "identifier-single").getValue());
         // only linked data from the linked template should change
         Assert.assertEquals(

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.wicket;
+package org.geoserver.metadata.web;
 
 import static org.junit.Assert.assertEquals;
 

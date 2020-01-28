@@ -257,16 +257,22 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     }
 
     @Override
-    public void copy(ComplexMetadataMap source, ComplexMetadataMap dest, String typeName) {
+    public void copy(
+            ComplexMetadataMap source,
+            ComplexMetadataMap dest,
+            String typeName,
+            boolean ignoreUUID) {
         AttributeCollection attCollection = getAttributeCollection(typeName);
 
         for (AttributeConfiguration config : attCollection.getAttributes()) {
             if (config.getFieldType() != FieldTypeEnum.COMPLEX) {
-                dest.get(Serializable.class, config.getKey())
-                        .setValue(
-                                ComplexMetadataMapImpl.dimCopy(
-                                        source.get(Serializable.class, config.getKey())
-                                                .getValue()));
+                if (!ignoreUUID || config.getFieldType() != FieldTypeEnum.UUID) {
+                    dest.get(Serializable.class, config.getKey())
+                            .setValue(
+                                    ComplexMetadataMapImpl.dimCopy(
+                                            source.get(Serializable.class, config.getKey())
+                                                    .getValue()));
+                }
             } else {
                 copy(
                         source.subMap(config.getKey()),

@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -208,6 +210,7 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         ci.setAbstract("new abstract");
         ci.getDimensions().get(0).setName("CUSTOM_DIMENSION");
         ci.getMetadata().put("asomething", "anything");
+        ci.getMetadata().put("adate", new Date());
         if (SUPPORTS_METADATA) {
             HashMap<String, String> map = new HashMap<>();
             map.put("foo", "bar");
@@ -237,9 +240,11 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
                 cov.getEncodedDimensionsInfoList().get(0).getName());
         assertEquals("asomething", cov.getMetadataList().get(0).getKey());
         assertEquals("anything", cov.getMetadataList().get(0).getMetadataElem().getText());
+        assertEquals("adate", cov.getMetadataList().get(1).getKey());
+        assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("date") );
         if (SUPPORTS_METADATA) {
-            assertEquals("complex", cov.getMetadataList().get(1).getKey());
-            assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("map"));
+            assertEquals("complex", cov.getMetadataList().get(2).getKey());
+            assertNotNull(cov.getMetadataList().get(2).getMetadataElem().getChild("map"));
         }
         layer = restManager.getReader().getLayer("wcs", "DEM");
         assertEquals(STYLE, layer.getDefaultStyle());

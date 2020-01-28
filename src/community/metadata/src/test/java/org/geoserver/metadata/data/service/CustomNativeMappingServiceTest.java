@@ -17,12 +17,18 @@ import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
 
     @Autowired CustomNativeMappingService cnmService;
+
+    @After
+    public void after() throws Exception {
+        restoreLayers();
+    }
 
     @Test
     public void testCustomToNative() {

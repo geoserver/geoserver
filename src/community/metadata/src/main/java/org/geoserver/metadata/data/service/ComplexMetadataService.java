@@ -49,7 +49,23 @@ public interface ComplexMetadataService {
      * @param dest target submap
      * @param typeConfiguration the configuration of the type
      */
-    void copy(ComplexMetadataMap source, ComplexMetadataMap dest, String typeName);
+    default void copy(ComplexMetadataMap source, ComplexMetadataMap dest, String typeName) {
+        copy(source, dest, typeName, false);
+    }
+
+    /**
+     * Copy from one submap to another
+     *
+     * @param source source submap
+     * @param dest target submap
+     * @param typeConfiguration the configuration of the type
+     * @param ingoreUUID whether to ignore UUID's
+     */
+    void copy(
+            ComplexMetadataMap source,
+            ComplexMetadataMap dest,
+            String typeName,
+            boolean ignoreUUID);
 
     /**
      * Tests if two submaps are equal to each other

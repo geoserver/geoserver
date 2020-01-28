@@ -2,16 +2,18 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.wicket;
+package org.geoserver.metadata.web;
 
 import java.io.IOException;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
 import org.geoserver.metadata.data.model.MetadataTemplate;
-import org.geoserver.metadata.web.MetadataTemplatePage;
+import org.geoserver.metadata.web.panel.LinkedLayersPanel;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +28,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
 
     @Before
     public void before() throws IOException {
+        login();
         // Load the page
         MetadataTemplate allData = templateService.findByName("allData");
         MetadataTemplatePage page =
@@ -37,6 +40,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
 
     @After
     public void after() throws IOException {
+        logout();
         restoreTemplates();
     }
 
@@ -64,7 +68,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
                 .setObject("description");
         ((IModel<String>)
                         tester.getComponentFromLastRenderedPage(
-                                        "form:metadataTemplatePanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
+                                        "form:metadataTabs:panel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
                                 .getDefaultModel())
                 .setObject("new identifier value");
 
@@ -87,7 +91,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
                 .setObject("description update");
         ((IModel<String>)
                         tester.getComponentFromLastRenderedPage(
-                                        "form:metadataTemplatePanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
+                                        "form:metadataTabs:panel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
                                 .getDefaultModel())
                 .setObject("new identifier value");
 
@@ -137,5 +141,19 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         tester.assertLabel(
                 "topFeedback:feedbackul:messages:0:message", "Field &#039;Name&#039; is required.");
+    }
+
+    @Test
+    public void testLayerTab() {
+        // Load the page
+        MetadataTemplatePage page =
+                new MetadataTemplatePage(new ListModel<>(templateService.list()));
+        tester.startPage(page);
+        tester.assertRenderedPage(MetadataTemplatePage.class);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:metadataTabs"))
+                .setSelectedTab(1);
+        tester.submitForm("form");
+        tester.assertComponent("form:metadataTabs:panel", LinkedLayersPanel.class);
+        tester.assertComponent("form:metadataTabs:panel:layersTable", GeoServerTablePanel.class);
     }
 }

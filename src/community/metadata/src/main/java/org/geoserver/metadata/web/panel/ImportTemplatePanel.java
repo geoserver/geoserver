@@ -151,6 +151,7 @@ public abstract class ImportTemplatePanel extends Panel {
                                 protected boolean onSubmit(
                                         AjaxRequestTarget target, Component contents) {
                                     linkTemplate(target, dropDown.getModelObject());
+                                    handleUpdate(target);
                                     return true;
                                 }
                             });
@@ -173,6 +174,7 @@ public abstract class ImportTemplatePanel extends Panel {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 unlinkTemplate(target, templatesPanel.getSelection());
+                handleUpdate(target);
             }
 
             protected void onError(AjaxRequestTarget target, Form<?> form) {
@@ -210,13 +212,12 @@ public abstract class ImportTemplatePanel extends Panel {
      *
      * @param selected
      */
-    private void linkTemplate(AjaxRequestTarget target, MetadataTemplate selected) {
+    public void linkTemplate(AjaxRequestTarget target, MetadataTemplate selected) {
         // add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);
         getDropDown().setModelObject(null);
         getDropDown().setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
         updateTableState(target, linkedTemplatesDataProvider);
-        handleUpdate(target);
         target.add(templatesPanel);
         target.add(getDropDown());
     }
@@ -228,7 +229,6 @@ public abstract class ImportTemplatePanel extends Panel {
         templatesPanel.clearSelection();
         getDropDown().setChoices(linkedTemplatesDataProvider.getUnlinkedItems());
         updateTableState(target, linkedTemplatesDataProvider);
-        handleUpdate(target);
         target.add(getFeedbackPanel());
         target.add(templatesPanel);
         target.add(getDropDown());

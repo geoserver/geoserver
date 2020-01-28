@@ -25,6 +25,15 @@
         <property name="category" ref="metadataCategory" />
         <property name="authorizer" ref="metadataMenuAuthorizer"/>
     </bean>
+    
+    <bean id="metadataBulkOperationsPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="metadataBulkOperationsPage"/>
+        <property name="titleKey" value="MetadataBulkOperationsPage.page.title"/>
+        <property name="descriptionKey" value="MetadataBulkOperationsPage.page.description"/>
+        <property name="componentClass" value="org.geoserver.metadata.web.MetadataBulkOperationsPage"/>
+        <property name="category" ref="metadataCategory" />
+        <property name="authorizer" ref="metadataMenuAuthorizer"/>
+    </bean>
 
     <bean id="metadataEditTabPanel" class="org.geoserver.metadata.web.layer.MetadataTabPanelInfo">
         <property name="id" value="metadataEditTabPanel" />

@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -241,7 +240,7 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         assertEquals("asomething", cov.getMetadataList().get(0).getKey());
         assertEquals("anything", cov.getMetadataList().get(0).getMetadataElem().getText());
         assertEquals("adate", cov.getMetadataList().get(1).getKey());
-        assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("date") );
+        assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("date"));
         if (SUPPORTS_METADATA) {
             assertEquals("complex", cov.getMetadataList().get(2).getKey());
             assertNotNull(cov.getMetadataList().get(2).getMetadataElem().getChild("map"));

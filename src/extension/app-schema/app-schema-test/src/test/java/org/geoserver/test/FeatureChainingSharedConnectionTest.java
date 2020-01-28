@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
@@ -29,6 +30,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.PropertyIsLike;
 
@@ -87,13 +89,12 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         assertNotNull(guTypeInfo);
 
         FeatureSource fs = mfTypeInfo.getFeatureSource(new NullProgressListener(), null);
-        assertTrue(fs instanceof MappingFeatureSource);
-        MappingFeatureSource mfFs = (MappingFeatureSource) fs;
+        MappingFeatureSource mfFs = unwrap(fs);
+
         FeatureSource mfSourceFs = mfFs.getMapping().getSource();
 
         fs = guTypeInfo.getFeatureSource(new NullProgressListener(), null);
-        assertTrue(fs instanceof MappingFeatureSource);
-        MappingFeatureSource guFs = (MappingFeatureSource) fs;
+        MappingFeatureSource guFs = unwrap(fs);
         FeatureSource guSourceFs = guFs.getMapping().getSource();
 
         // The test only makes sense if we have a databae backend and joining is enabled
@@ -151,6 +152,19 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
         assertEquals(1, connListener.actionCountByDataStore.get(guSourceDataStore).borrowCount);
         assertEquals(1, connListener.actionCountByDataStore.get(guSourceDataStore).releaseCount);
         assertEquals(8, nestedFeaturesCount);
+    }
+
+    private MappingFeatureSource unwrap(FeatureSource fs) {
+        MappingFeatureSource mfFs;
+        if (fs instanceof DecoratingFeatureSource) {
+            mfFs =
+                    ((DecoratingFeatureSource<FeatureType, Feature>) fs)
+                            .unwrap(MappingFeatureSource.class);
+        } else {
+            assertTrue(fs instanceof MappingFeatureSource);
+            mfFs = (MappingFeatureSource) fs;
+        }
+        return mfFs;
     }
 
     private void testSharedConnectionRecursively(

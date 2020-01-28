@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
@@ -32,6 +33,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.PropertyIsEqualTo;
 
@@ -212,8 +214,14 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
         assertNotNull(typeInfo);
 
         FeatureSource fs = typeInfo.getFeatureSource(new NullProgressListener(), null);
-        assertTrue(fs instanceof MappingFeatureSource);
-        mappingFs = (MappingFeatureSource) fs;
+        if (fs instanceof DecoratingFeatureSource) {
+            mappingFs =
+                    ((DecoratingFeatureSource<FeatureType, Feature>) fs)
+                            .unwrap(MappingFeatureSource.class);
+        } else {
+            assertTrue(fs instanceof MappingFeatureSource);
+            mappingFs = (MappingFeatureSource) fs;
+        }
 
         FeatureSource sourceFs = mappingFs.getMapping().getSource();
 

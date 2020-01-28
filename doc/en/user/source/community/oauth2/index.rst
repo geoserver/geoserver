@@ -25,7 +25,7 @@ REST token template and resource details.
 
 Currently this module is shipped with a sample extension for Google OAuth2 Provider. This is a particular case since the 
 Google JWT response is not standard and therefore we had to define and inject also a ``GoogleUserAuthenticationConverter`` taking
-the Google REST response against a valid ``access_token`` and converting it to a OAuth2 standard one.
+the Google REST response against a valid ``access_token`` and converting it to an OAuth2 standard one.
 
 Other than this the most interesting part is the implementation of the base class ``GeoServerOAuth2SecurityConfiguration``.
 
@@ -84,7 +84,7 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
 
 #. Configure a new ``Web application``
 
-   * If it is the first time you create a ``OAuth Client ID``, you will be asked to create a new ``consent screen``
+   * If it is the first time you create an ``OAuth Client ID``, you will be asked to create a new ``consent screen``
    
         .. figure:: images/google_api_console008.png
            :align: center
@@ -111,8 +111,8 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
                   
                   However it is possible to add as many ``Authorized redirect URIs`` you need to a new ``Web application``. 
                   
-                  It is also possible create many ``Client credentials`` with customised ``consent screen`` and ``Web application``, depending on your specific needs.
-                  Every public GeoServer instance (or cluster of GeoServer belonging to a specific project) should have it's own specific ``Client credentials``.
+                  It is also possible to create many ``Client credentials`` with customised ``consent screen`` and ``Web application``, depending on your specific needs.
+                  Every public GeoServer instance (or cluster of GeoServer belonging to a specific project) should have its own specific ``Client credentials``.
        
         .. figure:: images/google_api_console011.png
            :align: center
@@ -125,7 +125,7 @@ The first thing to do is to configure the OAuth2 Provider and obtain ``Client ID
 #. Click on ``Create`` and take note of the ``Client ID`` and the ``Client Sectet``.
 
    At the end of the procedure Google will show-up a small dialog box with the ``Client ID`` and the ``Client Sectet``.
-   Those info can be always accessed and updated from the `Google API Console <https://console.developers.google.com/>`_
+   That info can be always accessed and updated from the `Google API Console <https://console.developers.google.com/>`_
    
     .. figure:: images/google_api_console013.png
        :align: center
@@ -184,7 +184,7 @@ Configure the GeoServer OAuth2 filter
     
             This option allows you to decide whether or not *force* automatic redirection to OAuth2 Access Token URI or not for authentication.
             
-            What does that means?
+            What does that mean?
             
             * *Enable Redirect Authentication EntryPoint* = True
             

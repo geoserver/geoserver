@@ -5,7 +5,7 @@ ArcSDE
 
 .. note:: ArcSDE support is not enabled by default and requires the ArcSDE extension to be installed prior to use.  Please see the section on :ref:`arcsde_install` for details.
 
-ESRI's `ArcSDE <http://www.esri.com/software/arcgis/arcsde/>`_ is a spatial engine that runs on top of a relational database such as Oracle or SQL Server.  GeoServer with the ArcSDE extension supports ArcSDE **versions 9.2 and 9.3**.  It has been tested with **Oracle 10g** and **Microsoft SQL Server 2000 Developer Edition**.  The ArcSDE extension is based on the GeoTools ArcSDE driver and uses the ESRI Java API libraries.  See the `GeoTools ArcSDE page <http://docs.geotools.org/latest/userguide/library/data/arcsde.html>`_ for more technical details.
+ESRI's `ArcSDE <http://www.esri.com/software/arcgis/arcsde/>`_ is a spatial engine that runs on top of a relational database such as Oracle or SQL Server.  GeoServer with the ArcSDE extension supports ArcSDE **versions 10.2 and 10.3**.  It has been tested with **Oracle 10g** and **Microsoft SQL Server 2000 Developer Edition**.  The ArcSDE extension is based on the GeoTools ArcSDE driver and uses the ESRI Java API libraries.  See the `GeoTools ArcSDE page <http://docs.geotools.org/latest/userguide/library/data/arcsde.html>`_ for more technical details.
 
 There are two types of ArcSDE data that can be added to GeoServer:  **vector** and **raster**.
 
@@ -47,18 +47,16 @@ Finally, ArcSDE supports raster catalogs.  A raster catalog is a mosaic of raste
 Installing the ArcSDE extension
 -------------------------------
 
-.. warning:: Due to licensing requirements, not all files are included with the extension.  To install ArcSDE support, it is necessary to download additional files.  **Just installing the ArcSDE extension will have no effect.**
+.. warning:: Due to licensing requirements, not all files are included with the extension.  To install ArcSDE support, it is necessary to install additional files from your ArcSDE Java SDK.  **Just installing the ArcSDE extension will have no effect.**
 
 GeoServer files
 ````````````````
 
-#. Download the ArcSDE extension from the `GeoServer download page 
-   <http://geoserver.org/download>`_.
+#. Download the extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
-   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of 
-   the GeoServer installation.
+#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 Required external files
 ````````````````````````
@@ -80,18 +78,6 @@ service pack, although client jar versions higher than the ArcSDE Server version
 
 These two files are available on your installation of the ArcSDE Java SDK from the ArcSDE installation media
 (usually ``C:\Program Files\ArcGIS\ArcSDE\lib``).
-They may also be available on ESRI's website if there's a service pack containing them, but this is not
-guaranteed. To download these files from ESRI's website:
-
-#. Navigate to `<http://support.esri.com/index.cfm?fa=downloads.patchesServicePacks.listPatches&PID=66>`_
-#. Find the link to the latest service pack for your version of ArcSDE
-#. Scroll down to :menuselection:`Installing this Service Pack --> ArcSDE SDK --> UNIX` (regardless of your target OS)
-#. Download any of the target files (but be sure to match 32/64 bit to your OS)
-#. Open the archive, and extract the appropriate JARs.
-
-.. note:: The JAR files may be in a nested archive inside this archive.
-
-.. note:: The :file:`icu4j##.jar` may also be on your ArcSDE Java SDK installation folder, but it is already included as part of the the GeoServer ArcSDE extension and is not necessary to install separately.
 
 #. When downloaded, copy the two files to the :file:`WEB-INF/lib` directory of the GeoServer installation.
 
@@ -105,7 +91,7 @@ In order to serve vector data layers, it is first necessary to register the ArcS
 
 .. note:: If ``ArcSDE`` is not an option in the **Feature Data Set Description** drop down box, the extension is not properly installed.  Please see the section on :ref:`arcsde_install`.
 
-.. figure:: images/arcsdevectorcreate.png
+.. figure:: arcsdevectorcreate.png
    :align: center
 
    *ArcSDE in the list of data sources*
@@ -116,7 +102,7 @@ Configuring an ArcSDE vector data store
 
 The next page contains configuration options for the ArcSDE vector data store.  Fill out the form, then click :guilabel:`Save`. 
    
-.. figure:: images/arcsdevectorconfigure.png
+.. figure:: arcsdevectorconfigure.png
    :align: center
 
    *Configuring a new ArcSDE data store*
@@ -200,7 +186,7 @@ Navigate to the **Add new store** page, accessed from the :ref:`data_webadmin_st
 
 .. note:: If ``ArcSDE Raster Format`` is not an option in the **Coverage Data Set Description** drop down box, the extension is not properly installed.  Please see the section on :ref:`arcsde_install`.
 
-.. figure:: images/arcsderastercreate.png
+.. figure:: arcsderastercreate.png
    :align: center
 
    *ArcSDE Raster in the list of data sources*
@@ -210,7 +196,7 @@ Configuring an ArcSDE raster coveragestore
 
 The next page contains configuration options for the ArcSDE instance.  Fill out the form, then click :guilabel:`Save`.
    
-.. figure:: images/arcsderasterconfigure.png
+.. figure:: arcsderasterconfigure.png
    :align: center
 
    *Configuring a new ArcSDE coveragestore*

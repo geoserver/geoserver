@@ -15,27 +15,9 @@ Files required:
    such as 92 for 9.2)
 2) jpe_sdk.jar (also known as jpe##_sdk.jar where ## is the version number,
    such as 92 for 9.2)
-3) icu4j_3_2.jar (only needed for ArcSDE 9.2 and newer)
 
-These files can be downloaded from ESRI's website or copied from the ArcSDE
-installation media.
-
-To download the JSDE/JPE JAR files from ESRI's website:
-
-1) Navigate to:
-   http://support.esri.com/index.cfm?fa=downloads.patchesServicePacks.listPatches&PID=66
-2) Find the link to the latest service pack for your version of ArcSDE
-3) Scroll down to "Installing this Service Pack" -> "ArcSDE SDK" -> "UNIX"
-   (regardless of your target OS)
-4) Download any of the target files (but be sure to match 32/64 bit to your OS)
-5) Open the archive, and extract the JARs.
-
-To download the icu4j JAR file:
-
-1) Navigate to:
-   ftp://ftp.software.ibm.com/software/globalization/icu/icu4j/3.2/
-2) Download the file icu4j_3_2.jar.
-
+These files are available on your installation of the ArcSDE Java SDK 
+from the ArcSDE installation media (usually C:\Program Files\ArcGIS\ArcSDE\lib). 
 
 INSTALLATION
 

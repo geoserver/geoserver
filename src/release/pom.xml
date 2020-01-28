@@ -95,16 +95,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-arcsde-common</artifactId>
-   <version>${gt.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-arcsde</artifactId>
-   <version>${gt.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-imagepyramid</artifactId>
    <version>${gt.version}</version>
   </dependency>
@@ -193,11 +183,6 @@
    <artifactId>gs-gdal</artifactId>
    <version>${project.version}</version>
   </dependency> 
-  <dependency>
-   <groupId>org.geoserver.extension</groupId>
-   <artifactId>gs-arcsde</artifactId>
-   <version>${project.version}</version>
-  </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
    <artifactId>gs-control-flow</artifactId>

@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -30,22 +31,21 @@ import org.w3c.dom.Document;
  * types, i.e. that is possible to create a layer with a name different from the App-Schema feature
  * type.
  */
-public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport {
+public final class LayersNamesAliasingTest extends AbstractAppSchemaTestSupport {
 
     // xpath engines used to check WFS responses
     private XpathEngine WFS11_XPATH_ENGINE;
     private XpathEngine WFS20_XPATH_ENGINE;
 
     private static Path testFolderPath;
-    private static Path mappingsFolderPath;
 
     @BeforeClass
     public static void prepare() throws IOException {
         testFolderPath = Files.createTempDirectory(Paths.get("target/test-classes"), "layernames");
         File srcDir = new File("target/test-classes/test-data/stations/layerNamesTest");
         File destDir = Paths.get(testFolderPath.toString(), "layerNamesTest").toFile();
+        destDir.deleteOnExit();
         FileUtils.copyDirectory(srcDir, destDir);
-        mappingsFolderPath = destDir.toPath();
     }
 
     @Before
@@ -71,7 +71,20 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
     @Override
     protected AliasStationsMockData createTestData() {
         // instantiate our custom complex types
-        return new AliasStationsMockData();
+        return new AliasStationsMockData() {
+            @Override
+            protected Optional<String> extraStationFeatures() {
+                String features =
+                        "\nst.2=st.2|station2|32154895|station2@stations.org|POINT(-1.0E-7 1.0E-7)";
+                return Optional.of(features);
+            }
+
+            @Override
+            protected Optional<String> extraMeasurementFeatures() {
+                String features = "\nms.3=ms.3|wind|km/h|st.2";
+                return Optional.of(features);
+            }
+        };
     }
 
     Map<String, String> getBaseNamespaces() {
@@ -109,7 +122,7 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                1,
+                2,
                 "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
     }
 
@@ -122,7 +135,7 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
-                1,
+                2,
                 "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
     }
 
@@ -157,7 +170,7 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                1,
+                2,
                 "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
     }
 
@@ -169,7 +182,7 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
-                1,
+                2,
                 "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
     }
 
@@ -195,6 +208,67 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
                 "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
     }
 
+    /**
+     * This test checks default layer CQL filter is executed on a WFS GetFeature request without an
+     * explicit query on the URL.
+     */
+    @Test
+    public void testDefaultCqlNameWfsGetFeature11() throws Exception {
+        try {
+            setCqlFilter(
+                    "st_gml31",
+                    "lyr_Station_gml31",
+                    "st_gml31:Station_gml31.st_gml31:name='station2'");
+            Document document =
+                    getAsDOM(
+                            "ows?service=wfs&request=GetFeature&version=1.1.0"
+                                    + "&typenames=st_gml31:lyr_Station_gml31");
+            // requested with lyr_Station_gml31, must returns Station:
+            checkCount(
+                    WFS11_XPATH_ENGINE,
+                    document,
+                    1,
+                    "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
+            checkCount(
+                    WFS11_XPATH_ENGINE,
+                    document,
+                    1,
+                    "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31[@gml:id='st.2']");
+        } finally {
+            cleanCqlFilter("st_gml31", "lyr_Station_gml31");
+        }
+    }
+
+    /**
+     * This test checks default layer CQL filter is executed on a WFS GetFeature request without an
+     * explicit query on the URL.
+     */
+    @Test
+    public void testDefaultCqlWfsGetFeature20() throws Exception {
+        try {
+            setCqlFilter(
+                    "st_gml32",
+                    "lyr_Station_gml32",
+                    "st_gml32:Station_gml32.st_gml32:name='station2'");
+            Document document =
+                    getAsDOM(
+                            "wfs?request=GetFeature&version=2.0.0"
+                                    + "&typeNames=st_gml32:lyr_Station_gml32");
+            checkCount(
+                    WFS20_XPATH_ENGINE,
+                    document,
+                    1,
+                    "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
+            checkCount(
+                    WFS20_XPATH_ENGINE,
+                    document,
+                    1,
+                    "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32[@gml:id='st.2']");
+        } finally {
+            cleanCqlFilter("st_gml32", "lyr_Station_gml32");
+        }
+    }
+
     private String resourceToString(String filename) throws IOException {
         return IOUtils.toString(
                 getClass()
@@ -215,5 +289,19 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath.", exception);
         }
+    }
+
+    private void setCqlFilter(String namespace, String layerName, String cql) {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo info = catalog.getFeatureTypeByName(namespace, layerName);
+        info.setCqlFilter(cql);
+        catalog.save(info);
+    }
+
+    private void cleanCqlFilter(String namespace, String layerName) {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo info = catalog.getFeatureTypeByName(namespace, layerName);
+        info.setCqlFilter(null);
+        catalog.save(info);
     }
 }

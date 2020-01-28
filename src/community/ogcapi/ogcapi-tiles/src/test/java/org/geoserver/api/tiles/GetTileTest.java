@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import javax.imageio.ImageIO;
 import no.ecc.vectortile.VectorTileDecoder;
 import org.apache.commons.io.FileUtils;
@@ -280,6 +281,43 @@ public class GetTileTest extends TilesTestSupport {
         File expectedFilteredFile =
                 new File("src/test/resources/org/geoserver/api/tiles/streams_filterd.png");
         ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
+    }
+
+    @Test
+    public void testEmtpyMVTTile() throws Exception {
+        String request =
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                        + getLayerId(MockData.ROAD_SEGMENTS)
+                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                        + "&CQL_FILTER=1=0&format="
+                        + MapBoxTileBuilderFactory.MIME_TYPE;
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, response.getContentType());
+        byte[] responseBytes = response.getContentAsByteArray();
+        VectorTileDecoder decoder = new VectorTileDecoder();
+        List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
+        assertEquals(0, featuresList.size());
+
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                                + MapBoxTileBuilderFactory.MIME_TYPE
+                                + "&filter=1=0&filter-lang=cql-text");
+        assertEquals(200, sr.getStatus());
+        assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
+
+        // check the headers
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a vector tile
+        VectorTileDecoder.FeatureIterable features =
+                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        // one road is before greenwich, not included in this tile
+        assertEquals(0, features.asList().size());
     }
 
     public void checkRoadGwcHeaders(String layerId, MockHttpServletResponse sr) {

@@ -90,7 +90,7 @@ public class ExternalResourceLoaderTest extends AbstractWicketMetadataTest {
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
         tester.startPage(page);
         ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
-                .setSelectedTab(3);
+                .setSelectedTab(4);
         tester.submitForm("publishedinfo");
         tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", MetadataPanel.class);
 

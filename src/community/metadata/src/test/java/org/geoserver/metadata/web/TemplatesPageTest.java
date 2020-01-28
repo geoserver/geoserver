@@ -32,9 +32,9 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
     @Before
     public void before() throws IOException {
+        login();
         // Make sure the catalog is loaded
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
-        login();
         new ResourceConfigurationPage(layer, false);
 
         // Load the page

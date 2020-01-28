@@ -24,6 +24,7 @@ import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,8 +32,14 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
 
     @Autowired private MetaDataRestService restService;
 
+    @Before
+    public void before() throws Exception {
+        login();
+    }
+
     @After
     public void after() throws Exception {
+        logout();
         restoreLayers();
     }
 

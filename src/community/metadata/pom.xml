@@ -90,6 +90,12 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.geoserver.csw</groupId>
+            <artifactId>gs-csw-iso</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

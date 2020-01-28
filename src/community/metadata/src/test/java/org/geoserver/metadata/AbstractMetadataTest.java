@@ -149,6 +149,15 @@ public abstract class AbstractMetadataTest {
                 .setAuthentication(new UsernamePasswordAuthenticationToken(username, password, l));
     }
 
+    /** Logs in as administrator. */
+    public void login() {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    }
+
+    public void logout() {
+        login("anonymousUser", "", "ROLE_ANONYMOUS");
+    }
+
     private static void unzip(InputStream fis, File target) throws IOException {
         ZipInputStream zis = new ZipInputStream(fis);
         try {

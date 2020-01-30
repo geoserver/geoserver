@@ -135,11 +135,12 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                2,
+                3,
                 "/wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
         // check that the expected stations and measurements are present
         checkStation1Gml31(document);
         checkStation2Gml31(document);
+        checkStation3Gml31(document);
     }
 
     @Test
@@ -156,12 +157,13 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
-                2,
+                3,
                 "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
 
         // check that the expected stations and measurements are present
         checkStation1Gml32(document);
         checkStation2Gml32(document);
+        checkStation3Gml32(document);
     }
 
     @Test
@@ -294,6 +296,31 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                         + "[ms_gml31:tag='pressure_tag']");
     }
 
+    /** Helper method that checks that station 3 is present in the provided document. */
+    private void checkStation3Gml31(Document document) {
+        String stationPath =
+                "/wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31[@gml:id='st.3']";
+        // check station exists
+        checkCount(WFS11_XPATH_ENGINE, document, 1, stationPath);
+        // check stations tags
+        checkCount(WFS11_XPATH_ENGINE, document, 0, stationPath + "/st_gml31:tag");
+        // check measurements
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                stationPath
+                        + "/st_gml31:measurements/ms_gml31:Measurement_gml31"
+                        + "[@gml:id='ms.4']");
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                0,
+                stationPath
+                        + "/st_gml31:measurements/ms_gml31:Measurement_gml31"
+                        + "[@gml:id='ms.4']/ms_gml31:tag");
+    }
+
     /** Helper method that checks that station 1 is present in the provided document. */
     private void checkStation1Gml32(Document document) {
         // check station exists
@@ -386,6 +413,31 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                         + "/st_gml32:measurements/ms_gml32:Measurement_gml32"
                         + "[@gml:id='ms.3']"
                         + "[ms_gml32:tag='pressure_tag']");
+    }
+
+    /** Helper method that checks that station 3 is present in the provided document. */
+    private void checkStation3Gml32(Document document) {
+        final String stationPath =
+                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32[@gml:id='st.3']";
+        // check station exists
+        checkCount(WFS20_XPATH_ENGINE, document, 1, stationPath);
+        // check stations tags
+        checkCount(WFS20_XPATH_ENGINE, document, 0, stationPath + "/st_gml32:tag");
+        // check measurements
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                stationPath
+                        + "/st_gml32:measurements/ms_gml32:Measurement_gml32"
+                        + "[@gml:id='ms.4']");
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                0,
+                stationPath
+                        + "/st_gml32:measurements/ms_gml32:Measurement_gml32"
+                        + "[@gml:id='ms.4']/ms_gml32:tag");
     }
 
     /**

@@ -162,7 +162,7 @@ Configure the GeoServer OAuth2 filter
     .. figure:: images/oauth2chain001.png
        :align: center
 
-    The default values provided with the plugin are valid for the Google OAuth2 Provider and are the following one:
+    The default values provided with the plugin are valid for the Google OAuth2 Provider and are the following:
     
     .. code-block:: shell
 
@@ -180,9 +180,9 @@ Configure the GeoServer OAuth2 filter
 	   
 	   #. Choose a ``Role Service`` able to recognize user emails as IDs. By default a connected user will have ``ROLE_USER`` role
        
-    .. warning:: Few words on **Enable Redirect Authentication EntryPoint** option
+    .. warning:: A few words on the **Enable Redirect Authentication EntryPoint** option
     
-            This option allows you to decide whether or not *force* automatic redirection to OAuth2 Access Token URI or not for authentication.
+            This option allows you to decide whether or not to *force* automatic redirection to OAuth2 Access Token URI or not for authentication.
             
             What does that mean?
             
@@ -198,7 +198,7 @@ Configure the GeoServer OAuth2 filter
                 
                 If not already authenticated (or no valid **Access Token** is provided in the query string), you **must** authenticate through the following URLs:
                 
-                #. *GeoServer OAuth2 Authorization Endpoint*; ``http://<host:port>/geoserver/j_spring_outh2_login``
+                #. *GeoServer OAuth2 Authorization Endpoint*; ``http://<host:port>/geoserver/j_spring_oauth2_login``
                 
                 #. *OAuth2 Provider Explicit User Authorization Endpoint*; this must be adapted for your specific OAuth2 Provider, the protocol stated that it should be 
                 
@@ -206,7 +206,7 @@ Configure the GeoServer OAuth2 filter
                     
                         https://<USER_AUTHORIZATION_URI>?scope=<SCOPES>&response_type=code&redirect_uri=<REDIRECT_URI>&client_id=<CLIENT_ID>
                 
-                    For google OAuth2 Provider is:
+                    For Google OAuth2 Provider is:
                     
                     ::
                     
@@ -238,7 +238,7 @@ Configure the GeoServer OAuth2 filter
    
    * ``default``
    
-   The order of the authentication filters depends basically on which method you would like GeoServer *try first*.
+   The order of the authentication filters depends basically on which method you would like GeoServer to *try first*.
    
    .. note:: During the authentication process, the authentication filters of a ``Filter Chain`` are executed serially until one succeed (for more details please see the section :ref:`security_auth_chain`)
    
@@ -296,7 +296,7 @@ where the client is supposed to have autonomously retrieved a valid bearer token
 SSL Trusted Certificates
 ------------------------
 
-When using a custom ``Keystore`` or trying to access a non-trusted or self-signed SSL-protected OAuth2 Provider from a non-SSH connection, you will need to add the certificated to the JVM ``Keystore``.
+When using a custom ``Keystore`` or trying to access a non-trusted or self-signed SSL-protected OAuth2 Provider from a non-SSH connection, you will need to add the certificates to the JVM ``Keystore``.
 
 In order to do this you can follow the next steps:
 

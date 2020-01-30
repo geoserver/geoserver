@@ -1489,6 +1489,69 @@ public class XStreamPersisterTest {
         assertThat(metadata, hasEntry("netcdf", null));
     }
 
+    @Test
+    public void testLegacyWMSLayerInfo() throws Exception {
+        // this test asserts that when expecting a legacy wmsLayer xml tag
+        // the converter kicks and sets the default values to ensure integrity
+        // and avoid mannually re-saving the layer from GUI
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<wmsLayer>\n"
+                        + "   <id>WMSLayerInfoImpl-622caab0:16ff63f5f7a:-7ffc</id>\n"
+                        + "   <name>states</name>\n"
+                        + "   <nativeName>topp:states</nativeName>\n"
+                        + "   <namespace>\n"
+                        + "      <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ffc</id>\n"
+                        + "   </namespace>\n"
+                        + "   <title>USA Population</title>\n"
+                        + "   <description>This is some census data on the states.</description>\n"
+                        + "   <abstract>This is some census data on the states.</abstract>\n"
+                        + "   <keywords>\n"
+                        + "      <string>census</string>\n"
+                        + "      <string>united</string>\n"
+                        + "      <string>boundaries</string>\n"
+                        + "      <string>state</string>\n"
+                        + "      <string>states</string>\n"
+                        + "   </keywords>\n"
+                        + "   <nativeCRS>GEOGCS[\"WGS 84\", &#xD;\n"
+                        + "  DATUM[\"World Geodetic System 1984\", &#xD;\n"
+                        + "    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], &#xD;\n"
+                        + "    AUTHORITY[\"EPSG\",\"6326\"]], &#xD;\n"
+                        + "  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], &#xD;\n"
+                        + "  UNIT[\"degree\", 0.017453292519943295], &#xD;\n"
+                        + "  AXIS[\"Geodetic longitude\", EAST], &#xD;\n"
+                        + "  AXIS[\"Geodetic latitude\", NORTH], &#xD;\n"
+                        + "  AUTHORITY[\"EPSG\",\"4326\"]]</nativeCRS>\n"
+                        + "   <srs>EPSG:4326</srs>\n"
+                        + "   <nativeBoundingBox>\n"
+                        + "      <minx>-124.73142200000001</minx>\n"
+                        + "      <maxx>-66.969849</maxx>\n"
+                        + "      <miny>24.955967</miny>\n"
+                        + "      <maxy>49.371735</maxy>\n"
+                        + "      <crs>EPSG:4326</crs>\n"
+                        + "   </nativeBoundingBox>\n"
+                        + "   <latLonBoundingBox>\n"
+                        + "      <minx>-124.731422</minx>\n"
+                        + "      <maxx>-66.969849</maxx>\n"
+                        + "      <miny>24.955967</miny>\n"
+                        + "      <maxy>49.371735</maxy>\n"
+                        + "      <crs>EPSG:4326</crs>\n"
+                        + "   </latLonBoundingBox>\n"
+                        + "   <projectionPolicy>FORCE_DECLARED</projectionPolicy>\n"
+                        + "   <enabled>true</enabled>\n"
+                        + "   <store class=\"wmsStore\">\n"
+                        + "      <id>WMSStoreInfoImpl-622caab0:16ff63f5f7a:-7fff</id>\n"
+                        + "   </store>\n"
+                        + "   <serviceConfiguration>false</serviceConfiguration>\n"
+                        + "</wmsLayer>";
+
+        WMSLayerInfo wmsLayerInfo =
+                persister.load(new ByteArrayInputStream(xml.getBytes()), WMSLayerInfo.class);
+
+        assertTrue(wmsLayerInfo.getPreferredFormat().equalsIgnoreCase("image/png"));
+        assertTrue(wmsLayerInfo.getForcedRemoteStyle().isEmpty());
+    }
+
     ByteArrayOutputStream out() {
         return new ByteArrayOutputStream();
     }

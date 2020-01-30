@@ -523,6 +523,7 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
+        xs.registerConverter(new WMSLayerInfoLegacyConverter());
         // this should have been a metadata map too, but was not registered as such and got a plain
         // map converter. Switched to SettingsTolerantMapConverter to make it work when plugins get
         // removed and leave configuration that cannot be parsed anymore in there
@@ -2527,6 +2528,29 @@ public class XStreamPersister {
                 }
             }
             return obj.toString();
+        }
+    }
+
+    /** Converter for WMSLayerInfoImpl class ensure backwards compatibility with old directories */
+    class WMSLayerInfoLegacyConverter extends AbstractCatalogInfoConverter {
+
+        public WMSLayerInfoLegacyConverter() {
+            super(WMSLayerInfoImpl.class);
+        }
+
+        public Object doUnmarshal(
+                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+            WMSLayerInfoImpl obj = (WMSLayerInfoImpl) super.doUnmarshal(result, reader, context);
+            // setting the minimal defaults and clean object with no NULL values
+            if (obj.getPreferredFormat() == null) {
+                obj.setPreferredFormat(WMSLayerInfoImpl.DEFAULT_FORMAT);
+                obj.setSelectedRemoteFormats(new ArrayList<String>());
+            }
+            if (obj.getForcedRemoteStyle() == null) {
+                obj.setForcedRemoteStyle(WMSLayerInfoImpl.DEFAULT_ON_REMOTE.getName());
+                obj.setSelectedRemoteStyles(new ArrayList<String>());
+            }
+            return obj;
         }
     }
 }

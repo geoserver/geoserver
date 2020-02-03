@@ -1,6 +1,7 @@
 cache:
   directories:
     - "$HOME/.m2"
+    - downloads
 language: java
 before_install:
   - rm ~/.m2/settings.xml
@@ -8,13 +9,32 @@ before_install:
 env:
   global:
     - MAVEN_OPTS=-Xmx512m
+    - MAVEN_VERSION=3.6.3
+    - TAKARI_SMART_BUILDER_VERSION=0.6.1
+before_script:
+  - mkdir -p downloads
+  - export MAVEN_ZIP=apache-maven-$MAVEN_VERSION-bin.zip
+  - |
+    if [ ! -f downloads/$MAVEN_ZIP ]; then
+      wget -P downloads https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/$MAVEN_ZIP
+    fi
+  - export SMART_JAR=takari-smart-builder-$TAKARI_SMART_BUILDER_VERSION.jar
+  - |
+    if [ ! -f downloads/$SMART_JAR ]; then
+      wget -P downloads https://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/$TAKARI_SMART_BUILDER_VERSION/$SMART_JAR
+    fi
+  - unzip downloads/$MAVEN_ZIP
+  - export M2_HOME=$PWD/apache-maven-$MAVEN_VERSION
+  - cp downloads/$SMART_JAR $M2_HOME/lib/ext
+  - export PATH=$M2_HOME/bin:$PATH
+  - mvn --version
 install:
   - if [ "$ACTION" == "docs" ]; then sudo pip install sphinx requests; fi
 script:
-  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install $COMMUNITY_ARGS; fi
+  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease --builder smart clean install $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease --builder smart  clean install $COMMUNITY_ARGS; fi
   - if [ "$ACTION" == "build" ]; then grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50; fi
   - if [ "$ACTION" == "docs" ]; then mvn -f doc/en install; fi
-  - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:attached -nsu; mvn -f src/community/pom.xml assembly:attached -nsu; fi
+  - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae --builder smart -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:attached -nsu; mvn -f src/community/pom.xml assembly:attached -nsu; fi
 before-caching:
   - rm -rf $HOME/.m2/repository/org/geotools
   - rm -rf $HOME/.m2/repository/org/geowebcache

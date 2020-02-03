@@ -249,6 +249,23 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
                                 + "?service=WMS&version=1.1.1&request=GetMap&layers=world4326"
                                 + "&styles&bbox=-180.0,-90.0,180.0,90.0&srs=EPSG:4326&bgcolor=0xFFFFFF&transparent=FALSE&format=image/png&width=180&height=90"),
                 new MockHttpResponse(pngImage, "image/png"));
+        // setting up mock get feature info response
+        URL featureInfo = WMSTestSupport.class.getResource("wms-features.xml");
+        wms11Client.expectGet(
+                new URL(
+                        wms11BaseURL
+                                + "?Y=50&X=50"
+                                + "&SERVICE=WMS"
+                                + "&INFO_FORMAT=application/vnd.ogc.gml"
+                                + "&LAYERS=world4326"
+                                + "&FEATURE_COUNT=50"
+                                + "&FORMAT=image%2Fpng"
+                                + "&HEIGHT=101&TRANSPARENT=TRUE"
+                                + "&REQUEST=GetFeatureInfo"
+                                + "&WIDTH=101"
+                                + "&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679"
+                                + "&STYLES=&SRS=EPSG:4326&QUERY_LAYERS=world4326&VERSION=1.1.1"),
+                new MockHttpResponse(featureInfo, "application/vnd.ogc.gml"));
 
         String caps = wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
         TestHttpClientProvider.bind(wms11Client, caps);

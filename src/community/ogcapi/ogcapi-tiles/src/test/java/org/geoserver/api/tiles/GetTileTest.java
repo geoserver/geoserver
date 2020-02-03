@@ -6,18 +6,23 @@ package org.geoserver.api.tiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import javax.imageio.ImageIO;
 import no.ecc.vectortile.VectorTileDecoder;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
+import org.geotools.image.test.ImageAssert;
 import org.geowebcache.mime.ApplicationMime;
 import org.junit.Before;
 import org.junit.Test;
@@ -208,14 +213,111 @@ public class GetTileTest extends TilesTestSupport {
                 getAsServletResponse(
                         "ogc/tiles/collections/"
                                 + layerId
-                                + "/map/RoadSegments/tiles/EPSG:900913/EPSG:900913:10/511/512?f=image/png8");
+                                + "/map/RoadSegments/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png8");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
-        checkRoadGwcHeaders(layerId, sr);
 
         // check it can actually be read as a PNG
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(sr.getContentAsByteArray()));
         assertNotBlank("testPng8Tile", image, null);
+
+        // check it looks as expected, with the roads actually filtered
+        File expectedFile = new File("src/test/resources/org/geoserver/api/tiles/rs_full.png");
+        ImageAssert.assertEquals(expectedFile, image, 100);
+    }
+
+    @Test
+    public void testCacheableFilteredPNGTile() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        String request =
+                "ogc/tiles/collections/"
+                        + layerId
+                        + "/map/RoadSegments/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png"
+                        + "&filter=NAME='Route 5'&filter-lang=cql-text";
+        MockHttpServletResponse sr = getAsServletResponse(request);
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+
+        // first time miss, no reason
+        assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
+        assertNull(sr.getHeader("geowebcache-miss-reason"));
+
+        // run again, this time it should be a hit
+        sr = getAsServletResponse(request);
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+        assertEquals("HIT", sr.getHeader("geowebcache-cache-result"));
+
+        // check it can be read as a png image
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(sr.getContentAsByteArray()));
+        assertNotBlank("testPng8Tile", image, null);
+
+        // check it looks as expected, with the roads actually filtered
+        File expectedFile = new File("src/test/resources/org/geoserver/api/tiles/rs_filtered.png");
+        ImageAssert.assertEquals(expectedFile, image, 100);
+    }
+
+    @Test
+    public void testNonCacheableFilteredPNGTile() throws Exception {
+        String layerId = getLayerId(MockData.STREAMS);
+        String request =
+                "ogc/tiles/collections/"
+                        + layerId
+                        + "/map/Streams/tiles/EPSG:900913/EPSG:900913:15/16384/16384?f=image/png";
+        RenderedImage fullImage = getAsImage(request, "image/png");
+        File expectedFile = new File("src/test/resources/org/geoserver/api/tiles/streams_full.png");
+        ImageAssert.assertEquals(expectedFile, fullImage, 100);
+
+        MockHttpServletResponse resp =
+                getAsServletResponse(request + "&filter=NAME='Cam Stream'&filter-lang=cql-text");
+        assertEquals("image/png", resp.getContentType());
+        assertEquals("MISS", resp.getHeader("geowebcache-cache-result"));
+        assertEquals(
+                "CQL_FILTER filter parameter not cached or not condition not matched",
+                resp.getHeader("geowebcache-miss-reason"));
+
+        InputStream is = getBinaryInputStream(resp);
+        RenderedImage filteredImage = ImageIO.read(is);
+        File expectedFilteredFile =
+                new File("src/test/resources/org/geoserver/api/tiles/streams_filterd.png");
+        ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
+    }
+
+    @Test
+    public void testEmtpyMVTTile() throws Exception {
+        String request =
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                        + getLayerId(MockData.ROAD_SEGMENTS)
+                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                        + "&CQL_FILTER=1=0&format="
+                        + MapBoxTileBuilderFactory.MIME_TYPE;
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, response.getContentType());
+        byte[] responseBytes = response.getContentAsByteArray();
+        VectorTileDecoder decoder = new VectorTileDecoder();
+        List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
+        assertEquals(0, featuresList.size());
+
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                                + MapBoxTileBuilderFactory.MIME_TYPE
+                                + "&filter=1=0&filter-lang=cql-text");
+        assertEquals(200, sr.getStatus());
+        assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
+
+        // check the headers
+        checkRoadGwcHeaders(layerId, sr);
+
+        // check it can actually be read as a vector tile
+        VectorTileDecoder.FeatureIterable features =
+                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        // one road is before greenwich, not included in this tile
+        assertEquals(0, features.asList().size());
     }
 
     public void checkRoadGwcHeaders(String layerId, MockHttpServletResponse sr) {

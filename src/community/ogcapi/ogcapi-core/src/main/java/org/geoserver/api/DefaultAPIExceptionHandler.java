@@ -101,7 +101,7 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
 
     private String getDescription(GeoServerInfo geoServer, Throwable t) {
         StringBuffer sb = new StringBuffer();
-        OwsUtils.dumpExceptionMessages(t, sb, true);
+        OwsUtils.dumpExceptionMessages(t, sb, false);
 
         if (geoServer.getSettings().isVerboseExceptions()) {
             ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();

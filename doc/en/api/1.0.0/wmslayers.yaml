@@ -188,9 +188,62 @@ paths:
                   <name>cite:altgs</name>
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.xml" type="application/xml"/>
                 </store>
+                <forcedRemoteStyle>dem_style</forcedRemoteStyle>
+                <preferredFormat>image/png</preferredFormat>
+                <selectedRemoteFormats>
+                   <string>image/png</string>
+                   <string>image/jpeg</string>
+                   <string>image/tiff</string>
+                   <string>image/gif</string>
+                   <string>image/geotiff</string>
+                   <string>image/png8</string>
+                   <string>image/tiff8</string>
+                   <string>image/geotiff8</string>
+                </selectedRemoteFormats>
+                <selectedRemoteStyles>
+                   <string>dem_style</string>
+                   <string>another_dem_style</string>
+                </selectedRemoteStyles>
+                <minScale>1000000.0</minScale>
+                <maxScale>1.0E7</maxScale>
+                <metadataBBoxRespected>false</metadataBBoxRespected>
+                <allAvailableRemoteStyles>
+                   <style>
+                      <name>another_dem_style</name>
+                      <format>sld</format>
+                      <languageVersion>
+                         <version>1.0.0</version>
+                      </languageVersion>
+                      <legend>
+                         <width>20</width>
+                         <height>20</height>
+                         <format>image/png</format>
+                         <onlineResource>https://remote.wms.server/geoserver/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Astates&amp;style=another_dem_style</onlineResource>
+                      </legend>
+                      <metadata>
+                         <entry key="isRemote">true</entry>
+                      </metadata>
+                   </style>
+                   <style>
+                      <name>dem_style</name>
+                      <format>sld</format>
+                      <languageVersion>
+                         <version>1.0.0</version>
+                      </languageVersion>
+                      <legend>
+                         <width>20</width>
+                         <height>20</height>
+                         <format>image/png</format>
+                         <onlineResource>https://remote.wms.server/geoserver/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Astates&amp;style=dem_style</onlineResource>
+                      </legend>
+                      <metadata>
+                         <entry key="isRemote">true</entry>
+                      </metadata>
+                   </style>
+                </allAvailableRemoteStyles>
               </wmsLayer>
             application/json: |
-              {"wmsLayer":{"name":"dem","nativeName":"usgs:dem","namespace":{"name":"cite","href":"http://localhost:8080/geoserver/rest/namespaces/cite.json"},"title":"Digital elevation model","description":"USGS GTOPO30 digital elevation model","abstract":"USGS GTOPO30 digital elevation model","keywords":{"string":["WCS","GeoTIFF","W100N40"]},"nativeCRS":"GEOGCS[\"WGS 84\", \r\n  DATUM[\"World Geodetic System 1984\", \r\n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \r\n    AUTHORITY[\"EPSG\",\"6326\"]], \r\n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n  UNIT[\"degree\", 0.017453292519943295], \r\n  AXIS[\"Geodetic longitude\", EAST], \r\n  AXIS[\"Geodetic latitude\", NORTH], \r\n  AUTHORITY[\"EPSG\",\"4326\"]]","srs":"EPSG:4326","nativeBoundingBox":{"minx":-100,"maxx":-60.000000000015994,"miny":-9.999999999980012,"maxy":39.99999999999999,"crs":"EPSG:4326"},"latLonBoundingBox":{"minx":-100,"maxx":-60.000000000015994,"miny":-9.999999999980012,"maxy":39.99999999999999,"crs":"EPSG:4326"},"projectionPolicy":"FORCE_DECLARED","enabled":true,"metadata":{"entry":{"@key":"cachingEnabled","$":"false"}},"store":{"@class":"wmsStore","name":"cite:altgs","href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.json"}}}
+              {"wmsLayer":{"name":"dem","nativeName":"usgs:dem","namespace":{"name":"cite","href":"http://localhost:8080/geoserver/rest/namespaces/cite.json"},"title":"Digital elevation model","description":"USGS GTOPO30 digital elevation model","abstract":"USGS GTOPO30 digital elevation model","keywords":{"string":["WCS","GeoTIFF","W100N40"]},"nativeCRS":"GEOGCS[\"WGS 84\", \r\n  DATUM[\"World Geodetic System 1984\", \r\n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \r\n    AUTHORITY[\"EPSG\",\"6326\"]], \r\n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n  UNIT[\"degree\", 0.017453292519943295], \r\n  AXIS[\"Geodetic longitude\", EAST], \r\n  AXIS[\"Geodetic latitude\", NORTH], \r\n  AUTHORITY[\"EPSG\",\"4326\"]]","srs":"EPSG:4326","nativeBoundingBox":{"minx":-100,"maxx":-60,"miny":-10,"maxy":40,"crs":"EPSG:4326"},"latLonBoundingBox":{"minx":-100,"maxx":-60,"miny":-10,"maxy":40,"crs":"EPSG:4326"},"projectionPolicy":"FORCE_DECLARED","enabled":true,"metadata":{"entry":{"@key":"cachingEnabled","$":"false"}},"store":{"@class":"wmsStore","name":"cite:altgs","href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.json"},"forcedRemoteStyle":"polygon","preferredFormat":"image/png","selectedRemoteFormats":{"string":["image/png","image/png; mode=8bit","image/vnd.jpeg-png","image/jpeg","image/tiff","image/gif","image/geotiff","image/gif;subtype=animated","image/png8","image/tiff8","image/geotiff8"]},"selectedRemoteStyles":{"string":["pophatch","population-region","polygon","population"]},"minScale":1000000,"maxScale":1.0E7,"metadataBBoxRespected":false,"allAvailableRemoteStyles":{"style":[{"name":"population-region","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates&style=population-region"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}},{"name":"polygon","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates&style=polygon"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}},{"name":"population","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}},{"name":"pophatch","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates&style=pophatch"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}}]}}}
 
     post:
       operationId: postWMSStoreLayer
@@ -727,6 +780,36 @@ definitions:
           href:
             type: string
             description: URL to the data store
+      forcedRemoteStyle:
+        type: string
+        description: Remote style to be used in remote GetMap request.
+      selectedRemoteFormats:
+        type: array
+        description: Additional list of image formats supported by remote WMS Server.
+        items:
+          type: string
+      preferredFormat:
+        type: string
+        description: Output image format to be used in remote GetMap request
+      selectedRemoteStyles:
+        type: array
+        description: Additional list of remote styles that can be used to remote GetMap requests.
+        items:
+          type: string
+      allAvailableRemoteStyles:
+        type: array
+        description: List of complete style info objects that contain name, sld format and GetLegendRequests.
+        items:
+          $ref: '#/definitions/StyleInfo'
+      minScale:
+        type: number
+        description: minimum scale denominator, works like Scale denomintors in SLD.
+      maxScale:
+        type: number
+        description: maximum scale denominator, works like Scale denomintors in SLD.
+      metadataBBoxRespected:
+        type: boolean
+        description: An optimization that skips remote GetMap requests if requested Map is outside advertised bounds.
 
   MetadataEntry:
       type: object
@@ -747,3 +830,38 @@ definitions:
         text:
           type: string
           description: Value of given key
+
+  StyleInfo:
+      type: object
+      title: style
+      properties:
+        name:
+          type: string
+          description: Name of remote style
+        format:
+          type: string
+          description: format of style
+          example: "sld"
+        languageVersion:
+          type: object
+          properties:
+            version:
+              type: string
+              description: versioon of format
+              example: "1.0.0"
+        legend:
+          type: object
+          properties:
+            width:
+              type: number
+              description: width of remote legend graphic              
+            height:
+              type: number
+              description: height of remote legend graphics              
+            format:
+              type: string
+              description: image format of legend graphic
+              example: "image/png"
+            onlineResource:
+              type: string
+              description: GetLegendGraphic request URL

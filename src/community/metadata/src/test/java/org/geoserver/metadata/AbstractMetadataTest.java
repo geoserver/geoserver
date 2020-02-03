@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.wicket.util.file.File;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
@@ -148,6 +149,15 @@ public abstract class AbstractMetadataTest {
                 .setAuthentication(new UsernamePasswordAuthenticationToken(username, password, l));
     }
 
+    /** Logs in as administrator. */
+    public void login() {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    }
+
+    public void logout() {
+        login("anonymousUser", "", "ROLE_ANONYMOUS");
+    }
+
     private static void unzip(InputStream fis, File target) throws IOException {
         ZipInputStream zis = new ZipInputStream(fis);
         try {
@@ -189,6 +199,7 @@ public abstract class AbstractMetadataTest {
     }
 
     protected void restoreLayers() throws Exception {
+        FileUtils.cleanDirectory(new File(DATA_DIRECTORY.getDataDirectoryRoot(), "workspaces"));
         // All files for the layer
         unzip(
                 AbstractMetadataTest.class.getResourceAsStream("myLayer.zip"),

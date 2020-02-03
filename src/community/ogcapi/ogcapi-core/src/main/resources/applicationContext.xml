@@ -54,4 +54,6 @@
     </property>
   </bean>
   
+  <bean id="apiFilterParser" class="org.geoserver.api.APIFilterParser"/>
+  
 </beans>

@@ -13,7 +13,7 @@ import java.nio.channels.Channels;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,18 +23,26 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
+import org.geoserver.api.APIFilterParser;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.APIService;
 import org.geoserver.api.ConformanceDocument;
 import org.geoserver.api.HTMLResponseBody;
+import org.geoserver.api.InvalidParameterValueException;
 import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.api.QueryablesDocument;
+import org.geoserver.api.ResourceNotFoundException;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.wms.WMS;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.ConveyorTile;
+import org.geowebcache.filter.parameters.ParameterException;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
@@ -43,6 +51,8 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
+import org.geowebcache.storage.TileObject;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +62,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(
@@ -73,12 +84,19 @@ public class TilesService {
     private final GWC gwc;
     private final WMS wms;
     private final StorageBroker storageBroker;
+    private final APIFilterParser filterParser;
 
-    public TilesService(GeoServer geoServer, WMS wms, GWC gwc, StorageBroker storageBroker) {
+    public TilesService(
+            GeoServer geoServer,
+            WMS wms,
+            GWC gwc,
+            StorageBroker storageBroker,
+            APIFilterParser filterParser) {
         this.geoServer = geoServer;
         this.gwc = gwc;
         this.wms = wms;
         this.storageBroker = storageBroker;
+        this.filterParser = filterParser;
     }
 
     @GetMapping(name = "getLandingPage")
@@ -131,10 +149,8 @@ public class TilesService {
             @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId) {
         GridSet gridSet = gwc.getGridSetBroker().get(tileMatrixSetId);
         if (gridSet == null) {
-            throw new APIException(
-                    "NotFound",
-                    "Tile matrix set " + tileMatrixSetId + " not recognized",
-                    HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(
+                    "Tile matrix set " + tileMatrixSetId + " not recognized");
         }
         return new TileMatrixSetDocument(gridSet, false);
     }
@@ -172,11 +188,8 @@ public class TilesService {
         try {
             return gwc.getTileLayerByName(collectionId);
         } catch (IllegalArgumentException e) {
-            throw new APIException(
-                    "InvalidParameter",
-                    "Tiled collection " + collectionId + " not found",
-                    HttpStatus.NOT_FOUND,
-                    e);
+            throw new ResourceNotFoundException(
+                    "Tiled collection " + collectionId + " not found", e);
         }
     }
 
@@ -203,10 +216,20 @@ public class TilesService {
             @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
             @PathVariable(name = "tileMatrix") String tileMatrix,
             @PathVariable(name = "tileRow") long tileRow,
-            @PathVariable(name = "tileCol") long tileCol)
+            @PathVariable(name = "tileCol") long tileCol,
+            @RequestParam(name = "filter", required = false) String filter,
+            @RequestParam(name = "filter-lang", required = false) String filterLanguage)
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException {
         return getTileInternal(
-                collectionId, tileMatrixSetId, tileMatrix, tileRow, tileCol, null, false);
+                collectionId,
+                tileMatrixSetId,
+                tileMatrix,
+                tileRow,
+                tileCol,
+                null,
+                filter,
+                filterLanguage,
+                false);
     }
 
     @GetMapping(
@@ -221,10 +244,20 @@ public class TilesService {
             @PathVariable(name = "tileMatrix") String tileMatrix,
             @PathVariable(name = "tileRow") long tileRow,
             @PathVariable(name = "tileCol") long tileCol,
-            @PathVariable(name = "styleId") String styleId)
+            @PathVariable(name = "styleId") String styleId,
+            @RequestParam(name = "filter", required = false) String filter,
+            @RequestParam(name = "filter-lang", required = false) String filterLanguage)
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException {
         return getTileInternal(
-                collectionId, tileMatrixSetId, tileMatrix, tileRow, tileCol, styleId, true);
+                collectionId,
+                tileMatrixSetId,
+                tileMatrix,
+                tileRow,
+                tileCol,
+                styleId,
+                filter,
+                filterLanguage,
+                true);
     }
 
     ResponseEntity<byte[]> getTileInternal(
@@ -234,6 +267,8 @@ public class TilesService {
             long tileRow,
             long tileCol,
             String styleId,
+            String filterSpec,
+            String filterLanguage,
             boolean renderedTile)
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException {
         // run the request
@@ -249,6 +284,8 @@ public class TilesService {
                 tileLayer instanceof GeoServerTileLayer
                         ? ((GeoServerTileLayer) tileLayer).getContextualName()
                         : tileLayer.getName();
+        Filter filter = filterParser.parse(filterSpec, filterLanguage);
+        String cqlSpecification = toCQLSpecification(tileLayer, filter);
         ConveyorTile tile =
                 new ConveyorTile(
                         storageBroker,
@@ -256,15 +293,32 @@ public class TilesService {
                         tileMatrixSetId,
                         tileIndex,
                         requestedFormat,
-                        filterParameters(styleId),
+                        filterParameters(styleId, cqlSpecification),
                         null,
                         null);
-        tile = tileLayer.getTile(tile);
+        boolean tileIsCacheable = filterSpec == null || supportsCQLFilter(tileLayer, filterSpec);
+        if (tileIsCacheable) {
+            tile = tileLayer.getTile(tile);
+        } else {
+            if (!(tileLayer instanceof GeoServerTileLayer)) {
+                throw new InvalidParameterValueException("Filter is not supported on this layer");
+            }
+            // if geoserver tile layer, run the filter with no meta tiling, otherwise throw an
+            // exception
+            VolatileGeoServerTileLayer volatileLayer =
+                    new VolatileGeoServerTileLayer((GeoServerTileLayer) tileLayer);
+            volatileLayer.getTile(tile);
+            TileObject so = tile.getStorageObject();
+            if (so != null) {
+                so.setCreated(System.currentTimeMillis());
+            }
+        }
+
         if (tile == null) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("geowebcache-cache-result", MISS.toString());
             headers.add("geowebcache-miss-reason", "unknown");
-            ResponseEntity response = new ResponseEntity(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity(headers, HttpStatus.NOT_FOUND);
         }
 
         final byte[] tileBytes;
@@ -282,8 +336,7 @@ public class TilesService {
         // Handle Etags
         HttpServletRequest httpRequest = APIRequestInfo.get().getRequest();
         final String ifNoneMatch = httpRequest.getHeader("If-None-Match");
-        final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
-        final String etag = GWC.getETag(tileBytes);
+        final String etag = getETag(tileBytes);
         if (etag.equals(ifNoneMatch)) {
             // Client already has the current version
             LOGGER.finer("ETag matches, returning 304");
@@ -304,6 +357,12 @@ public class TilesService {
                 tileLayer instanceof GeoServerTileLayer
                         ? ((GeoServerTileLayer) tileLayer).getContextualName()
                         : tileLayer.getName());
+        if (filterSpec != null && !tileIsCacheable) {
+            tmpHeaders.put("geowebcache-cache-result", MISS.toString());
+            tmpHeaders.put(
+                    "geowebcache-miss-reason",
+                    "CQL_FILTER filter parameter not cached or not condition not matched");
+        }
         HttpHeaders headers = new HttpHeaders();
         tmpHeaders.forEach((k, v) -> headers.add(k, v));
         // content type and disposition
@@ -313,6 +372,46 @@ public class TilesService {
                 getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
 
         return new ResponseEntity(tileBytes, headers, HttpStatus.OK);
+    }
+
+    private String getETag(byte[] tileBytes) throws NoSuchAlgorithmException {
+        if (tileBytes == null) {
+            return "EMPTY_TILE";
+        }
+        final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
+        return GWC.getETag(tileBytes);
+    }
+
+    private String toCQLSpecification(TileLayer tileLayer, Filter filter) {
+        if (filter == null) {
+            return null;
+        }
+        // we might use the exact filter provided in input, but it should round trip ok
+        // and makes it easier to support multiple filter languages in the future
+        String cqlSpec = ECQL.toCQL(filter);
+        return tileLayer
+                .getParameterFilters()
+                .stream()
+                .filter(pf -> pf.getKey().equalsIgnoreCase("CQL_FILTER") && pf.applies((cqlSpec)))
+                .map(
+                        pf -> {
+                            try {
+                                return pf.apply(cqlSpec);
+                            } catch (ParameterException e) {
+                                throw new RuntimeException(
+                                        "Tested before if it was applicable, this exception should not happen",
+                                        e);
+                            }
+                        })
+                .findFirst()
+                .orElse(cqlSpec);
+    }
+
+    private boolean supportsCQLFilter(TileLayer tileLayer, String cqlSpec) {
+        return tileLayer
+                .getParameterFilters()
+                .stream()
+                .anyMatch(pf -> pf.getKey().equalsIgnoreCase("CQL_FILTER") && pf.applies(cqlSpec));
     }
 
     public static void validateStyle(TileLayer tileLayer, String styleId) {
@@ -328,11 +427,9 @@ public class TilesService {
                         .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
                         .findFirst();
         if (!styles.isPresent() && !styles.get().applies(styleId)) {
-            throw new APIException(
-                    "InvalidParameterValue",
+            throw new InvalidParameterValueException(
                     "Invalid style name, please check the collection description for valid style names: "
-                            + tileLayer.getStyles(),
-                    HttpStatus.BAD_REQUEST);
+                            + tileLayer.getStyles());
         }
     }
 
@@ -346,19 +443,21 @@ public class TilesService {
     public static GridSubset getGridSubset(TileLayer tileLayer, String tileMatrixSetId) {
         GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixSetId);
         if (gridSubset == null) {
-            throw new APIException(
-                    "InvalidParameterValue",
-                    "Invalid tileMatrixSetId " + tileMatrixSetId,
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterValueException("Invalid tileMatrixSetId " + tileMatrixSetId);
         }
 
         return gridSubset;
     }
 
-    private Map<String, String> filterParameters(String styleId) {
-        return styleId != null
-                ? Collections.singletonMap("styles", styleId)
-                : Collections.emptyMap();
+    private Map<String, String> filterParameters(String styleId, String cqlSpec) {
+        Map<String, String> params = new HashMap<>();
+        if (styleId != null) {
+            params.put("styles", styleId);
+        }
+        if (cqlSpec != null) {
+            params.put("cql_filter", cqlSpec);
+        }
+        return params;
     }
 
     public String getTileFileName(
@@ -390,18 +489,12 @@ public class TilesService {
             TileLayer tileLayer) {
         GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixSetId);
         if (gridSubset == null) {
-            throw new APIException(
-                    "InvalidParameterValue",
-                    "Invalid tileMatrixSetId " + tileMatrixSetId,
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterValueException("Invalid tileMatrixSetId " + tileMatrixSetId);
         }
         long z = gridSubset.getGridIndex(tileMatrix);
 
         if (z < 0) {
-            throw new APIException(
-                    "InvalidParameterValue",
-                    "Unknown tileMatrix " + tileMatrix,
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterValueException("Unknown tileMatrix " + tileMatrix);
         }
         final long tilesHigh = gridSubset.getNumTilesHigh((int) z);
         long y = tilesHigh - tileRow - 1;
@@ -445,12 +538,10 @@ public class TilesService {
                                         (a, b) -> a,
                                         LinkedHashMap::new));
         if (layerTypes.isEmpty()) {
-            throw new APIException(
-                    "InvalidParameterValue",
+            throw new InvalidParameterValueException(
                     "The layer does not seem to have any cached format suitable for "
                             + "this type of resource, check the resource is listed "
-                            + "among the tiled collection links",
-                    HttpStatus.BAD_REQUEST);
+                            + "among the tiled collection links");
         }
 
         if (requestedTypes == null || requestedTypes.isEmpty()) {
@@ -473,5 +564,37 @@ public class TilesService {
                 "InvalidParameter",
                 "Could not find a tile media type matching the requested resource (either invalid format, or not supported on this resource)",
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path = "collections/{collectionId}/queryables", name = "getQueryables")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
+    public QueryablesDocument queryables(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        if (!supportsFiltering(tileLayer)) {
+            throw new ResourceNotFoundException(
+                    "Collection '"
+                            + collectionId
+                            + "' cannot be filtered, no queryables available");
+        }
+
+        return new QueryablesDocument(
+                (FeatureTypeInfo)
+                        ((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo())
+                                .getResource());
+    }
+
+    /**
+     * Utility method to check if a given tile layer supports filtering
+     *
+     * @param tileLayer
+     * @return
+     */
+    public static boolean supportsFiltering(TileLayer tileLayer) {
+        return (tileLayer instanceof GeoServerTileLayer)
+                && (((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerInfo)
+                && (((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo()).getResource()
+                        instanceof FeatureTypeInfo);
     }
 }

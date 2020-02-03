@@ -19,7 +19,6 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.http.HttpStatus;
 
 /** A BBOX parser specialized for API bounding boxes (up to 6 coordinates, default CRS is CRS84) */
 public class APIBBoxParser {
@@ -192,10 +191,8 @@ public class APIBBoxParser {
                 return new ReferencedEnvelope3D(
                         minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
             } else {
-                throw new APIException(
-                        "InvalidParameterValue",
-                        "Unexpected BBOX, can only handle 2D or 3D ones",
-                        HttpStatus.BAD_REQUEST);
+                throw new InvalidParameterValueException(
+                        "Unexpected BBOX, can only handle 2D or 3D ones");
             }
         }
     }

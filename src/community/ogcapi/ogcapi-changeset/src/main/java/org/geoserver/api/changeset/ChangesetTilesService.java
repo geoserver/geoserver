@@ -16,6 +16,8 @@ import org.geoserver.api.APIBBoxParser;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
 import org.geoserver.api.APIService;
+import org.geoserver.api.InvalidParameterValueException;
+import org.geoserver.api.ResourceNotFoundException;
 import org.geoserver.api.tiles.TilesService;
 import org.geoserver.api.tiles.TilesServiceInfo;
 import org.geoserver.catalog.Catalog;
@@ -227,26 +229,20 @@ public class ChangesetTilesService {
         // assuming a min/max expression
         String[] split = scaleDenominatorSpec.split("/");
         if (split.length != 2) {
-            throw new APIException(
-                    "InvalidParameterValue",
-                    "Unexpected format for 'scaleDenominator', should be minScale/maxScale",
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterValueException(
+                    "Unexpected format for 'scaleDenominator', should be minScale/maxScale");
         }
         try {
             double min = Double.parseDouble(split[0]);
             double max = Double.parseDouble(split[1]);
             if (max < min) {
-                throw new APIException(
-                        "InvalidParameterValue",
-                        "Unexpected values in 'scaleDenominator', minScale/maxScale, but minScale is greater than maxScale",
-                        HttpStatus.BAD_REQUEST);
+                throw new InvalidParameterValueException(
+                        "Unexpected values in 'scaleDenominator', minScale/maxScale, but minScale is greater than maxScale");
             }
             return new NumberRange<>(Double.class, min, max);
         } catch (NumberFormatException e) {
-            throw new APIException(
-                    "InvalidParameterValue",
-                    "Unexpected values in 'scaleDenominator', could not parse numbers out of them",
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterValueException(
+                    "Unexpected values in 'scaleDenominator', could not parse numbers out of them");
         }
     }
 
@@ -259,13 +255,11 @@ public class ChangesetTilesService {
                         .filter(mt -> tileFormatSpec.equals(mt.getMimeType()))
                         .findFirst();
         if (!mimeTypeMaybe.isPresent()) {
-            throw new APIException(
-                    "InvalidParameterValue",
+            throw new InvalidParameterValueException(
                     "Tiled collection "
                             + tileLayer.getName()
                             + " does not support format "
-                            + tileFormatSpec,
-                    HttpStatus.BAD_REQUEST);
+                            + tileFormatSpec);
         }
 
         return mimeTypeMaybe.get();
@@ -290,10 +284,7 @@ public class ChangesetTilesService {
         }
 
         if (failIfNotFound) {
-            throw new APIException(
-                    "NotFound",
-                    "Could not locate collection " + collectionId,
-                    HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("Could not locate collection " + collectionId);
         } else {
             return null;
         }
@@ -303,11 +294,8 @@ public class ChangesetTilesService {
         try {
             return gwc.getTileLayerByName(collectionId);
         } catch (IllegalArgumentException e) {
-            throw new APIException(
-                    "InvalidParameter",
-                    "Tiled collection " + collectionId + " not found",
-                    HttpStatus.NOT_FOUND,
-                    e);
+            throw new ResourceNotFoundException(
+                    "Tiled collection " + collectionId + " not found", e);
         }
     }
 }

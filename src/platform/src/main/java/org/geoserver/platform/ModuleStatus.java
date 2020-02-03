@@ -26,7 +26,7 @@ public interface ModuleStatus {
 
     /**
      * Human readable name (from GeoServer documentation), or as defined in the extension pom.xml,
-     * ie. <name>ArcSDE DataStore Extensions</name>
+     * ie. <name>PostGIS DataStore Extensions</name>
      */
     String getName();
 

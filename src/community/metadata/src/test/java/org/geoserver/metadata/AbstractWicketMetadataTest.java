@@ -1,5 +1,7 @@
 package org.geoserver.metadata;
 
+import static org.geoserver.web.GeoServerApplication.GEOSERVER_CSRF_DISABLED;
+
 import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.util.tester.WicketTester;
@@ -23,6 +25,8 @@ public abstract class AbstractWicketMetadataTest extends AbstractMetadataTest {
         // prevent Wicket from bragging about us being in dev mode (and run
         // the tests as if we were in production all the time)
         System.setProperty("wicket.configuration", "deployment");
+        // Disable CSRF protection for tests, since the test framework doesn't set the Referer
+        System.setProperty(GEOSERVER_CSRF_DISABLED, "true");
 
         // make sure that we check the english i18n when needed
         Locale.setDefault(Locale.ENGLISH);
@@ -36,15 +40,6 @@ public abstract class AbstractWicketMetadataTest extends AbstractMetadataTest {
     @After
     public void stop() {
         tester.destroy();
-    }
-
-    /** Logs in as administrator. */
-    public void login() {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-    }
-
-    public void logout() {
-        login("anonymousUser", "", "ROLE_ANONYMOUS");
     }
 
     /**

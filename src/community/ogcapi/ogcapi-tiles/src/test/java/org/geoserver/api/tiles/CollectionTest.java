@@ -65,11 +65,11 @@ public class CollectionTest extends TilesTestSupport {
                 json.read("$.extent.spatial.crs", String.class));
 
         // check the tiles link (both data and map tiles)
-        List<String> items =
+        List<String> tilesLinks =
                 json.read("$.links[?(@.rel=='tiles' && @.type=='application/json')].href");
-        assertEquals(2, items.size());
+        assertEquals(2, tilesLinks.size());
         assertThat(
-                items,
+                tilesLinks,
                 Matchers.containsInAnyOrder(
                         "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/tiles?f=application%2Fjson",
                         "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/map/tiles?f=application%2Fjson"));
@@ -81,6 +81,14 @@ public class CollectionTest extends TilesTestSupport {
 
         assertEquals("generic", json.read("$.styles[1].id"));
         assertEquals("Generic", json.read("$.styles[1].title"));
+
+        // queryable links
+        String queryablesLink =
+                readSingle(
+                        json, "$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/queryables?f=application%2Fjson",
+                queryablesLink);
     }
 
     @Test
@@ -92,5 +100,39 @@ public class CollectionTest extends TilesTestSupport {
                                 + "?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testRoadsCollectionJson(json);
+    }
+
+    @Test
+    public void testBluemarble() throws Exception {
+        String roadSegments = getLayerId(MockData.TASMANIA_BM);
+        DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + roadSegments, 200);
+
+        assertEquals("wcs:BlueMarble", json.read("$.id", String.class));
+        assertEquals("BlueMarble", json.read("$.title", String.class));
+        assertEquals(146.5, json.read("$.extent.spatial.bbox[0][0]", Double.class), 0.1d);
+        assertEquals(-44.5, json.read("$.extent.spatial.bbox[0][1]", Double.class), 0.1d);
+        assertEquals(148, json.read("$.extent.spatial.bbox[0][2]", Double.class), 0.1d);
+        assertEquals(-43, json.read("$.extent.spatial.bbox[0][3]", Double.class), 0.1d);
+        assertEquals(
+                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                json.read("$.extent.spatial.crs", String.class));
+
+        // check the tiles link (only map tiles for the time being)
+        List<String> tilesLinks =
+                json.read("$.links[?(@.rel=='tiles' && @.type=='application/json')].href");
+        assertEquals(1, tilesLinks.size());
+        assertThat(
+                tilesLinks,
+                Matchers.containsInAnyOrder(
+                        "http://localhost:8080/geoserver/ogc/tiles/collections/wcs:BlueMarble/map/tiles?f=application%2Fjson"));
+
+        // styles
+        assertEquals(Integer.valueOf(1), json.read("$.styles.size()"));
+        assertEquals("raster", json.read("$.styles[0].id"));
+
+        // no queryable links
+        List<String> items =
+                json.read("$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
+        assertThat(items, Matchers.empty());
     }
 }

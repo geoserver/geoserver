@@ -21,8 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -31,6 +32,7 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.model.impl.MetadataTemplateImpl;
 import org.geoserver.metadata.data.service.ComplexMetadataService;
+import org.geoserver.metadata.data.service.CustomNativeMappingService;
 import org.geoserver.metadata.data.service.GlobalModelService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.platform.resource.Resource;
@@ -61,9 +63,11 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
 
     @Autowired private ComplexMetadataService metadataService;
 
+    @Autowired private CustomNativeMappingService nativeToCustomService;
+
     @Autowired private GlobalModelService globalModelService;
 
-    @Autowired private GeoServer geoServer;
+    @Autowired private Catalog rawCatalog;
 
     private List<MetadataTemplate> templates = new ArrayList<>();
 
@@ -154,7 +158,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
         // update layers
         Set<String> deletedLayers = new HashSet<>();
         for (String key : template.getLinkedLayers()) {
-            ResourceInfo resource = geoServer.getCatalog().getResource(key, ResourceInfo.class);
+            ResourceInfo resource = rawCatalog.getResource(key, ResourceInfo.class);
 
             if (resource == null) {
                 // remove the link because the layer cannot be found.
@@ -249,8 +253,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
             if (progressKey != null) {
                 globalModelService.put(progressKey, ((float) counter++) / resourceIds.size());
             }
-            ResourceInfo resource =
-                    geoServer.getCatalog().getResource(resourceId, ResourceInfo.class);
+            ResourceInfo resource = rawCatalog.getResource(resourceId, ResourceInfo.class);
 
             if (resource != null) {
                 update(resource);
@@ -284,11 +287,21 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
                                     .computeIfAbsent(
                                             MetadataConstants.DERIVED_KEY, key -> new HashMap<>());
             metadataService.merge(model, sources, derivedAtts);
+            // derived atts
+            metadataService.derive(model);
             // update timestamp
             model.get(Date.class, MetadataConstants.TIMESTAMP_KEY).setValue(new Date());
 
             resource.getMetadata().put(MetadataConstants.DERIVED_KEY, derivedAtts);
-            geoServer.getCatalog().save(resource);
+
+            // custom-to-native mapping
+            for (LayerInfo layer : rawCatalog.getLayers(resource)) {
+                layer.setResource(resource);
+                nativeToCustomService.mapCustomToNative(layer);
+                rawCatalog.save(layer);
+            }
+
+            rawCatalog.save(resource);
         }
     }
 

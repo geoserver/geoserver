@@ -117,17 +117,10 @@ public class XMLRoleService extends AbstractRoleService {
 
         try {
             Document doc = null;
-            InputStream is = null;
-            try {
-                is = roleResource.in();
+            try (InputStream is = roleResource.in()) {
                 doc = builder.parse(is);
             } catch (SAXException e) {
                 throw new IOException(e);
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                }
             }
             if (isValidatingXMLSchema()) {
                 XMLValidator.Singleton.validateRoleRegistry(doc);

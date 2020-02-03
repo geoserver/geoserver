@@ -15,6 +15,13 @@
 </#list>
 </ul>
 </li>
+
+<#if model.queryable>
+<li>Queryables as <a id="html_${model.htmlId}_queryables" href="${model.getLinkUrl('queryables', 'text/html')!}">HTML</a>.
+      </li>
+<#else>
+<li>Layer does not support filtering.</li>
+</#if>
 </ul>
 
 Tiles available for this collection:

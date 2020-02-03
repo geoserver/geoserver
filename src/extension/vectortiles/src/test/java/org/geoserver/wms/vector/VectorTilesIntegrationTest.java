@@ -122,6 +122,23 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testCqlFilterNoMatch() throws Exception {
+        String request =
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                        + getLayerId(MockData.ROAD_SEGMENTS)
+                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                        + "&CQL_FILTER=1=0&format="
+                        + MapBoxTileBuilderFactory.MIME_TYPE;
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals(200, response.getStatus());
+        assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, response.getContentType());
+        byte[] responseBytes = response.getContentAsByteArray();
+        VectorTileDecoder decoder = new VectorTileDecoder();
+        List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
+        assertEquals(0, featuresList.size());
+    }
+
+    @Test
     public void testFilterById() throws Exception {
         String request =
                 "wms?service=WMS&version=1.1.0&request=GetMap&layers="

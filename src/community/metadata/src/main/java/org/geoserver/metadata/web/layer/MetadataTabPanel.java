@@ -26,6 +26,7 @@ import org.geoserver.metadata.data.service.CustomNativeMappingService;
 import org.geoserver.metadata.data.service.GeonetworkImportService;
 import org.geoserver.metadata.data.service.MetadataTemplateService;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
+import org.geoserver.metadata.web.panel.CopyFromLayerPanel;
 import org.geoserver.metadata.web.panel.ImportGeonetworkPanel;
 import org.geoserver.metadata.web.panel.ImportTemplatePanel;
 import org.geoserver.metadata.web.panel.MetadataPanel;
@@ -100,15 +101,7 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
 
                     @Override
                     protected void handleUpdate(AjaxRequestTarget target) {
-                        updateModel();
-                        target.add(
-                                metadataPanel()
-                                        .replaceWith(
-                                                new MetadataPanel(
-                                                        "metadataPanel",
-                                                        metadataModel,
-                                                        derivedAtts,
-                                                        resource)));
+                        updateAndRefresh(target, resource);
                     }
                 });
 
@@ -140,6 +133,8 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                             // import metadata
                             importService.importLayer(
                                     resource, metadataModel.getObject(), geoNetwork, uuid);
+
+                            updateAndRefresh(target, resource);
                         } catch (IOException e) {
                             LOGGER.severe(e.getMessage());
                             feedbackPanel.error(e.getMessage());
@@ -156,6 +151,58 @@ public class MetadataTabPanel extends PublishedEditTabPanel<LayerInfo> {
                     }
                 };
         add(geonetworkPanel);
+
+        add(
+                new CopyFromLayerPanel("copyFromLayerPanel", resource.getId()) {
+                    private static final long serialVersionUID = -4105294542603002567L;
+
+                    @Override
+                    public void handleCopy(ResourceInfo res, AjaxRequestTarget target) {
+                        @SuppressWarnings("unchecked")
+                        ComplexMetadataMap source =
+                                new ComplexMetadataMapImpl(
+                                        (Map<String, Serializable>)
+                                                res.getMetadata()
+                                                        .get(
+                                                                MetadataConstants
+                                                                        .CUSTOM_METADATA_KEY));
+                        if (source != null) {
+                            // First unlink all templates
+                            importTemplatePanel()
+                                    .unlinkTemplate(
+                                            target, importTemplatePanel().getLinkedTemplates());
+                            GeoServerApplication.get()
+                                    .getApplicationContext()
+                                    .getBean(ComplexMetadataService.class)
+                                    .copy(source, metadataModel.getObject(), null, true);
+
+                            MetadataTemplateService templateService =
+                                    GeoServerApplication.get()
+                                            .getApplicationContext()
+                                            .getBean(MetadataTemplateService.class);
+                            for (MetadataTemplate template : templateService.list()) {
+                                if (template.getLinkedLayers().contains(res.getId())) {
+                                    importTemplatePanel().linkTemplate(target, template);
+                                }
+                            }
+
+                            ResourceInfo resource = getPublishedInfo().getResource();
+                            resource.setAbstract(res.getAbstract());
+                            resource.setTitle(res.getTitle());
+
+                            updateAndRefresh(target, resource);
+                        }
+                    }
+                });
+    }
+
+    protected void updateAndRefresh(AjaxRequestTarget target, ResourceInfo resource) {
+        updateModel();
+        target.add(
+                metadataPanel()
+                        .replaceWith(
+                                new MetadataPanel(
+                                        "metadataPanel", metadataModel, derivedAtts, resource)));
     }
 
     protected MetadataPanel metadataPanel() {

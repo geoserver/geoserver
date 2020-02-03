@@ -77,13 +77,6 @@
     </profile>
 
     <profile>
-      <id>arcsde</id>
-      <modules>
-        <module>arcsde</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>h2</id>
       <modules>
         <module>h2</module>
@@ -368,7 +361,6 @@
       <id>allExtensions</id>
       <modules>
         <module>app-schema</module>
-        <module>arcsde</module>
         <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
@@ -415,7 +407,6 @@
       <id>release</id>
       <modules>
         <module>app-schema</module>
-        <module>arcsde</module>
         <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>

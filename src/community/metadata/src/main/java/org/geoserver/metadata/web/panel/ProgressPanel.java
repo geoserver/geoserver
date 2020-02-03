@@ -31,15 +31,23 @@ public class ProgressPanel extends Panel {
 
     private boolean cancelMe = false;
 
+    public ProgressPanel(String id) {
+        this(id, null);
+    }
+
     public ProgressPanel(String id, IModel<String> title) {
         super(id);
 
         add(window = new ModalWindow("dialog"));
 
         window.setInitialHeight(35);
-        window.setInitialWidth(424);
         window.setTitle(title);
+        window.setInitialWidth(424);
         window.showUnloadConfirmation(false);
+    }
+
+    public void setTitle(IModel<String> title) {
+        window.setTitle(title);
     }
 
     public void start(AjaxRequestTarget target, IModel<Float> model, EventHandler handler) {

@@ -417,14 +417,7 @@
     <property name="id" value="oracle"/> <property name="factoryClass" value="org.geotools.data.oracle.OracleNGDataStoreFactory"/> 
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
     <property name="icon" value="img/icons/geosilk/database_oracle.png"/> </bean> 
-    <bean id="arcsdeDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo"> 
-    <property name="id" value="arcsde"/> <property name="factoryClass" value="org.geotools.arcsde.ArcSDEDataStoreFactory"/> 
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
-    <property name="icon" value="img/icons/geosilk/database_vector.png"/> </bean> 
-    <bean id="arcsdeCoverageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo"> 
-    <property name="id" value="arcsde_gce"/> <property name="factoryClass" value="org.geotools.arcsde.gce.ArcSDERasterFormat"/> 
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
-    <property name="icon" value="img/icons/geosilk/database_raster.png"/> </bean> -->
+   -->
 
   <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.publish.LayerEditTabPanelInfo">
     <property name="id" value="ndLayerEditTabPanelInfo" />

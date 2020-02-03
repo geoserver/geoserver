@@ -140,6 +140,13 @@ The style editor supports line numbering, automatic indentation, and real-time s
      - Redo
    * - .. image:: img/styles_editor_goto.png
      - Go to line
+   * - .. image:: img/styles_editor_find.png
+     - Find in style text (CTRL-F)
+   * - .. image:: img/styles_editor_find_next.png
+     - Find next occurrence in style text (CTRL-G/Cmd-G)
+   * - .. image:: img/styles_editor_replace.png
+     - Find and replace in style text (CTRL-SHIFT-F/Cmd-Option-F). First enter the search term, press ENTER, then type the replace term and press ENTER again.
+       It is also possible to run "replace all" using CTRL-SHIFT-R/Cmd-Shift-Option-F.
    * - .. image:: img/styles_editor_reformat.png
      - Auto-format the editor contents
    * - .. image:: img/styles_editor_fontsize.png

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.geoserver.api.AttributeType;
 import org.geotools.filter.FunctionFinder;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.parameter.Parameter;

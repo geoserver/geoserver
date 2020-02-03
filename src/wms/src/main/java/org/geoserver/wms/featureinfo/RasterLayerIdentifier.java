@@ -25,6 +25,7 @@ import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.clip.CroppedGridCoverage2DReader;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -50,6 +51,7 @@ import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.coverage.CannotEvaluateException;
 import org.opengis.coverage.PointOutsideCoverageException;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -71,7 +73,7 @@ import org.opengis.referencing.operation.TransformException;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class RasterLayerIdentifier implements LayerIdentifier {
+public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DReader> {
 
     static final Logger LOGGER = Logging.getLogger(RasterLayerIdentifier.class);
 
@@ -93,9 +95,11 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         final SortBy[] sort = params.getSort();
         final CoverageInfo cinfo = layer.getCoverage();
         final GridCoverage2DReader reader =
-                (GridCoverage2DReader)
-                        cinfo.getGridCoverageReader(
-                                new NullProgressListener(), GeoTools.getDefaultHints());
+                handleClipParam(
+                        params,
+                        (GridCoverage2DReader)
+                                cinfo.getGridCoverageReader(
+                                        new NullProgressListener(), GeoTools.getDefaultHints()));
 
         // set the requested position in model space for this request
         final Coordinate middle =
@@ -374,5 +378,13 @@ public class RasterLayerIdentifier implements LayerIdentifier {
             }
             return new String(result);
         }
+    }
+
+    @Override
+    public GridCoverage2DReader handleClipParam(
+            FeatureInfoRequestParameters params, GridCoverage2DReader reader) {
+        Geometry roiGeom = params.getGetMapRequest().getClip();
+        if (roiGeom == null) return reader;
+        return new CroppedGridCoverage2DReader(reader, roiGeom);
     }
 }

@@ -201,6 +201,17 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this._subSets = new AtomicReference<>();
     }
 
+    protected GeoServerTileLayer(final GeoServerTileLayer layer) {
+        this.gridSetBroker = layer.gridSetBroker;
+        this.catalog = layer.catalog;
+        this.publishedInfoId = layer.publishedInfoId;
+        this._publishedInfo = new AtomicReference<>();
+        this.info = layer.info;
+        this._subSets = new AtomicReference<>();
+        this.legendSample = layer.legendSample;
+        this.wms = layer.wms;
+    }
+
     @Override
     public String getId() {
         return info.getId();
@@ -602,7 +613,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
     }
 
-    private ConveyorTile getMetatilingReponse(
+    protected ConveyorTile getMetatilingReponse(
             ConveyorTile tile, final boolean tryCache, final int metaX, final int metaY)
             throws GeoWebCacheException, IOException {
 

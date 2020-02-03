@@ -21,6 +21,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.platform.resource.Resource;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
     @Autowired GeonetworkXmlParser xmlParser;
 
     @Autowired private GeoServerDataDirectory dataDirectory;
+
+    @After
+    public void after() throws Exception {
+        restoreLayers();
+    }
 
     @Test
     public void testMapping() throws IOException {

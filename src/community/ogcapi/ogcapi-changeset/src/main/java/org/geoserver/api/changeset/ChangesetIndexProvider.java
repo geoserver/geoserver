@@ -15,7 +15,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.api.APIException;
+import org.geoserver.api.InvalidParameterValueException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CoverageInfo;
@@ -48,7 +48,6 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsGreaterThan;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -197,10 +196,8 @@ public class ChangesetIndexProvider {
                 store.getFeatures(FF.equals(FF.property(CHECKPOINT), FF.literal(checkpoint)));
         SimpleFeature first = DataUtilities.first(fc);
         if (first == null) {
-            throw new APIException(
-                    "InvalidParameterValue",
-                    "Checkpoint " + checkpoint + " cannot be found in change history",
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterValueException(
+                    "Checkpoint " + checkpoint + " cannot be found in change history");
         }
 
         return (Timestamp) first.getAttribute(TIMESTAMP);

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.wicket;
+package org.geoserver.metadata.web;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,13 +30,13 @@ public class ConditionTest extends AbstractWicketMetadataTest {
 
     @Test
     public void testNoFeatureCatalogueForRasters() {
+        login();
         LayerInfo raster =
                 geoServer.getCatalog().getLayerByName(MockData.USA_WORLDIMG.getLocalPart());
-        login();
         ResourceConfigurationPage page = new ResourceConfigurationPage(raster, false);
         tester.startPage(page);
         ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
-                .setSelectedTab(3);
+                .setSelectedTab(4);
 
         MarkupContainer c =
                 (MarkupContainer)

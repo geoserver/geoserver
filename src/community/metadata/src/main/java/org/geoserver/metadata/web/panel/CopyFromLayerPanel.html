@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <div wicket:id="copyFromLayerDialog"></div>
+    <ul>
+        <li>
+            <fieldset>
+                <legend>
+                    <span><wicket:message key="header"></wicket:message></span>
+                </legend>
+                <ul>
+                    <li>
+                        <select wicket:id="layer" /> 
+                        <a href="#"
+							wicket:id="link"> <wicket:message key="actionCopy"></wicket:message>
+						</a>
+                        <span wicket:id="copyFeedback"></span>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

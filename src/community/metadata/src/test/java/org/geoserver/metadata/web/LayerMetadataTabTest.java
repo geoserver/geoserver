@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.wicket;
+package org.geoserver.metadata.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,21 +51,22 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
     @Before
     public void before() throws IOException {
-        layer = geoServer.getCatalog().getLayerByName("mylayer");
         login();
+        layer = geoServer.getCatalog().getLayerByName("mylayer");
+        assertNotNull(layer);
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
         tester.startPage(page);
         ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
-                .setSelectedTab(3);
+                .setSelectedTab(4);
         tester.submitForm("publishedinfo");
         tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", MetadataPanel.class);
     }
 
     @After
     public void after() throws Exception {
+        logout();
         restoreTemplates();
         restoreLayers();
-        logout();
     }
 
     @Test

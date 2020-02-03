@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.metadata.wicket;
+package org.geoserver.metadata.web;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,8 +15,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
-import org.geoserver.metadata.web.MetadataTemplatePage;
-import org.geoserver.metadata.web.MetadataTemplatesPage;
 import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -34,9 +32,9 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
     @Before
     public void before() throws IOException {
+        login();
         // Make sure the catalog is loaded
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
-        login();
         new ResourceConfigurationPage(layer, false);
 
         // Load the page
@@ -99,7 +97,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:description", TextField.class);
 
-        tester.assertComponent("form:metadataTemplatePanel", MetadataPanel.class);
+        tester.assertComponent("form:metadataTabs:panel", MetadataPanel.class);
     }
 
     @Test
@@ -117,7 +115,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertModelValue("form:name", "simple fields");
         tester.assertModelValue("form:description", "Only basic fields");
 
-        tester.assertComponent("form:metadataTemplatePanel", MetadataPanel.class);
+        tester.assertComponent("form:metadataTabs:panel", MetadataPanel.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -187,11 +185,11 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         // print(tester.getLastRenderedPage(), true, true);
         Assert.assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
         Assert.assertEquals(
-                "Template 'simple fields' is not deleted. Linked to layers: mylayer",
+                "Template 'simple fields' is not deleted. Linked to layers: topp:mylayer",
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         tester.assertLabel(
                 "topFeedback:feedbackul:messages:0:message",
-                "Template &#039;simple fields&#039; is not deleted. Linked to layers: mylayer");
+                "Template &#039;simple fields&#039; is not deleted. Linked to layers: topp:mylayer");
     }
 
     @Test

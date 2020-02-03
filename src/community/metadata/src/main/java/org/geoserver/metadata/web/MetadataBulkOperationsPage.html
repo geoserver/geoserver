@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+	<wicket:link>
+		<link rel="stylesheet" href="styleMetadataModule.css" type="text/css" />
+	</wicket:link>
+</wicket:head>
+<body>
+	<wicket:extend>
+		<div wicket:id="dialog"></div>
+		<div wicket:id="progress"></div>
+
+		<fieldset>
+			<legend>
+				<wicket:message key="fixTitle" />
+			</legend>
+			<form>
+				<ul>
+					<li><wicket:message key="fixMsg"></wicket:message></li>
+					<li>
+						<button wicket:id="fix">
+							<wicket:message key="fixBtn" />
+						</button>
+					</li>
+				</ul>
+			</form>
+		</fieldset>
+		<fieldset>
+			<legend>
+				<wicket:message key="importTitle" />
+			</legend>
+			<form wicket:id="formImport">
+				<ul>
+					<li><wicket:message key="importMsg" /></li>
+					<li><label for="geonetworkName"><wicket:message
+								key="geonetworkName" /></label> `<select id="geonetworkName"
+						wicket:id="geonetworkName" /></li>
+					<li><label for="importCsv"><wicket:message
+								key="importCsv" /></label> <input wicket:id="importCsv" size="40"
+						type="file" /></li>
+					<li>
+						<button wicket:id="import">
+							<wicket:message key="importBtn" />
+						</button>
+					</li>
+				</ul>
+			</form>
+		</fieldset>
+		<fieldset>
+			<legend>
+				<wicket:message key="customTitle" />
+			</legend>
+			<form wicket:id="formCustom">
+				<ul>
+					<li><wicket:message key="customMsg" /></li>
+					<li><label for="ruleList"><wicket:message
+								key="ruleList" /></label> `<input id="ruleList" type="text"
+						wicket:id="ruleList" /></li>
+					<li><label for="customCsv"><wicket:message
+								key="customCsv" /></label> <input wicket:id="customCsv" size="40"
+						type="file" /></li>
+					<li>
+						<button wicket:id="custom">
+							<wicket:message key="customBtn" />
+						</button>
+					</li>
+				</ul>
+			</form>
+		</fieldset>
+		<fieldset>
+			<legend>
+				<wicket:message key="clearTitle" />
+			</legend>
+			<form wicket:id="formClear">
+				<ul>
+					<li><wicket:message key="clearMsg" /></li>
+					<li class="choiceItem"><input type="checkbox"
+						id="clearTemplates" wicket:id="clearTemplates"></input> <label
+						for="clearTemplates"><wicket:message key="clearTemplates" /></label></li>
+					<li>
+						<button wicket:id="clear">
+							<wicket:message key="clearBtn" />
+						</button>
+					</li>
+				</ul>
+			</form>
+		</fieldset>
+	</wicket:extend>
+</body>
+</html>

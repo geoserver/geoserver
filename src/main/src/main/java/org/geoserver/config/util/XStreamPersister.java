@@ -523,7 +523,7 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
-        xs.registerConverter(new WMSLayerInfoLegacyConverter());
+        xs.registerConverter(new WMSLayerInfoConverter());
         // this should have been a metadata map too, but was not registered as such and got a plain
         // map converter. Switched to SettingsTolerantMapConverter to make it work when plugins get
         // removed and leave configuration that cannot be parsed anymore in there
@@ -2531,10 +2531,13 @@ public class XStreamPersister {
         }
     }
 
-    /** Converter for WMSLayerInfoImpl class ensure backwards compatibility with old directories */
-    class WMSLayerInfoLegacyConverter extends AbstractCatalogInfoConverter {
+    /**
+     * Converter for WMSLayerInfoImpl class ensure backwards compatibility with <= 2.16.2 data
+     * directories
+     */
+    class WMSLayerInfoConverter extends AbstractCatalogInfoConverter {
 
-        public WMSLayerInfoLegacyConverter() {
+        public WMSLayerInfoConverter() {
             super(WMSLayerInfoImpl.class);
         }
 

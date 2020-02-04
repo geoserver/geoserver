@@ -8,13 +8,16 @@ package org.geoserver.wms.web.data.publish;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,6 +34,9 @@ import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
@@ -260,5 +266,145 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                         != null
                 && tester.getComponentFromLastRenderedPage("form:panel:metaDataCheckBoxContainer")
                         != null;
+    }
+
+    @Test
+    public void testWMSCascadeSettingsLegacyBean() throws Exception {
+        // this test asserts that the wmslayer settings do not break
+        // when user has switched from 2.16.2 and less version
+
+        // Create a Legacy Resource usong < 2.16.2 WMSLayerInfo XML without fields storing new
+        // settings
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<wmsLayer>\n"
+                        + "   <id>WMSLayerInfoImpl-622caab0:16ff63f5f7a:-7ffc</id>\n"
+                        + "   <name>legacy_roads</name>\n"
+                        + "   <nativeName>roads</nativeName>\n"
+                        + "   <title>Legacy</title>\n"
+                        + "   <description>Legacy</description>\n"
+                        + "   <abstract>Legacy</abstract>\n"
+                        + "   <keywords>\n"
+                        + "      <string>census</string>\n"
+                        + "      <string>united</string>\n"
+                        + "      <string>boundaries</string>\n"
+                        + "      <string>state</string>\n"
+                        + "      <string>states</string>\n"
+                        + "   </keywords>\n"
+                        + "   <nativeCRS>GEOGCS[\"WGS 84\", &#xD;\n"
+                        + "  DATUM[\"World Geodetic System 1984\", &#xD;\n"
+                        + "    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], &#xD;\n"
+                        + "    AUTHORITY[\"EPSG\",\"6326\"]], &#xD;\n"
+                        + "  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], &#xD;\n"
+                        + "  UNIT[\"degree\", 0.017453292519943295], &#xD;\n"
+                        + "  AXIS[\"Geodetic longitude\", EAST], &#xD;\n"
+                        + "  AXIS[\"Geodetic latitude\", NORTH], &#xD;\n"
+                        + "  AUTHORITY[\"EPSG\",\"4326\"]]</nativeCRS>\n"
+                        + "   <srs>EPSG:4326</srs>\n"
+                        + "   <nativeBoundingBox>\n"
+                        + "      <minx>-124.73142200000001</minx>\n"
+                        + "      <maxx>-66.969849</maxx>\n"
+                        + "      <miny>24.955967</miny>\n"
+                        + "      <maxy>49.371735</maxy>\n"
+                        + "      <crs>EPSG:4326</crs>\n"
+                        + "   </nativeBoundingBox>\n"
+                        + "   <latLonBoundingBox>\n"
+                        + "      <minx>-124.731422</minx>\n"
+                        + "      <maxx>-66.969849</maxx>\n"
+                        + "      <miny>24.955967</miny>\n"
+                        + "      <maxy>49.371735</maxy>\n"
+                        + "      <crs>EPSG:4326</crs>\n"
+                        + "   </latLonBoundingBox>\n"
+                        + "   <projectionPolicy>FORCE_DECLARED</projectionPolicy>\n"
+                        + "   <enabled>true</enabled>\n"
+                        + "   <serviceConfiguration>false</serviceConfiguration>\n"
+                        + "</wmsLayer>";
+
+        WMSLayerInfoImpl legacyWmsLayerInfo =
+                (WMSLayerInfoImpl)
+                        persister.load(
+                                new ByteArrayInputStream(xml.getBytes()), WMSLayerInfo.class);
+
+        MockHttpClient wms11Client = new MockHttpClient();
+        URL wms11BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
+        URL capsDocument = WMSLayerConfigTest.class.getResource("caps111.xml");
+        wms11Client.expectGet(
+                new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
+                new MockHttpResponse(capsDocument, "text/xml"));
+        String caps = wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1";
+        TestHttpClientProvider.bind(wms11Client, caps);
+
+        // setup the WMS layer
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        WMSStoreInfo store = cb.buildWMSStore("mock-wms-legacy-store-110");
+        getCatalog().add(store);
+        cb.setStore(store);
+        store.setCapabilitiesURL(caps);
+        WMSLayerInfo wmsLayer = cb.buildWMSLayer("roads");
+        // copy values into Legacy Resource
+        legacyWmsLayerInfo.setNamespace(wmsLayer.getNamespace());
+        legacyWmsLayerInfo.setCatalog(wmsLayer.getCatalog());
+        legacyWmsLayerInfo.setStore(wmsLayer.getStore());
+
+        getCatalog().add(legacyWmsLayerInfo);
+        // build layer using legacy resource
+        LayerInfo gsLayer = cb.buildLayer(legacyWmsLayerInfo);
+        getCatalog().add(gsLayer);
+
+        final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
+
+        FormTestPage page =
+                new FormTestPage(
+                        new ComponentBuilder() {
+
+                            public Component buildComponent(String id) {
+                                return new WMSLayerConfig(id, layerModel);
+                            }
+                        });
+
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        // should not complain about no error messages
+        tester.assertNoErrorMessage();
+
+        // assert defaults
+        // asserting Remote Style UI fields is set to empty
+        tester.assertModelValue(
+                "form:panel:remotestyles:remoteStylesDropDown", wmsLayer.getForcedRemoteStyle());
+        // asserting preffered format is set to png
+        tester.assertModelValue(
+                "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
+
+        // NOW assert if drop down are showing the defaults as selected on GUI
+        DropDownChoice<String> remotStyles =
+                (DropDownChoice<String>)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:remotestyles:remoteStylesDropDown");
+        DropDownChoice<String> remoteformats =
+                (DropDownChoice<String>)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:remoteformats:remoteFormatsDropDown");
+
+        assertFalse(remoteformats.getChoicesModel().getObject().isEmpty());
+        assertFalse(remotStyles.getChoicesModel().getObject().isEmpty());
+
+        Palette<String> remoteFormatsPalette =
+                (Palette<String>)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:remoteformats:remoteFormatsPalette");
+        Palette<String> extraRemoteStyles =
+                (Palette<String>)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:remotestyles:extraRemoteStyles");
+
+        // assert palettes have populated choices
+        assertFalse(remoteFormatsPalette.getChoices().isEmpty());
+        assertFalse(extraRemoteStyles.getChoices().isEmpty());
+
+        // assert no choice is selected, its for user to select them on will
+        assertNull(remoteFormatsPalette.getConvertedInput());
+        assertNull(extraRemoteStyles.getConvertedInput());
     }
 }

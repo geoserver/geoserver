@@ -41,8 +41,10 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         DEFAULT_ON_REMOTE.getMetadata().put("isRemote", true);
     }
 
+    @Transient public static String DEFAULT_FORMAT = "image/png";
+
     protected String forcedRemoteStyle = "";
-    protected String preferredFormat = "image/png";
+    protected String preferredFormat = DEFAULT_FORMAT;
 
     private List<String> selectedRemoteFormats = new ArrayList<String>();
 
@@ -79,14 +81,14 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public void reset() {
         selectedRemoteStyles.clear();
         selectedRemoteFormats.clear();
+        // set empty to take whatever is on remote server
+        forcedRemoteStyle = DEFAULT_ON_REMOTE.getName();
+        // select all formats for us
+        selectedRemoteFormats.addAll(availableFormats());
         getAllAvailableRemoteStyles().clear();
         getAllAvailableRemoteStyles().addAll(getRemoteStyleInfos());
         // select all formats for use
         selectedRemoteStyles.addAll(remoteStyles());
-        // set empty to take whatever is on remote server
-        forcedRemoteStyle = "";
-        // select all styles available for us
-        selectedRemoteFormats.addAll(availableFormats());
     }
 
     @Override
@@ -113,7 +115,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public void setForcedRemoteStyle(String forcedRemoteStyle) {
-        this.forcedRemoteStyle = (forcedRemoteStyle == null) ? "" : forcedRemoteStyle;
+        this.forcedRemoteStyle =
+                (forcedRemoteStyle == null) ? DEFAULT_ON_REMOTE.getName() : forcedRemoteStyle;
     }
 
     @Override
@@ -145,7 +148,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     @Override
     public void setPreferredFormat(String preferredFormat) {
-        this.preferredFormat = (preferredFormat == null) ? "image/png" : preferredFormat;
+        this.preferredFormat = (preferredFormat == null) ? DEFAULT_FORMAT : preferredFormat;
     }
 
     @Override

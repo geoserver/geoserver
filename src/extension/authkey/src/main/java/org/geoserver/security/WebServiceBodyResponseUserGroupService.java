@@ -155,11 +155,12 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
                     authorities.add(createAuthorityObject(roleName.trim()));
                 }
             }
-        } else {
+        }
+        if (authorities.size() == 0) {
             LOGGER.log(
                     Level.WARNING,
-                    "Error in WebServiceAuthenticationKeyMapper, cannot find any Role in response");
-            authorities.add(GeoServerRole.ADMIN_ROLE);
+                    "Error in WebServiceAuthenticationKeyMapper, cannot find any Role in response adding anonymous role");
+            authorities.add(GeoServerRole.ANONYMOUS_ROLE);
         }
 
         RoleCalculator calc = new RoleCalculator(this, getDefaultSecurityService());

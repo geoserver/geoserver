@@ -104,6 +104,7 @@
           <descriptor>release/ext-csw-iso.xml</descriptor>
           <descriptor>release/ext-importer-jdbc.xml</descriptor>
           <descriptor>release/ext-json-ld.xml</descriptor>
+          <descriptor>release/ext-metadata.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

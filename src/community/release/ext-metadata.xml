@@ -1,0 +1,21 @@
+<assembly>
+  <id>metadata-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-metadata*.jar</include>
+        <include>wicketstuff-progressbar*.jar</include>
+        <include>wicket-datetime*.jar</include>
+        <include>jackson-databind*.jar</include>
+        <include>jackson-dataformat-yaml*.jar</include>
+        <include>javax.annotation-api*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -34,6 +34,8 @@ public class MetricValue implements Serializable {
 
     int priority;
 
+    ValueHolder holder;
+
     /**
      * Initialize the metric value coping the definition from infomration obejct {@link MetricInfo}
      *
@@ -54,6 +56,7 @@ public class MetricValue implements Serializable {
 
     public void setValue(Object value) {
         this.value = value;
+        this.holder = new ValueHolder(value);
     }
 
     public Boolean getAvailable() {

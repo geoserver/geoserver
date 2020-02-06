@@ -169,6 +169,10 @@ public class RequestData implements Serializable {
     /** If there was a cache miss, the reason for it */
     private String missReason;
 
+    private List<Long> resourcesProcessingTime;
+
+    private Long labellingProcessingTime;
+
     public long getId() {
         return id;
     }
@@ -517,5 +521,30 @@ public class RequestData implements Serializable {
 
     public void setMissReason(String missReason) {
         this.missReason = missReason;
+    }
+
+    public List<Long> getResourcesProcessingTime() {
+        return resourcesProcessingTime;
+    }
+
+    public String getResourcesProcessingTimeList() {
+        if (resourcesProcessingTime != null && resourcesProcessingTime.size() > 0) {
+            String times = resourcesProcessingTime.toString();
+            return times.substring(1, times.length() - 1);
+        } else {
+            return null;
+        }
+    }
+
+    public void setResourcesProcessingTime(List<Long> resourcesProccessingTime) {
+        this.resourcesProcessingTime = resourcesProccessingTime;
+    }
+
+    public Long getLabellingProcessingTime() {
+        return labellingProcessingTime;
+    }
+
+    public void setLabellingProcessingTime(Long labellingProcessingTime) {
+        this.labellingProcessingTime = labellingProcessingTime;
     }
 }

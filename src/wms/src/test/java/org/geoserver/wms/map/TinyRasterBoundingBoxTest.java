@@ -161,7 +161,7 @@ public class TinyRasterBoundingBoxTest extends WMSTestSupport {
                         new ReferencedEnvelope(minX, maxX, minY, maxY, DefaultGeographicCRS.WGS84));
         RenderedImageMapOutputFormat rasterMapProducer = new RenderedImageMapOutputFormat(getWMS());
         RenderedImageMap imageMap = rasterMapProducer.produceMap(this.map);
-        this.op = (RenderedOp) imageMap.getImage();
+        this.op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         this.image = this.op.getAsBufferedImage();
         imageMap.dispose();
         return new Rectangle(0, 0, this.image.getWidth(), this.image.getHeight());

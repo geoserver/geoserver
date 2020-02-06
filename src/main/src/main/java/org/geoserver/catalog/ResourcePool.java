@@ -1112,6 +1112,13 @@ public class ResourcePool {
             }
             ft = tb.buildFeatureType();
         } // end special case for SimpleFeatureType
+
+        // extension point for retyping the feature type
+        for (RetypeFeatureTypeCallback callback :
+                GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
+            ft = callback.retypeFeatureType(info, ft);
+        }
+
         return ft;
     }
 
@@ -1382,15 +1389,22 @@ public class ResourcePool {
             }
 
             // return a normal
-            return GeoServerFeatureLocking.create(
-                    fs,
-                    new GeoServerFeatureSource.Settings(
-                            schema,
-                            info.filter(),
-                            resultCRS,
-                            info.getProjectionPolicy().getCode(),
-                            getTolerance(info),
-                            info.getMetadata()));
+            FeatureSource featureSource =
+                    GeoServerFeatureLocking.create(
+                            fs,
+                            new GeoServerFeatureSource.Settings(
+                                    schema,
+                                    info.filter(),
+                                    resultCRS,
+                                    info.getProjectionPolicy().getCode(),
+                                    getTolerance(info),
+                                    info.getMetadata()));
+
+            for (RetypeFeatureTypeCallback callback :
+                    GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
+                featureSource = callback.wrapFeatureSource(info, featureSource);
+            }
+            return featureSource;
         }
     }
 

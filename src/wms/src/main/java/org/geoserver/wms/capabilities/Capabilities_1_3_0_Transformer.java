@@ -8,7 +8,6 @@ package org.geoserver.wms.capabilities;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.equal;
-import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
@@ -50,8 +49,6 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -1518,125 +1515,89 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          */
         protected void handleLegendURL(
                 LayerInfo layer, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
-            // if legend is valid, use it
+
+            int legendWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;
+            int legendHeight = GetLegendGraphicRequest.DEFAULT_HEIGHT;
+            String defaultFormat = GetLegendGraphicRequest.DEFAULT_FORMAT;
+
             if (validateLegendInfo(legend)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("using user supplied legend URL");
                 }
+                // reading sizes of external graphics
+                legendWidth = legend.getWidth();
+                legendHeight = legend.getHeight();
+                // remove any charset info
+                defaultFormat = legend.getFormat().replaceFirst(";charset=utf-8", "");
 
-                AttributesImpl attrs = new AttributesImpl();
-                attrs.addAttribute("", "width", "width", "", String.valueOf(legend.getWidth()));
-                attrs.addAttribute("", "height", "height", "", String.valueOf(legend.getHeight()));
-
-                start("LegendURL", attrs);
-
-                element("Format", legend.getFormat());
-                attrs.clear();
-                attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
-                attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                WorkspaceInfo styleWs = sampleStyle.getWorkspace();
-                String legendUrl;
-
-                if (layer.getResource() instanceof WMSLayerInfo)
-                    legendUrl = legend.getOnlineResource();
-                else if (styleWs != null) {
-                    legendUrl =
-                            buildURL(
-                                    request.getBaseUrl(),
-                                    appendPath(
-                                            "styles",
-                                            styleWs.getName(),
-                                            legend.getOnlineResource()),
-                                    null,
-                                    URLType.RESOURCE);
-                } else {
-                    legendUrl =
-                            buildURL(
-                                    request.getBaseUrl(),
-                                    appendPath("styles", legend.getOnlineResource()),
-                                    null,
-                                    URLType.RESOURCE);
-                }
-                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);
-                element("OnlineResource", null, attrs);
-
-                end("LegendURL");
-            } else {
-                int legendWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;
-                int legendHeight = GetLegendGraphicRequest.DEFAULT_HEIGHT;
-
-                if (sampleStyle != null) {
-                    // delegate to legendSample the calculus of proper legend size for
-                    // the given style
-                    Dimension dimension;
-                    try {
-                        dimension = legendSample.getLegendURLSize(sampleStyle);
-                        if (dimension != null) {
-                            legendWidth = (int) dimension.getWidth();
-                            legendHeight = (int) dimension.getHeight();
-                        }
-                    } catch (Exception e) {
-                        LOGGER.log(
-                                Level.WARNING, "Error getting LegendURL dimensions from sample", e);
+            } else if (sampleStyle != null) {
+                // delegate to legendSample the calculus of proper legend size for
+                // the given style
+                Dimension dimension;
+                try {
+                    dimension = legendSample.getLegendURLSize(sampleStyle);
+                    if (dimension != null) {
+                        legendWidth = (int) dimension.getWidth();
+                        legendHeight = (int) dimension.getHeight();
                     }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Error getting LegendURL dimensions from sample", e);
                 }
-
-                String defaultFormat = GetLegendGraphicRequest.DEFAULT_FORMAT;
-
-                if (null == wmsConfig.getLegendGraphicOutputFormat(defaultFormat)) {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.warning(
-                                new StringBuffer("Default legend format (")
-                                        .append(defaultFormat)
-                                        .append(
-                                                ")is not supported (jai not available?), can't add LegendURL element")
-                                        .toString());
-                    }
-
-                    return;
-                }
-
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("Adding GetLegendGraphic call as LegendURL");
-                }
-
-                AttributesImpl attrs = new AttributesImpl();
-                attrs.addAttribute("", "width", "width", "", String.valueOf(legendWidth));
-
-                attrs.addAttribute("", "height", "height", "", String.valueOf(legendHeight));
-
-                start("LegendURL", attrs);
-
-                element("Format", defaultFormat);
-                attrs.clear();
-
-                String layerName = layer.prefixedName();
-                Map<String, String> params =
-                        params(
-                                "service",
-                                "WMS",
-                                "request",
-                                "GetLegendGraphic",
-                                "format",
-                                defaultFormat,
-                                "width",
-                                String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH),
-                                "height",
-                                String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT),
-                                "layer",
-                                layerName);
-                if (style != null) {
-                    params.put("style", style.getName());
-                }
-                String legendURL = buildURL(request.getBaseUrl(), "ows", params, URLType.SERVICE);
-
-                attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
-                attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendURL);
-                element("OnlineResource", null, attrs);
-
-                end("LegendURL");
             }
+
+            if (null == wmsConfig.getLegendGraphicOutputFormat(defaultFormat)) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning(
+                            new StringBuffer("Default legend format (")
+                                    .append(defaultFormat)
+                                    .append(
+                                            ")is not supported (jai not available?), can't add LegendURL element")
+                                    .toString());
+                }
+
+                return;
+            }
+
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Adding GetLegendGraphic call as LegendURL");
+            }
+
+            AttributesImpl attrs = new AttributesImpl();
+            attrs.addAttribute("", "width", "width", "", String.valueOf(legendWidth));
+
+            attrs.addAttribute("", "height", "height", "", String.valueOf(legendHeight));
+
+            start("LegendURL", attrs);
+
+            element("Format", defaultFormat);
+            attrs.clear();
+
+            String layerName = layer.prefixedName();
+            Map<String, String> params =
+                    params(
+                            "service",
+                            "WMS",
+                            "request",
+                            "GetLegendGraphic",
+                            "format",
+                            defaultFormat,
+                            "width",
+                            String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH),
+                            "height",
+                            String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT),
+                            "layer",
+                            layerName);
+            if (style != null) {
+                params.put("style", style.getName());
+            }
+            String legendURL = buildURL(request.getBaseUrl(), "ows", params, URLType.SERVICE);
+
+            attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
+            attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
+            attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendURL);
+            element("OnlineResource", null, attrs);
+
+            end("LegendURL");
         }
 
         /**

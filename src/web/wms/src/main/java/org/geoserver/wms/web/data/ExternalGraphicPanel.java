@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,6 +65,8 @@ public class ExternalGraphicPanel extends Panel {
 
     private Model<String> showhideStyleModel = new Model<String>("");
 
+    private static String externalURIPattern = "^(http|https|file)://.*$";
+
     public ExternalGraphicPanel(
             String id, final CompoundPropertyModel<StyleInfo> styleModel, final Form<?> styleForm) {
         super(id, styleModel);
@@ -103,11 +106,6 @@ public class ExternalGraphicPanel extends Panel {
                         }
                         if (uri != null && uri.isAbsolute()) {
                             try {
-                                String baseUrl = baseURL(onlineResource.getForm());
-                                if (!value.startsWith(baseUrl)) {
-                                    onlineResource.warn(
-                                            "Recommend use of styles directory at " + baseUrl);
-                                }
                                 URL url = uri.toURL();
                                 URLConnection conn = url.openConnection();
                                 if ("text/html".equals(conn.getContentType())) {
@@ -147,15 +145,11 @@ public class ExternalGraphicPanel extends Panel {
                                 if (test == null) {
                                     test = resources.find(styles, path);
                                 }
-                                if (test == null) {
-                                    ValidationError error = new ValidationError();
-                                    error.setMessage("File not found in styles directory");
-                                    error.addKey("imageNotFound");
-                                    input.error(error);
-                                }
-                            } catch (IOException e) {
+
+                            } catch (Exception e) {
                                 ValidationError error = new ValidationError();
-                                error.setMessage("File not found in styles directory");
+                                error.setMessage(
+                                        "File not found in styles directory or given path is invalid");
                                 error.addKey("imageNotFound");
                                 input.error(error);
                             }
@@ -308,11 +302,8 @@ public class ExternalGraphicPanel extends Panel {
                 String external = onlineResource.getModelObject().toString();
 
                 URI uri = new URI(external);
-                if (uri.isAbsolute()) {
-                    url = uri.toURL();
-                    if (!external.startsWith(baseUrl)) {
-                        form.warn("Recommend use of styles directory at " + baseUrl);
-                    }
+                if (uri.isAbsolute() || isUrlOrFile(external)) {
+                    url = uri.toURL();                  
                 } else {
                     WorkspaceInfo wsInfo = ((StyleInfo) getDefaultModelObject()).getWorkspace();
                     if (wsInfo != null) {
@@ -357,5 +348,9 @@ public class ExternalGraphicPanel extends Panel {
         autoFill.setVisible(b);
         hide.setVisible(b);
         show.setVisible(!b);
+    }
+
+    private boolean isUrlOrFile(final String uri) {
+        return externalURIPattern.matches(uri);
     }
 }

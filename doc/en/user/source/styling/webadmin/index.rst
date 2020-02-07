@@ -228,7 +228,7 @@ The :guilabel:`Legend` area allows you to add, modify, or delete a custom style,
    * - :guilabel:`Add legend`
      - Allows you to use a custom legend
    * - :guilabel:`Online Resource`
-     - Path to the custom legend graphic to use. Can be a URL or a local path (relative to the style file path). See :ref:`datadir_structure` for a description of the styles directory.
+     - Path to the custom legend graphic to use. Can be a URL, URI or a local path (relative to the style file path). See :ref:`datadir_structure` for a description of the styles directory.
    * - :guilabel:`Auto-detect image size and type`
      - Populates the :guilabel:`Width`, :guilabel:`Height`, and :guilabel:`Format` options for the :guilabel:`Online Resource`
    * - :guilabel:`Width`

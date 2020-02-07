@@ -18,9 +18,17 @@ package org.geoserver.test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.DataAccess;
@@ -143,6 +151,77 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
     }
 
     @Test
+    public void testGetAllNormalizedMultiValuesWfsJson11() throws Exception {
+        // check if this is an online test with a JDBC based data store
+        if (notJdbcBased()) {
+            // not a JDBC online test
+            return;
+        }
+        // execute the WFS 1.1.0 request
+        String request =
+                "wfs?request=GetFeature&version=1.1.0&typename=st_gml31:Station_gml31"
+                        + "&outputFormat=application/json";
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(2, features.size());
+        // check stations json content
+        JSONObject station = getStationById(features, "st.1");
+        assertNotNull(station);
+        checkStationJson1(station);
+        station = getStationById(features, "st.2");
+        assertNotNull(station);
+        checkStationJson2(station);
+    }
+
+    private void checkStationJson1(JSONObject station) {
+        JSONArray tags = station.getJSONObject("properties").getJSONArray("tag");
+        assertEquals(3, tags.size());
+        assertTagsArrayHasTagContent(tags, "st_1_tag_a", 1);
+        assertTagsArrayHasTagContent(tags, "st_1_tag_b", 2);
+        assertTagsArrayHasTagContent(tags, "europe", 3);
+    }
+
+    private void checkStationJson2(JSONObject station) {
+        JSONArray tags = station.getJSONObject("properties").getJSONArray("tag");
+        assertEquals(3, tags.size());
+        assertTagsArrayHasTagContent(tags, "st_2_tag_a", 4);
+        assertTagsArrayHasTagContent(tags, "st_2_tag_b", 5);
+        assertTagsArrayHasTagContent(tags, "europe", 6);
+    }
+
+    private void assertTagsArrayHasTagContent(JSONArray tags, String value, int code) {
+        assertTrue(
+                "Tag value=" + value + ", code=" + code + " not found",
+                toJsonObjectStream(tags).anyMatch(tag -> isTagContent(tag, value, code)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Stream<JSONObject> toJsonObjectStream(JSONArray array) {
+        return array.stream().filter(obj -> obj instanceof JSONObject).map(obj -> (JSONObject) obj);
+    }
+
+    private boolean isTagContent(JSONObject tag, String value, int code) {
+        try {
+            String valueJson = tag.getString("value");
+            int codeJson = tag.getInt("@code");
+            return (Objects.equals(value, valueJson) && Objects.equals(code, codeJson));
+        } catch (JSONException ex) {
+            // a required key not found
+        }
+        return false;
+    }
+
+    private JSONObject getStationById(JSONArray features, String id) {
+        for (Object obj : features) {
+            if (!(obj instanceof JSONObject)) continue;
+            JSONObject station = (JSONObject) obj;
+            if (Objects.equals(station.getString("id"), id)) return station;
+        }
+        // well, not found station json feature
+        return null;
+    }
+
+    @Test
     public void testGetAllNormalizedMultiValuesWfs20() throws Exception {
         // check if this is an online test with a JDBC based data store
         if (notJdbcBased()) {
@@ -162,6 +241,29 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         // check that the expected stations and measurements are present
         checkStation1Gml32(document);
         checkStation2Gml32(document);
+    }
+
+    @Test
+    public void testGetAllNormalizedMultiValuesWfsJson20() throws Exception {
+        // check if this is an online test with a JDBC based data store
+        if (notJdbcBased()) {
+            // not a JDBC online test
+            return;
+        }
+        // execute the WFS 2.0 request
+        String request =
+                "wfs?request=GetFeature&version=2.0&typename=st_gml32:Station_gml32"
+                        + "&outputFormat=application/json";
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(2, features.size());
+        // check stations json content
+        JSONObject station = getStationById(features, "st.1");
+        assertNotNull(station);
+        checkStationJson1(station);
+        station = getStationById(features, "st.2");
+        assertNotNull(station);
+        checkStationJson2(station);
     }
 
     @Test

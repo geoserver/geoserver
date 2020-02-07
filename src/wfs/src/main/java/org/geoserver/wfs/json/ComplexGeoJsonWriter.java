@@ -379,14 +379,14 @@ class ComplexGeoJsonWriter {
     @SuppressWarnings("unchecked")
     private void encodeProperty(Property property) {
         // these extra attributes should be seen as XML attributes
-        Map<NameImpl, String> attributes =
-                (Map<NameImpl, String>) property.getUserData().get(Attributes.class);
+        Map<NameImpl, Object> attributes =
+                (Map<NameImpl, Object>) property.getUserData().get(Attributes.class);
         String attributeName = property.getName().getLocalPart();
         encodeProperty(attributeName, property, attributes);
     }
 
     private void encodeProperty(
-            String attributeName, Property property, Map<NameImpl, String> attributes) {
+            String attributeName, Property property, Map<NameImpl, Object> attributes) {
         if (property instanceof ComplexAttribute) {
             // check if we have a simple content
             ComplexAttribute complexAttribute = (ComplexAttribute) property;
@@ -401,9 +401,9 @@ class ComplexGeoJsonWriter {
                 if (isGMLPropertyType(complexAttribute)) {
                     Collection<? extends Property> value = complexAttribute.getValue();
                     Property nested = value.iterator().next();
-                    Map<NameImpl, String> nestedAttributes =
-                            (Map<NameImpl, String>) nested.getUserData().get(Attributes.class);
-                    Map<NameImpl, String> mergedAttributes =
+                    Map<NameImpl, Object> nestedAttributes =
+                            (Map<NameImpl, Object>) nested.getUserData().get(Attributes.class);
+                    Map<NameImpl, Object> mergedAttributes =
                             mergeMaps(attributes, nestedAttributes);
                     encodeProperty(attributeName, nested, mergedAttributes);
                 } else {
@@ -559,7 +559,7 @@ class ComplexGeoJsonWriter {
 
     /** Encode a complex attribute as a JSON object. */
     private void encodeComplexAttribute(
-            String name, ComplexAttribute attribute, Map<NameImpl, String> attributes) {
+            String name, ComplexAttribute attribute, Map<NameImpl, Object> attributes) {
         if (isFullFeature(attribute)) {
             jsonWriter.key(name);
             encodeFeature((Feature) attribute, false);
@@ -600,7 +600,7 @@ class ComplexGeoJsonWriter {
      * the value and attributes values.
      */
     private void encodeSimpleAttribute(
-            String name, Object value, Map<NameImpl, String> attributes) {
+            String name, Object value, Map<NameImpl, Object> attributes) {
         // let's see if we need to encode attributes or simple value
         if (attributes == null || attributes.isEmpty()) {
             // add a simple JSON attribute to the current object
@@ -623,7 +623,7 @@ class ComplexGeoJsonWriter {
      * attribute name local part will be used as the property name. Attributes with a NULL value
      * will not be encoded. This method assumes that it is already in an object context.
      */
-    private void encodeAttributes(Map<NameImpl, String> attributes) {
+    private void encodeAttributes(Map<NameImpl, Object> attributes) {
         attributes.forEach(
                 (name, value) -> {
                     if (value != null) {

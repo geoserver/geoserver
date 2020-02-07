@@ -7,7 +7,7 @@ package org.geoserver.wps.gs.download;
 
 import it.geosolutions.imageio.stream.output.ImageOutputStreamAdapter;
 import it.geosolutions.io.output.adapter.OutputStreamAdapter;
-import java.awt.Color;
+import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -22,10 +22,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.stream.ImageOutputStream;
-import javax.media.jai.BorderExtender;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
+import javax.media.jai.*;
 import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -47,15 +44,22 @@ import org.geotools.data.Parameter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.metadata.i18n.ErrorKeys;
+import org.geotools.metadata.i18n.Errors;
 import org.geotools.process.ProcessException;
 import org.geotools.process.raster.BandSelectProcess;
 import org.geotools.process.raster.CropCoverage;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
-import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
+import org.geotools.renderer.crs.ProjectionHandler;
+import org.geotools.renderer.crs.ProjectionHandlerFinder;
+import org.geotools.renderer.crs.WrappingProjectionHandler;
+import org.geotools.renderer.lite.gridcoverage2d.GridCoverageReaderHelper;
+import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRendererUtilities;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.RasterSymbolizerImpl;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -419,40 +423,106 @@ class RasterDownload {
                     IOException {
 
         if (isImposedTargetSize) {
-            // Delegate the GridCoverageRenderer to do all the work of reprojection/interpolation
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Target Size has been imposed");
+            // mimic the GridCoverageRenderer logic without raster symbolization in place
+            // and other colorMap related steps
+            CoordinateReferenceSystem sourceCRS = reader.getCoordinateReferenceSystem();
+            Rectangle destinationSize = new Rectangle(0, 0, targetSizeX, targetSizeY);
 
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Target Size has been imposed. Delegating to GridCoverageRenderer");
+            if (targetCRS == null) {
+                throw new TransformException(
+                        Errors.format(ErrorKeys.CANT_SEPARATE_CRS_$1, targetCRS));
             }
-            GridCoverageRenderer renderer =
-                    new GridCoverageRenderer(
-                            targetCRS,
-                            targetEnvelope,
-                            new Rectangle(0, 0, targetSizeX, targetSizeY),
-                            null,
-                            null);
+            GeneralEnvelope destinationEnvelope =
+                    new GeneralEnvelope(new ReferencedEnvelope(targetEnvelope, targetCRS));
+            AffineTransform finalWorldToGrid =
+                    computeWorldToGrid(destinationEnvelope, destinationSize);
+            Hints hints = prepareHints(interpolation);
 
-            Color color =
-                    backgroundValues != null
-                            ? new Color(
-                                    (int) backgroundValues[0],
-                                    (int) backgroundValues[0],
-                                    (int) backgroundValues[0])
-                            : Color.BLACK;
-            RenderedImage ri =
-                    renderer.renderImage(
-                            reader, readParameters, RS, interpolation, color, 512, 512);
-            if (ri == null) {
+            List<GridCoverage2D> coverages;
+            // read all the coverages we need, cut and whatnot
+            GridCoverageReaderHelper rh =
+                    new GridCoverageReaderHelper(
+                            reader,
+                            destinationSize,
+                            ReferencedEnvelope.reference(destinationEnvelope),
+                            interpolation,
+                            hints);
+
+            ProjectionHandler handler =
+                    ProjectionHandlerFinder.getHandler(rh.getReadEnvelope(), sourceCRS, true);
+            if (handler instanceof WrappingProjectionHandler) {
+                ((WrappingProjectionHandler) handler).setDatelineWrappingCheckEnabled(false);
+            }
+            coverages = rh.readCoverages(readParameters, handler, GC_FACTORY);
+            coverages =
+                    GridCoverageRendererUtilities.forceToValidBounds(
+                            coverages, handler, backgroundValues, targetCRS, hints);
+
+            // reproject if needed
+            coverages =
+                    GridCoverageRendererUtilities.reproject(
+                            coverages,
+                            targetCRS,
+                            interpolation,
+                            destinationEnvelope,
+                            backgroundValues,
+                            GC_FACTORY,
+                            hints);
+
+            // displace them if needed via a projection handler
+            coverages =
+                    GridCoverageRendererUtilities.displace(
+                            coverages,
+                            handler,
+                            destinationEnvelope,
+                            sourceCRS,
+                            targetCRS,
+                            GC_FACTORY);
+
+            // remove displaced/reprojected coverages being outside of the destination envelope
+            GridCoverageRendererUtilities.removeNotIntersecting(coverages, destinationEnvelope);
+
+            List<GridCoverage2D> transformedCoverages = new ArrayList<>();
+            for (GridCoverage2D displaced : coverages) {
+                GridCoverage2D transformed =
+                        GridCoverageRendererUtilities.affine(
+                                displaced,
+                                interpolation,
+                                finalWorldToGrid,
+                                backgroundValues,
+                                true,
+                                GC_FACTORY,
+                                hints);
+                if (transformed != null) {
+                    transformedCoverages.add(transformed);
+                }
+            }
+            coverages = transformedCoverages;
+
+            GridCoverage2D mosaicked =
+                    GridCoverageRendererUtilities.mosaicSorted(
+                            coverages, destinationEnvelope, backgroundValues, hints);
+
+            // the mosaicking can cut off images that are just slightly out of the
+            // request (effect of the read buffer + a request touching the actual data area)
+            if (mosaicked == null) {
+                return null;
+            }
+
+            // at this point, we might have a coverage that's still slightly larger
+            // than the one requested, crop as needed
+            GridCoverage2D cropped =
+                    GridCoverageRendererUtilities.crop(
+                            mosaicked, destinationEnvelope, false, backgroundValues, hints);
+
+            if (cropped == null || cropped.getRenderedImage() == null) {
                 throw new WPSException(
                         "The reader did not return anything"
                                 + "It normally means there is nothing there, or the data got filtered out by the ROI or filter");
             }
-
-            // Get the parentCoverage associated to the renderedImage returned by the
-            // GridCoverageRenderer
-            return (GridCoverage2D) ri.getProperty("ParentCoverage");
+            return cropped;
         } else {
             // If not, proceed with standard read and reproject
 
@@ -485,6 +555,56 @@ class RasterDownload {
             }
             return gridCoverage;
         }
+    }
+
+    private AffineTransform computeWorldToGrid(
+            GeneralEnvelope destinationEnvelope, Rectangle destinationSize)
+            throws NoninvertibleTransformException {
+        final GridToEnvelopeMapper gridToEnvelopeMapper = new GridToEnvelopeMapper();
+        gridToEnvelopeMapper.setPixelAnchor(PixelInCell.CELL_CORNER);
+        gridToEnvelopeMapper.setGridRange(new GridEnvelope2D(destinationSize));
+        gridToEnvelopeMapper.setEnvelope(destinationEnvelope);
+        AffineTransform finalGridToWorld =
+                new AffineTransform(gridToEnvelopeMapper.createAffineTransform());
+        AffineTransform finalWorldToGrid = finalGridToWorld.createInverse();
+        return finalWorldToGrid;
+    }
+
+    private boolean needReprojection(
+            List<GridCoverage2D> coverages, CoordinateReferenceSystem targetCRS) {
+        for (GridCoverage2D coverage : coverages) {
+            if (coverage == null) {
+                continue;
+            }
+            final CoordinateReferenceSystem coverageCRS = coverage.getCoordinateReferenceSystem();
+            if (!CRS.equalsIgnoreMetadata(coverageCRS, targetCRS)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Hints prepareHints(Interpolation interpolation) {
+        // Interpolation
+        Hints hints = new Hints(new RenderingHints(JAI.KEY_INTERPOLATION, interpolation));
+        hints.put(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
+        hints.add(
+                new RenderingHints(
+                        JAI.KEY_BORDER_EXTENDER,
+                        BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+        if (interpolation instanceof InterpolationNearest) {
+            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL, Boolean.FALSE));
+            hints.add(new RenderingHints(JAI.KEY_TRANSFORM_ON_COLORMAP, Boolean.TRUE));
+        } else {
+            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL, Boolean.TRUE));
+            hints.add(new RenderingHints(JAI.KEY_TRANSFORM_ON_COLORMAP, Boolean.FALSE));
+        }
+
+        // Tile Size
+        final ImageLayout layout = new ImageLayout2();
+        layout.setTileGridXOffset(0).setTileGridYOffset(0).setTileHeight(512).setTileWidth(512);
+        hints.add(new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout));
+        return hints;
     }
 
     /**

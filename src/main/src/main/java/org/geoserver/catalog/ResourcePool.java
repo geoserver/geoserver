@@ -137,6 +137,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
 import org.vfny.geoserver.global.GeoServerFeatureSource;
+import org.vfny.geoserver.global.GeoserverComplexFeatureSource;
 import org.vfny.geoserver.util.DataStoreUtils;
 import org.xml.sax.EntityResolver;
 import si.uom.NonSI;
@@ -1397,12 +1398,14 @@ public class ResourcePool {
      * type info on the provided data access. We will first search based on the published name
      * (layer name) and only if this search fails we will search based on the native name.
      */
+    @SuppressWarnings("unchecked")
     private FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess, FeatureTypeInfo info)
             throws IOException {
+        FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
         try {
             // first try to search based on the published name, to avoid any unexpected aliasing
-            return dataAccess.getFeatureSource(info.getQualifiedName());
+            featureSource = dataAccess.getFeatureSource(info.getQualifiedName());
         } catch (Exception exception) {
             LOGGER.log(
                     Level.FINE,
@@ -1410,8 +1413,12 @@ public class ResourcePool {
                             "Error retrieving feature type using published name '%s'.",
                             info.getQualifiedName()));
             // let's try now to search based on the native name
-            return dataAccess.getFeatureSource(info.getQualifiedNativeName());
+            featureSource = dataAccess.getFeatureSource(info.getQualifiedNativeName());
         }
+        // return a decorated feature source, capable of handling the layer definition default CQL
+        // filter
+        return new GeoserverComplexFeatureSource(
+                (FeatureSource<FeatureType, Feature>) featureSource, info);
     }
 
     private Double getTolerance(FeatureTypeInfo info) {

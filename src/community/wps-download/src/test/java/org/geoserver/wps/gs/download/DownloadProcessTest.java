@@ -14,6 +14,7 @@ import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageio.plugins.tiff.PrivateTIFFTagSet;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,6 +104,8 @@ public class DownloadProcessTest extends WPSTestSupport {
     private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
 
     private static QName MIXED_RES = new QName(WCS_URI, "mixedres", WCS_PREFIX);
+    private static QName SHORT = new QName(WCS_URI, "short", WCS_PREFIX);
+    private static QName FLOAT = new QName(WCS_URI, "float", WCS_PREFIX);
 
     private static Set<String> GTIFF_EXTENSIONS = new HashSet<String>();
     private static Set<String> PNG_EXTENSIONS = new HashSet<String>();
@@ -205,6 +208,8 @@ public class DownloadProcessTest extends WPSTestSupport {
         super.onSetUp(testData);
         testData.addRasterLayer(MockData.USA_WORLDIMG, "usa.zip", MockData.PNG, getCatalog());
         testData.addRasterLayer(MIXED_RES, "mixedres.zip", null, getCatalog());
+        testData.addRasterLayer(SHORT, "short.zip", null, getCatalog());
+        testData.addRasterLayer(FLOAT, "float.zip", null, getCatalog());
     }
 
     @Override
@@ -1257,6 +1262,115 @@ public class DownloadProcessTest extends WPSTestSupport {
                     -123.95304462109999, gc.getEnvelope().getUpperCorner().getOrdinate(0), 1E-6);
             Assert.assertEquals(
                     54.0861661371, gc.getEnvelope().getUpperCorner().getOrdinate(1), 1E-6);
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    /**
+     * Test download of raster data. The output is scaled to fit exactly the provided size. Check
+     * that Datatype won't be modified
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadScaledRasterPreservingDatatype() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits =
+                new DownloadEstimatorProcess(
+                        new StaticDownloadServiceConfiguration(), getGeoServer());
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess =
+                new DownloadProcess(getGeoServer(), limits, resourceManager);
+
+        // Download the coverage as tiff
+        File rasterZip =
+                downloadProcess.execute(
+                        getLayerId(SHORT), // layerName
+                        null, // filter
+                        "image/tiff", // outputFormat
+                        null, // targetCRS
+                        CRS.decode("EPSG:4326", true), // roiCRS
+                        null, // roi
+                        false, // cropToGeometry
+                        null, // interpolation
+                        80, // targetSizeX
+                        80, // targetSizeY
+                        null, // bandSelectIndices
+                        null, // Writing params
+                        new NullProgressListener() // progressListener
+                        );
+
+        // Final checks on the result. This test only focus on checking that the
+        // datatype get preserved
+        Assert.assertNotNull(rasterZip);
+        GeoTiffReader reader = null;
+        GridCoverage2D gc = null;
+        try {
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+
+            Assert.assertNotNull(gc);
+
+            // check coverage size
+            Rectangle2D originalGridRange = (GridEnvelope2D) reader.getOriginalGridRange();
+            Assert.assertEquals(80, Math.round(originalGridRange.getWidth()));
+            Assert.assertEquals(80, Math.round(originalGridRange.getHeight()));
+
+            // This JUNIT test only focus on checking that the datatype get preserved
+            Assert.assertEquals(
+                    DataBuffer.TYPE_SHORT, gc.getRenderedImage().getSampleModel().getDataType());
+
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+
+        rasterZip =
+                downloadProcess.execute(
+                        getLayerId(FLOAT), // layerName
+                        null, // filter
+                        "image/tiff", // outputFormat
+                        null, // targetCRS
+                        CRS.decode("EPSG:4326", true), // roiCRS
+                        null, // roi
+                        false, // cropToGeometry
+                        null, // interpolation
+                        80, // targetSizeX
+                        80, // targetSizeY
+                        null, // bandSelectIndices
+                        null, // Writing params
+                        new NullProgressListener() // progressListener
+                        );
+
+        Assert.assertNotNull(rasterZip);
+        try {
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+            Assert.assertNotNull(gc);
+
+            // This JUNIT test only focus on checking that the datatype get preserved
+            Assert.assertEquals(
+                    DataBuffer.TYPE_FLOAT, gc.getRenderedImage().getSampleModel().getDataType());
+
         } finally {
             if (gc != null) {
                 CoverageCleanerCallback.disposeCoverage(gc);

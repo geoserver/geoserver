@@ -476,17 +476,22 @@ public class ClassifierController extends BaseSLDServiceController {
         if (cm0.getQuantity() instanceof Literal) {
             // wrap it between two values that are slightly below and above
             Float value = cm0.getQuantity().evaluate(null, Float.class);
-            int intBits = Float.floatToIntBits(value);
-            ColorMapEntry cm1 = new ColorMapEntryImpl();
-            cm1.setQuantity(FF.literal(Float.intBitsToFloat(intBits + 1)));
-            cm0.setQuantity(FF.literal(Float.intBitsToFloat(intBits - 1)));
+            if (Float.isInfinite(value)) {
+                // all must be the same color, switch to ramp mode
+                colorMap.setType(ColorMap.TYPE_RAMP);
+            } else {
+                int intBits = Float.floatToIntBits(value);
+                ColorMapEntry cm1 = new ColorMapEntryImpl();
+                cm1.setQuantity(FF.literal(Float.intBitsToFloat(intBits + 1)));
+                cm0.setQuantity(FF.literal(Float.intBitsToFloat(intBits - 1)));
 
-            cm1.setColor(cm0.getColor());
-            cm1.setLabel(cm0.getLabel());
-            cm1.setOpacity(cm0.getOpacity());
+                cm1.setColor(cm0.getColor());
+                cm1.setLabel(cm0.getLabel());
+                cm1.setOpacity(cm0.getOpacity());
 
-            colorMap.addColorMapEntry(cm1);
-            colorMap.setType(ColorMap.TYPE_INTERVALS);
+                colorMap.addColorMapEntry(cm1);
+                colorMap.setType(ColorMap.TYPE_INTERVALS);
+            }
         } else {
             // make it formally valid, but the value match will not really not work
             colorMap.setType(ColorMap.TYPE_VALUES);

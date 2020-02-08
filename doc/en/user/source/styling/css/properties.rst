@@ -54,6 +54,17 @@ Point symbology
       * boolean
       * If true the point symbol will be consider an obstable for labels, no label will overlap it
       * no
+    - * ``mark-anchor``
+      * expression 
+      * The part of the mark to place over the point or middle of the polygon.
+        This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge.
+        y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label.
+      * yes
+    - * ``mark-offset``
+      * expression 
+      * This is for fine-tuning mark-anchor. x and y values specify pixel offsets to adjust the mark position.
+      * yes
+
 
 .. _css_properties_line:
 
@@ -260,6 +271,29 @@ Text symbology (labeling) - part 1
       * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
       * The type of the image referenced by a url()
       * No, defaults to 'image/jpeg'
+    - * ``shield-placement``
+      * one of ``label``, ``indipendent``, defaults to ``label``
+      * Placement of the shield relative to the label. The default is ``label``, meaning the shield
+        will move along with the label and be centered with it (classic road shield). ``independent``
+        places the shield independently instead, using its own anchor and offset properties. The latter
+        is useful to build "point and label" compositions (e.g., city labels) so that the point won't
+        show up if the label does not (as an alternative to a mark and label setup, where the mark
+        will always show up).
+      * no
+    - * ``shield-anchor``
+      * expression 
+      * The part of the shield to place over the point or middle of the polygon.
+        This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge.
+        y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label.
+        This property activates only if the ``shield-placement`` one is set to ``independent``, otherwise
+        the shield will be centered with the label.
+      * yes
+    - * ``shield-offset``
+      * expression 
+      * This is for fine-tuning shield-anchor. x and y values specify pixels to adjust the shield position.
+        This property activates only if the ``shield-placement`` one is set to ``independent``, otherwise
+        the shield will be centered with the label.
+      * yes
     - * ``font-family``
       * string
       * The name of the font or font family to use for labels

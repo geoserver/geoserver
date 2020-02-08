@@ -725,9 +725,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "random-rotation","random-seed","random-symbol-count","random-tile-size","shield-margin",
     "shield-resize", "stroke-label-obstacle","halo-color",
     "halo-opacity","halo-radius","label","label-anchor","label-geometry","label-offset","label-rotation","label-z-index",
-    "mark","mark-geometry","mark-mime","mark-rotation","mark-size" ,"raster-channels","raster-color-map",
+    "mark","mark-geometry","mark-mime","mark-rotation","mark-size","mark-anchor","mark-offset","raster-channels","raster-color-map",
     "raster-color-map-type","raster-contrast-enhancement","raster-gamma","raster-geometry","raster-opacity",
-    "raster-z-index","rotation","shield","shield-mime","size","sort-by","sort-by-group","stroke","stroke-dasharray",
+    "raster-z-index","rotation","shield","shield-mime","shield-anchor","shield-offset","shield-placement","size","sort-by","sort-by-group","stroke","stroke-dasharray",
     "stroke-dashoffset","stroke-geometry","stroke-linecap","stroke-linejoin","stroke-mime","stroke-offset",
     "stroke-opacity","stroke-repeat","stroke-rotation","stroke-size","stroke-width","transform", "z-index", "composite", 
     "composite-base" ],
@@ -736,7 +736,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   var geoValueKeywords_ = [ "auto","bevel","color-map-entry(","false","free","grid","histogram","image/jpeg","image/png"
     ,"image/svg+xml","intervals","italic","miter","none","normal","normalize","oblique","proportional","ramp","repeat",
     "round","stipple","stretch","symbol(","true","url(","values", "hsl(", "saturate(", "desaturate(", "darken(", "lighten(", "spin(",
-    "mix(", "tint(", "shade(", "grayscale(", "constrast(" ],
+    "mix(", "tint(", "shade(", "grayscale(", "constrast(", "label", "independent" ],
     geoValueKeywords = keySet(geoValueKeywords_);
   
   CodeMirror.defineMIME("text/geocss", {

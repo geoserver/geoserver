@@ -76,8 +76,10 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.xml.styling.SLDParser;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -877,6 +879,75 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[2], "#0000FF", PropertyIsEqualTo.class);
     }
 
+    @Test
+    public void testCustomRampOneEntry() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=1&method=jenks&ramp=custom&open=false&startColor=0x00ff00&midColor=0xffff00&endColor=0xff0000";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        System.out.println(baos.toString());
+        Rule[] rules =
+                checkRules(
+                        resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 1);
+
+        checkRule(rules[0], "#00FF00", And.class);
+    }
+
+    @Test
+    public void testCustomRampTwoEntries() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=2&method=jenks&ramp=custom&open=true&startColor=0x00ff00&midColor=0xffff00&endColor=0xff0000";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        System.out.println(baos.toString());
+        Rule[] rules =
+                checkRules(
+                        resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 2);
+
+        checkRule(rules[0], "#00FF00", PropertyIsLessThan.class);
+        checkRule(rules[1], "#FF0000", PropertyIsGreaterThanOrEqualTo.class);
+    }
+
+    @Test
+    public void testCustomRampThreeEntries() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=3&method=jenks&ramp=custom&open=true&startColor=0x00ff00&midColor=0xffff00&endColor=0xff0000";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        System.out.println(baos.toString());
+        Rule[] rules =
+                checkRules(
+                        resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
+
+        checkRule(rules[0], "#00FF00", PropertyIsLessThan.class);
+        checkRule(rules[1], "#FFFF00", And.class);
+        checkRule(rules[2], "#FF0000", PropertyIsGreaterThanOrEqualTo.class);
+    }
+
     private Rule[] checkRules(String resultXml, int classes) {
         Rule[] rules = checkSLD(resultXml);
         assertEquals(classes, rules.length);
@@ -899,11 +970,11 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     private Filter checkRule(Rule rule, String color, Class<?> filterType) {
         assertNotNull(rule.getFilter());
-        assertTrue(filterType.isAssignableFrom(rule.getFilter().getClass()));
-        assertNotNull(rule.getSymbolizers());
-        assertEquals(1, rule.getSymbolizers().length);
-        assertTrue(rule.getSymbolizers()[0] instanceof PointSymbolizer);
-        PointSymbolizer symbolizer = (PointSymbolizer) rule.getSymbolizers()[0];
+        assertThat(rule.getFilter(), instanceOf(filterType));
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertThat(rule.symbolizers().get(0), instanceOf(PointSymbolizer.class));
+        PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().get(0);
         assertNotNull(symbolizer.getGraphic());
         assertEquals(1, symbolizer.getGraphic().getMarks().length);
         assertNotNull(symbolizer.getGraphic().getMarks()[0].getFill());
@@ -1757,5 +1828,26 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 cm1.getQuantity().evaluate(null, Float.class), Matchers.greaterThanOrEqualTo(10f));
         assertEquals("#FF071C", cm1.getColor().evaluate(null, String.class));
         assertEquals(1, cm1.getOpacity().evaluate(null, Double.class), 0);
+    }
+
+    @Test
+    public void testCustomRampSingleValue() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:singleByteNoData/"
+                        + getServiceUrl()
+                        + ".xml?continuous=false&endColor=0xff0000&fullSLD=true"
+                        + "&intervals=7&method=jenks&midColor=0xffff00&ramp=custom"
+                        + "&reverse=true&startColor=0x00ff00&strokeWeight=-1&open=true";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        assertEquals(ColorMap.TYPE_RAMP, cm.getType());
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(1, entries.length);
+        ColorMapEntry cm0 = cm.getColorMapEntry(0);
+        assertEquals("#00FF00", cm0.getColor().evaluate(null, String.class));
+        assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
     }
 }

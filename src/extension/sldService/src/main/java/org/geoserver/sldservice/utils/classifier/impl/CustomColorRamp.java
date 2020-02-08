@@ -100,10 +100,21 @@ public class CustomColorRamp implements ColorRamp {
             if (midColor == null) {
                 interpolate(colors, startColor, endColor, classNum - 1);
             } else {
-                mid = classes / 2;
-                int rest = classes - mid;
-                interpolate(colors, startColor, midColor, mid);
-                interpolate(colors, midColor, endColor, rest, true);
+                if (classes == 1) {
+                    colors.add(startColor);
+                } else if (classes == 2) {
+                    colors.add(startColor);
+                    colors.add(endColor);
+                } else if (classes == 3) {
+                    colors.add(startColor);
+                    colors.add(midColor);
+                    colors.add(endColor);
+                } else {
+                    mid = classes / 2;
+                    int rest = classes - mid;
+                    interpolate(colors, startColor, midColor, mid);
+                    interpolate(colors, midColor, endColor, rest, true);
+                }
             }
         }
     }

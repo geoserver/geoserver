@@ -76,6 +76,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
@@ -324,6 +325,31 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                         TIMERANGES.getPrefix(), TIMERANGES.getLocalPart(), CoverageInfo.class);
         Map<String, Serializable> parameters = ci.getParameters();
         assertEquals("NEAREST", parameters.get(OVERVIEW_POLICY.getName().toString()));
+    }
+
+    @Test
+    public void testApply() {
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        LayerInfo layer = catalog.getLayerByName(layerId);
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        FormTester ft = tester.newFormTester("publishedinfo");
+        String newTitle = "A test title";
+        ft.setValue("tabs:panel:theList:0:content:title", newTitle);
+        ft.submit("apply");
+        tester.executeAjaxEvent("publishedinfo:apply", "submit");
+        // no errors, and page is still the same
+        tester.assertNoErrorMessage();
+        assertThat(
+                tester.getLastRenderedPage(), Matchers.instanceOf(ResourceConfigurationPage.class));
+
+        // check the title was updated
+        assertEquals(newTitle, getCatalog().getLayerByName(layerId).getTitle());
     }
 
     @Test

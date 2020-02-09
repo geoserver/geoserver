@@ -33,6 +33,7 @@ import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geotools.factory.CommonFactoryFinder;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -449,5 +450,27 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.calculateLayerGroupBounds(lg);
         catalog.add(lg);
+    }
+
+    @Test
+    public void testApply() {
+        LayerGroupEditPage page =
+                new LayerGroupEditPage(
+                        new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        // Create the new page
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // Update the title
+        FormTester ft = tester.newFormTester("publishedinfo");
+        String newTitle = "A test title";
+        ft.setValue("tabs:panel:title", newTitle);
+        ft.submit("apply");
+        tester.executeAjaxEvent("publishedinfo:apply", "submit");
+        // no errors, and page is still the same
+        tester.assertNoErrorMessage();
+        assertThat(tester.getLastRenderedPage(), Matchers.instanceOf(LayerGroupEditPage.class));
+
+        // check the title was updated
+        assertEquals(newTitle, getCatalog().getLayerGroupByName("cite:bridges").getTitle());
     }
 }

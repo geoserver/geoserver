@@ -403,8 +403,8 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
                             setResponsePage(
                                     new LayerPage(task.getLayer(), pp) {
-                                        protected void onSuccessfulSave() {
-                                            super.onSuccessfulSave();
+                                        protected void onSuccessfulSave(boolean doReturn) {
+                                            super.onSuccessfulSave(doReturn);
 
                                             // update the item
                                             try {

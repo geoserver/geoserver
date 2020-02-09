@@ -15,6 +15,8 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
@@ -226,6 +228,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 };
         theForm.add(tabbedPanel);
         theForm.add(saveLink());
+        theForm.add(applyLink());
         theForm.add(cancelLink());
     }
 
@@ -283,7 +286,17 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
             @Override
             public void onSubmit() {
-                doSave();
+                doSave(true);
+            }
+        };
+    }
+
+    private AjaxSubmitLink applyLink() {
+        return new AjaxSubmitLink("apply") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                doSave(false);
             }
         };
     }
@@ -294,7 +307,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
      * <p>This implementation adds the necessary objects to the catalog, respecting the isNew flag,
      * and calls {@link #onSuccessfulSave()} upon success.
      */
-    protected void doSave() {
+    protected void doSave(boolean doReturn) {
         try {
             for (Entry<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> e :
                     tabPanelCustomModels.entrySet()) {
@@ -329,7 +342,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 tabPanel.save();
             }
 
-            onSuccessfulSave();
+            onSuccessfulSave(doReturn);
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error saving layer", e);
             error(e.getMessage() == null ? e.toString() : e.getMessage());
@@ -367,8 +380,10 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     /** By default brings back the user to LayerPage, subclasses can override this behavior */
-    protected void onSuccessfulSave() {
-        doReturn();
+    protected void onSuccessfulSave(boolean doReturn) {
+        if (doReturn) {
+            doReturn();
+        }
     }
 
     /** By default brings back the user to LayerPage, subclasses can override this behavior */

@@ -78,6 +78,17 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testChangeNameApply() {
+        FormTester form = tester.newFormTester("rasterStoreForm");
+        form.setValue("namePanel:border:border_body:paramValue", "BlueMarbleModified");
+        form.submit("apply");
+
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(CoverageStoreEditPage.class);
+        assertNotNull(getCatalog().getStoreByName("BlueMarbleModified", CoverageStoreInfo.class));
+    }
+
+    @Test
     public void testNameRequired() {
         FormTester form = tester.newFormTester("rasterStoreForm");
         form.setValue("namePanel:border:border_body:paramValue", null);

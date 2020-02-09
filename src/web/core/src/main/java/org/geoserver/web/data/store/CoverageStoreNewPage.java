@@ -39,7 +39,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
     }
 
     @Override
-    protected void onSave(final CoverageStoreInfo info, AjaxRequestTarget target)
+    protected void onSave(final CoverageStoreInfo info, AjaxRequestTarget target, boolean doReturn)
             throws IllegalArgumentException {
         final Catalog catalog = getCatalog();
 
@@ -68,30 +68,41 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
                     "The coverage store could not be saved. Failure message: " + e.getMessage());
         }
 
-        onSuccessfulSave(info, catalog, savedStore);
+        onSuccessfulSave(info, catalog, savedStore, doReturn);
     }
 
     protected void onSuccessfulSave(
-            final CoverageStoreInfo info, final Catalog catalog, CoverageStoreInfo savedStore) {
-        // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
-        // coverage while the getotools coverage api does not allow for more than one
-        NewLayerPage layerChooserPage;
-        try {
-            catalog.getResourcePool().clone(savedStore, true);
-            // The ID is assigned by the catalog and therefore cannot be cloned
-            layerChooserPage = new NewLayerPage(savedStore.getId());
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.INFO, "Getting list of coverages for saved store " + info.getURL(), e);
-            // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.
-            try { // be extra cautious
-                catalog.remove(savedStore);
-            } catch (RuntimeErrorException shouldNotHappen) {
-                LOGGER.log(Level.WARNING, "Can't remove CoverageStoreInfo after adding it!", e);
+            final CoverageStoreInfo info,
+            final Catalog catalog,
+            CoverageStoreInfo savedStore,
+            boolean doReturn) {
+        if (doReturn) {
+            // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
+            // coverage while the getotools coverage api does not allow for more than one
+            NewLayerPage layerChooserPage;
+            try {
+                catalog.getResourcePool().clone(savedStore, true);
+                // The ID is assigned by the catalog and therefore cannot be cloned
+                layerChooserPage = new NewLayerPage(savedStore.getId());
+            } catch (RuntimeException e) {
+                LOGGER.log(
+                        Level.INFO,
+                        "Getting list of coverages for saved store " + info.getURL(),
+                        e);
+                // doh, can't present the list of coverages, means saving the StoreInfo is
+                // meaningless.
+                try { // be extra cautious
+                    catalog.remove(savedStore);
+                } catch (RuntimeErrorException shouldNotHappen) {
+                    LOGGER.log(Level.WARNING, "Can't remove CoverageStoreInfo after adding it!", e);
+                }
+                // tell the caller why we failed...
+                throw new IllegalArgumentException(e.getMessage(), e);
             }
-            // tell the caller why we failed...
-            throw new IllegalArgumentException(e.getMessage(), e);
-        }
 
-        setResponsePage(layerChooserPage);
+            setResponsePage(layerChooserPage);
+        } else {
+            setResponsePage(new CoverageStoreEditPage(savedStore.getId()));
+        }
     }
 }

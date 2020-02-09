@@ -14,13 +14,11 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
@@ -95,9 +93,10 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         // did not switch
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertNoErrorMessage();
-        
+
         // the change was applied
-        assertEquals(newTestURI, getCatalog().getNamespaceByPrefix(citeWorkspace.getName()).getURI());
+        assertEquals(
+                newTestURI, getCatalog().getNamespaceByPrefix(citeWorkspace.getName()).getURI());
     }
 
     @Test

@@ -19,6 +19,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
@@ -110,6 +111,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         // cancel/submit buttons
         paramsForm.add(new BookmarkablePageLink<StorePage>("cancel", StorePage.class));
         paramsForm.add(saveLink());
+        paramsForm.add(applyLink());
         paramsForm.setDefaultButton(saveLink());
 
         // feedback panel for error messages
@@ -136,7 +138,29 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
             protected void onSubmit(AjaxRequestTarget target, Form form) {
                 CoverageStoreInfo info = (CoverageStoreInfo) form.getModelObject();
                 try {
-                    onSave(info, target);
+                    onSave(info, target, true);
+                } catch (IllegalArgumentException e) {
+                    paramsForm.error(e.getMessage());
+                    target.add(paramsForm);
+                }
+            }
+        };
+    }
+
+    private GeoserverAjaxSubmitLink applyLink() {
+        return new GeoserverAjaxSubmitLink("apply", paramsForm, this) {
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                super.onError(target, form);
+                target.add(paramsForm);
+            }
+
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    CoverageStoreInfo info = (CoverageStoreInfo) form.getModelObject();
+                    onSave(info, target, false);
                 } catch (IllegalArgumentException e) {
                     paramsForm.error(e.getMessage());
                     target.add(paramsForm);
@@ -150,10 +174,13 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
      * "save" button is pressed.
      *
      * @param info the StoreInfo to save
+     * @param target The ajax request target
+     * @param doReturn If true, move to another page (layer selection or store list), if false, stay
      * @throws IllegalArgumentException with an appropriate error message if the save action can't
      *     be successfully performed
      */
-    protected abstract void onSave(CoverageStoreInfo info, AjaxRequestTarget target)
+    protected abstract void onSave(
+            CoverageStoreInfo info, AjaxRequestTarget target, boolean doReturn)
             throws IllegalArgumentException;
 
     @Override

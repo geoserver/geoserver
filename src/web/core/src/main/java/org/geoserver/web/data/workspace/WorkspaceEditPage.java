@@ -5,6 +5,11 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -70,12 +75,6 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
 import org.geotools.util.logging.Logging;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /** Allows editing a specific workspace */
 public class WorkspaceEditPage extends GeoServerSecuredPage {

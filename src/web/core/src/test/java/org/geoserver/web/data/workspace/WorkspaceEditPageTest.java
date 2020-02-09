@@ -14,11 +14,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
@@ -84,10 +86,39 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testValidURIApply() {
+        FormTester form = tester.newFormTester("form");
+        String newTestURI = "http://www.geoserver.org/abcde";
+        form.setValue("tabs:panel:uri", newTestURI);
+        form.submit("apply");
+
+        // did not switch
+        tester.assertRenderedPage(WorkspaceEditPage.class);
+        tester.assertNoErrorMessage();
+        
+        // the change was applied
+        assertEquals(newTestURI, getCatalog().getNamespaceByPrefix(citeWorkspace.getName()).getURI());
+    }
+
+    @Test
     public void testInvalidURI() {
         FormTester form = tester.newFormTester("form");
         form.setValue("tabs:panel:uri", "not a valid uri");
         form.submit("save");
+
+        tester.assertRenderedPage(WorkspaceEditPage.class);
+        List messages = tester.getMessages(FeedbackMessage.ERROR);
+        assertEquals(1, messages.size());
+        assertEquals(
+                "Invalid URI syntax: not a valid uri",
+                ((ValidationErrorFeedback) messages.get(0)).getMessage());
+    }
+
+    @Test
+    public void testInvalidURIApply() {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("tabs:panel:uri", "not a valid uri");
+        form.submit("apply");
 
         tester.assertRenderedPage(WorkspaceEditPage.class);
         List messages = tester.getMessages(FeedbackMessage.ERROR);

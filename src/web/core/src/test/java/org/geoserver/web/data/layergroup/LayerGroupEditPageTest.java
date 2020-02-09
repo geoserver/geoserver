@@ -29,6 +29,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
+import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.KeywordsEditor;
@@ -465,10 +466,9 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         String newTitle = "A test title";
         ft.setValue("tabs:panel:title", newTitle);
         ft.submit("apply");
-        tester.executeAjaxEvent("publishedinfo:apply", "submit");
         // no errors, and page is still the same
         tester.assertNoErrorMessage();
-        assertThat(tester.getLastRenderedPage(), Matchers.instanceOf(LayerGroupEditPage.class));
+        tester.assertRenderedPage(LayerGroupEditPage.class);
 
         // check the title was updated
         assertEquals(newTitle, getCatalog().getLayerGroupByName("cite:bridges").getTitle());

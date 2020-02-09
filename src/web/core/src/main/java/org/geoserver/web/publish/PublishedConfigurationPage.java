@@ -36,6 +36,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.resource.LayerModel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.security.LayerAccessDataRulePanel;
@@ -291,11 +292,11 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         };
     }
 
-    private AjaxSubmitLink applyLink() {
-        return new AjaxSubmitLink("apply") {
+    private Component applyLink() {
+        return new GeoserverAjaxSubmitLink("apply", this) {
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
                 doSave(false);
             }
         };

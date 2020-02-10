@@ -27,6 +27,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
     private final Catalog catalog;
     private final ToggleSwitch producer;
+    private final CatalogUtils catalogUtils = CatalogUtils.checking();
 
     public JMSCatalogPostModifyEventHandler(
             Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
@@ -57,6 +58,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
                 LOGGER.severe(
                         this.getClass() + " is unable to synchronize the incoming event: " + event);
@@ -75,7 +77,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
      * @throws InvocationTargetException
      *     <p>TODO: synchronization on catalog object
      */
-    protected static void postModify(final Catalog catalog, CatalogPostModifyEvent modifyEv)
+    protected void postModify(final Catalog catalog, CatalogPostModifyEvent modifyEv)
             throws IllegalAccessException, InvocationTargetException {
 
         final CatalogInfo info = modifyEv.getSource();
@@ -83,7 +85,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
         if (info instanceof LayerGroupInfo) {
 
             final LayerGroupInfo localizedObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+                    catalogUtils.localizePublishedInfo((LayerGroupInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -92,7 +94,8 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof LayerInfo) {
 
-            final LayerInfo localizedObject = CatalogUtils.localizeLayer((LayerInfo) info, catalog);
+            final LayerInfo localizedObject =
+                    catalogUtils.localizePublishedInfo((LayerInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -101,7 +104,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof MapInfo) {
 
-            final MapInfo localizedObject = CatalogUtils.localizeMapInfo((MapInfo) info, catalog);
+            final MapInfo localizedObject = catalogUtils.localizeMapInfo((MapInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -111,7 +114,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
         } else if (info instanceof NamespaceInfo) {
 
             final NamespaceInfo localizedObject =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+                    catalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -120,7 +123,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof StoreInfo) {
 
-            final StoreInfo localizedObject = CatalogUtils.localizeStore((StoreInfo) info, catalog);
+            final StoreInfo localizedObject = catalogUtils.localizeStore((StoreInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -130,7 +133,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
         } else if (info instanceof ResourceInfo) {
 
             final ResourceInfo localizedObject =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+                    catalogUtils.localizeResource((ResourceInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -139,7 +142,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof StyleInfo) {
 
-            final StyleInfo localizedObject = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+            final StyleInfo localizedObject = catalogUtils.localizeStyle((StyleInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -149,7 +152,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
         } else if (info instanceof WorkspaceInfo) {
 
             final WorkspaceInfo localizedObject =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+                    catalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),

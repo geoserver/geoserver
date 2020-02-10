@@ -204,8 +204,10 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
     @Override
     public void visit(StyleInfo style) {
         StyleInfo otherStyle = otherCatalog.getStyle(style.getId());
-        if (!(Objects.equals(style, otherStyle)
-                && getStyleFile(style, dataDir).equals(getStyleFile(otherStyle, otherDataDir)))) {
+        boolean equals = Objects.equals(style, otherStyle);
+        String styleFile1 = style == null ? null : getStyleFile(style, dataDir);
+        String styleFile2 = otherStyle == null ? null : getStyleFile(otherStyle, otherDataDir);
+        if (!(equals && Objects.equals(styleFile1, styleFile2))) {
             differences.add(new InfoDiff(style, otherStyle));
         }
     }
@@ -213,13 +215,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
     @Override
     public void visit(LayerGroupInfo layerGroup) {
         LayerGroupInfo otherLayerGroup = otherCatalog.getLayerGroup(layerGroup.getId());
-        if (!(Objects.equals(layerGroup, otherLayerGroup)
-                && checkEquals(layerGroup.getStyles(), otherLayerGroup.getStyles())
-                && checkEquals(layerGroup.getAuthorityURLs(), otherLayerGroup.getAuthorityURLs())
-                && checkEquals(layerGroup.getIdentifiers(), otherLayerGroup.getIdentifiers())
-                && checkEquals(layerGroup.getMetadataLinks(), otherLayerGroup.getMetadataLinks())
-                && checkEquals(layerGroup.getMetadata(), otherLayerGroup.getMetadata())
-                && checkEquals(layerGroup.getLayers(), otherLayerGroup.getLayers()))) {
+        if (!Objects.equals(layerGroup, otherLayerGroup)) {
             differences.add(new InfoDiff(layerGroup, otherLayerGroup));
         }
     }
@@ -259,18 +255,11 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
     /** Searches a catalog info based in is ID in a provided collection- */
     private <T extends CatalogInfo> boolean containsElementWithId(
             String id, Collection<T> collection) {
-        for (T element : collection) {
-            if (element.getId().equals(id)) {
-                // catalog info element found
-                return true;
-            }
-        }
-        // catalog info element not found
-        return false;
+        return collection.stream().map(CatalogInfo::getId).anyMatch(id::equals);
     }
 
     /** Retrieves a style file content has a string. */
-    private String getStyleFile(StyleInfo styleInfo, GeoServerDataDirectory dataDir) {
+    public static String getStyleFile(StyleInfo styleInfo, GeoServerDataDirectory dataDir) {
         Resource resource = dataDir.get(styleInfo, styleInfo.getFilename());
         try (InputStream input = resource.in();
                 ByteArrayOutputStream output = new ByteArrayOutputStream()) {
@@ -289,14 +278,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
             // collections have a different size so their are different
             return false;
         }
-        for (Object object : collectionA) {
-            if (!collectionB.contains(object)) {
-                // this element is not present in collection B
-                return false;
-            }
-        }
-        // the two collections contain the same elements
-        return true;
+        return collectionB.containsAll(collectionA);
     }
 
     /** Checks that the contained metadata is the same. */
@@ -306,18 +288,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
 
     /** Checks that two maps have exactly the same elements. */
     private boolean checkEquals(Map<String, Serializable> mapA, Map<String, Serializable> mapB) {
-        if (mapA.size() != mapB.size()) {
-            // the have a different number of elements, so their are different
-            return false;
-        }
-        for (Map.Entry<String, Serializable> entry : mapA.entrySet()) {
-            if (!Objects.equals(entry.getValue(), mapB.get(entry.getKey()))) {
-                // element doesn't exists in map B or is value is different
-                return false;
-            }
-        }
-        // the two maps contain the same elements
-        return true;
+        return Objects.equals(mapA, mapB);
     }
 
     @Override

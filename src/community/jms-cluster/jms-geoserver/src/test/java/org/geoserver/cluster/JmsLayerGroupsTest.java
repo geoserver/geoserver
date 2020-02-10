@@ -79,7 +79,7 @@ public final class JmsLayerGroupsTest extends GeoServerSystemTestSupport {
         assertThat(layerGroupAddEvent.size(), is(1));
         assertThat(layerGroupAddEvent.get(0).getSource(), instanceOf(LayerGroupInfo.class));
         LayerGroupInfo layerGroup = (LayerGroupInfo) layerGroupAddEvent.get(0).getSource();
-        CatalogUtils.localizeLayerGroup(layerGroup, getCatalog());
+        layerGroup = CatalogUtils.creating().localizePublishedInfo(layerGroup, getCatalog());
         // checking the published layer group
         assertThat(layerGroup.getName(), is(TEST_LAYER_GROUP_NAME));
         List<PublishedInfo> content = layerGroup.getLayers();

@@ -4,6 +4,8 @@
  */
 package org.geoserver.cluster.impl.rest;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.collections.PropertiesConverter;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import java.io.IOException;
@@ -137,6 +139,8 @@ public class ClusterController extends AbstractCatalogController {
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.getXStream().allowTypes(new Class[] {Properties.class});
+        XStream xStream = persister.getXStream();
+        xStream.allowTypes(new Class[] {Properties.class});
+        xStream.registerConverter(new PropertiesConverter());
     }
 }

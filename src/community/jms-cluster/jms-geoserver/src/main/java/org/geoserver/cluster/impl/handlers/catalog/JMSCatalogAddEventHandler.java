@@ -31,6 +31,7 @@ import org.geoserver.cluster.events.ToggleSwitch;
 public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
     private final Catalog catalog;
     private final ToggleSwitch producer;
+    private final CatalogUtils catalogUtils = CatalogUtils.creating();
 
     public JMSCatalogAddEventHandler(
             Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
@@ -54,7 +55,7 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
                 producer.disable();
 
                 // add the incoming CatalogInfo to the local catalog
-                JMSCatalogAddEventHandler.add(catalog, info);
+                this.add(catalog, info);
             } else {
                 // incoming object not recognized
                 if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
@@ -63,6 +64,7 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
                 LOGGER.severe(
                         this.getClass() + " is unable to synchronize the incoming event: " + event);
@@ -74,55 +76,55 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
         return true;
     }
 
-    private static void add(final Catalog catalog, CatalogInfo info)
+    private void add(final Catalog catalog, CatalogInfo info)
             throws IllegalAccessException, InvocationTargetException {
 
         if (info instanceof LayerGroupInfo) {
 
             final LayerGroupInfo deserObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+                    catalogUtils.localizePublishedInfo((LayerGroupInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(deserObject));
 
         } else if (info instanceof LayerInfo) {
 
-            final LayerInfo layer = CatalogUtils.localizeLayer((LayerInfo) info, catalog);
+            final LayerInfo layer = catalogUtils.localizePublishedInfo((LayerInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(layer));
 
         } else if (info instanceof MapInfo) {
 
-            final MapInfo localObject = CatalogUtils.localizeMapInfo((MapInfo) info, catalog);
+            final MapInfo localObject = catalogUtils.localizeMapInfo((MapInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(localObject));
 
         } else if (info instanceof NamespaceInfo) {
 
             final NamespaceInfo namespace =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+                    catalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(namespace));
 
         } else if (info instanceof StoreInfo) {
 
-            StoreInfo store = CatalogUtils.localizeStore((StoreInfo) info, catalog);
+            StoreInfo store = catalogUtils.localizeStore((StoreInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(store));
 
         } else if (info instanceof ResourceInfo) {
 
             final ResourceInfo resource =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+                    catalogUtils.localizeResource((ResourceInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(resource));
 
         } else if (info instanceof StyleInfo) {
 
             final StyleInfo deserializedObject =
-                    CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+                    catalogUtils.localizeStyle((StyleInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(deserializedObject));
 
         } else if (info instanceof WorkspaceInfo) {
 
             final WorkspaceInfo workspace =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+                    catalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(workspace));
 
-        } else if (info instanceof CatalogInfo) {
+        } else if (info instanceof Catalog) {
             // TODO may we don't want to send this empty message!
             // TODO check the producer
             // DO NOTHING

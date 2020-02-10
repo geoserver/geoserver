@@ -5,6 +5,10 @@
  */
 package org.geoserver.cluster.client;
 
+import static java.lang.String.format;
+import static org.geoserver.cluster.configuration.JMSConfiguration.GROUP_KEY;
+import static org.geoserver.cluster.configuration.JMSConfiguration.INSTANCE_NAME_KEY;
+
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -18,7 +22,6 @@ import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;
 import org.geoserver.cluster.JMSManager;
-import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.events.ToggleType;
 import org.geotools.util.logging.Logging;
 import org.springframework.jms.listener.SessionAwareMessageListener;
@@ -49,55 +52,40 @@ public class JMSQueueListener extends JMSApplicationListener
 
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
-
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Incoming message event for session: " + session.toString());
-        }
+        fine("Incoming message event for session: %s", session.toString());
 
         // CHECKING LISTENER STATUS
         if (!isEnabled()) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Incoming message is swallowed since this component is disabled");
-            }
+            fine("Incoming message is swallowed since this component is disabled");
             return;
         }
         // FILTERING INCOMING MESSAGE
-        if (!message.propertyExists(JMSConfiguration.INSTANCE_NAME_KEY)) {
-            throw new JMSException(
-                    "Unable to handle incoming message, property \'"
-                            + JMSConfiguration.INSTANCE_NAME_KEY
-                            + "\' not set.");
+        if (!message.propertyExists(INSTANCE_NAME_KEY)) {
+            throwJMSException(
+                    "Unable to handle incoming message, property '%s' not set.", INSTANCE_NAME_KEY);
         }
 
         // FILTERING INCOMING MESSAGE
-        if (!message.propertyExists(JMSConfiguration.GROUP_KEY)) {
-            throw new JMSException(
-                    "Unable to handle incoming message, property \'"
-                            + JMSConfiguration.GROUP_KEY
-                            + "\' not set.");
+        if (!message.propertyExists(GROUP_KEY)) {
+            throwJMSException(
+                    "Unable to handle incoming message, property '%s' not set.", GROUP_KEY);
         }
 
         // check if message comes from a master with the same name of this slave
-        if (message.getStringProperty(JMSConfiguration.INSTANCE_NAME_KEY)
-                .equals(config.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY))) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Incoming message discarded: source is equal to destination");
-            }
+        if (message.getStringProperty(INSTANCE_NAME_KEY)
+                .equals(config.getConfiguration(INSTANCE_NAME_KEY))) {
+            fine("Incoming message discarded: source is equal to destination");
             // if so discard the message
             return;
         }
 
         // check if message comes from a different group
-        final String group = message.getStringProperty(JMSConfiguration.GROUP_KEY);
-        final String localGroup = config.getConfiguration(JMSConfiguration.GROUP_KEY);
+        final String group = message.getStringProperty(GROUP_KEY);
+        final String localGroup = config.getConfiguration(GROUP_KEY);
         if (!group.equals(localGroup)) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        "Incoming message discarded: incoming group-->"
-                                + group
-                                + " is different from the local one-->"
-                                + localGroup);
-            }
+            fine(
+                    "Incoming message discarded: incoming group--> %s is different from the local one--> %s",
+                    group, localGroup);
             // if so discard the message
             return;
         }
@@ -105,10 +93,9 @@ public class JMSQueueListener extends JMSApplicationListener
         // check the property which define the SPI used (to serialize on the
         // server side).
         if (!message.propertyExists(JMSEventHandlerSPI.getKeyName()))
-            throw new JMSException(
-                    "Unable to handle incoming message, property \'"
-                            + JMSEventHandlerSPI.getKeyName()
-                            + "\' not set.");
+            throwJMSException(
+                    "Unable to handle incoming message, property '%s' not set.",
+                    JMSEventHandlerSPI.getKeyName());
 
         // END -> FILTERING INCOMING MESSAGE
 
@@ -118,53 +105,48 @@ public class JMSQueueListener extends JMSApplicationListener
             throw new IllegalArgumentException(
                     "Unable to handle a message without a generator class name");
         }
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "Incoming message was serialized using an handler generated by: \'"
-                            + generatorClass
-                            + "\'");
+        fine("Incoming message was serialized using an handler generated by: '%s'", generatorClass);
+
+        if (!(message instanceof ObjectMessage)) {
+            throw new JMSException("Unrecognized message type for catalog incoming event");
         }
 
         // USING INCOMING MESSAGE
-        if (message instanceof ObjectMessage) {
-
-            final ObjectMessage objMessage = (ObjectMessage) (message);
-            final Serializable obj = objMessage.getObject();
-
-            try {
-                // lookup the SPI handler, search is performed using the
-                // name
-                final JMSEventHandler<Serializable, Object> handler =
-                        jmsManager.getHandlerByClassName(generatorClass);
-                if (handler == null) {
-                    throw new JMSException(
-                            "Unable to find SPI named \'"
-                                    + generatorClass
-                                    + "\', be shure to load that SPI into your context.");
-                }
-
-                final Enumeration<String> keys = message.getPropertyNames();
-                final Properties options = new Properties();
-                while (keys.hasMoreElements()) {
-                    String key = keys.nextElement();
-                    options.put(key, message.getObjectProperty(key));
-                }
-                handler.setProperties(options);
-
-                // try to synchronize object locally
-                if (!handler.synchronize(handler.deserialize(obj))) {
-                    throw new JMSException(
-                            "Unable to synchronize message locally.\n SPI: " + generatorClass);
-                }
-
-            } catch (Exception e) {
-                final JMSException jmsE = new JMSException(e.getLocalizedMessage());
-                jmsE.initCause(e);
-                throw jmsE;
-            } finally {
-                this.consumedEvents.incrementAndGet();
+        final ObjectMessage objMessage = (ObjectMessage) (message);
+        final Serializable obj = objMessage.getObject();
+        try {
+            // lookup the SPI handler, search is performed using the
+            // name
+            final JMSEventHandler<Serializable, Object> handler =
+                    jmsManager.getHandlerByClassName(generatorClass);
+            if (handler == null) {
+                throwJMSException(
+                        "Unable to find SPI named '%s', be shure to load that SPI into your context.",
+                        generatorClass);
             }
-        } else throw new JMSException("Unrecognized message type for catalog incoming event");
+
+            @SuppressWarnings("unchecked")
+            final Enumeration<String> keys = message.getPropertyNames();
+            final Properties options = new Properties();
+            while (keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                options.put(key, message.getObjectProperty(key));
+            }
+            handler.setProperties(options);
+
+            // try to synchronize object locally
+            Object deserializedObject = handler.deserialize(obj);
+            if (!handler.synchronize(deserializedObject)) {
+                throwJMSException("Unable to synchronize message locally. SPI: %s", generatorClass);
+            }
+
+        } catch (Exception e) {
+            final JMSException jmsE = new JMSException(e.getLocalizedMessage());
+            jmsE.initCause(e);
+            throw jmsE;
+        } finally {
+            this.consumedEvents.incrementAndGet();
+        }
     }
 
     // /**
@@ -224,5 +206,20 @@ public class JMSQueueListener extends JMSApplicationListener
 
     public void resetconsumedevents() {
         consumedEvents.set(0);
+    }
+
+    private void throwJMSException(String msgFormat, Object... args) throws JMSException {
+        throw new JMSException(format(msgFormat, args));
+    }
+
+    private void fine(String msgFormat, Object... args) {
+        log(Level.FINE, msgFormat, args);
+    }
+
+    private void log(Level level, String msgFormat, Object... args) {
+        if (LOGGER.isLoggable(level)) {
+            String msg = String.format(msgFormat, args);
+            LOGGER.log(level, msg);
+        }
     }
 }

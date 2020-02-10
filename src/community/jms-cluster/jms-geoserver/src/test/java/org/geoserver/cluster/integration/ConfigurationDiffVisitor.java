@@ -4,11 +4,16 @@
  */
 package org.geoserver.cluster.integration;
 
+import com.google.common.base.Equivalence;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -52,87 +57,75 @@ public final class ConfigurationDiffVisitor {
         computeSettingsDifference();
     }
 
+    private <T extends Info> List<InfoDiff> computeDifferences(
+            Map<String, T> objectsA,
+            Map<String, T> objectsB,
+            BiFunction<T, T, Boolean> equivalenceFunction) {
+
+        MapDifference<String, T> diff =
+                Maps.difference(
+                        objectsA,
+                        objectsB,
+                        new Equivalence<T>() {
+                            protected @Override boolean doEquivalent(T a, T b) {
+                                return equivalenceFunction.apply(a, b);
+                            }
+
+                            protected @Override int doHash(T t) {
+                                throw new UnsupportedOperationException(
+                                        "unexpected, method not used");
+                            }
+                        });
+        // more cumbersome than needed to aid in debugging
+        List<InfoDiff> toAdd =
+                diff.entriesOnlyOnLeft()
+                        .values()
+                        .stream()
+                        .map(a -> new InfoDiff(a, null))
+                        .collect(Collectors.toList());
+        List<InfoDiff> toRemove =
+                diff.entriesOnlyOnRight()
+                        .values()
+                        .stream()
+                        .map(b -> new InfoDiff(null, b))
+                        .collect(Collectors.toList());
+
+        List<InfoDiff> toUpdate =
+                diff.entriesDiffering()
+                        .values()
+                        .stream()
+                        .map(d -> new InfoDiff(d.leftValue(), d.rightValue()))
+                        .collect(Collectors.toList());
+
+        return Stream.concat(Stream.concat(toAdd.stream(), toRemove.stream()), toUpdate.stream())
+                .collect(Collectors.toList());
+    }
+
     /** Register services differences between the two GeoServers. */
     private void computeServicesDifference() {
         // get all the services available on both GeoServers
-        Collection<ServiceInfo> servicesA = getAllServices(geoServerA);
-        Collection<ServiceInfo> servicesB = getAllServices(geoServerB);
-        // register the services that are only present in GeoServer B has differences
-        differences.addAll(
-                servicesB
-                        .stream()
-                        .filter(service -> search(service, servicesA) == null)
-                        .map(service -> new InfoDiff(null, service))
-                        .collect(Collectors.toList()));
-        // iterate over GeoServer A services and compare them with GeoServer B services
-        for (ServiceInfo service : servicesA) {
-            ServiceInfo otherService = search(service, servicesB);
-            if (!checkEquals(service, otherService)) {
-                // different service found, the other service may be NULL which means
-                // that this service only exists in GeoServer A
-                differences.add(new InfoDiff(service, otherService));
-            }
-        }
-    }
+        Map<String, ServiceInfo> servicesA = getAllServices(geoServerA);
+        Map<String, ServiceInfo> servicesB = getAllServices(geoServerB);
 
-    /** Searches a service by is name and workspace on a collection of services. */
-    private static ServiceInfo search(ServiceInfo info, Collection<ServiceInfo> collection) {
-        for (ServiceInfo candidateInfo : collection) {
-            if (checkEqualsByNameAndWorkspace(info, candidateInfo)) {
-                // service found
-                return candidateInfo;
-            }
-        }
-        // service not found
-        return null;
-    }
-
-    /** Returns TRUE if the services have the same name and the same workspace. */
-    private static boolean checkEqualsByNameAndWorkspace(ServiceInfo infoA, ServiceInfo infoB) {
-        return Objects.equals(infoA.getName(), infoB.getName())
-                && Objects.equals(infoA.getWorkspace(), infoB.getWorkspace());
+        List<InfoDiff> serviceDiffs = computeDifferences(servicesA, servicesB, this::checkEquals);
+        differences.addAll(serviceDiffs);
     }
 
     /** Register settings differences between the two GeoServers. */
     private void computeSettingsDifference() {
         // get all the settings available on both GeoServers
-        List<SettingsInfo> settingsA = getAllSettings(geoServerA);
-        List<SettingsInfo> settingsB = getAllSettings(geoServerB);
-        // register the settings that are only present in GeoServer B has differences
-        differences.addAll(
-                settingsB
-                        .stream()
-                        .filter(settings -> search(settings, settingsA) == null)
-                        .map(settings -> new InfoDiff(null, settings))
-                        .collect(Collectors.toList()));
-        // iterate over GeoServer A settings and compare them with GeoServer B services
-        for (SettingsInfo settings : settingsA) {
-            SettingsInfo otherSettings = search(settings, settingsB);
-            if (!checkEquals(settings, otherSettings)) {
-                // different settings found, the other settings may be NULL which means
-                // that this settings only exists in GeoServer A
-                differences.add(new InfoDiff(settings, otherSettings));
-            }
-        }
-    }
+        Map<String, SettingsInfo> settingsA = getAllSettings(geoServerA);
+        Map<String, SettingsInfo> settingsB = getAllSettings(geoServerB);
 
-    /** Searches settings by is title and workspace on a collection of settings. */
-    private static SettingsInfo search(SettingsInfo info, Collection<SettingsInfo> collection) {
-        for (SettingsInfo candidateInfo : collection) {
-            if (Objects.equals(info.getId(), candidateInfo.getId())) {
-                // settings found
-                return candidateInfo;
-            }
-        }
-        // settings not found
-        return null;
+        List<InfoDiff> serviceDiffs = computeDifferences(settingsA, settingsB, this::checkEquals);
+        differences.addAll(serviceDiffs);
     }
 
     /**
      * Get all services info objects of a GeoServer instance, including the global service and
      * workspace services.
      */
-    private static List<ServiceInfo> getAllServices(GeoServer geoServer) {
+    private static Map<String, ServiceInfo> getAllServices(GeoServer geoServer) {
         List<ServiceInfo> allServices = new ArrayList<>();
         // get global services
         allServices.addAll(geoServer.getServices());
@@ -142,14 +135,14 @@ public final class ConfigurationDiffVisitor {
             // get the services of this workspace
             allServices.addAll(geoServer.getFacade().getServices(workspace));
         }
-        return allServices;
+        return allServices.stream().collect(Collectors.toMap(ServiceInfo::getId, s -> s));
     }
 
     /**
      * Get all settings info objects of a GeoServer instance, this will not include global settings
      * only per workspace settings will be included.
      */
-    private static List<SettingsInfo> getAllSettings(GeoServer geoServer) {
+    private static Map<String, SettingsInfo> getAllSettings(GeoServer geoServer) {
         List<SettingsInfo> allSettings = new ArrayList<>();
         // get all settings per workspace
         List<WorkspaceInfo> workspaces = geoServer.getCatalog().getWorkspaces();
@@ -160,11 +153,11 @@ public final class ConfigurationDiffVisitor {
                 allSettings.add(settings);
             }
         }
-        return allSettings;
+        return allSettings.stream().collect(Collectors.toMap(SettingsInfo::getId, s -> s));
     }
 
     /** Compare two GeoServer info objects ignoring the update sequence. */
-    private static boolean checkEquals(GeoServerInfo infoA, GeoServerInfo infoB) {
+    private boolean checkEquals(GeoServerInfo infoA, GeoServerInfo infoB) {
         // for GeoServer infos to have the same update sequence
         infoA = ModificationProxy.unwrap(infoA);
         infoB = ModificationProxy.unwrap(infoB);
@@ -179,7 +172,7 @@ public final class ConfigurationDiffVisitor {
         }
     }
 
-    private static boolean checkEquals(Info infoA, Info infoB) {
+    private boolean checkEquals(Info infoA, Info infoB) {
         // if only one of the infos is NULL they are not the same
         if ((infoA == null || infoB == null) && infoA != infoB) {
             return false;

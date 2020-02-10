@@ -33,4 +33,8 @@ public final class InfoDiff {
     public Info getInfoB() {
         return infoB;
     }
+
+    public @Override String toString() {
+        return String.format("%s/%s", infoA, infoB);
+    }
 }

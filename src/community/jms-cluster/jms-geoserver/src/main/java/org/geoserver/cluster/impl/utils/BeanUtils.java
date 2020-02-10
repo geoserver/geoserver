@@ -1,18 +1,16 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/*
+ * (c) 2014 Open Source Geospatial Foundation - all rights reserved (c) 2001 - 2013 OpenPlans This
+ * code is licensed under the GPL 2.0 license, available at the root application directory.
  */
 package org.geoserver.cluster.impl.utils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.geoserver.cluster.impl.handlers.catalog.CatalogUtils;
+import org.geotools.util.logging.Logging;
 
 /**
  * This class implements a set of function inspired by the Apache BeanUtils defining wrappers which
@@ -21,6 +19,7 @@ import org.geoserver.cluster.impl.handlers.catalog.CatalogUtils;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class BeanUtils {
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(BeanUtils.class);
 
     /**
      * This is a 'smart' (perform checks for some special cases) update function which should be
@@ -37,11 +36,10 @@ public abstract class BeanUtils {
     public static <T> void smartUpdate(
             final T info, final List<String> properties, final List<Object> values)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        final Iterator<String> itPropertyName = properties.iterator();
-        final Iterator<Object> itValue = values.iterator();
-        while (itPropertyName.hasNext() && itValue.hasNext()) {
-            String propertyName = itPropertyName.next();
-            final Object value = itValue.next();
+
+        for (int i = 0; i < properties.size(); i++) {
+            String propertyName = properties.get(i);
+            final Object value = values.get(i);
 
             PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(info, propertyName);
             // return null if there is no such descriptor
@@ -72,8 +70,8 @@ public abstract class BeanUtils {
                     liveMap.clear();
                     liveMap.putAll((Map) value);
                 } else {
-                    if (CatalogUtils.LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                        CatalogUtils.LOGGER.severe(
+                    if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
+                        LOGGER.severe(
                                 "Skipping unwritable property "
                                         + propertyName
                                         + " with property type "

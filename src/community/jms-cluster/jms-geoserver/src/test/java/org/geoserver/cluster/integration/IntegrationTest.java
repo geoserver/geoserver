@@ -388,11 +388,13 @@ public final class IntegrationTest {
         WorkspaceInfo workspace = new WorkspaceInfoImpl();
         workspace.setName("workspace-Name");
         catalog.add(workspace);
+        workspace = catalog.getWorkspaceByName("workspace-Name");
         // add namespace
         NamespaceInfo namespace = new NamespaceInfoImpl();
         namespace.setPrefix(workspace.getName());
         namespace.setURI("namespace-URI");
         catalog.add(namespace);
+        namespace = catalog.getNamespaceByURI("namespace-URI");
         // add data store
         DataStoreInfo dataStore = new DataStoreInfoImpl(catalog);
         dataStore.setEnabled(false);
@@ -401,6 +403,7 @@ public final class IntegrationTest {
         dataStore.setType("dataStore-Type");
         dataStore.setDescription("dataStore-Description");
         catalog.add(dataStore);
+        dataStore = catalog.getDataStoreByName("dataStore-Name");
         // add coverage store
         CoverageStoreInfo coverageStore = new CoverageStoreInfoImpl(catalog);
         coverageStore.setEnabled(false);
@@ -409,6 +412,7 @@ public final class IntegrationTest {
         coverageStore.setType("coverageStore-Type");
         coverageStore.setDescription("coverageStore-Description");
         catalog.add(coverageStore);
+        coverageStore = catalog.getCoverageStoreByName("coverageStore-Name");
         // add WMS store
         WMSStoreInfo wmsStore = new WMSStoreInfoImpl(catalog);
         wmsStore.setEnabled(false);
@@ -424,6 +428,7 @@ public final class IntegrationTest {
         wmsStore.setReadTimeout(0);
         wmsStore.setConnectTimeout(0);
         catalog.add(wmsStore);
+        wmsStore = catalog.getStoreByName("wmsStore-Name", WMSStoreInfo.class);
         // add feature type
         FeatureTypeInfo featureType = new FeatureTypeInfoImpl(catalog);
         featureType.setName("featureType-Name");
@@ -445,6 +450,7 @@ public final class IntegrationTest {
         featureType.setSkipNumberMatched(false);
         featureType.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         catalog.add(featureType);
+        featureType = catalog.getFeatureTypeByName("featureType-Name");
         // add coverage
         CoverageInfo coverage = new CoverageInfoImpl(catalog);
         coverage.setName("coverage-Name");
@@ -462,6 +468,7 @@ public final class IntegrationTest {
         coverage.setNativeCoverageName("coverage-NativeCoverageName");
         coverage.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         catalog.add(coverage);
+        coverage = catalog.getCoverageByName("coverage-Name");
         // add style info and style file
         copyStyle(instance, "/test_style.sld", "test_style.sld");
         StyleInfo style = new StyleInfoImpl(catalog);
@@ -469,6 +476,7 @@ public final class IntegrationTest {
         style.setFormat("sld");
         style.setFilename("test_style.sld");
         catalog.add(style);
+        style = catalog.getStyleByName("style-Name");
         // add layer info
         LayerInfo layer = new LayerInfoImpl();
         layer.setResource(featureType);
@@ -481,6 +489,7 @@ public final class IntegrationTest {
         layer.setOpaque(false);
         layer.setAdvertised(false);
         catalog.add(layer);
+        layer = catalog.getLayerByName(featureType.getName());
         // add WMS layer info
         WMSLayerInfo wmsLayer = new WMSLayerInfoImpl(catalog);
         wmsLayer.setName("wmsLayer-Name");
@@ -497,6 +506,7 @@ public final class IntegrationTest {
         wmsLayer.setStore(wmsStore);
         wmsLayer.setAdvertised(false);
         catalog.add(wmsLayer);
+        wmsLayer = catalog.getResourceByName("wmsLayer-Name", WMSLayerInfo.class);
         // layer group
         LayerGroupInfo layerGroup = new LayerGroupInfoImpl();
         layerGroup.setTitle("layerGroup-Title");
@@ -507,6 +517,7 @@ public final class IntegrationTest {
         layerGroup.getLayers().add(layer);
         layerGroup.getStyles().add(style);
         catalog.add(layerGroup);
+        layerGroup = catalog.getLayerGroupByName("layerGroup-Name");
     }
 
     /** Helper method that apply some catalog changes to the provided GeoServer instance. */

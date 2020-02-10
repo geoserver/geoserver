@@ -136,14 +136,17 @@ public final class GeoServerInstance {
     // will be used to listen on consumed events
     private final JMSQueueListener jmsQueueListener;
 
+    public final String instanceName;
+
     public GeoServerInstance() {
         this(null);
     }
 
-    public GeoServerInstance(String instanceName) {
+    public GeoServerInstance(String name) {
+        this.instanceName = name == null ? "INSTANCE" : name;
         try {
             // create this instance base data directory by copying the base test data
-            dataDirectory = createTempDirectory(instanceName == null ? "INSTANCE" : instanceName);
+            dataDirectory = createTempDirectory(instanceName);
             IOUtils.deepCopy(BASE_TEST_DATA.getDataDirectoryRoot(), dataDirectory);
             // disable security manager to speed up tests
             System.setSecurityManager(null);
@@ -152,13 +155,14 @@ public final class GeoServerInstance {
             System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "true");
             // initialize Spring application context
             applicationContext = initInstance();
-            // get some  JMS util beans
+            // get some JMS util beans
             jmsController = applicationContext.getBean(Controller.class);
             jmsQueueListener = applicationContext.getBean(JMSQueueListener.class);
             // set integration tests cluster name
             jmsController.setGroup(CLUSTER_NAME);
             saveJmsConfiguration();
         } catch (Exception exception) {
+            exception.printStackTrace();
             throw new RuntimeException(
                     String.format("Error instantiating GeoServer instance '%s'.", instanceName),
                     exception);
@@ -244,6 +248,12 @@ public final class GeoServerInstance {
     /** Returns this GeoServer instance data directory. */
     public GeoServerDataDirectory getDataDirectory() {
         return new GeoServerDataDirectory(getResourceLoader());
+    }
+
+    /** This GeoServer instance will stop propagating and processing JMS events. */
+    public void disableJms() {
+        disableJmsMaster();
+        disableJmsSlave();
     }
 
     /** This GeoServer instance will stop propagating JMS events. */

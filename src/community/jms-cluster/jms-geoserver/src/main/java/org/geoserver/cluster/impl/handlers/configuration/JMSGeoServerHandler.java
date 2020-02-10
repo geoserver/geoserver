@@ -159,7 +159,8 @@ public class JMSGeoServerHandler extends JMSConfigurationHandler<JMSGlobalModify
 
         final WorkspaceInfo workspace = info.getWorkspace();
         if (workspace != null) {
-            info.setWorkspace(CatalogUtils.localizeWorkspace(workspace, geoServer.getCatalog()));
+            info.setWorkspace(
+                    CatalogUtils.checking().localizeWorkspace(workspace, geoServer.getCatalog()));
         }
 
         final ContactInfo contact = info.getContact();

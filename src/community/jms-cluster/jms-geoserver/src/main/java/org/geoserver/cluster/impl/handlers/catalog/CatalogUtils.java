@@ -6,14 +6,18 @@
 package org.geoserver.cluster.impl.handlers.catalog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanUtils;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogException;
+import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -28,47 +32,106 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geotools.util.logging.Logging;
 
 /** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
-public abstract class CatalogUtils {
-    public static final java.util.logging.Logger LOGGER = Logging.getLogger(CatalogUtils.class);
+public class CatalogUtils {
+    private static final CatalogUtils CREATE = new CatalogUtils(true);
+    private static final CatalogUtils UPDATE = new CatalogUtils(false);
+
+    private final boolean createIfMissing;
+
+    private CatalogUtils(boolean createIfMissing) {
+        this.createIfMissing = createIfMissing;
+    }
+
+    /**
+     * Returns an instance that checks for the existence of the object passed as argument to any of
+     * the {@code localize*} methods, and makes them throw a {@link CatalogException} if no such
+     * object exists.
+     */
+    public static CatalogUtils checking() {
+        return UPDATE;
+    }
+
+    /**
+     * Returns an instance that creates a new instance of the of type of the object passed as
+     * argument to any of the {@code localize*} methods, if such object does not exist in the
+     * provided {@link Catalog}, and resolves the required {@link CatalogInfo} dependencies as a
+     * {@link #checking() must exist}
+     */
+    public static CatalogUtils creating() {
+        return CREATE;
+    }
+
+    private <T extends CatalogInfo> Optional<T> find(T info, Function<String, T> finder) {
+        Objects.requireNonNull(info, "argument 'info' is null");
+        Objects.requireNonNull(finder);
+        return Optional.ofNullable(finder.apply(info.getId()));
+    }
+
+    private <T extends CatalogInfo> T tryCreate(
+            Catalog catalog, T info, Function<CatalogFactory, T> factory) {
+        Objects.requireNonNull(catalog, "argument 'catalog' is null");
+        Objects.requireNonNull(info, "argument 'info' is null");
+        Objects.requireNonNull(factory);
+
+        if (createIfMissing) {
+            T localObject = factory.apply(catalog.getFactory());
+            // let's use the newly created object
+            try {
+                BeanUtils.copyProperties(localObject, info);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new IllegalStateException("Error copying properties of " + info, e);
+            }
+            return localObject;
+        }
+        throw new CatalogException(
+                String.format("Object not found in local catalog: %s [%s]", info.getId(), info));
+    }
+
+    private <T extends CatalogInfo> T resolveLocal(
+            Catalog catalog,
+            T info,
+            Function<String, T> finder,
+            Function<CatalogFactory, T> factory) {
+        Objects.requireNonNull(catalog, "argument 'catalog' is null");
+        Objects.requireNonNull(info, "argument 'info' is null");
+        Objects.requireNonNull(finder);
+        Objects.requireNonNull(factory);
+
+        T localObject = finder.apply(info.getId());
+        if (localObject == null) {
+            if (createIfMissing) {
+                localObject = factory.apply(catalog.getFactory());
+                // let's use the newly created object
+                try {
+                    BeanUtils.copyProperties(localObject, info);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException("Error copying properties of " + info, e);
+                }
+            } else {
+                throw new CatalogException(
+                        String.format(
+                                "Object not found in local catalog: %s [%s]", info.getId(), info));
+            }
+        }
+        return localObject;
+    }
 
     /**
      * @param info
      * @param catalog
      * @return the local workspace if found or the passed one (localized)
      */
-    public static WorkspaceInfo localizeWorkspace(final WorkspaceInfo info, final Catalog catalog) {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final WorkspaceInfo localObject = catalog.getWorkspaceByName(info.getName());
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(info);
-
-        return info;
+    public WorkspaceInfo localizeWorkspace(final WorkspaceInfo info, final Catalog catalog) {
+        return resolveLocal(catalog, info, catalog::getWorkspace, CatalogFactory::createWorkspace);
     }
 
-    public static NamespaceInfo localizeNamespace(final NamespaceInfo info, final Catalog catalog) {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final NamespaceInfo localObject = catalog.getNamespaceByURI(info.getURI());
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(info);
-        return info;
+    public NamespaceInfo localizeNamespace(final NamespaceInfo info, final Catalog catalog) {
+        return resolveLocal(catalog, info, catalog::getNamespace, CatalogFactory::createNamespace);
     }
 
     /**
@@ -76,391 +139,284 @@ public abstract class CatalogUtils {
      * @param catalog
      * @return the local style or the passed one (if not exists locally)
      */
-    public static StyleInfo localizeStyle(final StyleInfo info, final Catalog catalog) {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final StyleInfo localObject = catalog.getStyleByName(info.getWorkspace(), info.getName());
-        if (localObject != null) {
-            return localObject;
-        } else {
-            if (LOGGER.isLoggable(java.util.logging.Level.INFO)) {
-                LOGGER.info(
-                        "No such style called \'"
-                                + info.getName()
-                                + "\' can be found: LOCALIZATION");
-            }
-            final CatalogBuilder builder = new CatalogBuilder(catalog);
-            builder.attach(info);
-            return info;
-        }
+    public StyleInfo localizeStyle(final StyleInfo info, final Catalog catalog) {
+        return resolveLocal(catalog, info, catalog::getStyle, CatalogFactory::createStyle);
     }
 
-    public static Set<StyleInfo> localizeStyles(
-            final Set<StyleInfo> stileSet, final Catalog catalog) {
-        if (stileSet == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-        final Set<StyleInfo> localStileSet = new HashSet<StyleInfo>();
-        final Iterator<StyleInfo> deserStyleSetIterator = stileSet.iterator();
-        while (deserStyleSetIterator.hasNext()) {
-            final StyleInfo deserStyle = deserStyleSetIterator.next();
-            final StyleInfo localStyle = localizeStyle(deserStyle, catalog);
-            if (localStyle != null) {
-                localStileSet.add(localStyle);
-            }
-        }
-        return localStileSet;
+    private LinkedHashSet<StyleInfo> localizeStyles(
+            final Collection<StyleInfo> styleSet, final Catalog catalog) {
+
+        return styleSet.stream()
+                .map(s -> CatalogUtils.checking().localizeStyle(s, catalog))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public static <T extends PublishedInfo> List<LayerInfo> localizeLayers(
-            final List<T> info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-        final List<LayerInfo> localLayerList = new ArrayList<LayerInfo>(info.size());
-        final Iterator<LayerInfo> it = localLayerList.iterator();
-        while (it.hasNext()) {
-            final LayerInfo layer = it.next();
-            final LayerInfo localLayer = localizeLayer(layer, catalog);
-            if (localLayer != null) {
-                localLayerList.add(localLayer);
-            } else {
-                if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
-                    LOGGER.warning(
-                            "No such layer called \'"
-                                    + layer.getName()
-                                    + "\' can be found: SKIPPING");
-                }
-            }
+    @SuppressWarnings("unchecked")
+    public <T extends PublishedInfo> T localizePublishedInfo(final T info, final Catalog catalog) {
+        if (info instanceof LayerGroupInfo) {
+            return (T) localizeLayerGroup((LayerGroupInfo) info, catalog);
         }
-        return localLayerList;
+        if (info instanceof LayerInfo) {
+            return (T) localizeLayer((LayerInfo) info, catalog);
+        }
+        throw new IllegalArgumentException("Unknown PublishedInfo type: " + info);
     }
 
-    public static LayerInfo localizeLayer(final LayerInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
+    private LayerInfo localizeLayer(final LayerInfo info, final Catalog catalog) {
+        return find(info, catalog::getLayer)
+                .orElseGet(
+                        () -> {
+                            LayerInfo localObject = catalog.getFactory().createLayer();
+                            if (createIfMissing) {
+                                localObject = catalog.getFactory().createLayer();
+                            } else {
+                                throw new CatalogException(
+                                        String.format(
+                                                "Object not found in local catalog: %s [%s]",
+                                                info.getId(), info));
+                            }
 
-        // make sure we use the prefixed name to include the workspace
-        final LayerInfo localObject = catalog.getLayerByName(info.prefixedName());
+                            // RESOURCE
+                            ResourceInfo resource = info.getResource();
+                            if (resource != null) {
+                                resource =
+                                        CatalogUtils.checking().localizeResource(resource, catalog);
+                            } else {
+                                throw new NullPointerException("No resource found !!!");
+                            }
 
-        if (localObject != null) {
-            return localObject;
-        }
-        final LayerInfo createdObject = catalog.getFactory().createLayer();
+                            // we have to set the resource before [and after] calling copyProperties
+                            // it is needed to call setName(String)
+                            localObject.setResource(resource);
 
-        // RESOURCE
-        ResourceInfo resource = info.getResource();
-        if (resource != null) {
-            resource = localizeResource(resource, catalog);
-        } else {
-            throw new NullPointerException("No resource found !!!");
-        }
+                            // let's use the newly created object
+                            try {
+                                BeanUtils.copyProperties(localObject, info);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw new IllegalStateException(
+                                        "Error copying properties of " + info, e);
+                            }
 
-        // we have to set the resource before [and after] calling copyProperties
-        // it is needed to call setName(String)
-        createdObject.setResource(resource);
+                            // we have to set the resource before [and after] calling copyProperties
+                            // it is overwritten (set to null) by the copyProperties function
+                            localObject.setResource(resource);
 
-        // let's use the newly created object
-        BeanUtils.copyProperties(createdObject, info);
+                            final StyleInfo deserDefaultStyle = info.getDefaultStyle();
+                            if (deserDefaultStyle != null) {
+                                final StyleInfo localDefaultStyle =
+                                        CatalogUtils.checking()
+                                                .localizeStyle(deserDefaultStyle, catalog);
+                                localObject.setDefaultStyle(localDefaultStyle);
+                            } else {
+                                // the default style is set by the builder
+                                // TODO: check: this happens when configuring a layer using
+                                // GeoServer REST manager
+                                // (see
+                                // ImageMosaicTest)
+                            }
 
-        // we have to set the resource before [and after] calling copyProperties
-        // it is overwritten (set to null) by the copyProperties function
-        createdObject.setResource(resource);
-
-        final StyleInfo deserDefaultStyle = info.getDefaultStyle();
-        if (deserDefaultStyle != null) {
-            final StyleInfo localDefaultStyle = localizeStyle(deserDefaultStyle, catalog);
-            if (localDefaultStyle == null) {
-                throw new NullPointerException(
-                        "No matching style called \'"
-                                + deserDefaultStyle.getName()
-                                + "\'found locally.");
-            }
-            createdObject.setDefaultStyle(localDefaultStyle);
-        } else {
-
-            // the default style is set by the builder
-
-            // TODO: check: this happens when configuring a layer using GeoServer REST manager (see
-            // ImageMosaicTest)
-        }
-
-        // STYLES
-        createdObject.getStyles().addAll(localizeStyles(createdObject.getStyles(), catalog));
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(createdObject);
-        return createdObject;
+                            // STYLES
+                            localObject.getStyles().clear();
+                            localObject
+                                    .getStyles()
+                                    .addAll(
+                                            CatalogUtils.checking()
+                                                    .localizeStyles(
+                                                            localObject.getStyles(), catalog));
+                            return localObject;
+                        });
     }
 
-    public static MapInfo localizeMapInfo(final MapInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final MapInfo localObject = catalog.getMapByName(info.getName());
-        if (localObject != null) {
-            return localObject;
-            // else object is modified: continue with localization
-        }
-
-        info.getLayers().addAll(localizeLayers(info.getLayers(), catalog));
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(info);
-        return info;
+    public MapInfo localizeMapInfo(final MapInfo info, final Catalog catalog) {
+        return find(info, catalog::getMap)
+                .orElseGet(
+                        () -> {
+                            final MapInfo localObject =
+                                    tryCreate(catalog, info, CatalogFactory::createMap);
+                            if (!info.getLayers().isEmpty()) {
+                                List<LayerInfo> layers =
+                                        info.getLayers()
+                                                .stream()
+                                                .map(
+                                                        l ->
+                                                                CatalogUtils.checking()
+                                                                        .localizeLayer(l, catalog))
+                                                .collect(Collectors.toList());
+                                localObject.getLayers().clear();
+                                localObject.getLayers().addAll(layers);
+                            }
+                            return localObject;
+                        });
     }
 
-    public static LayerGroupInfo localizeLayerGroup(
-            final LayerGroupInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
+    private LayerGroupInfo localizeLayerGroup(final LayerGroupInfo info, final Catalog catalog) {
+        return find(info, catalog::getLayerGroup)
+                .orElseGet(
+                        () -> {
+                            final LayerGroupInfo localObject =
+                                    tryCreate(catalog, info, CatalogFactory::createLayerGroup);
 
-        // make sure we use the prefixed name to include the workspace
-        final LayerGroupInfo localObject = catalog.getLayerGroupByName(info.prefixedName());
+                            if (!info.getLayers().isEmpty()) {
+                                List<PublishedInfo> layers =
+                                        info.getLayers()
+                                                .stream()
+                                                .map(
+                                                        p ->
+                                                                CatalogUtils.checking()
+                                                                        .localizePublishedInfo(
+                                                                                p, catalog))
+                                                .collect(Collectors.toList());
+                                localObject.getLayers().clear();
+                                localObject.getLayers().addAll(layers);
+                            }
 
-        if (localObject != null) {
-            return localObject;
-        }
+                            // localize styles, order matters
+                            LinkedHashSet<StyleInfo> styles =
+                                    CatalogUtils.checking()
+                                            .localizeStyles(info.getStyles(), catalog);
+                            localObject.getStyles().clear();
+                            localObject.getStyles().addAll(styles);
 
-        try {
-            info.getLayers().addAll(localizeLayers(info.getLayers(), catalog));
-        } catch (IllegalAccessException e) {
-            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(e.getLocalizedMessage());
-            throw e;
-        } catch (InvocationTargetException e) {
-            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(e.getLocalizedMessage());
-            throw e;
-        }
+                            if (info.getRootLayer() != null)
+                                localObject.setRootLayer(
+                                        CatalogUtils.checking()
+                                                .localizeLayer(info.getRootLayer(), catalog));
 
-        // make sure catalog transient fields are properly initiated
-        List<PublishedInfo> layers = info.getLayers();
-        if (layers != null) {
-            for (PublishedInfo layer : layers) {
-                if (layer instanceof LayerInfo) {
-                    ResourceInfo resource = ((LayerInfo) layer).getResource();
-                    if (resource == null) {
-                        continue;
-                    }
-                    StoreInfo store = resource.getStore();
-                    // we need the non proxy instance
-                    store = ModificationProxy.unwrap(store);
-                    if (store instanceof StoreInfoImpl) {
-                        // setting the catalog
-                        ((StoreInfoImpl) store).setCatalog(catalog);
-                    }
-                }
-            }
-        }
+                            if (info.getRootLayerStyle() != null)
+                                localObject.setRootLayerStyle(
+                                        CatalogUtils.checking()
+                                                .localizeStyle(info.getRootLayerStyle(), catalog));
 
-        // localize layers
-        info.getStyles().addAll(localizeStyles(new HashSet<StyleInfo>(info.getStyles()), catalog));
-
-        // attach to the catalog
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(info);
-        return info;
+                            if (info.getWorkspace() != null)
+                                localObject.setWorkspace(
+                                        CatalogUtils.checking()
+                                                .localizeWorkspace(info.getWorkspace(), catalog));
+                            return localObject;
+                        });
     }
 
-    public static StoreInfo localizeStore(final StoreInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
+    public StoreInfo localizeStore(final StoreInfo info, final Catalog catalog) {
+        Optional<StoreInfo> localObject;
+        Function<CatalogFactory, StoreInfo> factory;
         if (info instanceof CoverageStoreInfo) {
-            return localizeCoverageStore((CoverageStoreInfo) info, catalog);
+            localObject = find(info, catalog::getCoverageStore);
+            factory = CatalogFactory::createCoverageStore;
         } else if (info instanceof DataStoreInfo) {
-            return localizeDataStore((DataStoreInfo) info, catalog);
+            localObject = find(info, catalog::getDataStore);
+            factory = CatalogFactory::createDataStore;
         } else if (info instanceof WMSStoreInfo) {
-            return localizeWMSStore((WMSStoreInfo) info, catalog);
+            localObject = find(info, id -> catalog.getStore(id, WMSStoreInfo.class));
+            factory = CatalogFactory::createWebMapServer;
+        } else if (info instanceof WMTSStoreInfo) {
+            localObject = find(info, id -> catalog.getStore(id, WMTSStoreInfo.class));
+            factory = CatalogFactory::createWebMapTileServer;
         } else {
             throw new IllegalArgumentException(
-                    "Unable to provide localization for the passed instance");
+                    "Unable to provide localization for the passed instance: " + info);
         }
+        return localObject.orElseGet(
+                () -> {
+                    StoreInfo object = tryCreate(catalog, info, factory);
+                    object.setWorkspace(
+                            CatalogUtils.checking()
+                                    .localizeWorkspace(info.getWorkspace(), catalog));
+                    return object;
+                });
     }
 
-    public static DataStoreInfo localizeDataStore(final DataStoreInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final DataStoreInfo localObject =
-                catalog.getDataStoreByName(info.getWorkspace(), info.getName());
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final DataStoreInfo createdObject = catalog.getFactory().createDataStore();
-
-        // let's using the created object (see getGridCoverageReader)
-        BeanUtils.copyProperties(createdObject, info);
-
-        createdObject.setWorkspace(localizeWorkspace(info.getWorkspace(), catalog));
-
-        builder.attach(createdObject);
-        return createdObject;
-    }
-
-    public static WMSStoreInfo localizeWMSStore(final WMSStoreInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final WMSStoreInfo localObject =
-                catalog.getStoreByName(info.getWorkspace(), info.getName(), WMSStoreInfo.class);
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final WMSStoreInfo createdObject = catalog.getFactory().createWebMapServer();
-
-        // let's using the created object (see getGridCoverageReader)
-        BeanUtils.copyProperties(createdObject, info);
-
-        createdObject.setWorkspace(localizeWorkspace(info.getWorkspace(), catalog));
-
-        builder.attach(createdObject);
-        return createdObject;
-    }
-
-    public static CoverageStoreInfo localizeCoverageStore(
-            final CoverageStoreInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final CoverageStoreInfo localObject =
-                catalog.getCoverageStoreByName(info.getWorkspace(), info.getName());
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final CoverageStoreInfo createdObject = catalog.getFactory().createCoverageStore();
-
-        // let's using the created object (see getGridCoverageReader)
-        BeanUtils.copyProperties(createdObject, info);
-
-        createdObject.setWorkspace(localizeWorkspace(info.getWorkspace(), catalog));
-
-        builder.attach(createdObject);
-        return createdObject;
-    }
-
-    public static ResourceInfo localizeResource(final ResourceInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
+    public ResourceInfo localizeResource(final ResourceInfo info, final Catalog catalog) {
         if (info instanceof CoverageInfo) {
-            // coverage
             return localizeCoverage((CoverageInfo) info, catalog);
-
-        } else if (info instanceof FeatureTypeInfo) {
-            // feature
+        }
+        if (info instanceof FeatureTypeInfo) {
             return localizeFeatureType((FeatureTypeInfo) info, catalog);
-
-        } else if (info instanceof WMSLayerInfo) {
-            // wmslayer
+        }
+        if (info instanceof WMSLayerInfo) {
             return localizeWMSLayer((WMSLayerInfo) info, catalog);
-
-        } else {
-            throw new IllegalArgumentException(
-                    "Unable to provide localization for the passed instance");
         }
+        if (info instanceof WMTSLayerInfo) {
+            return localizeWMTSLayer((WMTSLayerInfo) info, catalog);
+        }
+        throw new IllegalArgumentException("Unknown ResourceInfo type: " + info);
     }
 
-    public static WMSLayerInfo localizeWMSLayer(final WMSLayerInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final WMSLayerInfo localObject =
-                catalog.getResourceByName(info.getNamespace(), info.getName(), WMSLayerInfo.class);
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final WMSLayerInfo createdObject = catalog.getFactory().createWMSLayer();
-
-        // let's using the created object (see getGridCoverageReader)
-        BeanUtils.copyProperties(createdObject, info);
-
-        createdObject.setNamespace(localizeNamespace(info.getNamespace(), catalog));
-
-        final StoreInfo store = localizeStore(info.getStore(), catalog);
-        createdObject.setStore(store);
-
-        //		WMSLayerObject.setAttributes(localizeAttributes(...)); TODO(should be already
-        // serialized)
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(createdObject);
-        return createdObject;
+    private WMSLayerInfo localizeWMSLayer(final WMSLayerInfo info, final Catalog catalog) {
+        return find(info, id -> catalog.getResource(id, WMSLayerInfo.class))
+                .orElseGet(
+                        () -> {
+                            WMSLayerInfo localObject =
+                                    tryCreate(catalog, info, CatalogFactory::createWMSLayer);
+                            localObject.setNamespace(
+                                    CatalogUtils.checking()
+                                            .localizeNamespace(info.getNamespace(), catalog));
+                            localObject.setStore(
+                                    CatalogUtils.checking()
+                                            .localizeStore(info.getStore(), catalog));
+                            if (info.getAllAvailableRemoteStyles() != null
+                                    && !info.getAllAvailableRemoteStyles().isEmpty()) {
+                                localObject.getAllAvailableRemoteStyles().clear();
+                                localObject
+                                        .getAllAvailableRemoteStyles()
+                                        .addAll(
+                                                CatalogUtils.checking()
+                                                        .localizeStyles(
+                                                                info.getAllAvailableRemoteStyles(),
+                                                                catalog));
+                            }
+                            // defaultStyle is a derived property from forcedRemoteStyle:String,
+                            // sigh
+                            // if(null != info.getDefaultStyle())
+                            // remoteStyleInfos is an on-the-fly computed property, sigh
+                            /// info.getRemoteStyleInfos();
+                            return localObject;
+                        });
     }
 
-    public static FeatureTypeInfo localizeFeatureType(
-            final FeatureTypeInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
-
-        final FeatureTypeInfo localObject =
-                catalog.getFeatureTypeByName(info.getNamespace(), info.getName());
-
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final FeatureTypeInfo createdObject = catalog.getFactory().createFeatureType();
-
-        // let's using the created object (see getGridCoverageReader)
-        BeanUtils.copyProperties(createdObject, info);
-
-        createdObject.setNamespace(localizeNamespace(info.getNamespace(), catalog));
-
-        final StoreInfo store = localizeStore(info.getStore(), catalog);
-        createdObject.setStore(store);
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(createdObject);
-        return createdObject;
+    private WMTSLayerInfo localizeWMTSLayer(final WMTSLayerInfo info, final Catalog catalog) {
+        return find(info, id -> catalog.getResource(id, WMTSLayerInfo.class))
+                .orElseGet(
+                        () -> {
+                            WMTSLayerInfo localObject =
+                                    tryCreate(catalog, info, CatalogFactory::createWMTSLayer);
+                            localObject.setNamespace(
+                                    CatalogUtils.checking()
+                                            .localizeNamespace(info.getNamespace(), catalog));
+                            localObject.setStore(
+                                    CatalogUtils.checking()
+                                            .localizeStore(info.getStore(), catalog));
+                            return localObject;
+                        });
     }
 
-    public static CoverageInfo localizeCoverage(final CoverageInfo info, final Catalog catalog)
-            throws IllegalAccessException, InvocationTargetException {
-        if (info == null || catalog == null)
-            throw new NullPointerException("Arguments may never be null");
+    private FeatureTypeInfo localizeFeatureType(final FeatureTypeInfo info, final Catalog catalog) {
+        return find(info, catalog::getFeatureType)
+                .orElseGet(
+                        () -> {
+                            FeatureTypeInfo localObject =
+                                    tryCreate(catalog, info, CatalogFactory::createFeatureType);
+                            localObject.setNamespace(
+                                    CatalogUtils.checking()
+                                            .localizeNamespace(info.getNamespace(), catalog));
+                            localObject.setStore(
+                                    CatalogUtils.checking()
+                                            .localizeStore(info.getStore(), catalog));
+                            return localObject;
+                        });
+    }
 
-        final CoverageInfo localObject =
-                catalog.getCoverageByName(info.getNamespace(), info.getName());
-        if (localObject != null) {
-            return localObject;
-        }
-
-        final CoverageInfo createdObject = catalog.getFactory().createCoverage();
-
-        // let's using the created object (see getGridCoverageReader)
-        BeanUtils.copyProperties(createdObject, info);
-
-        createdObject.setNamespace(localizeNamespace(info.getNamespace(), catalog));
-
-        createdObject.setStore(localizeCoverageStore(info.getStore(), catalog));
-
-        final CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.attach(createdObject);
-        return createdObject;
+    private CoverageInfo localizeCoverage(final CoverageInfo info, final Catalog catalog) {
+        return find(info, catalog::getCoverage)
+                .orElseGet(
+                        () -> {
+                            CoverageInfo localObject =
+                                    tryCreate(catalog, info, CatalogFactory::createCoverage);
+                            localObject.setNamespace(
+                                    CatalogUtils.checking()
+                                            .localizeNamespace(info.getNamespace(), catalog));
+                            localObject.setStore(
+                                    CatalogUtils.checking()
+                                            .localizeStore(info.getStore(), catalog));
+                            return localObject;
+                        });
     }
 }

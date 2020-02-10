@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
+import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -27,6 +28,7 @@ import org.geoserver.cluster.events.ToggleSwitch;
 public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
     private final Catalog catalog;
     private final ToggleSwitch producer;
+    private final CatalogUtils catalogUtils = CatalogUtils.checking();
 
     public JMSCatalogRemoveEventHandler(
             Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
@@ -50,19 +52,21 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
                 // disable the producer to avoid recursion
                 producer.disable();
                 // remove the selected CatalogInfo
-                JMSCatalogRemoveEventHandler.remove(catalog, info, getProperties());
+                remove(catalog, info, getProperties());
 
             } else {
                 // incoming object not recognized
                 if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe("Unrecognized event type");
+                    LOGGER.severe("Unrecognized event type: " + event.getClass().getName());
                 return false;
             }
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + event);
+                LOGGER.log(
+                        Level.SEVERE,
+                        this.getClass() + " is unable to synchronize the incoming event: " + event,
+                        e);
             throw e;
         } finally {
             // re enable the producer
@@ -71,57 +75,57 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
         return true;
     }
 
-    private static void remove(final Catalog catalog, CatalogInfo info, Properties options)
+    private void remove(final Catalog catalog, CatalogInfo info, Properties options)
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         if (info instanceof LayerGroupInfo) {
 
             final LayerGroupInfo deserObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+                    catalogUtils.localizePublishedInfo((LayerGroupInfo) info, catalog);
             catalog.remove(deserObject);
-            // catalog.save(CatalogUtils.getProxy(deserObject));
-            // info=CatalogUtils.localizeLayerGroup((LayerGroupInfo) info,
+            // catalog.save(catalogUtils.getProxy(deserObject));
+            // info=catalogUtils.localizeLayerGroup((LayerGroupInfo) info,
             // catalog);
 
         } else if (info instanceof LayerInfo) {
 
-            final LayerInfo layer = CatalogUtils.localizeLayer((LayerInfo) info, catalog);
+            final LayerInfo layer = catalogUtils.localizePublishedInfo((LayerInfo) info, catalog);
             catalog.remove(layer);
-            // catalog.save(CatalogUtils.getProxy(layer));
-            // info=CatalogUtils.localizeLayer((LayerInfo) info, catalog);
+            // catalog.save(catalogUtils.getProxy(layer));
+            // info=catalogUtils.localizeLayer((LayerInfo) info, catalog);
 
         } else if (info instanceof MapInfo) {
 
-            final MapInfo localObject = CatalogUtils.localizeMapInfo((MapInfo) info, catalog);
+            final MapInfo localObject = catalogUtils.localizeMapInfo((MapInfo) info, catalog);
             catalog.remove(localObject);
-            // catalog.save(CatalogUtils.getProxy(localObject));
-            // info= CatalogUtils.localizeMapInfo((MapInfo) info,catalog);
+            // catalog.save(catalogUtils.getProxy(localObject));
+            // info= catalogUtils.localizeMapInfo((MapInfo) info,catalog);
 
         } else if (info instanceof NamespaceInfo) {
 
             final NamespaceInfo namespace =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+                    catalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
             catalog.remove(namespace);
-            // catalog.save(CatalogUtils.getProxy(namespace));
-            // info =CatalogUtils.localizeNamespace((NamespaceInfo) info,
+            // catalog.save(catalogUtils.getProxy(namespace));
+            // info =catalogUtils.localizeNamespace((NamespaceInfo) info,
             // catalog);
         } else if (info instanceof StoreInfo) {
 
-            StoreInfo store = CatalogUtils.localizeStore((StoreInfo) info, catalog);
+            StoreInfo store = catalogUtils.localizeStore((StoreInfo) info, catalog);
             catalog.remove(store);
-            // catalog.save(CatalogUtils.getProxy(store));
+            // catalog.save(catalogUtils.getProxy(store));
 
-            // info=CatalogUtils.localizeStore((StoreInfo)info,catalog);
+            // info=catalogUtils.localizeStore((StoreInfo)info,catalog);
         } else if (info instanceof ResourceInfo) {
 
             final ResourceInfo resource =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+                    catalogUtils.localizeResource((ResourceInfo) info, catalog);
             catalog.remove(resource);
-            // catalog.save(CatalogUtils.getProxy(resource));
-            // info =CatalogUtils.localizeResource((ResourceInfo)info,catalog);
+            // catalog.save(catalogUtils.getProxy(resource));
+            // info =catalogUtils.localizeResource((ResourceInfo)info,catalog);
         } else if (info instanceof StyleInfo) {
 
-            final StyleInfo style = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+            final StyleInfo style = catalogUtils.localizeStyle((StyleInfo) info, catalog);
 
             catalog.remove(style);
 
@@ -137,16 +141,16 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
                 }
             }
 
-            // catalog.detach(CatalogUtils.getProxy(deserializedObject));
-            // info = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+            // catalog.detach(catalogUtils.getProxy(deserializedObject));
+            // info = catalogUtils.localizeStyle((StyleInfo) info, catalog);
 
         } else if (info instanceof WorkspaceInfo) {
 
             final WorkspaceInfo workspace =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+                    catalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
             catalog.remove(workspace);
             // catalog.detach(workspace);
-            // info = CatalogUtils.localizeWorkspace((WorkspaceInfo) info,
+            // info = catalogUtils.localizeWorkspace((WorkspaceInfo) info,
             // catalog);
         } else if (info instanceof CatalogInfo) {
             // TODO may we don't want to send this empty message!

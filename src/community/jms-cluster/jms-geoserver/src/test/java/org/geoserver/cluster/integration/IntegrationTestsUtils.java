@@ -5,8 +5,10 @@
 package org.geoserver.cluster.integration;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -15,20 +17,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.SerializationUtils;
+import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
@@ -47,7 +46,7 @@ public final class IntegrationTestsUtils {
     private IntegrationTestsUtils() {}
 
     /** Equalizes all GeoServer instances to the first instance. */
-    public static void equalizeInstances(GeoServerInstance... instances) {
+    public static void equalizeInstances(GeoServerInstance... instances) throws IOException {
         if (instances.length <= 1) {
             // only one instance, so nothing to equalize
             return;
@@ -57,11 +56,24 @@ public final class IntegrationTestsUtils {
         for (int i = 1; i < instances.length; i++) {
             // equalize instance to the reference instance
             equalize(instance, instances[i]);
+            List<InfoDiff> differences = differences(instance, instances[i]);
+            if (!differences.isEmpty()) {
+                differences = differences(instance, instances[i]);
+            }
+            assertThat(
+                    String.format(
+                            "Error synchronizing %s to %s: %s",
+                            instances[i].instanceName,
+                            instance.instanceName,
+                            differences.toString()),
+                    differences.size(),
+                    is(0));
         }
     }
 
     /** Equalizes two GeoServer instances, the first instance will be used as reference. */
-    public static void equalize(GeoServerInstance instanceA, GeoServerInstance instanceB) {
+    public static void equalize(GeoServerInstance instanceA, GeoServerInstance instanceB)
+            throws IOException {
         // get the differences between the two instances
         List<InfoDiff> differences = differences(instanceA, instanceB);
         // equalize each difference
@@ -73,15 +85,12 @@ public final class IntegrationTestsUtils {
                 remove(instanceB.getGeoServer(), instanceB.getCatalog(), infoB);
             } else if (infoB == null) {
                 // this info exists only in the reference instance so it needs to be added
-                add(
-                        instanceB.getGeoServer(),
-                        instanceB.getCatalog(),
-                        (Info) SerializationUtils.clone(infoA));
+                add(instanceA, instanceB, (Info) SerializationUtils.clone(infoA));
             } else {
                 // this info exists in both instances but is different
                 save(
-                        instanceB.getGeoServer(),
-                        instanceB.getCatalog(),
+                        instanceA,
+                        instanceB,
                         ModificationProxy.unwrap(infoA),
                         ModificationProxy.unwrap(infoB));
             }
@@ -153,30 +162,31 @@ public final class IntegrationTestsUtils {
         Arrays.stream(instances).forEach(GeoServerInstance::resetConsumedEventsCount);
     }
 
-    /** Equalizes the provided infos using info A as reference. */
-    private static void save(GeoServer geoServer, Catalog catalog, Info infoA, Info infoB) {
+    /**
+     * Equalizes the provided infos using info A as reference.
+     *
+     * @throws IOException
+     */
+    private static void save(
+            GeoServerInstance instanceA, GeoServerInstance instanceB, Info infoA, Info infoB)
+            throws IOException {
+        GeoServer geoServer = instanceB.getGeoServer();
+        Catalog catalog = instanceB.getCatalog();
         if (infoA instanceof WorkspaceInfo) {
             catalog.save(updateInfoImpl(infoA, infoB, WorkspaceInfo.class));
         } else if (infoA instanceof NamespaceInfo) {
             catalog.save(updateInfoImpl(infoA, infoB, NamespaceInfo.class));
-        } else if (infoA instanceof DataStoreInfo) {
-            catalog.save(updateInfoImpl(infoA, infoB, DataStoreInfo.class));
-        } else if (infoA instanceof CoverageStoreInfo) {
-            catalog.save(updateInfoImpl(infoA, infoB, CoverageStoreInfo.class));
-        } else if (infoA instanceof WMSStoreInfo) {
-            catalog.save(updateInfoImpl(infoA, infoB, WMSStoreInfo.class));
-        } else if (infoA instanceof FeatureTypeInfo) {
-            catalog.save(updateInfoImpl(infoA, infoB, FeatureTypeInfo.class));
-        } else if (infoA instanceof CoverageInfo) {
-            catalog.save(updateInfoImpl(infoA, infoB, CoverageInfo.class));
+        } else if (infoA instanceof StoreInfo) {
+            catalog.save(updateInfoImpl(infoA, infoB, StoreInfo.class));
+        } else if (infoA instanceof ResourceInfo) {
+            catalog.save(updateInfoImpl(infoA, infoB, ResourceInfo.class));
         } else if (infoA instanceof LayerInfo) {
             catalog.save(updateInfoImpl(infoA, infoB, LayerInfo.class));
         } else if (infoA instanceof StyleInfo) {
             catalog.save(updateInfoImpl(infoA, infoB, StyleInfo.class));
+            syncStyleFile(instanceA, instanceB, (StyleInfo) infoA, (StyleInfo) infoB);
         } else if (infoA instanceof LayerGroupInfo) {
             catalog.save(updateInfoImpl(infoA, infoB, LayerGroupInfo.class));
-        } else if (infoA instanceof WMSLayerInfo) {
-            catalog.save(updateInfoImpl(infoA, infoB, WMSLayerInfo.class));
         } else if (infoA instanceof SettingsInfo) {
             geoServer.save(updateInfoImpl(infoA, infoB, SettingsInfo.class));
         } else if (infoA instanceof ServiceInfo) {
@@ -190,6 +200,21 @@ public final class IntegrationTestsUtils {
                     String.format(
                             "Don't know how to handle info of type '%s'.",
                             infoA.getClass().getSimpleName()));
+        }
+    }
+
+    private static void syncStyleFile(
+            GeoServerInstance instanceA, GeoServerInstance instanceB, StyleInfo sA, StyleInfo sB)
+            throws IOException {
+        String styleFileA = CatalogDiffVisitor.getStyleFile(sA, instanceA.getDataDirectory());
+        String styleFileB = CatalogDiffVisitor.getStyleFile(sB, instanceB.getDataDirectory());
+        if (!styleFileA.equals(styleFileB)) {
+            instanceB
+                    .getCatalog()
+                    .getResourcePool()
+                    .writeStyle(sB, new ByteArrayInputStream(styleFileA.getBytes("UTF-8")));
+            styleFileB = CatalogDiffVisitor.getStyleFile(sB, instanceB.getDataDirectory());
+            assertEquals(styleFileA, styleFileB);
         }
     }
 
@@ -258,30 +283,30 @@ public final class IntegrationTestsUtils {
         return Info.class;
     }
 
-    /** Add info object to the provided GeoServer instance. */
-    private static void add(GeoServer geoServer, Catalog catalog, Info info) {
+    /**
+     * Add info object to the provided GeoServer instance.
+     *
+     * @throws IOException
+     */
+    private static void add(GeoServerInstance instanceA, GeoServerInstance instanceB, Info info)
+            throws IOException {
+        GeoServer geoServer = instanceB.getGeoServer();
+        Catalog catalog = instanceB.getCatalog();
         if (info instanceof WorkspaceInfo) {
             catalog.add((WorkspaceInfo) info);
         } else if (info instanceof NamespaceInfo) {
             catalog.add((NamespaceInfo) info);
-        } else if (info instanceof DataStoreInfo) {
-            catalog.add((DataStoreInfo) info);
-        } else if (info instanceof CoverageStoreInfo) {
-            catalog.add((CoverageStoreInfo) info);
-        } else if (info instanceof WMSStoreInfo) {
-            catalog.add((WMSStoreInfo) info);
-        } else if (info instanceof FeatureTypeInfo) {
-            catalog.add((FeatureTypeInfo) info);
-        } else if (info instanceof CoverageInfo) {
-            catalog.add((CoverageInfo) info);
+        } else if (info instanceof StoreInfo) {
+            catalog.add((StoreInfo) info);
+        } else if (info instanceof ResourceInfo) {
+            catalog.add((ResourceInfo) info);
         } else if (info instanceof LayerInfo) {
             catalog.add((LayerInfo) info);
         } else if (info instanceof StyleInfo) {
             catalog.add((StyleInfo) info);
+            syncStyleFile(instanceA, instanceB, (StyleInfo) info, catalog.getStyle(info.getId()));
         } else if (info instanceof LayerGroupInfo) {
             catalog.add((LayerGroupInfo) info);
-        } else if (info instanceof WMSLayerInfo) {
-            catalog.add((WMSLayerInfo) info);
         } else if (info instanceof SettingsInfo) {
             geoServer.add((SettingsInfo) info);
         } else if (info instanceof ServiceInfo) {

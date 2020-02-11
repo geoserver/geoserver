@@ -70,14 +70,16 @@ public class AccessDataRuleInfoManager {
 
     public List<DataAccessRule> getRules() {
         DataAccessRuleDAO dao = getSecurityManager().getDataAccessRuleDAO();
-        dao.reload();
         return dao.getRules();
     }
 
     public Set<DataAccessRule> getWorkspaceDataAccessRules(String workspaceName) {
         return getRules()
                 .stream()
-                .filter(r -> r.getRoot().equalsIgnoreCase(workspaceName))
+                .filter(
+                        r ->
+                                r.getRoot().equalsIgnoreCase(workspaceName)
+                                        && r.getLayer().equals("*"))
                 .collect(Collectors.toSet());
     }
 

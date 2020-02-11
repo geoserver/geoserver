@@ -61,7 +61,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
                 ruleInfoMan.mapFrom(
                         rulesInfo, availableRoles, ws.getName(), layerInfo.getName(), false);
         ruleInfoMan.saveRules(dataRules, news);
-        assertTrue(ruleInfoMan.getResourceRule(ws.getName(), ws).size() == 1);
+        assertTrue(ruleInfoMan.getResourceRule(ws.getName(), layerInfo).size() == 1);
         cleanRules(ws.getName(), layerInfo);
     }
 

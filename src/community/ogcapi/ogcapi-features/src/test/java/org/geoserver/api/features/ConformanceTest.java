@@ -16,6 +16,7 @@ public class ConformanceTest extends FeaturesTestSupport {
     @Test
     public void testConformanceJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/conformance", 200);
+        checkConformance(json);
     }
 
     private void checkConformance(DocumentContext json) {
@@ -24,6 +25,7 @@ public class ConformanceTest extends FeaturesTestSupport {
         assertEquals(FeatureService.HTML, json.read("$.conformsTo[2]", String.class));
         assertEquals(FeatureService.GEOJSON, json.read("$.conformsTo[3]", String.class));
         assertEquals(FeatureService.GMLSF0, json.read("$.conformsTo[4]", String.class));
+        assertEquals(FeatureService.CQL_TEXT, json.read("$.conformsTo[5]", String.class));
     }
 
     @Test

@@ -80,7 +80,7 @@ public class AbstractDocument {
      * @param rel The rel of the link object (the updater can modify it, to handle for example
      *     "self" relationships)
      */
-    protected void addLinksFor(
+    public void addLinksFor(
             String path,
             Class<?> responseType,
             String titlePrefix,

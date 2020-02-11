@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-import java.util.List;
 import org.geoserver.api.Link;
 import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
@@ -165,10 +164,5 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertEquals("Features 1.0 server", json.read("title"));
         // check description
         assertEquals("", json.read("description"));
-    }
-
-    static <T> void assertJSONList(DocumentContext json, String path, T... expected) {
-        List<T> selfRels = json.read(path);
-        assertThat(selfRels, Matchers.containsInAnyOrder(expected));
     }
 }

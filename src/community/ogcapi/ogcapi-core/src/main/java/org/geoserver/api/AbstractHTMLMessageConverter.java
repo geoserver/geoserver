@@ -6,15 +6,23 @@
 package org.geoserver.api;
 
 import freemarker.template.TemplateMethodModel;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
+import freemarker.template.utility.DeepUnwrap;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -38,19 +46,19 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      *
      * @param binding The bean meant to act as the model for the template
      * @param serviceConfigurationClass The class holding the configuration for the service
-     * @param loader A loader used to locate templates
+     * @param templateSupport A loader used to locate templates
      * @param geoServer The
      */
     public AbstractHTMLMessageConverter(
             Class binding,
             Class<? extends ServiceInfo> serviceConfigurationClass,
-            GeoServerResourceLoader loader,
+            FreemarkerTemplateSupport templateSupport,
             GeoServer geoServer) {
         super(MediaType.TEXT_HTML);
         this.binding = binding;
         this.geoServer = geoServer;
         this.serviceConfigurationClass = serviceConfigurationClass;
-        this.templateSupport = new FreemarkerTemplateSupport(loader);
+        this.templateSupport = templateSupport;
     }
 
     @Override
@@ -101,13 +109,14 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      * @param baseURL
      * @param model
      */
-    public static void addLinkFunctions(String baseURL, Map<String, Object> model) {
+    protected void addLinkFunctions(String baseURL, Map<String, Object> model) {
+        APIRequestInfo.get().getServiceBaseURL();
         model.put(
                 "serviceLink",
                 (TemplateMethodModel)
                         arguments ->
                                 ResponseUtils.buildURL(
-                                        baseURL,
+                                        APIRequestInfo.get().getServiceBaseURL(),
                                         (String) arguments.get(0),
                                         arguments.size() > 1
                                                 ? Collections.singletonMap(
@@ -132,6 +141,59 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
                                         (String) arguments.get(0),
                                         null,
                                         URLMangler.URLType.EXTERNAL));
+        // TemplateMethodModelEx accepts generic object arguments instead of just string arguments
+        Object htmlExtensions =
+                model.put(
+                        "htmlExtensions",
+                        new TemplateMethodModelEx() {
+                            @Override
+                            public Object exec(List arguments) throws TemplateModelException {
+                                if (arguments != null) {
+                                    arguments = unwrapArguments(arguments);
+                                }
+                                return processHtmlExtensions(model, arguments);
+                            }
+                        });
+    }
+
+    public List<Object> unwrapArguments(List<Object> arguments) {
+        return arguments
+                .stream()
+                .map(
+                        v -> {
+                            if (v instanceof TemplateModel) {
+                                try {
+                                    return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
+                                } catch (TemplateModelException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            return v;
+                        })
+                .collect(Collectors.toList());
+    }
+
+    private String processHtmlExtensions(Map<String, Object> model, List arguments) {
+        try {
+            List<HTMLExtensionCallback> callbacks =
+                    GeoServerExtensions.extensions(HTMLExtensionCallback.class);
+            StringBuilder sb = new StringBuilder();
+            Request dr = Dispatcher.REQUEST.get();
+            for (HTMLExtensionCallback callback : callbacks) {
+                String html = callback.getExtension(dr, model, arguments);
+                if (html != null) {
+                    // add a separation just for output readability
+                    if (sb.length() > 0) {
+                        sb.append("\n");
+                    }
+                    sb.append(html);
+                }
+            }
+
+            return sb.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected String getBaseURL() {

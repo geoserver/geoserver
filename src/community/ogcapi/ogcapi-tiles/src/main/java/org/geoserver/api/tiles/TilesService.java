@@ -76,9 +76,10 @@ public class TilesService {
 
     static final Logger LOGGER = Logging.getLogger(TilesService.class);
 
-    static final String CORE = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/core";
-    static final String MULTITILE = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/multitile";
-    static final String INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/info";
+    public static final String CC_CORE = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/core";
+    public static final String CC_MULTITILE =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/multitile";
+    public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/info";
 
     private final GeoServer geoServer;
     private final GWC gwc;
@@ -131,7 +132,7 @@ public class TilesService {
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE, MULTITILE, INFO);
+        List<String> classes = Arrays.asList(CC_CORE, CC_MULTITILE, CC_INFO);
         return new ConformanceDocument(classes);
     }
 

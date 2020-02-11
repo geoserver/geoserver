@@ -18,9 +18,9 @@ public class ConformanceTest extends TilesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(TilesService.CORE, json.read("$.conformsTo[0]", String.class));
-        assertEquals(TilesService.MULTITILE, json.read("$.conformsTo[1]", String.class));
-        assertEquals(TilesService.INFO, json.read("$.conformsTo[2]", String.class));
+        assertEquals(TilesService.CC_CORE, json.read("$.conformsTo[0]", String.class));
+        assertEquals(TilesService.CC_MULTITILE, json.read("$.conformsTo[1]", String.class));
+        assertEquals(TilesService.CC_INFO, json.read("$.conformsTo[2]", String.class));
         // check the others as they get implemented
     }
 

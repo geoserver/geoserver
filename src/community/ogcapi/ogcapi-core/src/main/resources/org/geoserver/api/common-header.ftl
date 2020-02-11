@@ -12,6 +12,6 @@
   </head>
 <body>
    <div id="header">
-     <a href="${serviceLink("ogc/features")}"></a>
+     <a href="${serviceLink("")}"></a>
    </div>
    <div id="content">

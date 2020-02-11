@@ -19,7 +19,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.springframework.core.GenericTypeResolver;
@@ -49,22 +48,22 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
     private static final MediaType MEDIA_TYPE_APPLICATION = new MediaType("application");
 
     private final ContentNegotiationManager contentNegotiationManager;
-    protected final GeoServerResourceLoader loader;
+    protected final FreemarkerTemplateSupport templateSupport;
     protected final GeoServer geoServer;
     protected List<DispatcherCallback> callbacks;
 
     public APIBodyMethodProcessor(
             List<HttpMessageConverter<?>> converters,
-            GeoServerResourceLoader loader,
+            FreemarkerTemplateSupport templateSupport,
             GeoServer geoServer,
             List<DispatcherCallback> callbacks) {
-        this(converters, new APIContentNegotiationManager(), loader, geoServer, callbacks);
+        this(converters, new APIContentNegotiationManager(), templateSupport, geoServer, callbacks);
     }
 
     public APIBodyMethodProcessor(
             List<HttpMessageConverter<?>> converters,
             ContentNegotiationManager contentNegotiationManager,
-            GeoServerResourceLoader loader,
+            FreemarkerTemplateSupport templateSupport,
             GeoServer geoServer,
             List<DispatcherCallback> callbacks) {
         super(
@@ -72,7 +71,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 new APIContentNegotiationManager(), // this is the customized bit
                 Collections.singletonList(new JsonViewResponseBodyAdvice()));
         this.contentNegotiationManager = contentNegotiationManager;
-        this.loader = loader;
+        this.templateSupport = templateSupport;
         this.geoServer = geoServer;
         this.callbacks = callbacks;
     }
@@ -96,12 +95,16 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         HttpMessageConverter converter;
         if (htmlResponseBody != null && MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
             // direct HTML encoding based on annotations
+            Class baseClass = htmlResponseBody.baseClass();
+            if (baseClass == Object.class) {
+                baseClass = returnType.getContainingClass();
+            }
             converter =
                     new SimpleHTTPMessageConverter(
                             value.getClass(),
                             getServiceClass(returnType),
-                            returnType.getContainingClass(),
-                            loader,
+                            baseClass,
+                            templateSupport,
                             geoServer,
                             htmlResponseBody.templateName());
             mediaType = MediaType.TEXT_HTML;

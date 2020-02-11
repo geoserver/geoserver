@@ -35,7 +35,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
@@ -180,7 +179,7 @@ public class APIDispatcher extends AbstractController {
                                                 handlerAdapter.getMessageConverters(),
                                                 contentNegotiationManager,
                                                 GeoServerExtensions.bean(
-                                                        GeoServerResourceLoader.class),
+                                                        FreemarkerTemplateSupport.class),
                                                 GeoServerExtensions.bean(GeoServer.class),
                                                 callbacks);
                                     } else {

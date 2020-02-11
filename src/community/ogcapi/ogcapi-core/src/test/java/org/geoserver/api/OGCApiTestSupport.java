@@ -23,6 +23,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -117,5 +118,18 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     protected boolean exists(DocumentContext json, String path) {
         List items = json.read(path);
         return items.size() > 0;
+    }
+
+    /**
+     * Verifies the given JSONPath evaluates to the expected list
+     *
+     * @param json The document
+     * @param path The path
+     * @param expected The expected list
+     * @param <T>
+     */
+    protected <T> void assertJSONList(DocumentContext json, String path, T... expected) {
+        List<T> selfRels = json.read(path);
+        assertThat(selfRels, Matchers.containsInAnyOrder(expected));
     }
 }

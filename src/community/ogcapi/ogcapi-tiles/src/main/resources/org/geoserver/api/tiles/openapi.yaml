@@ -324,7 +324,7 @@ paths:
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
-        - $ref: '#/components/parameters/f-png-jpeg-vector'
+        - $ref: '#/components/parameters/f-vector'
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/filter-lang'
       responses:
@@ -369,7 +369,7 @@ paths:
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
         - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
-        - $ref: '#/components/parameters/f-png-jpeg-vector'
+        - $ref: '#/components/parameters/f-png-jpeg'
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/filter-lang'
       responses:
@@ -580,14 +580,13 @@ components:
           - json
           - zip
       example: json
-    f-png-jpeg-vector:
+    f-png-jpeg:
       name: f
       in: query
       description: |-
         The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
 
-        Pre-defined values are "mvt" for a Mapbox Vector Tile, "json" for a GeoJSON tiled feature collection and jpeg, png or gif for image based tiles
-        The response to other values is determined by the server.
+        Pre-defined values are jpeg, png or gif for image based tiles. The response to other values is determined by the server.
       required: false
       style: form
       explode: false
@@ -600,6 +599,25 @@ components:
           - mvt
           - json
       example: png
+    f-vector:
+        name: f
+        in: query
+        description: |-
+          The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+
+          Pre-defined values are "mvt" for a Mapbox Vector Tile, "json" for a GeoJSON tiled feature collection. The response to other values is determined by the server.
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+            - png
+            - jpeg
+            - gif
+            - mvt
+            - json
+        example: png
     f-map:
       name: f-map
       in: query

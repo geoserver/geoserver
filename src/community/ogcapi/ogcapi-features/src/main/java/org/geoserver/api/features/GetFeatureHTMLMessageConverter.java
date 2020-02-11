@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractHTMLMessageConverter;
+import org.geoserver.api.FreemarkerTemplateSupport;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -31,8 +31,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter<FeaturesResponse> {
 
-    public GetFeatureHTMLMessageConverter(GeoServerResourceLoader loader, GeoServer geoServer) {
-        super(FeaturesResponse.class, WFSInfo.class, loader, geoServer);
+    public GetFeatureHTMLMessageConverter(
+            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+        super(FeaturesResponse.class, WFSInfo.class, templateSupport, geoServer);
     }
 
     private FeatureTypeInfo getResource(FeatureCollection collection) {
@@ -70,7 +71,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", request.getBaseURL());
         model.put("response", response);
-        AbstractHTMLMessageConverter.addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
+        addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
         try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody())) {
             try {

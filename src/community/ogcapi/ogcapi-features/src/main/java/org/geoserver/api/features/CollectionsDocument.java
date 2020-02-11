@@ -7,9 +7,11 @@ package org.geoserver.api.features;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,10 +30,9 @@ public class CollectionsDocument extends AbstractDocument {
 
     private final GeoServer geoServer;
     private final List<String> crs;
-    /* private final List<WFS3Extension> extensions; */
+    private final List<Consumer<CollectionDocument>> collectionDecorators = new ArrayList<>();
 
-    public CollectionsDocument(
-            GeoServer geoServer, List<String> crsList /* List<WFS3Extension> extensions */) {
+    public CollectionsDocument(GeoServer geoServer, List<String> crsList) {
         this.geoServer = geoServer;
         this.crs = crsList;
         /* this.extensions = extensions; */
@@ -72,7 +73,10 @@ public class CollectionsDocument extends AbstractDocument {
                                         featureType, Collections.singletonList("#/crs"));
                         CollectionDocument collection =
                                 new CollectionDocument(geoServer, featureType, crs);
-                        /* decorateWithExtensions(collection); */
+                        for (Consumer<CollectionDocument> collectionDecorator :
+                                collectionDecorators) {
+                            collectionDecorator.accept(collection);
+                        }
 
                         next = collection;
                         return true;
@@ -95,5 +99,9 @@ public class CollectionsDocument extends AbstractDocument {
 
     public List<String> getCrs() {
         return crs;
+    }
+
+    public void addCollectionDecorator(Consumer<CollectionDocument> decorator) {
+        this.collectionDecorators.add(decorator);
     }
 }

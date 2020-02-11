@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-import java.util.List;
 import org.geoserver.api.Link;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
@@ -106,7 +105,7 @@ public class LandingPageTest extends ImagesTestSupport {
                         "http://localhost:8080/geoserver/gs/ogc/images/collections?f=application%2Fjson"));
     }
 
-    static void checkJSONLandingPage(DocumentContext json) {
+    void checkJSONLandingPage(DocumentContext json) {
         assertEquals(12, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
@@ -121,7 +120,7 @@ public class LandingPageTest extends ImagesTestSupport {
         checkJSONLandingPageShared(json);
     }
 
-    static void checkJSONLandingPageShared(DocumentContext json) {
+    void checkJSONLandingPageShared(DocumentContext json) {
         // check API links
         assertJSONList(
                 json,
@@ -147,10 +146,5 @@ public class LandingPageTest extends ImagesTestSupport {
         assertEquals("Image mosaicks discovery and management interface", json.read("title"));
         // check description
         assertEquals("", json.read("description"));
-    }
-
-    static <T> void assertJSONList(DocumentContext json, String path, T... expected) {
-        List<T> selfRels = json.read(path);
-        assertThat(selfRels, Matchers.containsInAnyOrder(expected));
     }
 }

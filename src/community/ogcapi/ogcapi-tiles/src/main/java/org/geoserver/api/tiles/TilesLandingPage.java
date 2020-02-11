@@ -10,6 +10,7 @@ import org.geoserver.api.AbstractLandingPageDocument;
 public class TilesLandingPage extends AbstractLandingPageDocument {
 
     public static final String TILES_SERVICE_BASE = "ogc/tiles";
+    public static final String REL_TILING_SCHEMES = "tiling-schemes";
 
     public TilesLandingPage(String title, String description) {
         super(title, description, TILES_SERVICE_BASE);
@@ -30,6 +31,6 @@ public class TilesLandingPage extends AbstractLandingPageDocument {
                 "Tile matrix set list as ",
                 "tileMatrixSets",
                 null,
-                "data");
+                REL_TILING_SCHEMES);
     }
 }

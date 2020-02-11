@@ -18,4 +18,4 @@ There are many ways to install GeoServer on your system. This section will discu
    war
    upgrade
 
-.. note:: At this time we no longer provide a Windows Installer, because the benefics do not outstand the costs (it's basically a wrapper around the win_binary). However if you realy need the Windows installer, you can create one following `the instruction on this site <../../developer/win-installer.html>`.
+.. note:: At this time, for several reasons, we no longer provide the Windows Installer. However if you realy need the Windows installer, you can create one following `the instruction on this site <../../developer/win-installer.html>`.

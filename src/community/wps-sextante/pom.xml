@@ -28,7 +28,7 @@
     <repositories>
       <repository>
         <id>Main 52north releases repo</id>
-        <url>http://52north.org/maven/repo/releases/</url>
+        <url>https://52north.org/maven/repo/releases/</url>
       </repository>
     </repositories>
 

@@ -11,7 +11,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -24,6 +26,8 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.security.AccessMode;
+import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.security.AccessDataRuleInfoManager;
 import org.junit.Before;
@@ -337,6 +341,49 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
             tester.clickLink("form:save");
             assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size() == 1);
             tester.assertNoErrorMessage();
+
+        } finally {
+            ruleMan.removeAllResourceRules(citeWorkspace.getName(), citeWorkspace);
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).isEmpty());
+        }
+    }
+
+    @Test
+    public void testWsSecurityRulesUI() throws IOException {
+        AccessDataRuleInfoManager ruleMan = new AccessDataRuleInfoManager();
+        try {
+            final Catalog catalog = getCatalog();
+            final List<DataStoreInfo> storesInitial =
+                    catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
+
+            final NamespaceInfo citeNamespace =
+                    catalog.getNamespaceByPrefix(citeWorkspace.getName());
+            for (DataStoreInfo store : storesInitial) {
+                assertEquals(
+                        citeNamespace.getURI(), store.getConnectionParameters().get("namespace"));
+            }
+            DataAccessRule ruleLayer =
+                    new DataAccessRule(
+                            citeWorkspace.getName(), "Forests", AccessMode.READ, "ADMIN");
+            DataAccessRule ruleWS =
+                    new DataAccessRule(
+                            citeWorkspace.getName(), DataAccessRule.ANY, AccessMode.ADMIN, "ADMIN");
+            Set<DataAccessRule> news = new HashSet<>();
+            news.add(ruleLayer);
+            news.add(ruleWS);
+            ruleMan.saveRules(new HashSet<DataAccessRule>(), news);
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size() == 1);
+            tester.clickLink("form:tabs:tabs-container:tabs:1:link");
+            CheckBox checkboxFalse =
+                    (CheckBox)
+                            tester.getComponentFromLastRenderedPage(
+                                    "form:tabs:panel:listContainer:rules:0:read");
+            CheckBox checkboxTrue =
+                    (CheckBox)
+                            tester.getComponentFromLastRenderedPage(
+                                    "form:tabs:panel:listContainer:rules:0:admin");
+            assertFalse(checkboxFalse.getModelObject().booleanValue());
+            assertTrue(checkboxTrue.getModelObject().booleanValue());
 
         } finally {
             ruleMan.removeAllResourceRules(citeWorkspace.getName(), citeWorkspace);

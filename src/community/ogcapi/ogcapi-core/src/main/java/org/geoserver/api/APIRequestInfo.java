@@ -12,9 +12,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
@@ -198,5 +200,24 @@ public class APIRequestInfo {
             result.add(link);
         }
         return result;
+    }
+
+    /**
+     * Returns the base URL for the current service, that is, GeoServer base url + service base. Can
+     * be called only after the service has been looked up, will otherwise throw a descriptive
+     * exception.
+     */
+    public String getServiceBaseURL() {
+        return Optional.ofNullable(Dispatcher.REQUEST.get())
+                .map(r -> r.getServiceDescriptor())
+                .map(sd -> sd.getService())
+                .map(s -> s.getClass())
+                .map(c -> APIDispatcher.getApiServiceAnnotation(c))
+                .map(a -> a.landingPage())
+                .map(lp -> ResponseUtils.appendPath(baseURL, lp))
+                .orElseThrow(
+                        () ->
+                                new RuntimeException(
+                                        "Could not find a service base URL at this stage, maybe the service has not been dispatched yet"));
     }
 }

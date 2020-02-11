@@ -5,15 +5,17 @@
 package org.geoserver.api;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Represents the conformance response, responses will encode in the desired formats */
-public class ConformanceDocument {
+public class ConformanceDocument extends AbstractDocument {
 
     List<String> conformsTo;
 
     public ConformanceDocument(List<String> conformsTo) {
-        this.conformsTo = conformsTo;
+        // keep it editable, regardless of how the source has been provided
+        this.conformsTo = new ArrayList<>(conformsTo);
     }
 
     /** Returns the lists of conformance classes */

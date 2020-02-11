@@ -7,7 +7,11 @@ package org.geoserver.api;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Map;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
@@ -16,14 +20,18 @@ import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
+import org.geotools.util.SoftValueHashMap;
+import org.springframework.stereotype.Component;
 
 /**
  * Support class that locates the templates based on the current response and eventual {@link
  * LocalWorkspace}
  */
+@Component
 public class FreemarkerTemplateSupport {
 
-    private static Configuration templateConfig = TemplateUtils.getSafeConfiguration();
+    private static Map<Class, Configuration> configurationCache =
+            new SoftValueHashMap<Class, Configuration>(10);
 
     private final GeoServerResourceLoader resoureLoader;
 
@@ -31,13 +39,6 @@ public class FreemarkerTemplateSupport {
 
     static DirectTemplateFeatureCollectionFactory FC_FACTORY =
             new DirectTemplateFeatureCollectionFactory();
-
-    static {
-        // initialize the template engine, this is static to maintain a cache of templates being
-        // loaded
-        templateConfig = TemplateUtils.getSafeConfiguration();
-        templateConfig.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
-    }
 
     public FreemarkerTemplateSupport(GeoServerResourceLoader loader) {
         this.resoureLoader = loader;
@@ -57,7 +58,7 @@ public class FreemarkerTemplateSupport {
                         if (source == null) {
                             source = rootLoader.findTemplateSource(path);
 
-                            // wrap the source in a source that maintains the orignial path
+                            // wrap the source in a source that maintains the original path
                             if (source != null) {
                                 return new ClassTemplateSource(path, source);
                             }
@@ -77,11 +78,70 @@ public class FreemarkerTemplateSupport {
         }
 
         // Configuration is not thread safe
-        synchronized (templateConfig) {
-            templateConfig.setTemplateLoader(templateLoader);
-            Template t = templateConfig.getTemplate(templateName);
+        Configuration configuration = getTemplateConfiguration(clazz);
+        synchronized (configuration) {
+            configuration.setTemplateLoader(templateLoader);
+            Template t = configuration.getTemplate(templateName);
             t.setEncoding("UTF-8");
             return t;
         }
+    }
+
+    Configuration getTemplateConfiguration(Class clazz) {
+        return configurationCache.computeIfAbsent(
+                clazz,
+                k -> {
+                    Configuration cfg = TemplateUtils.getSafeConfiguration();
+                    cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
+                    return cfg;
+                });
+    }
+
+    /**
+     * Processes a template and returns the result as a string
+     *
+     * @param resource The resource reference used to lookup templates in the data dir
+     * @param templateName The template name
+     * @param referenceClass The reference class for classpath template loading
+     * @param model The model to be applied
+     * @param write The writer receiving the template output
+     * @return
+     * @throws IOException
+     */
+    public void processTemplate(
+            ResourceInfo resource,
+            String templateName,
+            Class referenceClass,
+            Map<String, Object> model,
+            Writer writer)
+            throws IOException {
+        Template template = getTemplate(resource, templateName, referenceClass);
+
+        try {
+            template.process(model, writer);
+        } catch (TemplateException e) {
+            throw new IOException("Error occured processing template " + templateName, e);
+        }
+    }
+
+    /**
+     * Processes a template and returns the result as a string
+     *
+     * @param resource The resource reference used to lookup templates in the data dir
+     * @param templateName The template name
+     * @param referenceClass The reference class for classpath template loading
+     * @param model The model to be applied
+     * @return
+     * @throws IOException
+     */
+    public String processTemplate(
+            ResourceInfo resource,
+            String templateName,
+            Class referenceClass,
+            Map<String, Object> model)
+            throws IOException {
+        StringWriter sw = new StringWriter();
+        processTemplate(resource, templateName, referenceClass, model, sw);
+        return sw.toString();
     }
 }

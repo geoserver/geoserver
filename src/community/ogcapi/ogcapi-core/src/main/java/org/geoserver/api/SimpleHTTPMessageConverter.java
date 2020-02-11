@@ -5,13 +5,10 @@
 
 package org.geoserver.api;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import org.geoserver.config.GeoServer;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
@@ -39,10 +36,10 @@ public class SimpleHTTPMessageConverter<T> extends AbstractHTMLMessageConverter<
             Class binding,
             Class serviceConfigurationClass,
             Class serviceClass,
-            GeoServerResourceLoader loader,
+            FreemarkerTemplateSupport support,
             GeoServer geoServer,
             String templateName) {
-        super(binding, serviceConfigurationClass, loader, geoServer);
+        super(binding, serviceConfigurationClass, support, geoServer);
         this.templateName = templateName;
         this.serviceClass = serviceClass;
     }
@@ -50,13 +47,12 @@ public class SimpleHTTPMessageConverter<T> extends AbstractHTMLMessageConverter<
     @Override
     protected void writeInternal(T value, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Template template = templateSupport.getTemplate(null, templateName, serviceClass);
-
-        try {
-            HashMap<String, Object> model = setupModel(value);
-            template.process(model, new OutputStreamWriter(outputMessage.getBody()));
-        } catch (TemplateException e) {
-            throw new IOException("Error occured processing HTML template " + templateName, e);
-        }
+        HashMap<String, Object> model = setupModel(value);
+        templateSupport.processTemplate(
+                null,
+                templateName,
+                serviceClass,
+                model,
+                new OutputStreamWriter(outputMessage.getBody()));
     }
 }

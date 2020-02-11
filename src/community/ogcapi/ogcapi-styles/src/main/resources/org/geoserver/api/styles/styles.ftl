@@ -5,7 +5,7 @@
        
        <ul>
        <#list model.styles as style>
-       <li><a href="${serviceLink("ogc/styles/styles/${style.id}/metadata?f=html")}">${style.id}</a>: ${style.title!"N/A"}</li>
+       <li><a href="${serviceLink("styles/${style.id}/metadata?f=html")}">${style.id}</a>: ${style.title!"N/A"}</li>
        </#list>
        </ul>
 <#include "common-footer.ftl">

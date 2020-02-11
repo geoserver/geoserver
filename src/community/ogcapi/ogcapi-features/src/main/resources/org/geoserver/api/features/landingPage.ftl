@@ -22,6 +22,9 @@
        <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
        </p>
        
+       <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping --> 
+       ${htmlExtensions('landing')}
+       
        <h2>Contact information</h2>
        <ul>
        <li>Server managed by ${contact.contactPerson!"-unspecified-"}</li>

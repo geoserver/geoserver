@@ -93,4 +93,25 @@ public class Link {
     public void setClassification(String classification) {
         this.classification = classification;
     }
+
+    @Override
+    public String toString() {
+        return "Link{"
+                + "href='"
+                + href
+                + '\''
+                + ", rel='"
+                + rel
+                + '\''
+                + ", type='"
+                + type
+                + '\''
+                + ", title='"
+                + title
+                + '\''
+                + ", classification='"
+                + classification
+                + '\''
+                + '}';
+    }
 }

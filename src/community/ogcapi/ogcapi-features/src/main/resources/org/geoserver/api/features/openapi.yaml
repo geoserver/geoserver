@@ -306,6 +306,7 @@ components:
         type: object
         additionalProperties: true
     crs:
+      name: crs
       in: query
       required: false
       schema:
@@ -314,6 +315,7 @@ components:
       style: form
       explode: false
     bbox-crs:
+      name: bbox-crs
       in: query
       required: false
       schema:

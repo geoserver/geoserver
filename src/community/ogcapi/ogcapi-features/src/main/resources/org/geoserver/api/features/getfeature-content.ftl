@@ -4,7 +4,7 @@
     -->
     <#if collection??>
       <#-- Expended only in OGC Features -->
-      <h2><a href="${serviceLink("ogc/features/collections/${collection}")}"></a></h2>
+      <h2><a href="${serviceLink("/collections/${collection}")}"></a></h2>
     <#else>
       <h2>${data.type.name}</h2>
     </#if>

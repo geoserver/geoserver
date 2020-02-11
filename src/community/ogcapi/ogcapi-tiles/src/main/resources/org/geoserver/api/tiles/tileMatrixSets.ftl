@@ -3,7 +3,7 @@
        <p>This document lists all the available tile matrix sets, linking to their definitions:<br/>
        <ul>
        <#list model.tileMatrixSets as tileMatrixSet>
-           <li><a href="${serviceLink("ogc/tiles/tileMatrixSets/${tileMatrixSet.encodedId}", "text/html")}">${tileMatrixSet.identifier}</a></h2>
+           <li><a href="${serviceLink("/tileMatrixSets/${tileMatrixSet.encodedId}", "text/html")}">${tileMatrixSet.identifier}</a></h2>
        </#list>
        </ul>
 <#include "common-footer.ftl">

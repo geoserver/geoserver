@@ -35,13 +35,10 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     // What is important for this test is the legend info we are adding.
     private static final String LAYER_NAME = "watertemp";
     private static final String LAYER_NAME_HTP_LEGND = "watertemp_http_legend";
-    private static final String LAYER_NAME_FILE_LEGEND = "watertemp_file_legend";
     private static final QName LAYER_QNAME =
             new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_QNAME_HTP_LEGND =
             new QName(MockData.DEFAULT_URI, LAYER_NAME_HTP_LEGND, MockData.DEFAULT_PREFIX);
-    private static final QName LAYER_QNAME_FILE_LEGEND =
-            new QName(MockData.DEFAULT_URI, LAYER_NAME_FILE_LEGEND, MockData.DEFAULT_PREFIX);
     private static final String LAYER_FILE = "custwatertemp.zip";
     private static final String STYLE_NAME = "temperature";
     private static final String STYLE_NAME_HTTP = "temperature_http_url";
@@ -162,13 +159,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         Map<SystemTestData.LayerProperty, Object> propertyMap =
                 new HashMap<SystemTestData.LayerProperty, Object>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
-        testData.addRasterLayer(
-                LAYER_QNAME_FILE_LEGEND,
-                LAYER_FILE,
-                null,
-                propertyMap,
-                SystemTestData.class,
-                getCatalog());
     }
 
     @Test
@@ -187,9 +177,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         String expectedGetLegendGraphicRequestURLHttp =
                 "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
                         + LAYER_NAME_HTP_LEGND;
-        String expectedGetLegendGraphicRequestURLLocalFile =
-                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
-                        + LAYER_NAME_FILE_LEGEND;
 
         final String legendUrlPath =
                 "//wms:Layer[wms:Name='gs:" + LAYER_NAME + "']/wms:Style/wms:LegendURL";
@@ -227,20 +214,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo(
                 BASE + expectedGetLegendGraphicRequestURLHttp,
                 legendUrlPathHTTPLegend + "/wms:OnlineResource/@xlink:href",
-                dom);
-
-        final String legendUrlPathFileLegend =
-                "//wms:Layer[wms:Name='gs:" + LAYER_NAME_FILE_LEGEND + "']/wms:Style/wms:LegendURL";
-
-        // assert that legend resources are hidden behind a GetLegendGraphic request URL
-        assertXpathEvaluatesTo(
-                String.valueOf(LEGEND_WIDTH), legendUrlPathFileLegend + "/@width", dom);
-        assertXpathEvaluatesTo(
-                String.valueOf(LEGEND_HEIGHT), legendUrlPathFileLegend + "/@height", dom);
-        assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPathFileLegend + "/wms:Format", dom);
-        assertXpathEvaluatesTo(
-                BASE + expectedGetLegendGraphicRequestURLLocalFile,
-                legendUrlPathFileLegend + "/wms:OnlineResource/@xlink:href",
                 dom);
     }
 }

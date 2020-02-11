@@ -1592,9 +1592,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             String legendURL = buildURL(request.getBaseUrl(), "ows", params, URLType.SERVICE);
 
-            attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
-            attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-            attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendURL);
+            CapabilityUtil.addGetLegendAttributes(attrs, legendURL, XLINK_NS);
             element("OnlineResource", null, attrs);
 
             end("LegendURL");

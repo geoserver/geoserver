@@ -830,9 +830,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                         .newInstance("someid", page);
         Assert.notNull(tabPanel, "Constructor for plugin tab panels has a broken signature.");
     }
-    
+
     @Test
     public void testDirectURILegend() throws IOException, URISyntaxException {
+        // test asserts that error is thrown when trying to set URL as direct file
+        // outside data directory/styles folder
         Resource resource = getResourceLoader().get("legend.png");
         getResourceLoader().copyFromClassPath("legend.png", resource.file(), getClass());
         assertTrue(resource.file().exists());
@@ -845,21 +847,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                     "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
                     "click");
 
-            // Make sure the fields we are editing actually exist
-            tester.assertComponent(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                    TextField.class);
-            tester.assertComponent(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                    TextField.class);
-            tester.assertComponent(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                    TextField.class);
-            tester.assertComponent(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                    TextField.class);
-
-            // Set a URI of an actual file
+            // Set a URI of an actual file outside data directory
             FormTester form = tester.newFormTester("styleForm", false);
             form.setValue(
                     "context:panel:legendPanel:externalGraphicContainer:list:onlineResource", uri);
@@ -867,20 +855,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                     "styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill",
                     true);
 
-            // assert that image was read and its dimensions and types were detected
-            tester.assertModelValue(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", 22);
+            // assert that error is thrown complaining file not being inside style directory
+            tester.assertErrorMessages(
+                    "Could not find legend image in the styles directory",
+                    "Could not access legend image");
 
-            tester.assertModelValue(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", 22);
-
-            tester.assertModelValue(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                    "image/png");
-
-            // no complains on GUI
-            tester.assertNoInfoMessage();
-            tester.assertNoErrorMessage();
         } finally {
             // clean up
             resource.file().delete();

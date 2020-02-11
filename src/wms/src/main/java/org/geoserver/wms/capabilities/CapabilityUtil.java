@@ -17,6 +17,7 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.util.NumberRange;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Provides utility methods required to build the capabilities document.
@@ -185,5 +186,15 @@ public final class CapabilityUtil {
                 && legend.getOnlineResource() != null
                 && legend.getHeight() > 0
                 && legend.getWidth() > 0;
+    }
+
+    public static AttributesImpl addGetLegendAttributes(
+            AttributesImpl attrs, String legendURL, String XLINK_NS) {
+
+        attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
+        attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
+        attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendURL);
+
+        return attrs;
     }
 }

@@ -266,7 +266,7 @@ paths:
           description: OK
  
 
-  /workspaces/{workspace}/wmtsstores/{wmtsstore}/wmtslayers:
+  /workspaces/{workspace}/wmtsstores/{wmtsstore}/layers:
 
     get:
       operationId: getWMTSStoreStoreLayers
@@ -377,7 +377,7 @@ paths:
           description: Method Not Allowed
 
 
-  /workspaces/{workspace}/wmtsstores/{wmtsstore}/wmtslayers/{wmtslayer}:
+  /workspaces/{workspace}/wmtsstores/{wmtsstore}/layers/{wmtslayer}:
 
     get:
       operationId: getWMTSStoreStoreLayer

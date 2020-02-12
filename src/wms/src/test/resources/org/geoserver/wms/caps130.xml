@@ -207,6 +207,23 @@
            </LegendURL>
        </Style>       
       </Layer>
+      <Layer queryable="1" opaque="0">
+        <Name>legacy_group_lyr_130</Name>
+        <Title>legacy_group_lyr_130</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>legacy_group_lyr_130</Keyword>
+        </KeywordList>
+       <CRS>EPSG:4326</CRS>       
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>0.0</westBoundLongitude>
+           <eastBoundLongitude>20.0</eastBoundLongitude>
+           <southBoundLatitude>0.0</southBoundLatitude>
+           <northBoundLatitude>20.0</northBoundLatitude>
+       </EX_GeographicBoundingBox>       
+       <BoundingBox minx="0" miny="0" maxx="20" maxy="20" CRS="EPSG:4326"/>
+      </Layer>
     </Layer>    
   </Capability>
 </WMS_Capabilities>

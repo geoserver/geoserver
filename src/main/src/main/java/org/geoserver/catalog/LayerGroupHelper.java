@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -241,7 +242,18 @@ public class LayerGroupHelper {
                     PublishedInfo p = group.getLayers().get(i);
                     StyleInfo s = group.getStyles().get(i);
                     if (p instanceof LayerInfo) {
-                        styles.add(group.getStyles().get(i));
+                        StyleInfo styleInfo = group.getStyles().get(i);
+                        if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
+                            // legacy < 2.16.2 support
+                            // old wms cascaded layers are by-default configured to use local
+                            // `raster` style
+                            // this utility method call ensures that layer is set to use default on
+                            // remote
+                            WMSLayerInfo wmsLayerInfo =
+                                    (WMSLayerInfo) ((LayerInfo) p).getResource();
+                            styleInfo = processWMSLayer(wmsLayerInfo, styleInfo);
+                        }
+                        styles.add(styleInfo);
                     } else if (p instanceof LayerGroupInfo) {
                         allStylesForRendering((LayerGroupInfo) p, styles, false);
                     } else if (p == null && s != null) {
@@ -529,6 +541,29 @@ public class LayerGroupHelper {
                             + "'. Skipping...",
                     e);
         }
+    }
+
+    /**
+     * Ensures that WMSLayer Info inside layergroup associates with correct remote style
+     *
+     * @return returns a compatible StyleInfo representing a remote style if required
+     */
+    private static StyleInfo processWMSLayer(WMSLayerInfo wmsLayerInfo, StyleInfo styleInfo) {
+
+        if (styleInfo == null) styleInfo = wmsLayerInfo.getDefaultStyle();
+        else if (!wmsLayerInfo.findRemoteStyleByName(styleInfo.getName()).isPresent()) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine(
+                        styleInfo.getName()
+                                + " style is not a known remote style for WMS Layer "
+                                + wmsLayerInfo
+                                + ","
+                                + " Re-configure the Resourcer");
+            }
+            styleInfo = WMSLayerInfoImpl.DEFAULT_ON_REMOTE;
+        }
+
+        return styleInfo;
     }
 
     /**

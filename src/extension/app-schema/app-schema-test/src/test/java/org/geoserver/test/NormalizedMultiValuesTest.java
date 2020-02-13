@@ -19,6 +19,7 @@ package org.geoserver.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -164,7 +165,7 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                         + "&outputFormat=application/json";
         JSONObject json = (JSONObject) getAsJSON(request);
         JSONArray features = json.getJSONArray("features");
-        assertEquals(2, features.size());
+        assertEquals(3, features.size());
         // check stations json content
         JSONObject station = getStationById(features, "st.1");
         assertNotNull(station);
@@ -172,6 +173,9 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         station = getStationById(features, "st.2");
         assertNotNull(station);
         checkStationJson2(station);
+        station = getStationById(features, "st.3");
+        assertNotNull(station);
+        checkStationJson3(station);
     }
 
     private void checkStationJson1(JSONObject station) {
@@ -188,6 +192,10 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         assertTagsArrayHasTagContent(tags, "st_2_tag_a", 4);
         assertTagsArrayHasTagContent(tags, "st_2_tag_b", 5);
         assertTagsArrayHasTagContent(tags, "europe", 6);
+    }
+
+    private void checkStationJson3(JSONObject station) {
+        assertFalse(station.has("tag"));
     }
 
     private void assertTagsArrayHasTagContent(JSONArray tags, String value, int code) {
@@ -258,7 +266,7 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                         + "&outputFormat=application/json";
         JSONObject json = (JSONObject) getAsJSON(request);
         JSONArray features = json.getJSONArray("features");
-        assertEquals(2, features.size());
+        assertEquals(3, features.size());
         // check stations json content
         JSONObject station = getStationById(features, "st.1");
         assertNotNull(station);
@@ -266,6 +274,9 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         station = getStationById(features, "st.2");
         assertNotNull(station);
         checkStationJson2(station);
+        station = getStationById(features, "st.3");
+        assertNotNull(station);
+        checkStationJson3(station);
     }
 
     @Test

@@ -440,6 +440,7 @@
         <module>netcdf-out</module>
         <module>vectortiles</module>
         <module>ysld</module>
+        <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
         <module>geofence</module>

@@ -290,11 +290,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-mbstyle</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-nsg-wmts-profile</artifactId>
      <version>${project.version}</version>
    </dependency>

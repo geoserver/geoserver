@@ -281,7 +281,8 @@ public class FeatureService {
             filters.add(FF.id(FF.featureId(itemId)));
         }
         if (filter != null) {
-            filters.add(filterParser.parse(filter, filterLanguage));
+            Filter parsedFilter = filterParser.parse(filter, filterLanguage);
+            filters.add(parsedFilter);
         }
         query.setFilter(mergeFiltersAnd(filters));
         if (crs != null) {

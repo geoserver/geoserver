@@ -220,6 +220,22 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testCqlSpatialFilter() throws Exception {
+        String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath(
+                        "ogc/features/collections/"
+                                + roadSegments
+                                + "/items?filter=BBOX(pointProperty,38,1,40,3)&filter-lang=cql-text",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f001
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+    }
+
+    @Test
     public void testCqlFilterInvalidLanguage() throws Exception {
         String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =

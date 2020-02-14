@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.logging.Level;
@@ -45,6 +46,11 @@ class ComplexGeoJsonWriter {
 
     private static Class NON_FEATURE_TYPE_PROXY;
     private static final String DATATYPE = "@dataType";
+    /**
+     * A string constant for representing a not needed key name because object is being added inside
+     * an already named json array
+     */
+    private static final String INSIDE_ARRAY_ATTRIBUTE = "${inside-array}";
 
     static {
         try {
@@ -243,13 +249,57 @@ class ComplexGeoJsonWriter {
                 // encode linked features
                 encodeLinkedFeatures(descriptor, linkedFeatures);
             } else {
-                // no chained or linked features just encode each property
-                properties.forEach(this::encodeProperty);
+                // encode properties
+                encodeProperties(descriptor, properties);
             }
         } else {
             // chained features so we need to encode the chained features as an array
             encodeChainedFeatures(descriptor.getName().getLocalPart(), chainedFeatures);
         }
+    }
+
+    /**
+     * Encodes the properties and select if it is a single attribute or a json array is needed.
+     *
+     * @param descriptor the attribute descriptor
+     * @param properties the properties to be encoded
+     */
+    private void encodeProperties(PropertyDescriptor descriptor, List<Property> properties) {
+        // no chained or linked features just encode each property
+        String attributeName = descriptor.getName().getLocalPart();
+        if (properties.size() > 1
+                && areAllPropertiesAttributeNameEquals(properties, attributeName)) {
+            encodeArray(properties, attributeName);
+        } else {
+            properties.forEach(this::encodeProperty);
+        }
+    }
+
+    /**
+     * Encodes a JSON array with provided properties using the attribute name as key.
+     *
+     * @param properties the properties to be encoded inside the array
+     * @param attributeName the attribute name to be used as key name for the array
+     */
+    private void encodeArray(List<Property> properties, String attributeName) {
+        jsonWriter.key(attributeName).array();
+        properties.forEach(
+                prop -> encodeProperty(INSIDE_ARRAY_ATTRIBUTE, prop, getAttributes(prop)));
+        jsonWriter.endArray();
+    }
+
+    /**
+     * Checks if all properties names are the same as provided attribute name.
+     *
+     * @param properties properties to check
+     * @param attributeName attribute name
+     * @return true if all properties attribute name are equals to provided one
+     */
+    private boolean areAllPropertiesAttributeNameEquals(
+            List<Property> properties, String attributeName) {
+        return properties
+                .stream()
+                .allMatch(prop -> Objects.equals(attributeName, prop.getName().getLocalPart()));
     }
 
     /** Encodes linked features as a JSON array. */
@@ -274,8 +324,12 @@ class ComplexGeoJsonWriter {
     /** Encodes a list of features (chained features) as a JSON array. */
     private void encodeChainedFeatures(String attributeName, List<Feature> chainedFeatures) {
         // start the JSON object
-        jsonWriter.key(attributeName);
-        jsonWriter.array();
+        // print the key name if it is not inside an array
+        key(attributeName);
+        if (!isInsideArrayAttributeName(attributeName)) {
+            // start the json array only if it is not inside one already
+            jsonWriter.array();
+        }
         for (Feature feature : chainedFeatures) {
             // if it's GeoJSON compatible, encode as a full blown GeoJSON feature (must have a
             // default geometry)
@@ -288,7 +342,21 @@ class ComplexGeoJsonWriter {
             }
         }
         // end the JSON chained features array
-        jsonWriter.endArray();
+        if (!isInsideArrayAttributeName(attributeName)) {
+            // end the json array only if it is not inside one already
+            jsonWriter.endArray();
+        }
+    }
+
+    /**
+     * Checks if the provided attribute name represents an already started key name and current
+     * object is inside an array already.
+     *
+     * @param attributeName the attribute name to check
+     * @return true if it is inside an array
+     */
+    private boolean isInsideArrayAttributeName(String attributeName) {
+        return INSIDE_ARRAY_ATTRIBUTE.equals(attributeName);
     }
 
     /**
@@ -374,15 +442,26 @@ class ComplexGeoJsonWriter {
 
     /**
      * Encode a feature property, we only support complex attributes and simple attributes, if
-     * another tye of attribute is used an exception will be throw.
+     * another type of attribute is used an exception will be throw.
      */
-    @SuppressWarnings("unchecked")
     private void encodeProperty(Property property) {
         // these extra attributes should be seen as XML attributes
-        Map<NameImpl, Object> attributes =
-                (Map<NameImpl, Object>) property.getUserData().get(Attributes.class);
+        Map<NameImpl, Object> attributes = getAttributes(property);
         String attributeName = property.getName().getLocalPart();
         encodeProperty(attributeName, property, attributes);
+    }
+
+    /**
+     * Returns a map of attributes inside the provided property.
+     *
+     * @param property property to check
+     * @return a map of attributes
+     */
+    @SuppressWarnings("unchecked")
+    private Map<NameImpl, Object> getAttributes(Property property) {
+        Map<NameImpl, Object> attributes =
+                (Map<NameImpl, Object>) property.getUserData().get(Attributes.class);
+        return attributes != null ? attributes : Collections.emptyMap();
     }
 
     private void encodeProperty(
@@ -561,11 +640,11 @@ class ComplexGeoJsonWriter {
     private void encodeComplexAttribute(
             String name, ComplexAttribute attribute, Map<NameImpl, Object> attributes) {
         if (isFullFeature(attribute)) {
-            jsonWriter.key(name);
+            key(name);
             encodeFeature((Feature) attribute, false);
         } else {
             // get the attribute name and start a JSON object
-            jsonWriter.key(name);
+            key(name);
             jsonWriter.object();
             // encode the datatype
             jsonWriter.key(DATATYPE);
@@ -604,11 +683,13 @@ class ComplexGeoJsonWriter {
         // let's see if we need to encode attributes or simple value
         if (attributes == null || attributes.isEmpty()) {
             // add a simple JSON attribute to the current object
-            jsonWriter.key(name).value(value);
+            key(name);
+            jsonWriter.value(value);
             return;
         }
         // we need to encode a list of attributes, let's first encode the main value
-        jsonWriter.key(name).object();
+        key(name);
+        jsonWriter.object();
         if (value != null) {
             jsonWriter.key("value").value(value);
         }
@@ -616,6 +697,18 @@ class ComplexGeoJsonWriter {
         encodeAttributes(attributes);
         // close the values \ attributes object
         jsonWriter.endObject();
+    }
+
+    /**
+     * Start a json attribute name only if provided name does not represent that current object is
+     * already inside on a json array.
+     *
+     * @param name provided attribute name or the constant representing this is inside an array
+     */
+    private void key(String name) {
+        if (!isInsideArrayAttributeName(name)) {
+            jsonWriter.key(name);
+        }
     }
 
     /**

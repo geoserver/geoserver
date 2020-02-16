@@ -6,7 +6,6 @@
 package org.geoserver.wms.web.data;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,10 +13,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +36,11 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 
@@ -128,7 +127,7 @@ public class ExternalGraphicPanel extends Panel {
                             try {
 
                                 WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
-                                findResourceinStylesDirectory(wsInfo, value);
+                                getIconFromStyleDirectory(wsInfo, value);
                             } catch (Exception e) {
                                 ValidationError error = new ValidationError();
                                 error.setMessage(
@@ -289,11 +288,12 @@ public class ExternalGraphicPanel extends Panel {
                     url = uri.toURL();
                 } else {
                     WorkspaceInfo wsInfo = ((StyleInfo) getDefaultModelObject()).getWorkspace();
-                    File file = findResourceinStylesDirectory(wsInfo, external);
-                    if (file == null || file.isDirectory()) {
+                    Resource icon = getIconFromStyleDirectory(wsInfo, external);
+
+                    if (icon == null) {
                         throw new FileNotFoundException();
                     }
-                    url = file.toURI().toURL();
+                    url = icon.file().toURI().toURL();
                 }
 
                 URLConnection conn = url.openConnection();
@@ -334,24 +334,20 @@ public class ExternalGraphicPanel extends Panel {
         return uri.startsWith("http");
     }
 
-    private File findResourceinStylesDirectory(WorkspaceInfo wsInfo, String value)
+    private Resource getIconFromStyleDirectory(WorkspaceInfo wsInfo, String value)
             throws Exception {
         GeoServerResourceLoader resources = GeoServerApplication.get().getResourceLoader();
-
-        String[] path = value.split(Pattern.quote(File.separator));
-        File test = null;
+        GeoServerDataDirectory gsDataDir = new GeoServerDataDirectory(resources);
+        Resource icon = null;
         if (wsInfo != null) {
-            String wsName = wsInfo.getName();
-            List<String> list = new ArrayList();
-            list.addAll(Arrays.asList("workspaces", wsName, "styles"));
-            list.addAll(Arrays.asList(path));
-            test = resources.find(list.toArray(new String[list.size()]));
+            icon = gsDataDir.getStyles(wsInfo, value);
         }
-        if (test == null) {
-            // resources.find(styles, path);
-            test = resources.find("styles" + File.separator + value);
-            if (test == null) throw new Exception("file not found");
+        if (icon == null) {
+            icon = gsDataDir.getStyles(value);
+            if (icon == null) throw new FileNotFoundException("file not found");
+            else if (icon.getType() != Resource.Type.RESOURCE)
+                throw new Exception("given path is a directory");
         }
-        return test;
+        return icon;
     }
 }

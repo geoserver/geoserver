@@ -5,6 +5,8 @@
  */
 package org.geoserver.platform.resource;
 
+import static org.apache.commons.io.FileUtils.moveFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -471,11 +473,7 @@ public final class Files {
                                 + dest.getCanonicalPath());
             }
         }
-        // make sure the rename actually succeeds
-        if (!source.renameTo(dest)) {
-            throw new IOException(
-                    "Failed to move " + source.getAbsolutePath() + " to " + dest.getAbsolutePath());
-        }
+        moveFile(source, dest);
         return true;
     }
 

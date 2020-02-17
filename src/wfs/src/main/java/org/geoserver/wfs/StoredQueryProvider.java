@@ -195,7 +195,7 @@ public class StoredQueryProvider {
 
             return parseStoredQuery(res);
         } catch (Exception e) {
-            throw new RuntimeException("Error accessign stoed query: " + name, e);
+            throw new RuntimeException("Error accessing stored query: " + name, e);
         }
     }
 
@@ -300,7 +300,7 @@ public class StoredQueryProvider {
             try {
                 queries.add(parseStoredQuery(f, p));
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Error occured parsing stored query: " + f, e);
+                LOGGER.log(Level.WARNING, "Error occurred parsing stored query: " + f, e);
             }
         }
         return queries;

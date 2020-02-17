@@ -683,6 +683,44 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertNull(userpropMapper.getUser(user2KeyB));
     }
 
+    @Test
+    public void testWebServiceAuthKeyBodyResponseNoRoleMatchingRegex() throws Exception {
+        WebServiceBodyResponseUserGroupServiceConfig config =
+                new WebServiceBodyResponseUserGroupServiceConfig();
+        config.setName("testWebServiceAuthKey4");
+        config.setClassName(WebServiceBodyResponseUserGroupService.class.getName());
+        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
+        config.setSearchRoles("wrong_regex");
+        config.setAvailableGroups("GROUP_MYROLE_1, GROUP_MYROLE_2");
+
+        getSecurityManager().saveUserGroupService(config /*,isNewUGService(name)*/);
+        GeoServerUserGroupService webServiceAuthKeyBodyResponseUGS =
+                getSecurityManager().loadUserGroupService("testWebServiceAuthKey4");
+
+        assertNotNull(webServiceAuthKeyBodyResponseUGS);
+
+        WebServiceAuthenticationKeyMapper propMapper =
+                GeoServerExtensions.extensions(WebServiceAuthenticationKeyMapper.class)
+                        .iterator()
+                        .next();
+        propMapper.setUserGroupServiceName("testWebServiceAuthKey4");
+        propMapper.setSecurityManager(getSecurityManager());
+        propMapper.setWebServiceUrl("http://service/{key}");
+        propMapper.setSearchUser("^.*?\"user\"\\s*:\\s*\"([^\"]+)\".*$");
+        propMapper.setHttpClient(
+                new TestHttpClient(
+                        "testkey",
+                        "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
+        GeoServerUser user = propMapper.getUser("testkey");
+        assertNotNull(user);
+        assertEquals(user.getUsername(), "user1");
+
+        assertNotNull(user.getAuthorities());
+        assertEquals(1, user.getAuthorities().size());
+        assertTrue(user.getAuthorities().contains(new GeoServerRole("ROLE_ANONYMOUS")));
+    }
+
     private void loadPropFile(File authKeyFile, Properties props)
             throws FileNotFoundException, IOException {
         FileInputStream propFile = new FileInputStream(authKeyFile);

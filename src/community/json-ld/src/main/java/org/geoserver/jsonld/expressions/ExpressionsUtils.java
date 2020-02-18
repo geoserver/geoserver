@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.type.Types;
@@ -29,6 +30,8 @@ public class ExpressionsUtils {
 
     static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
+    public static final String XPATH_FUN_START = "xpath(";
+
     public static String extractXpath(String xpath) {
         boolean inXpath = false;
         StringBuilder sb = new StringBuilder();
@@ -36,7 +39,6 @@ public class ExpressionsUtils {
             final char curr = xpath.charAt(i);
             final boolean isLast = (i == xpath.length() - 1);
             final char next = isLast ? 0 : xpath.charAt(i + 1);
-            final char prev = xpath.charAt(i > 0 ? i - 1 : 0);
 
             if (curr == '\\') {
                 if (isLast)
@@ -220,6 +222,12 @@ public class ExpressionsUtils {
         return xpath;
     }
 
+    /**
+     * Extract Namespaces from given FeatureType
+     *
+     * @param type
+     * @return Namespaces if found for the given FeatureType
+     */
     public static NamespaceSupport declareNamespaces(FeatureType type) {
         NamespaceSupport namespaceSupport = null;
         if (type instanceof ComplexFeatureTypeImpl) {
@@ -250,5 +258,71 @@ public class ExpressionsUtils {
             }
         }
         return strBuilder.toString();
+    }
+
+    /**
+     * Clean a CQL expression from the xpath function syntax to make the xpath suitable to be
+     * encoded as a PropertyName
+     *
+     * @param expression
+     * @param toReplace
+     * @param replacement
+     * @return
+     */
+    public static String cleanCQLExpression(
+            String expression, String toReplace, String replacement) {
+        if (expression.indexOf(XPATH_FUN_START) != -1)
+            return expression.replace(toReplace, replacement).replaceAll("\\.\\./", "");
+        else return expression;
+    }
+
+    public static String removeBackDots(String xpath) {
+        if (xpath.indexOf("../") != -1) return xpath.replaceAll("\\.\\./", "");
+        return xpath;
+    }
+
+    /**
+     * Extract the xpath function from CQL Expression if present
+     *
+     * @param expression
+     * @return
+     */
+    public static String extractXpathFromCQL(String expression) {
+        int xpathI = expression.indexOf(XPATH_FUN_START);
+        if (xpathI != -1) {
+            int xpathI2 = expression.indexOf(")", xpathI);
+            String strXpath = expression.substring(xpathI, xpathI2 + 1);
+            return strXpath;
+        }
+        return expression;
+    }
+
+    /**
+     * Extract the literal argument from the xpath function
+     *
+     * @param strXpath
+     * @return
+     */
+    public static String getLiteralXpath(String strXpath) {
+        if (strXpath.indexOf(XPATH_FUN_START) != -1) {
+            return strXpath.replace(XPATH_FUN_START, "").replace(")", "");
+        }
+        return strXpath;
+    }
+
+    /**
+     * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
+     * xpath, and cleans it from ../ notation.
+     *
+     * @param xpath
+     * @return
+     */
+    public static int determineContextPos(String xpath) {
+        int contextPos = 0;
+        while (xpath.contains("../")) {
+            contextPos++;
+            xpath = xpath.replaceFirst("\\.\\./", "");
+        }
+        return contextPos;
     }
 }

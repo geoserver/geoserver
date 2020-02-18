@@ -7,10 +7,12 @@ package org.geoserver.api.features;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.api.AttributeType;
 import org.geotools.filter.FunctionFinder;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.parameter.Parameter;
 
@@ -151,8 +153,32 @@ public class FilterCapabilitiesDocument {
                 new FunctionFinder(null)
                         .getAllFunctionDescriptions()
                         .stream()
+                        .filter(FilterCapabilitiesDocument::isSimpleFunction)
                         .map(Function::new)
                         .collect(Collectors.toList());
+    }
+
+    private static boolean isSimpleFunction(FunctionName functionName) {
+        for (Parameter<?> p : functionName.getArguments()) {
+            Class<?> type = p.getType();
+            if (type == null) {
+                return false;
+            }
+            if (!CharSequence.class.isAssignableFrom(type)
+                    && !Number.class.isAssignableFrom(type)
+                    && !Date.class.isAssignableFrom(type)
+                    && !Geometry.class.isAssignableFrom(type)
+                    && !org.opengis.geometry.Geometry.class.isAssignableFrom(type)
+                    && !Boolean.class.isAssignableFrom(type)) {
+                return false;
+            }
+        }
+
+        // no real way to identify functions that are meant to work against a FeatureCollection
+        // rather than a Feature
+
+        // no complex parameter found, returning
+        return true;
     }
 
     public List<String> getConformanceClasses() {

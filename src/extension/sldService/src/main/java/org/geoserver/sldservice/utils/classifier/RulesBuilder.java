@@ -364,22 +364,26 @@ public class RulesBuilder {
                 r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMax(i)));
-                    r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
-                    r.setFilter(f);
-                    list.add(r);
+                    if (!isDuplicatedClass(list, f)) {
+                        r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
+                        r.setFilter(f);
+                        list.add(r);
+                    }
                 } else {
                     f =
                             FF.and(
                                     FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
                                     FF.less(att, FF.literal(groups.getMax(i))));
-                    r.getDescription()
-                            .setTitle(
-                                    (" >= "
-                                            + FF.literal(groups.getMin(i))
-                                            + " AND < "
-                                            + FF.literal(groups.getMax(i))));
-                    r.setFilter(f);
-                    list.add(r);
+                    if (!isDuplicatedClass(list, f)) {
+                        r.getDescription()
+                                .setTitle(
+                                        (" >= "
+                                                + FF.literal(groups.getMin(i))
+                                                + " AND < "
+                                                + FF.literal(groups.getMax(i))));
+                        r.setFilter(f);
+                        list.add(r);
+                    }
                 }
             }
             /* Last class */
@@ -429,9 +433,11 @@ public class RulesBuilder {
                 r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMin(i)));
-                    r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
-                    r.setFilter(f);
-                    list.add(r);
+                    if (!isDuplicatedClass(list, f)) {
+                        r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
+                        r.setFilter(f);
+                        list.add(r);
+                    }
                 } else {
                     f =
                             FF.and(
@@ -439,16 +445,17 @@ public class RulesBuilder {
                                     i == (groups.getSize() - 1)
                                             ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
                                             : FF.less(att, FF.literal(groups.getMax(i))));
-
-                    r.getDescription()
-                            .setTitle(
-                                    (" >= "
-                                            + FF.literal(groups.getMin(i))
-                                            + " AND "
-                                            + (i == (groups.getSize() - 1) ? "<=" : "<")
-                                            + FF.literal(groups.getMax(i))));
-                    r.setFilter(f);
-                    list.add(r);
+                    if (!isDuplicatedClass(list, f)) {
+                        r.getDescription()
+                                .setTitle(
+                                        (" >= "
+                                                + FF.literal(groups.getMin(i))
+                                                + " AND "
+                                                + (i == (groups.getSize() - 1) ? "<=" : "<")
+                                                + FF.literal(groups.getMax(i))));
+                        r.setFilter(f);
+                        list.add(r);
+                    }
                 }
             }
             return list;
@@ -505,5 +512,9 @@ public class RulesBuilder {
                         Level.INFO, "Failed to build explicit Rules" + e.getLocalizedMessage(), e);
         }
         return null;
+    }
+
+    private boolean isDuplicatedClass(List<Rule> rules, Filter f) {
+        return rules.stream().anyMatch(r -> r.getFilter().equals(f));
     }
 }

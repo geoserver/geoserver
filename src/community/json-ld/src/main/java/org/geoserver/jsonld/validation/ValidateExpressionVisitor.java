@@ -4,6 +4,9 @@
  */
 package org.geoserver.jsonld.validation;
 
+import static org.geoserver.jsonld.expressions.ExpressionsUtils.determineContextPos;
+import static org.geoserver.jsonld.expressions.ExpressionsUtils.removeBackDots;
+
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
@@ -16,7 +19,7 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class ValidateExpressionVisitor extends DefaultFilterVisitor {
 
-    private int contextPos;
+    private int contextPos = 0;
 
     public ValidateExpressionVisitor() {
         super();
@@ -26,9 +29,10 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
     public Object visit(PropertyName expression, Object data) {
         if (expression.getPropertyName().indexOf("@") == -1) {
             String xpathPath = expression.getPropertyName();
+            this.contextPos = determineContextPos(xpathPath);
+            xpathPath = removeBackDots(xpathPath);
             PropertyName pn =
-                    new AttributeExpressionImpl(
-                            determineContextPos(xpathPath), expression.getNamespaceContext());
+                    new AttributeExpressionImpl(xpathPath, expression.getNamespaceContext());
             JsonBuilderContext context = (JsonBuilderContext) data;
             int i = 0;
             while (i < contextPos) {
@@ -37,14 +41,5 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
             }
             return pn.evaluate(context.getCurrentObj(), Object.class);
         } else return expression.getPropertyName();
-    }
-
-    private String determineContextPos(String xpath) {
-        contextPos = 0;
-        while (xpath.contains("../")) {
-            contextPos++;
-            xpath = xpath.replaceFirst("\\.\\./", "");
-        }
-        return xpath;
     }
 }

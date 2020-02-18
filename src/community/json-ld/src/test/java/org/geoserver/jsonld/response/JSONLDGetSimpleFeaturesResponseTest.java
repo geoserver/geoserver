@@ -4,8 +4,7 @@
  */
 package org.geoserver.jsonld.response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +56,34 @@ public class JSONLDGetSimpleFeaturesResponseTest extends GeoServerSystemTestSupp
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 2);
         checkFeature((JSONObject) features.get(0));
+    }
+
+    @Test
+    public void testJsonLdResponseOGCAPI() throws Exception {
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("cite:NamedPlaces")
+                        .append("/items?f=application%2Fld%2Bjson");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(features.size(), 2);
+        checkFeature((JSONObject) features.get(0));
+    }
+
+    @Test
+    public void testJsonLdQueryPointingToExpr() throws Exception {
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append("&cql_filter= features.geometry.wkt IS NULL ");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.size() == 0);
     }
 
     @Test

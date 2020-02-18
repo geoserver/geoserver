@@ -107,6 +107,40 @@ public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestS
     }
 
     @Test
+    public void testJsonLdQueryOGCAPI() throws Exception {
+        setUpComplex();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&filter-lang=cql-text")
+                        .append(
+                                "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value")
+                        .append(" = 'name_2' ");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.size() == 1);
+        assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
+    }
+
+    @Test
+    public void testJsonLdQueryPointingToExpr() throws Exception {
+        setUpComplex();
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append("&cql_filter= features.geometry.wkt IS NULL");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertTrue(features.size() == 0);
+    }
+
+    @Test
     public void testJsonLdQueryWithPOST() throws Exception {
         setUpComplex();
         StringBuilder xml =

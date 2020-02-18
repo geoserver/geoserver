@@ -188,6 +188,14 @@ public final class CapabilityUtil {
                 && legend.getWidth() > 0;
     }
 
+    /**
+     * A Utility method to populate legend url href attribute
+     *
+     * @param attrs AttributesImpl to be populated with Legend URL href
+     * @param legendURL URL String
+     * @param XLINK_NS Namsepace like (e.g http://www.w3.org/1999/xlink)
+     * @return attrs with Legend URL attributes
+     */
     public static AttributesImpl addGetLegendAttributes(
             AttributesImpl attrs, String legendURL, String XLINK_NS) {
 

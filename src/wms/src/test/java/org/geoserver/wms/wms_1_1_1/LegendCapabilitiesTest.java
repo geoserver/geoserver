@@ -8,7 +8,6 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -33,15 +32,14 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     // Reusing layer and SLD files from another test; their content doesn't really matter.
     // What is important for this test is the legend info we are adding.
     private static final String LAYER_NAME = "watertemp";
-    private static final String LAYER_NAME_HTP_LEGND = "watertemp_http_legend";
+    private static final String HTTP_LEGEND_LAYER = "watertemp_http_legend";
     private static final QName LAYER_QNAME =
             new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_QNAME_HTP_LEGND =
-            new QName(MockData.DEFAULT_URI, LAYER_NAME_HTP_LEGND, MockData.DEFAULT_PREFIX);
+            new QName(MockData.DEFAULT_URI, HTTP_LEGEND_LAYER, MockData.DEFAULT_PREFIX);
     private static final String LAYER_FILE = "custwatertemp.zip";
     private static final String STYLE_NAME = "temperature";
     private static final String STYLE_NAME_HTTP = "temperature_http_url";
-    private static final String STYLE_NAME_LOCALFILE = "temperature_file_url";
     private static final String STYLE_FILE = "../temperature.sld";
 
     private static final int LEGEND_WIDTH = 22;
@@ -74,7 +72,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                 LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
 
         addLayerWithHttpLegend(testData);
-        addLayerWithLocalFileAsLegend(testData);
+        //  addLayerWithLocalFileAsLegend(testData);
 
         GeoServerInfo global = getGeoServer().getGlobal();
 
@@ -114,22 +112,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                 getCatalog());
     }
 
-    private void addLayerWithLocalFileAsLegend(SystemTestData testData) throws IOException {
-        Resource resource = getResourceLoader().get("styles/legend.png");
-        URI localURIPath = resource.file().toURI();
-        LegendInfo legend = new LegendInfoImpl();
-        legend.setWidth(LEGEND_WIDTH);
-        legend.setHeight(LEGEND_HEIGHT);
-        legend.setFormat(LEGEND_FORMAT);
-        legend.setOnlineResource(localURIPath.toString());
-
-        // add layer
-        testData.addStyle(null, STYLE_NAME_LOCALFILE, STYLE_FILE, getClass(), getCatalog(), legend);
-        Map<SystemTestData.LayerProperty, Object> propertyMap =
-                new HashMap<SystemTestData.LayerProperty, Object>();
-        propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
-    }
-
     /**
      * Looking for somethign similar to:
      *
@@ -144,7 +126,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     public void testCapabilities() throws Exception {
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
-        // assert that legend resources are hidden behind a GetLegendGraphic request URL in all
+        // assert that legend resources are hidden behind a GetLegendGraphic request URL in both
         // two
         // cases
         String expectedGetLegendGraphicRequestURL =
@@ -152,11 +134,11 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                         + LAYER_NAME;
         String expectedGetLegendGraphicRequestURLHttp =
                 "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
-                        + LAYER_NAME_HTP_LEGND;
+                        + HTTP_LEGEND_LAYER;
 
         final String legendUrlPath = "//Layer[Name='gs:" + LAYER_NAME + "']/Style/LegendURL";
         final String legendUrlPathHttpLegend =
-                "//Layer[Name='gs:" + LAYER_NAME_HTP_LEGND + "']/Style/LegendURL";
+                "//Layer[Name='gs:" + HTTP_LEGEND_LAYER + "']/Style/LegendURL";
 
         // Ensure capabilities document reflects the specified legend info
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);

@@ -280,11 +280,10 @@ public class ExternalGraphicPanel extends Panel {
         if (onlineResource.getModelObject() != null) {
             URL url = null;
             try {
-                // String baseUrl = baseURL(form);
                 String external = onlineResource.getModelObject().toString();
 
                 URI uri = new URI(external);
-                if (uri.isAbsolute() || isUrl(external)) {
+                if (uri.isAbsolute() && isUrl(external)) {
                     url = uri.toURL();
                 } else {
                     WorkspaceInfo wsInfo = ((StyleInfo) getDefaultModelObject()).getWorkspace();

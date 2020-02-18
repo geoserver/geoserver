@@ -185,7 +185,7 @@ alias-separated, alias-list, alias-of and alias-buckets.
 
 Roles can optionally be specified for `security<#security>` purposes as follows:
 
-``alias.s3.rootfolder.bucket=comma,separated,list,of,roles``
+``alias.bucket.s3.roles=comma,separated,list,of,roles``
 
 Prepare script
 ^^^^^^^^^^^^^^^

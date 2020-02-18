@@ -244,14 +244,14 @@ public class LayerGroupHelper {
                     if (p instanceof LayerInfo) {
                         StyleInfo styleInfo = group.getStyles().get(i);
                         if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
-                            // legacy < 2.16.2 support
-                            // old wms cascaded layers are by-default configured to use local
-                            // `raster` style
-                            // this utility method call ensures that layer is set to use default on
-                            // remote
+                            // pre 2.16.2, raster style was by default assigned to wms remote layers
+                            // this was not a problem because the default style was always used to
+                            // request the remote server, once we introduced the possibility tos
+                            // elect remote styles this broke layer groups migrated form old data
+                            // directories, we need now to ensure that a valid style is selected
                             WMSLayerInfo wmsLayerInfo =
                                     (WMSLayerInfo) ((LayerInfo) p).getResource();
-                            styleInfo = processWMSLayer(wmsLayerInfo, styleInfo);
+                            styleInfo = getRemoteWmsLayerStyle(wmsLayerInfo, styleInfo);
                         }
                         styles.add(styleInfo);
                     } else if (p instanceof LayerGroupInfo) {
@@ -544,11 +544,11 @@ public class LayerGroupHelper {
     }
 
     /**
-     * Ensures that WMSLayer Info inside layergroup associates with correct remote style
-     *
-     * @return returns a compatible StyleInfo representing a remote style if required
+     * Ensures that cascaded WMS Layer is assigned the correct remote style if the passed style is
+     * NULL or unknown to cascaded WMS layer, the default style will returned *
      */
-    private static StyleInfo processWMSLayer(WMSLayerInfo wmsLayerInfo, StyleInfo styleInfo) {
+    private static StyleInfo getRemoteWmsLayerStyle(
+            WMSLayerInfo wmsLayerInfo, StyleInfo styleInfo) {
 
         if (styleInfo == null) styleInfo = wmsLayerInfo.getDefaultStyle();
         else if (!wmsLayerInfo.findRemoteStyleByName(styleInfo.getName()).isPresent()) {
@@ -558,7 +558,7 @@ public class LayerGroupHelper {
                                 + " style is not a known remote style for WMS Layer "
                                 + wmsLayerInfo
                                 + ","
-                                + " Re-configure the Resourcer");
+                                + " Re-configure the Resource");
             }
             styleInfo = WMSLayerInfoImpl.DEFAULT_ON_REMOTE;
         }

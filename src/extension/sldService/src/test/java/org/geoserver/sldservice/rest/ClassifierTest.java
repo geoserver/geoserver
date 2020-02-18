@@ -22,15 +22,7 @@ import static org.junit.Assert.fail;
 
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
@@ -65,6 +57,7 @@ import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.RasterSymbolizer;
@@ -98,6 +91,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
     static final QName CLASSIFICATION_POLYGONS =
             new QName(
                     SystemTestData.CITE_URI, "ClassificationPolygons", SystemTestData.CITE_PREFIX);
+
+    static final QName CLASSIFICATION_LINES =
+            new QName(SystemTestData.CITE_URI, "ClassificationLines", SystemTestData.CITE_PREFIX);
 
     static final QName FILTERED_POINTS =
             new QName(SystemTestData.CITE_URI, "FilteredPoints", SystemTestData.CITE_PREFIX);
@@ -144,6 +140,13 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 CLASSIFICATION_POINTS,
                 props,
                 "ClassificationPoints.properties",
+                this.getClass(),
+                catalog);
+
+        testData.addVectorLayer(
+                CLASSIFICATION_LINES,
+                props,
+                "ClassificationLines.properties",
                 this.getClass(),
                 catalog);
 
@@ -1849,5 +1852,157 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMapEntry cm0 = cm.getColorMapEntry(0);
         assertEquals("#00FF00", cm0.getColor().evaluate(null, String.class));
         assertEquals(1, cm0.getOpacity().evaluate(null, Double.class), 0);
+    }
+
+    @Test
+    public void testRasterNoDuplicatedClasses() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:milanogeo/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&ramp=custom&intervals=7"
+                        + "&colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206&fullSLD=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        // first color map entry got skipped when applying color ramp, taking the second
+        ColorMapEntry cm1 = cm.getColorMapEntry(1);
+        assertEquals("#FF071C", cm1.getColor().evaluate(null, String.class));
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:milanogeo/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=jenks&ramp=custom&intervals=7&open=true"
+                        + "&colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206&fullSLD=true";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        RasterSymbolizer rsJenks = getRasterSymbolizer(domJenks);
+        ColorMap cmJenks = rsJenks.getColorMap();
+        ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
+        assertEquals(2, entriesJenks.length);
+        ColorMapEntry cm0Jenks = cmJenks.getColorMapEntry(0);
+        assertEquals("#FF071C", cm0Jenks.getColor().evaluate(null, String.class));
+        ColorMapEntry cm1Jenks = cmJenks.getColorMapEntry(1);
+        assertEquals("#CC0616", cm1Jenks.getColor().evaluate(null, String.class));
+    }
+
+    @Test
+    public void testNoDuplicatedClosedRulesVectors() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationLines/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=cat2&ramp=CUSTOM&method=quantile&intervals=7&"
+                        + "colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 4);
+        checkRuleLineSymbolizer(rules[0], "#FF071C");
+        checkRuleLineSymbolizer(rules[1], "#CC0616");
+        checkRuleLineSymbolizer(rules[2], "#82040E");
+        checkRuleLineSymbolizer(rules[3], "#68030B");
+
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationLines/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=cat2&ramp=CUSTOM&method=jenks&intervals=7&"
+                        + "colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(resultJenks.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 3);
+        checkRuleLineSymbolizer(rulesJenks[0], "#FF071C");
+        checkRuleLineSymbolizer(rulesJenks[1], "#CC0616");
+        checkRuleLineSymbolizer(rulesJenks[2], "#82040E");
+    }
+
+    @Test
+    public void testNoDuplicatedOpenRulesVectors() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationLines/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=cat2&ramp=CUSTOM&method=quantile&intervals=7&open=true&"
+                        + "colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 5);
+        checkRuleLineSymbolizer(rules[0], "#FF071C");
+        checkRuleLineSymbolizer(rules[1], "#CC0616");
+        checkRuleLineSymbolizer(rules[2], "#82040E");
+        checkRuleLineSymbolizer(rules[3], "#68030B");
+        checkRuleLineSymbolizer(rules[4], "#530209");
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationLines/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=cat2&ramp=CUSTOM&method=jenks&intervals=7&open=true&"
+                        + "colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(resultJenks.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 4);
+        checkRuleLineSymbolizer(rulesJenks[0], "#FF071C");
+        checkRuleLineSymbolizer(rulesJenks[1], "#CC0616");
+        checkRuleLineSymbolizer(rulesJenks[2], "#82040E");
+        checkRuleLineSymbolizer(rulesJenks[3], "#68030B");
+    }
+
+    @Test
+    public void testNoDuplicatedExplicitRulesVectors() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationLines/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=cat2&ramp=CUSTOM&method=uniqueInterval&intervals=7&"
+                        + "colors=#FF071C,#CC0616,#82040E,#68030B,#530209,#420207,#350206";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 4);
+        checkRuleLineSymbolizer(rules[0], "#FF071C");
+        checkRuleLineSymbolizer(rules[1], "#CC0616");
+        checkRuleLineSymbolizer(rules[2], "#82040E");
+        checkRuleLineSymbolizer(rules[3], "#68030B");
+    }
+
+    private void checkRuleLineSymbolizer(Rule rule, String color) {
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertThat(rule.symbolizers().get(0), instanceOf(LineSymbolizer.class));
+        LineSymbolizer symbolizer = (LineSymbolizer) rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getStroke());
+        assertEquals(color, symbolizer.getStroke().getColor().toString());
     }
 }

@@ -7,6 +7,7 @@ package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -32,16 +33,21 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     // Reusing layer and SLD files from another test; their content doesn't really matter.
     // What is important for this test is the legend info we are adding.
     private static final String LAYER_NAME = "watertemp";
+    private static final String HTTP_LEGEND_LAYER = "watertemp_http_legend";
     private static final QName LAYER_QNAME =
             new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
+    private static final QName LAYER_QNAME_HTP_LEGND =
+            new QName(MockData.DEFAULT_URI, HTTP_LEGEND_LAYER, MockData.DEFAULT_PREFIX);
     private static final String LAYER_FILE = "custwatertemp.zip";
     private static final String STYLE_NAME = "temperature";
+    private static final String STYLE_NAME_HTTP = "temperature_http_url";
     private static final String STYLE_FILE = "../temperature.sld";
 
     private static final int LEGEND_WIDTH = 22;
     private static final int LEGEND_HEIGHT = 22;
     private static final String LEGEND_FORMAT = "image/jpeg";
     private static final String IMAGE_URL = "legend.png";
+    private static final String IMAGE_HTTP_URL = "http://some.url.com/legend.png";
     private static final String BASE = "src/test/resources/geoserver";
 
     private static final String LAYER_NAME_WS = "watertemp_ws";
@@ -96,6 +102,8 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                 SystemTestData.class,
                 getCatalog());
 
+        addLayerWithHttpLegend(testData);
+
         // For global set-up
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl(BASE);
@@ -113,33 +121,80 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
 
+    private void addLayerWithHttpLegend(SystemTestData testData) throws IOException {
+        LegendInfo legend = new LegendInfoImpl();
+        legend.setWidth(LEGEND_WIDTH);
+        legend.setHeight(LEGEND_HEIGHT);
+        legend.setFormat(LEGEND_FORMAT);
+        legend.setOnlineResource(IMAGE_HTTP_URL);
+
+        // add layer
+        testData.addStyle(null, STYLE_NAME_HTTP, STYLE_FILE, getClass(), getCatalog(), legend);
+        Map<SystemTestData.LayerProperty, Object> propertyMap =
+                new HashMap<SystemTestData.LayerProperty, Object>();
+        propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
+        testData.addRasterLayer(
+                LAYER_QNAME_HTP_LEGND,
+                LAYER_FILE,
+                null,
+                propertyMap,
+                SystemTestData.class,
+                getCatalog());
+    }
+
     @Test
     public void testCapabilities() throws Exception {
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
+        // assert that legend resources are hidden behind a GetLegendGraphic request URL in all
+        // three
+        // cases
+        String expectedGetLegendGraphicRequestURL =
+                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                        + LAYER_NAME;
+        String expectedGetLegendGraphicRequestURLWS =
+                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                        + LAYER_NAME_WS;
+        String expectedGetLegendGraphicRequestURLHttp =
+                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                        + HTTP_LEGEND_LAYER;
 
         final String legendUrlPath =
                 "//wms:Layer[wms:Name='gs:" + LAYER_NAME + "']/wms:Style/wms:LegendURL";
 
-        // Ensure capabilities document reflects the specified legend info
+        // assert that legend resources are hidden behind a GetLegendGraphic request URL
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPath + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/wms:Format", dom);
         assertXpathEvaluatesTo(
-                BASE + "/styles/" + IMAGE_URL,
+                BASE + expectedGetLegendGraphicRequestURL,
                 legendUrlPath + "/wms:OnlineResource/@xlink:href",
                 dom);
 
         final String legendUrlPathWs =
                 "//wms:Layer[wms:Name='gs:" + LAYER_NAME_WS + "']/wms:Style/wms:LegendURL";
 
-        // Ensure capabilities document reflects the specified legend info
+        // assert that legend resources are hidden behind a GetLegendGraphic request URL
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPathWs + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPathWs + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPathWs + "/wms:Format", dom);
         assertXpathEvaluatesTo(
-                BASE + "/styles/gs/" + IMAGE_URL,
+                BASE + expectedGetLegendGraphicRequestURLWS,
                 legendUrlPathWs + "/wms:OnlineResource/@xlink:href",
+                dom);
+
+        final String legendUrlPathHTTPLegend =
+                "//wms:Layer[wms:Name='gs:" + HTTP_LEGEND_LAYER + "']/wms:Style/wms:LegendURL";
+
+        // assert that legend resources are hidden behind a GetLegendGraphic request URL
+        assertXpathEvaluatesTo(
+                String.valueOf(LEGEND_WIDTH), legendUrlPathHTTPLegend + "/@width", dom);
+        assertXpathEvaluatesTo(
+                String.valueOf(LEGEND_HEIGHT), legendUrlPathHTTPLegend + "/@height", dom);
+        assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPathHTTPLegend + "/wms:Format", dom);
+        assertXpathEvaluatesTo(
+                BASE + expectedGetLegendGraphicRequestURLHttp,
+                legendUrlPathHTTPLegend + "/wms:OnlineResource/@xlink:href",
                 dom);
     }
 }

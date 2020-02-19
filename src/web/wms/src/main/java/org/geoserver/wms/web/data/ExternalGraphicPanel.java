@@ -6,7 +6,6 @@
 package org.geoserver.wms.web.data;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,10 +13,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +36,11 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 
@@ -101,13 +100,8 @@ public class ExternalGraphicPanel extends Panel {
                         } catch (URISyntaxException e1) {
                             // Unable to check if absolute
                         }
-                        if (uri != null && uri.isAbsolute()) {
+                        if (uri != null && uri.isAbsolute() && isUrl(value)) {
                             try {
-                                String baseUrl = baseURL(onlineResource.getForm());
-                                if (!value.startsWith(baseUrl)) {
-                                    onlineResource.warn(
-                                            "Recommend use of styles directory at " + baseUrl);
-                                }
                                 URL url = uri.toURL();
                                 URLConnection conn = url.openConnection();
                                 if ("text/html".equals(conn.getContentType())) {
@@ -130,32 +124,14 @@ public class ExternalGraphicPanel extends Panel {
                             }
                             return; // no further checks possible
                         } else {
-                            GeoServerResourceLoader resources =
-                                    GeoServerApplication.get().getResourceLoader();
                             try {
-                                File styles = resources.find("styles");
-                                String[] path = value.split(Pattern.quote(File.separator));
+
                                 WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
-                                File test = null;
-                                if (wsInfo != null) {
-                                    String wsName = wsInfo.getName();
-                                    List<String> list = new ArrayList();
-                                    list.addAll(Arrays.asList("workspaces", wsName, "styles"));
-                                    list.addAll(Arrays.asList(path));
-                                    test = resources.find(list.toArray(new String[list.size()]));
-                                }
-                                if (test == null) {
-                                    test = resources.find(styles, path);
-                                }
-                                if (test == null) {
-                                    ValidationError error = new ValidationError();
-                                    error.setMessage("File not found in styles directory");
-                                    error.addKey("imageNotFound");
-                                    input.error(error);
-                                }
-                            } catch (IOException e) {
+                                getIconFromStyleDirectory(wsInfo, value);
+                            } catch (Exception e) {
                                 ValidationError error = new ValidationError();
-                                error.setMessage("File not found in styles directory");
+                                error.setMessage(
+                                        "File not found in styles directory or given path is invalid");
                                 error.addKey("imageNotFound");
                                 input.error(error);
                             }
@@ -304,25 +280,19 @@ public class ExternalGraphicPanel extends Panel {
         if (onlineResource.getModelObject() != null) {
             URL url = null;
             try {
-                String baseUrl = baseURL(form);
                 String external = onlineResource.getModelObject().toString();
 
                 URI uri = new URI(external);
-                if (uri.isAbsolute()) {
+                if (uri.isAbsolute() && isUrl(external)) {
                     url = uri.toURL();
-                    if (!external.startsWith(baseUrl)) {
-                        form.warn("Recommend use of styles directory at " + baseUrl);
-                    }
                 } else {
                     WorkspaceInfo wsInfo = ((StyleInfo) getDefaultModelObject()).getWorkspace();
-                    if (wsInfo != null) {
-                        url =
-                                new URL(
-                                        ResponseUtils.appendPath(
-                                                baseUrl, "styles", wsInfo.getName(), external));
-                    } else {
-                        url = new URL(ResponseUtils.appendPath(baseUrl, "styles", external));
+                    Resource icon = getIconFromStyleDirectory(wsInfo, external);
+
+                    if (icon == null) {
+                        throw new FileNotFoundException();
                     }
+                    url = icon.file().toURI().toURL();
                 }
 
                 URLConnection conn = url.openConnection();
@@ -357,5 +327,26 @@ public class ExternalGraphicPanel extends Panel {
         autoFill.setVisible(b);
         hide.setVisible(b);
         show.setVisible(!b);
+    }
+
+    private boolean isUrl(final String uri) {
+        return uri.startsWith("http");
+    }
+
+    private Resource getIconFromStyleDirectory(WorkspaceInfo wsInfo, String value)
+            throws Exception {
+        GeoServerResourceLoader resources = GeoServerApplication.get().getResourceLoader();
+        GeoServerDataDirectory gsDataDir = new GeoServerDataDirectory(resources);
+        Resource icon = null;
+        if (wsInfo != null) {
+            icon = gsDataDir.getStyles(wsInfo, value);
+        }
+        if (icon == null) {
+            icon = gsDataDir.getStyles(value);
+            if (icon == null) throw new FileNotFoundException("file not found");
+            else if (icon.getType() != Resource.Type.RESOURCE)
+                throw new Exception("given path is a directory");
+        }
+        return icon;
     }
 }

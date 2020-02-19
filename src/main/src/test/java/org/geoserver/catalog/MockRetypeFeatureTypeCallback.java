@@ -4,7 +4,7 @@
  */
 package org.geoserver.catalog;
 
-import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
+import org.geoserver.catalog.retype.MockRetypedSource;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -25,13 +25,17 @@ public class MockRetypeFeatureTypeCallback implements RetypeFeatureTypeCallback 
     public static final String RETYPED = "RETYPED";
     public static final String RETYPED_GEOM_COLUMN = "GENERATED_POINT";
 
+    public static final String LONG_FIELD = "lon";
+    public static final String LAT_FIELD = "lat";
+    public static final int EPSG_CODE = 4326;
+
     @Override
     public FeatureType retypeFeatureType(FeatureTypeInfo featureTypeInfo, FeatureType src) {
         // only work for the test file : test/resources/org/geoserver/catalog/longlat.properties
         if (!RetypeFeatureTypeCallbackTest.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER.equalsIgnoreCase(
                 featureTypeInfo.getName())) return src;
         try {
-            CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:" + EPSG_CODE);
             SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
 
             builder.setName(src.getName());
@@ -55,19 +59,13 @@ public class MockRetypeFeatureTypeCallback implements RetypeFeatureTypeCallback 
     public FeatureSource wrapFeatureSource(
             FeatureTypeInfo featureTypeInfo, FeatureSource featureSource) {
         // only work for the test file : test/resources/org/geoserver/catalog/longlat.properties
+
         if (!RetypeFeatureTypeCallbackTest.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER.equalsIgnoreCase(
                 featureTypeInfo.getName())) return featureSource;
 
-        MockRetypeFeatureTypedFeatureSource wrapped =
-                new MockRetypeFeatureTypedFeatureSource((SimpleFeatureSource) featureSource);
+        MockRetypedSource wrapped =
+                new MockRetypedSource(featureTypeInfo, (SimpleFeatureSource) featureSource);
 
         return wrapped;
-    }
-
-    class MockRetypeFeatureTypedFeatureSource extends DecoratingSimpleFeatureSource {
-
-        public MockRetypeFeatureTypedFeatureSource(SimpleFeatureSource delegate) {
-            super(delegate);
-        }
     }
 }

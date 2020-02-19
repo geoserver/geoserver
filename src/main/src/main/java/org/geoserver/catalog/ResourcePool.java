@@ -1388,23 +1388,23 @@ public class ResourcePool {
                 schema = typeBuilder.buildFeatureType();
             }
 
-            // return a normal
-            FeatureSource featureSource =
-                    GeoServerFeatureLocking.create(
-                            fs,
-                            new GeoServerFeatureSource.Settings(
-                                    schema,
-                                    info.filter(),
-                                    resultCRS,
-                                    info.getProjectionPolicy().getCode(),
-                                    getTolerance(info),
-                                    info.getMetadata()));
-
+            // applying wrappers using
+            // implementations of org.geoserver.catalog.RetypeFeatureTypeCallback
             for (RetypeFeatureTypeCallback callback :
                     GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
-                featureSource = callback.wrapFeatureSource(info, featureSource);
+                fs = (SimpleFeatureSource) callback.wrapFeatureSource(info, fs);
             }
-            return featureSource;
+
+            // return a normal
+            return GeoServerFeatureLocking.create(
+                    fs,
+                    new GeoServerFeatureSource.Settings(
+                            schema,
+                            info.filter(),
+                            resultCRS,
+                            info.getProjectionPolicy().getCode(),
+                            getTolerance(info),
+                            info.getMetadata()));
         }
     }
 

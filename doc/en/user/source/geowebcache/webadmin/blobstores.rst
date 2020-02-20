@@ -3,7 +3,7 @@
 BlobStores
 ==========
 
-BlobStores allow us to configure how and where GeoWebCache will store its cashed data on a per-layer basis. This page allows us to define the different BlobStores present in the system. BlobStores can be created, modified and removed from here. 
+BlobStores allow us to configure how and where GeoWebCache will store its cached data on a per-layer basis. This page allows us to define the different BlobStores present in the system. BlobStores can be created, modified and removed from here. 
 
 .. figure:: img/blobstores.png
 
@@ -20,7 +20,7 @@ There can be different BlobStore types to use different ways of storage. There i
 
 Enabled
 ~~~~~~~
-Disabled BlobStores will not be loaded. Disabling a BlobStore will disable cashing for all layers and layergroups assigned to that BlobStore.
+Disabled BlobStores will not be loaded. Disabling a BlobStore will disable caching for all layers and layergroups assigned to that BlobStore.
 
 Default
 ~~~~~~~
@@ -43,7 +43,7 @@ It is also possible to choose the tile file layout:
 
 Base Directory
 ~~~~~~~~~~~~~~
-The directory where the cashed data is stored.
+The directory where the cached data is stored.
 
 Disk block size
 ~~~~~~~~~~~~~~~

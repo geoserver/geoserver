@@ -830,4 +830,39 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                         .newInstance("someid", page);
         Assert.notNull(tabPanel, "Constructor for plugin tab panels has a broken signature.");
     }
+
+    @Test
+    public void testDirectURILegend() throws IOException, URISyntaxException {
+        // test asserts that error is thrown when trying to set URL as direct file
+        // outside data directory/styles folder
+        Resource resource = getResourceLoader().get("legend.png");
+        getResourceLoader().copyFromClassPath("legend.png", resource.file(), getClass());
+        assertTrue(resource.file().exists());
+
+        try {
+
+            String uri = resource.file().toURI().toString();
+
+            tester.executeAjaxEvent(
+                    "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
+                    "click");
+
+            // Set a URI of an actual file outside data directory
+            FormTester form = tester.newFormTester("styleForm", false);
+            form.setValue(
+                    "context:panel:legendPanel:externalGraphicContainer:list:onlineResource", uri);
+            tester.clickLink(
+                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill",
+                    true);
+
+            // assert that error is thrown complaining file not being inside style directory
+            tester.assertErrorMessages(
+                    "Could not find legend image in the styles directory",
+                    "Could not access legend image");
+
+        } finally {
+            // clean up
+            resource.file().delete();
+        }
+    }
 }

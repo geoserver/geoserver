@@ -312,7 +312,23 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         // the request should generate exepected remote WMS URL
         // e.g default remote styles should include the forced remote style of one layer
         // and empty for second layer
-        // For Mock URL check WMSCascadeTestSupport.setupWMS110Layer()
+        // For Mock URL check WMSCascadeTestSupport.setupWMS130Layer()
+        BufferedImage response = getAsImage(getMapRequest, "image/png");
+        assertNotNull(response);
+    }
+
+    @Test
+    public void testLegacyCascadeLayerGroup() throws Exception {
+
+        String getMapRequest =
+                "wms?bbox=-90,-180,90,180"
+                        + "&styles=&layers=cascaded_legacy_group_130"
+                        + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                        + "&width=180&height=90&crs=EPSG:4326";
+
+        // the request should generate exepected remote WMS URL
+        // e.g default remote styles should be empty in remote request
+        // For Mock URL check WMSCascadeTestSupport.setupWMS130Layer()
         BufferedImage response = getAsImage(getMapRequest, "image/png");
         assertNotNull(response);
     }

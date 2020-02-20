@@ -158,8 +158,8 @@ public class LayerInfoImpl implements LayerInfo {
             // will be null if remote capability document
             // does not have any Style tags
             if (remoteDefaultStyleInfo != null) return remoteDefaultStyleInfo;
-            else
-                LOGGER.warning(
+            else if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.fine(
                         "No Default Style found on cascaded WMS Resource"
                                 + ((WMSLayerInfo) getResource()).getName());
         }
@@ -178,8 +178,8 @@ public class LayerInfoImpl implements LayerInfo {
             // will be null if remote capability document
             // does not have any Style tags
             if (remoteStyles != null) return remoteStyles;
-            else
-                LOGGER.warning(
+            else if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.fine(
                         "No Default Styles found on cascaded WMS Resource"
                                 + ((WMSLayerInfo) getResource()).getName());
         }

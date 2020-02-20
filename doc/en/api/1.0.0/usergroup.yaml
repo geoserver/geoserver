@@ -4,6 +4,8 @@ info:
   version: 1.0.0
   title: Users and Groups
   description: Organisation of security users and groups
+host: localhost:8080
+basePath: /geoserver/rest/security
 
 paths:
   /usergroup/users/:

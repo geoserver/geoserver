@@ -17,3 +17,5 @@ There are many ways to install GeoServer on your system. This section will discu
    linux
    war
    upgrade
+
+.. note:: At this time we no longer provide a Windows Installer, due to lack of a secure Windows machine where the installer can be built and signed. However if you realy need the Windows installer, you can create one following `the instruction on this site <../../developer/win-installer.html>`.

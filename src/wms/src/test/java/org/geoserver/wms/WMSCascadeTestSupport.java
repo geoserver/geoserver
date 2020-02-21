@@ -13,9 +13,12 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
@@ -231,6 +234,34 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         wms13Client.expectGet(
                 new URL(mockURLWithSingleLayerInsideBounds),
                 new MockHttpResponse(pngRoadsImage, "image/png"));
+
+        WMSLayerInfo legacy_group_lyr = cb.buildWMSLayer("legacy_group_lyr_130");
+        legacy_group_lyr.setName("legacy_group_lyr_130");
+        getCatalog().add(legacy_group_lyr);
+
+        LayerInfoImpl legacy_lyr = (LayerInfoImpl) cb.buildLayer(legacy_group_lyr);
+        StyleInfo defaultRaster = getCatalog().getStyleByName(CiteTestData.DEFAULT_RASTER_STYLE);
+
+        legacy_lyr.setDefaultStyle(defaultRaster);
+        getCatalog().add(legacy_lyr);
+        LayerGroupInfo legacyCascadedGroup = getCatalog().getFactory().createLayerGroup();
+
+        legacyCascadedGroup.setName("cascaded_legacy_group_130");
+        legacyCascadedGroup.getLayers().add(legacy_lyr);
+
+        try {
+            cb.calculateLayerGroupBounds(legacyCascadedGroup);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+        getCatalog().add(legacyCascadedGroup);
+
+        String mockURLWithLegacyLayers =
+                wms13BaseURL
+                        + "?SERVICE=WMS&LAYERS=legacy_group_lyr_130&CRS=EPSG:4326&FORMAT=image/png&HEIGHT=90&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=-90.0,-180.0,90.0,180.0&WIDTH=180&STYLES=&VERSION=1.3.0";
+        // we dont care about response, URL content is important
+        wms13Client.expectGet(
+                new URL(mockURLWithLegacyLayers), new MockHttpResponse(pngRoadsImage, "image/png"));
     }
 
     private void setupWMS110Layer() throws MalformedURLException, IOException {
@@ -410,6 +441,34 @@ public abstract class WMSCascadeTestSupport extends WMSTestSupport {
         wms11Client.expectGet(
                 new URL(mockURLWithSingleLayerInsideBounds),
                 new MockHttpResponse(pngRoadsImage, "image/png"));
+
+        WMSLayerInfo legacy_group_lyr = cb.buildWMSLayer("legacy_group_lyr");
+        legacy_group_lyr.setName("legacy_group_lyr");
+        getCatalog().add(legacy_group_lyr);
+
+        LayerInfoImpl legacy_lyr = (LayerInfoImpl) cb.buildLayer(legacy_group_lyr);
+        StyleInfo defaultRaster = getCatalog().getStyleByName(CiteTestData.DEFAULT_RASTER_STYLE);
+
+        legacy_lyr.setDefaultStyle(defaultRaster);
+        getCatalog().add(legacy_lyr);
+        LayerGroupInfo legacyCascadedGroup = getCatalog().getFactory().createLayerGroup();
+
+        legacyCascadedGroup.setName("cascaded_legacy_group");
+        legacyCascadedGroup.getLayers().add(legacy_lyr);
+
+        try {
+            cb.calculateLayerGroupBounds(legacyCascadedGroup);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+        getCatalog().add(legacyCascadedGroup);
+
+        String mockURLWithLegacyLayers =
+                wms11BaseURL
+                        + "?SERVICE=WMS&LAYERS=legacy_group_lyr&FORMAT=image%2Fpng&HEIGHT=90&TRANSPARENT=FALSE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&BBOX=-180.0,-90.0,180.0,90.0&WIDTH=180&STYLES=&SRS=EPSG:4326&VERSION=1.1.1";
+        // we dont care about response, URL content is important
+        wms11Client.expectGet(
+                new URL(mockURLWithLegacyLayers), new MockHttpResponse(pngRoadsImage, "image/png"));
     }
 
     private void setupWMS110NfiLayer() throws MalformedURLException, IOException {

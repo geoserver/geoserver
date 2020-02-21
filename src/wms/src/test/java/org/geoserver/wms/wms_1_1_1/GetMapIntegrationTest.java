@@ -38,23 +38,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -1155,7 +1145,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + dpi,
                         "image/png");
         // RenderedImageBrowser.showChain(image);
-
         // check the pixels that should be in the legend
         assertPixel(image, 15, 67, Color.RED);
         assertPixel(image, 15, 107, Color.GREEN);
@@ -1923,5 +1912,43 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         "image/png");
 
         ImageAssert.assertEquals(expectedImage, response, 100);
+    }
+
+    @Test
+    public void testLayoutLegendStyleOnlineResource() throws Exception {
+        Catalog catalog = getCatalog();
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
+        File styles = getDataDirectory().findOrCreateDir("styles");
+        URL grassPng = GetMapIntegrationTest.class.getResource("../red_fill.png");
+        FileUtils.copyURLToFile(grassPng, new File(styles, "org/geoserver/wms/red_fill.png"));
+        FeatureTypeInfo states = catalog.getFeatureTypeByName("states");
+
+        StyleInfo sInfo = catalog.getLayerByName(states.getName()).getDefaultStyle();
+        LegendInfoImpl legend = new LegendInfoImpl();
+        legend.setOnlineResource("org/geoserver/wms/red_fill.png");
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setHeight(32);
+        legend.setWidth(32);
+        sInfo.setLegend(legend);
+        catalog.save(sInfo);
+        BufferedImage image =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=cite:giantPolygon"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=250"
+                                + "&srs=EPSG:4326&format_options=layout:test-layout-legend-image",
+                        "image/png");
+
+        URL expectedResponse = getClass().getResource("giant_poly_legend.png");
+        BufferedImage expectedImage = ImageIO.read(expectedResponse);
+        ImageAssert.assertEquals(image, expectedImage, 200);
+        sInfo.setLegend(null);
+        catalog.save(sInfo);
     }
 }

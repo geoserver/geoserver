@@ -329,7 +329,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param legendInfo LegendInfo used to document use external graphic
      * @return Copy of provided legend info resolved to local file references.
      */
-    private LegendInfo resolveLegendInfo(
+    public LegendInfo resolveLegendInfo(
             LegendInfo legendInfo, GetLegendGraphicRequest request, StyleInfo context) {
         if (legendInfo == null) {
             return null; // not available

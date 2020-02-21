@@ -13,6 +13,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +21,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.ResourceInfo;
+import java.util.function.Predicate;
+import org.geoserver.catalog.*;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -30,6 +31,7 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
+import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geoserver.wms.legendgraphic.LegendUtils;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.map.Layer;
@@ -101,7 +103,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                 request.setKvp(dispatcherRequest.getKvp());
                 request.setRawKvp(dispatcherRequest.getRawKvp());
             }
-
+            setLegendInfo(layer, request);
             Map legendOptions = new CaseInsensitiveMap(options);
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());
             if (dispatcherRequest != null
@@ -112,7 +114,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
             LayerLegend legend = new LayerLegend();
             legend.request = request;
-
             String title = findTitle(layer, wms.getGeoServer().getCatalog());
             if (title != null) {
                 Font newFont = LegendUtils.getLabelFont(request);
@@ -133,7 +134,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
                 BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
                 g2d.setFont(oldFont);
-
                 legend.title = titleImage;
             }
 
@@ -285,6 +285,39 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             return resource.getTitle();
         } else {
             return layer.getTitle();
+        }
+    }
+
+    private void setLegendInfo(Layer layer, GetLegendGraphicRequest request) {
+        // online resource handling
+        LayerInfo info = wms.getLayerByName(layer.getTitle());
+        StyleInfo defaultStyle = info.getDefaultStyle();
+
+        Predicate<StyleInfo> predicate =
+                new Predicate<StyleInfo>() {
+                    @Override
+                    public boolean test(StyleInfo s) {
+                        try {
+                            return s.getName().equals(layer.getStyle().getName())
+                                    && s.getStyle() != null;
+                        } catch (IOException e) {
+                            return false;
+                        }
+                    }
+                };
+        StyleInfo sInfo =
+                info.getStyles()
+                        .stream()
+                        .filter(predicate)
+                        .findFirst()
+                        .orElseGet(() -> defaultStyle);
+        GetLegendGraphicRequest.LegendRequest legendReq =
+                request.getLegend(info.getResource().getQualifiedName());
+        legendReq.setLayerInfo(info);
+        GetLegendGraphicKvpReader reader = new GetLegendGraphicKvpReader(wms);
+        LegendInfo legendInfo = reader.resolveLegendInfo(sInfo.getLegend(), request, sInfo);
+        if (legendInfo != null) {
+            legendReq.setLegendInfo(legendInfo);
         }
     }
 

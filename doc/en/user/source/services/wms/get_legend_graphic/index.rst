@@ -138,7 +138,7 @@ Take as an instance one of the SLD files attached to this page, each row in the 
 
 	<ColorMapEntry color="#732600" quantity="9888" opacity="1.0" label="<-70 mm"/>
 
-The producer for the raster legend will make use of this elements in order to build the legend, with this i, notice that:
+The producer for the raster legend will make use of this elements in order to build the legend, with this in mind, notice that:
 
     - the width of the Color element is driven by the requested width for the GetLegendGraphic request
     - the width and height of label and rules is computed accordingly to the used Font and Font size for the prepared text (**no new line management for the moment**) 
@@ -146,10 +146,10 @@ The producer for the raster legend will make use of this elements in order to bu
     - the height of each row is set to the maximum height of the single elements
     - the width of each row is set to the sum of the width of the various elements plus the various paddings
     - **dx,dy** the spaces between elements and rows are set to the 15% of the requested width and height. Notice that **dy** is ignored for the colormaps of type **ramp** since they must create a continuous color strip.
-    - **absoluteMargins** true/false, used to change the Unit of measure of **dx** from percentage (when false) to a fixed number of pixels (when true).
+    - **absoluteMargins** true/false, used to change the Unit of Measure of **dx** from percentage (when false) to a fixed number of pixels (when true).
     - **mx,my** the margins from the border of the legends are set to the 1.5% of the total size of the legend
 
-CoJust to jump right to the conclusions (which is a bad practice I know, but no one is perfect ), here below I am adding an image of a sample legend with all the various options at work. The request that generated it is the following::
+In conclusion, here below I am adding an image of a sample legend with all the various options at work. The request that generated it is the following::
 
 	http://localhost:8081/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=100&HEIGHT=20&LAYER=it.geosolutions:di08031_da&LEGEND_OPTIONS=forceRule:True;dx:0.2;dy:0.2;mx:0.2;my:0.2;fontStyle:bold;borderColor:0000ff;border:true;fontColor:ff0000;fontSize:18
 

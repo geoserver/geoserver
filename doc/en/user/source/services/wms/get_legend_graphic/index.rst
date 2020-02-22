@@ -18,7 +18,7 @@ which would produce four 20x20 icons that graphically represent the rules of the
 
    *Sample legend*
 
-The following table the whole set of GetLegendGraphic parameters that can be used.
+The following table list the whole set of GetLegendGraphic parameters that can be used.
 
 .. list-table::
    :widths: 15 5 80

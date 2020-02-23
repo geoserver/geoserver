@@ -73,11 +73,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
      */
     private boolean availableDescribeCoverageExtensions;
 
-    /**
-     * Creates a new WFSCapsTransformer object.
-     *
-     * @param mimemapper
-     */
+    /** Creates a new WFSCapsTransformer object. */
     public WCS20DescribeCoverageTransformer(
             Catalog catalog,
             EnvelopeAxesLabelsMapper envelopeDimensionsMapper,

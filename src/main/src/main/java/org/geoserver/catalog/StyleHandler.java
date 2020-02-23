@@ -223,8 +223,6 @@ public abstract class StyleHandler {
      * #encode(StyledLayerDescriptor, Version, boolean, OutputStream)} won't throw an
      * UnsupportedOperationException. By default returns "false", subclasses implementing encoding
      * should override.
-     *
-     * @return
      */
     public boolean supportsEncoding(Version version) {
         return false;

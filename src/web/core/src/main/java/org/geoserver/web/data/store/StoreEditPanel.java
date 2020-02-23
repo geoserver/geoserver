@@ -41,11 +41,7 @@ public abstract class StoreEditPanel extends Panel {
         }
     }
 
-    /**
-     * Initializes all store parameters to their default value
-     *
-     * @param info
-     */
+    /** Initializes all store parameters to their default value */
     protected void applyDataStoreParamsDefaults(StoreInfo info) {
         // grab the factory
         final DataStoreInfo dsInfo = (DataStoreInfo) info;

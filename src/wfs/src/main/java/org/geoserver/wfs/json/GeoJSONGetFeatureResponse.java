@@ -160,13 +160,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
     }
 
-    /**
-     * Builds, configures and returns {@link GeoJSONBuilder}
-     *
-     * @param featureCollection
-     * @param outWriter
-     * @return
-     */
+    /** Builds, configures and returns {@link GeoJSONBuilder} */
     protected GeoJSONBuilder getGeoJSONBuilder(
             FeatureCollectionResponse featureCollection, Writer outWriter) {
         final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
@@ -177,28 +171,13 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return jsonWriter;
     }
 
-    /**
-     * Is WFS configured to return feature and collection bounds?
-     *
-     * @return
-     */
+    /** Is WFS configured to return feature and collection bounds? */
     protected boolean isFeatureBounding() {
         WFSInfo wfs = getInfo();
         return wfs.isFeatureBounding();
     }
 
-    /**
-     * Writes the feature to the output
-     *
-     * @param featureCollection
-     * @param operation
-     * @param featureBounding
-     * @param id_option
-     * @param isComplex
-     * @param jsonWriter
-     * @param resultsList
-     * @return
-     */
+    /** Writes the feature to the output */
     protected FeaturesInfo writeFeatures(
             List<FeatureCollection> resultsList,
             Operation operation,
@@ -234,11 +213,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return featuresInfo;
     }
 
-    /**
-     * Writes a WFS3 compliant timeStamp collection attribute
-     *
-     * @param jw
-     */
+    /** Writes a WFS3 compliant timeStamp collection attribute */
     protected void writeCollectionTimeStamp(GeoJSONBuilder jw) {
         jw.key("timeStamp").value(new ISO8601Formatter().format(new Date()));
     }
@@ -251,10 +226,6 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
      *   <li>WFS 3 numberMatched (same as totalFeatures)
      *   <li>WFS 3 numberReturned
      * </ul>
-     *
-     * @param featureCount
-     * @param numberReturned
-     * @param jsonWriter
      */
     protected void writeCollectionCounts(
             BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
@@ -270,14 +241,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         jsonWriter.key("numberReturned").value(numberReturned);
     }
 
-    /**
-     * Writes the collection bounds
-     *
-     * @param featureBounding
-     * @param jsonWriter
-     * @param resultsList
-     * @param hasGeom
-     */
+    /** Writes the collection bounds */
     protected void writeCollectionBounds(
             boolean featureBounding,
             GeoJSONBuilder jsonWriter,
@@ -317,13 +281,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
     }
 
-    /**
-     * Writes WFS3 compliant paging links
-     *
-     * @param response
-     * @param operation
-     * @param jw
-     */
+    /** Writes WFS3 compliant paging links */
     protected void writePagingLinks(
             FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
 

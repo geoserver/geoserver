@@ -59,20 +59,12 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         this.tileBuilderFactory = tileBuilderFactory;
     }
 
-    /**
-     * Multiplies density of simplification from its base value.
-     *
-     * @param factor
-     */
+    /** Multiplies density of simplification from its base value. */
     public void setOverSamplingFactor(double factor) {
         this.overSamplingFactor = factor;
     }
 
-    /**
-     * Does this format use features clipped to the extent of the tile instead of whole features
-     *
-     * @param clip
-     */
+    /** Does this format use features clipped to the extent of the tile instead of whole features */
     public void setClipToMapBounds(boolean clip) {
         this.clipToMapBounds = clip;
     }

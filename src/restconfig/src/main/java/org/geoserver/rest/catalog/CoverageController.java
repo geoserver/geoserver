@@ -356,8 +356,6 @@ public class CoverageController extends AbstractCatalogController {
     /**
      * This method returns {@code true} in case we have POSTed a Coverage object with the name only,
      * as an instance when configuring a new coverage which has just been harvested.
-     *
-     * @param coverage
      */
     private boolean isNewCoverage(CoverageInfo coverage) {
         return coverage.getName() != null

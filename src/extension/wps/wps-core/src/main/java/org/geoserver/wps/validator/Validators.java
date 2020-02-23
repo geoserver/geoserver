@@ -48,8 +48,6 @@ public class Validators {
     /**
      * Returning the most restrictive size limit in the {@link MaxSizeValidator} contained in the
      * validators collection, or -1 if there is no limit
-     *
-     * @param validators
      */
     public static int getMaxSizeMB(Collection<Validator> validators) {
         int maxSize = Integer.MAX_VALUE;

@@ -45,8 +45,6 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel>
     /**
      * Method for setting the priority of the Object. This is used for ordering the various plugin
      * panels.
-     *
-     * @param priority
      */
     public void setPriority(int priority) {
         this.priority = priority;
@@ -55,10 +53,6 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel>
     /**
      * This method creates a pluggable ListView which can store various panels. All the elements
      * must implement the {@link SettingsPluginPanelInfo} class.
-     *
-     * @param id
-     * @param model
-     * @param application
      */
     public static ListView<SettingsPluginPanelInfo> createExtensions(
             String id, final IModel<SettingsInfo> model, GeoServerApplication application) {

@@ -125,10 +125,6 @@ public class RulesBuilder {
     /**
      * Generate a List of rules using equal interval classification Sets up only filter not
      * symbolizer
-     *
-     * @param features
-     * @param property
-     * @param classNumber
      */
     public List<Rule> equalIntervalClassification(
             FeatureCollection features,
@@ -144,9 +140,6 @@ public class RulesBuilder {
     /**
      * Generate a List of rules using unique interval classification Sets up only filter not
      * symbolizer
-     *
-     * @param features
-     * @param property
      */
     public List<Rule> uniqueIntervalClassification(
             FeatureCollection features,
@@ -173,10 +166,6 @@ public class RulesBuilder {
     /**
      * Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not
      * symbolizer
-     *
-     * @param features
-     * @param property
-     * @param classNumber
      */
     public List<Rule> jenksClassification(
             FeatureCollection features,
@@ -190,10 +179,6 @@ public class RulesBuilder {
 
     /**
      * Generate a List of rules using Equal Area classification. Sets up only filter not symbolizer.
-     *
-     * @param features
-     * @param property
-     * @param classNumber
      */
     public List<Rule> equalAreaClassification(
             FeatureCollection features,
@@ -206,13 +191,7 @@ public class RulesBuilder {
                 features, property, propertyType, classNumber, open, normalize, "EqualArea");
     }
 
-    /**
-     * Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor
-     *
-     * @param rules
-     * @param fillRamp
-     * @param reverseColors
-     */
+    /** Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor */
     public void polygonStyle(List<Rule> rules, ColorRamp fillRamp, boolean reverseColors) {
 
         Iterator<Rule> it;
@@ -250,12 +229,7 @@ public class RulesBuilder {
         }
     }
 
-    /**
-     * Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor
-     *
-     * @param rules
-     * @param ramp
-     */
+    /** Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor */
     public void pointStyle(List<Rule> rules, ColorRamp fillRamp, boolean reverseColors) {
 
         Iterator<Rule> it;
@@ -299,13 +273,7 @@ public class RulesBuilder {
         }
     }
 
-    /**
-     * Generate Line Symbolyzer for each rule in list Stroke color is choose from rampcolor
-     *
-     * @param rules
-     * @param fillRamp
-     * @param reverseColors
-     */
+    /** Generate Line Symbolyzer for each rule in list Stroke color is choose from rampcolor */
     public void lineStyle(List<Rule> rules, ColorRamp fillRamp, boolean reverseColors) {
 
         Iterator<Rule> it;
@@ -339,12 +307,7 @@ public class RulesBuilder {
         return this.SF;
     }
 
-    /**
-     * Generate Rules from Rangedclassifier groups build a List of rules
-     *
-     * @param groups
-     * @param property
-     */
+    /** Generate Rules from Rangedclassifier groups build a List of rules */
     public List<Rule> openRangedRules(
             RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
@@ -409,12 +372,7 @@ public class RulesBuilder {
         return property;
     }
 
-    /**
-     * Generate Rules from Rangedclassifier groups build a List of rules
-     *
-     * @param groups
-     * @param property
-     */
+    /** Generate Rules from Rangedclassifier groups build a List of rules */
     public List<Rule> closedRangedRules(
             RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
@@ -462,12 +420,7 @@ public class RulesBuilder {
         return null;
     }
 
-    /**
-     * Generate Rules from Explicit classifier groups build a List of rules
-     *
-     * @param groups
-     * @param property
-     */
+    /** Generate Rules from Explicit classifier groups build a List of rules */
     public List<Rule> explicitRules(
             ExplicitClassifier groups, String property, Class<?> propertyType) {
 

@@ -507,11 +507,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return replacement;
     }
 
-    /**
-     * Gathers the most specific CatalogInfo sub-interface from the specified class object
-     *
-     * @param class1
-     */
+    /** Gathers the most specific CatalogInfo sub-interface from the specified class object */
     private Class getCatalogInfoInterface(Class<? extends CatalogInfo> clazz) {
         Class result = CatalogInfo.class;
         for (Class c : clazz.getInterfaces()) {
@@ -564,9 +560,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
      *
      * <p>This will not recursively re-wrap properties that hold other ModificationProxies. If that
      * is needed, it is up to innerWrap do this itself.
-     *
-     * @param object
-     * @param innerWrap
      */
     @SuppressWarnings("unchecked")
     public static <T> T rewrap(T object, UnaryOperator<T> innerWrap, Class<T> clazz) {

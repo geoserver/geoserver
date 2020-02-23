@@ -142,10 +142,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     @Override
     public abstract PasswordEncodingType getEncodingType();
 
-    /**
-     * @param encPass
-     * @return true if this encoder has encoded encPass
-     */
+    /** @return true if this encoder has encoded encPass */
     public boolean isResponsibleForEncoding(String encPass) {
         if (encPass == null) return false;
         return encPass.startsWith(getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER);

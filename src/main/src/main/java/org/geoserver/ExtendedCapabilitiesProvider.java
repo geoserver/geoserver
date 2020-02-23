@@ -31,8 +31,6 @@ public interface ExtendedCapabilitiesProvider<Info extends ServiceInfo, Request>
      * server the location can be a relative path such as <tt>foo/foo.xsd</tt>. In the latter case
      * the path will be appended to the base url from which the capabilities document is being
      * requested from.
-     *
-     * @param schemaBaseURL
      */
     String[] getSchemaLocations(String schemaBaseURL);
 
@@ -77,11 +75,7 @@ public interface ExtendedCapabilitiesProvider<Info extends ServiceInfo, Request>
          */
         void chars(String text);
 
-        /**
-         * Ends an element creating a closing tag.
-         *
-         * @param element
-         */
+        /** Ends an element creating a closing tag. */
         void end(String element);
     }
 }

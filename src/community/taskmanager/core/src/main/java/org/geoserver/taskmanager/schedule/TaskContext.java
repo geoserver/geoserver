@@ -20,10 +20,7 @@ public interface TaskContext {
     /** @return the batch context, null if this is a clean-up */
     BatchContext getBatchContext();
 
-    /**
-     * @return the parameter values, lazy loaded from task and configuration.
-     * @throws TaskException
-     */
+    /** @return the parameter values, lazy loaded from task and configuration. */
     Map<String, Object> getParameterValues() throws TaskException;
 
     /**

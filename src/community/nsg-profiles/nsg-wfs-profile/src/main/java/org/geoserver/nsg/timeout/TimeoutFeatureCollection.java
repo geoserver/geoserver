@@ -35,9 +35,6 @@ class TimeoutFeatureCollection<T extends FeatureType, F extends Feature>
      * nature if possible
      *
      * @param <R>
-     * @param timeoutVerifier
-     * @param fc
-     * @return
      */
     public static FeatureCollection wrap(TimeoutVerifier timeoutVerifier, FeatureCollection fc) {
         if (fc instanceof SimpleFeatureCollection) {

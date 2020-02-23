@@ -21,12 +21,7 @@ public class FixedValueStrategyImpl extends AbstractDefaultValueSelectionStrateg
     private Object value;
     private String fixedCapabilitiesValue;
 
-    /**
-     * Constructs a
-     *
-     * @param value
-     * @param fixedCapabilitiesValue
-     */
+    /** Constructs a */
     public FixedValueStrategyImpl(Object value) {
         this.value = value;
     }

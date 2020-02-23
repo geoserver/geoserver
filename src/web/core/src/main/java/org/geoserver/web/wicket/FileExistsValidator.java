@@ -38,8 +38,6 @@ public class FileExistsValidator implements IValidator<String> {
     /**
      * If <code>allowRemoveUrl</code> is true this validator allows the file to be either local (no
      * URI scheme, or file URI scheme) or a remote
-     *
-     * @param allowRemoteUrl
      */
     public FileExistsValidator(boolean allowRemoteUrl) {
         if (allowRemoteUrl) {

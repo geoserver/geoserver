@@ -89,11 +89,7 @@ public class LiveCasData extends LiveSystemTestData {
         this.keyStoreFile = keyStoreFile;
     }
 
-    /**
-     * Looks up the fixture file in the home directory provided that the
-     *
-     * @param fixtureId
-     */
+    /** Looks up the fixture file in the home directory provided that the */
     private File lookupFixture(String fixtureId) {
         // first of all, make sure the fixture was not disabled using a system
         // variable
@@ -179,8 +175,6 @@ public class LiveCasData extends LiveSystemTestData {
     /**
      * Permanently disable this test logging the specificed warning message (the reason why the test
      * is being disabled)
-     *
-     * @param warning
      */
     private void disableTest(final String warning) {
         LOGGER.warning(warning);

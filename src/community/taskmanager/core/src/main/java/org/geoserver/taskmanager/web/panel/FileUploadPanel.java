@@ -59,7 +59,6 @@ public class FileUploadPanel extends Panel {
      *
      * @param id Component name
      * @param fileNameModel the model that will contain the name of the file.
-     * @param fileService
      */
     public FileUploadPanel(String id, IModel<String> fileNameModel, String fileService) {
 
@@ -208,12 +207,7 @@ public class FileUploadPanel extends Panel {
         }
     }
 
-    /**
-     * . Create the 'add new folder' button.
-     *
-     * @param folderChoice
-     * @return
-     */
+    /** . Create the 'add new folder' button. */
     protected AjaxSubmitLink createAddFolderButton(DropDownChoice<String> folderChoice) {
         return new AjaxSubmitLink("addNew") {
 

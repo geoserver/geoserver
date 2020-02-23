@@ -312,12 +312,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         return executeBuffer;
     }
 
-    /**
-     * Validates a document against the
-     *
-     * @param dom
-     * @param configuration
-     */
+    /** Validates a document against the */
     protected void checkValidationErrors(Document dom) throws Exception {
         Parser p = new Parser(new WPSConfiguration());
         p.setValidating(true);

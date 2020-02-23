@@ -5,7 +5,6 @@
  */
 package org.geoserver.test.onlineTest.support;
 
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +95,6 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
      * and tests the connection using {@link #isOnline()}.
      *
      * @return true if fixture is available for use
-     * @throws FileNotFoundException
      */
     protected boolean checkAvailable() throws Exception {
 

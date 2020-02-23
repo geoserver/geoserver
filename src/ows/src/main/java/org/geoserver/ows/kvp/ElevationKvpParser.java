@@ -35,11 +35,7 @@ public class ElevationKvpParser extends KvpParser {
         return parser.parse(value);
     }
 
-    /**
-     * Allows subclasses to customize the {@link ElevationParser} used in {@link #parse(String)}
-     *
-     * @return
-     */
+    /** Allows subclasses to customize the {@link ElevationParser} used in {@link #parse(String)} */
     protected ElevationParser getElevationParser() {
         return parser;
     }

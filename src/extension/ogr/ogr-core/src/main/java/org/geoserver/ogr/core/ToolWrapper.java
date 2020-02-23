@@ -49,8 +49,6 @@ public interface ToolWrapper {
      * @param format the format descriptor
      * @param crs the coordinate reference system of the output
      * @return the output file
-     * @throws IOException
-     * @throws InterruptedException
      */
     public File convert(
             File inputData,

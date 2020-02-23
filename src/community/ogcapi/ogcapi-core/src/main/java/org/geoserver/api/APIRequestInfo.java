@@ -41,8 +41,6 @@ public class APIRequestInfo {
 
     /**
      * Constructs a {@link APIRequestInfo} object, generating content based on the passed request.
-     *
-     * @param request
      */
     public APIRequestInfo(
             HttpServletRequest request, HttpServletResponse response, APIDispatcher dispatcher) {
@@ -75,11 +73,7 @@ public class APIRequestInfo {
         return ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.SERVICE);
     }
 
-    /**
-     * Returns the APIRequestInfo from the current {@link RequestContextHolder}
-     *
-     * @return
-     */
+    /** Returns the APIRequestInfo from the current {@link RequestContextHolder} */
     public static APIRequestInfo get() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) return null;
@@ -91,11 +85,7 @@ public class APIRequestInfo {
         return queryMap;
     }
 
-    /**
-     * Sets the provided APIRequestInfo into the {@link RequestContextHolder}
-     *
-     * @param requestInfo
-     */
+    /** Sets the provided APIRequestInfo into the {@link RequestContextHolder} */
     static void set(APIRequestInfo requestInfo) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
@@ -108,8 +98,6 @@ public class APIRequestInfo {
     /**
      * Returns the requested media types (the resolver will fill in defaults in case none was
      * provided in the "f" parameter or in the Accept header
-     *
-     * @return
      */
     public List<MediaType> getRequestedMediaTypes() {
         return requestedMediaTypes;
@@ -119,11 +107,7 @@ public class APIRequestInfo {
         this.requestedMediaTypes = requestedMediaTypes;
     }
 
-    /**
-     * Returns the message converters available in the dispatcher (as a read only collection)
-     *
-     * @return
-     */
+    /** Returns the message converters available in the dispatcher (as a read only collection) */
     public List<HttpMessageConverter<?>> getConverters() {
         return dispatcher.getConverters();
     }
@@ -132,22 +116,13 @@ public class APIRequestInfo {
         return dispatcher.getProducibleMediaTypes(responseType, addHTML);
     }
 
-    /**
-     * Returns true if no indication was given as to what media type is to be returned
-     *
-     * @return
-     */
+    /** Returns true if no indication was given as to what media type is to be returned */
     public boolean isAnyMediaTypeAccepted() {
         return requestedMediaTypes == null
                 || ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(requestedMediaTypes);
     }
 
-    /**
-     * Returns true if the given format has been requested
-     *
-     * @param mediaType
-     * @return
-     */
+    /** Returns true if the given format has been requested */
     public boolean isFormatRequested(MediaType mediaType, MediaType defaultMediaType) {
         if (requestedMediaTypes == null) {
             return false;

@@ -57,11 +57,7 @@ public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
         }
     }
 
-    /**
-     * Adds the parameters found in the sql definition
-     *
-     * @param sql
-     */
+    /** Adds the parameters found in the sql definition */
     public void refreshFromSql(String sql) {
         Pattern p = Pattern.compile("%[\\w\\d\\s]+%");
         Matcher matcher = p.matcher(sql);

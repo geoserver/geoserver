@@ -22,11 +22,7 @@ import org.geoserver.security.validation.PasswordPolicyException;
 public class LockingUserGroupStore extends LockingUserGroupService
         implements GeoServerUserGroupStore {
 
-    /**
-     * Constructor for the locking wrapper
-     *
-     * @param store
-     */
+    /** Constructor for the locking wrapper */
     public LockingUserGroupStore(GeoServerUserGroupStore store) {
         super(store);
     }

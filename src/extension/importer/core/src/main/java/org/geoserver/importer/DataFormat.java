@@ -132,8 +132,6 @@ public abstract class DataFormat implements Serializable {
     /**
      * Returns a File from the ImportData, assuming the import data itself is a FileData (a class
      * cast exception will happen otherwise)
-     *
-     * @param data
      */
     protected File getFileFromData(ImportData data) {
         assert data instanceof FileData;

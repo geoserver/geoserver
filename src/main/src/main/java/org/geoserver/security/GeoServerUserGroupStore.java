@@ -18,18 +18,10 @@ import org.geoserver.security.validation.PasswordPolicyException;
  */
 public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
 
-    /**
-     * Initializes itself from a service for future store modifications concerning this service
-     *
-     * @param service
-     */
+    /** Initializes itself from a service for future store modifications concerning this service */
     void initializeFromService(GeoServerUserGroupService service) throws IOException;
 
-    /**
-     * discards all entries
-     *
-     * @throws IOException
-     */
+    /** discards all entries */
     void clear() throws IOException;
 
     /**
@@ -37,8 +29,6 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      *
      * <p>The method must use #getPasswordValidatorName() to validate the raw password and
      * #getPasswordEncoderName() to encode the password.
-     *
-     * @param user
      */
     void addUser(GeoServerUser user) throws IOException, PasswordPolicyException;
 
@@ -52,37 +42,19 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      * #getPasswordValidatorName() to validate the raw password and #getPasswordEncoderName() to
      *
      * <p>encode the password.
-     *
-     * @param user
      */
     void updateUser(GeoServerUser user) throws IOException, PasswordPolicyException;
 
-    /**
-     * Removes the specified user
-     *
-     * @param user
-     */
+    /** Removes the specified user */
     boolean removeUser(GeoServerUser user) throws IOException;
 
-    /**
-     * Adds a group
-     *
-     * @param group
-     */
+    /** Adds a group */
     void addGroup(GeoServerUserGroup group) throws IOException;
 
-    /**
-     * Updates a group
-     *
-     * @param group
-     */
+    /** Updates a group */
     void updateGroup(GeoServerUserGroup group) throws IOException;
 
-    /**
-     * Removes the specified group.
-     *
-     * @param group
-     */
+    /** Removes the specified group. */
     boolean removeGroup(GeoServerUserGroup group) throws IOException;
 
     /**
@@ -91,20 +63,10 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      */
     void store() throws IOException;
 
-    /**
-     * Associates a user with a group, on success
-     *
-     * @param user
-     * @param group
-     */
+    /** Associates a user with a group, on success */
     void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException;
 
-    /**
-     * Disassociates a user from a group, on success
-     *
-     * @param user
-     * @param group
-     */
+    /** Disassociates a user from a group, on success */
     void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException;
 
     /**

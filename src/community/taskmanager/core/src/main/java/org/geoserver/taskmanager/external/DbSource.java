@@ -22,7 +22,6 @@ public interface DbSource extends Secured {
      * Get a data source for this database.
      *
      * @return the data source.
-     * @throws SQLException
      */
     DataSource getDataSource() throws SQLException;
 
@@ -42,25 +41,13 @@ public interface DbSource extends Secured {
      */
     Map<String, Serializable> getParameters();
 
-    /**
-     * schema
-     *
-     * @return
-     */
+    /** schema */
     String getSchema();
 
-    /**
-     * @param encoder
-     * @param origParameters
-     * @return
-     */
+    /** */
     GSAbstractStoreEncoder postProcess(GSAbstractStoreEncoder encoder, DbTable table);
 
-    /**
-     * The dialect specific actions for taskmanager.
-     *
-     * @return
-     */
+    /** The dialect specific actions for taskmanager. */
     Dialect getDialect();
 
     /*

@@ -21,48 +21,26 @@ public interface OSEOInfo extends ServiceInfo {
     /** Version 1.0.0 */
     Version VERSION_1_0_0 = new Version("1.0.0");
 
-    /**
-     * Returns the identifier of the OpenSearchAccess
-     *
-     * @return
-     */
+    /** Returns the identifier of the OpenSearchAccess */
     String getOpenSearchAccessStoreId();
 
     void setOpenSearchAccessStoreId(String openSearchAccessStoreId);
 
-    /**
-     * Returns the maximum amount of records returned in a search
-     *
-     * @return
-     */
+    /** Returns the maximum amount of records returned in a search */
     int getMaximumRecordsPerPage();
 
-    /**
-     * Sets the maximum amount of records returned in a search
-     *
-     * @param maximumRecords
-     */
+    /** Sets the maximum amount of records returned in a search */
     void setMaximumRecordsPerPage(int maximumRecords);
 
-    /**
-     * Returns the default records per page when no "count" parameter is provided
-     *
-     * @return
-     */
+    /** Returns the default records per page when no "count" parameter is provided */
     int getRecordsPerPage();
 
-    /**
-     * Sets the records per page, when no record is provided
-     *
-     * @param recordsPerPage
-     */
+    /** Sets the records per page, when no record is provided */
     void setRecordsPerPage(int recordsPerPage);
 
     /**
      * Live list of configured product classes. If none is configured, then a clone of {@link
      * ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
-     *
-     * @return
      */
     List<ProductClass> getProductClasses();
 }

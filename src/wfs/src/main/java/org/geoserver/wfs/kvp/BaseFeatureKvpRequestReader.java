@@ -282,9 +282,6 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
 
     /**
      * Given a set of keys, this method will ensure that no two keys are specified at the same time
-     *
-     * @param kvp
-     * @param keys
      */
     protected void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
         for (int i = 0; i < keys.length; i++) {

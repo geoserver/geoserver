@@ -423,12 +423,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         return removed;
     }
 
-    /**
-     * To allow test cases to set a shorter delay for testing.
-     *
-     * @param delay
-     * @param unit
-     */
+    /** To allow test cases to set a shorter delay for testing. */
     public void schedule(long delay, TimeUnit unit) {
         this.delay = delay;
         this.unit = unit;

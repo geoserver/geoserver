@@ -16,11 +16,7 @@ import org.w3c.dom.NodeList;
 /** Test the setting for ignoring max features for hit counts */
 public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
 
-    /**
-     * Check that max features is ignored when the hitsIgnoreMaxFeatures flag is active
-     *
-     * @throws Exception
-     */
+    /** Check that max features is ignored when the hitsIgnoreMaxFeatures flag is active */
     @Test
     public void testHitsIgnoreMaxFeaturesEnabled() throws Exception {
         WFSInfo wfs = getWFS();
@@ -64,11 +60,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         assertEquals(1, featureMembers.getLength());
     }
 
-    /**
-     * Check that max features is respected when the hitsIgnoreMaxFeatures flag is active
-     *
-     * @throws Exception
-     */
+    /** Check that max features is respected when the hitsIgnoreMaxFeatures flag is active */
     @Test
     public void testHitsIgnoreMaxFeaturesDisabled() throws Exception {
         WFSInfo wfs = getWFS();

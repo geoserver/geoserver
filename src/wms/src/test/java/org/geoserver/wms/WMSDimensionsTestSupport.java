@@ -149,13 +149,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, catalog);
     }
 
-    /**
-     * Checks two dates are the same, within a given tolerance.
-     *
-     * @param d1
-     * @param d2
-     * @param tolerance
-     */
+    /** Checks two dates are the same, within a given tolerance. */
     protected static void assertDateEquals(java.util.Date d1, java.util.Date d2, long tolerance) {
         long difference = Math.abs(d1.getTime() - d2.getTime());
         assertTrue(difference <= tolerance);
@@ -195,11 +189,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         getCatalog().save(info);
     }
 
-    /**
-     * Checks that the last HTTP response had the expected number of "Warning" headers
-     *
-     * @param expectedValue
-     */
+    /** Checks that the last HTTP response had the expected number of "Warning" headers */
     protected void assertWarningCount(int expectedValue) {
         MockHttpServletResponse response = getLastResponse();
         List<Object> values = response.getHeaderValues(HttpHeaders.WARNING);
@@ -211,9 +201,6 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     /**
      * Asserts that the specified nearest value has been used and check the corresponding HTTP
      * warning
-     *
-     * @param layerId
-     * @param expectedValue
      */
     protected void assertNearestTimeWarning(String layerId, String expectedValue) {
         String expected =
@@ -237,9 +224,6 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     /**
      * Asserts that the specified nearest value has been used and check the corresponding HTTP
      * warning
-     *
-     * @param layerId
-     * @param expectedValue
      */
     protected void assertNoNearestWarning(String layerId, String dimension) {
         String expected = "99 No nearest value found on " + layerId + ": " + dimension;

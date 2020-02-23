@@ -177,10 +177,6 @@ public interface LayerGroupInfo extends PublishedInfo {
      * "common" equality). This method only uses getters to fetch the fields. Could have been build
      * using EqualsBuilder and reflection, but would have been very slow and we do lots of these
      * calls on large catalogs.
-     *
-     * @param lg
-     * @param obj
-     * @return
      */
     public static boolean equals(LayerGroupInfo lg, Object obj) {
         if (lg == obj) return true;
@@ -257,10 +253,6 @@ public interface LayerGroupInfo extends PublishedInfo {
      * Styles, especially when using defaults, can be represented in too many ways (null, list of
      * nulls, and so on). This returns a single canonical representation for those cases, trying not
      * to allocate new objects.
-     *
-     * @param styles
-     * @param layers
-     * @return
      */
     static List<StyleInfo> canonicalStyles(List<StyleInfo> styles, List<PublishedInfo> layers) {
         if (styles == null || styles.isEmpty()) {

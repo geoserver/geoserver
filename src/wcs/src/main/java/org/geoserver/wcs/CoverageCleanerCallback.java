@@ -44,11 +44,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         clean();
     }
 
-    /**
-     * Mark coverage for cleaning.
-     *
-     * @param coverages
-     */
+    /** Mark coverage for cleaning. */
     public static void addCoverages(GridCoverage... coverages) {
         List<GridCoverage> list = COVERAGES.get();
         if (list == null) {
@@ -58,11 +54,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         list.addAll(Arrays.asList(coverages));
     }
 
-    /**
-     * Cleans up a coverage and its internal rendered image
-     *
-     * @param coverage
-     */
+    /** Cleans up a coverage and its internal rendered image */
     public static void disposeCoverage(GridCoverage coverage) {
         RenderedImage ri = coverage.getRenderedImage();
         if (coverage instanceof GridCoverage2D) {

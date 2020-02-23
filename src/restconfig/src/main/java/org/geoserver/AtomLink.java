@@ -41,11 +41,7 @@ public class AtomLink {
         return type;
     }
 
-    /**
-     * Configure x-stream for XML encoding of link
-     *
-     * @param xStream
-     */
+    /** Configure x-stream for XML encoding of link */
     public static void configureXML(XStream xStream) {
         xStream.alias("atom:link", AtomLink.class);
         xStream.useAttributeFor(AtomLink.class, "href");
@@ -54,11 +50,7 @@ public class AtomLink {
         xStream.aliasAttribute(AtomLink.class, "NAMESPACE", "xmlns:atom");
     }
 
-    /**
-     * Configure x-stream for JSON encoding of link
-     *
-     * @param xStream
-     */
+    /** Configure x-stream for JSON encoding of link */
     public static void configureJSON(XStream xStream) {
         xStream.alias("link", AtomLink.class);
         xStream.omitField(AtomLink.class, "NAMESPACE");

@@ -79,11 +79,6 @@ public abstract class Dimension {
     /**
      * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
      * count will be returned, otherwise min and max will also be returned
-     *
-     * @param features
-     * @param attribute
-     * @param expandLimit
-     * @return
      */
     protected DomainSummary getDomainSummary(
             FeatureCollection features, String attribute, int expandLimit) {
@@ -108,11 +103,6 @@ public abstract class Dimension {
     /**
      * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
      * count will be returned, otherwise min and max will also be returned
-     *
-     * @param features
-     * @param attribute
-     * @param expandLimit
-     * @return
      */
     protected DomainSummary getPagedDomainValues(
             FeatureCollection features, String attribute, int maxValues) {
@@ -120,11 +110,7 @@ public abstract class Dimension {
         return new DomainSummary(uniqueValues);
     }
 
-    /**
-     * Returns the data type of the dimension
-     *
-     * @return
-     */
+    /** Returns the data type of the dimension */
     public abstract Class getDimensionType();
 
     /**
@@ -250,8 +236,6 @@ public abstract class Dimension {
      * are large shapefile layers involved in this (computing min/max/groupby is three full data
      * scans in that case). Or have a way to figure out if a collection can optimize out a visit
      * (completely missing right now, that would be a significant API change).
-     *
-     * @return
      */
     private boolean loadDataInMemory() {
         String value = GeoServerExtensions.getProperty("WMTS_HISTOGRAM_IN_MEMORY");
@@ -291,21 +275,12 @@ public abstract class Dimension {
         return sortedResults;
     }
 
-    /**
-     * Returns the attribute name representing the dimension
-     *
-     * @return
-     */
+    /** Returns the attribute name representing the dimension */
     protected String getDimensionAttributeName() {
         return dimensionInfo.getAttribute();
     }
 
-    /**
-     * Returns the domain given a filter
-     *
-     * @param filter
-     * @return
-     */
+    /** Returns the domain given a filter */
     protected abstract FeatureCollection getDomain(Query filter);
 
     protected abstract String getDefaultValueFallbackAsString();
@@ -346,14 +321,7 @@ public abstract class Dimension {
 
     protected abstract DomainSummary getDomainSummary(Query query, int expandLimit);
 
-    /**
-     * Returns a page of domain values
-     *
-     * @param expandLimit
-     * @param query
-     * @param sortOrder
-     * @return
-     */
+    /** Returns a page of domain values */
     protected abstract DomainSummary getPagedDomainValues(
             Query query, int maxNumberOfValues, SortOrder sortOrder);
 

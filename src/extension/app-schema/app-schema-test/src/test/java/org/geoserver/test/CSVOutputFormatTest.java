@@ -185,9 +185,6 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     /**
      * Convenience to read the csv content . Copied from {@link
      * org.geoserver.wfs.response.CSVOutputFormatTest}
-     *
-     * @param csvContent
-     * @throws IOException
      */
     static List<String[]> readLines(String csvContent) throws IOException {
         CSVReader reader = new CSVReader(new StringReader(csvContent));

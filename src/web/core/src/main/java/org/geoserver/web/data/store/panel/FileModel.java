@@ -91,11 +91,7 @@ public class FileModel implements IModel<String> {
         delegate.setObject(location);
     }
 
-    /**
-     * Turns a file in canonical form if possible
-     *
-     * @param file
-     */
+    /** Turns a file in canonical form if possible */
     File canonicalize(File file) {
         try {
             return file.getCanonicalFile();

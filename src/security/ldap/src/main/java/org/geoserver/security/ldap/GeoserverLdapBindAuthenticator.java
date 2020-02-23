@@ -60,8 +60,6 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
     /**
      * If userFilter is defined we extract user data using the filter and dnPattern (if defined) to
      * transform username for authentication.
-     *
-     * @param authentication
      */
     protected DirContextOperations authenticateUsingFilter(Authentication authentication) {
         DirContextOperations user = null;

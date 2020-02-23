@@ -20,11 +20,7 @@ public class SessionController extends RestBaseController {
 
     @Autowired SessionService sessionService;
 
-    /**
-     * Get a list of Scripting Sessions
-     *
-     * @return
-     */
+    /** Get a list of Scripting Sessions */
     @GetMapping(
         path = {"/sessions", "/sessions/{language}"},
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE}
@@ -37,10 +33,8 @@ public class SessionController extends RestBaseController {
     /**
      * Get a scripting session
      *
-     * @param request
      * @param language = ext in old restlet code
      * @param id = session in old restlet code
-     * @return
      */
     @GetMapping(path = "/sessions/{language}/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void getScriptSession(
@@ -54,9 +48,7 @@ public class SessionController extends RestBaseController {
     /**
      * Create a scripting session
      *
-     * @param request
      * @param language = ext in old restlet code
-     * @return
      */
     @PostMapping(path = "/sessions/{language}", produces = MediaType.TEXT_PLAIN_VALUE)
     public void postScriptSession(
@@ -69,10 +61,8 @@ public class SessionController extends RestBaseController {
     /**
      * Run a scripting session
      *
-     * @param request
      * @param language = ext in old restlet code
      * @param id = session in old restlet code
-     * @return
      */
     @PutMapping(path = "/sessions/{language}/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
     public void putScriptSession(

@@ -47,7 +47,6 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     /**
      * Description ...
      *
-     * @param lock
      * @see
      *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
      */

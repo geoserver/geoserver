@@ -51,11 +51,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         // do nothing
     }
 
-    /**
-     * To be called at the the end of a transaction, frees the current {@link Connection}
-     *
-     * @throws SQLException
-     */
+    /** To be called at the the end of a transaction, frees the current {@link Connection} */
     protected void releaseConnection() throws SQLException {
         if (connection != null) {
             connection.close();
@@ -101,14 +97,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         // fireUserGroupChangedEvent();
     }
 
-    /**
-     * Helper method for inserting user properties
-     *
-     * @param user
-     * @param con
-     * @throws SQLException
-     * @throws IOException
-     */
+    /** Helper method for inserting user properties */
     protected void addUserProperties(GeoServerUser user, Connection con)
             throws SQLException, IOException {
         if (user.getProperties().size() == 0) return; // nothing to do
@@ -129,9 +118,6 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
 
     /**
      * validates and encodes the password. Do nothing for a not changed password of an existing user
-     *
-     * @param user
-     * @throws IOException
      */
     protected void preparePassword(GeoServerUser user) throws IOException, PasswordPolicyException {
 

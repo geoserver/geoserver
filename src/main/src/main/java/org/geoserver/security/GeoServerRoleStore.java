@@ -16,71 +16,31 @@ import org.geoserver.security.impl.GeoServerRole;
  */
 public interface GeoServerRoleStore extends GeoServerRoleService {
 
-    /**
-     * Initializes itself from a service for future store modifications concerning this service
-     *
-     * @param service
-     */
+    /** Initializes itself from a service for future store modifications concerning this service */
     void initializeFromService(GeoServerRoleService service) throws IOException;
 
-    /**
-     * discards all entries
-     *
-     * @throws IOException
-     */
+    /** discards all entries */
     void clear() throws IOException;
 
-    /**
-     * Adds a role
-     *
-     * @param role
-     */
+    /** Adds a role */
     void addRole(GeoServerRole role) throws IOException;
 
-    /**
-     * Updates a role
-     *
-     * @param role
-     */
+    /** Updates a role */
     void updateRole(GeoServerRole role) throws IOException;
 
-    /**
-     * Removes the specified {@link GeoServerRole} role
-     *
-     * @param role
-     */
+    /** Removes the specified {@link GeoServerRole} role */
     boolean removeRole(GeoServerRole role) throws IOException;
 
-    /**
-     * Associates a role with a group.
-     *
-     * @param role
-     * @param groupname
-     */
+    /** Associates a role with a group. */
     void associateRoleToGroup(GeoServerRole role, String groupname) throws IOException;
 
-    /**
-     * Disassociates a role from a group.
-     *
-     * @param role
-     * @param groupname
-     */
+    /** Disassociates a role from a group. */
     void disAssociateRoleFromGroup(GeoServerRole role, String groupname) throws IOException;
 
-    /**
-     * Associates a role with a user,
-     *
-     * @param role
-     * @param username
-     */
+    /** Associates a role with a user, */
     void associateRoleToUser(GeoServerRole role, String username) throws IOException;
 
-    /**
-     * Disassociates a role from a user.
-     *
-     * @param role
-     * @param groupname
-     */
+    /** Disassociates a role from a user. */
     void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException;
 
     /**
@@ -108,7 +68,6 @@ public interface GeoServerRoleStore extends GeoServerRoleService {
      *               " is not a valid parent for " + role.getAuthority());
      * </code>
      *
-     * @param role
      * @param parentRole may be null to remove a parent
      */
     void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException;

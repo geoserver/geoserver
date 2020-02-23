@@ -65,8 +65,6 @@ public class DDSMapResponse extends RenderedImageMapResponse {
     /**
      * Covert RenderedImage to BufferedImage with correct colour model (lifted from
      * http://www.jguru.com/faq/view.jsp?EID=114602)
-     *
-     * @param img
      */
     protected BufferedImage convertRenderedImage(RenderedImage img) {
         if (img instanceof BufferedImage) {

@@ -36,9 +36,6 @@ public class XMLValidator {
     /**
      * Validates a User/Group DOM against the XMLSchema. The schema is determined by the version of
      * the User/Group DOM
-     *
-     * @param doc
-     * @throws IOException
      */
     public void validateUserGroupRegistry(Document doc) throws IOException {
         if (versionMapUR == null) initializeSchemataUR();
@@ -61,9 +58,6 @@ public class XMLValidator {
     /**
      * Validates a Role DOM against the XMLSchema. The schema is determined by the version of the
      * Role DOM
-     *
-     * @param doc
-     * @throws IOException
      */
     public void validateRoleRegistry(Document doc) throws IOException {
         if (versionMapRR == null) initializeSchemataRR();
@@ -83,11 +77,7 @@ public class XMLValidator {
         }
     }
 
-    /**
-     * Lazy initialization of User/Group schemata
-     *
-     * @throws IOException
-     */
+    /** Lazy initialization of User/Group schemata */
     protected void initializeSchemataUR() throws IOException {
         synchronized (lockUR) {
             if (versionMapUR != null) return; // another tread was faster
@@ -106,11 +96,7 @@ public class XMLValidator {
         }
     }
 
-    /**
-     * Lazy initialization of Role schemata
-     *
-     * @throws IOException
-     */
+    /** Lazy initialization of Role schemata */
     protected void initializeSchemataRR() throws IOException {
 
         synchronized (lockRR) {

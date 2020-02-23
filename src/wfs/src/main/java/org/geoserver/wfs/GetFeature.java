@@ -220,11 +220,7 @@ public class GetFeature {
         return wfs;
     }
 
-    /**
-     * Sets the filter factory to use to create filters.
-     *
-     * @param filterFactory
-     */
+    /** Sets the filter factory to use to create filters. */
     public void setFilterFactory(FilterFactory2 filterFactory) {
         this.filterFactory = filterFactory;
     }
@@ -913,9 +909,6 @@ public class GetFeature {
     /**
      * Expands the stored queries, returns true if a single GetFeatureById stored query was found
      * (as a different GML encoding is required in that case)
-     *
-     * @param request
-     * @return
      */
     protected boolean processStoredQueries(GetFeatureRequest request) {
         List queries = request.getAdaptedQueries();
@@ -924,15 +917,7 @@ public class GetFeature {
         return queries.size() == 1 && foundGetFeatureById;
     }
 
-    /**
-     * Replaces stored queries with actual ad-hoc queries
-     *
-     * @param request
-     * @param queries
-     * @param foundGetFeatureById
-     * @param storedQueryProvider
-     * @return
-     */
+    /** Replaces stored queries with actual ad-hoc queries */
     static boolean expandStoredQueries(
             RequestObject request, List queries, StoredQueryProvider storedQueryProvider) {
         boolean foundGetFeatureById = false;
@@ -1200,10 +1185,6 @@ public class GetFeature {
     /**
      * Allows subclasses to poke with the feature collection extraction. The default behavior
      * attempts to wrap the feature collectio into a {@link FeatureSizeFeatureCollection}.
-     *
-     * @param source
-     * @param gtQuery
-     * @throws IOException
      */
     protected FeatureCollection<? extends FeatureType, ? extends Feature> getFeatures(
             Object request,

@@ -98,8 +98,6 @@ public class WMSExtensions {
     /**
      * Looks up all the {@link RenderedImageMapResponse} registered in the Spring application
      * context
-     *
-     * @param applicationContext
      */
     public static Collection<RenderedImageMapResponse> findMapResponses(
             ApplicationContext applicationContext) {

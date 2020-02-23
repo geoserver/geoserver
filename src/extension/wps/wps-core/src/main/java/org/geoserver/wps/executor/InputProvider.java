@@ -15,11 +15,7 @@ import org.opengis.util.ProgressListener;
  */
 interface InputProvider {
 
-    /**
-     * Returns the value associated with this provider
-     *
-     * @param subListener
-     */
+    /** Returns the value associated with this provider */
     public Object getValue(ProgressListener subListener) throws Exception;
 
     /** Returns the input id for this value */

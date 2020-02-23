@@ -20,11 +20,7 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
     static Converter CONVERTER =
             new JAIToolsRangeConverterFactory().createConverter(String.class, Range.class, null);
 
-    /**
-     * Parses a single range from a string
-     *
-     * @param sRange
-     */
+    /** Parses a single range from a string */
     public static Range<Double> parseRange(String sRange) {
         try {
             Range<Double> result = CONVERTER.convert(sRange, Range.class);

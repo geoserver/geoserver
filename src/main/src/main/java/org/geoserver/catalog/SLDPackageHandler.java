@@ -75,12 +75,7 @@ public class SLDPackageHandler extends StyleHandler {
         }
     }
 
-    /**
-     * Unzips a SLD package to a temporal folder, returning the SLD file path.
-     *
-     * @param input
-     * @throws IOException
-     */
+    /** Unzips a SLD package to a temporal folder, returning the SLD file path. */
     private File unzipSldPackage(Object input) throws IOException {
         File myTempDir = Files.createTempDir();
 

@@ -251,12 +251,7 @@ public class TreeView<T> extends Panel {
 
     // ------------------- internal methods/classes
 
-    /**
-     * Select the node without automatic expansion but with event dispatching.
-     *
-     * @param selectedNode
-     * @param target
-     */
+    /** Select the node without automatic expansion but with event dispatching. */
     protected void setSelectedNodesInternal(
             Collection<TreeNode<T>> selectedNodes, AjaxRequestTarget target) {
         selectedNodeModel.setObject(selectedNodes);
@@ -271,9 +266,6 @@ public class TreeView<T> extends Panel {
      * Get the view for a node, if there is not yet a view for this node, it will return the nearest
      * parent node. Refreshing this view refreshes all child nodes as well. It is efficient to only
      * refresh the necessary node(s) on ajax requests, rather than the whole tree.
-     *
-     * @param node
-     * @return
      */
     protected TreeNodeView getNearestViewInternal(TreeNode<T> node) {
         TreeNode<T> parent = node.getParent();
@@ -291,11 +283,7 @@ public class TreeView<T> extends Panel {
         }
     }
 
-    /**
-     * Get the root view.
-     *
-     * @return
-     */
+    /** Get the root view. */
     @SuppressWarnings("unchecked")
     protected TreeNodeView getRoot() {
         return (TreeNodeView) get("rootView").get(getRootNode().getUniqueId());

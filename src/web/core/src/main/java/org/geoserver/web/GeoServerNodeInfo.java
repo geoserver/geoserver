@@ -35,8 +35,6 @@ interface GeoServerNodeInfo {
      * also any other attribute. Implementors are suggested to hide the id element unless an
      * administrator is logged in, but specific implementations can use different policies. See
      * {@link DefaultGeoServerNodeInfo} for the default implementation of the visibility logic
-     *
-     * @param parent
      */
     void customize(WebMarkupContainer nodeInfoContainer);
 }

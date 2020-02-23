@@ -60,11 +60,6 @@ public class KMLFeatureAccessor {
     /**
      * Loads the feature collection based on the current styling and the scale denominator. If no
      * feature is going to be returned a null feature collection will be returned instead
-     *
-     * @param layer
-     * @param mapContent
-     * @param wms
-     * @param scaleDenominator
      */
     public SimpleFeatureCollection loadFeatureCollection(
             Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
@@ -90,14 +85,7 @@ public class KMLFeatureAccessor {
         return features;
     }
 
-    /**
-     * Counts how many features will be returned for the specified layer in the current request
-     *
-     * @param layer
-     * @param mapContent
-     * @param wms
-     * @param scaleDenominator
-     */
+    /** Counts how many features will be returned for the specified layer in the current request */
     public int getFeatureCount(
             Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
             throws Exception {
@@ -115,14 +103,6 @@ public class KMLFeatureAccessor {
     /**
      * Builds the Query object that will return the features for the specified layer and scale
      * denominator, based also on the current WMS configuration
-     *
-     * @param layer
-     * @param mapContent
-     * @param wms
-     * @param scaleDenominator
-     * @param schema
-     * @throws TransformException
-     * @throws FactoryException
      */
     private Query getFeaturesQuery(
             Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
@@ -297,11 +277,7 @@ public class KMLFeatureAccessor {
         }
     }
 
-    /**
-     * Joins the provided filters in a single one by and-ing them (and then, simplifying them)
-     *
-     * @param filters
-     */
+    /** Joins the provided filters in a single one by and-ing them (and then, simplifying them) */
     private Filter joinFilters(Filter... filters) {
         Filter result = null;
         if (filters == null || filters.length == 0) {

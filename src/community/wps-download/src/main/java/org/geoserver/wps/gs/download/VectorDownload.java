@@ -86,7 +86,6 @@ class VectorDownload {
      * @param clip whether or not to clip the resulting data (useless for the moment)
      * @param filter the {@link Filter} to load the data
      * @param targetCRS the reproject {@link CoordinateReferenceSystem}
-     * @param progressListener
      * @return a file, given the provided mime-type.
      */
     public Resource execute(

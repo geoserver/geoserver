@@ -246,12 +246,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
                 "gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString");
     }
 
-    /**
-     * Helper method to add Mapping in to Queryables
-     *
-     * @param key
-     * @param path
-     */
+    /** Helper method to add Mapping in to Queryables */
     protected static void addQueryableMapping(String key, String path) {
         QUERYABLE_MAPPING.put(key, ff.property(path, NAMESPACES));
     }

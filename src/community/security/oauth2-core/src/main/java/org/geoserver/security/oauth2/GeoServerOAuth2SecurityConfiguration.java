@@ -66,11 +66,7 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
         return details;
     }
 
-    /**
-     * Returns the details id for the AuthorizationCodeResourceDetails.
-     *
-     * @return
-     */
+    /** Returns the details id for the AuthorizationCodeResourceDetails. */
     protected String getDetailsId() {
         return "oauth2-client";
     }

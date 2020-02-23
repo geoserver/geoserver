@@ -121,20 +121,12 @@ public class GeoTiffWriterHelper {
         return wparams;
     }
 
-    /**
-     * Returns the write parameters, allowing their customization
-     *
-     * @return
-     */
+    /** Returns the write parameters, allowing their customization */
     public GeoTiffWriteParams getImageIoWriteParams() {
         return imageIoWriteParams;
     }
 
-    /**
-     * Returns the GeoTools grid writer params, allowing their customization
-     *
-     * @return
-     */
+    /** Returns the GeoTools grid writer params, allowing their customization */
     public ParameterValueGroup getGeotoolsWriteParams() {
         return geotoolsWriteParams;
     }
@@ -200,11 +192,7 @@ public class GeoTiffWriterHelper {
         }
     }
 
-    /**
-     * Returns true if the coverage has not been processed in any way since it has been read
-     *
-     * @param coverage
-     */
+    /** Returns true if the coverage has not been processed in any way since it has been read */
     private boolean isUnprocessed(GridCoverage2D coverage) {
         RenderedImage ri = coverage.getRenderedImage();
         if (ri instanceof RenderedOp) {

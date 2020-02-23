@@ -67,13 +67,7 @@ public class MasterPasswordChangeValidator extends AbstractSecurityValidator {
         }
     }
 
-    /**
-     * Checks the {@link MasterPasswordChangeRequest} object
-     *
-     * @param request
-     * @throws MasterPasswordChangeException
-     * @throws PasswordPolicyException
-     */
+    /** Checks the {@link MasterPasswordChangeRequest} object */
     public void validateChangeRequest(MasterPasswordChangeRequest request)
             throws MasterPasswordChangeException, PasswordPolicyException {
 

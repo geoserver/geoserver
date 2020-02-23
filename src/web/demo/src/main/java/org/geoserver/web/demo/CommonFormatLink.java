@@ -29,7 +29,6 @@ public abstract class CommonFormatLink extends ToolLinkExternalInfo
      * Returns an ExternalLink object that is used to link to the layer preview.
      *
      * @param layer the PreviewLayer object for which the preview link is returned
-     * @return
      */
     public abstract ExternalLink getFormatLink(PreviewLayer layer);
 

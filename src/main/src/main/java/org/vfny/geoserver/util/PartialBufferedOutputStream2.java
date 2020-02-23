@@ -62,11 +62,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     /** Set to true when close() is called to prevent further writing */
     private boolean closed = false;
 
-    /**
-     * Constructor Defaults buffer size to 50KB
-     *
-     * @param response
-     */
+    /** Constructor Defaults buffer size to 50KB */
     public PartialBufferedOutputStream2(HttpServletResponse response) throws IOException {
         this(response, DEFAULT_BUFFER_SIZE); // default to 50KB
     }
@@ -210,8 +206,6 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * real stream. This is why we have a buffer. Abort will succeed if the buffer is not full yet.
      * If that is true, then the buffer is cleared and closed. It does NOT close the response's
      * OutputStream
-     *
-     * @throws IOException
      */
     public boolean abort() throws IOException {
         if ((out_buffer != null) && (out_buffer.size() < BUFFER_SIZE)) {

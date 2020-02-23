@@ -540,12 +540,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals(0, pixel[2]);
     }
 
-    /**
-     * Parses teh TIFF contained in the response as a {@link RenderedImage}
-     *
-     * @param response
-     * @throws IOException
-     */
+    /** Parses teh TIFF contained in the response as a {@link RenderedImage} */
     RenderedImage readTiff(MockHttpServletResponse response) throws IOException {
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
         reader.setInput(ImageIO.createImageInputStream(getBinaryInputStream(response)));

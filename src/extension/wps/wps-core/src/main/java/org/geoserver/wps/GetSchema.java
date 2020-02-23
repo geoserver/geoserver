@@ -25,12 +25,7 @@ public class GetSchema {
         this.wps = wps;
     }
 
-    /**
-     * Fetches named schema and writes it to the response stream
-     *
-     * @param request
-     * @param response
-     */
+    /** Fetches named schema and writes it to the response stream */
     @SuppressWarnings("unchecked")
     public void run(HttpServletRequest request, HttpServletResponse response) {
         String name = null;

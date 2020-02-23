@@ -72,11 +72,7 @@ public abstract class XMLPPIO extends ComplexPPIO {
         return "xml";
     }
 
-    /**
-     * Returns a parser using the given configuration
-     *
-     * @param configuration
-     */
+    /** Returns a parser using the given configuration */
     protected Parser getParser(Configuration configuration) {
         Parser parser = new Parser(configuration);
         // spring injection would have been preferred, but it changes the order in which PPIO

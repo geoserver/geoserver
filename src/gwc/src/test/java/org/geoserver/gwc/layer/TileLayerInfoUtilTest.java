@@ -171,12 +171,7 @@ public class TileLayerInfoUtilTest {
         assertEquals(filter, filter3);
     }
 
-    /**
-     * Find a parameter filter by key from a set of filters.
-     *
-     * @param paramName
-     * @param parameterFilters
-     */
+    /** Find a parameter filter by key from a set of filters. */
     private static ParameterFilter findParameterFilter(
             final String paramName, Set<ParameterFilter> parameterFilters) {
 

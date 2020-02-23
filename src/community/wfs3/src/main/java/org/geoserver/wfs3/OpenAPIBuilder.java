@@ -59,7 +59,6 @@ public class OpenAPIBuilder {
      * @param request The incoming request
      * @param wfs The WFS configuration
      * @param extensions The list of WFS 3 extensions
-     * @return
      */
     public OpenAPI build(BaseRequest request, WFSInfo wfs, List<WFS3Extension> extensions) {
         OpenAPI api = readTemplate();
@@ -170,8 +169,6 @@ public class OpenAPIBuilder {
     /**
      * Reads the template to customize (each time, as the object tree is not thread safe nor
      * cloneable not serializable)
-     *
-     * @return
      */
     private OpenAPI readTemplate() {
         try {

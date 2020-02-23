@@ -78,9 +78,6 @@ public class ExpressionsUtils {
      * Parses the original string and returns an array or parsed expressions, in particular, the
      * result of parsing each embedded cql expression and string literals in between the cql
      * expressions, in the order they appear in the original string
-     *
-     * @param expression
-     * @return
      */
     static List<Expression> splitCqlExpressions(String expression) {
         boolean inCqlExpression = false;
@@ -163,12 +160,7 @@ public class ExpressionsUtils {
         return result;
     }
 
-    /**
-     * Given an expression list will create an expression concatenating them.
-     *
-     * @param
-     * @return
-     */
+    /** Given an expression list will create an expression concatenating them. */
     static Expression catenateExpressions(List<Expression> expressions) {
         if (expressions == null || expressions.size() == 0)
             throw new IllegalArgumentException(
@@ -184,9 +176,6 @@ public class ExpressionsUtils {
     /**
      * Builds a CQL expression equivalent to the specified string, see class javadocs for rules on
      * how to build the expression in string form
-     *
-     * @param expression
-     * @return
      */
     public static Expression extractCqlExpressions(String expression) {
         return catenateExpressions(splitCqlExpressions(expression));
@@ -195,9 +184,6 @@ public class ExpressionsUtils {
     /**
      * Wrap attribute selector syntax in a xpath with quotation marks to make it suitable by cql
      * compiler.
-     *
-     * @param xpath
-     * @return
      */
     public static String quoteXpathAttribute(String xpath) {
         int atIndex = xpath.indexOf("@");

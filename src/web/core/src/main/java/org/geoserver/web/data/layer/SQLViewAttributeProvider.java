@@ -90,11 +90,7 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
         return Arrays.asList(NAME, TYPE, SRID, PK);
     }
 
-    /**
-     * Sets the geometries details and the primary key columns into the virtual table
-     *
-     * @param vt
-     */
+    /** Sets the geometries details and the primary key columns into the virtual table */
     @SuppressWarnings("unchecked")
     public void fillVirtualTable(VirtualTable vt) {
         List<String> pks = new ArrayList<String>();

@@ -114,10 +114,6 @@ public class UTFGridMap extends RawMap {
     /**
      * Writes the grid, and maps the original values into a compact sequence of keys (the original
      * values might be sparse due to features being fully overwritten by other features)
-     *
-     * @param pw
-     * @param image
-     * @param entries
      */
     private List<UTFGridEntry> writeGrid(
             PrintWriter pw, RenderedImage image, UTFGridEntries entries) {

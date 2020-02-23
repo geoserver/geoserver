@@ -34,11 +34,7 @@ public class LockingUserGroupService extends AbstractLockingService
     protected Set<UserGroupLoadedListener> listeners =
             Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
 
-    /**
-     * Constructor for the locking wrapper
-     *
-     * @param service
-     */
+    /** Constructor for the locking wrapper */
     public LockingUserGroupService(GeoServerUserGroupService service) {
         super(service);
         service.registerUserGroupLoadedListener(this);

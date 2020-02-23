@@ -811,10 +811,6 @@ public abstract class FeatureTypeSchemaBuilder {
      *
      * <p>A side-effect of calling this method is that the constructed type and any concrete nested
      * complex types are added to the schema.
-     *
-     * @param complexType
-     * @param schema
-     * @param factory
      */
     private XSDComplexTypeDefinition buildComplexSchemaContent(
             ComplexType complexType, XSDSchema schema, XSDFactory factory) {

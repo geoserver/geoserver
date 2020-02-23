@@ -63,11 +63,7 @@ public class CSVPPIOTest extends WPSTestSupport {
         }
     }
 
-    /**
-     * Test method for {@link org.geoserver.wps.ppio.WFSPPIO#decode(java.io.InputStream)}.
-     *
-     * @throws Exception
-     */
+    /** Test method for {@link org.geoserver.wps.ppio.WFSPPIO#decode(java.io.InputStream)}. */
     @Test
     public void testDecodeInputStream() throws Exception {
         SimpleFeatureCollection states =

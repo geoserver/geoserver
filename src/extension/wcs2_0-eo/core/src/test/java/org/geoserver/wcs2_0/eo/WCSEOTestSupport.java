@@ -127,11 +127,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
         return IS_WINDOWS;
     }
 
-    /**
-     * Marks the coverage to be cleaned when the test ends
-     *
-     * @param coverage
-     */
+    /** Marks the coverage to be cleaned when the test ends */
     protected void scheduleForCleaning(GridCoverage coverage) {
         if (coverage != null) {
             coverages.add(coverage);
@@ -145,13 +141,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
         }
     }
 
-    /**
-     * Parses a multipart message from the response
-     *
-     * @param response
-     * @throws MessagingException
-     * @throws IOException
-     */
+    /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
         MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
@@ -159,14 +149,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
         return multipart;
     }
 
-    /**
-     * Configures the specified dimension for a coverage
-     *
-     * @param coverageName
-     * @param metadataKey
-     * @param presentation
-     * @param resolution
-     */
+    /** Configures the specified dimension for a coverage */
     protected void setupRasterDimension(
             String coverageName,
             String metadataKey,
@@ -183,14 +166,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
         getCatalog().save(info);
     }
 
-    /**
-     * Clears dimension information from the specified coverage
-     *
-     * @param coverageName
-     * @param metadataKey
-     * @param presentation
-     * @param resolution
-     */
+    /** Clears dimension information from the specified coverage */
     protected void clearDimensions(String coverageName) {
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
         info.getMetadata().remove(ResourceInfo.TIME);

@@ -42,12 +42,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
     private final Catalog catalog;
     private final ToggleSwitch producer;
 
-    /**
-     * @param catalog
-     * @param xstream
-     * @param clazz
-     * @param producer
-     */
+    /** */
     public JMSCatalogModifyEventHandler(
             Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
@@ -90,12 +85,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
      * simulate a catalog.save() rebuilding the EventModify proxy object locally {@link
      * org.geoserver.catalog.impl.DefaultCatalogFacade#saved(CatalogInfo)}
      *
-     * @param catalog
-     * @param modifyEv
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     *     <p>TODO synchronization on catalog object
+     * <p>TODO synchronization on catalog object
      */
     protected static void modify(final Catalog catalog, CatalogModifyEvent modifyEv)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {

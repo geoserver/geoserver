@@ -28,11 +28,7 @@ public interface DimensionInfo extends Serializable {
     /** Whether this dimension is enabled or not */
     public boolean isEnabled();
 
-    /**
-     * Sets the dimension as enabled, or not
-     *
-     * @param enabled
-     */
+    /** Sets the dimension as enabled, or not */
     public void setEnabled(boolean enabled);
 
     /** The attribute on which the dimension is based. Used only for vector data */
@@ -97,11 +93,7 @@ public interface DimensionInfo extends Serializable {
      */
     public boolean isNearestMatchEnabled();
 
-    /**
-     * Enables/disables nearest match.
-     *
-     * @param nearestMatch
-     */
+    /** Enables/disables nearest match. */
     public void setNearestMatchEnabled(boolean nearestMatch);
 
     /**
@@ -110,16 +102,12 @@ public interface DimensionInfo extends Serializable {
      * {code}before/after{code} range specifying how far to search from the requested value (e.g.,
      * {code}PT12H/PT1H{code} to allow searching 12 hours in the past but only 1 hour in the
      * future).
-     *
-     * @return
      */
     public String getAcceptableInterval();
 
     /**
      * Allows setting the search range for nearest matches, see also {@link
      * #getAcceptableInterval()}.
-     *
-     * @param acceptableInterval
      */
     public void setAcceptableInterval(String acceptableInterval);
 }

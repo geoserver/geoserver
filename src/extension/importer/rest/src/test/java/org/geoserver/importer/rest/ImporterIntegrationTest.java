@@ -685,11 +685,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertNotNull(layer);
     }
 
-    /**
-     * Attribute computation integration test
-     *
-     * @throws Exception
-     */
+    /** Attribute computation integration test */
     @Test
     public void testAttributeCompute() throws Exception {
         // create H2 store to act as a target

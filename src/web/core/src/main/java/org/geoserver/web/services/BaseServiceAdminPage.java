@@ -231,8 +231,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * Callback for submit.
      *
      * <p>This implementation simply saves the service. Subclasses may extend / override if need be.
-     *
-     * @param info
      */
     protected void handleSubmit(T info) {
         if (info.getId() != null) {

@@ -36,7 +36,6 @@ public class JavaScriptPluginTest extends ScriptIntTestSupport {
     /**
      * Test method for {@link org.geoserver.script.js.JavaScriptPlugin#getModulePaths()}.
      *
-     * @throws URISyntaxException
      */
     public void testGetModulePaths() throws URISyntaxException {
         JavaScriptPlugin plugin = getPlugin();
@@ -57,7 +56,6 @@ public class JavaScriptPluginTest extends ScriptIntTestSupport {
     /**
      * Test method for {@link org.geoserver.geoscript.javascript.JavaScriptModules#require()}.
      *
-     * @throws ScriptException
      */
     public void testRequireGeoScript() throws ScriptException {
         ScriptManager scriptMgr = getScriptManager();
@@ -75,7 +73,6 @@ public class JavaScriptPluginTest extends ScriptIntTestSupport {
     /**
      * Test method for {@link org.geoserver.geoscript.javascript.JavaScriptModules#require()}.
      *
-     * @throws ScriptException
      */
     public void testRequireGeoServer() throws ScriptException {
         ScriptManager scriptMgr = getScriptManager();
@@ -91,7 +88,6 @@ public class JavaScriptPluginTest extends ScriptIntTestSupport {
     /**
      * Test for catalog access through the geoserver.js module.
      *
-     * @throws ScriptException
      */
     public void testGeoServerCatalogNamespaces() throws ScriptException {
 
@@ -124,7 +120,6 @@ public class JavaScriptPluginTest extends ScriptIntTestSupport {
     /**
      * Test for catalog access through the geoserver.js module.
      *
-     * @throws ScriptException
      */
     public void testGeoServerCatalogGetVectorLayer() throws ScriptException {
 

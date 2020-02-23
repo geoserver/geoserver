@@ -117,9 +117,6 @@ public class Transaction {
      * <p>The specification allows a WFS to implement PARTIAL sucess if it is unable to rollback all
      * the requested changes. This implementation is able to offer full Rollback support and will
      * not require the use of PARTIAL success.
-     *
-     * @param transactionRequest
-     * @throws WfsException
      */
     protected TransactionResponse execute(TransactionRequest request) throws Exception {
         // some defaults
@@ -440,11 +437,7 @@ public class Transaction {
         }
     }
 
-    /**
-     * Looks up the element handlers to be used for each element
-     *
-     * @param group
-     */
+    /** Looks up the element handlers to be used for each element */
     private Map gatherElementHandlers(TransactionRequest request) throws WFSTransactionException {
         // JD: use a linked hashmap since the order of elements in a transaction
         // must be respected
@@ -461,8 +454,6 @@ public class Transaction {
     /**
      * Finds the best transaction element handler for the specified element type (the one matching
      * the most specialized superclass of type)
-     *
-     * @param type
      */
     protected final TransactionElementHandler findElementHandler(Class type)
             throws WFSTransactionException {
@@ -593,7 +584,6 @@ public class Transaction {
     /**
      * Implement lockExists.
      *
-     * @param lockID
      * @return true if lockID exists
      * @see org.geotools.data.Data#lockExists(java.lang.String)
      */
@@ -607,8 +597,6 @@ public class Transaction {
      * Refresh lock by authorization
      *
      * <p>Should use your own transaction?
-     *
-     * @param lockID
      */
     private void lockRefresh(String lockId) throws Exception {
         LockFeature lockFeature = new LockFeature(wfs, catalog);

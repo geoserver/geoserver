@@ -113,11 +113,7 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
         return true;
     }
 
-    /**
-     * Creates a new {@link RemoteProcess} stub
-     *
-     * @throws IllegalArgumentException
-     */
+    /** Creates a new {@link RemoteProcess} stub */
     public Process create(Name name) throws IllegalArgumentException {
         synchronized (remoteInstances) {
             if (checkName(name)) {

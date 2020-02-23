@@ -68,10 +68,6 @@ public abstract class AbstractHTMLResponse extends Response {
      *   <li>contact: the contact information
      *   <li>baseURL: the GeoServer baseURL for link construction
      * </ul>
-     *
-     * @param value
-     * @param operation
-     * @return
      */
     protected HashMap<String, Object> setupModel(Object value, Operation operation) {
         HashMap<String, Object> model = new HashMap<>();
@@ -123,20 +119,10 @@ public abstract class AbstractHTMLResponse extends Response {
         return baseURL;
     }
 
-    /**
-     * Returns the template name to be used for the object to be encoded
-     *
-     * @param value
-     * @return
-     */
+    /** Returns the template name to be used for the object to be encoded */
     protected abstract String getTemplateName(Object value);
 
-    /**
-     * Returns the eventual ResourceInfo associated with the
-     *
-     * @param value
-     * @return
-     */
+    /** Returns the eventual ResourceInfo associated with the */
     protected abstract ResourceInfo getResource(Object value);
 
     @Override

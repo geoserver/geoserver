@@ -128,10 +128,7 @@ public class StyleParameterFilter extends ParameterFilter {
         return super.getDefaultValue();
     }
 
-    /**
-     * @see StyleParameterFilter#setDefaultValue(String)
-     * @param s
-     */
+    /** @see StyleParameterFilter#setDefaultValue(String) */
     public void setRealDefault(String s) {
         // Just use the regular set method
         setDefaultValue(s);
@@ -176,11 +173,7 @@ public class StyleParameterFilter extends ParameterFilter {
         return finalStyles;
     }
 
-    /**
-     * Set/update the availableStyles and defaultStyle based on the given GeoServer layer.
-     *
-     * @param layer
-     */
+    /** Set/update the availableStyles and defaultStyle based on the given GeoServer layer. */
     public void setLayer(LayerInfo layer) {
         availableStyles = new TreeSet<String>();
 
@@ -205,11 +198,7 @@ public class StyleParameterFilter extends ParameterFilter {
         return Collections.unmodifiableSet(allowedStyles);
     }
 
-    /**
-     * Set the allowed styles. {@code null} to allow all styles available on the layer.
-     *
-     * @param styles
-     */
+    /** Set the allowed styles. {@code null} to allow all styles available on the layer. */
     public void setStyles(@Nullable Set<String> styles) {
         if (styles == null) {
             this.allowedStyles = null;

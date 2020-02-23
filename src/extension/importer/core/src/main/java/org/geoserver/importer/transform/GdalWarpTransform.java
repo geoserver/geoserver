@@ -28,11 +28,7 @@ import org.geotools.gce.image.WorldImageFormat;
 public class GdalWarpTransform extends AbstractCommandLinePreTransform implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
-    /**
-     * Checks if gdalwarp is available
-     *
-     * @throws IOException
-     */
+    /** Checks if gdalwarp is available */
     public static boolean isAvailable() throws IOException {
         return new GdalWarpTransform(new ArrayList<String>()).checkAvailable();
     }

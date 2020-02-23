@@ -34,7 +34,6 @@ public class CloneLibraryTest extends TestCase {
     /**
      * Constructor for CloneLibraryTest.
      *
-     * @param arg0
      */
     public CloneLibraryTest(String arg0) {
         super(arg0);

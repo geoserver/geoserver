@@ -165,8 +165,6 @@ public class OGRDataStoreFactoryTest {
     /**
      * * Unpack archive to directory (maintaining directory structure).
      *
-     * @param archive
-     * @param directory
      */
     public static void unpack(File archive, File directory) throws IOException {
         // see http://stackoverflow.com/questions/10633595/java-zip-how-to-unzip-folder

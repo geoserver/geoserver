@@ -226,8 +226,6 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     /**
      * Set the boolean indicating whether or not state should be saved in the provided {@link
      * ExecutionContext} during the {@link ItemStream} call to update.
-     *
-     * @param saveState
      */
     public void setSaveState(boolean saveState) {
         this.saveState = saveState;

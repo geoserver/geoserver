@@ -316,8 +316,6 @@ public class TaskManagerDataUtil {
     /**
      * Close a batch run (do this when the batch run is no longer running, but its status suggests
      * it is.)
-     *
-     * @param br
      */
     @Transactional("tmTransactionManager")
     public BatchRun closeBatchRun(BatchRun br, String message) {

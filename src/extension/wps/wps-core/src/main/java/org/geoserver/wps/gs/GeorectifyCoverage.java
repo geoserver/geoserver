@@ -339,8 +339,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      * input data of the process involved in rendering. This method will be called only if the input
      * data is a feature collection.
      *
-     * @param targetQuery
-     * @param gridGeometry
      * @return The transformed query, or null if no inversion is possible/meaningful
      */
     public Query invertQuery(Query targetQuery, GridGeometry gridGeometry) {
@@ -352,8 +350,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      * the input data of the process involved in rendering. This method will be called only if the
      * input data is a grid coverage or a grid coverage reader
      *
-     * @param targetQuery
-     * @param gridGeometry
      * @return The transformed query, or null if no inversion is possible/meaningful
      */
     public GridGeometry invertGridGeometry(Query targetQuery, GridGeometry targetGridGeometry) {
@@ -366,7 +362,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      *
      * @param image the to be stored.
      * @return the {@link File} storing the image.
-     * @throws IOException
      */
     private File storeImage(final RenderedImage image, final File tempFolder) throws IOException {
         File file = File.createTempFile("readCoverage", ".tif", tempFolder);
@@ -380,7 +375,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      * @param width the final image's width
      * @param height the final image's height
      * @param targetCRS the target coordinate reference system
-     * @throws IOException
      */
     private File warpFile(
             final File originalFile,
@@ -476,11 +470,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
         }
     }
 
-    /**
-     * Parse the bounding box to be used by gdalwarp command
-     *
-     * @param boundingBox
-     */
+    /** Parse the bounding box to be used by gdalwarp command */
     @SuppressWarnings("serial")
     private static List<String> parseBBox(Envelope re) {
         if (re == null) {
@@ -513,7 +503,6 @@ public class GeorectifyCoverage implements GeoServerProcess {
      * @param originalFilePath the path of the file referring to the original image.
      * @param gcp the Ground Control Points option to be attached to the translating command.
      * @return a File containing the translated dataset.
-     * @throws IOException
      */
     private File addGroundControlPoints(
             final String originalFilePath, final List<String> gcp, final List<String> parameters)
@@ -646,10 +635,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
         }
     }
 
-    /**
-     * @param gcps
-     * @param gcpNum
-     */
+    /** */
     private List<String> parseGcps(String gcps, int[] gcpNum) {
         Matcher gcpMatcher = GCP_PATTERN.matcher(gcps);
         // if(!gcpMatcher.matches()) {

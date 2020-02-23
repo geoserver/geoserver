@@ -637,11 +637,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gu.25678']", doc);
     }
 
-    /**
-     * Check schema location
-     *
-     * @param doc
-     */
+    /** Check schema location */
     private void checkSchemaLocation(Document doc) {
         String schemaLocation = evaluate("/wfs:FeatureCollection/@xsi:schemaLocation", doc);
         String gsmlLocation =
@@ -661,12 +657,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         }
     }
 
-    /**
-     * Check mf1 content are encoded correctly
-     *
-     * @param id
-     * @param doc
-     */
+    /** Check mf1 content are encoded correctly */
     private void checkMf1Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
@@ -874,12 +865,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check mf2 content are encoded correctly
-     *
-     * @param id
-     * @param doc
-     */
+    /** Check mf2 content are encoded correctly */
     private void checkMf2Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "MERCIA MUDSTONE GROUP",
@@ -1163,12 +1149,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check mf3 content are encoded correctly
-     *
-     * @param id
-     * @param doc
-     */
+    /** Check mf3 content are encoded correctly */
     private void checkMf3Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
@@ -1206,12 +1187,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Check mf4 content are encoded correctly
-     *
-     * @param id
-     * @param doc
-     */
+    /** Check mf4 content are encoded correctly */
     private void checkMf4Content(String id, Document doc) {
         assertXpathEvaluatesTo(
                 "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
@@ -1495,11 +1471,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Implementation for tests expected to get mf4 only.
-     *
-     * @param xml
-     */
+    /** Implementation for tests expected to get mf4 only. */
     private void checkGetMf4Only(String xml) {
         Document doc = postAsDOM("wfs", xml);
         LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));

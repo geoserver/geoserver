@@ -225,8 +225,6 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     /**
      * Subclasses can override to perform custom behaviors when the SRS is updated, which happens
      * either when the text field is left or when the find dialog returns
-     *
-     * @param target
      */
     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
         // do nothing by default

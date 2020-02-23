@@ -58,7 +58,6 @@ final class DownloadUtilities {
      * <p>In case the egometry is not a valid polygon, it throws an {@link IllegalStateException};
      *
      * @param roi the {@link Geometry} to check.
-     * @throws IllegalStateException
      */
     static void checkPolygonROI(Geometry roi) throws IllegalStateException {
         // Null check
@@ -82,11 +81,10 @@ final class DownloadUtilities {
     /**
      * Looks for a valid PPIO given the provided mime type and process parameter.
      *
-     * @param p
-     * @param context
-     *     <p>The lenient approach makes this method try harder to send back a result but it is
-     *     preferrable to be non-lenient since otherwise we might get s a PPIO which is not really
-     *     what we need.
+     * <p>The lenient approach makes this method try harder to send back a result but it is
+     * preferrable to be non-lenient since otherwise we might get s a PPIO which is not really what
+     * we need.
+     *
      * @param mime the mime-type for which we are searching for a {@link ProcessParameterIO}
      * @param lenient whether or not trying to be lenient when returning a suitable {@link
      *     ProcessParameterIO}.
@@ -152,7 +150,6 @@ final class DownloadUtilities {
      * IllegalStateException};
      *
      * @param features the {@link SimpleFeatureCollection} to check
-     * @throws IllegalStateException
      */
     static final void checkIsEmptyFeatureCollection(SimpleFeatureCollection features)
             throws IllegalStateException {
@@ -164,7 +161,6 @@ final class DownloadUtilities {
     /**
      * Retrieves the native {@link CoordinateReferenceSystem} for the provided {@link ResourceInfo}.
      *
-     * @param resourceInfo
      * @return the native {@link CoordinateReferenceSystem} for the provided {@link ResourceInfo}.
      * @throws IOException in case something bad happems!
      */
@@ -187,7 +183,6 @@ final class DownloadUtilities {
      * @param geometry Geometry to transform
      * @param crs target CRS for the transformation
      * @return a transformed Geometry object
-     * @throws IOException
      */
     static Geometry transformGeometry(Geometry geometry, CoordinateReferenceSystem crs)
             throws IOException {
@@ -238,7 +233,6 @@ final class DownloadUtilities {
      *
      * @param style the underlying SLD {@link File} for the provided GeoSerevr Style.
      * @return the underlying SLD {@link File} for the provided GeoSerevr Style.
-     * @throws IOException
      */
     static Resource findStyle(StyleInfo style) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
@@ -290,7 +284,6 @@ final class DownloadUtilities {
      *
      * @param layerInfo the provided GeoServer layer.
      * @return all the underlying SLD {@link File}s for the provided GeoServer layer.
-     * @throws IOException
      */
     static List<Resource> collectStyles(LayerInfo layerInfo) throws IOException {
         final List<Resource> styleFiles = new ArrayList<Resource>();

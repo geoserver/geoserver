@@ -23,11 +23,7 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
 
     protected final WMS wms;
 
-    /**
-     * @param wms
-     * @param outputFormat
-     * @throws Exception if outputFormat is not a valid json mime type
-     */
+    /** @throws Exception if outputFormat is not a valid json mime type */
     public GeoJSONFeatureInfoResponse(final WMS wms, final String outputFormat) throws Exception {
         super(outputFormat);
         this.wms = wms;

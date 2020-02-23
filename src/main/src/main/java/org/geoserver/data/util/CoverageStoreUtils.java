@@ -104,11 +104,7 @@ public final class CoverageStoreUtils {
         return null;
     }
 
-    /**
-     * After user has selected Description can aquire Format based on description.
-     *
-     * @param description
-     */
+    /** After user has selected Description can aquire Format based on description. */
     public static Format aquireFactory(String description) {
         Format[] formats = GridFormatFinder.getFormatArray();
         Format format = null;
@@ -210,8 +206,6 @@ public final class CoverageStoreUtils {
     /**
      * Convert map to real values based on factory Params.
      *
-     * @param factory
-     * @param params
      * @return Map with real values that may be acceptable to GDSFactory
      */
     public static Map toParams(GridFormatFactorySpi factory, Map params) throws IOException {
@@ -230,15 +224,7 @@ public final class CoverageStoreUtils {
         return Collections.synchronizedMap(map);
     }
 
-    /**
-     * Retrieve a WGS84 lon,lat envelope from the provided one.
-     *
-     * @param sourceCRS
-     * @param targetEnvelope
-     * @throws IndexOutOfBoundsException
-     * @throws FactoryException
-     * @throws TransformException
-     */
+    /** Retrieve a WGS84 lon,lat envelope from the provided one. */
     public static GeneralEnvelope getWGS84LonLatEnvelope(final GeneralEnvelope envelope)
             throws IndexOutOfBoundsException, FactoryException, TransformException {
         final CoordinateReferenceSystem sourceCRS = envelope.getCoordinateReferenceSystem();

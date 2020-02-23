@@ -84,7 +84,6 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Adds/overwrites a rule in the rule set
      *
-     * @param rule
      * @return true if the set did not contain the rule already, false otherwise
      */
     public boolean addRule(R rule) {
@@ -103,11 +102,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
         lastModified = System.currentTimeMillis();
     }
 
-    /**
-     * Removes the rule from rule set
-     *
-     * @param rule
-     */
+    /** Removes the rule from rule set */
     public boolean removeRule(R rule) {
         lastModified = System.currentTimeMillis();
         return rules.remove(rule);
@@ -125,11 +120,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
         return watcher != null && watcher.isStale();
     }
 
-    /**
-     * Writes the rules back to file system
-     *
-     * @throws IOException
-     */
+    /** Writes the rules back to file system */
     public void storeRules() throws IOException {
         OutputStream os = null;
         try {

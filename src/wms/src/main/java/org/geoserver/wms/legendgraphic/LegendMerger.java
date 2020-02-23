@@ -944,10 +944,6 @@ public class LegendMerger {
     /**
      * Renders a label on the given image, using parameters from the request for the rendering
      * style.
-     *
-     * @param image
-     * @param label
-     * @param request
      */
     protected static BufferedImage getRenderedLabel(
             BufferedImage image, String label, GetLegendGraphicRequest req) {

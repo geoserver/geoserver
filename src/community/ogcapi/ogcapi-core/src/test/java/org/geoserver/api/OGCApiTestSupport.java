@@ -76,8 +76,6 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     /**
      * Allows subclasses to register namespaces. By default, does not add any, subclasses can
      * manipulate the namespaces map as they see fit.
-     *
-     * @param namespaces
      */
     protected void registerNamespaces(Map<String, String> namespaces) {}
 

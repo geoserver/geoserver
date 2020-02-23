@@ -49,21 +49,13 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         return GeoServerExtensions.bean(DataAccessRuleDAO.class);
     }
 
-    /**
-     * Builds a new dao
-     *
-     * @param rawCatalog
-     */
+    /** Builds a new dao */
     public DataAccessRuleDAO(GeoServerDataDirectory dd, Catalog rawCatalog) throws IOException {
         super(dd, LAYERS);
         this.rawCatalog = rawCatalog;
     }
 
-    /**
-     * Builds a new dao with a custom security dir. Used mostly for testing purposes
-     *
-     * @param rawCatalog
-     */
+    /** Builds a new dao with a custom security dir. Used mostly for testing purposes */
     DataAccessRuleDAO(Catalog rawCatalog, Resource securityDir) {
         super(securityDir, LAYERS);
         this.rawCatalog = rawCatalog;
@@ -75,11 +67,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         return catalogMode;
     }
 
-    /**
-     * Parses the rules contained in the property file
-     *
-     * @param props
-     */
+    /** Parses the rules contained in the property file */
     protected void loadRules(Properties props) {
         TreeSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
         catalogMode = CatalogMode.HIDE;
@@ -222,11 +210,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         return props;
     }
 
-    /**
-     * Parses workspace.layer.mode into an array of strings
-     *
-     * @param path
-     */
+    /** Parses workspace.layer.mode into an array of strings */
     static String[] parseElements(String path) {
         String[] rawParse = path.trim().split("\\s*\\.\\s*");
         List<String> result = new ArrayList<String>();
@@ -258,11 +242,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         return null;
     }
 
-    /**
-     * Returns a sorted set of rules associated to the role
-     *
-     * @param role
-     */
+    /** Returns a sorted set of rules associated to the role */
     public SortedSet<DataAccessRule> getRulesAssociatedWithRole(String role) {
         SortedSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
         for (DataAccessRule rule : getRules()) if (rule.getRoles().contains(role)) result.add(rule);

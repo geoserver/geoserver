@@ -282,8 +282,6 @@ class ImageReader {
     /**
      * Returns true if a band has been selected (and as such, we'll need to add a channel selection
      * in the raster symbolizer)
-     *
-     * @return
      */
     public boolean isBandSelected() {
         return bandSelected;

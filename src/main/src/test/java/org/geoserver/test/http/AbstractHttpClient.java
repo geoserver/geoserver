@@ -56,10 +56,7 @@ public abstract class AbstractHttpClient implements HTTPClient {
         this.readTimeout = readTimeout;
     }
 
-    /**
-     * @param tryGZIP
-     * @see org.geotools.data.ows.HTTPClient#setTryGzip(boolean)
-     */
+    /** @see org.geotools.data.ows.HTTPClient#setTryGzip(boolean) */
     @Override
     public void setTryGzip(boolean tryGZIP) {
         this.tryGzip = tryGZIP;

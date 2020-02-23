@@ -62,9 +62,6 @@ public abstract class JacksonResponse extends WFSResponse {
     /**
      * Returns the requested format from the operation, falls back to {@link BaseRequest#JSON_MIME}
      * if none was requested
-     *
-     * @param operation
-     * @return
      */
     protected String getFormat(Operation operation) {
         BaseRequest request = (BaseRequest) operation.getParameters()[0];
@@ -122,10 +119,6 @@ public abstract class JacksonResponse extends WFSResponse {
         return getFileName(value, operation) + (isJsonFormat(operation) ? ".json" : ".yaml");
     }
 
-    /**
-     * Just the name of the file to be returned (no extension)
-     *
-     * @return
-     */
+    /** Just the name of the file to be returned (no extension) */
     protected abstract String getFileName(Object value, Operation operation);
 }

@@ -61,12 +61,7 @@ public abstract class AbstractFlowControllerTest {
         }
     }
 
-    /**
-     * Waits maxWait for the thread to finish by itself, then forcefully kills it
-     *
-     * @param t
-     * @param maxWait
-     */
+    /** Waits maxWait for the thread to finish by itself, then forcefully kills it */
     void waitAndKill(Thread t, long maxWait) {
         try {
             long start = System.currentTimeMillis();
@@ -115,11 +110,6 @@ public abstract class AbstractFlowControllerTest {
     /**
      * Waits for he flow controller testing thread to get into a specified state for a max given
      * amount of time, fail otherwise
-     *
-     * @param state
-     * @param tt
-     * @param maxWait
-     * @throws InterruptedException
      */
     protected void waitState(ThreadState state, FlowControllerTestingThread tt, long maxWait)
             throws InterruptedException {

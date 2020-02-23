@@ -25,9 +25,6 @@ public class PDFMaxSizeEnforcer {
 
     /**
      * Builds a new max errors enforcer. If maxErrors is not positive the enforcer will do nothing
-     *
-     * @param renderer
-     * @param maxErrors
      */
     public PDFMaxSizeEnforcer(
             final GTRenderer renderer, final PdfGraphics2D graphics, final int maxSize) {

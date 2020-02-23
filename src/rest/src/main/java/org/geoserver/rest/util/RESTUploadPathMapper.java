@@ -13,8 +13,6 @@ public interface RESTUploadPathMapper {
     /**
      * Remaps the position of a store path. The implementor is free to append, modify or replace the
      * store root directory, REST upload will append workspace/store to it
-     *
-     * @throws IOException
      */
     void mapStorePath(
             StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
@@ -23,8 +21,6 @@ public interface RESTUploadPathMapper {
     /**
      * Remaps the position of a file inside a store (e.g., a image being harvested into a mosaic.
      * The implementor is free to alter the item path.
-     *
-     * @throws IOException
      */
     void mapItemPath(
             String workspace,

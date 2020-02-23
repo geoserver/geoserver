@@ -69,12 +69,7 @@ public interface TreeNode<T> extends Serializable {
         return getObject().toString();
     }
 
-    /**
-     * Determine if this is the same node (all fields must be the same as well)
-     *
-     * @param node
-     * @return
-     */
+    /** Determine if this is the same node (all fields must be the same as well) */
     default boolean isSameAs(TreeNode<T> node) {
         return (getUniqueId().equals(node.getUniqueId()));
     }

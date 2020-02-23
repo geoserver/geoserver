@@ -53,11 +53,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         this.coverageName = coverageName;
     }
 
-    /**
-     * Checks the specified name is the one we are expecting
-     *
-     * @param coverageName
-     */
+    /** Checks the specified name is the one we are expecting */
     protected void checkCoverageName(String coverageName) {
         if (!this.coverageName.equals(coverageName)) {
             throw new IllegalArgumentException(

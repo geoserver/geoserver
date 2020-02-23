@@ -31,7 +31,6 @@ public class EqualsLibraryTest extends TestCase {
     /**
      * Constructor for EqualsLibraryTest.
      *
-     * @param arg0
      */
     public EqualsLibraryTest(String arg0) {
         super(arg0);

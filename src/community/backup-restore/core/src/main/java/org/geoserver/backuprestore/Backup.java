@@ -304,13 +304,7 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
-    /**
-     * Authenticate a user
-     *
-     * @param username
-     * @param password
-     * @return
-     */
+    /** Authenticate a user */
     public Authentication authenticate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null && getAuth() != null) {
@@ -355,10 +349,7 @@ public class Backup extends JobExecutionListenerSupport
         return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     */
+    /** */
     private BackupExecutionAdapter runBackupAsync(
             final Resource archiveFile,
             final boolean overwrite,
@@ -483,11 +474,7 @@ public class Backup extends JobExecutionListenerSupport
         return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
     }
 
-    /**
-     * @return
-     * @return
-     * @throws IOException
-     */
+    /** */
     public RestoreExecutionAdapter runRestoreAsync(
             final Resource archiveFile,
             final Filter wsFilter,
@@ -603,14 +590,7 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
-    /**
-     * Stop a running Backup/Restore Execution
-     *
-     * @param executionId
-     * @return
-     * @throws NoSuchJobExecutionException
-     * @throws JobExecutionNotRunningException
-     */
+    /** Stop a running Backup/Restore Execution */
     public void stopExecution(Long executionId)
             throws NoSuchJobExecutionException, JobExecutionNotRunningException {
         LOGGER.info("Stopping execution id [" + executionId + "]");
@@ -648,30 +628,14 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
-    /**
-     * Restarts a running Backup/Restore Execution
-     *
-     * @param executionId
-     * @return
-     * @throws JobInstanceAlreadyCompleteException
-     * @throws NoSuchJobExecutionException
-     * @throws NoSuchJobException
-     * @throws JobRestartException
-     * @throws JobParametersInvalidException
-     */
+    /** Restarts a running Backup/Restore Execution */
     public Long restartExecution(Long executionId)
             throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException,
                     NoSuchJobException, JobRestartException, JobParametersInvalidException {
         return jobOperator.restart(executionId);
     }
 
-    /**
-     * Abort a running Backup/Restore Execution
-     *
-     * @param executionId
-     * @throws NoSuchJobExecutionException
-     * @throws JobExecutionAlreadyRunningException
-     */
+    /** Abort a running Backup/Restore Execution */
     public void abandonExecution(Long executionId)
             throws NoSuchJobExecutionException, JobExecutionAlreadyRunningException {
         LOGGER.info("Aborting execution id [" + executionId + "]");
@@ -705,10 +669,7 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
-    /**
-     * @param params
-     * @param paramsBuilder
-     */
+    /** */
     private void parseParams(final Hints params, JobParametersBuilder paramsBuilder) {
         if (params != null) {
             for (Entry<Object, Object> param : params.entrySet()) {

@@ -39,8 +39,6 @@ public class ImportTransformTest extends ImporterTestSupport {
      * Create a test transform context: one import task with two transforms:
      *
      * <p>One ReprojectTransform and one IntegerFieldToDateTransform.
-     *
-     * @throws Exception
      */
     @Before
     public void setupTransformContext() throws Exception {
@@ -181,9 +179,6 @@ public class ImportTransformTest extends ImporterTestSupport {
      *     }
      * ]
      * </pre>
-     *
-     * @param transformsResponse
-     * @return
      */
     List<JSONObject> parseTransformObjectsFromResponse(JSON transformsResponse) {
         assertTrue(transformsResponse instanceof JSONObject);

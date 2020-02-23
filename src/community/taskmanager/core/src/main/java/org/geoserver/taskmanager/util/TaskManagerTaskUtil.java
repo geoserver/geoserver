@@ -102,7 +102,6 @@ public class TaskManagerTaskUtil {
      *
      * @param taskType task type
      * @param rawParameters raw parameters
-     * @throws TaskException
      */
     private void validateRequired(
             TaskType taskType,
@@ -212,7 +211,6 @@ public class TaskManagerTaskUtil {
      * @param task the task.
      * @return true if the cleanup was entirely successful, false if one or more task clean-ups
      *     failed, in which case the logs should be checked.
-     * @throws TaskException
      */
     public Map<String, Object> getParameterValues(Task task) throws TaskException {
         return parseParameters(taskTypes.get(task.getType()), getRawParameterValues(task));
@@ -388,7 +386,6 @@ public class TaskManagerTaskUtil {
      * Get attribute domain based on associated parameters.
      *
      * @param type the type
-     * @param string
      * @return the task
      */
     private List<String> mergeDomain(Attribute attribute, Configuration config) {
@@ -520,7 +517,6 @@ public class TaskManagerTaskUtil {
      * Validate configuration (at configuration time)
      *
      * @param configuration the configuration
-     * @throws TaskException
      */
     public List<ValidationError> validate(Configuration configuration) {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
@@ -597,14 +593,7 @@ public class TaskManagerTaskUtil {
         return new ArrayList<String>(result);
     }
 
-    /**
-     * Get dependent values for an attribute with respect to a particular action
-     *
-     * @param action
-     * @param attribute
-     * @param config
-     * @return
-     */
+    /** Get dependent values for an attribute with respect to a particular action */
     public List<String> getDependentRawValues(
             String action, Attribute attribute, Configuration config) {
         List<String> values = new ArrayList<String>();

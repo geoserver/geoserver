@@ -91,10 +91,6 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
      * Saves the mock access limits for this user and secured item (this is meant only for testing,
      * it's the caller care to make sure the appropriate user limits class is used). The CatalogInfo
      * is required to have a valid and stable id.
-     *
-     * @param userName
-     * @param securedItem
-     * @param limits
      */
     public void putLimits(String userName, CatalogInfo securedItem, AccessLimits limits) {
         getUserMap(userName).put(securedItem.getId(), limits);

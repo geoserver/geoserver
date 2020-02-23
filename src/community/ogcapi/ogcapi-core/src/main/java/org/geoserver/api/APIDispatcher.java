@@ -514,22 +514,12 @@ public class APIDispatcher extends AbstractController {
         return uri;
     }
 
-    /**
-     * Returns a read only list of available {@link HttpMessageConverter}
-     *
-     * @return
-     */
+    /** Returns a read only list of available {@link HttpMessageConverter} */
     public List<HttpMessageConverter<?>> getConverters() {
         return Collections.unmodifiableList(messageConverters);
     }
 
-    /**
-     * Returns a {@link List} of media types that can be produced for a given response object
-     *
-     * @param responseType
-     * @param addHTML
-     * @return
-     */
+    /** Returns a {@link List} of media types that can be produced for a given response object */
     public List<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {

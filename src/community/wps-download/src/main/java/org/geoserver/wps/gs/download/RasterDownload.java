@@ -116,8 +116,6 @@ class RasterDownload {
      * @param limits the {@link DownloadEstimatorProcess} to check for not exceeding the download
      *     limits.
      * @param resourceManager the {@link WPSResourceManager} to handl generated resources
-     * @param context
-     * @param catalog
      */
     public RasterDownload(
             DownloadServiceConfiguration limits,
@@ -607,13 +605,7 @@ class RasterDownload {
         return hints;
     }
 
-    /**
-     * Extract the backgroundValues which will be used for mosaicking operations.
-     *
-     * @param coverageParameters
-     * @param readParameters
-     * @return
-     */
+    /** Extract the backgroundValues which will be used for mosaicking operations. */
     private double[] getBackgroundValues(
             Map<String, Serializable> coverageParameters, GeneralParameterValue[] readParameters) {
         double[] backgroundValues = null;
@@ -635,10 +627,6 @@ class RasterDownload {
     /**
      * Check if a crop operation is needed (meaning that the extent of the returned image contains
      * the requested extent).
-     *
-     * @param rasterData
-     * @param requestedRange
-     * @return
      */
     private boolean cropIsNeeded(RenderedImage rasterData, GridEnvelope requestedRange) {
         final int requestedW = requestedRange.getSpan(0);
@@ -671,15 +659,6 @@ class RasterDownload {
     /**
      * The requested region is wider than the returned coverage (the reader may have done a crop to
      * minimal extent). Extend the result to the requested region, using background value.
-     *
-     * @param gridCoverage
-     * @param requestedGridGeometry
-     * @param backgroundValues
-     * @return
-     * @throws NoninvertibleTransformException
-     * @throws IllegalStateException
-     * @throws TransformException
-     * @throws MismatchedDimensionException
      */
     private GridCoverage2D extendToRegion(
             GridCoverage2D gridCoverage,
@@ -745,13 +724,6 @@ class RasterDownload {
     /**
      * Apply bandSelection operation in case band indices have been specified but underlying reader
      * do not support bands param.
-     *
-     * @param reader
-     * @param readParameters
-     * @param bandIndices
-     * @param originalGridCoverage
-     * @param disposableSources
-     * @return
      */
     private GridCoverage2D bandSelect(
             GridCoverage2DReader reader,
@@ -815,12 +787,6 @@ class RasterDownload {
     /**
      * Update read parameters, taking into accounts filter (if specified), band selection parameters
      * as well as forcing deferred execution loading.
-     *
-     * @param readParameters
-     * @param parameterDescriptors
-     * @param bandIndices
-     * @param filter
-     * @return
      */
     private GeneralParameterValue[] updateReadParams(
             GeneralParameterValue[] readParameters,

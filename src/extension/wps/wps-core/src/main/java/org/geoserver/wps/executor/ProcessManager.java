@@ -42,7 +42,6 @@ public interface ProcessManager {
      * @param listener The progress listener, that the process will use to report about its
      *     progress, and check for cancellation
      * @return The results
-     * @throws ProcessException
      */
     Map<String, Object> submitChained(
             String executionId,
@@ -60,7 +59,6 @@ public interface ProcessManager {
      * inputs will parse during execution and require temporary storage, same goes for certain
      * processes in need to use temporary files)
      *
-     * @param executionId
      * @param processName The name of the process
      * @param inputs The process inputs
      * @param listener The progress listener, that the process will use to report about its
@@ -69,7 +67,6 @@ public interface ProcessManager {
      *     lower pace) or a foreground one. This is used to differentiate between a synchronous WPS
      *     request, that has a time sensitive HTTP connection associated to it, and a asynchronous
      *     one, in which the client will poll the server for updates
-     * @throws ProcessException
      */
     void submit(
             String executionId,
@@ -83,9 +80,6 @@ public interface ProcessManager {
      * Gets the process output. Will block the caller for at most "timeout" if the process execution
      * is not complete. Once the output is retrieved the process will be marked as terminated and it
      * won't be possible to get its outputs or status anymore.
-     *
-     * @param executionId
-     * @param timeout
      */
     Map<String, Object> getOutput(String executionId, long timeout) throws ProcessException;
 

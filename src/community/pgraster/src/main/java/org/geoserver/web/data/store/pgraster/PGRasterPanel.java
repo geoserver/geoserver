@@ -168,11 +168,7 @@ public class PGRasterPanel extends Panel {
         };
     }
 
-    /**
-     * Setup a URL String composing all the required configuration options
-     *
-     * @throws FactoryException
-     */
+    /** Setup a URL String composing all the required configuration options */
     public String buildURL() {
         StringBuilder builder = new StringBuilder("pgraster://");
         //

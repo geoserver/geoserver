@@ -131,14 +131,6 @@ public class RequestUtils {
     /**
      * Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews
      * as necessary
-     *
-     * @param mapContent
-     * @param reader
-     * @param params
-     * @param readGG
-     * @param interpolation
-     * @param hints
-     * @throws IOException
      */
     public static GridCoverage2D readBestCoverage(
             final GridCoverage2DReader reader,
@@ -350,12 +342,7 @@ public class RequestUtils {
         return readSampleGridCoverage(reader);
     }
 
-    /**
-     * Grabs the reader from the specified coverage
-     *
-     * @param ci
-     * @throws IOException
-     */
+    /** Grabs the reader from the specified coverage */
     public static GridCoverage2DReader getCoverageReader(CoverageInfo ci)
             throws IOException, Exception {
         // get a reader for this coverage
@@ -371,11 +358,7 @@ public class RequestUtils {
         return reader;
     }
 
-    /**
-     * Makes sure the version is present and supported
-     *
-     * @param version
-     */
+    /** Makes sure the version is present and supported */
     public static void checkVersion(String version) {
         if (version == null) {
             throw new WCS20Exception(
@@ -389,11 +372,7 @@ public class RequestUtils {
         }
     }
 
-    /**
-     * Makes sure the service is present and supported
-     *
-     * @param serviceName
-     */
+    /** Makes sure the service is present and supported */
     public static void checkService(String serviceName) {
         if (serviceName == null) {
             throw new WCS20Exception(

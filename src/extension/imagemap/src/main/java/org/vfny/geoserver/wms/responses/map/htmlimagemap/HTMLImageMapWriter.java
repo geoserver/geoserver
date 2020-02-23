@@ -89,8 +89,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      *
      * @param out stream to encode the layer to
      * @param mapContent current wms context
-     * @throws ClassCastException
-     * @throws UnsupportedEncodingException
      */
     public HTMLImageMapWriter(OutputStream out, WMSMapContent mapContent)
             throws UnsupportedEncodingException, ClassCastException {
@@ -590,8 +588,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * Simplifies a geometry to exclude duplicated points. When translating from world to screen
          * coordinates it's possible that many world points collapse to a single screen point. Those
          * colliding points are simplified to a single point.
-         *
-         * @param geom
          */
         Geometry decimate(Geometry geom) {
             DefaultMathTransformFactory f = new DefaultMathTransformFactory();

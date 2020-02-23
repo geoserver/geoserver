@@ -39,11 +39,7 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
 
     protected GeoServerUserGroupService service;
 
-    /**
-     * Creates a wrapper object.
-     *
-     * @param service
-     */
+    /** Creates a wrapper object. */
     public UserGroupServiceValidationWrapper(GeoServerUserGroupService service) {
         super(service.getSecurityManager());
         this.service = service;
@@ -216,12 +212,7 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
         return service.getUserCountHavingPropertyValue(propname, propvalue);
     }
 
-    /**
-     * Helper method for creating a proper {@link SecurityConfigException} object
-     *
-     * @param errorid
-     * @param args
-     */
+    /** Helper method for creating a proper {@link SecurityConfigException} object */
     protected IOException createSecurityException(String errorid, Object... args) {
         UserGroupServiceException ex = new UserGroupServiceException(errorid, args);
         return new IOException("Details are in the nested excetpion", ex);

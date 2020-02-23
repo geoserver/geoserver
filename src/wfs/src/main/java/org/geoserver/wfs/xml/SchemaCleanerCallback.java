@@ -21,11 +21,7 @@ public class SchemaCleanerCallback extends AbstractDispatcherCallback {
 
     static final ThreadLocal<List<XSDSchema>> schemas = new ThreadLocal<List<XSDSchema>>();
 
-    /**
-     * Schedules a XSDSchema for removal at the end of the request
-     *
-     * @param schema
-     */
+    /** Schedules a XSDSchema for removal at the end of the request */
     public static void addSchema(XSDSchema schema) {
         if (schema == null) {
             return;

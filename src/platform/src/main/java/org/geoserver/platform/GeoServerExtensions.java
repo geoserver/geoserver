@@ -244,11 +244,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         return extensions(extensionPoint, context);
     }
 
-    /**
-     * Returns a specific bean given its name
-     *
-     * @param name
-     */
+    /** Returns a specific bean given its name */
     public static final Object bean(String name) {
         return bean(name, context);
     }

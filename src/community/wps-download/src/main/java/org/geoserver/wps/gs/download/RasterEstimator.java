@@ -45,7 +45,6 @@ class RasterEstimator {
      *
      * @param limits the parent {@link DownloadEstimatorProcess} that contains the download limits
      *     to be enforced.
-     * @param catalog
      */
     public RasterEstimator(DownloadServiceConfiguration limits, Catalog catalog) {
         this.downloadServiceConfiguration = limits;

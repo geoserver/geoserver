@@ -23,12 +23,7 @@ public interface WebFeatureService30 {
 
     static final Version V3 = new Version("3.0.0");
 
-    /**
-     * Returns the landing page of WFS 3.0
-     *
-     * @param request
-     * @return
-     */
+    /** Returns the landing page of WFS 3.0 */
     LandingPageDocument landingPage(LandingPageRequest request);
 
     /**
@@ -47,28 +42,13 @@ public interface WebFeatureService30 {
      */
     CollectionDocument collection(CollectionRequest request);
 
-    /**
-     * The OpenAPI description of the service
-     *
-     * @param request
-     * @return
-     */
+    /** The OpenAPI description of the service */
     OpenAPI api(APIRequest request);
 
-    /**
-     * The conformance declaration for this service
-     *
-     * @param request
-     * @return
-     */
+    /** The conformance declaration for this service */
     ConformanceDocument conformance(ConformanceRequest request);
 
-    /**
-     * Queries features and returns them
-     *
-     * @param request
-     * @return
-     */
+    /** Queries features and returns them */
     FeatureCollectionResponse getFeature(GetFeatureType request);
 
     /** Tiling Schemes available list */

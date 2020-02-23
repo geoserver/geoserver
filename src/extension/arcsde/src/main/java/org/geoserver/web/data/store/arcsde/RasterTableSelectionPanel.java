@@ -196,15 +196,7 @@ public class RasterTableSelectionPanel extends Panel {
         this.sessionPoolFactory = factory;
     }
 
-    /**
-     * @param server
-     * @param port
-     * @param instance
-     * @param user
-     * @param password
-     * @param sessionFac
-     * @throws IllegalArgumentException
-     */
+    /** */
     List<String> getRasterColumns(
             final String server,
             final String port,

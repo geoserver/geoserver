@@ -18,11 +18,7 @@ import org.geotools.feature.FeatureCollection;
  */
 public interface LayerIdentifier {
 
-    /**
-     * Returns true if the identifier can handle this layer, false otherwise
-     *
-     * @param layer
-     */
+    /** Returns true if the identifier can handle this layer, false otherwise */
     boolean canHandle(MapLayerInfo layer);
 
     /**

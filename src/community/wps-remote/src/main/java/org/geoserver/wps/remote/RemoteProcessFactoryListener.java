@@ -17,16 +17,12 @@ public interface RemoteProcessFactoryListener {
     /**
      * Registers a new {@link RemoteProcess} upon a new remote service presentation; from now on a
      * new WPS Process will be available
-     *
-     * @param serviceDescriptor
      */
     public void registerProcess(RemoteServiceDescriptor serviceDescriptor);
 
     /**
      * De-registers a {@link RemoteProcess} upon a {@link RemoteProcessClient} request; the WPS
      * Process won't be available anymore
-     *
-     * @param name
      */
     public void deregisterProcess(Name name);
 }

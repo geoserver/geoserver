@@ -43,11 +43,7 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
         super(catalog);
     }
 
-    /**
-     * @param store
-     * @param format
-     * @param directory
-     */
+    /** */
     protected List<Resource> handleFileUpload(
             String store,
             String workspace,
@@ -157,10 +153,7 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
         }
     }
 
-    /**
-     * @param directory
-     * @param format
-     */
+    /** */
     protected Resource findPrimaryFile(Resource directory, String format) {
         for (Resource f :
                 Resources.list(

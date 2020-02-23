@@ -125,8 +125,6 @@ public class WPSResourceManager extends ProcessListenerAdapter
      * ProcessManagers should call this method every time they are running the process in a thread
      * other than the request thread, and that is not a child of it either (typical case is running
      * in a thread pool)
-     *
-     * @param executionId
      */
     void setCurrentExecutionId(String executionId) {
         ExecutionResources resources = resourceCache.get(executionId);
@@ -136,11 +134,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
         this.executionId.set(executionId);
     }
 
-    /**
-     * Returns the executionId bound to this thread, if any
-     *
-     * @param executionId
-     */
+    /** Returns the executionId bound to this thread, if any */
     String getCurrentExecutionId() {
         return this.executionId.get();
     }
@@ -164,7 +158,6 @@ public class WPSResourceManager extends ProcessListenerAdapter
      * Returns a resource that will be used to store a process output as a "reference"
      *
      * @param executionId - can be null
-     * @param fileName
      */
     public Resource getOutputResource(String executionId, String fileName) {
         executionId = getExecutionId(executionId);
@@ -188,10 +181,8 @@ public class WPSResourceManager extends ProcessListenerAdapter
      *
      * @param executionId - optional, if you don't have it the resource manager will use its thread
      *     local version
-     * @param name
      * @param baseUrl - optional, if you don't have it the resource manager will pick one from
      *     Dispatcher.REQUEST
-     * @param mimeType
      */
     public String getOutputResourceUrl(
             String executionId, String name, String baseUrl, String mimeType) {
@@ -216,10 +207,6 @@ public class WPSResourceManager extends ProcessListenerAdapter
     /**
      * Returns a resource that will be used to store some temporary file for processing sake, and
      * will mark it for deletion when the process ends
-     *
-     * @param executionId
-     * @param fileName
-     * @throws IOException
      */
     public Resource getTemporaryResource(String extension) throws IOException {
 
@@ -233,11 +220,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
         return resource;
     }
 
-    /**
-     * Gets the stored response file for the specified execution id
-     *
-     * @param executionId
-     */
+    /** Gets the stored response file for the specified execution id */
     public Resource getStoredResponse(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Response, null);
     }
@@ -245,19 +228,12 @@ public class WPSResourceManager extends ProcessListenerAdapter
     /**
      * Gets the stored request file for the specified execution id. It will be available only if the
      * process is executing asynchronously
-     *
-     * @param executionId
      */
     public Resource getStoredRequest(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Request, null);
     }
 
-    /**
-     * Gets the stored request as a parsed object
-     *
-     * @param executionId
-     * @throws IOException
-     */
+    /** Gets the stored request as a parsed object */
     public ExecuteType getStoredRequestObject(String executionId) throws IOException {
         Resource resource = getStoredRequest(executionId);
         if (resource == null || resource.getType() == Type.UNDEFINED) {
@@ -273,12 +249,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
         }
     }
 
-    /**
-     * Stores the request in a binary resource for efficient later retrieval
-     *
-     * @param executionId
-     * @throws IOException
-     */
+    /** Stores the request in a binary resource for efficient later retrieval */
     public void storeRequestObject(ExecuteType execute, String executionId) throws IOException {
         Resource resource = getStoredRequest(executionId);
         try (OutputStream out = resource.out()) {
@@ -324,8 +295,6 @@ public class WPSResourceManager extends ProcessListenerAdapter
      * Cleans up all the resources associated to a certain id. It is called automatically when the
      * request ends for synchronous processes, for asynch ones it will be triggered by the process
      * completion
-     *
-     * @param id
      */
     public void cleanProcess(String id, boolean cancelled) {
         // delete all resources associated with the process

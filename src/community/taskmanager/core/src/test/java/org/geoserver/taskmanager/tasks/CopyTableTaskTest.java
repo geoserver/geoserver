@@ -226,12 +226,7 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
         }
     }
 
-    /**
-     * Use the existing generated_id column if it exists.
-     *
-     * @throws SchedulerException
-     * @throws SQLException
-     */
+    /** Use the existing generated_id column if it exists. */
     @Test
     public void testCopyViewWithGeneratedIdColumn() throws SchedulerException, SQLException {
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
@@ -368,12 +363,7 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
                         SqlUtil.notQualified(TARGET_TABLE_NAME)));
     }
 
-    /**
-     * the copy task should create the schema if it doesn't exist.
-     *
-     * @throws SchedulerException
-     * @throws SQLException
-     */
+    /** the copy task should create the schema if it doesn't exist. */
     @Test
     public void testTableInNewSchema() throws SchedulerException, SQLException {
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);

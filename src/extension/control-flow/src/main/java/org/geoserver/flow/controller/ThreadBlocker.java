@@ -30,8 +30,6 @@ public interface ThreadBlocker {
      * Returns the number of requests "running" (could be both executing and timed out, anything
      * that went into {@link #requestIncoming(Request, long)} and managed to get out of it, but it's
      * not yet complete)
-     *
-     * @return
      */
     int getRunningRequestsCount();
 }

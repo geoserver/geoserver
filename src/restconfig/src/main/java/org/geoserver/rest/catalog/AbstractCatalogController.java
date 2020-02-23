@@ -116,8 +116,6 @@ public abstract class AbstractCatalogController extends RestBaseController {
     /**
      * Validates the current user can edit the resource (full admin required if workspaceName is
      * null)
-     *
-     * @param workspaceName
      */
     protected void checkFullAdminRequired(String workspaceName) {
         // global workspaces/styles can only be edited by a full admin

@@ -53,11 +53,7 @@ public class WCSEnvelope extends AbstractEnvelope {
         }
     }
 
-    /**
-     * Copies an existing envelope
-     *
-     * @param other
-     */
+    /** Copies an existing envelope */
     public WCSEnvelope(Envelope other) {
         this(other.getCoordinateReferenceSystem());
         for (int d = 0; d < dimensions; d++) {
@@ -68,11 +64,6 @@ public class WCSEnvelope extends AbstractEnvelope {
     /**
      * Sets the range for the given dimension. If the dimension is the longitude, it is allowed to
      * set a minimum greater than the maximum, this envelope will be assumed to span the dateline
-     *
-     * @param dimension
-     * @param minimum
-     * @param maximum
-     * @throws IndexOutOfBoundsException
      */
     public void setRange(int dimension, double minimum, double maximum)
             throws IndexOutOfBoundsException {
@@ -191,8 +182,6 @@ public class WCSEnvelope extends AbstractEnvelope {
     /**
      * Checks if this envelope intersects the provided one, taking into account the case of dateline
      * crossing.
-     *
-     * @param other
      */
     public void intersect(GeneralEnvelope other) {
         assert other.getDimension() == dimensions : other;
@@ -245,11 +234,7 @@ public class WCSEnvelope extends AbstractEnvelope {
                                 && getMaximum(longitudeDimension) > 180));
     }
 
-    /**
-     * Returns true if the specified dimension index is matching the longitude axis
-     *
-     * @param dimension
-     */
+    /** Returns true if the specified dimension index is matching the longitude axis */
     public boolean isLongitude(int dimension) {
         return longitudeDimension == dimension;
     }

@@ -89,14 +89,7 @@ public class GenericUnWrapper implements UnWrapper {
                 "getUnderlyingStatement");
     }
 
-    /**
-     * Look up method used for unwrapping (if supported in the application container).
-     *
-     * @param env
-     * @param methods
-     * @param className
-     * @param methodName
-     */
+    /** Look up method used for unwrapping (if supported in the application container). */
     private static void methodSearch(
             String env, Map<Class<?>, Method> methods, String className, String methodName) {
         try {
@@ -153,10 +146,6 @@ public class GenericUnWrapper implements UnWrapper {
      * is provided, or null is sentinel (indicating no method is available). For classes that do not
      * provide an unwrapping method reflection is tried once (resulting in either a cached method to
      * next time, or null for use as a sentinel
-     *
-     * @param target
-     * @param conn
-     * @param methods
      */
     @SuppressWarnings(
             "deprecation") // Method.isAccessible is deprecated but replacement not available in
@@ -208,10 +197,6 @@ public class GenericUnWrapper implements UnWrapper {
      *
      * <p>All errors are logged at finest detail, and null is returned.
      *
-     * @param target
-     * @param conn
-     * @param wrapper
-     * @param accessMethod
      * @return unwrapped instance of target class, or null if not available
      */
     private <T> T unwrapInternal(Class<T> target, T conn, Class<?> wrapper, Method accessMethod) {

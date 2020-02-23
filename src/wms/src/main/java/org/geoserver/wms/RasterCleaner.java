@@ -23,11 +23,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
     static final ThreadLocal<List<GridCoverage2D>> coverages =
             new ThreadLocal<List<GridCoverage2D>>();
 
-    /**
-     * Schedules a RenderedImage for cleanup at the end of the request
-     *
-     * @param schema
-     */
+    /** Schedules a RenderedImage for cleanup at the end of the request */
     public static void addImage(RenderedImage image) {
         if (image == null) {
             return;
@@ -41,11 +37,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
         list.add(image);
     }
 
-    /**
-     * Schedules a RenderedImage for cleanup at the end of the request
-     *
-     * @param schema
-     */
+    /** Schedules a RenderedImage for cleanup at the end of the request */
     public static void addCoverage(GridCoverage2D coverage) {
         if (coverage == null) {
             return;

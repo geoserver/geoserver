@@ -21,11 +21,7 @@ public class GdalTranslateTransform extends AbstractCommandLinePreTransform
         implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
-    /**
-     * Checks if gdal_translate is available
-     *
-     * @throws IOException
-     */
+    /** Checks if gdal_translate is available */
     public static boolean isAvailable() throws IOException {
         return new GdalTranslateTransform(new ArrayList<String>()).checkAvailable();
     }

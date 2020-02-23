@@ -42,7 +42,6 @@ public class RuleMapXMLConverter extends MapXMLConverter {
      * parent element given.
      *
      * @param elem , the root elment
-     * @param o
      */
     @SuppressWarnings("unchecked")
     protected final void insert(Element elem, Object o) {

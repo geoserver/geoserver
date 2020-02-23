@@ -122,11 +122,7 @@ public abstract class WebMap {
         return filename;
     }
 
-    /**
-     * Returns the filename with no extension
-     *
-     * @return
-     */
+    /** Returns the filename with no extension */
     public String getSimpleAttachmentFileName() {
         // see if we can get the original request, before the group expansion happened
         Request request = Dispatcher.REQUEST.get();

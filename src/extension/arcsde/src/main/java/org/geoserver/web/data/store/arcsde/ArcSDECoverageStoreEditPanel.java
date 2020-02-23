@@ -160,8 +160,6 @@ public final class ArcSDECoverageStoreEditPanel extends StoreEditPanel {
     }
 
     /**
-     * @param paramsModel
-     * @param isNew
      * @return a combobox set up to display the list of available raster tables if the StoreInfo is
      *     new, or a non editable text box if we're editing an existing StoreInfo
      */

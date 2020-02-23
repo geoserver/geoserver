@@ -215,8 +215,6 @@ public class CatalogStyleChangeListener implements CatalogListener {
      *   <li>A {@link LayerGroupInfo} contains a layer using {@code modifiedStyle}
      *   <li>{@code modifiedStyle} is explicitly assigned to a {@link LayerGroupInfo}
      * </ul>
-     *
-     * @param modifiedStyle
      */
     private void handleStyleChange(final StyleInfo modifiedStyle) {
         final String styleName = modifiedStyle.prefixedName();

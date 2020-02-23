@@ -43,13 +43,7 @@ public class SqlViewParamsExtractor {
         }
     }
 
-    /**
-     * Set the viewParams in the binding class manually
-     *
-     * @param object
-     * @param node
-     * @throws Exception
-     */
+    /** Set the viewParams in the binding class manually */
     public static void viewParams(EObject object, Node node) throws Exception {
         if (node.hasAttribute("viewParams")) {
             String rawViewParams = (String) node.getAttributeValue("viewParams");

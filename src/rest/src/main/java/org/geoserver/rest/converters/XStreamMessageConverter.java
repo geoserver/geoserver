@@ -22,27 +22,13 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
         super(supportedMediaTypes);
     }
 
-    /**
-     * Encode the given link
-     *
-     * @param link
-     * @param writer
-     */
+    /** Encode the given link */
     public abstract void encodeLink(String link, HierarchicalStreamWriter writer);
 
-    /**
-     * Encode the given link
-     *
-     * @param link
-     * @param writer
-     */
+    /** Encode the given link */
     public abstract void encodeCollectionLink(String link, HierarchicalStreamWriter writer);
 
-    /**
-     * Create the instance of XStream needed to do encoding
-     *
-     * @return
-     */
+    /** Create the instance of XStream needed to do encoding */
     protected abstract XStream createXStreamInstance();
 
     protected void encodeAlternateAtomLink(String link, HierarchicalStreamWriter writer) {
@@ -80,18 +66,12 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
         }
     }
 
-    /**
-     * The extension used for resources of the type being encoded
-     *
-     * @return
-     */
+    /** The extension used for resources of the type being encoded */
     public abstract String getExtension();
 
     /**
      * Get the text representation of the mime type being encoded. Only used in link encoding for
      * xml
-     *
-     * @return
      */
     public abstract String getMediaType();
 }

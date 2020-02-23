@@ -115,8 +115,6 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
     /**
      * Force reloading the properties which may have been updated in the meanwhile; after a restore
      * as an instance.
-     *
-     * @throws IOException
      */
     public void reload() throws IOException {
         if (localProperties != null) {

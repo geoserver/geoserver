@@ -61,11 +61,7 @@ public class AuthenticationCacheEntry {
         this.lastAccessed = lastAccessed;
     }
 
-    /**
-     * returns true if the entry has expired, false otherwise
-     *
-     * @param timeInMilliSecs
-     */
+    /** returns true if the entry has expired, false otherwise */
     public boolean hasExpired(long timeInMilliSecs) {
         if (lastAccessed + timeToIdleSeconds * 1000 < timeInMilliSecs) return true;
         if (created + timeToLiveSeconds * 1000 < timeInMilliSecs) return true;

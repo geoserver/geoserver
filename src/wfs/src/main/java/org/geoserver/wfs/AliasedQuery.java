@@ -206,10 +206,6 @@ class AliasedQuery extends Query {
      * Checks the aliases in the query are present, and not in conflict with feature type names or
      * field names (such conflicts might cause issues down the road). In case of conflicts a new
      * Query object will be returned in which the conflicts have been resolved.
-     *
-     * @param metas
-     * @param query
-     * @throws IOException
      */
     static Query fixAliases(List<FeatureTypeInfo> metas, Query query) throws IOException {
         Set<String> reservedWords = new HashSet<>();

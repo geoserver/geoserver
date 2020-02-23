@@ -290,12 +290,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Returns the store from the repository (which is based on GeoServer own resource pool)
-     *
-     * @return
-     * @throws IOException
-     */
+    /** Returns the store from the repository (which is based on GeoServer own resource pool) */
     DataStore getDelegateStore() throws IOException {
         DataStore store = getRawDelegateStore();
         if (delegateStoreCache != null && delegateStoreCache.wraps(store)) {

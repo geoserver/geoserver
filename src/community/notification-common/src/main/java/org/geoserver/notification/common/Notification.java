@@ -37,26 +37,18 @@ public interface Notification {
     /** The event type */
     public Type getType();
 
-    /**
-     * The event action
-     *
-     * @return
-     */
+    /** The event action */
     public Action getAction();
 
     /**
      * The "object" of the event, could be what has been created/inserted/modified, the container of
      * it, the request, and so on. Typically a catalog object, a service object, or a Request
-     *
-     * @return
      */
     public Object getObject();
 
     /**
      * A set of "properties" attached to the event, could be properties being changed, the bounds
      * being affected, and so on
-     *
-     * @return
      */
     public Map<String, Object> getProperties();
 

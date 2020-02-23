@@ -44,13 +44,7 @@ public class IOUtils {
         // singleton
     }
 
-    /**
-     * Copies the provided input stream onto a file
-     *
-     * @param from
-     * @param to
-     * @throws IOException
-     */
+    /** Copies the provided input stream onto a file */
     public static void copy(InputStream from, File to) throws IOException {
         copy(from, new FileOutputStream(to));
     }
@@ -59,10 +53,6 @@ public class IOUtils {
      * Copies the provided input stream onto an outputstream.
      *
      * <p>Please note that both from input stream and out output stream will be closed.
-     *
-     * @param in
-     * @param to
-     * @throws IOException
      */
     public static void copy(InputStream in, OutputStream out) throws IOException {
         try {
@@ -85,11 +75,6 @@ public class IOUtils {
      * Copies from a file to another by performing a filtering on certain specified tokens. In
      * particular, each key in the filters map will be looked up in the reader as ${key} and
      * replaced with the associated value.
-     *
-     * @param to
-     * @param filters
-     * @param reader
-     * @throws IOException
      */
     public static void filteredCopy(File from, File to, Map<String, String> filters)
             throws IOException {
@@ -120,11 +105,6 @@ public class IOUtils {
      * Copies from a reader to a file by performing a filtering on certain specified tokens. In
      * particular, each key in the filters map will be looked up in the reader as ${key} and
      * replaced with the associated value.
-     *
-     * @param to
-     * @param filters
-     * @param reader
-     * @throws IOException
      */
     public static void filteredCopy(BufferedReader from, File to, Map<String, String> filters)
             throws IOException {
@@ -150,24 +130,12 @@ public class IOUtils {
         }
     }
 
-    /**
-     * Copies the provided file onto the specified destination file
-     *
-     * @param from
-     * @param to
-     * @throws IOException
-     */
+    /** Copies the provided file onto the specified destination file */
     public static void copy(File from, File to) throws IOException {
         copy(new FileInputStream(from), to);
     }
 
-    /**
-     * Copy the contents of fromDir into toDir (if the latter is missing it will be created)
-     *
-     * @param fromDir
-     * @param toDir
-     * @throws IOException
-     */
+    /** Copy the contents of fromDir into toDir (if the latter is missing it will be created) */
     public static void deepCopy(File fromDir, File toDir) throws IOException {
         if (!fromDir.isDirectory() || !fromDir.exists())
             throw new IllegalArgumentException(
@@ -193,10 +161,6 @@ public class IOUtils {
     /**
      * Creates a directory as a child of baseDir. The directory name will be preceded by prefix and
      * followed by suffix
-     *
-     * @param basePath
-     * @param prefix
-     * @throws IOException
      */
     public static File createRandomDirectory(String baseDir, String prefix, String suffix)
             throws IOException {
@@ -228,7 +192,6 @@ public class IOUtils {
      * directory itself. For each file that cannot be deleted a warning log will be issued.
      *
      * @param directory Directory to delete
-     * @throws IOException
      * @returns true if the directory could be deleted, false otherwise
      */
     public static boolean delete(File directory) throws IOException {
@@ -334,8 +297,6 @@ public class IOUtils {
      * @param zipout The {@link ZipOutputStream} that will be populated by the files found
      * @param filter An optional filter that can be used to select only certain files. Can be null,
      *     in that case all files in the directory will be zipped
-     * @throws IOException
-     * @throws FileNotFoundException
      */
     public static void zipDirectory(
             File directory, ZipOutputStream zipout, final FilenameFilter filter)
@@ -460,12 +421,7 @@ public class IOUtils {
         }
     }
 
-    /**
-     * @param len
-     * @param stream
-     * @param fos
-     * @throws IOException
-     */
+    /** */
     public static void saveCompressedStream(
             final byte[] buffer, final OutputStream out, final int len) throws IOException {
         try {
@@ -537,8 +493,6 @@ public class IOUtils {
      * Replacement for the now deprecated {@link
      * org.apache.commons.io.IOUtils#closeQuietly(Closeable)}, to be used only when then "quiet"
      * behavior bit is really rneeded
-     *
-     * @param closeable
      */
     public static void closeQuietly(final Closeable closeable) {
         try {

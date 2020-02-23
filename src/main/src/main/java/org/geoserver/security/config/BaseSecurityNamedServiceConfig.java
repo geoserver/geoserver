@@ -55,8 +55,6 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
     /**
      * The class name of the service to be constructed The class must have a constructor with a
      * string argument, specifying the name of the service
-     *
-     * @param className
      */
     public void setClassName(String className) {
         this.className = className;

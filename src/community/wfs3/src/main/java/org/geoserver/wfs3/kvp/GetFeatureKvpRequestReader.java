@@ -68,12 +68,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         return new org.geoserver.wfs3.GetFeatureType();
     }
 
-    /**
-     * Finds all filter expressions and combines them in "AND"
-     *
-     * @param kvp
-     * @return
-     */
+    /** Finds all filter expressions and combines them in "AND" */
     private Filter getFullFilter(Map kvp) throws IOException {
         List<Filter> filters = new ArrayList<>();
         // check the various filters, considering that only one feature type at a time can be
@@ -204,13 +199,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                 .collect(Collectors.toList());
     }
 
-    /**
-     * In WFS3 it's possible to have multiple filter KVPs, and they have to be combined in AND
-     *
-     * @param kvp
-     * @param keys
-     * @param request
-     */
+    /** In WFS3 it's possible to have multiple filter KVPs, and they have to be combined in AND */
     @Override
     protected void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
         // no op, we actually want to handle multiple filters

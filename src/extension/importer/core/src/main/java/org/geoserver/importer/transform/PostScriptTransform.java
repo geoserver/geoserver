@@ -34,11 +34,7 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
         getExecutable();
     }
 
-    /**
-     * Name of the script to be run
-     *
-     * @return
-     */
+    /** Name of the script to be run */
     public String getName() {
         return name;
     }

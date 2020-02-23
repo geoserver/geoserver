@@ -51,8 +51,6 @@ public final class GetFeatureContext {
      * The feature type being queried. The object returned may be mutable, but the callback is
      * strongly suggested not to attempt any modification, the behavior of doing so is undefined and
      * might change over time
-     *
-     * @return
      */
     public FeatureTypeInfo getFeatureTypeInfo() {
         return featureTypeInfo;
@@ -72,11 +70,7 @@ public final class GetFeatureContext {
         return query;
     }
 
-    /**
-     * Allows to replace the query being run with another one
-     *
-     * @param query
-     */
+    /** Allows to replace the query being run with another one */
     public void setQuery(Query query) {
         this.query = query;
     }

@@ -576,11 +576,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return getGeoServerApplication().getCatalog();
     }
 
-    /**
-     * Splits up the pages by category, turning the list into a map keyed by category
-     *
-     * @param pages
-     */
+    /** Splits up the pages by category, turning the list into a map keyed by category */
     private Map<Category, List<MenuPageInfo>> splitByCategory(List<MenuPageInfo> pages) {
         Collections.sort(pages);
         HashMap<Category, List<MenuPageInfo>> map = new HashMap<Category, List<MenuPageInfo>>();

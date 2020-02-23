@@ -160,11 +160,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         }
     }
 
-    /**
-     * See https://osgeo-org.atlassian.net/browse/GEOS-8491
-     *
-     * @throws Exception
-     */
+    /** See https://osgeo-org.atlassian.net/browse/GEOS-8491 */
     @Test
     public void testConcurrentRequests() throws Exception {
         ExecutorService executor =

@@ -41,8 +41,6 @@ public abstract class GeoServerTestSupport extends GeoServerAbstractTestSupport 
      * data types, subclasses may add their extra ones or decide to avoid the standar ones and build
      * a custom list calling {@link MockData#addPropertiesType(QName, java.net.URL, java.net.URL)}
      * and {@link MockData#addCoverage(QName, InputStream, String)}
-     *
-     * @throws IOException
      */
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         // set up the data directory
@@ -55,7 +53,6 @@ public abstract class GeoServerTestSupport extends GeoServerAbstractTestSupport 
      * @param featureTypeName The name of the feature type.
      * @param template The name of the template.
      * @param body The content of the template.
-     * @throws IOException
      */
     protected void setupTemplate(QName featureTypeName, String template, String body)
             throws IOException {

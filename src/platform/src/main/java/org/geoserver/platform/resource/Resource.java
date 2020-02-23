@@ -190,9 +190,6 @@ public interface Resource {
     /**
      * Returns a resource full contents as a byte array. Usage is suggested only if the resource is
      * known to be small (e.g. a configuration file).
-     *
-     * @return
-     * @throws IOException
      */
     default byte[] getContents() throws IOException {
         try (InputStream in = in()) {
@@ -203,9 +200,6 @@ public interface Resource {
     /**
      * Writes a resource contents as a byte array. Usage is suggested only if the resource is known
      * to be small (e.g. a configuration file).
-     *
-     * @param byteArray
-     * @throws IOException
      */
     default void setContents(byte[] byteArray) throws IOException {
         try (OutputStream os = out()) {

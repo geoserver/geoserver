@@ -27,9 +27,6 @@ public class LineSegment {
     /**
      * Checks if the segment intersects a "ray "starting from the given origin and "going" in the
      * given direction.
-     *
-     * @param origin
-     * @param direction
      */
     public Float intersectsWithRay(Coordinate origin, Coordinate direction) {
         float largestDistance =
@@ -58,12 +55,7 @@ public class LineSegment {
         return value;
     }
 
-    /**
-     * Gets the intersection point of the 2 given segments (null if they don't intersect).
-     *
-     * @param a
-     * @param b
-     */
+    /** Gets the intersection point of the 2 given segments (null if they don't intersect). */
     public static Coordinate findIntersection(LineSegment a, LineSegment b) {
         double x1 = a.A.getPosition().x;
         double y1 = a.A.getPosition().y;
@@ -91,13 +83,7 @@ public class LineSegment {
         return new Coordinate(d.getElement(0), d.getElement(1));
     }
 
-    /**
-     * Restricts a value to be in the given range (min - max).
-     *
-     * @param value
-     * @param min
-     * @param max
-     */
+    /** Restricts a value to be in the given range (min - max). */
     public static double clamp(double value, double min, double max) {
         if (value > max) return max;
         if (value < min) return min;

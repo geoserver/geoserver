@@ -275,11 +275,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         ImageAssert.assertEquals(expected, image, 1000);
     }
 
-    /**
-     * This test checks it's possible to change an existing configuration and stuff still works
-     *
-     * @throws Exception
-     */
+    /** This test checks it's possible to change an existing configuration and stuff still works */
     @Test
     public void testModifyConfigurationSingleBand() throws Exception {
         // setup and check one collection

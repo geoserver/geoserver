@@ -59,7 +59,6 @@ public class MetadataLinkEditor extends Panel {
     }
 
     /**
-     * @param id
      * @param resourceModel Must return object that has a "metadataLinks" property (such as a {@link
      *     ResourceInfo} or {@link LayerGroupInfo})
      */

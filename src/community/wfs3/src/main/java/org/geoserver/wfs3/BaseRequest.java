@@ -24,11 +24,7 @@ public abstract class BaseRequest {
         return outputFormat;
     }
 
-    /**
-     * Sets the format name
-     *
-     * @param outputFormat
-     */
+    /** Sets the format name */
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
     }
@@ -42,11 +38,7 @@ public abstract class BaseRequest {
         return baseUrl;
     }
 
-    /**
-     * Sets the base url
-     *
-     * @param baseUrl
-     */
+    /** Sets the base url */
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }

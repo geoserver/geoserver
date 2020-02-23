@@ -67,8 +67,6 @@ public class GwcServiceProxy {
      * return a response object so that the GeoServer {@link Dispatcher} looks up a {@link Response}
      * that finally writes the result down to the client response stream.
      *
-     * @param rawRequest
-     * @param rawRespose
      * @see GwcOperationProxy
      * @see GwcResponseProxy
      */

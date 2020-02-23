@@ -130,12 +130,7 @@ public class DownloadLinkHandler {
             }
         }
 
-        /**
-         * Append the BBOX parameter to the directDownload link
-         *
-         * @param envelope
-         * @param builder
-         */
+        /** Append the BBOX parameter to the directDownload link */
         private void appendBBOXToLink(ReferencedEnvelope envelope, StringBuilder builder) {
             if (envelope == null) {
                 throw new IllegalArgumentException("Envelope can't be null");
@@ -202,11 +197,7 @@ public class DownloadLinkHandler {
                     + "="
                     + FILE_TEMPLATE;
 
-    /**
-     * Generate download links for the specified info object.
-     *
-     * @param info
-     */
+    /** Generate download links for the specified info object. */
     public CloseableIterator<String> generateDownloadLinks(CatalogInfo info) {
         Request request = Dispatcher.REQUEST.get();
         String baseURL = null;
@@ -239,9 +230,6 @@ public class DownloadLinkHandler {
     /**
      * Return an {@link Iterator} containing {@link String}s representing the downloadLinks
      * associated to the provided {@link CoverageInfo} object.
-     *
-     * @param baseURL
-     * @param coverageInfo
      */
     protected CloseableIterator<String> linksFromCoverage(
             String baseURL, CoverageInfo coverageInfo) {

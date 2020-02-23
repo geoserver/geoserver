@@ -171,11 +171,6 @@ public abstract class AbstractURLPublisher extends AbstractController {
         return 1000 * (ifModifiedSince / 1000);
     }
 
-    /**
-     * Retrieves the resource URL from the specified request
-     *
-     * @param request
-     * @throws IOException
-     */
+    /** Retrieves the resource URL from the specified request */
     protected abstract URL getUrl(HttpServletRequest request) throws IOException;
 }

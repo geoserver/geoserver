@@ -569,8 +569,6 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
     /**
      * Same as {@link #testWmsPublicSingleAndSecuredOpaqueGroup} but with a nested group as the
      * testing target
-     *
-     * @throws Exception
      */
     @Test
     public void testWmsNestedInPublicSingleAndSecuredOpaqueGroup() throws Exception {

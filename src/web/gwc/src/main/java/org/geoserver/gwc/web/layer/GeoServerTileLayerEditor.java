@@ -126,11 +126,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
     private CheckBox enableInMemoryCaching;
 
-    /**
-     * @param id
-     * @param layerModel
-     * @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel}
-     */
+    /** @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel} */
     public GeoServerTileLayerEditor(
             final String id,
             final IModel<? extends PublishedInfo> layerModel,

@@ -486,12 +486,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
         return factory;
     }
 
-    /**
-     * Execute REST CALL, and then call the given callback on HTTP JSON Response.
-     *
-     * @param callback
-     * @throws Exception
-     */
+    /** Execute REST CALL, and then call the given callback on HTTP JSON Response. */
     protected Object connectToRESTEndpoint(
             final String roleRESTBaseURL,
             final String roleRESTEndpoint,
@@ -608,7 +603,6 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
          * Perform specific operations accordingly to the caller needs.
          *
          * @param json the <code>JSON</code> string to perform an operation on.
-         * @throws Exception
          */
         Object executeWithContext(final String json) throws Exception;
     }

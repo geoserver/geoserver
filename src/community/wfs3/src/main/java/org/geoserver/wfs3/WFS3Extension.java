@@ -17,11 +17,7 @@ public interface WFS3Extension {
      */
     void extendAPI(OpenAPI api);
 
-    /**
-     * Extend the collection document
-     *
-     * @param collection
-     */
+    /** Extend the collection document */
     void extendCollection(CollectionDocument collection, BaseRequest request);
 
     /** Here we'll eventually have the method to actually run the extension calls */

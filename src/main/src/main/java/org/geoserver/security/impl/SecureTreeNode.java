@@ -55,11 +55,7 @@ public class SecureTreeNode {
      */
     Map<AccessMode, Set<String>> authorizedRoles = new HashMap<AccessMode, Set<String>>();
 
-    /**
-     * Builds a child of the specified parent node
-     *
-     * @param parent
-     */
+    /** Builds a child of the specified parent node */
     private SecureTreeNode(SecureTreeNode parent) {
         this.parent = parent;
         // no rule specified, full fall back on the node's parent
@@ -81,20 +77,12 @@ public class SecureTreeNode {
         }
     }
 
-    /**
-     * Returns a child with the specified name, or null
-     *
-     * @param name
-     */
+    /** Returns a child with the specified name, or null */
     public SecureTreeNode getChild(String name) {
         return children.get(name);
     }
 
-    /**
-     * Adds a child to this path element
-     *
-     * @param name
-     */
+    /** Adds a child to this path element */
     public SecureTreeNode addChild(String name) {
         if (getChild(name) != null)
             throw new IllegalArgumentException(
@@ -111,9 +99,6 @@ public class SecureTreeNode {
      * root is reached and it has no security definition, access will be granted. Otherwise, the
      * first path element with a role list for the specified access mode will return true if the
      * user has a {@link GrantedAuthority} matching one of the specified roles, false otherwise
-     *
-     * @param user
-     * @param mode
      */
     public boolean canAccess(Authentication user, AccessMode mode) {
         Set<String> roles = getAuthorizedRoles(mode);
@@ -159,8 +144,6 @@ public class SecureTreeNode {
      * names, and returns the latest element found along that path (might not be correspondent to
      * the full path specified, security paths can be incomplete, the definition of the parent
      * applies to the missing children as well)
-     *
-     * @param pathElements
      */
     public SecureTreeNode getDeepestNode(String... pathElements) {
         SecureTreeNode curr = this;
@@ -184,8 +167,6 @@ public class SecureTreeNode {
     /**
      * Utility method that drills down from the current node using the specified list of child
      * names, and returns an element only if it fully matches the provided path
-     *
-     * @param pathElements
      */
     public SecureTreeNode getNode(String... pathElements) {
         SecureTreeNode curr = this;
@@ -220,8 +201,6 @@ public class SecureTreeNode {
 
     /**
      * Returns the node depth, 0 is the root, 1 is a workspace/global layer one, 2 is layer specific
-     *
-     * @return
      */
     int getDepth() {
         int depth = 0;

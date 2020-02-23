@@ -159,9 +159,6 @@ public class GeoServerEnvironment {
      *
      * <p>The method first looks for System variables which take precedence on local ones, then into
      * internal props loaded from configuration file 'geoserver-environment.properties'.
-     *
-     * @param value
-     * @return
      */
     public Object resolveValue(Object value) {
         if (value != null) {
@@ -176,9 +173,6 @@ public class GeoServerEnvironment {
     /**
      * Returns 'false' whenever the configuration file 'geoserver-environment.properties' has
      * changed.
-     *
-     * @param value
-     * @return
      */
     public boolean isStale() {
         return this.configFile != null && this.configFile.isModified();

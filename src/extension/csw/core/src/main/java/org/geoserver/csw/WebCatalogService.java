@@ -53,30 +53,12 @@ public interface WebCatalogService {
      */
     RepositoryItem getRepositoryItem(GetRepositoryItemType request) throws ServiceException;
 
-    /**
-     * Runs a harvest request
-     *
-     * @param request
-     * @param response
-     * @throws CSWException
-     */
+    /** Runs a harvest request */
     HarvestResponseType harvest(HarvestType request) throws ServiceException;
 
-    /**
-     * Runs a transaction request
-     *
-     * @param request
-     * @param response
-     * @throws CSWException
-     */
+    /** Runs a transaction request */
     HarvestResponseType transaction(TransactionType request) throws ServiceException;
 
-    /**
-     * Runs a direct download request
-     *
-     * @param request
-     * @param response
-     * @throws CSWException
-     */
+    /** Runs a direct download request */
     List<File> directDownload(DirectDownloadType type) throws ServiceException;
 }

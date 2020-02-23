@@ -1048,10 +1048,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         return true;
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     * @see org.geowebcache.layer.TileLayer#setCacheBypassAllowed(boolean)
-     */
+    /** @see org.geowebcache.layer.TileLayer#setCacheBypassAllowed(boolean) */
     @Override
     public void setCacheBypassAllowed(boolean allowed) {
         throw new UnsupportedOperationException();
@@ -1066,10 +1063,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         return Integer.valueOf(0);
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     * @see org.geowebcache.layer.TileLayer#setBackendTimeout(int)
-     */
+    /** @see org.geowebcache.layer.TileLayer#setBackendTimeout(int) */
     @Override
     public void setBackendTimeout(int seconds) {
         throw new UnsupportedOperationException();
@@ -1123,11 +1117,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
     }
 
-    /**
-     * Returns the max age of a layer group by looking for the minimum max age of its components
-     *
-     * @param lg
-     */
+    /** Returns the max age of a layer group by looking for the minimum max age of its components */
     private int getGroupMaxAge(LayerGroupInfo lg) {
         int maxAge = Integer.MAX_VALUE;
         for (PublishedInfo pi : lg.getLayers()) {

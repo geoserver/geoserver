@@ -82,8 +82,6 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
      * This is undocumented/accidental behavior of 2.10.x (and previous) that actually got used by
      * other projects, adding it back preserving its original structure (pure XStream reflection)
      * even if it's really hard on the eyes....
-     *
-     * @throws Exception
      */
     @Test
     public void testGetXMLById() throws Exception {
@@ -102,8 +100,6 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
      * This is undocumented/accidental behavior of 2.10.x (and previous) that actually got used by
      * other projects, adding it back preserving its original structure (pure XStream reflection)
      * even if it's really hard on the eyes....
-     *
-     * @throws Exception
      */
     @Test
     public void testGetJSONById() throws Exception {

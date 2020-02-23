@@ -75,8 +75,6 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
      * (something like: %3C%2Fscript%
      * 3E%3Cscript%3Ealert%28%27x-scripted%27%29%3C%2Fscript%3E%3Cscript%3E=foo) the causes js code
      * execution.
-     *
-     * @throws IOException
      */
     @Test
     public void testXssFix() throws Exception {
@@ -277,8 +275,6 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
      * <p>Exception is thrown when decoding CRS in isWms13FlippedCRS which is called by produceMap,
      * test uses produceMap and reads the resulting output steam to ensure "yx: true" is returned
      * for EPSG:4326, output is false before fix
-     *
-     * @throws Exception
      */
     @Test
     public void testUrnCodeFix() throws Exception {

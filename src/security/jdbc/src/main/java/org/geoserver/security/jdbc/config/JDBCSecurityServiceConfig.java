@@ -154,11 +154,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
         return creatingTables;
     }
 
-    /**
-     * set table creation flag
-     *
-     * @param creatingTables
-     */
+    /** set table creation flag */
     public void setCreatingTables(boolean creatingTables) {
         this.creatingTables = creatingTables;
     }

@@ -148,8 +148,6 @@ public class StoreExtensionPoints {
     }
 
     /**
-     * @param storeInfo
-     * @param app
      * @return the extension point descriptor for the given storeInfo, or {@code null} if there's no
      *     contribution specific for the given storeInfo's type
      */

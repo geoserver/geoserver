@@ -478,12 +478,7 @@ public class WCSCapsTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * Writes the element if and only if the content is not null and not empty
-         *
-         * @param elementName
-         * @param content
-         */
+        /** Writes the element if and only if the content is not null and not empty */
         protected void elementIfNotEmpty(String elementName, String content) {
             if (content != null && !"".equals(content.trim())) element(elementName, content);
         }

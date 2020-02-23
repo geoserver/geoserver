@@ -123,7 +123,6 @@ class ScaleToTarget {
      *
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
-     * @throws TransformException
      */
     public void setTargetSize(Integer targetSizeX, Integer targetSizeY) throws TransformException {
         // validate input
@@ -161,10 +160,7 @@ class ScaleToTarget {
         }
     }
 
-    /**
-     * @return the grid geometry at the picked read resolution
-     * @throws IOException
-     */
+    /** @return the grid geometry at the picked read resolution */
     GridGeometry2D getGridGeometry() throws IOException {
         MathTransform gridToCRS = getGridToCRSTransform();
         GridGeometry2D gridGeometry =
@@ -189,7 +185,6 @@ class ScaleToTarget {
      *
      * @param readParameters the read parameters to pass to the coverage reader
      * @return the scaled coverage
-     * @throws IOException
      */
     public GridCoverage2D scale(GeneralParameterValue[] readParameters) throws IOException {
         if (readParameters == null) {
@@ -224,7 +219,6 @@ class ScaleToTarget {
      * is performed.
      *
      * @param sourceGC the scaled coverage
-     * @throws IOException
      */
     /*
      * Code adapted from org.geoserver.wcs2_0.ScalingPolicy.ScaleToSize
@@ -312,7 +306,6 @@ class ScaleToTarget {
      * account.
      *
      * @return the grid-to-CRS transformation
-     * @throws IOException
      */
     MathTransform getGridToCRSTransform() throws IOException {
         // scaling transform
@@ -334,7 +327,6 @@ class ScaleToTarget {
      * resolution.
      *
      * @return the scaling transformation
-     * @throws IOException
      */
     private AffineTransform getScaleTransform() throws IOException {
         // getting the native resolution
@@ -395,7 +387,6 @@ class ScaleToTarget {
      * @param requestedResolution the requested resolution
      * @return the resolution of the overview which would be picked out for the provided requested
      *     resolution using the current OverviewPolicy
-     * @throws IOException
      */
     double[] computeReadingResolution(double[] requestedResolution) throws IOException {
         return reader.getReadingResolutions(overviewPolicy, requestedResolution);

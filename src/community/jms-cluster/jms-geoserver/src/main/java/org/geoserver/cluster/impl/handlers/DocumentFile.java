@@ -35,8 +35,6 @@ public class DocumentFile {
      *
      * @param path the path referring to this file
      * @param document the string containing the body of the file (should be a valid JDOM document)
-     * @throws JDOMException
-     * @throws IOException
      */
     public DocumentFile(Resource path, final String document) throws JDOMException, IOException {
         if (!Resources.exists(path)) {
@@ -66,13 +64,7 @@ public class DocumentFile {
         return resourcePath;
     }
 
-    /**
-     * write the body to the passed file argument
-     *
-     * @param file
-     * @throws JDOMException
-     * @throws IOException
-     */
+    /** write the body to the passed file argument */
     public void writeTo(Resource file) throws JDOMException, IOException {
         try (OutputStream out = file.out()) {
             IOUtils.write(body, out);

@@ -139,11 +139,7 @@ public class ElevationParser {
         return new ArrayList(values);
     }
 
-    /**
-     * Maximum number of elevations this parser will parse before throwing an exception
-     *
-     * @return
-     */
+    /** Maximum number of elevations this parser will parse before throwing an exception */
     private int getMaxElevations() {
         if (maxElevations != null) {
             return maxElevations;

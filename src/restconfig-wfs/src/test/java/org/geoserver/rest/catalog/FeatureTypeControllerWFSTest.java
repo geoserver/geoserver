@@ -109,12 +109,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
                 "application/zip");
     }
 
-    /**
-     * Add a property data store with multiple feature types, but only configure the first.
-     *
-     * @param configureFeatureType
-     * @throws Exception
-     */
+    /** Add a property data store with multiple feature types, but only configure the first. */
     void addPropertyDataStoreOnlyConfigureFirst() throws Exception {
         ByteArrayOutputStream zbytes = new ByteArrayOutputStream();
         ZipOutputStream zout = new ZipOutputStream(zbytes);

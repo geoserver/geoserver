@@ -509,9 +509,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Asserts the content type taking into account that Spring-test insists on adding the charset
      * encoding to the content type (see https://jira.spring.io/browse/SPR-1717)
-     *
-     * @param string
-     * @param response
      */
     protected static void assertContentType(String contentType, MockHttpServletResponse response) {
         String actual = response.getHeader("Content-Type");
@@ -557,8 +554,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Given a qualified layer name returns a string in the form "prefix:localPart" if prefix is
      * available, "localPart" if prefix is null
-     *
-     * @param layerName
      */
     public String getLayerId(QName layerName) {
         return toString(layerName);
@@ -796,9 +791,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *     props.store(new FileOutputStream(users), &quot;&quot;);
      * }
      * </pre>
-     *
-     * @param username
-     * @param password
      */
     protected void setRequestAuth(String username, String password) {
         this.username = username;
@@ -1178,8 +1170,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Extracts the true binary stream out of the response. The usual way (going thru {@link
      * MockHttpServletResponse#getOutputStreamContent()}) mangles bytes if the content is not made
      * of chars.
-     *
-     * @param response
      */
     protected ByteArrayInputStream getBinaryInputStream(MockHttpServletResponse response) {
         return new ByteArrayInputStream(getBinary(response));
@@ -1189,8 +1179,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Extracts the true binary stream out of the response. The usual way (going thru {@link
      * MockHttpServletResponse#getOutputStreamContent()}) mangles bytes if the content is not made
      * of chars.
-     *
-     * @param response
      */
     protected byte[] getBinary(MockHttpServletResponse response) {
         return response.getContentAsByteArray();
@@ -1216,7 +1204,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path The porition of the request after the context ( no query string ), example:
      *     'wms'.
      * @param xml The body content, often xml for OGC services
-     * @param contentType
      * @return the servlet response
      */
     protected MockHttpServletResponse postAsServletResponse(
@@ -1378,12 +1365,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return JSONSerializer.toJSON(content);
     }
 
-    /**
-     * Retries the request result as a BufferedImage, checking the mime type is the expected one
-     *
-     * @param path
-     * @param mime
-     */
+    /** Retries the request result as a BufferedImage, checking the mime type is the expected one */
     protected BufferedImage getAsImage(String path, String mime) throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(path);
         assertEquals(mime, resp.getContentType());
@@ -1540,7 +1522,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Parses a stream into a dom.
      *
-     * @param input
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
     protected Document dom(InputStream input, boolean skipDTD)
@@ -1600,8 +1581,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Returns the last MockHttpServletRequest response. Warning, not thread safe. Last response is
      * cleared at before each test method run.
-     *
-     * @return
      */
     protected MockHttpServletResponse getLastResponse() {
         return lastResponse;
@@ -1767,14 +1746,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         assertEquals(code, response.getErrorCode());
     }
 
-    /**
-     * Gets a specific pixel color from the specified buffered image
-     *
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     */
+    /** Gets a specific pixel color from the specified buffered image */
     protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();
         Raster raster = image.getRaster();
@@ -1794,27 +1766,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return actual;
     }
 
-    /**
-     * Checks the pixel i/j has the specified color
-     *
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     */
+    /** Checks the pixel i/j has the specified color */
     protected void assertPixel(BufferedImage image, int i, int j, Color color) {
         Color actual = getPixelColor(image, i, j);
 
         assertEquals(color, actual);
     }
 
-    /**
-     * Checks the pixel i/j is fully transparent
-     *
-     * @param image
-     * @param i
-     * @param j
-     */
+    /** Checks the pixel i/j is fully transparent */
     protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
         int pixel = image.getRGB(i, j);
         assertEquals(true, (pixel >> 24) == 0x00);
@@ -1941,9 +1900,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Given a dom and a schema, checks that the dom validates against the schema of the validation
      * errors instead
-     *
-     * @throws IOException
-     * @throws SAXException
      */
     protected void checkValidationErrors(Document dom, Schema schema)
             throws SAXException, IOException {
@@ -2274,8 +2230,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Checks the image and its sources are all deferred loaded, that is, there is no BufferedImage
      * in the chain
-     *
-     * @param image
      */
     protected void assertDeferredLoading(RenderedImage image) {
         if (image instanceof BufferedImage) {

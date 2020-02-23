@@ -66,11 +66,7 @@ class AttributeDescription implements Serializable {
 
     CoordinateReferenceSystem crs = WGS84;
 
-    /**
-     * Returns the localized named of the attribute type
-     *
-     * @param binding
-     */
+    /** Returns the localized named of the attribute type */
     static String getLocalizedName(Class<?> binding) {
         if (binding == null) {
             return "-";

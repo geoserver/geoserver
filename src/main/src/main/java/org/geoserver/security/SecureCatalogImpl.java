@@ -799,11 +799,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Factors out the policy that decides what access level the current user has to a specific
      * resource considering the read/write access, the security mode, and the filtering status
-     *
-     * @param user
-     * @param canRead
-     * @param canWrite
-     * @param resourceName
      */
     public WrapperPolicy buildWrapperPolicy(
             Authentication user,
@@ -822,11 +817,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Factors out the policy that decides what access level the current user has to a specific
      * resource considering the read/write access, the security mode, and the filtering status
-     *
-     * @param user
-     * @param canRead
-     * @param canWrite
-     * @param resourceName
      */
     public WrapperPolicy buildWrapperPolicy(
             Authentication user,
@@ -998,9 +988,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a list of resources, returns a copy of it containing only the resources the user can
      * access
-     *
-     * @param user
-     * @param resources
      */
     protected <T extends ResourceInfo> List<T> filterResources(
             Authentication user, List<T> resources) {
@@ -1015,9 +1002,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a list of stores, returns a copy of it containing only the resources the user can
      * access
-     *
-     * @param user
-     * @param resources
      */
     protected <T extends StoreInfo> List<T> filterStores(Authentication user, List<T> resources) {
         List<T> result = new ArrayList<T>();
@@ -1031,9 +1015,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a list of layer groups, returns a copy of it containing only the groups the user can
      * access
-     *
-     * @param user
-     * @param groups
      */
     protected List<LayerGroupInfo> filterGroups(Authentication user, List<LayerGroupInfo> groups) {
         List<LayerGroupInfo> result = new ArrayList<LayerGroupInfo>();
@@ -1046,9 +1027,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     /**
      * Given a list of layers, returns a copy of it containing only the layers the user can access
-     *
-     * @param user
-     * @param layers
      */
     protected List<LayerInfo> filterLayers(Authentication user, List<LayerInfo> layers) {
         List<LayerInfo> result = new ArrayList<LayerInfo>();
@@ -1074,9 +1052,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a list of namespaces, returns a copy of it containing only the namespaces the user can
      * access
-     *
-     * @param user
-     * @param namespaces
      */
     protected <T extends NamespaceInfo> List<T> filterNamespaces(
             Authentication user, List<T> namespaces) {
@@ -1091,9 +1066,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a list of workspaces, returns a copy of it containing only the workspaces the user can
      * access
-     *
-     * @param user
-     * @param namespaces
      */
     protected <T extends WorkspaceInfo> List<T> filterWorkspaces(
             Authentication user, List<T> workspaces) {

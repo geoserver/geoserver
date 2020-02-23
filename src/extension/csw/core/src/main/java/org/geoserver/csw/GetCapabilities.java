@@ -289,11 +289,7 @@ public class GetCapabilities {
         return sectionIsRequested;
     }
 
-    /**
-     * @param owsf
-     * @param baseUrl
-     * @param operationsMetadata
-     */
+    /** */
     private void OperationMetadata_GetCapabilities(
             Ows10Factory owsf, final String baseUrl, OperationsMetadataType operationsMetadata) {
         // - GetCapabilities
@@ -334,11 +330,7 @@ public class GetCapabilities {
         }
     }
 
-    /**
-     * @param owsf
-     * @param baseUrl
-     * @param operationsMetadata
-     */
+    /** */
     private void OperationMetadata_DescribeRecord(
             Ows10Factory owsf, String baseUrl, OperationsMetadataType operationsMetadata) {
         // - DescribeRecord
@@ -386,11 +378,7 @@ public class GetCapabilities {
         }
     }
 
-    /**
-     * @param owsf
-     * @param baseUrl
-     * @param operationsMetadata
-     */
+    /** */
     private void OperationMetadata_GetRecords(
             Ows10Factory owsf, String baseUrl, OperationsMetadataType operationsMetadata) {
         // - GetRecords
@@ -469,11 +457,7 @@ public class GetCapabilities {
         }
     }
 
-    /**
-     * @param owsf
-     * @param baseUrl
-     * @param operationsMetadata
-     */
+    /** */
     private void OperationMetadata_GetRecordById(
             Ows10Factory owsf, String baseUrl, OperationsMetadataType operationsMetadata) {
         // - GetRecordById
@@ -521,11 +505,7 @@ public class GetCapabilities {
         }
     }
 
-    /**
-     * @param owsf
-     * @param baseUrl
-     * @param operationsMetadata
-     */
+    /** */
     private void OperationMetadata_GetDomain(
             Ows10Factory owsf, String baseUrl, OperationsMetadataType operationsMetadata) {
         // - GetDomain
@@ -605,11 +585,7 @@ public class GetCapabilities {
         }
     }
 
-    /**
-     * @param owsf
-     * @param baseUrl
-     * @param operationsMetadata
-     */
+    /** */
     private void OperationMetadata_Transaction(
             Ows10Factory owsf, String baseUrl, OperationsMetadataType operationsMetadata) {
         // - Transaction

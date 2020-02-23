@@ -43,11 +43,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
         // do nothing
     }
 
-    /**
-     * To be called at the the end of a transaction, frees the current {@link Connection}
-     *
-     * @throws SQLException
-     */
+    /** To be called at the the end of a transaction, frees the current {@link Connection} */
     protected void releaseConnection() throws SQLException {
         if (connection != null) {
             connection.close();

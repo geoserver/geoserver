@@ -26,10 +26,6 @@ public class JsgiRequest extends ScriptableObject {
      * Generates a JavaScript object that conforms to the JSGI spec.
      * http://wiki.commonjs.org/wiki/JSGI/Level0/A/Draft2
      *
-     * @param request
-     * @param response
-     * @param cx
-     * @param scope
      */
     public JsgiRequest(
             HttpServletRequest request,

@@ -20,18 +20,10 @@ import org.geotools.coverage.grid.GridCoverage2D;
  */
 public interface CoverageResponseDelegate {
 
-    /**
-     * Returns true if the specified output format is supported, false otherwise
-     *
-     * @param outputFormat
-     */
+    /** Returns true if the specified output format is supported, false otherwise */
     boolean canProduce(String outputFormat);
 
-    /**
-     * Returns the content type for the specified output format
-     *
-     * @param outputFormat
-     */
+    /** Returns the content type for the specified output format */
     String getMimeType(String outputFormat);
 
     /**
@@ -41,15 +33,7 @@ public interface CoverageResponseDelegate {
      */
     String getFileExtension(String outputFormat);
 
-    /**
-     * Encodes the coverage in the specified output format onto the output stream
-     *
-     * @param coverage
-     * @param outputFormat
-     * @param output
-     * @throws ServiceException
-     * @throws IOException
-     */
+    /** Encodes the coverage in the specified output format onto the output stream */
     void encode(
             GridCoverage2D coverage,
             String outputFormat,
@@ -66,21 +50,10 @@ public interface CoverageResponseDelegate {
      */
     boolean isAvailable();
 
-    /**
-     * Returns the GML conformance class for this output format.
-     *
-     * @param format
-     */
+    /** Returns the GML conformance class for this output format. */
     String getConformanceClass(String format);
 
-    /**
-     * Allows the delegate to specify the output format given the object to encode and the
-     *
-     * @param value
-     * @param coverageId
-     * @param format
-     * @return
-     */
+    /** Allows the delegate to specify the output format given the object to encode and the */
     default String getFileName(GridCoverage2D value, String coverageId, String format) {
         return coverageId + "." + getFileExtension(format);
     }

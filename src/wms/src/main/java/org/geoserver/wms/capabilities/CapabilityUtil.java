@@ -78,7 +78,6 @@ public final class CapabilityUtil {
      * </pre>
      *
      * @return Max and Min denominator
-     * @throws IOException
      */
     public static NumberRange<Double> searchMinMaxScaleDenominator(final LayerInfo layer)
             throws IOException {
@@ -127,7 +126,6 @@ public final class CapabilityUtil {
      * </pre>
      *
      * @return Max and Min denominator
-     * @throws IOException
      */
     public static NumberRange<Double> searchMinMaxScaleDenominator(final LayerGroupInfo layerGroup)
             throws IOException {
@@ -150,7 +148,6 @@ public final class CapabilityUtil {
      * </pre>
      *
      * @return Max and Min denominator
-     * @throws IOException
      */
     public static NumberRange<Double> searchMinMaxScaleDenominator(
             final PublishedInfo publishedInfo) throws IOException {
@@ -166,7 +163,6 @@ public final class CapabilityUtil {
      * Computes the rendering scale taking into account the standard pixel size and the real world
      * scale denominator.
      *
-     * @param scaleDenominator
      * @return the rendering scale.
      */
     public static Double computeScaleHint(final Double scaleDenominator) {

@@ -48,11 +48,7 @@ public interface CatalogVisitor {
     /** Visits a layer group.. */
     void visit(LayerGroupInfo layerGroup);
 
-    /**
-     * Visits a WMS layer resource
-     *
-     * @param wmsLayerInfoImpl
-     */
+    /** Visits a WMS layer resource */
     void visit(WMSLayerInfo wmsLayer);
 
     /** Visits a WMTS layer resource */

@@ -93,29 +93,17 @@ public class AcceptableRange {
         throw new IllegalArgumentException("Unsupported value type " + dataType);
     }
 
-    /**
-     * Before offset
-     *
-     * @return
-     */
+    /** Before offset */
     public Number getBefore() {
         return before;
     }
 
-    /**
-     * After offset
-     *
-     * @return
-     */
+    /** After offset */
     public Number getAfter() {
         return after;
     }
 
-    /**
-     * The range data type
-     *
-     * @return
-     */
+    /** The range data type */
     public Class getDataType() {
         return dataType;
     }

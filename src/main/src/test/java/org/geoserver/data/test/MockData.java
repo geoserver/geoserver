@@ -426,9 +426,6 @@ public class MockData implements TestData {
      * Adds the list of well known types to the data directory. Well known types are listed as
      * constants in the MockData class header, and are organized as arrays based on the cite test
      * they do come from
-     *
-     * @param names
-     * @throws IOException
      */
     public void addWellKnownTypes(QName[] names) throws IOException {
         for (int i = 0; i < names.length; i++) {
@@ -440,9 +437,7 @@ public class MockData implements TestData {
     /**
      * Adds a single well known type with the custom properties specified
      *
-     * @param name
      * @param extraProperties The extra properties to be used
-     * @throws IOException
      */
     public void addWellKnownType(QName name, Map extraProperties) throws IOException {
         URL properties = MockData.class.getResource(name.getLocalPart() + ".properties");
@@ -508,7 +503,6 @@ public class MockData implements TestData {
      *
      * @param styleId the style id
      * @param style an URL pointing to an SLD file to be copied into the data directory
-     * @throws IOException
      */
     public void addStyle(String styleId, URL style) throws IOException {
         layerStyles.put(styleId, styleId + ".sld");
@@ -526,7 +520,6 @@ public class MockData implements TestData {
      * @param properties a URL to the property file backing the feature type. If null, an emtpy
      *     property file will be used
      * @param extraParams a map from extra configurable keys to their values (see for example
-     * @throws IOException
      */
     public void addPropertiesType(QName name, URL properties, Map extraParams) throws IOException {
         // sanitize input params
@@ -567,9 +560,6 @@ public class MockData implements TestData {
      *
      * <p>The <tt>coverage</tt> parameter is an input stream containing a single uncompressed file
      * that's supposed to be a coverage (e.g., a GeoTiff).
-     *
-     * @param name
-     * @param coverage
      */
     public void addCoverage(QName name, URL coverage, String extension, String styleName)
             throws Exception {
@@ -644,20 +634,12 @@ public class MockData implements TestData {
         coverageStores.put(name.getLocalPart(), params);
     }
 
-    /**
-     * Disables the specificed datastore (it's still configured, but with enabled=false)
-     *
-     * @param datastoreId
-     */
+    /** Disables the specificed datastore (it's still configured, but with enabled=false) */
     public void disableDataStore(String datastoreId) {
         disabledDataStores.add(datastoreId);
     }
 
-    /**
-     * Disables the specificed coveragestore (it's still configured, but with enabled=false)
-     *
-     * @param datastoreId
-     */
+    /** Disables the specificed coveragestore (it's still configured, but with enabled=false) */
     public void disableCoverageStore(String datastoreId) {
         disabledCoverageStores.add(datastoreId);
     }
@@ -670,11 +652,7 @@ public class MockData implements TestData {
         namespaces.put(MockData.SF_PREFIX, MockData.SF_URI);
     }
 
-    /**
-     * Sets up the catalog in the data directory
-     *
-     * @throws IOException
-     */
+    /** Sets up the catalog in the data directory */
     protected void setUpCatalog() throws IOException {
         // create the catalog.xml
         CatalogWriter writer = new CatalogWriter();
@@ -954,11 +932,7 @@ public class MockData implements TestData {
         writer.close();
     }
 
-    /**
-     * Kills the data directory, deleting all the files.
-     *
-     * @throws IOException
-     */
+    /** Kills the data directory, deleting all the files. */
     public void tearDown() throws IOException {
         //        IOUtils.delete(templates);
         //        IOUtils.delete(validation);

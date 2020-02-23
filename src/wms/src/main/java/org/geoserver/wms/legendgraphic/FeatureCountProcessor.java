@@ -182,8 +182,6 @@ class FeatureCountProcessor {
     /**
      * Builds a new feature count processor given the legend graphic request. It can be used to
      * alter with feature counts many rule sets.
-     *
-     * @param request
      */
     public FeatureCountProcessor(GetLegendGraphicRequest request) {
         this.request = request;
@@ -202,10 +200,6 @@ class FeatureCountProcessor {
     /**
      * Pre-processes the legend request and returns a style whose rules have been altered to contain
      * a feature count
-     *
-     * @param legend
-     * @return
-     * @throws Exception
      */
     public Rule[] preProcessRules(LegendRequest legend, Rule[] rules) {
         if (rules == null || rules.length == 0) {
@@ -297,14 +291,7 @@ class FeatureCountProcessor {
         return counters;
     }
 
-    /**
-     * Parse the equivalent GetMap for this layer
-     *
-     * @param legend
-     * @param rules
-     * @return
-     * @throws Exception
-     */
+    /** Parse the equivalent GetMap for this layer */
     private GetMapRequest parseAssociatedGetMap(LegendRequest legend, Rule[] rules)
             throws Exception {
         // setup the KVP for the internal, fake GetMap

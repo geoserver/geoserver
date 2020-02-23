@@ -55,8 +55,6 @@ public class EOCoverageResourceCodec {
     /**
      * Checks if the specified coverage is a valid dataset, e.g., it has the dataset flag enabled
      * and time dimension, and has a structured grid coverage reader backing it
-     *
-     * @param ci
      */
     public boolean isValidDataset(CoverageInfo ci) {
         Boolean dataset = ci.getMetadata().get(WCSEOMetadata.DATASET.key, Boolean.class);
@@ -74,7 +72,6 @@ public class EOCoverageResourceCodec {
     /**
      * Returns the coverage backed by the provided datasetId
      *
-     * @param datasetId
      * @return the coverage, or null if not found, or if not a coverage
      */
     public CoverageInfo getDatasetCoverage(String datasetId) {
@@ -138,8 +135,6 @@ public class EOCoverageResourceCodec {
     /**
      * Given a valid granule id returns a Filter to extract it from the structured grid coverage
      * reader
-     *
-     * @param coverageId
      */
     public Filter getGranuleFilter(String granuleId) {
         // does it have the expected lexical structure?

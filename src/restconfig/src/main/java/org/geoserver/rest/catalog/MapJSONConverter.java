@@ -75,7 +75,6 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
     /**
      * Convert to JSON representation.
      *
-     * @param obj
      * @return json representation
      */
     public Object toJSONObject(Object obj) {

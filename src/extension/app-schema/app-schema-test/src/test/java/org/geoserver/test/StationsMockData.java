@@ -353,14 +353,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 otherResourcesFiles);
     }
 
-    /**
-     * Helper method that
-     *
-     * @param resource
-     * @param gmlPrefix
-     * @param gmlDirectory
-     * @return
-     */
+    /** Helper method that */
     private File getTargetFile(String resource, String gmlPrefix, File gmlDirectory) {
         int index = resource.lastIndexOf("/");
         if (index < 0) {

@@ -66,12 +66,7 @@ public abstract class XMLXpath {
         rrContext.register(NSP_RR, NS_RR);
     }
 
-    /**
-     * Compile XPath Strings to {@link XPathExpression}
-     *
-     * @param xpath
-     * @param expression
-     */
+    /** Compile XPath Strings to {@link XPathExpression} */
     protected XPathExpression compile(XPath xpath, String expression) {
         try {
             return xpath.compile(expression);
@@ -81,13 +76,7 @@ public abstract class XMLXpath {
         }
     }
 
-    /**
-     * Creates a relatvie XPathExpression for a XML attribute, needs name space prefix
-     *
-     * @param xpath
-     * @param attrName
-     * @param prefix
-     */
+    /** Creates a relatvie XPathExpression for a XML attribute, needs name space prefix */
     protected XPathExpression compileRelativeAttribute(
             XPath xpath, String attrName, String prefix) {
         // return compile(xpath,"@"+prefix+":"+attrName);

@@ -115,16 +115,7 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
         xmppClient.sendMessage(serviceJID, "topic=finish");
     }
 
-    /**
-     * @param xmppClient
-     * @param pID
-     * @param baseURL
-     * @param outputProducer
-     * @param key
-     * @param resultParams
-     * @return
-     * @throws Exception
-     */
+    /** */
     protected Object transformOutputs(
             XMPPClient xmppClient,
             final String pID,

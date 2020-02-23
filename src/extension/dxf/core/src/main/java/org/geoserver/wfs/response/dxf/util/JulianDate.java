@@ -15,11 +15,7 @@ import java.util.GregorianCalendar;
  * @author Mauro Bartolomeoli, mbarto@infosia.it
  */
 public class JulianDate {
-    /**
-     * Converts a Date to JD format.
-     *
-     * @param dt
-     */
+    /** Converts a Date to JD format. */
     public static double toJulian(Date dt) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(dt);

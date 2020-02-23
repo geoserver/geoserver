@@ -402,10 +402,7 @@ public class DbMappings {
         log("----------------------");
     }
 
-    /**
-     * @param clazz
-     * @param nestedPropDefs
-     */
+    /** */
     private void addNestedPropertyTypes(
             final NamedParameterJdbcOperations template,
             Collection<PropertyTypeDef> nestedPropDefs) {
@@ -467,11 +464,6 @@ public class DbMappings {
     }
 
     /**
-     * @param infoClazz
-     * @param template
-     * @param propertyName
-     * @param targetProperty
-     * @param isCollection
      * @return the newly added property type, or {@code null} if it was not added to the database
      *     (i.e. already exists)
      */

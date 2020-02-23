@@ -23,11 +23,7 @@ class TimeoutReadWriteLock {
 
     String name;
 
-    /**
-     * Builds the {@link ReadWriteLock} wrapper with a given timeout, in milliseconds
-     *
-     * @param timeoutMs
-     */
+    /** Builds the {@link ReadWriteLock} wrapper with a given timeout, in milliseconds */
     public TimeoutReadWriteLock(int timeoutMs, String name) {
         this.timeoutMs = timeoutMs;
         this.name = name;

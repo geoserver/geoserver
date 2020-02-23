@@ -56,10 +56,6 @@ public abstract class SimpleAjaxSubmitLink extends Panel {
         return label;
     }
 
-    /**
-     * Subclasses should override and provide the behaviour for
-     *
-     * @param target
-     */
+    /** Subclasses should override and provide the behaviour for */
     protected abstract void onSubmit(AjaxRequestTarget target, Form<?> form);
 }

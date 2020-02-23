@@ -68,8 +68,6 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     /**
      * Makes the CRS bounds a required component of the envelope. It is warmly suggested that the
      * crs field be made visible too
-     *
-     * @param crsRequired
      */
     public void setCrsRequired(boolean crsRequired) {
         this.crsRequired = crsRequired;

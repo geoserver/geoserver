@@ -19,10 +19,6 @@ public interface DimensionDefaultValueSelectionStrategyFactory {
     /**
      * Returns a dimension and resource specific strategy for selecting default values for the given
      * resource and dimension in GetMap requests.
-     *
-     * @param resource
-     * @param dimensionName
-     * @param dimension
      */
     public DimensionDefaultValueSelectionStrategy getStrategy(
             ResourceInfo resource, String dimensionName, DimensionInfo dimension);

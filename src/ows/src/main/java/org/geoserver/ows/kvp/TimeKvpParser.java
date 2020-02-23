@@ -38,11 +38,7 @@ public class TimeKvpParser extends KvpParser {
         return parser.parse(value);
     }
 
-    /**
-     * Allows subclasses to customize the {@link TimeParser} used in {@link #parse(String)}
-     *
-     * @return
-     */
+    /** Allows subclasses to customize the {@link TimeParser} used in {@link #parse(String)} */
     protected TimeParser getTimeParser() {
         return parser;
     }

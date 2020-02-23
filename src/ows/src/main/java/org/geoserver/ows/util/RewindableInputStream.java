@@ -115,7 +115,6 @@ public class RewindableInputStream extends InputStream {
      * (initial size of the internal buffer and chunk read mode).
      *
      * @param is InputStream that needs some reset/rewind functionality.
-     * @param chunkedMode
      *     <p>Initial value of <code>fMayReadChunks</code> flag which determines whether multiple
      *     bytes can be read from the underlying stream in single reading operation or not. This
      *     value can be changed using <code>setChunkedMode</code> (or its aliases). For specific

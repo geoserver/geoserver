@@ -27,11 +27,7 @@ public abstract class ComplexTransmuter implements Transmuter {
     /** Returns mime-type of encoded data */
     public abstract String getMimeType();
 
-    /**
-     * Used to decode external XML documents for use as process inputs
-     *
-     * @param stream
-     */
+    /** Used to decode external XML documents for use as process inputs */
     public Object decode(InputStream stream) {
         Object decoded = null;
         Configuration config = null;
@@ -53,11 +49,7 @@ public abstract class ComplexTransmuter implements Transmuter {
         return decoded;
     }
 
-    /**
-     * Used to encode document for server storage
-     *
-     * @param input
-     */
+    /** Used to encode document for server storage */
     public Object encode(Object input) {
         throw new WPSException("NoApplicableCode", "Unimplemented encoder for ComplexTransmuter.");
     }

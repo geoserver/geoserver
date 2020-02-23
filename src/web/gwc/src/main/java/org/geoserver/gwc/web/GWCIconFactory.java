@@ -44,11 +44,7 @@ public class GWCIconFactory implements Serializable {
         // private constructor, this is a singleton
     }
 
-    /**
-     * Returns the appropriate icon for the specified layer type.
-     *
-     * @param info
-     */
+    /** Returns the appropriate icon for the specified layer type. */
     public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
         if (layer instanceof GeoServerTileLayer) {
             GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;

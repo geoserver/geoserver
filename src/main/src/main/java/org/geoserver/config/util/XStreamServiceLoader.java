@@ -67,8 +67,6 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
     /**
      * Fills in all the bits that are normally not loaded automatically by XStream, such as empty
      * collections
-     *
-     * @param info
      */
     public void initializeService(ServiceInfo info) {
         initialize((T) info);
@@ -78,8 +76,6 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
      * Fills in the blanks of the service object loaded by XStream. This implementation makes sure
      * all collections in {@link ServiceInfoImpl} are initialized, subclasses should override to add
      * more specific initializations (such as the actual supported versions and so on)
-     *
-     * @param service
      */
     protected T initialize(T service) {
         if (service instanceof ServiceInfoImpl) {

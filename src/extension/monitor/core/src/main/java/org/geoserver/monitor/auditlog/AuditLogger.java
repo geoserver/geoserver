@@ -311,12 +311,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
             LOGGER.info("Request Dumper stopped");
         }
 
-        /**
-         * Performs log-rolling if necessary
-         *
-         * @param writer
-         * @throws IOException
-         */
+        /** Performs log-rolling if necessary */
         BufferedWriter rollWriter(BufferedWriter writer) throws Exception {
             // get date
             final GregorianCalendar current = new GregorianCalendar(TimeZone.getTimeZone("GMT"));

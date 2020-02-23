@@ -33,12 +33,7 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         return store;
     }
 
-    /**
-     * Loads a new {@link JDBCDatastore} from the data directory, and
-     *
-     * @param dd
-     * @throws IOException
-     */
+    /** Loads a new {@link JDBCDatastore} from the data directory, and */
     public JDBCStatusStoreLoader(GeoServerDataDirectory dd) throws IOException {
         // see if we have the JDBCDatastore configuration ready, otherwise create one from the
         // classpath

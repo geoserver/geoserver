@@ -74,18 +74,10 @@ public interface OAuth2FilterConfig {
     /** @param scopes the scopes to set */
     public void setScopes(String scopes);
 
-    /**
-     * **THIS MUST** be different for every OAuth2 Plugin
-     *
-     * @return
-     */
+    /** **THIS MUST** be different for every OAuth2 Plugin */
     public String getLoginEndpoint();
 
-    /**
-     * **THIS MUST** be different for every OAuth2 Plugin
-     *
-     * @return
-     */
+    /** **THIS MUST** be different for every OAuth2 Plugin */
     public String getLogoutEndpoint();
 
     /** @param loginEndpoint */

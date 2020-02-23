@@ -367,11 +367,7 @@ public class ExecuteResponseBuilder {
         response.getStatus().setProcessFailed(failedType);
     }
 
-    /**
-     * Gets the mime type for the specified output
-     *
-     * @param key
-     */
+    /** Gets the mime type for the specified output */
     private String getOutputMimeType(String key) {
         // lookup for the OutputDefinitionType
         if (request.getResponseForm() == null) {

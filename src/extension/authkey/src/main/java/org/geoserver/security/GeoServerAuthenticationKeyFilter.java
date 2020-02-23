@@ -127,10 +127,6 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
     /**
      * Try to authenticate and adds {@link GeoServerRole#AUTHENTICATED_ROLE} Does NOT authenticate
      * {@link GeoServerUser#ROOT_USERNAME}
-     *
-     * @param request
-     * @param response
-     * @param authkey
      */
     protected void doAuthenticate(
             HttpServletRequest request, HttpServletResponse response, String authKey)
@@ -170,11 +166,7 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         return authKey;
     }
 
-    /**
-     * Extracts authkey value from the request.
-     *
-     * @param req
-     */
+    /** Extracts authkey value from the request. */
     private String getAuthKeyParamValue(HttpServletRequest req) {
         String keyParamName = getAuthKeyParamName();
         for (Enumeration<String> a = req.getParameterNames(); a.hasMoreElements(); ) {

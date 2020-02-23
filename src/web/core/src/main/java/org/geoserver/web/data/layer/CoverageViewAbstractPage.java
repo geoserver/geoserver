@@ -217,8 +217,6 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Data stores tend to return IOExceptions with no explanation, and the actual error coming from
      * the db is in the cause. This method extracts the first not null message in the cause chain
-     *
-     * @param t
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;

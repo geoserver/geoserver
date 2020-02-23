@@ -86,7 +86,6 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      * @param caller The "calling" class, used to look up templates based with {@link
      *     Class#getResource(String)}, may be <code>null</code>
      * @param rl The geoserver resource loader
-     * @throws IOException
      */
     public GeoServerTemplateLoader(Class caller, GeoServerResourceLoader rl) throws IOException {
         this(

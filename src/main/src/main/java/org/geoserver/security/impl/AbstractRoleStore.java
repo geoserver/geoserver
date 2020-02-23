@@ -101,11 +101,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
         return modified;
     }
 
-    /**
-     * Setter for modified flag
-     *
-     * @param value
-     */
+    /** Setter for modified flag */
     public void setModified(Boolean value) {
         modified = value;
     }

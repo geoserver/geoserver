@@ -129,7 +129,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
     /**
      * Creates a new WMSCapsTransformer object.
      *
-     * @param wms
      * @param schemaBaseUrl the base URL of the current request (usually
      *     "http://host:port/geoserver")
      * @param getMapFormats the list of supported output formats to state for the GetMap request
@@ -221,8 +220,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * Creates a new CapabilitiesTranslator object.
          *
          * @param handler content handler to send sax events to.
-         * @param schemaBaseURL
-         * @param schemaLoc
          */
         public Capabilities_1_3_0_Translator(
                 ContentHandler handler,
@@ -422,11 +419,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             end("ContactInformation");
         }
 
-        /**
-         * Turns the keyword list to XML
-         *
-         * @param keywords
-         */
+        /** Turns the keyword list to XML */
         private void handleKeywordList(List<KeywordInfo> keywords) {
             start("KeywordList");
 
@@ -443,11 +436,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             end("KeywordList");
         }
 
-        /**
-         * Turns the metadata URL list to XML
-         *
-         * @param keywords
-         */
+        /** Turns the metadata URL list to XML */
         private void handleMetadataList(Collection<MetadataLinkInfo> metadataURLs) {
             if (metadataURLs == null) {
                 return;
@@ -470,11 +459,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
-        /**
-         * Turns the data URL list to XML
-         *
-         * @param keywords
-         */
+        /** Turns the data URL list to XML */
         private void handleDataList(Collection<DataLinkInfo> dataURLs) {
             if (dataURLs == null) {
                 return;
@@ -1060,10 +1045,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             return wmsExposable;
         }
 
-        /**
-         * @throws IOException
-         * @throws RuntimeException
-         */
+        /** */
         protected void handleLayer(final LayerInfo layer, boolean isRoot) throws IOException {
             boolean queryable = wmsConfig.isQueryable(layer);
             AttributesImpl qatts = attributes("queryable", queryable ? "1" : "0");
@@ -1150,8 +1132,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * <code>MinScaleDenominator</code>
          * <code>MaxScaleDenominator</code>
          * </pre>
-         *
-         * @param layer
          */
         private void handleScaleDenominator(final PublishedInfo layer) {
 
@@ -1320,8 +1300,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         /**
          * Returns a list of top level groups, that is, the ones that are not nested within other
          * layer groups
-         *
-         * @param allGroups
          */
         private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
             LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<LayerGroupInfo>(allGroups);
@@ -1598,11 +1576,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             end("LegendURL");
         }
 
-        /**
-         * Encodes a LatLonBoundingBox for the given Envelope.
-         *
-         * @param bbox
-         */
+        /** Encodes a LatLonBoundingBox for the given Envelope. */
         private void handleGeographicBoundingBox(Envelope bbox) {
             String minx = String.valueOf(bbox.getMinX());
             String miny = String.valueOf(bbox.getMinY());
@@ -1617,11 +1591,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             end("EX_GeographicBoundingBox");
         }
 
-        /**
-         * Encodes a BoundingBox for the given Envelope.
-         *
-         * @param bbox
-         */
+        /** Encodes a BoundingBox for the given Envelope. */
         private void handleBBox(Envelope bbox, String srs) {
             String minx = String.valueOf(bbox.getMinX());
             String miny = String.valueOf(bbox.getMinY());

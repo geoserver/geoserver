@@ -285,12 +285,7 @@ public abstract class BackupRestoreItem<T> {
     /** */
     protected abstract void initialize(StepExecution stepExecution);
 
-    /**
-     * @param result
-     * @param e
-     * @return
-     * @throws Exception
-     */
+    /** */
     public boolean logValidationExceptions(ValidationResult result, Exception e) throws Exception {
         CatalogException validationException = new CatalogException(e);
         if (!isBestEffort()) {
@@ -322,11 +317,7 @@ public abstract class BackupRestoreItem<T> {
         return false;
     }
 
-    /**
-     * @param resource
-     * @param ws
-     * @return
-     */
+    /** */
     protected boolean filteredResource(T resource, WorkspaceInfo ws, boolean strict, Class clazz) {
         // Filtering Resources
         if (filterIsValid()) {
@@ -369,11 +360,7 @@ public abstract class BackupRestoreItem<T> {
         return false;
     }
 
-    /**
-     * @param resource
-     * @param ws
-     * @return
-     */
+    /** */
     protected boolean filteredResource(WorkspaceInfo ws, boolean strict) {
         return filteredResource(null, ws, strict, WorkspaceInfo.class);
     }
@@ -490,10 +477,7 @@ public abstract class BackupRestoreItem<T> {
         };
     }
 
-    /**
-     * @param item
-     * @return
-     */
+    /** */
     private Object unwrap(Object item) {
         if (item instanceof Proxy) {
             item = ProxyUtils.unwrap(item, Proxy.getInvocationHandler(item).getClass());
@@ -501,10 +485,7 @@ public abstract class BackupRestoreItem<T> {
         return item;
     }
 
-    /**
-     * @param info
-     * @return
-     */
+    /** */
     private ResourceInfo unwrapSecured(ResourceInfo info) {
         if (info instanceof SecuredFeatureTypeInfo)
             return ((SecuredFeatureTypeInfo) info).unwrap(ResourceInfo.class);
@@ -517,10 +498,7 @@ public abstract class BackupRestoreItem<T> {
         return info;
     }
 
-    /**
-     * @param info
-     * @return
-     */
+    /** */
     private StoreInfo unwrapSecured(StoreInfo info) {
         if (info instanceof SecuredDataStoreInfo)
             return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);

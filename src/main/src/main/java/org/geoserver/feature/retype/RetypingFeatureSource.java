@@ -43,8 +43,6 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
     /**
      * Builds a retyping wrapper
      *
-     * @param wrapped
-     * @param targetTypeName
      * @param targetSchema The target schema can have a different name and less attributes than the
      *     original one
      */

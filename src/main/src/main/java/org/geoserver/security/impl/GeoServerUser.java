@@ -164,11 +164,7 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
         return authorities;
     }
 
-    /**
-     * Set the roles of the user.
-     *
-     * @param roles
-     */
+    /** Set the roles of the user. */
     public void setAuthorities(Set<? extends GrantedAuthority> roles) {
         authorities = Collections.unmodifiableSet(roles);
     }

@@ -142,12 +142,7 @@ public class LDAPTestUtils {
         }
     }
 
-    /**
-     * Checks if a network host / port is already occupied.
-     *
-     * @param host
-     * @param port
-     */
+    /** Checks if a network host / port is already occupied. */
     private static boolean portIsBusy(String host, int port) {
         ServerSocket ss = null;
         DatagramSocket ds = null;

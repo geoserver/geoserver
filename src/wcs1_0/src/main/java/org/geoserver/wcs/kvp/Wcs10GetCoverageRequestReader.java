@@ -355,10 +355,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         return domainSubset;
     }
 
-    /**
-     * @param timeSequence
-     * @param tPos
-     */
+    /** */
     private void addToTimeSequence(TimeSequenceType timeSequence, Object tPos) {
         if (tPos instanceof Date) {
             final TimePositionType timePosition = Gml4wcsFactory.eINSTANCE.createTimePositionType();
@@ -418,10 +415,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         return rangeSubset;
     }
 
-    /**
-     * @param rangeSubset
-     * @param axis
-     */
+    /** */
     @SuppressWarnings("unchecked")
     private void checkTypeAxisRange(
             final RangeSubsetType rangeSubset, Object axis, String axisName) {
@@ -551,11 +545,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         return output;
     }
 
-    /**
-     * DEcode the requested CRS following the WCS 1.0 style with LON,LAT axes order.
-     *
-     * @param crsName
-     */
+    /** DEcode the requested CRS following the WCS 1.0 style with LON,LAT axes order. */
     private static CoordinateReferenceSystem decodeCRS100(String crsName) throws WcsException {
         if ("WGS84(DD)".equals(crsName)) {
             crsName = "EPSG:4326";
@@ -576,8 +566,6 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     /**
      * Parses the interpolation parameter from the kvp. If nothing is present the default nearest
      * neighbor is set.
-     *
-     * @param kvp
      */
     private InterpolationMethodType parseInterpolation(Map kvp) {
         if (kvp.containsKey("interpolation")) {

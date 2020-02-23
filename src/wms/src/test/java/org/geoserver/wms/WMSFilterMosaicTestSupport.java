@@ -16,13 +16,7 @@ import org.geoserver.catalog.CoverageInfo;
  */
 public class WMSFilterMosaicTestSupport extends WMSDimensionsTestSupport {
 
-    /**
-     * Here we setup the default mosaic filter to the layer
-     *
-     * @param metadata
-     * @param presentation
-     * @param resolution
-     */
+    /** Here we setup the default mosaic filter to the layer */
     protected void setupMosaicFilter(String filter, String layer) {
         CoverageInfo info = getCatalog().getCoverageByName(layer);
 

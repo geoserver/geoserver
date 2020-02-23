@@ -45,21 +45,13 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
      * <p>The provided list is directly used for storage, most feature collection operations just
      * use a simple iterator so there is no performance advantaged to be gained over using an
      * ArrayList vs a LinkedList (other then for the size() method of course).
-     *
-     * @param schema
-     * @param list
      */
     public ListComplexFeatureCollection(FeatureType schema, List<Feature> list) {
         super(schema);
         this.list = list;
     }
 
-    /**
-     * Create a ListFeatureCollection around the provided feature.
-     *
-     * @param schema
-     * @param list
-     */
+    /** Create a ListFeatureCollection around the provided feature. */
     public ListComplexFeatureCollection(Feature feature) {
         super(feature.getType());
         this.list = new ArrayList<>();

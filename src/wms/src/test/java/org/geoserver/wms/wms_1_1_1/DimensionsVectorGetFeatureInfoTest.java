@@ -64,8 +64,6 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
      * Ensures there is at most one feature at the specified location, and returns its feature id
      *
      * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
-     * @param x
-     * @param y
      */
     String getFeatureAt(String baseFeatureInfo, int x, int y) throws Exception {
         return getFeatureAt(baseFeatureInfo, x, y, "sf:TimeElevation");
@@ -75,8 +73,6 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
      * Ensures there is at most one feature at the specified location, and returns its feature id
      *
      * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
-     * @param x
-     * @param y
      */
     String getFeatureAt(String baseFeatureInfo, int x, int y, String typeName) throws Exception {
         MockHttpServletResponse response =

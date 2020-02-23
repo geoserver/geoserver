@@ -639,8 +639,6 @@ public class ReaderUtils {
     /**
      * Unescapes the provided text with XML entities, see
      * (http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references#Character_entities_in_XML)
-     *
-     * @param text
      */
     private static String unescape(String text) {
         String s = text;

@@ -60,7 +60,6 @@ public class ProductClass implements Serializable, Cloneable {
      *
      * @param oseo reference to the service configuration
      * @param name the product class name
-     * @return
      */
     public static ProductClass getProductClassFromName(OSEOInfo oseo, String name) {
         for (ProductClass pc : getProductClasses(oseo)) {
@@ -76,7 +75,6 @@ public class ProductClass implements Serializable, Cloneable {
      *
      * @param oseo reference to the service configuration
      * @param name the product class prefix
-     * @return
      */
     public static ProductClass getProductClassFromPrefix(OSEOInfo oseo, String prefix) {
         for (ProductClass pc : getProductClasses(oseo)) {
@@ -93,7 +91,6 @@ public class ProductClass implements Serializable, Cloneable {
      *
      * @param oseo reference to the service configuration
      * @param name the product class name
-     * @return
      */
     public static boolean isProductClass(OSEOInfo oseo, String prefix) {
         for (ProductClass pc : getProductClasses(oseo)) {
@@ -181,7 +178,6 @@ public class ProductClass implements Serializable, Cloneable {
      * Returns the configured product classes
      *
      * @param geoServer A GeoServer reference used to retrieve the OpenSearch configuration
-     * @return
      */
     public static List<ProductClass> getProductClasses(GeoServer geoServer) {
         if (geoServer != null) {
@@ -196,7 +192,6 @@ public class ProductClass implements Serializable, Cloneable {
      * Returns the configured product classes
      *
      * @param oseo The OpenSearch configuration
-     * @return
      */
     public static List<ProductClass> getProductClasses(OSEOInfo oseo) {
         if (oseo == null) {

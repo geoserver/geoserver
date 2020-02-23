@@ -414,8 +414,6 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     /**
      * Allows to remove presentation modes from the editor. If only a single presentation mode is
      * left the editor will setup in non enabled mode and will return that fixed value
-     *
-     * @param mode
      */
     public void disablePresentationMode(DimensionPresentation mode) {
         presentationModes.remove(mode);
@@ -526,12 +524,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
     protected void convertInputExtensions(T info) {}
 
-    /**
-     * Returns all attributes conforming to the specified type
-     *
-     * @param resource
-     * @param type
-     */
+    /** Returns all attributes conforming to the specified type */
     List<String> getAttributesOfType(ResourceInfo resource, Class<?> type) {
         List<String> result = new ArrayList<String>();
 

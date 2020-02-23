@@ -50,20 +50,12 @@ public class LockFile {
                                 }));
     }
 
-    /**
-     * return true if a write lock is hold by this file watcher
-     *
-     * @throws IOException
-     */
+    /** return true if a write lock is hold by this file watcher */
     public boolean hasWriteLock() throws IOException {
         return Resources.exists(lockFile) && lockFile.lastmodified() == lockFileLastModified;
     }
 
-    /**
-     * return true if a write lock is hold by another file watcher
-     *
-     * @throws IOException
-     */
+    /** return true if a write lock is hold by another file watcher */
     public boolean hasForeignWriteLock() throws IOException {
         return Resources.exists(lockFile) && lockFile.lastmodified() != lockFileLastModified;
     }
@@ -82,11 +74,7 @@ public class LockFile {
         }
     }
 
-    /**
-     * Try to get a lock
-     *
-     * @throws IOException
-     */
+    /** Try to get a lock */
     public void writeLock() throws IOException {
 
         if (hasWriteLock()) return; // already locked
@@ -107,12 +95,7 @@ public class LockFile {
         }
     }
 
-    /**
-     * Write some info into the lock file hostname, ip, user and lock file path
-     *
-     * @param lockFile
-     * @throws IOException
-     */
+    /** Write some info into the lock file hostname, ip, user and lock file path */
     protected void writeLockFileContent(Resource lockFile) throws IOException {
 
         Properties props = new Properties();

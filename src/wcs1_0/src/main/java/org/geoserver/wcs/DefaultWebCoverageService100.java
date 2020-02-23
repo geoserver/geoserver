@@ -869,9 +869,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     /**
      * Checks that the elements of the Output part of the request do make sense by comparing them to
      * the coverage metadata
-     *
-     * @param info
-     * @param rangeSubset
      */
     private void checkOutput(CoverageInfo meta, OutputType output) {
         if (output == null) return;
@@ -901,9 +898,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
      * Checks if the supported format string list contains the specified format, doing a case
      * insensitive search. If found the declared output format name is returned, otherwise null is
      * returned.
-     *
-     * @param supportedFormats
-     * @param format
      */
     private String getDeclaredFormat(List<String> supportedFormats, String format) {
         // supported formats may be setup using old style formats, first scan
@@ -922,9 +916,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     /**
      * Checks that the elements of the RangeSubset part of the request do make sense by comparing
      * them to the coverage metadata
-     *
-     * @param info
-     * @param rangeSubset
      */
     private static void checkRangeSubset(CoverageInfo info, RangeSubsetType rangeSubset) {
         // quick escape if no range subset has been specified (it's legal)

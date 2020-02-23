@@ -1068,11 +1068,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                 response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
     }
 
-    /**
-     * See https://osgeo-org.atlassian.net/browse/GEOS-8491
-     *
-     * @throws Exception
-     */
+    /** See https://osgeo-org.atlassian.net/browse/GEOS-8491 */
     @Test
     public void testConcurrentRequests() throws Exception {
         ExecutorService executor =

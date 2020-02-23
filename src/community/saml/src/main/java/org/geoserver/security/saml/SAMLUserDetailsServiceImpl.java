@@ -136,9 +136,6 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
      * GeoServerSecurityManager#getActiveRoleService()}
      *
      * <p>The result contains all inherited roles, but no personalized roles
-     *
-     * @param principal
-     * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromRoleService(String principal)
             throws IOException {
@@ -156,9 +153,6 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
     /**
      * Calculates roles using a {@link GeoServerUserGroupService} if the principal is not found, an
      * empty collection is returned
-     *
-     * @param principal
-     * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromUserGroupService(String principal)
             throws IOException {
@@ -185,9 +179,6 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
      * found, anempty collection is returned
      *
      * <p>The result contains personalized roles
-     *
-     * @param principal
-     * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromHttpAttribute(String principal)
             throws IOException {

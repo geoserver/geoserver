@@ -70,10 +70,6 @@ public class DataAccessLimits extends AccessLimits {
     /**
      * Writes the non Serializable Filter object ot the ObjectOutputStream via a OGC Filter XML
      * encoding conversion
-     *
-     * @param filter
-     * @param out
-     * @throws IOException
      */
     protected void writeFilter(Filter filter, ObjectOutputStream out) throws IOException {
         if (filter != null) {
@@ -89,10 +85,6 @@ public class DataAccessLimits extends AccessLimits {
     /**
      * Reads from the object input stream a string representing a filter in OGC XML encoding and
      * parses it back to a Filter object
-     *
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     protected Filter readFilter(ObjectInputStream in) throws IOException, ClassNotFoundException {
         byte[] serializedReadFilter = (byte[]) in.readObject();

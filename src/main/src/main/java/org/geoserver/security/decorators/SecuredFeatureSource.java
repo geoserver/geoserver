@@ -135,9 +135,6 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
     /**
      * Mixes two queries with an eye towards security (limiting attributes instead of adding them)
      * and preserves all of the other properties in userQuery (hints, crs handling, sorting)
-     *
-     * @param userQuery
-     * @param securityQuery
      */
     protected Query mixQueries(Query userQuery, Query securityQuery) {
         // first rough mix

@@ -63,12 +63,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
         return response;
     }
 
-    /**
-     * Returns true if the caching headers are enabled and the request is a GetCapabilities one
-     *
-     * @param request
-     * @return
-     */
+    /** Returns true if the caching headers are enabled and the request is a GetCapabilities one */
     private boolean handleCachingHeaders(Request request) {
         return capabilitiesCacheHeadersEnabled
                 && "GetCapabilities".equalsIgnoreCase(request.getRequest());
@@ -76,18 +71,12 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
 
     /**
      * Returns true if the callback will handle cache headers in GetCapabilities requests/responses
-     *
-     * @return
      */
     public boolean isCapabilitiesCacheHeadersEnabled() {
         return capabilitiesCacheHeadersEnabled;
     }
 
-    /**
-     * Enables/disables the caching headers processing for this callback
-     *
-     * @param capabilitiesCacheHeadersEnabled
-     */
+    /** Enables/disables the caching headers processing for this callback */
     public void setCapabilitiesCacheHeadersEnabled(boolean capabilitiesCacheHeadersEnabled) {
         this.capabilitiesCacheHeadersEnabled = capabilitiesCacheHeadersEnabled;
     }

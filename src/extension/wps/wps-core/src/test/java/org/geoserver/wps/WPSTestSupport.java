@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -102,11 +100,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         xp = XMLUnit.newXpathEngine();
     }
 
-    /**
-     * Subclasses can override to register custom namespace mappings for xml unit
-     *
-     * @param namespaces
-     */
+    /** Subclasses can override to register custom namespace mappings for xml unit */
     protected void registerNamespaces(Map<String, String> namespaces) {
         // TODO Auto-generated method stub
 
@@ -125,22 +119,12 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         return "wps?";
     }
 
-    /**
-     * Validates a document based on the WPS schema
-     *
-     * @throws TransformerException
-     * @throws ParserConfigurationException
-     */
+    /** Validates a document based on the WPS schema */
     protected void checkValidationErrors(Document dom) throws Exception {
         checkValidationErrors(dom, new WPSConfiguration());
     }
 
-    /**
-     * Validates a document against the
-     *
-     * @param dom
-     * @param configuration
-     */
+    /** Validates a document against the */
     protected void checkValidationErrors(Document dom, Configuration configuration)
             throws Exception {
         Parser p = new Parser(configuration);
@@ -169,11 +153,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         return sb.toString();
     }
 
-    /**
-     * Adds the wcs 1.1 coverages.
-     *
-     * @param testData
-     */
+    /** Adds the wcs 1.1 coverages. */
     public void addWcs11Coverages(SystemTestData testData) throws Exception {
         String styleName = "raster";
         testData.addStyle(styleName, "raster.sld", MockData.class, getCatalog());
@@ -191,12 +171,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
     }
 
-    /**
-     * Submits an asynch execute request and waits for the final result, which is then returned
-     *
-     * @param xml
-     * @param maxWaitSeconds
-     */
+    /** Submits an asynch execute request and waits for the final result, which is then returned */
     protected Document submitAsynchronous(String xml, long maxWaitSeconds) throws Exception {
         Document dom = postAsDOM("wps", xml);
         assertXpathExists("//wps:ProcessAccepted", dom);

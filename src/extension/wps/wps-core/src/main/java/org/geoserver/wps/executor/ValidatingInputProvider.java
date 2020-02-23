@@ -22,12 +22,7 @@ public class ValidatingInputProvider implements InputProvider {
 
     Collection<Validator> validators;
 
-    /**
-     * Adds validation around the input provider as needed
-     *
-     * @param delegate
-     * @param validators
-     */
+    /** Adds validation around the input provider as needed */
     public static InputProvider wrap(InputProvider delegate, Collection<Validator> validators) {
         if (validators == null || validators.isEmpty()) {
             return delegate;

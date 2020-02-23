@@ -191,9 +191,6 @@ public class PyAppHook extends AppHook {
      *   life of its containing process. Normally, this will only be true for a gateway
      *   based on CGI (or something similar).
      * </pre>
-     *
-     * @param request
-     * @throws IOException
      */
     PyObject createEnviron(HttpServletRequest request) throws IOException {
 

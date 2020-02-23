@@ -114,13 +114,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return searchParameters;
     }
 
-    /**
-     * Returns the complex feature representing a collection by parentId
-     *
-     * @param parentId
-     * @return
-     * @throws IOException
-     */
+    /** Returns the complex feature representing a collection by parentId */
     private Feature getCollectionByParentIdentifier(final String parentId) throws IOException {
         OpenSearchAccess access = getOpenSearchAccess();
         final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
@@ -314,12 +308,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return new QuicklookResults(request, payload, guessImageMimeType(payload));
     }
 
-    /**
-     * Used to guess the mime type of an encoded image until we start storing the mime in the db
-     *
-     * @param payload
-     * @return
-     */
+    /** Used to guess the mime type of an encoded image until we start storing the mime in the db */
     public static String guessImageMimeType(byte[] payload) {
         // guesses jpeg and png by the magic number
         if (payload.length >= 4

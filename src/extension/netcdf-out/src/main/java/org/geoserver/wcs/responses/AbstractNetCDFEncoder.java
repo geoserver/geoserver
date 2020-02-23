@@ -146,7 +146,6 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      * @param granuleStack the granule stack to be written
      * @param file an output file
      * @param encodingParameters customized encoding params
-     * @throws IOException
      */
     public AbstractNetCDFEncoder(
             GranuleStack granuleStack,
@@ -320,11 +319,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         }
     }
 
-    /**
-     * Parse encodingParams
-     *
-     * @param encodingParameters
-     */
+    /** Parse encodingParams */
     protected NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
         if (keys != null
@@ -370,11 +365,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         return level;
     }
 
-    /**
-     * Update the dimension values of a Dimension, by inspecting the coverage properties
-     *
-     * @param coverage
-     */
+    /** Update the dimension values of a Dimension, by inspecting the coverage properties */
     protected void updateDimensionValues(GridCoverage2D coverage) {
         Map properties = coverage.getProperties();
         for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
@@ -476,12 +467,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         }
     }
 
-    /**
-     * Write the NetCDF file
-     *
-     * @throws IOException
-     * @throws InvalidRangeException
-     */
+    /** Write the NetCDF file */
     public void write() throws IOException, ucar.ma2.InvalidRangeException {
         // end of define mode
         writer.create();
@@ -605,14 +591,6 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      * Get the x, y pixel from the data iterator and assign it to the NetCDF array matrix. Also
      * check if the read pixel is noData and apply the unitConversion (if needed) and dataPacking
      * (if needed).
-     *
-     * @param x
-     * @param y
-     * @param imageDataType
-     * @param netCDFDataType
-     * @param data
-     * @param matrix
-     * @param matrixIndex
      */
     protected void setPixel(
             int x,
@@ -708,9 +686,6 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /**
      * Setup the proper NetCDF array indexing, taking current dimension values from the current
      * coverage
-     *
-     * @param indexing
-     * @param currentCoverage
      */
     protected void updateIndexing(final int[] indexing, final GridCoverage2D currentCoverage) {
         int i = 0;
@@ -762,14 +737,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         }
     }
 
-    /**
-     * Writes out all non scalar extra variable configured
-     *
-     * @param numDimensions
-     * @param dimName
-     * @throws IOException
-     * @throws InvalidRangeException
-     */
+    /** Writes out all non scalar extra variable configured */
     protected List<ExtraVariableRecord> writeNonScalarExtraVariables(String[] dimName)
             throws IOException, InvalidRangeException {
         List<ExtraVariableRecord> nonscalarExtraVariables = new ArrayList<>();

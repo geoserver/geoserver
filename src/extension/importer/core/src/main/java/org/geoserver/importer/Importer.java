@@ -344,7 +344,6 @@ public class Importer implements DisposableBean, ApplicationListener {
      *
      * @param id optional id to use
      * @return Created ImportContext
-     * @throws IOException
      * @throws IllegalArgumentException if the provided id is invalid
      */
     public ImportContext createContext(Long id) throws IOException, IllegalArgumentException {
@@ -417,9 +416,6 @@ public class Importer implements DisposableBean, ApplicationListener {
     /**
      * Performs an asynchronous initialization of tasks in the specified context, and eventually
      * saves the result in the {@link ImportStore}
-     *
-     * @param context
-     * @param prepData
      */
     public Long initAsync(final ImportContext context, final boolean prepData) {
         return asynchronousJobs.submit(
@@ -1935,21 +1931,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         return null;
     }
 
-    /**
-     * Returns a copy of the importer configuration
-     *
-     * @return
-     */
+    /** Returns a copy of the importer configuration */
     public ImporterInfo getConfiguration() {
         return new ImporterInfoImpl(configuration);
     }
 
-    /**
-     * Sets the importer configuration, and saves it on disk
-     *
-     * @param configuration
-     * @throws IOException
-     */
+    /** Sets the importer configuration, and saves it on disk */
     public void setConfiguration(ImporterInfo configuration) throws IOException {
         configDAO.write(configuration, configFile);
         reloadConfiguration();

@@ -21,12 +21,7 @@ abstract class AbstractVectorLayerIdentifier implements LayerIdentifier {
         return type == MapLayerInfo.TYPE_VECTOR || type == MapLayerInfo.TYPE_REMOTE_VECTOR;
     }
 
-    /**
-     * Selects the rules active at this zoom level
-     *
-     * @param style
-     * @param scaleDenominator
-     */
+    /** Selects the rules active at this zoom level */
     protected List<Rule> getActiveRules(Style style, double scaleDenominator) {
         List<Rule> result = new ArrayList<Rule>();
 

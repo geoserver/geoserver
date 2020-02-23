@@ -119,9 +119,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     /**
      * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
      * xpath, and cleans it from ../ notation.
-     *
-     * @param xpath
-     * @return
      */
     private String determineContextPos(String xpath) {
         while (xpath.contains("../")) {
@@ -131,12 +128,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return xpath;
     }
 
-    /**
-     * Extract xpath from a cql expression if present
-     *
-     * @param expression
-     * @return
-     */
+    /** Extract xpath from a cql expression if present */
     private String workXpathFunction(String expression) {
         // extract xpath from cql expression if present
         int xpathI = expression.indexOf("xpath(");
@@ -152,9 +144,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     /**
      * A value can only be wrote if it is non NULL and not an empty list. This method supports *
      * complex features attributes, this method will be invoked recursively on the attribute value.
-     *
-     * @param result
-     * @return
      */
     private boolean canWriteValue(Object result) {
         if (result instanceof ComplexAttributeImpl) {

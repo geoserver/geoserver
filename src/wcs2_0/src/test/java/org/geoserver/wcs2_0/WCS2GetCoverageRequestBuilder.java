@@ -58,7 +58,6 @@ public class WCS2GetCoverageRequestBuilder {
     /**
      * Request only a given date, currently fails for WCS 1.1.1
      *
-     * @param date
      * @return this builder
      */
     public WCS2GetCoverageRequestBuilder date(XMLGregorianCalendar date) {
@@ -75,14 +74,7 @@ public class WCS2GetCoverageRequestBuilder {
         return this;
     }
 
-    /**
-     * Sets a lat/lon bounding box.
-     *
-     * @param minLat
-     * @param maxLat
-     * @param minLon
-     * @param maxLon
-     */
+    /** Sets a lat/lon bounding box. */
     public WCS2GetCoverageRequestBuilder bbox(
             double minLon, double maxLon, double minLat, double maxLat) {
         DimensionTrimType latTrim = Wcs20Factory.eINSTANCE.createDimensionTrimType();
@@ -117,12 +109,7 @@ public class WCS2GetCoverageRequestBuilder {
         return domainSubset;
     }
 
-    /**
-     * Returns the xml encoding of the created request.
-     *
-     * @param version
-     * @throws IOException
-     */
+    /** Returns the xml encoding of the created request. */
     public String asXML(String version) throws IOException {
         if ("1.1.1".equals(version)) {
             Encoder encoder = new Encoder(new org.geotools.wcs.v1_1.WCSConfiguration());

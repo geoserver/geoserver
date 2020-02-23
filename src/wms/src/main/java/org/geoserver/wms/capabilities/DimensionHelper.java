@@ -213,13 +213,7 @@ abstract class DimensionHelper {
         }
     }
 
-    /**
-     * Writes down the raster layer dimensions, if any
-     *
-     * @param layer
-     * @throws RuntimeException
-     * @throws IOException
-     */
+    /** Writes down the raster layer dimensions, if any */
     void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException, IOException {
 
         // do we have time and elevation?
@@ -547,12 +541,7 @@ abstract class DimensionHelper {
                 || BigDecimal.class.isAssignableFrom(typeBinding);
     }
 
-    /**
-     * Builds the proper presentation given the current
-     *
-     * @param dimension
-     * @param values
-     */
+    /** Builds the proper presentation given the current */
     String getTemporalDomainRepresentation(
             DimensionInfo dimension, TreeSet<? extends Object> values) {
         String timeMetadata = null;
@@ -611,11 +600,7 @@ abstract class DimensionHelper {
         return timeMetadata;
     }
 
-    /**
-     * Builds a single time range from the domain, be it made of Date or TimeRange objects
-     *
-     * @param values
-     */
+    /** Builds a single time range from the domain, be it made of Date or TimeRange objects */
     private DateRange getMinMaxTimeInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
         Object maxValue = values.last();
@@ -633,11 +618,7 @@ abstract class DimensionHelper {
         return new DateRange(min, max);
     }
 
-    /**
-     * Builds a single Z range from the domain, be it made of Number or NumberRange objects
-     *
-     * @param values
-     */
+    /** Builds a single Z range from the domain, be it made of Number or NumberRange objects */
     private NumberRange<Double> getMinMaxZInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
         Object maxValue = values.last();
@@ -655,11 +636,7 @@ abstract class DimensionHelper {
         return new NumberRange(min.getClass(), min, max);
     }
 
-    /**
-     * Returns true if all the values in the set are Date instances
-     *
-     * @param values
-     */
+    /** Returns true if all the values in the set are Date instances */
     private boolean allDates(TreeSet<? extends Object> values) {
         for (Object value : values) {
             if (!(value instanceof Date)) {
@@ -670,11 +647,7 @@ abstract class DimensionHelper {
         return true;
     }
 
-    /**
-     * Returns true if all the values in the set are Number instances
-     *
-     * @param values
-     */
+    /** Returns true if all the values in the set are Number instances */
     private boolean allNumbers(TreeSet<? extends Object> values) {
         for (Object value : values) {
             if (!(value instanceof Number)) {
@@ -685,12 +658,7 @@ abstract class DimensionHelper {
         return true;
     }
 
-    /**
-     * Builds the proper presentation given the specified value domain
-     *
-     * @param dimension
-     * @param values
-     */
+    /** Builds the proper presentation given the specified value domain */
     String getCustomDomainRepresentation(DimensionInfo dimension, List<String> values) {
         String metadata = null;
 
@@ -721,12 +689,7 @@ abstract class DimensionHelper {
         return metadata;
     }
 
-    /**
-     * Writes out metadata for the time dimension
-     *
-     * @param typeInfo
-     * @throws IOException
-     */
+    /** Writes out metadata for the time dimension */
     private void handleTimeDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
         // build the time dim representation
         TreeSet<Date> values = wms.getFeatureTypeTimes(typeInfo);

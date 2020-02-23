@@ -533,7 +533,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      *
      * @param source the input <code>File</code> which need to be moved.
      * @param destDir the destination directory where to move the file.
-     * @throws IOException
      */
     public static void moveFileTo(File source, File destDir, boolean removeInputFile)
             throws IOException {
@@ -709,7 +708,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @param archive the {@link ZipFile} to inflate.
      * @param outputDirectory the directory where to inflate the archive.
      * @param fileName name of the file if present.
-     * @param external
      * @throws IOException in case something bad happens.
      */
     public static void inflate(
@@ -724,7 +722,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @param archive the {@link ZipFile} to inflate.
      * @param outputDirectory the directory where to inflate the archive.
      * @param fileName name of the file if present.
-     * @param external
      * @param files empty list of the extracted files (or null if there is no desire to collect the
      *     list)
      * @throws IOException in case something bad happens.
@@ -747,7 +744,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @param archive the {@link ZipFile} to inflate.
      * @param outputDirectory the directory where to inflate the archive.
      * @param fileName name of the file if present.
-     * @param external
      * @param saveFile boolean to specify to save or not the list of the extracted files
      * @param files empty list of the extracted files (or null if there is no desire to collect the
      *     list)

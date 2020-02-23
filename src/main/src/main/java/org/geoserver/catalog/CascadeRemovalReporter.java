@@ -87,8 +87,6 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     /**
      * Allows removal of the specified objects from the reachable set (usually, the user will not
      * want the roots to be part of the set)
-     *
-     * @param objects
      */
     public void removeAll(Collection<? extends CatalogInfo> objects) {
         for (CatalogInfo ci : objects) {

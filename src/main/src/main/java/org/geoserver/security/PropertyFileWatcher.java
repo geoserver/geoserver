@@ -32,7 +32,6 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
      * Read properties from file.
      *
      * @return properties from file, or null if file does not exist yet
-     * @throws IOException
      */
     public Properties getProperties() throws IOException {
         return read();

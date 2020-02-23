@@ -57,7 +57,6 @@ public class BilWCSUtils extends WCSUtils {
      * @param sourceCRS CoordinateReferenceSystem
      * @param targetCRS CoordinateReferenceSystem
      * @return GridCoverage2D
-     * @throws WcsException
      */
     public static GridCoverage2D reproject(
             GridCoverage2D coverage,
@@ -101,7 +100,6 @@ public class BilWCSUtils extends WCSUtils {
      * @param newGridRange GridRange
      * @param sourceCoverage GridCoverage
      * @param sourceCRS CoordinateReferenceSystem
-     * @param destinationEnvelopeInSourceCRS
      * @return GridCoverage2D
      */
     public static GridCoverage2D scale(
@@ -153,7 +151,6 @@ public class BilWCSUtils extends WCSUtils {
      * @param sourceCRS CoordinateReferenceSystem
      * @param destinationEnvelopeInSourceCRS GeneralEnvelope
      * @return GridCoverage2D
-     * @throws WcsException
      */
     public static GridCoverage2D crop(
             final Coverage coverage,

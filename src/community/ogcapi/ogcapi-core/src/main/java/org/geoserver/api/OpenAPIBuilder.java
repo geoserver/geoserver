@@ -80,8 +80,6 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     /**
      * Returns the landing page document class. By default it returns {@link
      * AbstractLandingPageDocument} in case a service has more representations than usual
-     *
-     * @return
      */
     protected Class getLandingPageDocumentClass() {
         return AbstractLandingPageDocument.class;
@@ -156,8 +154,6 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     /**
      * Reads the template to customize (each time, as the object tree is not thread safe nor
      * cloneable not serializable)
-     *
-     * @return
      */
     protected OpenAPI readTemplate() {
         try {

@@ -36,24 +36,13 @@ import org.geoserver.security.validation.PasswordPolicyException;
 public class Util {
 
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
-    /**
-     * Convert from string to boolean, use defaultValue in case of null or empty string
-     *
-     * @param booleanString
-     * @param defaultValue
-     */
+    /** Convert from string to boolean, use defaultValue in case of null or empty string */
     public static boolean convertToBoolean(String booleanString, boolean defaultValue) {
         if (booleanString == null || booleanString.trim().length() == 0) return defaultValue;
         return Boolean.valueOf(booleanString.trim());
     }
 
-    /**
-     * Deep copy of the whole User/Group database
-     *
-     * @param service
-     * @param store
-     * @throws IOException
-     */
+    /** Deep copy of the whole User/Group database */
     public static void copyFrom(GeoServerUserGroupService service, GeoServerUserGroupStore store)
             throws IOException, PasswordPolicyException {
 
@@ -107,13 +96,7 @@ public class Util {
         }
     }
 
-    /**
-     * Deep copy of the whole role database
-     *
-     * @param service
-     * @param store
-     * @throws IOException
-     */
+    /** Deep copy of the whole role database */
     public static void copyFrom(GeoServerRoleService service, GeoServerRoleStore store)
             throws IOException {
         store.clear();
@@ -166,9 +149,6 @@ public class Util {
     /**
      * Determines if the the input stream is xml if it is, use create properties loaded from xml
      * format, otherwise create properties from default format.
-     *
-     * @param in
-     * @throws IOException
      */
     public static Properties loadUniversal(InputStream in) throws IOException {
         final String xmlDeclarationStart = "<?xml";
@@ -220,9 +200,6 @@ public class Util {
      *
      * <p>If it is possible to retrieve the raw password, the password is recoded using the actual
      * password encoder
-     *
-     * @param store
-     * @throws IOException
      */
     public static void recodePasswords(GeoServerUserGroupStore store) throws IOException {
         GeoServerPasswordEncoder encoder =

@@ -198,9 +198,6 @@ public class LegacyTileLayerInfoLoader {
     /**
      * Saves a tile layer info into the given metadata map using the old legacy metadata elements.
      * For unit testing only.
-     *
-     * @param source
-     * @param metadata
      */
     public static void save(GeoServerTileLayerInfo source, MetadataMap metadata) {
         final boolean enabled = source.isEnabled();

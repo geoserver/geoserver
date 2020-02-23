@@ -118,9 +118,6 @@ public final class IconPropertyExtractor {
         /**
          * Safe expression execution with default fallback.
          *
-         * @param expression
-         * @param feature
-         * @param defaultValue
          * @return evaluated value or defaultValue if unavailable
          */
         private <T> T evaluate(Expression expression, SimpleFeature feature, T defaultValue) {

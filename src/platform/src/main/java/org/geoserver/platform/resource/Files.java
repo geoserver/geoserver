@@ -499,8 +499,6 @@ public final class Files {
      * Recursively deletes the contents of the specified directory (but not the directory itself).
      * For each file that cannot be deleted a warning log will be issued.
      *
-     * @param directory
-     * @throws IOException
      * @returns true if all the directory contents could be deleted, false otherwise
      */
     private static boolean emptyDirectory(File directory) {

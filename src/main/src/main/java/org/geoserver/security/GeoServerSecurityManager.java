@@ -1855,10 +1855,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
     }
 
-    /**
-     * @return the master password used for the migration
-     * @throws Exception
-     */
+    /** @return the master password used for the migration */
     char[] extractMasterPasswordForMigration(Properties props) throws Exception {
 
         Map<String, String> candidates = new HashMap<String, String>();
@@ -1921,14 +1918,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return masterPasswordArray;
     }
 
-    /**
-     * Writes a file containing info about the master password.
-     *
-     * @param file
-     * @param message
-     * @param masterPasswordArray
-     * @throws IOException
-     */
+    /** Writes a file containing info about the master password. */
     void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray)
             throws IOException {
         try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()))) {
@@ -1960,9 +1950,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * <p>If authorization fails, a warning is written in the log and the return code is <code>false
      * </code>. On success, the return code is <code>true</code>.
-     *
-     * @param file
-     * @throws IOException
      */
     public boolean dumpMasterPassword(Resource file) throws IOException {
         if (file.getType() != Resource.Type.UNDEFINED) {
@@ -2005,8 +1992,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * authenticated principal has to be an administrator
      *
      * <p>If authorization fails, an IOException is thrown
-     *
-     * @throws IOException
      */
     public char[] getMasterPasswordForREST() throws IOException {
 
@@ -2030,9 +2015,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Checks if the stack trace contains allowed methods. It it contains allowed methods, return
      * <code>null</code>, if not return a String listing the methods.
-     *
-     * @param countMethodsToCheck
-     * @param allowedMethods
      */
     String checkStackTrace(int countMethodsToCheck, String[][] allowedMethods) {
 
@@ -2990,7 +2972,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * <p>If an absolute path is used the Resource implementation is provided by {@link
      * Files#asResource(File)}.
      *
-     * @param configFileLocation
      * @return resource
      */
     Resource getConfigFile(String configFileLocation) throws IOException {
@@ -3097,11 +3078,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
     }
 
-    /**
-     * set the active {@link GeoServerRoleService}
-     *
-     * @param activeRoleService
-     */
+    /** set the active {@link GeoServerRoleService} */
     public void setActiveRoleService(GeoServerRoleService activeRoleService) {
         this.activeRoleService = activeRoleService;
     }
@@ -3197,8 +3174,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         /**
          * Implement here XStream mappings and conversion behaviours needed to read incompatible
          * configurations during migration.
-         *
-         * @param xp
          */
         public void migrationPersister(XStreamPersister xp);
     }
@@ -3501,8 +3476,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Calculates the union of roles from all role services and adds {@link
      * GeoServerRole#ANONYMOUS_ROLE} and {@link GeoServerRole#AUTHENTICATED_ROLE}
-     *
-     * @throws IOException
      */
     public SortedSet<GeoServerRole> getRolesForAccessControl() throws IOException {
 

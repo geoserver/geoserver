@@ -31,11 +31,7 @@ public class AbstractDocument {
 
     protected final List<Link> links = new ArrayList<>();
 
-    /**
-     * Adds a link to the document
-     *
-     * @param link
-     */
+    /** Adds a link to the document */
     public void addLink(Link link) {
         links.add(link);
     }
@@ -95,8 +91,6 @@ public class AbstractDocument {
     /**
      * Same as {@link #addSelfLinks(String, MediaType)} using {@link MediaType#APPLICATION_JSON} as
      * the default media type
-     *
-     * @param path
      */
     protected void addSelfLinks(String path) {
         addSelfLinks(path, MediaType.APPLICATION_JSON);

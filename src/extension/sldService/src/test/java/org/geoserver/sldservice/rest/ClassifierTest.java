@@ -1169,11 +1169,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
     }
 
-    /**
-     * Same as testQuantileContinuousSrtm, but with reversed colormap
-     *
-     * @throws Exception
-     */
+    /** Same as testQuantileContinuousSrtm, but with reversed colormap */
     @Test
     public void testQuantileContinuousSrtmReverse() throws Exception {
         final String restPath =
@@ -1731,8 +1727,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
      * Was hoping for a simpler solution for integer data (single entry, type "values"), but the
      * output does not really render when tested, unsure why... keeping the code to cover both types
      * of data anyways
-     *
-     * @throws Exception
      */
     @Test
     public void testClassifyRasterSingleByte() throws Exception {

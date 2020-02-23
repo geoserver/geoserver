@@ -212,8 +212,6 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      * Opens or creates a {@link KeyStore} using the file {@link #DEFAULT_FILE_NAME}
      *
      * <p>Throws an exception for an invalid master key
-     *
-     * @throws IOException
      */
     protected void assertActivatedKeyStore() throws IOException {
         if (ks != null) return;
@@ -328,11 +326,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
         }
     }
 
-    /**
-     * Creates initial key entries auto generated keys {@link #CONFIGPASSWORDKEY}
-     *
-     * @throws IOException
-     */
+    /** Creates initial key entries auto generated keys {@link #CONFIGPASSWORDKEY} */
     protected void addInitialKeys() throws IOException {
         // TODO:scramble
         RandomPasswordProvider randPasswdProvider =

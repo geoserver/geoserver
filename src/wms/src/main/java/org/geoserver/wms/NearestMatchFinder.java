@@ -51,12 +51,6 @@ public abstract class NearestMatchFinder {
      * Returns an implementation of {@link NearestMatchFinder} optimized for the given resource
      * type, or throws an {@link IllegalArgumentException} in case the resource type is not
      * supported
-     *
-     * @param info
-     * @param dimensionInfo
-     * @param dimensionName
-     * @return
-     * @throws IOException
      */
     public static NearestMatchFinder get(
             ResourceInfo info, DimensionInfo dimensionInfo, String dimensionName)
@@ -166,7 +160,6 @@ public abstract class NearestMatchFinder {
      *     matches/overlaps the original value, then the original one is returned instead (this
      *     allows to tell apart no match vs exact match vs nearest match and eventually set the WMS
      *     HTTP warning head)
-     * @throws IOException
      */
     public Object getNearest(Object value) throws IOException {
         // simple point vs point comparison?
@@ -316,12 +309,7 @@ public abstract class NearestMatchFinder {
         }
     }
 
-    /**
-     * Returns a feature collection matching the
-     *
-     * @param filter
-     * @return
-     */
+    /** Returns a feature collection matching the */
     protected abstract FeatureCollection getMatches(Filter filter) throws IOException;
 
     /** Nearest matcher for vector data */
@@ -434,13 +422,7 @@ public abstract class NearestMatchFinder {
             }
         }
 
-        /**
-         * Compares two object, they can be either instants/ranges or a mix of them
-         *
-         * @param a
-         * @param b
-         * @return
-         */
+        /** Compares two object, they can be either instants/ranges or a mix of them */
         private int compare(Object a, Object b) {
             if (!(a instanceof Range)) {
                 if (!(b instanceof Range)) {

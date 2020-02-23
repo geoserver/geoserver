@@ -48,12 +48,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
         super(securityManager);
     }
 
-    /**
-     * Get the proper {@link SecurityConfigValidator} object
-     *
-     * @param serviceClass
-     * @param className
-     */
+    /** Get the proper {@link SecurityConfigValidator} object */
     public static SecurityConfigValidator getConfigurationValiator(
             Class<?> serviceClass, String className) throws SecurityConfigException {
         if (className == null)
@@ -71,13 +66,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
                 GeoServerExtensions.bean(GeoServerSecurityManager.class));
     }
 
-    /**
-     * Checks the {@link SecurityManagerConfig} object
-     *
-     * @param config
-     * @param oldConfig
-     * @throws SecurityConfigException
-     */
+    /** Checks the {@link SecurityManagerConfig} object */
     public void validateManagerConfig(SecurityManagerConfig config, SecurityManagerConfig oldConfig)
             throws SecurityConfigException {
 

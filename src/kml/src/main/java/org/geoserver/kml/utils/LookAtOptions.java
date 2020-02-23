@@ -87,8 +87,6 @@ public class LookAtOptions {
     /**
      * Creates a new KMLLookAt object by parsing the vendor specific parameters out of the provided
      * map, using the properties defined in the class javadoc above as Map keys.
-     *
-     * @param options
      */
     public LookAtOptions(final Map<String, Object> options) {
 

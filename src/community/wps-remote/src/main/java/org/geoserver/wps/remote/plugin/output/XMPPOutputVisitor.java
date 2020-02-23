@@ -13,15 +13,7 @@ import org.geoserver.wps.remote.plugin.XMPPClient;
  */
 public interface XMPPOutputVisitor {
 
-    /**
-     * @param visitor
-     * @param outputs
-     * @param value
-     * @param type
-     * @param pID
-     * @param xmppClient
-     * @param publish
-     */
+    /** */
     public Object visit(
             XMPPTextualOutput visitor,
             Object value,

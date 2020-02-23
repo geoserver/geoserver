@@ -114,7 +114,6 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      * class is equal, subclass or implementor of the specified class
      *
      * @param root the component under which the search is to be performed
-     * @param content
      * @param componentClass the target class, or null if any component will do
      */
     public Component findComponentByContent(
@@ -171,13 +170,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         return null;
     }
 
-    /**
-     * Execute Ajax Event Behavior with attached value.
-     *
-     * @param path
-     * @param event
-     * @param value
-     */
+    /** Execute Ajax Event Behavior with attached value. */
     protected void executeAjaxEventBehavior(String path, String event, String value) {
         String[] ids = path.split(":");
         String id = ids[ids.length - 1];

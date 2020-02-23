@@ -294,28 +294,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         return finalLegend;
     }
 
-    /**
-     * @param request
-     * @param layersImages
-     * @param forceLabelsOn
-     * @param forceLabelsOff
-     * @param forceTitlesOff
-     * @param layer
-     * @param w
-     * @param h
-     * @param transparent
-     * @param titleImage
-     * @param sampleFeature
-     * @param scaleDenominator
-     * @param applicableRules
-     * @param scaleRange
-     * @param ruleCount
-     * @param legendsStack
-     * @param styleFactory
-     * @param minimumSymbolSize
-     * @param rescalingRequired
-     * @param rescaler
-     */
+    /** */
     private void renderRules(
             GetLegendGraphicRequest request,
             List<RenderedImage> layersImages,

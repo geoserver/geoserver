@@ -488,8 +488,6 @@ public class ConfigurableBlobStore implements BlobStore {
     /**
      * This method changes the {@link ConfigurableBlobStore} configuration. It can be used for
      * changing cache configuration or the blobstore used.
-     *
-     * @param gwcConfig
      */
     public synchronized void setChanged(GWCConfig gwcConfig, boolean initialization) {
         // Change the blobstore configuration
@@ -610,11 +608,7 @@ public class ConfigurableBlobStore implements BlobStore {
         return delegate;
     }
 
-    /**
-     * Setter for the Tests
-     *
-     * @param cache
-     */
+    /** Setter for the Tests */
     void setCache(CacheProvider cache) {
         // Setting cache provider
         Map<String, CacheProvider> provs = new HashMap<String, CacheProvider>(cacheProviders);

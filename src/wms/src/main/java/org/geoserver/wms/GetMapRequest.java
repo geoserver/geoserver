@@ -339,20 +339,12 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         this.formatOptions = formatOptions;
     }
 
-    /**
-     * Sets the SLD environment substitution
-     *
-     * @param enviroment
-     */
+    /** Sets the SLD environment substitution */
     public void setEnv(Map enviroment) {
         this.env = enviroment;
     }
 
-    /**
-     * Sets the SQL views parameters
-     *
-     * @param viewParams
-     */
+    /** Sets the SQL views parameters */
     public void setViewParams(List<Map<String, String>> viewParams) {
         this.viewParams = viewParams;
     }
@@ -374,11 +366,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
                 styles == null ? Collections.EMPTY_LIST : new ArrayList<Style>(styles);
     }
 
-    /**
-     * Sets interpolations methods for layers.
-     *
-     * @param interpolations
-     */
+    /** Sets interpolations methods for layers. */
     public void setInterpolations(List<Interpolation> interpolations) {
         this.optionalParams.interpolationMethods =
                 interpolations == null ? Collections.EMPTY_LIST : interpolations;
@@ -508,11 +496,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         this.optionalParams.elevation = new ArrayList<Object>(elevation);
     }
 
-    /**
-     * Sets the feature version optional param
-     *
-     * @param featureVersion
-     */
+    /** Sets the feature version optional param */
     public void setFeatureVersion(String featureVersion) {
         this.optionalParams.featureVersion = featureVersion;
     }
@@ -558,11 +542,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         return this.optionalParams.angle;
     }
 
-    /**
-     * Sets the map rotation
-     *
-     * @param rotation
-     */
+    /** Sets the map rotation */
     public void setAngle(double rotation) {
         this.optionalParams.angle = rotation;
     }
@@ -591,11 +571,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         return this.optionalParams.scaleMethod;
     }
 
-    /**
-     * Sets the scale computation method ({@link ScaleComputationMethod#OGC} by default)
-     *
-     * @param rotation
-     */
+    /** Sets the scale computation method ({@link ScaleComputationMethod#OGC} by default) */
     public void setScaleMethod(ScaleComputationMethod scaleMethod) {
         this.optionalParams.scaleMethod = scaleMethod;
     }

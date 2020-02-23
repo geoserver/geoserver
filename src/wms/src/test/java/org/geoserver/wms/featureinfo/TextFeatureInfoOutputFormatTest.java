@@ -102,12 +102,7 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
         getFeatureInfoRequest.setQueryLayers(queryLayers);
     }
 
-    /**
-     * Test null geometry is correctly handled (GEOS-6829).
-     *
-     * @throws IOException
-     * @throws URISyntaxException
-     */
+    /** Test null geometry is correctly handled (GEOS-6829). */
     @Test
     public void testNullGeometry() throws IOException {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();

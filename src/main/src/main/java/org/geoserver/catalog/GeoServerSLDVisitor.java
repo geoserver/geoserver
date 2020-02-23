@@ -280,10 +280,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
      * each feature matching one of the supplied {@link FeatureTypeConstraint}s in a {@link
      * LayerInfo}
      *
-     * @param ul
      * @return The list of layers wrapping the exposed features
      * @throws UnsupportedOperationException, if an OWS service other than WFS is specified
-     * @throws IllegalStateException
      * @throws ServiceException if there was a problem accessing the remote service
      */
     protected List<LayerInfo> getRemoteLayersFromUserLayer(UserLayer ul) throws ServiceException {
@@ -337,8 +335,6 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     /**
      * Constructs a {@link WFSDataStore} from an OWS URL.
      *
-     * @param remoteOwsUrl
-     * @return
      * @throws ServiceException if there was a problem accessing the remote service
      */
     protected static DataStore connectRemoteWFS(URL remoteOwsUrl) {
@@ -361,12 +357,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
      * Constructs a {@link MemoryDataStore} from an inline feature specifies in a {@link UserLayer},
      * and wraps it in a {@link LayerInfo}
      *
-     * @param ul
      * @param fallbackCrs {@link CoordinateReferenceSystem} to fall back to in case one is not
      *     specified in the inline feature definition.
      * @return The layer
-     * @throws SchemaException
-     * @throws IOException
      */
     protected LayerInfo getInlineFeatureLayer(UserLayer ul, CoordinateReferenceSystem fallbackCrs)
             throws SchemaException, IOException {

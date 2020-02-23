@@ -727,10 +727,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(restoreExecutionsTable);
     }
 
-    /**
-     * @return
-     * @throws Exception
-     */
+    /** */
     protected Resource getBackupRestoreArchiveResource(boolean isBackup) throws Exception {
         Resource archiveFile = null;
         try {

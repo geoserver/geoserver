@@ -183,12 +183,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return wrapped.getLockingManager();
     }
 
-    /**
-     * Returns the type map given the external type name
-     *
-     * @param externalTypeName
-     * @throws IOException
-     */
+    /** Returns the type map given the external type name */
     FeatureTypeMap getTypeMapBackwards(String externalTypeName, boolean checkMap)
             throws IOException {
         FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(externalTypeName);
@@ -202,12 +197,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return map;
     }
 
-    /**
-     * Make sure the FeatureTypeMap is fully loaded
-     *
-     * @param map
-     * @throws IOException
-     */
+    /** Make sure the FeatureTypeMap is fully loaded */
     void updateMap(FeatureTypeMap map, boolean forceUpdate) throws IOException {
         try {
             if (map.getFeatureType() == null || forceUpdate) {
@@ -232,9 +222,6 @@ public class RetypingDataStore extends DecoratingDataStore {
     /**
      * Transforms the original feature type into a destination one according to the renaming rules.
      * For the moment, it's just a feature type name replacement
-     *
-     * @param original
-     * @throws IOException
      */
     protected SimpleFeatureType transformFeatureType(SimpleFeatureType original)
             throws IOException {
@@ -254,8 +241,6 @@ public class RetypingDataStore extends DecoratingDataStore {
     /**
      * Just transform the feature type name, or return null if the original type name is to be
      * hidden
-     *
-     * @param originalName
      */
     protected String transformFeatureTypeName(String originalName) {
         return originalName.replaceAll(":", "_");
@@ -265,13 +250,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         wrapped.dispose();
     }
 
-    /**
-     * Retypes a query from the extenal type to the internal one using the provided typemap
-     *
-     * @param q
-     * @param typeMap
-     * @throws IOException
-     */
+    /** Retypes a query from the extenal type to the internal one using the provided typemap */
     Query retypeQuery(Query q, FeatureTypeMap typeMap) throws IOException {
         Query modified = new Query(q);
         modified.setTypeName(typeMap.getOriginalName());
@@ -300,12 +279,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return modified;
     }
 
-    /**
-     * Retypes a filter making sure the fids are using the internal typename prefix
-     *
-     * @param filter
-     * @param typeMap
-     */
+    /** Retypes a filter making sure the fids are using the internal typename prefix */
     Filter retypeFilter(Filter filter, FeatureTypeMap typeMap) {
         FidTransformeVisitor visitor = new FidTransformeVisitor(typeMap);
         return (Filter) filter.accept(visitor, null);

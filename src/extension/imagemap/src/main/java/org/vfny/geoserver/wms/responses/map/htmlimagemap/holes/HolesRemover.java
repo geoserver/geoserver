@@ -80,11 +80,7 @@ public class HolesRemover {
         gFac = fac;
     }
 
-    /**
-     * Gets a new polygon without holes from the given polygon.
-     *
-     * @param poly
-     */
+    /** Gets a new polygon without holes from the given polygon. */
     public static Polygon removeHoles(Polygon poly, double scale) {
         GeometryFactory gFac = new GeometryFactory(poly.getPrecisionModel(), poly.getSRID());
         // extracts the exterior ring that will be used as

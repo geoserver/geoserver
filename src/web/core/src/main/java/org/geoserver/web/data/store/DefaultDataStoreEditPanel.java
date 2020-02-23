@@ -144,8 +144,6 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
     /**
      * Creates a form input component for the given datastore param based on its type and metadata
      * properties.
-     *
-     * @param paramMetadata
      */
     protected Panel getInputComponent(
             final String componentId, final IModel paramsModel, final ParamInfo paramMetadata) {

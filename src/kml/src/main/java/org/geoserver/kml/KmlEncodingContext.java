@@ -163,11 +163,7 @@ public class KmlEncodingContext {
         return mode;
     }
 
-    /**
-     * Force the output to be in WGS84
-     *
-     * @param mc
-     */
+    /** Force the output to be in WGS84 */
     private WMSMapContent fixViewport(WMSMapContent mc) {
         MapViewport viewport = mc.getViewport();
         if (!CRS.equalsIgnoreMetadata(
@@ -184,11 +180,7 @@ public class KmlEncodingContext {
     /** Protected constructor used by WFS output format to create a fake kml encoding context */
     protected KmlEncodingContext() {}
 
-    /**
-     * Returns the the kmplacemark value (either specified in the request, or the default one)
-     *
-     * @param mapContent
-     */
+    /** Returns the the kmplacemark value (either specified in the request, or the default one) */
     boolean computeKmplacemark() {
         Object kmplacemark = request.getFormatOptions().get("kmplacemark");
         if (kmplacemark != null) {
@@ -198,11 +190,7 @@ public class KmlEncodingContext {
         }
     }
 
-    /**
-     * Returns the the kmattr value (either specified in the request, or the default one)
-     *
-     * @param mapContent
-     */
+    /** Returns the the kmattr value (either specified in the request, or the default one) */
     boolean computeKMAttr() {
         Object kmattr = request.getFormatOptions().get("kmattr");
         if (kmattr == null) {
@@ -226,11 +214,7 @@ public class KmlEncodingContext {
         return kmScore;
     }
 
-    /**
-     * Checks if the extended data is enabled or not
-     *
-     * @param request
-     */
+    /** Checks if the extended data is enabled or not */
     boolean computeExtendedDataEnabled() {
         Map formatOptions = request.getFormatOptions();
         Boolean extendedData = Converters.convert(formatOptions.get("extendedData"), Boolean.class);
@@ -241,11 +225,7 @@ public class KmlEncodingContext {
         return extendedData;
     }
 
-    /**
-     * Checks if the superoverlay is enabled or not
-     *
-     * @param request
-     */
+    /** Checks if the superoverlay is enabled or not */
     boolean computeSuperOverlayEnabled() {
         Map formatOptions = request.getFormatOptions();
         Boolean superoverlay = (Boolean) formatOptions.get("superoverlay");
@@ -286,12 +266,7 @@ public class KmlEncodingContext {
         return result;
     }
 
-    /**
-     * Adds features to the folder own list
-     *
-     * @param folder
-     * @param features
-     */
+    /** Adds features to the folder own list */
     public void addFeatures(Folder folder, List<Feature> features) {
         List<Feature> originalFeatures = folder.getFeature();
         if (originalFeatures == null || originalFeatures.size() == 0) {
@@ -303,12 +278,7 @@ public class KmlEncodingContext {
         }
     }
 
-    /**
-     * Adds features to the document own list
-     *
-     * @param folder
-     * @param features
-     */
+    /** Adds features to the document own list */
     public void addFeatures(Document document, List<Feature> features) {
         List<Feature> originalFeatures = document.getFeature();
         if (originalFeatures == null || originalFeatures.size() == 0) {
@@ -401,7 +371,6 @@ public class KmlEncodingContext {
      * Adds a layer to be generated as ground overlay in the kmz package
      *
      * @param imagePath The path of the ground overlay image inside the kmz archive
-     * @param layer
      */
     public void addKmzGroundOverlay(String imagePath, Layer layer) {
         if (!kmz) {

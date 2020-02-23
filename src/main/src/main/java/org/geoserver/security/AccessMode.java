@@ -32,7 +32,6 @@ public enum AccessMode {
     /**
      * Locates the access mode by its alias
      *
-     * @param alias
      * @return the access mode, or null if not found
      */
     public static AccessMode getByAlias(String alias) {

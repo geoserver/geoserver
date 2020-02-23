@@ -141,11 +141,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * The listener will be informed of the parse progress, when it happens
-     *
-     * @param listener
-     */
+    /** The listener will be informed of the parse progress, when it happens */
     public void setListener(ProgressListener listener) {
         this.listener = listener;
     }

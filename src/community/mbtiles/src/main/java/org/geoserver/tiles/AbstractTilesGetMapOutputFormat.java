@@ -166,11 +166,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return result;
     }
 
-    /**
-     * Factory method for Tiles File
-     *
-     * @throws IOException
-     */
+    /** Factory method for Tiles File */
     protected abstract TilesFile createTilesFile() throws IOException;
 
     protected void addTiles(TilesFile tiles, WMSMapContent map)
@@ -200,15 +196,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         addTiles(tiles, tileLayers, req, name);
     }
 
-    /**
-     * Add the tiles
-     *
-     * @param tiles
-     * @param mapLayers
-     * @param map
-     * @throws IOException
-     * @throws ServiceException
-     */
+    /** Add the tiles */
     protected void addTiles(
             TilesFile tiles, List<MapLayerInfo> mapLayers, GetMapRequest request, String name)
             throws IOException, ServiceException {

@@ -244,8 +244,6 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     /**
      * Makes sure the url does not end with "/", otherwise we would have URL lik
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
-     *
-     * @param baseUrl
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

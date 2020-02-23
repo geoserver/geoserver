@@ -140,11 +140,7 @@ public class DirectDownload {
         this.geoserver = csw.getGeoServer();
     }
 
-    /**
-     * Prepare the list of files to be downloaded from the current request.
-     *
-     * @param request
-     */
+    /** Prepare the list of files to be downloaded from the current request. */
     public List<File> run(DirectDownloadType request) {
         List<File> result = new ArrayList<File>();
         String resourceId = request.getResourceId();
@@ -198,9 +194,6 @@ public class DirectDownload {
     /**
      * Get extra files for the specified reader and add them to the result list. Extra files are
      * usually auxiliary files like, as an instance, indexer, properties, config files for a mosaic.
-     *
-     * @param reader
-     * @param result
      */
     private void getExtraFiles(GridCoverage2DReader reader, List<File> result) {
         ServiceInfo info = reader.getInfo();
@@ -219,11 +212,6 @@ public class DirectDownload {
     /**
      * Get the data files from the specified {@link GridCoverage2DReader}, related to the provided
      * coverageName, matching the specified fileId and add them to the result list.
-     *
-     * @param reader
-     * @param coverageName
-     * @param fileId
-     * @param result
      */
     private void getFileResources(
             GridCoverage2DReader reader, String coverageName, String fileId, List<File> result) {
@@ -253,8 +241,6 @@ public class DirectDownload {
     /**
      * Check the current download is not exceeding the maxDownloadSize limit (if activated). Throws
      * a {@link CSWException} in case the limit is exceeded
-     *
-     * @param info
      */
     private void checkSizeLimit(List<File> fileList, CoverageInfo info) {
         DirectDownloadSettings settings =
@@ -290,11 +276,7 @@ public class DirectDownload {
         }
     }
 
-    /**
-     * Gently close a {@link CloseableIterator}
-     *
-     * @param files
-     */
+    /** Gently close a {@link CloseableIterator} */
     private void closeIterator(CloseableIterator<FileGroup> files) {
         if (files != null) {
             try {

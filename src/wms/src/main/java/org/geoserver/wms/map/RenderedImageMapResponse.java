@@ -82,8 +82,6 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      *
      * @param image The image to be formatted.
      * @param outStream The stream to write to.
-     * @throws ServiceException
-     * @throws IOException
      */
     public abstract void formatImageOutputStream(
             RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
@@ -221,18 +219,10 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
         return ImageUtils.forceIndexed8Bitmask(originalImage, paletteInverter);
     }
 
-    /**
-     * Returns the capabilities for this output format
-     *
-     * @param outputFormat
-     */
+    /** Returns the capabilities for this output format */
     public abstract MapProducerCapabilities getCapabilities(String outputFormat);
 
-    /**
-     * Returns a three letter extension for clients needing to name return files
-     *
-     * @return
-     */
+    /** Returns a three letter extension for clients needing to name return files */
     public String getExtension(RenderedImage image, WMSMapContent mapContent) {
         return "img";
     }

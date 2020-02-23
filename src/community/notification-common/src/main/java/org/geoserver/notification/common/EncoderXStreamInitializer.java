@@ -58,11 +58,7 @@ public class EncoderXStreamInitializer implements NotificationXStreamInitializer
 
         private EncoderXStreamInitializer encoderXStreamInitializer;
 
-        /**
-         * @param mapper
-         * @param reflectionProvider
-         * @param senderXStreamInitializer
-         */
+        /** */
         public EncoderConverter(
                 Mapper mapper,
                 ReflectionProvider reflectionProvider,

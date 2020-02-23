@@ -47,11 +47,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         super();
     }
 
-    /**
-     * Creates a shallow copy of the given Dimension object
-     *
-     * @param info
-     */
+    /** Creates a shallow copy of the given Dimension object */
     public DimensionInfoImpl(DimensionInfo info) {
         super();
         this.enabled = info.isEnabled();

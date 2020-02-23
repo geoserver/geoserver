@@ -46,10 +46,8 @@ public class GSFixtureUtilitiesDelegate {
      * file directory. For example, an id <code>a.b.foo</code> would be resolved to
      * <code>.geotools/a/b/foo.properties<code>.
      *
-     * @param fixtureDirectory
      *            the base fixture configuration file directory, typically ".geotools" in the user
      *            home directory.
-     * @param fixtureId
      *            the fixture id
      */
     public static File getFixtureFile(File fixtureDirectory, String fixtureId) {

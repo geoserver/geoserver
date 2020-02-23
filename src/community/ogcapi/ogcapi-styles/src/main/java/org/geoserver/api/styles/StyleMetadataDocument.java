@@ -163,12 +163,7 @@ public class StyleMetadataDocument extends AbstractDocument implements Serializa
         return null;
     }
 
-    /**
-     * Extracts the description of all styles contained in user layers or named layers
-     *
-     * @param sld
-     * @return
-     */
+    /** Extracts the description of all styles contained in user layers or named layers */
     private Stream<Description> getDescriptions(StyledLayerDescriptor sld) {
         return Arrays.stream(sld.getStyledLayers())
                 .flatMap(

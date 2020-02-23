@@ -39,7 +39,6 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
     /**
      * Creates a new keywords editor.
      *
-     * @param id
      * @param keywords The module should return a non null collection of strings.
      */
     public KeywordsEditor(String id, final IModel<List<KeywordInfo>> keywords) {

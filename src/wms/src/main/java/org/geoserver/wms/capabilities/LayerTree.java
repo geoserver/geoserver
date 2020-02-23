@@ -61,11 +61,7 @@ class LayerTree {
         }
     }
 
-    /**
-     * @param tree
-     * @param treeStructure
-     * @param layer
-     */
+    /** */
     private void addToNode(LayerTree tree, String[] treeStructure, LayerInfo layer) {
         final int length = treeStructure.length;
 

@@ -32,11 +32,7 @@ public class LockingRoleService extends AbstractLockingService
     protected Set<RoleLoadedListener> listeners =
             Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
 
-    /**
-     * Constructor for the locking wrapper
-     *
-     * @param service
-     */
+    /** Constructor for the locking wrapper */
     public LockingRoleService(GeoServerRoleService service) {
         super(service);
         service.registerRoleLoadedListener(this);

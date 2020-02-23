@@ -25,11 +25,7 @@ public final class ConfigDirConfiguration implements JMSConfigurationExt {
 
     public static final String CONFIGDIR_KEY = "CLUSTER_CONFIG_DIR";
 
-    /**
-     * Override the global config dir
-     *
-     * @throws IOException
-     */
+    /** Override the global config dir */
     @PostConstruct
     private void init() throws IOException {
         // check for override

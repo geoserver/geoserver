@@ -53,10 +53,6 @@ public interface TypeInfoCollectionWrapper {
         }
     }
 
-    /**
-     * Returns the feature information
-     *
-     * @return
-     */
+    /** Returns the feature information */
     FeatureTypeInfo getFeatureTypeInfo();
 }

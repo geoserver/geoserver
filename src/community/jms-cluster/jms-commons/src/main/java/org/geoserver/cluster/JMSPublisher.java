@@ -40,12 +40,10 @@ public class JMSPublisher {
      *
      * @param <S> a serializable object
      * @param <O> the object to serialize using a JMSEventHandler
-     * @param destination
      * @param jmsTemplate the template to use to publish on the topic <br>
      *     (default destination should be already set)
      * @param props the JMSProperties used by this instance of GeoServer
      * @param object the object (or event) to serialize and send on the JMS topic
-     * @throws JMSException
      */
     public <S extends Serializable, O> void publish(
             final Topic destination,

@@ -380,14 +380,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * layers,styles
      *
      * <p>NOTE: we also handle some featuretypeconstraints
-     *
-     * @param request
-     * @param currLayer
-     * @param layer
-     * @param layers
-     * @param styles
-     * @param filters
-     * @throws IOException
      */
     public static void addStyles(
             WMS wms,
@@ -486,9 +478,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     /**
      * Performs a check to see if we should use the style from the layer info or from the given set
      * of styles from the request.
-     *
-     * @param layerStyles
-     * @param currLayer
      */
     private static boolean shouldUseLayerStyle(Style[] layerStyles, MapLayerInfo currLayer) {
         boolean noSldLayerStyles = (layerStyles == null || layerStyles.length == 0);
@@ -584,9 +573,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * </xs:sequence> </xs:complexType> <xs:element name="Buffer" type="xs:integer" minOccurs="0"/>
      * </xs:element>
      * <!--Size-->
-     *
-     * @param nodeGetMap
-     * @param getMapRequest
      */
 
     // J+
@@ -666,9 +652,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     /**
      * Give a node and the name of a child of that node, return it. This doesnt do anything complex.
-     *
-     * @param parentNode
-     * @param wantedChildName
      */
     public Node getNode(Node parentNode, String wantedChildName) {
         NodeList children = parentNode.getChildNodes();
@@ -697,9 +680,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     /**
      * Give a node and the name of a child of that node, find its (string) value. This doesnt do
      * anything complex.
-     *
-     * @param parentNode
-     * @param wantedChildName
      */
     public String getNodeValue(Node parentNode, String wantedChildName) {
         NodeList children = parentNode.getChildNodes();
@@ -725,12 +705,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         return null;
     }
 
-    /**
-     * returns true if this node is named "name". Ignores case and namespaces.
-     *
-     * @param n
-     * @param name
-     */
+    /** returns true if this node is named "name". Ignores case and namespaces. */
     public boolean nodeNameEqual(Node n, String name) {
         if (n.getNodeName().equalsIgnoreCase(name)) {
             return true;
@@ -753,10 +728,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     /**
      * This should only be called if the xml starts with StyledLayerDescriptor Don't use on a
      * GetMap.
-     *
-     * @param f
-     * @param getMapRequest
-     * @throws ServiceException
      */
     public void validateSchemaSLD(File f, GetMapRequest getMapRequest) throws Exception {
         SLDValidator validator = new SLDValidator();
@@ -790,13 +761,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         }
     }
 
-    /**
-     * This should only be called if the xml starts with GetMap Don't use on a SLD.
-     *
-     * @param f
-     * @param getMapRequest
-     * @throws ServiceException
-     */
+    /** This should only be called if the xml starts with GetMap Don't use on a SLD. */
     public void validateSchemaGETMAP(File f, GetMapRequest getMapRequest) throws Exception {
         GETMAPValidator validator = new GETMAPValidator();
         List errors = null;

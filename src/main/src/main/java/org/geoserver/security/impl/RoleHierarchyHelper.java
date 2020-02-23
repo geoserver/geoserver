@@ -25,20 +25,12 @@ public class RoleHierarchyHelper {
         this.parentMappings = parentMappings;
     }
 
-    /**
-     * Test if roleName is known
-     *
-     * @param roleName
-     */
+    /** Test if roleName is known */
     public boolean containsRole(String roleName) {
         return parentMappings.containsKey(roleName);
     }
 
-    /**
-     * return the parent role name, null if role has no parent
-     *
-     * @param roleName
-     */
+    /** return the parent role name, null if role has no parent */
     public String getParent(String roleName) {
         checkRole(roleName);
         String parentRole = parentMappings.get(roleName);
@@ -46,11 +38,7 @@ public class RoleHierarchyHelper {
         return parentRole;
     }
 
-    /**
-     * Calculate an ordered list of ancestors, starting with the parent
-     *
-     * @param roleName
-     */
+    /** Calculate an ordered list of ancestors, starting with the parent */
     public List<String> getAncestors(String roleName) {
         checkRole(roleName);
         List<String> ancestors = new ArrayList<String>();
@@ -58,12 +46,7 @@ public class RoleHierarchyHelper {
         return ancestors;
     }
 
-    /**
-     * recursive method to fill the ancestor list
-     *
-     * @param roleName
-     * @param ancestors
-     */
+    /** recursive method to fill the ancestor list */
     protected void fillAncestors(String roleName, List<String> ancestors) {
         if (roleName == null || roleName.length() == 0) return; // end recursion
         ancestors.add(roleName);
@@ -74,11 +57,7 @@ public class RoleHierarchyHelper {
         fillAncestors(parentMappings.get(roleName), ancestors);
     }
 
-    /**
-     * Return child roles
-     *
-     * @param roleName
-     */
+    /** Return child roles */
     public List<String> getChildren(String roleName) {
         checkRole(roleName);
         List<String> children = new ArrayList<String>();
@@ -91,11 +70,7 @@ public class RoleHierarchyHelper {
         return children;
     }
 
-    /**
-     * Get all descendant roles, the order is randomly
-     *
-     * @param roleName
-     */
+    /** Get all descendant roles, the order is randomly */
     public List<String> getDescendants(String roleName) {
         checkRole(roleName);
         Set<String> descendants = new HashSet<String>();
@@ -106,12 +81,7 @@ public class RoleHierarchyHelper {
         return result;
     }
 
-    /**
-     * recursive method to fill the descendant list
-     *
-     * @param children
-     * @param descendants
-     */
+    /** recursive method to fill the descendant list */
     protected void fillDescendents(List<String> children, Set<String> descendants) {
         if (children == null || children.size() == 0) return; // end recursion
         for (String childName : children) {
@@ -126,11 +96,7 @@ public class RoleHierarchyHelper {
         }
     }
 
-    /**
-     * throws a {@link RuntimeException} for a non existing role.
-     *
-     * @param roleName
-     */
+    /** throws a {@link RuntimeException} for a non existing role. */
     protected void checkRole(String roleName) {
         if (parentMappings.containsKey(roleName) == false)
             throw new RuntimeException("Not extistend role: " + roleName);
@@ -138,9 +104,6 @@ public class RoleHierarchyHelper {
 
     /**
      * Throws a {@link RuntimeException} due to a cyclic parent relationship between the two roles
-     *
-     * @param roleName1
-     * @param roleName2
      */
     protected void cycleDetected(String roleName1, String roleName2) {
         if (roleName2 == null) throw new RuntimeException("Cycle detected for " + roleName1);
@@ -148,11 +111,7 @@ public class RoleHierarchyHelper {
             throw new RuntimeException("Cycle detected between " + roleName1 + " and " + roleName2);
     }
 
-    /**
-     * Check if the role is a root role
-     *
-     * @param roleName
-     */
+    /** Check if the role is a root role */
     public boolean isRoot(String roleName) {
         checkRole(roleName);
         return parentMappings.get(roleName) == null;
@@ -181,12 +140,7 @@ public class RoleHierarchyHelper {
         return result;
     }
 
-    /**
-     * returns true if parentName is a valid parent for roleName (avoiding cycles)
-     *
-     * @param roleName
-     * @param parentName
-     */
+    /** returns true if parentName is a valid parent for roleName (avoiding cycles) */
     public boolean isValidParent(String roleName, String parentName) {
         if (parentName == null || parentName.length() == 0) return true;
         if (roleName.equals(parentName)) return false;

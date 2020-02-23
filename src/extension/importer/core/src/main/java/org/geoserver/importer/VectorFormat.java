@@ -39,8 +39,6 @@ public abstract class VectorFormat extends DataFormat {
 
     /**
      * Builds a {@link SimpleFeatureType} from the attributes declared in a {@link FeatureTypeInfo}
-     *
-     * @param fti
      */
     protected SimpleFeatureType buildFeatureTypeFromInfo(FeatureTypeInfo fti) {
         SimpleFeatureType ft;

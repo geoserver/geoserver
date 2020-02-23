@@ -117,7 +117,6 @@ final class ROIManager {
      *
      * @param targetCRS a valid instance of {@link CoordinateReferenceSystem}
      * @throws IOException in case something bad happens.
-     * @throws FactoryException
      */
     public void useTargetCRS(final CoordinateReferenceSystem targetCRS)
             throws IOException, FactoryException {

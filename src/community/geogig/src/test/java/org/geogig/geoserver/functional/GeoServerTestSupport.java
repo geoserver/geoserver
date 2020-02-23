@@ -132,8 +132,6 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
     /**
      * Copied from parent class to do the same work on MockMultipartHttpServletRequest.
      *
-     * @param request
-     * @param path
      */
     private void kvp(MockHttpServletRequest request, String path) {
         Map<String, Object> params = KvpUtils.parseQueryString(path);
@@ -201,7 +199,6 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
      *
      * @param stream the stream to read as a document
      * @return the {@link Document}
-     * @throws Exception
      */
     public Document getDom(InputStream stream) throws Exception {
         return dom(stream);

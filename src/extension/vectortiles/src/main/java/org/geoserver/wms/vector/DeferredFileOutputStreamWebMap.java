@@ -20,7 +20,6 @@ public class DeferredFileOutputStreamWebMap extends RawMap {
      * @param mapContent Unencoded map content
      * @param mapContents Stream to which the encoded map has been written. This will be closed.
      * @param mimeType Format of the map
-     * @throws IOException
      */
     public DeferredFileOutputStreamWebMap(
             WMSMapContent mapContent, DeferredFileOutputStream mapContents, String mimeType)

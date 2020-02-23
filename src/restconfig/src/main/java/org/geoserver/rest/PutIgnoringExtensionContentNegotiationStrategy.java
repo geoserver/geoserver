@@ -46,7 +46,6 @@ public class PutIgnoringExtensionContentNegotiationStrategy implements ContentNe
     /**
      * Determine the list of supported media types
      *
-     * @param webRequest
      * @return {@link #mediaTypes}, as long as the request is a PUT or POST, and the path provided
      *     by webRequest matches. Otherwise returns an empty list (never null).
      */

@@ -108,8 +108,6 @@ public class ResourceController extends RestBaseController {
     /**
      * Extract expected media type from supplied resource
      *
-     * @param resource
-     * @param request
      * @return Content type requested
      */
     protected static MediaType getMediaType(Resource resource, HttpServletRequest request) {
@@ -137,7 +135,6 @@ public class ResourceController extends RestBaseController {
     /**
      * Access resource requested, note this may be UNDEFINED
      *
-     * @param request
      * @return Resource requested, may be UNDEFINED if not found.
      */
     protected Resource resource(HttpServletRequest request) {
@@ -158,7 +155,6 @@ public class ResourceController extends RestBaseController {
     /**
      * Look up operation query string value, defaults to {@link Operation#DEFAULT} if not provided.
      *
-     * @param operation
      * @return operation defined by query string, or {@link Operation#DEFAULT} if not provided
      */
     protected static Operation operation(String operation) {
@@ -375,14 +371,7 @@ public class ResourceController extends RestBaseController {
         }
     }
 
-    /**
-     * Verifies mime type and use {@link RESTUtils}
-     *
-     * @param directory
-     * @param filename
-     * @param request
-     * @return
-     */
+    /** Verifies mime type and use {@link RESTUtils} */
     protected Resource fileUpload(Resource directory, String filename, HttpServletRequest request) {
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info(

@@ -117,9 +117,6 @@ public class WPSExecutionManager
     /**
      * This call should only be used by process chaining to avoid deadlocking due to execution
      * threads starvation
-     *
-     * @param request
-     * @param listener
      */
     Map<String, Object> submitChained(ExecuteRequest request, ProgressListener listener) {
         Name processName = request.getProcessName();
@@ -143,7 +140,6 @@ public class WPSExecutionManager
      *
      * @param request The request to be executed
      * @return The execution response
-     * @throws ProcessException
      */
     public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)
             throws ProcessException {
@@ -269,11 +265,7 @@ public class WPSExecutionManager
         return connectionTimeout;
     }
 
-    /**
-     * Sets the HTTP connection timeout for remote resource fetching
-     *
-     * @param connectionTimeout
-     */
+    /** Sets the HTTP connection timeout for remote resource fetching */
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
@@ -281,8 +273,6 @@ public class WPSExecutionManager
     /**
      * Sets the heartbeat delay for the processes that are running (to make sure we tell the rest of
      * the cluster the process is actually still running, even if it does not update its status)
-     *
-     * @param i
      */
     public void setHeartbeatDelay(int heartbeatDelay) {
         if (heartbeatDelay != this.heartbeatDelay) {
@@ -572,11 +562,7 @@ public class WPSExecutionManager
         }
     }
 
-    /**
-     * Cancels the execution of the given process, notifying the process managers if needs be
-     *
-     * @param executionId
-     */
+    /** Cancels the execution of the given process, notifying the process managers if needs be */
     public void cancel(String executionId) {
         ExecutionStatus status = statusTracker.getStatus(executionId);
         if (status == null) {

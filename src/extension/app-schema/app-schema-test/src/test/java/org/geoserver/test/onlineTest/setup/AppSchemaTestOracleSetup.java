@@ -125,9 +125,6 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      *
      * @param propertyFiles Property files from app-schema-test suite.
      * @param parser The parser (WKT or an SC4O one for 3D tests)
-     * @throws IllegalAttributeException
-     * @throws NoSuchElementException
-     * @throws IOException
      */
     private void createTables(Map<String, File> propertyFiles, String parser)
             throws IllegalAttributeException, NoSuchElementException, IOException {

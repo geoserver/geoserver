@@ -54,11 +54,7 @@ public class PaletteManager {
     /** TODO: we should probably provide the data directory as a constructor parameter here */
     private PaletteManager() {}
 
-    /**
-     * Loads a PaletteManager
-     *
-     * @param name
-     */
+    /** Loads a PaletteManager */
     public static IndexColorModel getPalette(String name) throws Exception {
         // check for safe paletteInverter
         if ("SAFE".equals(name.toUpperCase())) {

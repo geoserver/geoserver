@@ -70,11 +70,7 @@ public class JDBCResourceStore implements ResourceStore {
         this.lockProvider = lockProvider;
     }
 
-    /**
-     * Configure ResourceWatcher
-     *
-     * @param resourceWatcher
-     */
+    /** Configure ResourceWatcher */
     public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceNotDis) {
         this.resourceNotificationDispatcher = resourceNotDis;
         dir.setResourceNotificationDispatcher(resourceNotDis);

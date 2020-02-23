@@ -32,9 +32,6 @@ public class OpenSearchAccessProvider {
     /**
      * Returns the OpenSearchAccess configured in {@link OSEOInfo}, or throws a service exception in
      * case of mis-configuration
-     *
-     * @return
-     * @throws IOException
      */
     public OpenSearchAccess getOpenSearchAccess() throws IOException {
         OSEOInfo service = getService();
@@ -62,11 +59,7 @@ public class OpenSearchAccessProvider {
         return (OpenSearchAccess) result;
     }
 
-    /**
-     * Returns the configuration of the store backing the OpenSearch subsystem
-     *
-     * @return
-     */
+    /** Returns the configuration of the store backing the OpenSearch subsystem */
     public DataStoreInfo getDataStoreInfo() {
         OSEOInfo service = getService();
         String openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
@@ -80,11 +73,7 @@ public class OpenSearchAccessProvider {
         return dataStore;
     }
 
-    /**
-     * List the configured product classes
-     *
-     * @return
-     */
+    /** List the configured product classes */
     public List<ProductClass> getProductClasses() {
         return ProductClass.getProductClasses(getService());
     }

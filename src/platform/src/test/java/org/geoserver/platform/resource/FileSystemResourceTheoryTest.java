@@ -105,9 +105,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
      *
      * <p>Example: Linux systems expect around 1 second resolution for file modification.
      *
-     * @param file
      * @return resulting value of lastmodified
-     * @throws InterruptedException
      */
     private long touch(File file) throws InterruptedException {
         long origional = file.lastModified();
@@ -226,7 +224,6 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
          * returned.
          *
          * @return Notification event, or null if it does not arrive within 5 seconds
-         * @throws InterruptedException
          */
         public T await(long howlong, TimeUnit unit) throws InterruptedException {
             final long DELAY = unit.convert(howlong, TimeUnit.MILLISECONDS);

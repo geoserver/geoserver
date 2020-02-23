@@ -625,8 +625,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     /**
      * Same as {@link #testVectorDescribeDomainsOperationWithBoundingBoxFilter()} but with a limit
      * of zero, so all domain descriptions should contract to a min max value
-     *
-     * @throws Exception
      */
     @Test
     public void testVectorDescribeDomainsOperationWithLimitZero() throws Exception {

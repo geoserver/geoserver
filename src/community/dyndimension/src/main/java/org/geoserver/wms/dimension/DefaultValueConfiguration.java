@@ -30,10 +30,7 @@ public final class DefaultValueConfiguration implements Serializable, Cloneable 
 
     String defaultValueExpression;
 
-    /**
-     * @param dimension
-     * @param policy
-     */
+    /** */
     public DefaultValueConfiguration(String dimension, DefaultValuePolicy policy) {
         this.dimension = dimension;
         this.policy = policy;

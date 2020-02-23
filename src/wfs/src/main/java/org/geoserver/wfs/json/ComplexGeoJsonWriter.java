@@ -143,9 +143,6 @@ class ComplexGeoJsonWriter {
     /**
      * Returns the simplified type name, e.g., if the name is BoreCollarType the method will return
      * "BoreCollar" (to remove yet another GML convention)
-     *
-     * @param name
-     * @return
      */
     private String getSimplifiedTypeName(Name name) {
         String localName = name.getLocalPart();

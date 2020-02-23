@@ -74,11 +74,7 @@ public class MaxExecutionTimeListener extends DelegateProgressListener {
         return maxExecutionTime;
     }
 
-    /**
-     * The maximum total time
-     *
-     * @return
-     */
+    /** The maximum total time */
     public long getMaxTotalTime() {
         return maxTotalTime;
     }

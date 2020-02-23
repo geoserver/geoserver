@@ -88,11 +88,7 @@ public class CatalogIconFactory implements Serializable {
         // private constructor, this is a singleton
     }
 
-    /**
-     * Returns the appropriate icon for the specified layer
-     *
-     * @param info
-     */
+    /** Returns the appropriate icon for the specified layer */
     public PackageResourceReference getLayerIcon(LayerInfo info) {
         PackageResourceReference icon = UNKNOWN_ICON;
         if (info.getType() == PublishedType.VECTOR) icon = VECTOR_ICON;
@@ -103,8 +99,6 @@ public class CatalogIconFactory implements Serializable {
     /**
      * Returns the appropriate icon for the specified layer. This one distinguishes the geometry
      * type inside vector layers.
-     *
-     * @param info
      */
     public PackageResourceReference getSpecificLayerIcon(LayerInfo info) {
         if (info.getType() == PublishedType.RASTER) {
@@ -126,11 +120,7 @@ public class CatalogIconFactory implements Serializable {
         }
     }
 
-    /**
-     * Returns the vector icon associated to the specified geometry descriptor
-     *
-     * @param gd
-     */
+    /** Returns the vector icon associated to the specified geometry descriptor */
     public PackageResourceReference getVectoryIcon(GeometryDescriptor gd) {
         if (gd == null) {
             return GEOMETRY_ICON;
@@ -157,7 +147,6 @@ public class CatalogIconFactory implements Serializable {
     /**
      * Returns the appropriate icon for the specified store.
      *
-     * @param storeInfo
      * @see #getStoreIcon(Class)
      */
     public PackageResourceReference getStoreIcon(final StoreInfo storeInfo) {

@@ -469,7 +469,6 @@ public class KMLTest extends WMSTestSupport {
      * @param doc The KML doc
      * @param path The xpath leading to the coordinate
      * @param expected The expected ordinate values
-     * @throws XpathException
      */
     public static void assertPointCoordinate(Document doc, String path, double... expected)
             throws XpathException {

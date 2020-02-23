@@ -35,9 +35,6 @@ abstract class FeatureCustomizer {
     /**
      * Customize the provided feature, looking for additional values to be retrieved from the
      * referred resource object.
-     *
-     * @param feature
-     * @param resource
      */
     abstract void customizeFeature(Feature feature, CatalogInfo resource);
 
@@ -57,11 +54,7 @@ abstract class FeatureCustomizer {
         return CUSTOMIZERS;
     }
 
-    /**
-     * Return a customizer instance for the specified typeName
-     *
-     * @param typeName
-     */
+    /** Return a customizer instance for the specified typeName */
     public static FeatureCustomizer getCustomizer(String typeName) {
         getCustomizers();
         if (CUSTOMIZERS.containsKey(typeName)) {

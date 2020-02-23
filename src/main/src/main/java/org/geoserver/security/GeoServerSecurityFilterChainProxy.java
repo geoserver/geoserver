@@ -212,8 +212,6 @@ public class GeoServerSecurityFilterChainProxy
 
     /**
      * Creates a {@link GeoServerRequestMatcher} object for the specified {@link RequestFilterChain}
-     *
-     * @param chain
      */
     public GeoServerRequestMatcher matcherForChain(RequestFilterChain chain) {
 

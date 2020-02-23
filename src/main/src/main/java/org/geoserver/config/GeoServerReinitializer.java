@@ -13,9 +13,6 @@ public interface GeoServerReinitializer extends GeoServerInitializer {
     /**
      * Performs initialization of GeoServer configuration, as well as any actions that should be
      * performed only when reloading the configuration.
-     *
-     * @param geoServer
-     * @throws Exception
      */
     default void reinitialize(GeoServer geoServer) throws Exception {
         initialize(geoServer);

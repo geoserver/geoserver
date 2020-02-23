@@ -103,19 +103,10 @@ public abstract class AbstractInputProvider implements InputProvider {
         return value;
     }
 
-    /**
-     * Computes the value
-     *
-     * @param listener
-     */
+    /** Computes the value */
     protected abstract Object getValueInternal(ProgressListener listener) throws Exception;
 
-    /**
-     * Simulates what the Dispatcher is doing when parsing a KVP request
-     *
-     * @param href
-     * @param reader
-     */
+    /** Simulates what the Dispatcher is doing when parsing a KVP request */
     protected Object kvpParse(String href, KvpRequestReader reader) throws Exception {
         Map original = new KvpMap(KvpUtils.parseQueryString(href));
         KvpUtils.normalize(original);
@@ -134,11 +125,7 @@ public abstract class AbstractInputProvider implements InputProvider {
         return reader.read(reader.createRequest(), parsed, original);
     }
 
-    /**
-     * Returns the version from the kvp request
-     *
-     * @param href
-     */
+    /** Returns the version from the kvp request */
     protected String getVersion(String href) {
         return (String) new KvpMap(KvpUtils.parseQueryString(href)).get("VERSION");
     }

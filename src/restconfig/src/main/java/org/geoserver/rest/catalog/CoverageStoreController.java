@@ -190,10 +190,6 @@ public class CoverageStoreController extends AbstractCatalogController {
     /**
      * Check the deleteType parameter in order to decide whether to delete some data too (all, or
      * just metadata).
-     *
-     * @param deleteType
-     * @param cs
-     * @throws IOException
      */
     private void delete(String deleteType, CoverageStoreInfo cs) throws IOException {
         if (!deleteType.equalsIgnoreCase("none")

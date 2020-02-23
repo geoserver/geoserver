@@ -59,11 +59,7 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
         return new XMLRoleService();
     }
 
-    /**
-     * Create the standard password validator
-     *
-     * @param config
-     */
+    /** Create the standard password validator */
     public PasswordValidator createPasswordValidator(
             PasswordPolicyConfig config, GeoServerSecurityManager securityManager) {
         return new PasswordValidatorImpl(securityManager);

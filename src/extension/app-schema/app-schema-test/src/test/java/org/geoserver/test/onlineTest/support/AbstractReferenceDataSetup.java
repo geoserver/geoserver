@@ -114,12 +114,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
         }
     }
 
-    /**
-     * Creates Example Fixture
-     *
-     * @param exFixtureFile
-     * @param exampleFixture
-     */
+    /** Creates Example Fixture */
     protected void createExampleFixture(File exFixtureFile, Properties exampleFixture) {
         try {
             exFixtureFile.getParentFile().mkdirs();

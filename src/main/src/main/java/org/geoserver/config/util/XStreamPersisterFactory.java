@@ -83,8 +83,6 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
      * Programmatically adds a {@link XStreamPersisterInitializer} to the factory (initializers are
      * also automatically looked up from the Spring context, use this method only if you cannot
      * Declare your initializer as a spring bean)
-     *
-     * @param initializer
      */
     public void addInitializer(XStreamPersisterInitializer initializer) {
         getInitializers().add(initializer);

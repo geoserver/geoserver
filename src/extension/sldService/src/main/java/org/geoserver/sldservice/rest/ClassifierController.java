@@ -340,11 +340,7 @@ public class ClassifierController extends BaseSLDServiceController {
         private static final long serialVersionUID = -5538194136398411147L;
     }
 
-    /**
-     * @param layer
-     * @param rules
-     * @return
-     */
+    /** */
     private RulesList generateRulesList(String layer, List<Rule> rules) {
         final RulesList ruleList = new RulesList(layer);
         for (Rule rule : rules) {
@@ -492,12 +488,7 @@ public class ClassifierController extends BaseSLDServiceController {
         }
     }
 
-    /**
-     * Returns the selected band
-     *
-     * @param property
-     * @return
-     */
+    /** Returns the selected band */
     private int getRequestedBand(String property) {
         // if no selection is provided, the code picks the first band
         if (property == null) {
@@ -513,11 +504,7 @@ public class ClassifierController extends BaseSLDServiceController {
         return selectedBand;
     }
 
-    /**
-     * Performs a full disposal of the coverage in question
-     *
-     * @param coverage
-     */
+    /** Performs a full disposal of the coverage in question */
     private void cleanImage(RenderedImage image) {
         if (image instanceof PlanarImage) {
             ImageUtilities.disposePlanarImageChain((PlanarImage) image);

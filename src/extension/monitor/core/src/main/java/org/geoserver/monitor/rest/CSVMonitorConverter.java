@@ -89,7 +89,6 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
      * Write CSV file (also called by {@link ZIPMonitorConverter}
      *
      * @param result Query, List or individual RequestData)
-     * @param fields
      * @param monitor used to cancel output process
      * @param os Output stream (not closed by this method allowing use of zipfile)
      */

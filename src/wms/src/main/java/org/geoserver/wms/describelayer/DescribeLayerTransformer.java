@@ -117,8 +117,6 @@ public class DescribeLayerTransformer extends TransformerBase {
         /**
          * As currently GeoServer does not have support for nested layers, this method declares a
          * <code>LayerDescription</code> element for each featuretype requested.
-         *
-         * @param req
          */
         private void handleLayers(DescribeLayerRequest req) {
             MapLayerInfo layer;

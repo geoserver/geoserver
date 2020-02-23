@@ -282,8 +282,6 @@ public class GetRecords {
     /**
      * Search for the record descriptor maching the typename, throws a service exception in case
      * none is found
-     *
-     * @param request
      */
     private RecordDescriptor getRecordDescriptor(Name typeName) {
         if (typeName == null) {
@@ -303,8 +301,6 @@ public class GetRecords {
     /**
      * Search for the record descriptor maching the request, throws a service exception in case none
      * is found
-     *
-     * @param request
      */
     private RecordDescriptor getRecordDescriptor(GetRecordsType request) {
         String outputSchema = request.getOutputSchema();

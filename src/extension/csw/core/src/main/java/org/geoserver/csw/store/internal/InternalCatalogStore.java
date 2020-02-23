@@ -72,7 +72,6 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
     /**
      * Get Mapping
      *
-     * @param typeName
      * @return the mapping
      */
     public CatalogStoreMapping getMapping(String typeName) {

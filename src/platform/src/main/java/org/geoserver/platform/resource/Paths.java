@@ -185,7 +185,6 @@ public class Paths {
     /**
      * Quick check of path for invalid characters
      *
-     * @param path
      * @return path
      * @throws IllegalArgumentException If path fails {@link #VALID} check
      */
@@ -197,7 +196,6 @@ public class Paths {
      * Quick check of path for invalid characters
      *
      * @param strictPath whether problematic characters are an error
-     * @param path
      * @return path
      * @throws IllegalArgumentException If path fails {@link #VALID} check
      */

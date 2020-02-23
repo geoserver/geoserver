@@ -123,14 +123,7 @@ public class ImageUtils {
         return new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
     }
 
-    /**
-     * Computes the memory usage of the buffered image used as the drawing surface.
-     *
-     * @param width
-     * @param height
-     * @param palette
-     * @param transparent
-     */
+    /** Computes the memory usage of the buffered image used as the drawing surface. */
     public static long getDrawingSurfaceMemoryUse(
             final int width,
             final int height,
@@ -206,10 +199,7 @@ public class ImageUtils {
         return graphic;
     }
 
-    /**
-     * @param originalImage
-     * @param invColorMap may be {@code null}
-     */
+    /** @param invColorMap may be {@code null} */
     public static RenderedImage forceIndexed8Bitmask(
             RenderedImage originalImage, final InverseColorMapOp invColorMap) {
         if (LOGGER.isLoggable(Level.FINER)) {

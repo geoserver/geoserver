@@ -24,31 +24,16 @@ public interface AuthenticationCache {
 
     /** Clears all cache entries */
     public void removeAll();
-    /**
-     * Clears all cache entries for filterName
-     *
-     * @param filterName
-     */
+    /** Clears all cache entries for filterName */
     public void removeAll(String filterName);
 
-    /**
-     * Clears a specific chache entry
-     *
-     * @param filterName
-     * @param cacheKey
-     */
+    /** Clears a specific chache entry */
     public void remove(String filterName, String cacheKey);
 
-    /**
-     * @param filterName
-     * @param cacheKey
-     */
+    /** */
     public Authentication get(String filterName, String cacheKey);
 
     /**
-     * @param filterName
-     * @param cacheKey
-     * @param auth
      * @param timeToIdleSeconds (time to evict after last access)
      * @param timeToLiveSeconds (time to evict after creation time)
      */
@@ -59,12 +44,6 @@ public interface AuthenticationCache {
             Integer timeToIdleSeconds,
             Integer timeToLiveSeconds);
 
-    /**
-     * timeToIdleSeconds and timeToLiveSeconds are derived from the cache global settings
-     *
-     * @param filterName
-     * @param cacheKey
-     * @param auth
-     */
+    /** timeToIdleSeconds and timeToLiveSeconds are derived from the cache global settings */
     public void put(String filterName, String cacheKey, Authentication auth);
 }

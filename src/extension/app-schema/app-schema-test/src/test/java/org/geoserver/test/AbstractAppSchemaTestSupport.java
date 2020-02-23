@@ -504,10 +504,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * For WMS tests.
      *
      * <p>Counts the number of non black pixels
-     *
-     * @param testName
-     * @param image
-     * @param bgColor
      */
     protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
         int pixelsDiffer = 0;

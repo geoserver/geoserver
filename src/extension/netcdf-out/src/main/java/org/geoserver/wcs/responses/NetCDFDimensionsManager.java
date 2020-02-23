@@ -125,11 +125,7 @@ public class NetCDFDimensionsManager {
         }
     }
 
-    /**
-     * Update the dimension values of a Dimension, by inspecting the coverage properties
-     *
-     * @param coverage
-     */
+    /** Update the dimension values of a Dimension, by inspecting the coverage properties */
     private void updateDimensionValues(GridCoverage2D coverage) {
         Map properties = coverage.getProperties();
         for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : getDimensions()) {
@@ -356,7 +352,6 @@ public class NetCDFDimensionsManager {
          * Get the value from the input object. Take care of time elements since they need to be
          * referred to the time origin
          *
-         * @param input
          * @param isTime does this object represents a temporal entity?
          * @param endValue specify whether it needs to return the second value of a range
          */
@@ -375,7 +370,6 @@ public class NetCDFDimensionsManager {
          * Return the time value for this object. Note that times are referred with respect to an
          * origin {@link NetCDFUtilities#START_TIME}.
          *
-         * @param input
          * @param endTime specify whether it needs to return the second value of a time range
          */
         private Double getTime(Object input, boolean endTime) {

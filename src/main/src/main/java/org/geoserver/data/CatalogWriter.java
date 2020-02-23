@@ -125,12 +125,7 @@ public class CatalogWriter {
         }
     }
 
-    /**
-     * Writers the "formats" element of the catalog.xml file
-     *
-     * @param coverageStores
-     * @param coverageStoresNamespaces
-     */
+    /** Writers the "formats" element of the catalog.xml file */
     public void coverageStores(HashMap coverageStores, HashMap namespaces, Set disabled) {
         Element formatsElement = document.createElement("formats");
         catalog.appendChild(formatsElement);

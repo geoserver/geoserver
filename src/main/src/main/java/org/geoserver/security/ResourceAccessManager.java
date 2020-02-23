@@ -29,8 +29,6 @@ public interface ResourceAccessManager {
      * Returns the access limits for the workspace and stores included in it. For specific resource
      * access and published resource access see the other two methods
      *
-     * @param user
-     * @param workspace
      * @return The access limits for this workspace, or null if there are no limits
      */
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace);
@@ -70,9 +68,6 @@ public interface ResourceAccessManager {
      * Returns a filter selecting only the objects authorized by the manager. May return {@code
      * null} in which case the caller is responsible for building a filter based on calls to the
      * manager's other methods.
-     *
-     * @param user
-     * @param clazz
      */
     public @Nullable Filter getSecurityFilter(
             Authentication user, final Class<? extends CatalogInfo> clazz);

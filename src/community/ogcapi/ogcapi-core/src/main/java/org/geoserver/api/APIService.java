@@ -42,8 +42,6 @@ public @interface APIService {
     /**
      * GeoServer {@link org.geoserver.config.ServiceInfo} sublass used to locate the service
      * configuration
-     *
-     * @return
      */
     public Class serviceClass();
 }

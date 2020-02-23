@@ -352,12 +352,7 @@ public class LegacyCatalogImporter {
         }
     }
 
-    /**
-     * Imports all styles and loads them into the catalog
-     *
-     * @param factory
-     * @param styles
-     */
+    /** Imports all styles and loads them into the catalog */
     void importStyles(CatalogFactory factory, Map styles) {
         for (Iterator s = styles.entrySet().iterator(); s.hasNext(); ) {
             Map.Entry entry = (Map.Entry) s.next();
@@ -370,12 +365,7 @@ public class LegacyCatalogImporter {
         }
     }
 
-    /**
-     * Imports namespaces and create symmetric workspaces for them
-     *
-     * @param factory
-     * @param namespaces
-     */
+    /** Imports namespaces and create symmetric workspaces for them */
     void importNamespaces(CatalogFactory factory, Map namespaces) {
         importNamespaces(factory, namespaces, false);
     }
@@ -383,9 +373,6 @@ public class LegacyCatalogImporter {
     /**
      * Imports namespaces and create symmetric workspaces for them setting isolation using the
      * provided value.
-     *
-     * @param factory
-     * @param namespaces
      */
     void importNamespaces(CatalogFactory factory, Map namespaces, boolean isolated) {
         for (Iterator n = namespaces.entrySet().iterator(); n.hasNext(); ) {
@@ -425,11 +412,7 @@ public class LegacyCatalogImporter {
         }
     }
 
-    /**
-     * TODO: code smell: no method should be this long
-     *
-     * @param ftInfoReader
-     */
+    /** TODO: code smell: no method should be this long */
     FeatureTypeInfo readFeatureType(LegacyFeatureTypeInfoReader ftInfoReader, File ftDirectory)
             throws Exception {
         CatalogFactory factory = catalog.getFactory();

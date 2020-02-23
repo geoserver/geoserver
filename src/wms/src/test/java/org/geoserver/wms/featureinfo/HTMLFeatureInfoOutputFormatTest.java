@@ -141,12 +141,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         getFeatureInfoRequest.setQueryLayers(queryLayers);
     }
 
-    /**
-     * Test request values are inserted in processed template
-     *
-     * @throws IOException
-     * @throws URISyntaxException
-     */
+    /** Test request values are inserted in processed template */
     @Test
     public void testRequestParametersAreEvaluatedInTemplate() throws IOException {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();

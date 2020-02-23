@@ -491,9 +491,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
         /**
          * Makes sure the URL can simply be used by appending to it, without checking if it ends by
          * ?, & or nothing
-         *
-         * @param url
-         * @return
          */
         private String makeURLAppendable(String url) {
             if (url.endsWith("?") || url.endsWith("&")) {
@@ -676,10 +673,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             end("wcs:ContentMetadata");
         }
 
-        /**
-         * @param cv
-         * @throws IOException
-         */
+        /** */
         private void handleCoverageOfferingBrief(CoverageInfo cv) throws IOException {
             if (cv.isEnabled()) {
                 start("wcs:CoverageOfferingBrief");
@@ -741,12 +735,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * Writes the element if and only if the content is not null and not empty
-         *
-         * @param elementName
-         * @param content
-         */
+        /** Writes the element if and only if the content is not null and not empty */
         private void elementIfNotEmpty(String elementName, String content) {
             if (content != null && !"".equals(content.trim())) element(elementName, content);
         }

@@ -149,11 +149,7 @@ class WCS10GetCoverageTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * Helper to build a set of attributes out of a list of key/value pairs
-         *
-         * @param nameValues
-         */
+        /** Helper to build a set of attributes out of a list of key/value pairs */
         AttributesImpl attributes(String... nameValues) {
             AttributesImpl atts = new AttributesImpl();
 

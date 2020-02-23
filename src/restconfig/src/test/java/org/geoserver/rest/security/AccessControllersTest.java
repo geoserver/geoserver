@@ -113,9 +113,6 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
      * Checks role strings for equality
      *
      * <p>e. g. ROLE1,ROLE2 is equal to ROLE2,ROLE1
-     *
-     * @param roleString1
-     * @param roleString2
      */
     boolean checkRolesStringsForEquality(String roleString1, String roleString2) {
         String[] roleArray1 = roleString1.split(",");

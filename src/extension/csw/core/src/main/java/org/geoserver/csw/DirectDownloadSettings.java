@@ -50,9 +50,6 @@ public class DirectDownloadSettings implements Serializable {
      * Look for a {@link DirectDownloadSettings} instance in the provided metadataMap. If not
      * available, look for the default object stored in {@link CSWInfo} metadataMap as fallback (if
      * provided)
-     *
-     * @param map
-     * @param csw
      */
     public static DirectDownloadSettings getSettingsFromMetadata(MetadataMap map, CSWInfo csw) {
         DirectDownloadSettings settings = null;

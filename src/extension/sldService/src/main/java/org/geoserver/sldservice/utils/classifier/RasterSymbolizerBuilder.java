@@ -153,9 +153,6 @@ public class RasterSymbolizerBuilder {
 
     /**
      * Builds a ImageWorker with subsampling factors suitable to respect the configured max pixels
-     *
-     * @param image
-     * @return
      */
     ImageWorker getImageWorker(RenderedImage image) {
         ImageWorker iw = new ImageWorker(image);
@@ -179,7 +176,6 @@ public class RasterSymbolizerBuilder {
      *
      * @param image The source image
      * @param intervals Number of resulting intervals
-     * @param open
      * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
      */
     public ColorMap equalIntervalClassification(
@@ -204,7 +200,6 @@ public class RasterSymbolizerBuilder {
      *
      * @param image The source image
      * @param intervals Number of resulting intervals
-     * @param open
      * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
      */
     public ColorMap quantileClassification(
@@ -223,7 +218,6 @@ public class RasterSymbolizerBuilder {
      *
      * @param image The source image
      * @param intervals Number of resulting intervals
-     * @param open
      * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
      */
     public ColorMap jenksClassification(
@@ -367,14 +361,7 @@ public class RasterSymbolizerBuilder {
         }
     }
 
-    /**
-     * Builds a ColorMap based on a user specified set of values
-     *
-     * @param continous
-     * @param classifier
-     * @param b
-     * @return
-     */
+    /** Builds a ColorMap based on a user specified set of values */
     public ColorMap createCustomColorMap(
             RangedClassifier classifier, boolean open, boolean continuous) {
         Number[] breaks = new Number[classifier.getSize() + (continuous ? 0 : 1)];

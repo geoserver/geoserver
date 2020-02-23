@@ -184,12 +184,7 @@ public class RESTUtils {
         return newFile;
     }
 
-    /**
-     * Handles an upload using the EXTERNAL method.
-     *
-     * @param request
-     * @throws IOException
-     */
+    /** Handles an upload using the EXTERNAL method. */
     public static org.geoserver.platform.resource.Resource handleEXTERNALUpload(
             HttpServletRequest request) throws IOException {
         // get the URL for this file to upload
@@ -254,7 +249,6 @@ public class RESTUtils {
      *
      * @param zipFile The zip file.
      * @param outputDirectory The directory to unpack the contents to.
-     * @param external
      * @throws IOException Any I/O errors that occur.
      *     <p>TODO: move this to IOUtils
      */
@@ -307,13 +301,7 @@ public class RESTUtils {
         }
     }
 
-    /**
-     * Method for searching an item inside the MetadataMap.
-     *
-     * @param workspaceName
-     * @param storeName
-     * @param catalog
-     */
+    /** Method for searching an item inside the MetadataMap. */
     public static String getItem(
             String workspaceName, String storeName, Catalog catalog, String key) {
         // Initialization of a null String containing the root directory to use for the input store
@@ -350,12 +338,7 @@ public class RESTUtils {
         return item;
     }
 
-    /**
-     * This method is used for extracting the metadata map from the selected store
-     *
-     * @param storeName
-     * @param catalog
-     */
+    /** This method is used for extracting the metadata map from the selected store */
     public static MetadataMap loadMapfromStore(String storeName, Catalog catalog) {
         StoreInfo storeInfo = catalog.getStoreByName(storeName, CoverageStoreInfo.class);
         if (storeInfo == null) {
@@ -368,12 +351,7 @@ public class RESTUtils {
         return null;
     }
 
-    /**
-     * This method is used for extracting the metadata map from the selected workspace
-     *
-     * @param workspaceName
-     * @param catalog
-     */
+    /** This method is used for extracting the metadata map from the selected workspace */
     public static MetadataMap loadMapfromWorkSpace(String workspaceName, Catalog catalog) {
         WorkspaceInfo wsInfo = catalog.getWorkspaceByName(workspaceName);
         // If the WorkSpace is present, then the associated MetadataMap is selected
@@ -396,12 +374,7 @@ public class RESTUtils {
         return null;
     }
 
-    /**
-     * Extraction of the item from the metadata map
-     *
-     * @param map
-     * @param key
-     */
+    /** Extraction of the item from the metadata map */
     public static String extractMapItem(MetadataMap map, String key) {
         if (map != null && !map.isEmpty()) {
             String item = map.get(key, String.class);
@@ -452,13 +425,7 @@ public class RESTUtils {
         }
     }
 
-    /**
-     * Unzips a InputStream to a directory
-     *
-     * @param in
-     * @param outputDirectory
-     * @throws IOException
-     */
+    /** Unzips a InputStream to a directory */
     public static void unzipInputStream(InputStream in, File outputDirectory) throws IOException {
         org.geoserver.util.IOUtils.decompress(in, outputDirectory);
     }

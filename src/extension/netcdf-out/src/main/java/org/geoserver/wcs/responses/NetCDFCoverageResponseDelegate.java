@@ -123,7 +123,6 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
      *
      * @param file the temporary file containing the NetCDF output.
      * @param output the outputStream where to write the output
-     * @throws IOException
      */
     private void streamBack(final File file, final OutputStream output) throws IOException {
         final byte[] buffer = new byte[8 * 1024];

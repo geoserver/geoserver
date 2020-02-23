@@ -67,11 +67,7 @@ public class S3FileServiceDataTest extends AbstractTaskManagerTest {
         Assert.assertEquals("/tmp", ((FileServiceImpl) fs).getRootFolder());
     }
 
-    /**
-     * This test assumes access to aws compatible service.
-     *
-     * @throws IOException
-     */
+    /** This test assumes access to aws compatible service. */
     @Test
     public void testFileServiceS3CreateSubFolders() throws IOException {
         S3FileServiceImpl service = getS3FileService();
@@ -168,11 +164,7 @@ public class S3FileServiceDataTest extends AbstractTaskManagerTest {
 
         service.delete(rootFolder);
     }
-    /**
-     * Add the properties to your S3 service here.
-     *
-     * @return
-     */
+    /** Add the properties to your S3 service here. */
     private S3FileServiceImpl getS3FileService() {
         S3FileServiceImpl s3FileService =
                 new S3FileServiceImpl(

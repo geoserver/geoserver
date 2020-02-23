@@ -175,8 +175,6 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
      * This test uses a conditionally joined feature with a broken mapping configuration to trigger
      * a RuntimeException when iterator.next() is called and verifies that no connection leak
      * occurs, even if the caller forgets to catch unchecked exceptions.
-     *
-     * @throws Exception
      */
     @Test
     @SuppressWarnings("TryFailThrowable")

@@ -34,7 +34,6 @@ public interface FileService extends Serializable, Secured {
      * List existing all nested folders in this file service. e.g. /foo/ /foo/bar/ /other/
      *
      * @return list of existing sub folders
-     * @throws IOException
      */
     List<String> listSubfolders();
 
@@ -44,7 +43,6 @@ public interface FileService extends Serializable, Secured {
      * @param filePath the path of the file, relative to this service
      * @param content the content of the file
      * @return a location string that can be used to configure a Geoserver store
-     * @throws IOException
      */
     void create(String filePath, InputStream content, boolean doPrepare) throws IOException;
 
@@ -54,7 +52,6 @@ public interface FileService extends Serializable, Secured {
      * @param filePath the path of the file, relative to this service
      * @param content the content of the file
      * @return a location string that can be used to configure a Geoserver store
-     * @throws IOException
      */
     default void create(String filePath, InputStream content) throws IOException {
         create(filePath, content, false);
@@ -65,7 +62,6 @@ public interface FileService extends Serializable, Secured {
      *
      * @param filePath the path of the file, relative to this service
      * @return whether the file exists
-     * @throws IOException
      */
     boolean checkFileExists(String filePath) throws IOException;
 
@@ -82,7 +78,6 @@ public interface FileService extends Serializable, Secured {
      *
      * @param filePath the path of the file, relative to this service
      * @return whether anything was actually deleted.
-     * @throws IOException
      */
     boolean delete(String filePath) throws IOException;
 
@@ -91,7 +86,6 @@ public interface FileService extends Serializable, Secured {
      *
      * @param filePath the path of the file, relative to this service
      * @return inputstream with data
-     * @throws IOException
      */
     InputStream read(String filePath) throws IOException;
 

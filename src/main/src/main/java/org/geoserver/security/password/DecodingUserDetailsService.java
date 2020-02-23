@@ -28,12 +28,7 @@ public class DecodingUserDetailsService implements UserDetailsService {
     protected GeoServerUserGroupService service;
     protected GeoServerMultiplexingPasswordEncoder encoder;
 
-    /**
-     * Creates a new Instance
-     *
-     * @param service
-     * @throws IOException
-     */
+    /** Creates a new Instance */
     public static DecodingUserDetailsService newInstance(GeoServerUserGroupService service)
             throws IOException {
         DecodingUserDetailsService decodingService = new DecodingUserDetailsService();
@@ -50,9 +45,6 @@ public class DecodingUserDetailsService implements UserDetailsService {
     /**
      * sets the wrapped {@link GeoServerUserGroupService} objects and prepares the {@link
      * GeoServerUserPasswordEncoder}
-     *
-     * @param service
-     * @throws IOException
      */
     public void setGeoserverUserGroupService(GeoServerUserGroupService service) throws IOException {
         this.service = service;

@@ -199,7 +199,6 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
      * @param granuleStack the granule stack to be written
      * @param file an output file
      * @param encodingParameters customized encoding params
-     * @throws IOException
      */
     public GHRSSTEncoder(
             GranuleStack granuleStack,
@@ -507,13 +506,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         return outDataType;
     }
 
-    /**
-     * Set the variables values
-     *
-     * @param writer
-     * @throws IOException
-     * @throws InvalidRangeException
-     */
+    /** Set the variables values */
     protected void writeDataValues() throws IOException, InvalidRangeException {
 
         // Initialize dimensions sizes

@@ -1424,12 +1424,6 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
      *
      * <p>- This is a pain in the ass. - Potentially difficult to recreate all default behavior +
      * behavior needed to fix this test case
-     *
-     * @param path
-     * @param body
-     * @param contentType
-     * @return
-     * @throws Exception
      */
     protected MockHttpServletResponse putAsServletResponse(
             String path, byte[] body, String contentType, String accepts) throws Exception {

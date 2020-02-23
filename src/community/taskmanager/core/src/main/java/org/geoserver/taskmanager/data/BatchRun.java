@@ -59,8 +59,6 @@ public interface BatchRun extends Serializable, Identifiable {
     /**
      * The scheduler reference is unique for runs that were started by scheduleNow(), but not for
      * runs automatically started by the time schedule.
-     *
-     * @return
      */
     String getSchedulerReference();
 

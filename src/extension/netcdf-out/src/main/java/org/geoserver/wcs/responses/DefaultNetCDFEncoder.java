@@ -76,7 +76,6 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
      * @param granuleStack the granule stack to be written
      * @param file an output file
      * @param encodingParameters customized encoding params
-     * @throws IOException
      */
     public DefaultNetCDFEncoder(
             GranuleStack granuleStack,
@@ -313,13 +312,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
         }
     }
 
-    /**
-     * Set the variables values
-     *
-     * @param writer
-     * @throws IOException
-     * @throws InvalidRangeException
-     */
+    /** Set the variables values */
     protected void writeDataValues() throws IOException, InvalidRangeException {
         // Initialize dimensions sizes
         final int numDimensions = dimensionsManager.getNumDimensions();

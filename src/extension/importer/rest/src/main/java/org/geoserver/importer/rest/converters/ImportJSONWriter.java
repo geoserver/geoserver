@@ -93,7 +93,6 @@ public class ImportJSONWriter {
      * from the query map.
      *
      * @param def The default value to fall back on
-     * @return
      */
     public int expand(int def) {
         String ex = null;
@@ -112,7 +111,6 @@ public class ImportJSONWriter {
      *
      * @param expand The value of the "expand" parameter
      * @param def The default value to fall back on
-     * @return
      */
     public int expand(String expand, int def) {
         if (expand == null) {

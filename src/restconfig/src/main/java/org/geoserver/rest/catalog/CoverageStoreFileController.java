@@ -423,7 +423,6 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
      *     on server)
      * @param storeName The name of the store being added
      * @param format The store format.
-     * @throws IOException
      */
     protected List<Resource> doFileUpload(
             UploadMethod method,

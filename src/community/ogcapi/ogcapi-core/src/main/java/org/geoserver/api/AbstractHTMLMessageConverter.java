@@ -77,10 +77,6 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      *   <li>contact: the contact information
      *   <li>baseURL: the GeoServer baseURL for link construction
      * </ul>
-     *
-     * @param value
-     * @param operation
-     * @return
      */
     protected HashMap<String, Object> setupModel(Object value) {
         HashMap<String, Object> model = new HashMap<>();
@@ -96,9 +92,6 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     /**
      * Adds the <code>serviceLink</code>, <code>serviceLink</code> and <code>externalLinks</code>
      * functions to the model, for usage in the tempalte
-     *
-     * @param baseURL
-     * @param model
      */
     public static void addLinkFunctions(String baseURL, Map<String, Object> model) {
         model.put(

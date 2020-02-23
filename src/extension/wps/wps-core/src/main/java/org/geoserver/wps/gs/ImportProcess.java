@@ -654,9 +654,6 @@ public class ImportProcess implements GeoServerProcess {
     /**
      * Applies a set of heuristics to find which target attribute corresponds to a certain input
      * attribute
-     *
-     * @param sourceType
-     * @param targetType
      */
     Map<String, String> buildAttributeMapping(
             SimpleFeatureType sourceType, SimpleFeatureType targetType) {

@@ -277,12 +277,6 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     /**
      * This is the core of the Class. The XML fragment will be unmarshalled via the GeoServer {@link
      * XStreamPersister}.
-     *
-     * @param source
-     * @return
-     * @throws TransformerException
-     * @throws XMLStreamException
-     * @throws UnsupportedEncodingException
      */
     private Object unmarshal(Source source)
             throws TransformerException, XMLStreamException, UnsupportedEncodingException {

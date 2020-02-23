@@ -160,12 +160,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         return (ResourceInfo) myResourceModel.getObject();
     }
 
-    /**
-     * Allows collaborating pages to update the resource info object
-     *
-     * @param info
-     * @param target
-     */
+    /** Allows collaborating pages to update the resource info object */
     public void updateResource(ResourceInfo info) {
         updateResource(info, null);
     }
@@ -174,7 +169,6 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
      * Allows collaborating pages to update the resource info object
      *
      * @param info the resource info to update
-     * @param target
      */
     public void updateResource(ResourceInfo info, final AjaxRequestTarget target) {
         myResourceModel.setObject(info);

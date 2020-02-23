@@ -30,11 +30,7 @@ public class GeoFenceConfigurationManager {
         return geofenceConfiguration;
     }
 
-    /**
-     * Updates the configuration.
-     *
-     * @param configuration
-     */
+    /** Updates the configuration. */
     public void setConfiguration(GeoFenceConfiguration configuration) {
 
         this.geofenceConfiguration = configuration;

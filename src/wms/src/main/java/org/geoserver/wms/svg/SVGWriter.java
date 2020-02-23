@@ -480,9 +480,6 @@ class SVGWriter extends OutputStreamWriter {
          * coordinate and the last encoded one is greater than the minimun distance expressed by the
          * field <code>minCoordDistance</code> and established by the method {@link
          * #setReferenceSpace(Envelope, float) setReferenceSpace(Envelope, blurFactor)}
-         *
-         * @param coords
-         * @throws IOException
          */
         protected void writePathContent(Coordinate[] coords) throws IOException {
             write('M');

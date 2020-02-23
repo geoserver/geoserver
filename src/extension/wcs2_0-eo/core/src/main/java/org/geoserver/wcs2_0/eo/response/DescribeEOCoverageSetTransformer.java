@@ -192,11 +192,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
             end("wcseo:EOCoverageSetDescription");
         }
 
-        /**
-         * Returns the max number of coverages to return, if any (null otherwise)
-         *
-         * @param dcs
-         */
+        /** Returns the max number of coverages to return, if any (null otherwise) */
         private Integer getMaxCoverages(DescribeEOCoverageSetType dcs) {
             if (dcs.getCount() > 0) {
                 return dcs.getCount();

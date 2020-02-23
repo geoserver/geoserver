@@ -104,11 +104,7 @@ public interface WMSInfo extends ServiceInfo {
      */
     int getMaxRenderingTime();
 
-    /**
-     * Sets the max allowed rendering time, in seconds
-     *
-     * @param maxRenderingTime
-     */
+    /** Sets the max allowed rendering time, in seconds */
     void setMaxRenderingTime(int maxRenderingTime);
 
     /**
@@ -117,11 +113,7 @@ public interface WMSInfo extends ServiceInfo {
      */
     int getMaxRenderingErrors();
 
-    /**
-     * Sets the max number of rendering errors tolerated
-     *
-     * @param maxRenderingTime
-     */
+    /** Sets the max number of rendering errors tolerated */
     void setMaxRenderingErrors(int maxRenderingTime);
 
     /**
@@ -137,28 +129,16 @@ public interface WMSInfo extends ServiceInfo {
     /** @return the title of the root layer */
     String getRootLayerTitle();
 
-    /**
-     * Sets the title of the root layer
-     *
-     * @param rootLayerTitle
-     */
+    /** Sets the title of the root layer */
     void setRootLayerTitle(String rootLayerTitle);
 
     /** @return the abstract of the root layer */
     public String getRootLayerAbstract();
 
-    /**
-     * Sets the abstract of the root layer
-     *
-     * @param rootLayerAbstract
-     */
+    /** Sets the abstract of the root layer */
     public void setRootLayerAbstract(String rootLayerAbstract);
 
-    /**
-     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
-     *
-     * @param dynamicStylesEnabled
-     */
+    /** Sets the status of dynamic styling (SLD and SLD_BODY params) allowance */
     void setDynamicStylingDisabled(Boolean dynamicStylesDisabled);
 
     /** @return the status of dynamic styling (SLD and SLD_BODY params) allowance */
@@ -188,8 +168,6 @@ public interface WMSInfo extends ServiceInfo {
      * Returns the maximum number of dimension items that can be requested by a client without
      * getting a service exception. The default is
      * {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
-     *
-     * @return
      */
     default int getMaxRequestedDimensionValues() {
         return DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES;
@@ -205,17 +183,9 @@ public interface WMSInfo extends ServiceInfo {
         // if not implemented nothing is done
     }
 
-    /**
-     * Returns WMS cache configuration for remote resources.
-     *
-     * @return
-     */
+    /** Returns WMS cache configuration for remote resources. */
     CacheConfiguration getCacheConfiguration();
 
-    /**
-     * Set current WMS cache configuration for remote resources.
-     *
-     * @return
-     */
+    /** Set current WMS cache configuration for remote resources. */
     void setCacheConfiguration(CacheConfiguration cacheCfg);
 }

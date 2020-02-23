@@ -13,18 +13,7 @@ import org.geoserver.wps.remote.plugin.XMPPClient;
  */
 public interface XMPPOutputType {
 
-    /**
-     * @param visitor
-     * @param outputs
-     * @param value
-     * @param type
-     * @param pID
-     * @param baseURL
-     * @param xmppClient
-     * @param publish
-     * @param metadata
-     * @param wpsOutputValue
-     */
+    /** */
     public Object accept(
             XMPPOutputVisitor visitor,
             Object value,
@@ -41,14 +30,7 @@ public interface XMPPOutputType {
             String metadata)
             throws Exception;
 
-    /**
-     * @param outputs
-     * @param value
-     * @param type
-     * @param pID
-     * @param xmppClient
-     * @param publish
-     */
+    /** */
     public Object produceOutput(
             Object value,
             String type,

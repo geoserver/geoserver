@@ -45,11 +45,7 @@ public class RemoteProcessFactoryConfiguration {
         return configKvPs;
     }
 
-    /**
-     * A method to access generic parsed property keys from the properties configuration file
-     *
-     * @param prop
-     */
+    /** A method to access generic parsed property keys from the properties configuration file */
     public String get(String prop) {
         return (configKvPs != null ? configKvPs.get(prop) : null);
     }

@@ -42,11 +42,7 @@ public enum ProcessState {
         return executionCompleted;
     }
 
-    /**
-     * Checks if a certain state comes before this one in the status workflow
-     *
-     * @param predecessor
-     */
+    /** Checks if a certain state comes before this one in the status workflow */
     public boolean isValidSuccessor(ProcessState predecessor) {
         return predecessor == this || predecessors.contains(predecessor);
     }

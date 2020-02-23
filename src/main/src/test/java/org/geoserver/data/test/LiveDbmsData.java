@@ -79,10 +79,6 @@ public class LiveDbmsData extends LiveSystemTestData {
      *       no initialization is needed). It's advisable to prepare a sql script that first drops
      *       all tables and views and then recreates them, if a statement fails it'll be logged and
      *       skipped anyways. This makes it possible to inspect the database contents
-     *
-     * @param dataDirSourceDirectory
-     * @param filterMap
-     * @param sqlScript
      */
     public LiveDbmsData(File dataDirSourceDirectory, String fixtureId, File sqlScript)
             throws IOException {
@@ -92,11 +88,7 @@ public class LiveDbmsData extends LiveSystemTestData {
         this.sqlScript = sqlScript;
     }
 
-    /**
-     * Looks up the fixture file in the home directory provided that the
-     *
-     * @param fixtureId
-     */
+    /** Looks up the fixture file in the home directory provided that the */
     private File lookupFixture(String fixtureId) {
         // first of all, make sure the fixture was not disabled using a system
         // variable
@@ -219,9 +211,6 @@ public class LiveDbmsData extends LiveSystemTestData {
     /**
      * Uses the current {@link JDBCDataStore} facilities to grab a connection, subclasses can
      * override to use other methods
-     *
-     * @param ds
-     * @throws IOException
      */
     protected Connection getDatabaseConnection(DataStore ds) throws IOException {
         if (ds instanceof JDBCDataStore) {
@@ -239,8 +228,6 @@ public class LiveDbmsData extends LiveSystemTestData {
     /**
      * Permanently disable this test logging the specificed warning message (the reason why the test
      * is being disabled)
-     *
-     * @param warning
      */
     private void disableTest(final String warning) {
         LOGGER.warning(warning);

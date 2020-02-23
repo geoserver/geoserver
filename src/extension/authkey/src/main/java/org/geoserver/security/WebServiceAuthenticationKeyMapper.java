@@ -212,8 +212,6 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     /**
      * Calls the external web service with the given key and parses the result to extract the
      * userName.
-     *
-     * @param key
      */
     private String callWebService(String key) {
         String url = webServiceUrl.replace("{key}", key);

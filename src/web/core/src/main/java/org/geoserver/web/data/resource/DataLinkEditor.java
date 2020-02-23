@@ -41,10 +41,7 @@ public class DataLinkEditor extends Panel {
     private Label noData;
     private WebMarkupContainer table;
 
-    /**
-     * @param id
-     * @param resourceModel Must return a {@link ResourceInfo}
-     */
+    /** @param resourceModel Must return a {@link ResourceInfo} */
     public DataLinkEditor(String id, final IModel<ResourceInfo> resourceModel) {
         super(id, resourceModel);
 

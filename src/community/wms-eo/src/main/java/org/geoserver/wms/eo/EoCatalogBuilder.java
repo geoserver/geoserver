@@ -65,11 +65,7 @@ public class EoCatalogBuilder implements EoStyles {
 
     private static final Logger LOGGER = Logging.getLogger(EoCatalogBuilder.class);
 
-    /**
-     * EoCatalogBuilder constructor
-     *
-     * @param catalog
-     */
+    /** EoCatalogBuilder constructor */
     public EoCatalogBuilder(Catalog catalog) {
         this.catalog = catalog;
     }
@@ -235,7 +231,6 @@ public class EoCatalogBuilder implements EoStyles {
     /**
      * Get database type from DataStoreFactorySpi
      *
-     * @param dataStoreFactory
      * @return database type
      */
     protected String getDbType(DataStoreFactorySpi dataStoreFactory) {
@@ -264,9 +259,7 @@ public class EoCatalogBuilder implements EoStyles {
      * Create Outline store parameters
      *
      * @param dir mosaic directory
-     * @param dataStoreFactory
      * @return parameters
-     * @throws IOException
      */
     protected Map<String, Serializable> getOutlineDataStoreParameters(
             File dir, DataStoreFactorySpi dataStoreFactory) throws IOException {
@@ -391,12 +384,7 @@ public class EoCatalogBuilder implements EoStyles {
         }
     }
 
-    /**
-     * Add EO styles to layer
-     *
-     * @param layer
-     * @param defaultStyleName
-     */
+    /** Add EO styles to layer */
     private void addEoStyles(LayerInfo layer, String defaultStyleName) {
         StyleInfo defaultStyle = catalog.getStyleByName(defaultStyleName);
         if (defaultStyle != null) {
@@ -424,7 +412,6 @@ public class EoCatalogBuilder implements EoStyles {
      *
      * @param ws workspace
      * @param name store name
-     * @param url
      * @return created store
      */
     protected CoverageStoreInfo createEoMosaicStore(WorkspaceInfo ws, String name, String url) {
@@ -586,11 +573,7 @@ public class EoCatalogBuilder implements EoStyles {
         return timeDimension && customDimension;
     }
 
-    /**
-     * Delete a layer, its resource and its store
-     *
-     * @param layer
-     */
+    /** Delete a layer, its resource and its store */
     private void delete(LayerInfo layer) {
         ResourceInfo resource = layer.getResource();
         StoreInfo store = resource.getStore();
@@ -599,11 +582,7 @@ public class EoCatalogBuilder implements EoStyles {
         catalog.remove(store);
     }
 
-    /**
-     * Delete a layer group, all its layers and their respective stores
-     *
-     * @param group
-     */
+    /** Delete a layer group, all its layers and their respective stores */
     public void delete(LayerGroupInfo group) {
         // load layers in group
         group = catalog.getLayerGroupByName(group.getWorkspace(), group.getName());
@@ -627,11 +606,7 @@ public class EoCatalogBuilder implements EoStyles {
         }
     }
 
-    /**
-     * Check presence of TIME dimension . Enable all dimensions found.
-     *
-     * @throws IOException
-     */
+    /** Check presence of TIME dimension . Enable all dimensions found. */
     private boolean enableDimensions(
             FeatureTypeInfo fi, String coverageName, StructuredGridCoverage2DReader reader)
             throws IOException {

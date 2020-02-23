@@ -43,10 +43,6 @@ public class WebUtils {
      * Utility method for localizing strings using Wicket i18n subsystem. Useful if your model needs
      * to be localized and you don't have access to a Component instance. Use with care, in most
      * cases you should be able to localize your messages directly in pages or components.
-     *
-     * @param key
-     * @param model
-     * @param params
      */
     public static String localize(String key, IModel<?> model, Object... params) {
         StringResourceModel rm =

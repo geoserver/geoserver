@@ -58,11 +58,7 @@ public abstract class FileWatcher implements ResourceListener {
         }
     }
 
-    /**
-     * Use this method for stopping the thread
-     *
-     * @param terminated
-     */
+    /** Use this method for stopping the thread */
     public void setTerminate(boolean terminated) {
         resource.removeListener(this);
         synchronized (terminateLock) {
@@ -151,7 +147,6 @@ public abstract class FileWatcher implements ResourceListener {
      * <p>This extra check is used in conjunction with {@link #setLastModified(long)} to allow the
      * FileWatcher to ignore an event that has been caused by a file update.
      *
-     * @param l
      * @return true if file was modified
      */
     public boolean testAndSetLastModified(long l) {
@@ -167,8 +162,6 @@ public abstract class FileWatcher implements ResourceListener {
     /**
      * Method intended to set last modified from a client which is up to date. This avoids
      * unnecessary reloads
-     *
-     * @param lastModified
      */
     public void setLastModified(long lastModified) {
         synchronized (lastModifiedLock) {

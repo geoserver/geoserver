@@ -22,8 +22,6 @@ public class StaticDownloadServiceConfiguration implements DownloadServiceConfig
      *
      * <p>This constructor takes an external {@link DownloadServiceConfiguration} object and stores
      * it without modifications.
-     *
-     * @param config
      */
     public StaticDownloadServiceConfiguration(DownloadServiceConfiguration config) {
         this.config = config;

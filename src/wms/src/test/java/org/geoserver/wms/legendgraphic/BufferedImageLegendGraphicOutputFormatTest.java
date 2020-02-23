@@ -1326,10 +1326,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertColorSimilar(Color.WHITE, colorOutsideCenter, 20);
     }
 
-    /**
-     * @param sldName
-     * @throws IOException
-     */
+    /** */
     private Style readSLD(String sldName) throws IOException {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
         SLDParser stylereader = new SLDParser(styleFactory, getClass().getResource(sldName));

@@ -178,8 +178,6 @@ public class GetCoverage {
     /**
      * Return true in case the specified format supports Multidimensional Output TODO: Consider
      * adding a method to CoverageResponseDelegate returning this information
-     *
-     * @param format
      */
     public static boolean formatSupportMDOutput(String format) {
         return mdFormats.contains(format);
@@ -379,9 +377,6 @@ public class GetCoverage {
      * @param coverageType the getCoverage
      * @param reader the Reader to be used to perform the read operation
      * @param hints hints to be used by the involved operations
-     * @param extensions
-     * @param coverageFactory
-     * @param dimensions
      */
     private GridCoverage2D setupCoverage(
             final WCSDimensionsSubsetHelper helper,
@@ -903,11 +898,7 @@ public class GetCoverage {
         return null;
     }
 
-    /**
-     * @param coverage
-     * @param hints
-     * @param outputCRS
-     */
+    /** */
     private GridCoverage2D enforceLatLongOrder(
             GridCoverage2D coverage, final Hints hints, final CoordinateReferenceSystem outputCRS)
             throws Exception {
@@ -1005,10 +996,6 @@ public class GetCoverage {
      * This method is responsible for reading the data based on the specified request. It might
      * return a single coverage, but if the request is a dateline crossing one, it will return two
      * instead
-     *
-     * @param cinfo
-     * @param reader
-     * @param hints
      */
     private List<GridCoverage2D> readCoverage(
             WCSDimensionsSubsetHelper helper,
@@ -1414,11 +1401,6 @@ public class GetCoverage {
     /**
      * Parse the scaling type applied to that request and return a resolution satisfying that
      * scaling.
-     *
-     * @param scaling
-     * @param subset
-     * @param nativeResX
-     * @param nativeResY
      */
     private double[] computeRequestedResolution(
             ScalingType scaling, Envelope subset, double nativeResX, double nativeResY) {
@@ -1468,7 +1450,6 @@ public class GetCoverage {
      * @param isOutputCRS a <code>boolean</code> which tells me whether the CRS we are looking for
      *     is a subsetting or an OutputCRS
      * @return a {@link CoordinateReferenceSystem}.
-     * @throws WCS20Exception
      */
     private CoordinateReferenceSystem extractCRSInternal(
             Map<String, ExtensionItemType> extensions,
@@ -1607,10 +1588,7 @@ public class GetCoverage {
         return parsedExtensions;
     }
 
-    /**
-     * @param reader
-     * @param extensions
-     */
+    /** */
     private Map<String, InterpolationPolicy> extractInterpolation(
             GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
         // preparation
@@ -2005,11 +1983,7 @@ public class GetCoverage {
             this.input = input;
         }
 
-        /**
-         * Increment the total size value if not disabled
-         *
-         * @param GridCoverage2D
-         */
+        /** Increment the total size value if not disabled */
         public void addSize(GridCoverage2D coverage) {
             incrementalSize +=
                     getCoverageSize(
@@ -2045,9 +2019,6 @@ public class GetCoverage {
         /**
          * Computes the size of a grid coverage in bytes given its grid envelope and the target
          * sample model (code from WCSUtils)
-         *
-         * @param envelope
-         * @param sm
          */
         private static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
             // === compute the coverage memory usage and compare with limit
@@ -2081,7 +2052,6 @@ public class GetCoverage {
     /**
      * Utility function to format a byte amount into a human readable string (code from WCSUtils)
      *
-     * @param bytes
      * @return a formatted string
      */
     private static String formatBytes(long bytes) {

@@ -246,9 +246,6 @@ class CoverageViewHandler {
         /**
          * Check whether the coverages associated to the provided reader is consistent with the
          * reference coverage.
-         *
-         * @param reader
-         * @throws IOException
          */
         public boolean checkConsistency(GridCoverage2DReader reader) throws IOException {
             GeneralEnvelope envelope = reader.getOriginalEnvelope();

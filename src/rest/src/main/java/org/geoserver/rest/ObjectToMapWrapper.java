@@ -31,11 +31,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
 
     Collection<Class> classesToExpand;
 
-    /**
-     * Constructs an ObjectToMapWrapper for the provided clazz.
-     *
-     * @param clazz
-     */
+    /** Constructs an ObjectToMapWrapper for the provided clazz. */
     public ObjectToMapWrapper(Class<T> clazz) {
         this(clazz, Collections.EMPTY_LIST);
     }
@@ -43,9 +39,6 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     /**
      * Constructs an ObjectToMapWrapper for the provided clazz. Any child properties that match
      * classesToExpand will be unwrapped to a map
-     *
-     * @param clazz
-     * @param classesToExpand
      */
     public ObjectToMapWrapper(Class<T> clazz, Collection<Class> classesToExpand) {
         this.clazz = clazz;
@@ -74,7 +67,6 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      *
      * @param object Object to wrap
      * @return A {@link SimpleHash} representing the passed object.
-     * @throws TemplateModelException
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -114,7 +106,6 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      *
      * @param object Object to convert.
      * @param clazz The advertized class of the object, from which the map keys are generated.
-     * @return
      */
     protected Map<String, Object> objectToMap(Object object, Class clazz) {
         HashMap<String, Object> map = new HashMap<>();
@@ -169,12 +160,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         return null;
     }
 
-    /**
-     * Add {@link RequestInfo} to the freemarker model
-     *
-     * @param model
-     * @throws TemplateModelException
-     */
+    /** Add {@link RequestInfo} to the freemarker model */
     protected void setRequestInfo(SimpleHash model) throws TemplateModelException {
         final RequestInfo requestInfo = RequestInfo.get();
 

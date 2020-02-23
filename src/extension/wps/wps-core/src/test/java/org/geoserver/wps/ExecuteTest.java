@@ -410,8 +410,6 @@ public class ExecuteTest extends WPSTestSupport {
     /**
      * Test GEOS-5663 https://osgeo-org.atlassian.net/browse/GEOS-5663 Location is removed from
      * collections
-     *
-     * @throws Exception
      */
     @Test
     public void testFeatureCollectionInlineWithLocation() throws Exception {
@@ -2084,12 +2082,7 @@ public class ExecuteTest extends WPSTestSupport {
         return fc;
     }
 
-    /**
-     * Checks the bounds process returned the expected envelope
-     *
-     * @param request
-     * @param id
-     */
+    /** Checks the bounds process returned the expected envelope */
     void executeState1BoundsTest(String request, String id) throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
             LOGGER.warning(

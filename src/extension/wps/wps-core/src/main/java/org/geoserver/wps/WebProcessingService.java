@@ -30,46 +30,22 @@ public interface WebProcessingService {
     /** Executes a execute request and writes output to the Servlet response */
     ExecuteResponseType execute(ExecuteType request) throws WPSException;
 
-    /**
-     * Returns the list of executions run by a user
-     *
-     * @param request
-     * @throws WPSException
-     */
+    /** Returns the list of executions run by a user */
     Object getExecutions(GetExecutionsType request) throws WPSException;
 
     /**
      * Returns the status of a given process execution, either as a {@link ExecuteResponseType} or
      * as a stored response File
-     *
-     * @param request
-     * @throws WPSException
      */
     Object getExecutionStatus(GetExecutionStatusType request) throws WPSException;
 
-    /**
-     * Executes a get schema request and writes the output to the Servlet response
-     *
-     * @param request
-     * @param response
-     * @throws WPSException
-     */
+    /** Executes a get schema request and writes the output to the Servlet response */
     void getSchema(HttpServletRequest request, HttpServletResponse response) throws WPSException;
 
-    /**
-     * Returns a output stored as a reference in the specified execution
-     *
-     * @param request
-     * @throws WPSException
-     */
+    /** Returns a output stored as a reference in the specified execution */
     Resource getExecutionResult(GetExecutionResultType request) throws WPSException;
 
-    /**
-     * Dismisses the execution of a currently running process
-     *
-     * @param request
-     * @throws WPSException
-     */
+    /** Dismisses the execution of a currently running process */
     ExecuteResponseType dismiss(DismissType request) throws WPSException;
 
     /** WPS service configuration. */

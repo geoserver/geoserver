@@ -305,7 +305,6 @@ public class Ogr2OgrFormatTest {
     /**
      * Parses a stream into a dom.
      *
-     * @param input
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
     protected Document dom(InputStream input)

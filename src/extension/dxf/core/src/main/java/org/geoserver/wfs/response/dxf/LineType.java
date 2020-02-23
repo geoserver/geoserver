@@ -34,11 +34,7 @@ public class LineType {
         return name;
     }
 
-    /**
-     * Sets DXF name of the line type.
-     *
-     * @param name
-     */
+    /** Sets DXF name of the line type. */
     public void setName(String name) {
         this.name = name;
     }
@@ -48,11 +44,7 @@ public class LineType {
         return description;
     }
 
-    /**
-     * Sets the pattern description for the line type.
-     *
-     * @param description
-     */
+    /** Sets the pattern description for the line type. */
     public void setDescription(String description) {
         this.description = description;
     }
@@ -62,11 +54,7 @@ public class LineType {
         return items;
     }
 
-    /**
-     * Sets the pattern items.
-     *
-     * @param items
-     */
+    /** Sets the pattern items. */
     public void setItems(LineTypeItem[] items) {
         this.items = items;
     }
@@ -85,8 +73,6 @@ public class LineType {
      * each part of the line pattern (defaults to 0.125), and <repeatable pattern> is a visual
      * description of the repeatable part of the line pattern, as a sequence of - (solid line), *
      * (dot) and _ (empty space).
-     *
-     * @param ltype
      */
     public static LineType parse(String ltype) {
         // split the descriptor in 2/3 parts

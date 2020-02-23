@@ -19,8 +19,6 @@ public class Excel97OutputFormat extends ExcelOutputFormat {
     /**
      * Constructor setting the format type as "excel" in addition to file extension, mime type, and
      * row and column limits
-     *
-     * @param gs
      */
     public Excel97OutputFormat(GeoServer gs) {
         super(gs, "excel");

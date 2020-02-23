@@ -139,8 +139,6 @@ public class FGDBFileFormat extends VectorFormat {
      * Load a single table from FileGDB.
      *
      * @param data OGRDataStore
-     * @param catalog
-     * @param source
      * @return import task for aynchronous loading
      */
     private ImportTask task(

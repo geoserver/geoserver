@@ -57,8 +57,6 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
     /**
      * Checks if the password starts with an encoder prefix, if true return the prefix, if false
      * return <code>null</code>
-     *
-     * @param password
      */
     public static String passwordStartsWithEncoderPrefix(char[] password) {
 
@@ -118,12 +116,7 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
         if (prefix != null) throw createSecurityException(RESERVED_PREFIX_$1, prefix);
     }
 
-    /**
-     * Executes statis check methods from the character class
-     *
-     * @param methodname
-     * @param charArray
-     */
+    /** Executes statis check methods from the character class */
     protected boolean checkUsingMethod(String methodname, char[] charArray) {
         try {
             Method m = getClass().getMethod(methodname, Character.class);

@@ -15,8 +15,6 @@ public interface NearestValueStrategyFactory {
 
     /**
      * Creates a strategy selecting the nearest domain value compared to the given object toMatch.
-     *
-     * @param toMatch
      */
     public DimensionDefaultValueSelectionStrategy createNearestValueStrategy(Object toMatch);
 
@@ -25,7 +23,6 @@ public interface NearestValueStrategyFactory {
      * Uses the given fixedCapabilitiesValue for presenting the default value in capabilities
      * documents.
      *
-     * @param toMatch
      * @param fixedCapabilitiesValue for example "current"
      */
     public DimensionDefaultValueSelectionStrategy createNearestValueStrategy(

@@ -21,7 +21,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.ConcatenatedOperation;
 import org.opengis.referencing.operation.CoordinateOperation;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
 
@@ -71,11 +70,7 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         CRS.reset("all");
     }
 
-    /**
-     * Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}.
-     *
-     * @throws TransformException
-     */
+    /** Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}. */
     @Test
     public void testCreateOperationFromCustomCodes() throws Exception {
         // Test CRSs
@@ -90,11 +85,7 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         assertEquals(p[1], DST_TEST_POINT[1], 1e-8);
     }
 
-    /**
-     * Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}.
-     *
-     * @throws TransformException
-     */
+    /** Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}. */
     @Test
     public void testOverrideEPSGOperation() throws Exception {
         // Test CRSs
@@ -109,11 +100,7 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         assertEquals(p[1], DST_TEST_POINT[1], 1e-8);
     }
 
-    /**
-     * Check we are actually using the EPSG database for anything not in override
-     *
-     * @throws TransformException
-     */
+    /** Check we are actually using the EPSG database for anything not in override */
     @Test
     public void testFallbackOnEPSGDatabaseStd() throws Exception {
         // Test CRSs

@@ -30,9 +30,6 @@ public interface DispatcherCallback {
     /**
      * Attempts to unwrap the Controller in case the handler is annotation driven, returns the
      * handler otherwise
-     *
-     * @param handler
-     * @return
      */
     static Object getControllerBean(Object handler) {
         if (handler instanceof HandlerMethod) {

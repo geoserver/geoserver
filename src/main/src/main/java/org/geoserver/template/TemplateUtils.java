@@ -30,11 +30,7 @@ public class TemplateUtils {
      */
     private static final Collection<String> LEGAL_FREEMARKER_CLASSES = Arrays.asList();
 
-    /**
-     * Get a Freemarker configuration that is safe against malicious templates
-     *
-     * @return
-     */
+    /** Get a Freemarker configuration that is safe against malicious templates */
     public static Configuration getSafeConfiguration() {
         Configuration config = new Configuration();
         config.setNewBuiltinClassResolver(

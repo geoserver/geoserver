@@ -236,23 +236,12 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         }
     }
 
-    /**
-     * @param contribution
-     * @param chunkContext
-     * @param jobExecution
-     * @return
-     * @throws Exception
-     */
+    /** */
     abstract RepeatStatus doExecute(
             StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
             throws Exception;
 
-    /**
-     * @param resourceStore
-     * @param baseDir
-     * @throws Exception
-     * @throws IOException
-     */
+    /** */
     public void backupRestoreAdditionalResources(ResourceStore resourceStore, Resource baseDir)
             throws Exception {
         try {
@@ -380,9 +369,6 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     /**
      * This method dumps the current Backup index: - List of Workspaces - List of Stores - List of
      * Layers
-     *
-     * @param sourceFolder
-     * @throws IOException
      */
     protected void dumpBackupIndex(Resource sourceFolder) throws IOException {
         Element root = new Element("Index");

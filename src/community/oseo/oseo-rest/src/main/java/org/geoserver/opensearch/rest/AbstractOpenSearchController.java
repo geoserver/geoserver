@@ -83,12 +83,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
     interface ZipPart {
 
-        /**
-         * Returns true if the part matches the provided name
-         *
-         * @param name
-         * @return
-         */
+        /** Returns true if the part matches the provided name */
         public boolean matches(String name);
     }
 
@@ -268,12 +263,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         return fb.buildFeature(identifier);
     }
 
-    /**
-     * Un-maps OSEO related attributes to a prefix:name for for json encoding
-     *
-     * @param fc
-     * @return
-     */
+    /** Un-maps OSEO related attributes to a prefix:name for for json encoding */
     protected SimpleFeatureCollection toSimpleFeatureCollection(
             FeatureCollection<FeatureType, Feature> fc,
             Consumer<SimpleFeatureTypeBuilder> extraAttributeBuilder,
@@ -308,13 +298,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         };
     }
 
-    /**
-     * Checks XML well formedness (TODO: check against actual schemas)
-     *
-     * @param xml
-     * @throws IOException
-     * @throws SAXException
-     */
+    /** Checks XML well formedness (TODO: check against actual schemas) */
     protected void checkWellFormedXML(String xml) {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
@@ -332,10 +316,6 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
     /**
      * Factors out the boilerplate to create a transaction, run it, commit it if successful, revert
      * otherwise, and finally close it
-     *
-     * @param store
-     * @param featureStoreConsumer
-     * @throws IOException
      */
     protected void runTransactionOnStore(
             FeatureStore store, IOConsumer<FeatureStore> featureStoreConsumer) throws IOException {
@@ -351,12 +331,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         }
     }
 
-    /**
-     * Turns a complex feature into a single item feature collection
-     *
-     * @param f
-     * @return
-     */
+    /** Turns a complex feature into a single item feature collection */
     protected FeatureCollection singleton(Feature f) {
         ListComplexFeatureCollection fc = new ListComplexFeatureCollection(f);
         return fc;
@@ -365,10 +340,6 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
     /**
      * Converts the simple feature representatin of a collection into a complex feature suitable for
      * OpenSearchAccess usage
-     *
-     * @param feature
-     * @return
-     * @throws IOException
      */
     protected Feature simpleToComplex(
             SimpleFeature feature, FeatureType targetSch, Collection<String> ignoredAttributes)

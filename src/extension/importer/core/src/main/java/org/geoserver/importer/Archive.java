@@ -16,7 +16,6 @@ public class Archive extends Directory {
      * Create archive from a file.
      *
      * @param file the file
-     * @throws IOException
      */
     public Archive(File file) throws IOException {
         super(Directory.createFromArchive(file).getFile());

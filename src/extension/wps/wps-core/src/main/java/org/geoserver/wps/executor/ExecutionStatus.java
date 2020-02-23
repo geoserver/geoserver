@@ -283,11 +283,7 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
         return lastUpdated;
     }
 
-    /**
-     * Sets the last updated time. Only the {@link ProcessStatusTracker} should call this method
-     *
-     * @param lastUpdated
-     */
+    /** Sets the last updated time. Only the {@link ProcessStatusTracker} should call this method */
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }

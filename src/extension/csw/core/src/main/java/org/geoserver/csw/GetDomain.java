@@ -61,11 +61,7 @@ public class GetDomain {
         }
     }
 
-    /**
-     * Returns the requested feature types
-     *
-     * @param request
-     */
+    /** Returns the requested feature types */
     public CloseableIterator<String> run(GetDomainType request) {
         try {
             List<String> result = new ArrayList<String>();

@@ -98,10 +98,6 @@ public interface PublishedInfo extends CatalogInfo {
      */
     boolean isAdvertised();
 
-    /**
-     * Set to true if the layer should be advertised, false otherwise
-     *
-     * @param advertised
-     */
+    /** Set to true if the layer should be advertised, false otherwise */
     void setAdvertised(boolean advertised);
 }

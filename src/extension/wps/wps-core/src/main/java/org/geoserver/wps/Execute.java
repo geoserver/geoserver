@@ -39,13 +39,7 @@ public class Execute {
         this.executionManager = executionManager;
     }
 
-    /**
-     * Main method for performing decoding, execution, and response
-     *
-     * @param object
-     * @param output
-     * @throws IllegalArgumentException
-     */
+    /** Main method for performing decoding, execution, and response */
     public ExecuteResponseType run(ExecuteType execute) {
         ResponseDocumentType responseDocument = null;
         OutputDefinitionType rawDataOutput = null;

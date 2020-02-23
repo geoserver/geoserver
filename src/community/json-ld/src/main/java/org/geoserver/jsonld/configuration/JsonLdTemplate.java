@@ -35,11 +35,7 @@ public class JsonLdTemplate {
         }
     }
 
-    /**
-     * Check if json-ld template file has benn modified an eventually reload it.
-     *
-     * @return
-     */
+    /** Check if json-ld template file has benn modified an eventually reload it. */
     public boolean checkTemplate() {
         if (watcher != null && watcher.isModified()) {
             LOGGER.log(

@@ -460,8 +460,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     /**
      * Tests a heterogeneous view without setting any extra configuration (falling back on defaults)
-     *
-     * @throws Exception
      */
     @Test
     public void testHeterogeneousViewDefaults() throws Exception {
@@ -511,8 +509,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     /**
      * Tests a heterogeneous view without setting any extra configuration (falling back on defaults)
-     *
-     * @throws Exception
      */
     @Test
     public void testHeterogeneousViewIntersectionEnvelope() throws Exception {
@@ -611,11 +607,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         assertEquals(resY, Math.abs(mt.getScaleY()), 1);
     }
 
-    /**
-     * Hit the view outside its bounds, should return null
-     *
-     * @throws Exception
-     */
+    /** Hit the view outside its bounds, should return null */
     @Test
     public void testHeterogeneousViewOutsideBounds() throws Exception {
         CoverageInfo info =

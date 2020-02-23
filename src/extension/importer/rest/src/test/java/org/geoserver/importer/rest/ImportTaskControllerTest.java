@@ -609,11 +609,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals("Invalid context state", State.PENDING, state);
     }
 
-    /**
-     * This variant matches exactly the documentation and puts the changes directly on the layer
-     *
-     * @throws Exception
-     */
+    /** This variant matches exactly the documentation and puts the changes directly on the layer */
     @Test
     public void testPutItemSRSOnLayer() throws Exception {
         File dir = unpack("shape/archsites_no_crs.zip");
@@ -647,11 +643,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals("Invalid context state", State.PENDING, state);
     }
 
-    /**
-     * Rename layer test
-     *
-     * @throws Exception
-     */
+    /** Rename layer test */
     @Test
     public void testRenameLayerAndImportIntoH2() throws Exception {
         // create H2 store to act as a target

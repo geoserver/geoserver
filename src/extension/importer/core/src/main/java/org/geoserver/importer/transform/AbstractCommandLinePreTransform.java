@@ -151,9 +151,6 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     /**
      * Returns the name of all the files that should be transferred from input to output (sometimes
      * the output is made of several files)
-     *
-     * @param data
-     * @throws IOException
      */
     protected abstract List<String> getReplacementTargetNames(ImportData data) throws IOException;
 
@@ -170,20 +167,10 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
         return true;
     }
 
-    /**
-     * The command input file
-     *
-     * @param data
-     * @throws IOException
-     */
+    /** The command input file */
     protected abstract File getInputFile(ImportData data) throws IOException;
 
-    /**
-     * The directory used for outputs, by default, a subdirectory of the input file parent
-     *
-     * @param data
-     * @throws IOException
-     */
+    /** The directory used for outputs, by default, a subdirectory of the input file parent */
     protected File getOutputDirectory(ImportData data) throws IOException {
         File input = getInputFile(data);
         File parent = input.getParentFile();
@@ -202,9 +189,6 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     /**
      * Locates and executable in the system path. On windows it will automatically append .exe to
      * the searched file name
-     *
-     * @param name
-     * @throws IOException
      */
     protected File getExecutableFromPath(String name) throws IOException {
         if (SystemUtils.IS_OS_WINDOWS) {

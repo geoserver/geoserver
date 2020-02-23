@@ -137,23 +137,14 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
         assertEquals(count, nodes.getLength());
     }
 
-    /**
-     * Return {@link Document} as a pretty-printed string.
-     *
-     * @param doc
-     */
+    /** Return {@link Document} as a pretty-printed string. */
     public String prettyString(Document doc) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
         prettyPrint(doc, out);
         return out.toString();
     }
 
-    /**
-     * Pretty-print a {@link Document} to an {@link OutputStream}.
-     *
-     * @param doc
-     * @param out
-     */
+    /** Pretty-print a {@link Document} to an {@link OutputStream}. */
     public void prettyPrint(Document doc, OutputStream out) throws Exception {
         Transformer tx = TransformerFactory.newInstance().newTransformer();
         tx.setOutputProperty(OutputKeys.INDENT, "yes");

@@ -270,8 +270,6 @@ public final class MapLayerInfo {
      * reprojection. This method is build especially for the rendering subsystem that should be able
      * to perform a full reprojection on its own, and do generalization before reprojection (thus
      * avoid to reproject all of the original coordinates)
-     *
-     * @param coordinateReferenceSystem
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
             boolean skipReproject, CoordinateReferenceSystem coordinateReferenceSystem)

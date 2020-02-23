@@ -141,11 +141,7 @@ final class TurboJpegImageWorker extends ImageWorker {
         }
     }
 
-    /**
-     * Remove the alpha band
-     *
-     * @param requestedBands
-     */
+    /** Remove the alpha band */
     private void removeAlpha(int requestedBands) {
         // Retrieving/Setting the ImageLayout
         final RenderingHints hints = getRenderingHints();

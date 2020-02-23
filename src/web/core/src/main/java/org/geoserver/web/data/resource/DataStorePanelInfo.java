@@ -39,8 +39,6 @@ public class DataStorePanelInfo extends ComponentInfo<StoreEditPanel> {
     /**
      * Used as the reference class to locate the datastore icon (since the component might not be
      * there)
-     *
-     * @param iconBase
      */
     public void setIconBase(Class<?> iconBase) {
         this.iconBase = iconBase;

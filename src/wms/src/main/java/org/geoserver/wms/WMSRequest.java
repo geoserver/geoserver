@@ -78,11 +78,7 @@ public abstract class WMSRequest {
         this.rawKvp = rawKvp;
     }
 
-    /**
-     * Set by {@link Dispatcher}
-     *
-     * @param baseUrl
-     */
+    /** Set by {@link Dispatcher} */
     public void setBaseUrl(final String baseUrl) {
         this.baseUrl = baseUrl;
     }

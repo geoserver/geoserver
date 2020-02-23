@@ -163,11 +163,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals(s1, s2);
     }
 
-    /**
-     * Minimum compliance for the resolve parameter
-     *
-     * @throws Exception
-     */
+    /** Minimum compliance for the resolve parameter */
     @Test
     public void testResolveParameter() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");

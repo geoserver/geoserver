@@ -379,11 +379,7 @@ public class WMSMapContent extends MapContent {
         }
     }
 
-    /**
-     * Computes the StreamingRenderer scale computation method hint based on the current request
-     *
-     * @param request
-     */
+    /** Computes the StreamingRenderer scale computation method hint based on the current request */
     public String getRendererScaleMethod() {
         if (request.getScaleMethod() == ScaleComputationMethod.Accurate) {
             return StreamingRenderer.SCALE_ACCURATE;
@@ -396,8 +392,6 @@ public class WMSMapContent extends MapContent {
      * Generic map attached to the map content, can be used to persist information around the life
      * cycle when the {@link WebMap} is not appropriate, or to persist state across the various
      * response callbacks
-     *
-     * @return
      */
     public Map<String, Object> getMetadata() {
         return metadata;

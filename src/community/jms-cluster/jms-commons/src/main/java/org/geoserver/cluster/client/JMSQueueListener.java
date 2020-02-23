@@ -169,8 +169,6 @@ public class JMSQueueListener extends JMSApplicationListener
 
     // /**
     // * @deprecated unused/untested
-    // * @param message
-    // * @throws JMSException
     // */
     // private static void getStreamMessage(Message message) throws JMSException
     // {

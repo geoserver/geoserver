@@ -149,8 +149,6 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaTestSupport {
     /**
      * Tests that {@link SecuredDataStoreInfo#getDataStore(org.opengis.util.ProgressListener)}
      * correctly returns a {@link DataAccess} instance.
-     *
-     * @throws IOException
      */
     @Test
     public void testSecuredDataStoreInfo() throws IOException {

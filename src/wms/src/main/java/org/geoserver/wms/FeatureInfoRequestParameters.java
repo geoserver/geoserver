@@ -124,9 +124,6 @@ public class FeatureInfoRequestParameters {
     /**
      * Grab the list of styles for each query layer, we'll use them to auto-evaluate the
      * GetFeatureInfo radius if the user did not specify one
-     *
-     * @param request
-     * @param layers
      */
     private List<Style> getStyles(final GetFeatureInfoRequest request, List<MapLayerInfo> layers) {
         List<Style> getMapStyles = request.getGetMapRequest().getStyles();

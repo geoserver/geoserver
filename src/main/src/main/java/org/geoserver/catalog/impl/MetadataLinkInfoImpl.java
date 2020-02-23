@@ -73,10 +73,7 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
     }
 
     static final List<String> protocols = Arrays.asList("http", "https", "ftp");
-    /**
-     * @throws IllegalArgumentException if the url is invalid for use as a Metadata Link
-     * @param url
-     */
+    /** @throws IllegalArgumentException if the url is invalid for use as a Metadata Link */
     public static void validate(String url) {
         if (url == null) return;
         URL dummy;

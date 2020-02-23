@@ -140,11 +140,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         pages.push(copy);
     };
 
-    /**
-     * Returns the function return type, or {@link Object} if it could not be determined
-     *
-     * @param f
-     */
+    /** Returns the function return type, or {@link Object} if it could not be determined */
     Class getFunctionReturnType(Function f) {
         FunctionName name = f.getFunctionName();
         if (name == null || name.getReturn() == null) {

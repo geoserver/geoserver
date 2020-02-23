@@ -36,12 +36,7 @@ public class FrameCatalog {
     /** Default Constructor. */
     private FrameCatalog() {}
 
-    /**
-     * Frame Catalog Constructor.
-     *
-     * @param request
-     * @param wmsConfiguration
-     */
+    /** Frame Catalog Constructor. */
     public FrameCatalog(GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         this();
 
@@ -94,11 +89,7 @@ public class FrameCatalog {
         return wmsConfiguration;
     }
 
-    /**
-     * Creates Frames visitors. Still not producing any image here.
-     *
-     * @param visitor
-     */
+    /** Creates Frames visitors. Still not producing any image here. */
     void getFrames(FrameCatalogVisitor visitor) {
         for (String value : values) {
             visitor.visit(

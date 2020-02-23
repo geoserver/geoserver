@@ -58,11 +58,7 @@ public abstract class GeoServerWicketCoverageTestSupport extends GeoServerWicket
         addWcs11Coverages(testData);
     }
 
-    /**
-     * Adds the wcs 1.1 coverages.
-     *
-     * @param testData
-     */
+    /** Adds the wcs 1.1 coverages. */
     public void addWcs11Coverages(SystemTestData testData) throws Exception {
         String styleName = "raster";
         testData.addStyle(styleName, "raster.sld", MockData.class, getCatalog());

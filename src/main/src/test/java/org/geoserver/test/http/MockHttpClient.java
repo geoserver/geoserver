@@ -32,20 +32,12 @@ public class MockHttpClient extends AbstractHttpClient {
      * Binds a certain URL to a response. The order of the query string parameters is not relevant,
      * the code will match the same set of KVP params regardless of their sequence and case of their
      * keys (from OGC specs, keys are case insensitive, values are case sensitive)
-     *
-     * @param url
-     * @param response
      */
     public void expectGet(URL url, HTTPResponse response) {
         expectedRequests.put(new Request(url), response);
     }
 
-    /**
-     * Binds a certain POST request to a response.
-     *
-     * @param url
-     * @param response
-     */
+    /** Binds a certain POST request to a response. */
     public void expectPost(
             URL url, String postContent, String postContentType, HTTPResponse response) {
         expectPOST(url, postContent.getBytes(), postContentType, response);

@@ -366,9 +366,6 @@ public class StylesService {
     /**
      * Gets the charset from the content type, or uses the default configured charset, of if even
      * that is missing, returns UTF-8 as a default
-     *
-     * @param mediaType
-     * @return
      */
     private String getCharacterEncoding(HttpServletRequest request) {
         return Optional.ofNullable(request.getCharacterEncoding())

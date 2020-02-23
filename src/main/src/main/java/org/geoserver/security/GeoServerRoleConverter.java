@@ -19,25 +19,16 @@ public interface GeoServerRoleConverter {
     /**
      * Converts a {@link GeoServerRole} to a string The {@link GeoServerRole#getUserName()} is not
      * included
-     *
-     * @param role
      */
     public abstract String convertRoleToString(GeoServerRole role);
 
-    /**
-     * converts a collection of roles to a string
-     *
-     * @param roles
-     */
+    /** converts a collection of roles to a string */
     public abstract String convertRolesToString(Collection<? extends GrantedAuthority> roles);
 
     /**
      * creates a collection of roles from a string
      *
      * <p>The userName may be null
-     *
-     * @param rolesString
-     * @param userName
      */
     public abstract Collection<GeoServerRole> convertRolesFromString(
             String rolesString, String userName);
@@ -48,9 +39,6 @@ public interface GeoServerRoleConverter {
      *
      * <p>The userName may be null and should only be passed if the role has personalized role
      * parameters
-     *
-     * @param roleString
-     * @param userName
      */
     public abstract GeoServerRole convertRoleFromString(String roleString, String userName);
 }

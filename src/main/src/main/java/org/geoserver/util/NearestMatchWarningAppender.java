@@ -38,7 +38,6 @@ public class NearestMatchWarningAppender extends AbstractDispatcherCallback {
      * @param value The actual value used, or null if it's a {@link WarningType#NotFound} warning
      *     type
      * @param unit The measure unit of measure
-     * @param warningType
      */
     public static void addWarning(
             String layerName,

@@ -362,14 +362,7 @@ public class CoverageView implements Serializable {
         this.coverageBands = coverageBands;
     }
 
-    /**
-     * Create a {@link CoverageInfo}
-     *
-     * @param builder
-     * @param storeInfo
-     * @param cinfo
-     * @param name
-     */
+    /** Create a {@link CoverageInfo} */
     private CoverageInfo buildCoverageInfo(
             CatalogBuilder builder, CoverageStoreInfo storeInfo, CoverageInfo cinfo, String name)
             throws Exception {
@@ -406,11 +399,6 @@ public class CoverageView implements Serializable {
     /**
      * Update the specified {@link CoverageInfo} with the updated {@link CoverageView} stored within
      * its metadata
-     *
-     * @param name
-     * @param storeInfo
-     * @param builder
-     * @param coverageInfo
      */
     public void updateCoverageInfo(
             String name,
@@ -427,20 +415,12 @@ public class CoverageView implements Serializable {
         coverageInfo.getDimensions().addAll(info.getDimensions());
     }
 
-    /**
-     * Get the i-th {@link CoverageBand}
-     *
-     * @param index
-     */
+    /** Get the i-th {@link CoverageBand} */
     public CoverageBand getBand(final int index) {
         return coverageBands.get(index);
     }
 
-    /**
-     * Get the {@link CoverageBand}s related to the specified coverageName
-     *
-     * @param coverageName
-     */
+    /** Get the {@link CoverageBand}s related to the specified coverageName */
     public List<CoverageBand> getBands(final String coverageName) {
         List<CoverageBand> bands = new ArrayList<CoverageBand>();
         for (CoverageBand coverageBand : coverageBands) {

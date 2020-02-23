@@ -143,10 +143,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
     /**
      * Utility method to dump a {@link CoordinateReferenceSystem} to a temporary file on disk.
      *
-     * @param parentDir
-     * @param crs
      * @return the temp file containing the CRS definition in WKT format
-     * @throws IOException
      */
     protected static File dumpCrs(File parentDir, CoordinateReferenceSystem crs)
             throws IOException {
@@ -174,12 +171,6 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
      * additional arguments to <code>cmd</code>.
      *
      * @param cmd the command to run and its arguments
-     * @param inputData
-     * @param outputDirectory
-     * @param typeName
-     * @param format
-     * @param crs
-     * @throws IOException
      */
     protected void onBeforeRun(
             List<String> cmd,
@@ -201,7 +192,6 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
      * clean-up work.
      *
      * @param exitCode the exit code of the invoked command. Usually, 0 indicates normal termination
-     * @throws IOException
      */
     protected void onAfterRun(int exitCode) throws IOException {
         // default implementation does nothing
@@ -214,8 +204,6 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
      * @param cmd the command to run and its arguments
      * @param sb command output is appended here
      * @return the exit code of the invoked command. Usually, 0 indicates normal termination
-     * @throws IOException
-     * @throws InterruptedException
      */
     protected int run(List<String> cmd, StringBuilder sb) throws IOException, InterruptedException {
         // run the process and grab the output for error reporting purposes

@@ -121,14 +121,7 @@ public abstract class AbstractRecordsResponse extends Response {
         }
     }
 
-    /**
-     * Actually encodes the response into a set of records
-     *
-     * @param output
-     * @param result
-     * @param request
-     * @param csw
-     */
+    /** Actually encodes the response into a set of records */
     protected abstract void transformResponse(
             OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw);
 }

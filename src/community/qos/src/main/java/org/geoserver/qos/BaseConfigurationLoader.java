@@ -28,7 +28,6 @@ public abstract class BaseConfigurationLoader<T extends ServiceInfo> {
     /**
      * Loads the configuration file in workspace or global
      *
-     * @param info
      * @return configuration
      */
     public QosMainConfiguration getConfiguration(ServiceInfo info) {
@@ -73,12 +72,7 @@ public abstract class BaseConfigurationLoader<T extends ServiceInfo> {
 
     protected abstract void validate(QosMainConfiguration config);
 
-    /**
-     * Saves QoS configuration to file in workspace folder
-     *
-     * @param info
-     * @param config
-     */
+    /** Saves QoS configuration to file in workspace folder */
     public void setConfiguration(T info, QosMainConfiguration config) {
         Resource resource = getResource(info);
         setConfiguration(resource, config);

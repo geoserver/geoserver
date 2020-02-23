@@ -45,21 +45,13 @@ public class XMLXpathFactory extends XMLXpath {
         return rrExpression;
     }
 
-    /**
-     * Get XPath provider for roles, depending on the version
-     *
-     * @param version
-     */
+    /** Get XPath provider for roles, depending on the version */
     public RoleXMLXpath getRoleXMLXpath(String version) {
         if (VERSION_RR_1_0.equals(version)) return RoleXMLXpath_1_0.Singleton;
         return null;
     }
 
-    /**
-     * Get XPath provider for user/groups, depending on the version
-     *
-     * @param version
-     */
+    /** Get XPath provider for user/groups, depending on the version */
     public UserGroupXMLXpath getUserGroupXMLXpath(String version) {
         if (VERSION_RR_1_0.equals(version)) return UserGroupXMLXpath_1_0.Singleton;
         return null;

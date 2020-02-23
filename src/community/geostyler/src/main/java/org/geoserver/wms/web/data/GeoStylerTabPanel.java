@@ -89,11 +89,7 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
         add(new HelpLink("styleGroupHelp").setDialog(dialog));
     }
 
-    /**
-     * Add required CSS and Javascript resources
-     *
-     * @param header
-     */
+    /** Add required CSS and Javascript resources */
     public void renderHead(IHeaderResponse header) {
         super.renderHead(header);
         try {
@@ -210,8 +206,6 @@ public class GeoStylerTabPanel extends StyleEditTabPanel implements IHeaderContr
     /**
      * Makes sure the url does not end with "/", otherwise we would have URLs like
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
-     *
-     * @param baseUrl
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

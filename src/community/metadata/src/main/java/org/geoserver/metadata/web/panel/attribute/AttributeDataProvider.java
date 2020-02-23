@@ -52,11 +52,7 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfig
         load(metadataConfigurationService.getMetadataConfiguration());
     }
 
-    /**
-     * Provide attributes for the given complex type configuration.
-     *
-     * @param typename
-     */
+    /** Provide attributes for the given complex type configuration. */
     public AttributeDataProvider(String typename, ResourceInfo rInfo) {
         this.rInfo = rInfo;
         ConfigurationService metadataConfigurationService =

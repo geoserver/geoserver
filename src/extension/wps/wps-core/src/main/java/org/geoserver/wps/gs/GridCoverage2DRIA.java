@@ -249,11 +249,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         }
     }
 
-    /**
-     * @param src
-     * @param dstGridGeometry
-     * @throws IllegalArgumentException
-     */
+    /** */
     private void initTransformations() throws IllegalArgumentException {
         // === Take one for all all the transformation we need to pass from
         // model, sample, src, target and viceversa.

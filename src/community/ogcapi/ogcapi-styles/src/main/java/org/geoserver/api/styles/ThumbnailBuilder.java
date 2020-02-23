@@ -138,9 +138,6 @@ public class ThumbnailBuilder {
      * Picks the first layer that has the style associated as default, or if none found, the first
      * having it as associate. To get some stability in the output in case of multiple associations,
      * the styles are sorted by workspace and name
-     *
-     * @param styleInfo
-     * @return
      */
     private LayerInfo getAssociatedLayer(StyleInfo styleInfo) {
         LayerInfo layer = null;
@@ -168,12 +165,7 @@ public class ThumbnailBuilder {
         return layer;
     }
 
-    /**
-     * Returns true if sample data is available to build a thumbnail
-     *
-     * @param si
-     * @return
-     */
+    /** Returns true if sample data is available to build a thumbnail */
     public boolean canGenerateThumbnail(StyleInfo styleInfo) {
         GetMapRequest request = new GetMapRequest();
         try {

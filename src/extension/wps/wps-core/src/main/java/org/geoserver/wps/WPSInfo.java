@@ -36,11 +36,7 @@ public interface WPSInfo extends ServiceInfo {
      */
     int getResourceExpirationTimeout();
 
-    /**
-     * Sets the resource expiration timeout.
-     *
-     * @param resourceExpirationTimeout
-     */
+    /** Sets the resource expiration timeout. */
     void setResourceExpirationTimeout(int resourceExpirationTimeout);
 
     /**
@@ -58,11 +54,7 @@ public interface WPSInfo extends ServiceInfo {
      */
     public int getMaxAsynchronousProcesses();
 
-    /**
-     * Sets the maximum number of processes that can run in asynchronous mode in parallel.
-     *
-     * @param maxAsynchronousProcesses
-     */
+    /** Sets the maximum number of processes that can run in asynchronous mode in parallel. */
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses);
 
     /** Retrieves the process groups configurations */
@@ -75,8 +67,6 @@ public interface WPSInfo extends ServiceInfo {
      * Sets the output storage directory, that is, the directory used to store the request, status
      * and final response of asynch requests, as well as any output that is meant to be referred to
      * by URL instead of being included inline in Execute the response.
-     *
-     * @param storageDirectory
      */
     public void setStorageDirectory(String storageDirectory);
 

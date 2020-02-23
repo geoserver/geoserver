@@ -60,8 +60,6 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
      * @param tileLayer The tile layer being described
      * @param summary If true, the info provided is minimal and assumed to be part of a {@link
      *     TiledCollectionsDocument}, otherwise it's full and assumed to be the main response
-     * @throws FactoryException
-     * @throws TransformException
      */
     public TiledCollectionDocument(WMS wms, TileLayer tileLayer, boolean summary)
             throws FactoryException, TransformException, IOException {

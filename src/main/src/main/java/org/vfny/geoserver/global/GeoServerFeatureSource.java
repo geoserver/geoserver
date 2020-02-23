@@ -173,7 +173,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * <p>This factory method is public and will be used to create all required subclasses. By
      * comparison the constructors for this class have package visibility.
      *
-     * @param featureSource
      * @param settings Settings for this store
      */
     public static GeoServerFeatureSource create(
@@ -332,7 +331,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @param listener
      * @see org.geotools.data.FeatureSource#addFeatureListener(org.geotools.data.FeatureListener)
      */
     public void addFeatureListener(FeatureListener listener) {
@@ -344,7 +342,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @param listener
      * @see org.geotools.data.FeatureSource#removeFeatureListener(org.geotools.data.FeatureListener)
      */
     public void removeFeatureListener(FeatureListener listener) {
@@ -356,8 +353,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * <p>Description ...
      *
-     * @param query
-     * @throws IOException
      * @see org.geotools.data.FeatureSource#getFeatures(org.geotools.data.Query)
      */
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
@@ -543,9 +538,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * Transforms the query applying the definition query in this layer, removes reprojection since
      * data stores cannot be trusted
      *
-     * @param query
      * @param schema TODO
-     * @throws IOException
      */
     protected Query adaptQuery(Query query, SimpleFeatureType schema) throws IOException {
         // if needed, reproject the filter to the native srs
@@ -711,11 +704,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         /**
          * Constructor parameter for GeoServerFeatureSource.
          *
-         * @param schema
-         * @param definitionQuery
-         * @param declaredCRS
-         * @param srsHandling
-         * @param linearizationTolerance
          * @param metadata Feature type metadata
          */
         public Settings(

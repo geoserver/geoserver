@@ -20,24 +20,14 @@ public class DomainType {
     List<String> allowedValues = Collections.emptyList();
     String defaultValue;
 
-    /**
-     * Builds a constraint with a name, and a default value
-     *
-     * @param name
-     * @param defaultValue
-     */
+    /** Builds a constraint with a name, and a default value */
     public DomainType(String name, String defaultValue) {
         this.name = name;
         this.noValues = true;
         this.defaultValue = defaultValue;
     }
 
-    /**
-     * Builds a constraint with a name and a non null list of allowed values (eventually empty)
-     *
-     * @param name
-     * @param allowedValues
-     */
+    /** Builds a constraint with a name and a non null list of allowed values (eventually empty) */
     public DomainType(String name, List<String> allowedValues) {
         this.name = name;
         this.allowedValues = allowedValues;

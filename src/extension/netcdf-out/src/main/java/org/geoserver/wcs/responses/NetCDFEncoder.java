@@ -24,23 +24,13 @@ import ucar.ma2.InvalidRangeException;
  */
 public interface NetCDFEncoder {
 
-    /**
-     * Writes out the NetCDF file
-     *
-     * @throws IOException
-     * @throws InvalidRangeException
-     */
+    /** Writes out the NetCDF file */
     void write() throws IOException, InvalidRangeException;
 
     /** Close and release resources */
     void close();
 
-    /**
-     * Extracts the NetCDF encoding settings out of the encoding parameters
-     *
-     * @param encodingParameters
-     * @return
-     */
+    /** Extracts the NetCDF encoding settings out of the encoding parameters */
     static NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
         if (keys != null
@@ -55,12 +45,7 @@ public interface NetCDFEncoder {
         return null;
     }
 
-    /**
-     * Extracts the NetCDF encoding settings from the coverage identifier
-     *
-     * @param coverageId
-     * @return
-     */
+    /** Extracts the NetCDF encoding settings from the coverage identifier */
     static NetCDFLayerSettingsContainer getSettings(String coverageId) {
         GeoServer geoserver = GeoServerExtensions.bean(GeoServer.class);
         MetadataMap map = null;

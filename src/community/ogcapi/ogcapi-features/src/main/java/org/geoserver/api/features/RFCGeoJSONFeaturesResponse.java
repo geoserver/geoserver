@@ -8,7 +8,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,11 +63,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
-    /**
-     * Returns the WFS3 featureId, or null if it's missing or the request is not a WFS3 one
-     *
-     * @return
-     */
+    /** Returns the WFS3 featureId, or null if it's missing or the request is not a WFS3 one */
     private String getItemId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(
@@ -80,14 +75,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
                 .orElse(null);
     }
 
-    /**
-     * Writes a single feature using the facilities provided by the base class
-     *
-     * @param value
-     * @param output
-     * @param operation
-     * @throws UnsupportedEncodingException
-     */
+    /** Writes a single feature using the facilities provided by the base class */
     private void writeSingleFeature(
             FeatureCollectionResponse value, OutputStream output, Operation operation)
             throws IOException {

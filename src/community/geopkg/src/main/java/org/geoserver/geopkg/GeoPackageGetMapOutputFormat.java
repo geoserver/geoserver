@@ -161,13 +161,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         return new GeopackageWrapper();
     }
 
-    /**
-     * Add tiles to an existing GeoPackage
-     *
-     * @param geopkg
-     * @param map
-     * @throws IOException
-     */
+    /** Add tiles to an existing GeoPackage */
     public void addTiles(GeoPackage geopkg, TileEntry e, GetMapRequest req, String name)
             throws IOException {
         addTiles(new GeopackageWrapper(geopkg, e), req, name);
@@ -176,12 +170,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     /**
      * Special method to add tiles using Geopackage's own grid matrix system rather than GWC
      * gridsubsets
-     *
-     * @param tiles
-     * @param mapLayers
-     * @param map
-     * @throws IOException
-     * @throws ServiceException
      */
     public void addTiles(
             GeoPackage geopkg,

@@ -62,10 +62,6 @@ public class DimensionFilterBuilder {
     /**
      * Build a filter for a single value based on an attribute and optional endAttribute. The value
      * is either a Range or object that can be used as a literal (Date,Number).
-     *
-     * @param value
-     * @param attribute
-     * @param endAttribute
      */
     Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
         Filter filter;

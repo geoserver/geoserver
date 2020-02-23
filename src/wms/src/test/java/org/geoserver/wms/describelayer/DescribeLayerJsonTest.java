@@ -85,7 +85,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * @param body Accepts:<br>
      *     DescribeLayer(...)<br>
-     * @param layer
      */
     private void checkJSONPDescribeLayer(String body, String layer) {
         assertNotNull(body);

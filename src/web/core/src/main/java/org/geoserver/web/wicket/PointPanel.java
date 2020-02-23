@@ -114,11 +114,7 @@ public class PointPanel extends FormComponentPanel<Point> {
                 });
     }
 
-    /**
-     * Sets the max number of digits for the
-     *
-     * @param maximumFractionDigits
-     */
+    /** Sets the max number of digits for the */
     public void setMaximumFractionDigits(int maximumFractionDigits) {
         xInput.setMaximumFractionDigits(maximumFractionDigits);
         yInput.setMaximumFractionDigits(maximumFractionDigits);

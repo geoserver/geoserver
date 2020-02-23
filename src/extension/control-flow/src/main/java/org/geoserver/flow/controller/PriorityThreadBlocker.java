@@ -143,11 +143,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         }
     }
 
-    /**
-     * Returns the priority provider, issuing a priority for each request to be put in queue
-     *
-     * @return
-     */
+    /** Returns the priority provider, issuing a priority for each request to be put in queue */
     public PriorityProvider getPriorityProvider() {
         return priorityProvider;
     }

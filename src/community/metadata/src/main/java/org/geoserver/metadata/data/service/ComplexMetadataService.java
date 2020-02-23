@@ -32,10 +32,6 @@ public interface ComplexMetadataService {
     /**
      * The values in the template are applied in reverse order, i.e. the first child has the highest
      * priority.
-     *
-     * @param parent
-     * @param children
-     * @param derivedAtts
      */
     void merge(
             ComplexMetadataMap destination,
@@ -77,11 +73,7 @@ public interface ComplexMetadataService {
      */
     boolean equals(ComplexMetadataMap map, ComplexMetadataMap other, String typeName);
 
-    /**
-     * Fill derived attributes.
-     *
-     * @param map
-     */
+    /** Fill derived attributes. */
     void derive(ComplexMetadataMap map);
 
     /**

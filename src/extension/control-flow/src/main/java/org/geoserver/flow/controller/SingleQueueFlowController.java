@@ -60,11 +60,7 @@ public class SingleQueueFlowController implements FlowController {
         return matcher;
     }
 
-    /**
-     * Returns the current queue size (used for testing only)
-     *
-     * @return
-     */
+    /** Returns the current queue size (used for testing only) */
     public int getRequestsInQueue() {
         return blocker.getRunningRequestsCount();
     }

@@ -116,11 +116,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         geoServer.save(oseo);
     }
 
-    /**
-     * Allows subclasses to decide if to populate the granules table, or not
-     *
-     * @return
-     */
+    /** Allows subclasses to decide if to populate the granules table, or not */
     protected boolean populateGranulesTable() {
         return false;
     }
@@ -133,12 +129,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     /**
      * Sets up a H2 based OpenSearchAccess and configures OpenSearch for EO to use it
      *
-     * @param testData
-     * @param cat
-     * @param gs
      * @param populateGranulesTable TODO
-     * @throws IOException
-     * @throws SQLException
      */
     public static void setupBasicOpenSearch(
             SystemTestData testData, Catalog cat, GeoServer gs, boolean populateGranulesTable)
@@ -223,14 +214,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         checkValidationErrors(d, getAtomSchema());
     }
 
-    /**
-     * Checks the response is a RSS and
-     *
-     * @param path
-     * @param i
-     * @return
-     * @throws Exception
-     */
+    /** Checks the response is a RSS and */
     protected Document getAsOpenSearchException(String path, int expectedStatus) throws Exception {
         return getAsDOM(path, expectedStatus, "application/xml"); // OSEOExceptionHandler.RSS_MIME);
     }
@@ -238,11 +222,6 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     /**
      * Returns the DOM after checking the status code is 200 and the returned mime type is the
      * expected one
-     *
-     * @param path
-     * @param expectedMimeType
-     * @return
-     * @throws Exception
      */
     protected Document getAsDOM(String path, int expectedStatusCode, String expectedMimeType)
             throws Exception {

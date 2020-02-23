@@ -72,11 +72,7 @@ public interface CoverageDimensionInfo extends Serializable {
     /** Returns the unit name for this dimension, or null if unknown */
     String getUnit();
 
-    /**
-     * Sets the dimenions unit name
-     *
-     * @param unit
-     */
+    /** Sets the dimenions unit name */
     void setUnit(String unit);
 
     /** */

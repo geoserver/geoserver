@@ -76,8 +76,6 @@ public class FeatureChainingSharedConnectionTest extends AbstractAppSchemaTestSu
      *       database connection to retrieve the nested <em>CompositionPart, ControlledConcept,
      *       CGI_TermValue</em> "features"
      * </ul>
-     *
-     * @throws Exception
      */
     @Test
     public void testSharedConnection() throws Exception {

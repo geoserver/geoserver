@@ -32,13 +32,7 @@ public abstract class GeoServerJ2eeBaseAuthenticationFilter
         return super.getRoles(request, principal);
     }
 
-    /**
-     * Implements roles retrieval from the J2EE container.
-     *
-     * @param request
-     * @param principal
-     * @throws IOException
-     */
+    /** Implements roles retrieval from the J2EE container. */
     protected Collection<GeoServerRole> getRolesFromJ2EE(
             HttpServletRequest request, String principal) throws IOException {
 

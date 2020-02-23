@@ -24,11 +24,7 @@ public class GeoServerOpenAPI extends OpenAPI {
         this.serviceBase = serviceBase;
     }
 
-    /**
-     * Used by the HTML representation to locate the
-     *
-     * @return
-     */
+    /** Used by the HTML representation to locate the */
     @JsonIgnore
     public String getApiLocation() {
         String baseURL = APIRequestInfo.get().getBaseURL();

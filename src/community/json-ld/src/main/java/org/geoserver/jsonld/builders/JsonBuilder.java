@@ -15,10 +15,6 @@ public interface JsonBuilder {
     /**
      * Writes a piece of json-ld output evaluating builder's corresponding portion of json-ld
      * template against current object passed inside ${@link JsonBuilderContext}
-     *
-     * @param writer
-     * @param context
-     * @throws IOException
      */
     void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException;
 

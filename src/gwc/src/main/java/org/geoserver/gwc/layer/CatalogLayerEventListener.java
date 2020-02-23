@@ -335,12 +335,6 @@ public class CatalogLayerEventListener implements CatalogListener {
      *       filter is updated to match the actual list of layer styles and any removed style is
      *       truncated.
      * </ul>
-     *
-     * @param changedProperties
-     * @param oldValues
-     * @param newValues
-     * @param li
-     * @param tileLayerInfo
      */
     private void handleLayerInfoChange(
             final List<String> changedProperties,

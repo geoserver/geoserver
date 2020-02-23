@@ -249,7 +249,6 @@ public class ExternalGraphicPanel extends Panel {
     /**
      * Lookup base URL using provided form
      *
-     * @param form
      * @see ResponseUtils
      * @return baseUrl
      */
@@ -271,8 +270,6 @@ public class ExternalGraphicPanel extends Panel {
      * Validates the external graphic and returns a connection to the graphic. If validation fails,
      * error messages will be added to the passed form
      *
-     * @param target
-     * @param form
      * @return URLConnection to the External Graphic file
      */
     protected URLConnection getExternalGraphic(AjaxRequestTarget target, Form<?> form) {

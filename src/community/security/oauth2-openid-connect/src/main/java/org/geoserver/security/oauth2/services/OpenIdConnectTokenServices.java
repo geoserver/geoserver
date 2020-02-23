@@ -49,14 +49,7 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
         }
     }
 
-    /**
-     * Overriden to remove the assertion about remote tokens
-     *
-     * @param accessToken
-     * @return
-     * @throws AuthenticationException
-     * @throws InvalidTokenException
-     */
+    /** Overriden to remove the assertion about remote tokens */
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken)
             throws AuthenticationException, InvalidTokenException {

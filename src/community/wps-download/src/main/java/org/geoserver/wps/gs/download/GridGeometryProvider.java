@@ -83,16 +83,7 @@ class GridGeometryProvider {
             return resDescriptor != null || (resXDescriptor != null && resYDescriptor != null);
         }
 
-        /**
-         * Get the best resolution from the input {@link SimpleFeatureCollection}.
-         *
-         * @param features
-         * @param resolutions
-         * @return
-         * @throws FactoryException
-         * @throws TransformException
-         * @throws IOException
-         */
+        /** Get the best resolution from the input {@link SimpleFeatureCollection}. */
         public ReferencedEnvelope getBestResolution(
                 SimpleFeatureCollection features, final double[] bestResolution)
                 throws FactoryException, TransformException, IOException {
@@ -142,19 +133,7 @@ class GridGeometryProvider {
             return envelope;
         }
 
-        /**
-         * Extract the resolution from the specified feature via the resolution attributes.
-         *
-         * @param feature
-         * @param resXAttribute
-         * @param resYAttribute
-         * @param crsAttribute
-         * @param schemaCrs
-         * @param resolution
-         * @throws FactoryException
-         * @throws TransformException
-         * @throws IOException
-         */
+        /** Extract the resolution from the specified feature via the resolution attributes. */
         private void extractResolution(
                 SimpleFeature feature,
                 String resXAttribute,
@@ -178,13 +157,6 @@ class GridGeometryProvider {
         /**
          * Compute the transformed resolution of the provided feature since we are in the case of
          * heterogeneous CRS.
-         *
-         * @param feature
-         * @param schemaCrs
-         * @param granuleCrs
-         * @param resolution
-         * @throws FactoryException
-         * @throws TransformException
          */
         private void transformResolution(
                 SimpleFeature feature,
@@ -338,12 +310,6 @@ class GridGeometryProvider {
     /**
      * Initialize the query to get granules, based on provided filter and region of interest (if
      * any)
-     *
-     * @param granules
-     * @return
-     * @throws TransformException
-     * @throws FactoryException
-     * @throws IOException
      */
     private Query initQuery(GranuleSource granules)
             throws TransformException, FactoryException, IOException {
@@ -392,13 +358,7 @@ class GridGeometryProvider {
         return query;
     }
 
-    /**
-     * Default GridGeometry retrieval based on native resolution.
-     *
-     * @return
-     * @throws TransformException
-     * @throws IOException
-     */
+    /** Default GridGeometry retrieval based on native resolution. */
     private GridGeometry2D getNativeResolutionGridGeometry()
             throws TransformException, IOException {
         final ReferencedEnvelope roiEnvelope =

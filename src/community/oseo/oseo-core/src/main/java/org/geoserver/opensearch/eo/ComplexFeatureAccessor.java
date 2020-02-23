@@ -19,24 +19,13 @@ public class ComplexFeatureAccessor {
     /**
      * Returns a single attribute value assuming the attribute is in the same namespace as the
      * feature
-     *
-     * @param feature
-     * @param attribute
-     * @return
      */
     public static Object value(Feature feature, String attribute) {
         String prefix = feature.getType().getName().getNamespaceURI();
         return value(feature, prefix, attribute);
     }
 
-    /**
-     * Returns a single attribute value looking it up by qualified name
-     *
-     * @param feature
-     * @param namespace
-     * @param attribute
-     * @return
-     */
+    /** Returns a single attribute value looking it up by qualified name */
     public static Object value(Feature feature, String namespace, String attribute) {
         Property property = feature.getProperty(new NameImpl(namespace, attribute));
         if (property == null) {

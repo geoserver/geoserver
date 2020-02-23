@@ -119,12 +119,6 @@ public class AccessDataRuleInfoManager {
     /**
      * Convert a <code>List</code> of {@Link DataAccessRule} to a <code>Set</code>> of {@Link
      * DataAccessRuleInfo} suitable to be used as a model object by {@Link AccessDataRulePanel}
-     *
-     * @param rules
-     * @param authorities
-     * @param wsName
-     * @param layerName
-     * @return
      */
     public List<DataAccessRuleInfo> mapTo(
             Set<DataAccessRule> rules, Set<String> authorities, String wsName, String layerName) {
@@ -176,13 +170,6 @@ public class AccessDataRuleInfoManager {
     /**
      * Convert a <code>List</code> of {@Link DataAccessRuleInfo} to a <code>Set</code>> of {@Link
      * DataAccessRule} suitable to be by {@Link DataAccessRuleDAO}
-     *
-     * @param newRules
-     * @param authorities
-     * @param wsName
-     * @param layerName
-     * @param globalLayerGroup
-     * @return
      */
     public Set<DataAccessRule> mapFrom(
             List<DataAccessRuleInfo> newRules,

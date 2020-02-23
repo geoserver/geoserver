@@ -108,11 +108,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         return symbolizerGeometriesVisitEnabled;
     }
 
-    /**
-     * Enables/disables visit of the symbolizer geometry property (on by default)
-     *
-     * @param symbolizerGeometriesVisitEnabled
-     */
+    /** Enables/disables visit of the symbolizer geometry property (on by default) */
     public void setSymbolizerGeometriesVisitEnabled(boolean symbolizerGeometriesVisitEnabled) {
         this.symbolizerGeometriesVisitEnabled = symbolizerGeometriesVisitEnabled;
     }
@@ -404,11 +400,7 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         }
     }
 
-    /**
-     * Handles the special CQL expressions embedded in the style markers since the time
-     *
-     * @param expression
-     */
+    /** Handles the special CQL expressions embedded in the style markers since the time */
     private void visitCqlExpression(String expression) {
         Expression parsed = ExpressionExtractor.extractCqlExpressions(expression);
         if (parsed != null) parsed.accept(this, null);
@@ -570,8 +562,6 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
      * available, or guessed from the style property necessities, otherwise. When multiple types
      * would be allowed thanks to converters, the most specific is used (e.g., Color instead of
      * String)
-     *
-     * @return
      */
     public Map<PropertyName, Class> getPropertyTypes() {
         return Collections.unmodifiableMap(propertyTypes);

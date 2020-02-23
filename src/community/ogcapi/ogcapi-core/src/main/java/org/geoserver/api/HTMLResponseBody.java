@@ -19,10 +19,6 @@ public @interface HTMLResponseBody {
 
     String fileName();
 
-    /**
-     * Optional, used for lookups when the base class is not the service itself
-     *
-     * @return
-     */
+    /** Optional, used for lookups when the base class is not the service itself */
     Class baseClass() default Object.class;
 }

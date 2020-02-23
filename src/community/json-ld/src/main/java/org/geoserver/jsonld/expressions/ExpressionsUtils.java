@@ -80,9 +80,6 @@ public class ExpressionsUtils {
      * Parses the original string and returns an array or parsed expressions, in particular, the
      * result of parsing each embedded cql expression and string literals in between the cql
      * expressions, in the order they appear in the original string
-     *
-     * @param expression
-     * @return
      */
     static List<Expression> splitCqlExpressions(String expression) {
         boolean inCqlExpression = false;
@@ -165,12 +162,7 @@ public class ExpressionsUtils {
         return result;
     }
 
-    /**
-     * Given an expression list will create an expression concatenating them.
-     *
-     * @param
-     * @return
-     */
+    /** Given an expression list will create an expression concatenating them. */
     static Expression catenateExpressions(List<Expression> expressions) {
         if (expressions == null || expressions.size() == 0)
             throw new IllegalArgumentException(
@@ -186,9 +178,6 @@ public class ExpressionsUtils {
     /**
      * Builds a CQL expression equivalent to the specified string, see class javadocs for rules on
      * how to build the expression in string form
-     *
-     * @param expression
-     * @return
      */
     public static Expression extractCqlExpressions(String expression) {
         return catenateExpressions(splitCqlExpressions(expression));
@@ -197,9 +186,6 @@ public class ExpressionsUtils {
     /**
      * Wrap attribute selector syntax in a xpath with quotation marks to make it suitable by cql
      * compiler.
-     *
-     * @param xpath
-     * @return
      */
     public static String quoteXpathAttribute(String xpath) {
         int atIndex = xpath.indexOf("@");
@@ -225,7 +211,6 @@ public class ExpressionsUtils {
     /**
      * Extract Namespaces from given FeatureType
      *
-     * @param type
      * @return Namespaces if found for the given FeatureType
      */
     public static NamespaceSupport declareNamespaces(FeatureType type) {
@@ -263,11 +248,6 @@ public class ExpressionsUtils {
     /**
      * Clean a CQL expression from the xpath function syntax to make the xpath suitable to be
      * encoded as a PropertyName
-     *
-     * @param expression
-     * @param toReplace
-     * @param replacement
-     * @return
      */
     public static String cleanCQLExpression(
             String expression, String toReplace, String replacement) {
@@ -281,12 +261,7 @@ public class ExpressionsUtils {
         return xpath;
     }
 
-    /**
-     * Extract the xpath function from CQL Expression if present
-     *
-     * @param expression
-     * @return
-     */
+    /** Extract the xpath function from CQL Expression if present */
     public static String extractXpathFromCQL(String expression) {
         int xpathI = expression.indexOf(XPATH_FUN_START);
         if (xpathI != -1) {
@@ -297,12 +272,7 @@ public class ExpressionsUtils {
         return expression;
     }
 
-    /**
-     * Extract the literal argument from the xpath function
-     *
-     * @param strXpath
-     * @return
-     */
+    /** Extract the literal argument from the xpath function */
     public static String getLiteralXpath(String strXpath) {
         if (strXpath.indexOf(XPATH_FUN_START) != -1) {
             return strXpath.replace(XPATH_FUN_START, "").replace(")", "");
@@ -313,9 +283,6 @@ public class ExpressionsUtils {
     /**
      * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
      * xpath, and cleans it from ../ notation.
-     *
-     * @param xpath
-     * @return
      */
     public static int determineContextPos(String xpath) {
         int contextPos = 0;

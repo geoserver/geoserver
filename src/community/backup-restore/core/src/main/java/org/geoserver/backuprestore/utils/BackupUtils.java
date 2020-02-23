@@ -41,12 +41,7 @@ public class BackupUtils {
 
     private static final Logger LOGGER = Logging.getLogger(BackupUtils.class);
 
-    /**
-     * Returns a random temp folder Resource inside the System Temp Directory.
-     *
-     * @return
-     * @throws IOException
-     */
+    /** Returns a random temp folder Resource inside the System Temp Directory. */
     public static Resource tmpDir() throws IOException {
         String tempPath = null;
         try {
@@ -80,13 +75,7 @@ public class BackupUtils {
         return createRandomResource(tempPath);
     }
 
-    /**
-     * Returns a random temp folder Resource inside the GeoServer Temp Directory.
-     *
-     * @param geoServerDataDirectory
-     * @return
-     * @throws IOException
-     */
+    /** Returns a random temp folder Resource inside the GeoServer Temp Directory. */
     public static Resource geoServerTmpDir(GeoServerDataDirectory geoServerDataDirectory)
             throws IOException {
         String tempPath = geoServerDataDirectory.findOrCreateDir("temp").getAbsolutePath();
@@ -94,11 +83,7 @@ public class BackupUtils {
         return createRandomResource(tempPath);
     }
 
-    /**
-     * @param tempPath
-     * @return
-     * @throws IOException
-     */
+    /** */
     private static Resource createRandomResource(String tempPath) throws IOException {
         Resource root = Resources.fromPath(tempPath);
         Resource directory = Resources.createRandom("tmp", "", root);
@@ -115,10 +100,6 @@ public class BackupUtils {
     /**
      * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously
      * exist.
-     *
-     * @param archiveFile
-     * @param targetFolder
-     * @throws IOException
      */
     public static void extractTo(Resource archiveFile, Resource targetFolder) throws IOException {
         FileSystemManager manager = VFS.getManager();
@@ -150,10 +131,6 @@ public class BackupUtils {
     /**
      * Compress {@code sourceFolder} to the archive file {@code archiveFile}; both shall previously
      * exist.
-     *
-     * @param sourceFolder
-     * @param archiveFile
-     * @throws IOException
      */
     public static void compressTo(Resource sourceFolder, Resource archiveFile) throws IOException {
         // See https://commons.apache.org/proper/commons-vfs/filesystems.html
@@ -205,12 +182,7 @@ public class BackupUtils {
         }
     }
 
-    /**
-     * @param zos
-     * @param sourceFile
-     * @throws FileSystemException
-     * @throws IOException
-     */
+    /** */
     private static void writeEntry(ZipOutputStream zos, FileObject sourceFile, String baseDir)
             throws FileSystemException, IOException {
         if (sourceFile.getType() == FileType.FOLDER) {
@@ -237,20 +209,14 @@ public class BackupUtils {
         }
     }
 
-    /**
-     * @param archiveFile
-     * @return
-     */
+    /** */
     public static String resolveArchiveURI(final Resource archiveFile) {
         String archivePrefix = getArchiveURLProtocol(archiveFile);
         String absolutePath = archivePrefix + archiveFile.file().getAbsolutePath();
         return absolutePath;
     }
 
-    /**
-     * @param file
-     * @return
-     */
+    /** */
     public static String getArchiveURLProtocol(final Resource file) {
         if (file.getType() == Type.DIRECTORY) {
             return "file://";
@@ -280,11 +246,7 @@ public class BackupUtils {
         return null;
     }
 
-    /**
-     * @param baseDir
-     * @param subDir
-     * @return
-     */
+    /** */
     public static Resource dir(Resource baseDir, String subDir) {
         final Resource targetPath = Resources.fromPath(subDir, baseDir);
         return Resources.fromPath(

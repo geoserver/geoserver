@@ -30,9 +30,7 @@ public class GetLegendGraphic {
      * for the whole OWS operation to succeed is that there exist a {@link Response} object (in the
      * application context) that can handle the returned object.
      *
-     * @param request
      * @return an Object representing the produced legend graphic
-     * @throws ServiceException
      * @see WMSExtensions#findLegendGraphicFormat
      * @see BufferedImageLegendGraphic
      */

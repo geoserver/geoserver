@@ -47,8 +47,6 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
      * Ensures there is at most one feature at the specified location, and returns its feature id
      *
      * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
-     * @param x
-     * @param y
      * @param layerName TODO
      */
     Double getFeatureAt(String baseFeatureInfo, int x, int y, String layerName) throws Exception {

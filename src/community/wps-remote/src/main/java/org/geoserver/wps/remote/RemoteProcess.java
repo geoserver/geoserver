@@ -67,10 +67,6 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
     /**
      * Constructs a new stub for the {@link RemoteProcess} execution. Metadata is a kvp map
      * containing specific properties of the {@link RemoteProcessClient} instance
-     *
-     * @param name
-     * @param remoteClient
-     * @param metadata
      */
     public RemoteProcess(
             Name name, RemoteProcessClient remoteClient, Map<String, Object> metadata) {

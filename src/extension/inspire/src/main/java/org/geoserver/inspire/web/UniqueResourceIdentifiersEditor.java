@@ -43,10 +43,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
     private GeoServerTablePanel<UniqueResourceIdentifier> identifiers;
     private AjaxButton button;
 
-    /**
-     * @param id
-     * @param identifiersModel Must return a {@link ResourceInfo}
-     */
+    /** @param identifiersModel Must return a {@link ResourceInfo} */
     public UniqueResourceIdentifiersEditor(
             String id, final IModel<UniqueResourceIdentifiers> identifiersModel) {
         super(id, identifiersModel);

@@ -59,8 +59,6 @@ public final class IconRenderer {
      * Render a point icon for the given style. This operation will fail if any style properties in
      * the given style are dynamic. This method is intended to work with styles that have been
      * preprocessed by IconPropertyExtractor and IconPropertyInjector.
-     *
-     * @param style
      */
     public static BufferedImage renderIcon(Style style) {
         int size = findIconSize(style) + 2; // size is an int because icons are always square

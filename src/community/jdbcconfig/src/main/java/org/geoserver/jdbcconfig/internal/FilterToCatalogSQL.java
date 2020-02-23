@@ -343,8 +343,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsLike,
      *     java.lang.Object)
      */
@@ -443,10 +441,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return propertyTypesParam;
     }
 
-    /**
-     * @param string
-     * @param propertyTypes
-     */
+    /** */
     private String newParam(String paramNamePrefix, Object paramValue) {
         int sufix = 0;
         while (true) {
@@ -480,11 +475,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return extraData;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.And, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.And, java.lang.Object) */
     @Override
     public Object visit(And filter, Object extraData) {
         StringBuilder sql = (StringBuilder) extraData;
@@ -504,11 +495,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return sql;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Or, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Or, java.lang.Object) */
     @Override
     public Object visit(Or filter, Object extraData) {
         StringBuilder sql = (StringBuilder) extraData;
@@ -527,22 +514,14 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return sql;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Id, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Id, java.lang.Object) */
     @Override
     public Object visit(Id filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Not, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Not, java.lang.Object) */
     @Override
     public Object visit(Not filter, Object extraData) {
 
@@ -550,8 +529,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsBetween,
      *     java.lang.Object)
      */
@@ -562,8 +539,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsGreaterThan,
      *     java.lang.Object)
      */
@@ -574,8 +549,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see
      *     org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsGreaterThanOrEqualTo,
      *     java.lang.Object)
@@ -587,8 +560,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsLessThan,
      *     java.lang.Object)
      */
@@ -599,8 +570,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsLessThanOrEqualTo,
      *     java.lang.Object)
      */
@@ -611,8 +580,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNull,
      *     java.lang.Object)
      */
@@ -635,8 +602,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNil,
      *     java.lang.Object)
      */
@@ -657,8 +622,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.BBOX,
      *     java.lang.Object)
      */
@@ -669,8 +632,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Beyond,
      *     java.lang.Object)
      */
@@ -681,8 +642,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Contains,
      *     java.lang.Object)
      */
@@ -693,8 +652,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Crosses,
      *     java.lang.Object)
      */
@@ -705,8 +662,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Disjoint,
      *     java.lang.Object)
      */
@@ -717,8 +672,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.DWithin,
      *     java.lang.Object)
      */
@@ -729,8 +682,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Equals,
      *     java.lang.Object)
      */
@@ -741,8 +692,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Intersects,
      *     java.lang.Object)
      */
@@ -753,8 +702,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Overlaps,
      *     java.lang.Object)
      */
@@ -765,8 +712,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Touches,
      *     java.lang.Object)
      */
@@ -777,8 +722,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Within,
      *     java.lang.Object)
      */
@@ -789,8 +732,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param after
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.After,
      *     java.lang.Object)
      */
@@ -801,8 +742,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param anyInteracts
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.AnyInteracts,
      *     java.lang.Object)
      */
@@ -813,8 +752,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param before
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Before,
      *     java.lang.Object)
      */
@@ -825,8 +762,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param begins
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Begins,
      *     java.lang.Object)
      */
@@ -837,8 +772,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param begunBy
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.BegunBy,
      *     java.lang.Object)
      */
@@ -849,8 +782,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param during
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.During,
      *     java.lang.Object)
      */
@@ -861,8 +792,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param endedBy
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.EndedBy,
      *     java.lang.Object)
      */
@@ -873,8 +802,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param ends
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Ends,
      *     java.lang.Object)
      */
@@ -885,8 +812,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param meets
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Meets,
      *     java.lang.Object)
      */
@@ -897,8 +822,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param metBy
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.MetBy,
      *     java.lang.Object)
      */
@@ -909,8 +832,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param overlappedBy
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.OverlappedBy,
      *     java.lang.Object)
      */
@@ -921,8 +842,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param contains
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TContains,
      *     java.lang.Object)
      */
@@ -933,8 +852,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param equals
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TEquals,
      *     java.lang.Object)
      */
@@ -945,8 +862,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param contains
-     * @param extraData
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TOverlaps,
      *     java.lang.Object)
      */
@@ -957,8 +872,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.NilExpression,
      *     java.lang.Object)
@@ -970,8 +883,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Add,
      *     java.lang.Object)
      */
@@ -982,8 +893,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Divide,
      *     java.lang.Object)
@@ -995,8 +904,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Function,
      *     java.lang.Object)
@@ -1008,8 +915,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Literal,
      *     java.lang.Object)
@@ -1021,8 +926,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Multiply,
      *     java.lang.Object)
@@ -1034,8 +937,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.PropertyName,
      *     java.lang.Object)
@@ -1047,8 +948,6 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
      * @see
      *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Subtract,
      *     java.lang.Object)

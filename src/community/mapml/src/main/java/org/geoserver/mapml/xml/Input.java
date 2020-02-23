@@ -280,20 +280,12 @@ public class Input {
         return min;
     }
 
-    /**
-     * Sets the value of the min property.
-     *
-     * @param value
-     */
+    /** Sets the value of the min property. */
     public void setMin(String value) {
         this.min = value;
     }
 
-    /**
-     * Gets the value of the max property.
-     *
-     * @return
-     */
+    /** Gets the value of the max property. */
     public String getMax() {
         return max;
     }

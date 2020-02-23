@@ -197,8 +197,6 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
     /**
      * Execute authentication, if configured to do so, and then call the given callback on
      * authenticated context, or simply call the given callback if no authentication is needed.
-     *
-     * @param callback
      */
     protected void authenticateIfNeeded(AuthenticatedLdapEntryContextCallback callback) {
         if (user != null && password != null) {

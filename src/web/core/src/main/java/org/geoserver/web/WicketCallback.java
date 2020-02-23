@@ -24,12 +24,7 @@ public interface WicketCallback {
     /** Called when the request cycle object has finished its response */
     void onEndRequest();
 
-    /**
-     * Called when a request target is set on the request cycle
-     *
-     * @param cycle
-     * @param requestTarget
-     */
+    /** Called when a request target is set on the request cycle */
     void onRequestTargetSet(RequestCycle cycle, Class<? extends IRequestablePage> requestTarget);
 
     /**

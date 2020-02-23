@@ -57,14 +57,7 @@ public class CSWGetDomainResponse extends Response {
         }
     }
 
-    /**
-     * Actually encodes the response into a set of records
-     *
-     * @param output
-     * @param result
-     * @param request
-     * @param csw
-     */
+    /** Actually encodes the response into a set of records */
     protected void transformResponse(
             OutputStream output,
             CloseableIterator<String> result,

@@ -259,11 +259,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         }
     }
 
-    /**
-     * Dumps the request
-     *
-     * @param simpleFeatureCollection
-     */
+    /** Dumps the request */
     private void createRequestDump(
             File tempDir, GetFeatureRequest gft, SimpleFeatureCollection fc) {
         final Request request = Dispatcher.REQUEST.get();
@@ -329,8 +325,6 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     /**
      * Either retrieves the corresponding FeatureTypeInfo from the catalog or fakes one with the
      * necessary information
-     *
-     * @param c
      */
     private FeatureTypeInfo getFeatureTypeInfo(SimpleFeatureType schema) {
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByName(schema.getName());
@@ -430,7 +424,6 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     /**
      * Looks up the charset parameter, either in the GetFeature request or as a global parameter
      *
-     * @param getFeature
      * @return the found charset, or the platform's default one if none was specified
      */
     private Charset getShapefileCharset(Operation getFeature) {

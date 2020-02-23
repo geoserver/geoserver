@@ -60,7 +60,6 @@ public class StationsMappingsSetup {
     /**
      * Copy remaining related files from test-data to temp test directory
      *
-     * @param testDirPath
      */
     private void copyRelatedFiles(String testDirPath) throws IOException {
         // meteo.xsd

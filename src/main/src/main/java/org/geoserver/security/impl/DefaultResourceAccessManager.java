@@ -114,9 +114,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     /**
      * Pass a reference to the raw, unsecured catalog. The reference is used to evaluate the
      * relationship between layers and the groups containing them
-     *
-     * @param dao
-     * @param rawCatalog
      */
     public DefaultResourceAccessManager(DataAccessRuleDAO dao, Catalog rawCatalog) {
         this.dao = dao;
@@ -151,11 +148,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
      * Returns true if the user can access the specified node, or one of the nodes below it
      *
      * <p>the specified nodes
-     *
-     * @param node
-     * @param user
-     * @param mode
-     * @return
      */
     private boolean canAccessChild(SecureTreeNode node, Authentication user, AccessMode mode) {
         if (node.canAccess(user, mode)) {
@@ -505,9 +497,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
     /**
      * Returns the possible location of the group in the secured tree based on name and workspace
-     *
-     * @param layerGroup
-     * @return
      */
     private String[] getLayerGroupPath(LayerGroupInfo layerGroup) {
         if (layerGroup.getWorkspace() == null) {

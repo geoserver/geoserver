@@ -207,15 +207,7 @@ public class RasterizerController extends BaseSLDServiceController {
         private static final long serialVersionUID = 5453377766415209696L;
     }
 
-    /**
-     * @param defaultStyle
-     * @param rasterSymbolizer
-     * @param layerName
-     * @param midColor
-     * @param endColor
-     * @param startColor
-     * @throws Exception
-     */
+    /** */
     private Style remapStyle(
             StyleInfo defaultStyle,
             RasterSymbolizer rasterSymbolizer,

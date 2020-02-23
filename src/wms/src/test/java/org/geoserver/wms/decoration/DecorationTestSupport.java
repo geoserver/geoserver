@@ -45,28 +45,14 @@ public class DecorationTestSupport {
         return map;
     }
 
-    /**
-     * Checks the pixel i/j has the specified color
-     *
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     */
+    /** Checks the pixel i/j has the specified color */
     protected void assertPixel(BufferedImage image, int i, int j, Color color) {
         Color actual = getPixelColor(image, i, j);
 
         assertEquals(color, actual);
     }
 
-    /**
-     * Gets a specific pixel color from the specified buffered image
-     *
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     */
+    /** Gets a specific pixel color from the specified buffered image */
     protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();
         Raster raster = image.getRaster();

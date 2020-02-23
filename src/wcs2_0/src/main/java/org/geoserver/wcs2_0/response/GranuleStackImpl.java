@@ -89,14 +89,7 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/
     /** The coverages stored by this Granule stack */
     private List<GridCoverage2D> coverages;
 
-    /**
-     * Granule stack constructor.
-     *
-     * @param name
-     * @param crs
-     * @param dimensions
-     * @param properties
-     */
+    /** Granule stack constructor. */
     public GranuleStackImpl(
             CharSequence name, CoordinateReferenceSystem crs, List<DimensionBean> dimensions) {
         super(name, new DummyGridCoverage2D(name, crs));

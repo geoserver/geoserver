@@ -1847,8 +1847,6 @@ public class CatalogImpl implements Catalog {
     /**
      * We don't want the world to be able and call this without going trough {@link
      * #resolve(ResourceInfo)}
-     *
-     * @param featureType
      */
     private FeatureTypeInfo resolve(FeatureTypeInfo featureType) {
         FeatureTypeInfoImpl ft = (FeatureTypeInfoImpl) featureType;

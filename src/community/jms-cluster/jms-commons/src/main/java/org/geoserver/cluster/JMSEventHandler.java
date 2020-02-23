@@ -66,7 +66,6 @@ public abstract class JMSEventHandler<S extends Serializable, O> {
      *
      * @param o the object of type <O> to serialize
      * @return a serializable object
-     * @throws Exception
      */
     public abstract S serialize(O o) throws Exception;
 
@@ -79,7 +78,6 @@ public abstract class JMSEventHandler<S extends Serializable, O> {
      *
      * @param o the object of type <O> to serialize
      * @return a serializable object
-     * @throws Exception
      */
     public abstract O deserialize(S o) throws Exception;
 

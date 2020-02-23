@@ -143,16 +143,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         }
     }
 
-    /**
-     * Helper method for creating attributes in the tree structure
-     *
-     * @param branch
-     * @param index
-     * @param type
-     * @param path
-     * @param value
-     * @param userData
-     */
+    /** Helper method for creating attributes in the tree structure */
     @SuppressWarnings("unchecked")
     private void createAttribute(
             TreeBranch branch,

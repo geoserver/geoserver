@@ -126,7 +126,6 @@ public class SextanteProcessFactory implements ProcessFactory {
      * Creates a geotools process which wraps a SEXTANTE geoalgorithm
      *
      * @param alg the SEXTANTE geoalgorithm to wrap
-     * @throws IllegalArgumentException
      */
     public Process create(Name name) throws IllegalArgumentException {
         checkName(name);
@@ -282,7 +281,6 @@ public class SextanteProcessFactory implements ProcessFactory {
     /**
      * Map Sextante common types into GeoTools common types
      *
-     * @param parameterClass
      */
     protected Class mapToGeoTools(Class parameterClass) {
         if (IVectorLayer.class.isAssignableFrom(parameterClass)) {

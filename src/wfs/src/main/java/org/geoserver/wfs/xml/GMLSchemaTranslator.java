@@ -37,8 +37,6 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      * XMLSchemaTranslator constructor.
      *
      * <p>Description
-     *
-     * @param prefix
      */
     public GMLSchemaTranslator(String prefix) {
         super(prefix);

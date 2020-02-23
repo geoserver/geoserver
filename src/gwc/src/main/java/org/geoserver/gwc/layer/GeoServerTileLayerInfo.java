@@ -190,17 +190,12 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     /** @return the parameterFilters */
     Set<ParameterFilter> getParameterFilters();
 
-    /**
-     * Replace the set of parameter filters
-     *
-     * @param parameterFilters
-     */
+    /** Replace the set of parameter filters */
     void setParameterFilters(Set<ParameterFilter> parameterFilters);
 
     /**
      * Add a parameter filter, replacing any existing filter with the same key.
      *
-     * @param parameterFilter
      * @return true if an existing filter was replaced, false otherwise.
      */
     boolean addParameterFilter(ParameterFilter parameterFilter);
@@ -208,18 +203,13 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     /**
      * Remove the filter with the specified key
      *
-     * @param key
      * @return true if the filter existed, false otherwise
      */
     boolean removeParameterFilter(String key);
 
     GeoServerTileLayerInfo clone();
 
-    /**
-     * Get the ParameterFilter with the specified key
-     *
-     * @param key
-     */
+    /** Get the ParameterFilter with the specified key */
     ParameterFilter getParameterFilter(String key);
 
     /**

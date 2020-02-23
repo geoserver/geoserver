@@ -344,8 +344,6 @@ public class DescribeCoverageTransformer extends TransformerBase {
         /**
          * Given a set of sample dimensions, this will return a valid range only if all sample
          * dimensions have one, otherwise null
-         *
-         * @param dimensions
          */
         protected NumberRange getCoverageRange(List<CoverageDimensionInfo> dimensions) {
             NumberRange range = null;
@@ -428,12 +426,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
             return "urn:ogc:def:crs:EPSG::" + code;
         }
 
-        /**
-         * Writes the element if and only if the content is not null and not empty
-         *
-         * @param elementName
-         * @param content
-         */
+        /** Writes the element if and only if the content is not null and not empty */
         protected void elementIfNotEmpty(String elementName, String content) {
             if (content != null && !"".equals(content.trim())) element(elementName, content);
         }

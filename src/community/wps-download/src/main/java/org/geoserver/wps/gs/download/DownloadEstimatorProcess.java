@@ -44,12 +44,7 @@ public class DownloadEstimatorProcess implements GeoServerProcess {
     /** The catalog. */
     private final Catalog catalog;
 
-    /**
-     * @param readLimits
-     * @param writeLimits
-     * @param hardOutputLimit
-     * @param geoserver
-     */
+    /** */
     public DownloadEstimatorProcess(
             DownloadServiceConfigurationGenerator downloadServiceConfigurationGenerator,
             GeoServer geoserver) {

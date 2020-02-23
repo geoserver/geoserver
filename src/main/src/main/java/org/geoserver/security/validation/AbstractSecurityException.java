@@ -19,10 +19,6 @@ public class AbstractSecurityException extends GeoServerException {
     /**
      * errorid is a unique identifier, message is a default error description, args are message
      * arguments to be used for an alternative message (i18n)
-     *
-     * @param errorId
-     * @param message
-     * @param args
      */
     public AbstractSecurityException(String errorId, String message, Object... args) {
         super(message);

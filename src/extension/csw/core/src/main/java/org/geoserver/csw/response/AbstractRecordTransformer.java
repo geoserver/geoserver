@@ -137,12 +137,7 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
             }
         }
 
-        /**
-         * Encodes the feature in the desired xml format (e.g., csw:Record, ISO, ebRIM)
-         *
-         * @param response
-         * @param f
-         */
+        /** Encodes the feature in the desired xml format (e.g., csw:Record, ISO, ebRIM) */
         protected abstract void encode(CSWRecordsResult response, Feature f);
     }
 }

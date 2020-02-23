@@ -110,7 +110,6 @@ public class TiledCRS {
      * @param zoom the zoom at which the bounds will be calculated
      * @param projectedCentre the projected coordinates of the centre of the new bounds
      * @param displayBounds a rectangle with origin at 0,0 of the size of display in px
-     * @return
      */
     public Bounds getProjectedBoundsForDisplayBounds(
             int zoom, Point projectedCentre, Bounds displayBounds) {
@@ -131,9 +130,6 @@ public class TiledCRS {
      * Returns a zoom at which bounds when rendered at the specified display width and height will
      * fit, when centered on bounds' centre point.
      *
-     * @param bounds
-     * @param width
-     * @param height
      * @return zoom
      */
     public int fitLatLngBoundsToDisplay(LatLngBounds bounds, int width, int height) {
@@ -176,11 +172,7 @@ public class TiledCRS {
         }
         return zoom;
     }
-    /**
-     * For testing purposes need to be able to set the pagesize.
-     *
-     * @param size
-     */
+    /** For testing purposes need to be able to set the pagesize. */
     public void setPageSize(int size) {
         pageSize = size;
     }
@@ -208,11 +200,7 @@ public class TiledCRS {
         Point untransformedPoint = this.transformation.untransform(p, this.scales[zoom]);
         return this.projection.unproject(untransformedPoint);
     }
-    /**
-     * @param p
-     * @param zoom
-     * @return Point transformed from PCRS units to pixel units at zoom
-     */
+    /** @return Point transformed from PCRS units to pixel units at zoom */
     public Point transform(Point p, int zoom) {
         return this.transformation.transform(p, this.scales[zoom]);
     }

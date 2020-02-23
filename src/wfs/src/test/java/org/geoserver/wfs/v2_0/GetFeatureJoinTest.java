@@ -679,11 +679,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         }
     }
 
-    /**
-     * See [GEOS-8032] WFS 2.0 feature joins fails when the joined feature type is renamed
-     *
-     * @throws Exception
-     */
+    /** See [GEOS-8032] WFS 2.0 feature joins fails when the joined feature type is renamed */
     @Test
     @Ignore
     public void testStandardJoinSecondaryTypeRenamed() throws Exception {
@@ -1282,12 +1278,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         }
     }
 
-    /**
-     * Convenience to read the csv content and
-     *
-     * @param csvContent
-     * @throws IOException
-     */
+    /** Convenience to read the csv content and */
     private List<String[]> readLines(String csvContent) throws IOException {
         // System.out.println(csvContent);
         CSVReader reader = new CSVReader(new StringReader(csvContent));

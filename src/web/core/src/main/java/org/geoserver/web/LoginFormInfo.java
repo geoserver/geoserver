@@ -21,11 +21,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
     private String include;
     private String loginPath;
 
-    /**
-     * Name of the login extension; it will determine also the order displayed for the icons
-     *
-     * @param name
-     */
+    /** Name of the login extension; it will determine also the order displayed for the icons */
     public void setName(String name) {
         this.name = name;
     }
@@ -33,8 +29,6 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
     /**
      * Path to the icon; the graphic file must be places under resources on the same package of the
      * "componentClass"
-     *
-     * @return
      */
     public String getIcon() {
         return icon;
@@ -43,8 +37,6 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
     /**
      * Path to the icon; the graphic file must be places under resources on the same package of the
      * "componentClass"
-     *
-     * @param icon
      */
     public void setIcon(String icon) {
         this.icon = icon;
@@ -86,11 +78,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
         this.include = include;
     }
 
-    /**
-     * Name of the login extension; it will determine also the order displayed for the icons
-     *
-     * @return
-     */
+    /** Name of the login extension; it will determine also the order displayed for the icons */
     public String getName() {
         return name;
     }

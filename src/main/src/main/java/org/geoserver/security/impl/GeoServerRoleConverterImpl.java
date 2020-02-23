@@ -95,12 +95,7 @@ public class GeoServerRoleConverterImpl implements GeoServerRoleConverter {
         return buff.toString();
     }
 
-    /**
-     * internal helper method
-     *
-     * @param buff
-     * @param role
-     */
+    /** internal helper method */
     protected void writeRole(StringBuffer buff, GeoServerRole role) {
         buff.append(role.getAuthority());
         Properties props = role.getProperties();
@@ -137,12 +132,7 @@ public class GeoServerRoleConverterImpl implements GeoServerRoleConverter {
         return buff.toString();
     }
 
-    /**
-     * internal helper method to split strings based on delimiter strings
-     *
-     * @param theString
-     * @param delim
-     */
+    /** internal helper method to split strings based on delimiter strings */
     protected List<String> splitString(String theString, String delim) {
 
         List<String> result = new ArrayList<String>();

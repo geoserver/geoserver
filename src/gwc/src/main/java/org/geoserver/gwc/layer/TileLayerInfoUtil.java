@@ -180,13 +180,7 @@ public class TileLayerInfoUtil {
         }
     }
 
-    /**
-     * Set the styles which should be cached on a layer
-     *
-     * @param info
-     * @param defaultStyle
-     * @param cachedStyles
-     */
+    /** Set the styles which should be cached on a layer */
     public static void setCachedStyles(
             GeoServerTileLayerInfo info, String defaultStyle, Set<String> cachedStyles) {
         StyleParameterFilter filter = (StyleParameterFilter) info.getParameterFilter("STYLES");

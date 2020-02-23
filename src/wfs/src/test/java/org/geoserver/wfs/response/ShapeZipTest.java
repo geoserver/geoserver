@@ -663,8 +663,6 @@ public class ShapeZipTest extends WFSTestSupport {
     /**
      * Writes out an {@code esri.properties} file to {@code <data_dir>/user_projections/} with the
      * single entry: {@code 4326=<esri version of 4326 WKT>}
-     *
-     * @throws IOException
      */
     private void setupESRIPropertyFile() throws IOException {
         String esri_properties = "4326=" + get4326_ESRI_WKTContent();

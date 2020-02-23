@@ -50,12 +50,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
 
     protected AbstractJDBCService() {}
 
-    /**
-     * initialize a {@link DataSource} form a {@link JdbcSecurityServiceConfig} object
-     *
-     * @param config
-     * @throws IOException
-     */
+    /** initialize a {@link DataSource} form a {@link JdbcSecurityServiceConfig} object */
     public void initializeDSFromConfig(SecurityNamedServiceConfig namedConfig) throws IOException {
         JDBCSecurityServiceConfig config = (JDBCSecurityServiceConfig) namedConfig;
         if (config.isJndi()) {
@@ -87,8 +82,6 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * Get a new connection from the datasource, check/set autocommit == false and isolation level
      * according to {@link #DEFAULT_ISOLATION_LEVEL}
-     *
-     * @throws SQLException
      */
     protected Connection getConnection() throws SQLException {
         Connection con = getDataSource().getConnection();
@@ -99,12 +92,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         return con;
     }
 
-    /**
-     * close a sql connection
-     *
-     * @param con
-     * @throws SQLException
-     */
+    /** close a sql connection */
     protected void closeConnection(Connection con) throws SQLException {
         con.close();
     }
@@ -112,10 +100,6 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * helper method, if any of the parametres is not null, try to close it and throw away a
      * possible {@link SQLException}
-     *
-     * @param con
-     * @param ps
-     * @param rs
      */
     protected void closeFinally(Connection con, PreparedStatement ps, ResultSet rs) {
         try {
@@ -132,14 +116,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
     }
 
-    /**
-     * get a prepared DML statement for a property key
-     *
-     * @param key
-     * @param con
-     * @throws IOException
-     * @throws SQLException
-     */
+    /** get a prepared DML statement for a property key */
     protected PreparedStatement getDMLStatement(String key, Connection con)
             throws IOException, SQLException {
         return getJDBCStatement(key, dmlProps, con);
@@ -148,11 +125,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * get a prepared Jdbc Statement by looking into the props for the given key
      *
-     * @param key
-     * @param props
-     * @param con
      * @throws IOException if key does not exist
-     * @throws SQLException
      */
     protected PreparedStatement getJDBCStatement(String key, Properties props, Connection con)
             throws IOException, SQLException {
@@ -162,14 +135,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         return con.prepareStatement(statementString.trim());
     }
 
-    /**
-     * get a prepared DDL statement for a property key
-     *
-     * @param key
-     * @param con
-     * @throws IOException
-     * @throws SQLException
-     */
+    /** get a prepared DDL statement for a property key */
     protected PreparedStatement getDDLStatement(String key, Connection con)
             throws IOException, SQLException {
         return getJDBCStatement(key, ddlProps, con);
@@ -179,19 +145,13 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * create a boolean from a String
      *
      * <p>"Y" or "y" results in true, all other values result in false
-     *
-     * @param booleanString
      */
     protected boolean convertFromString(String booleanString) {
         if (booleanString == null) return false;
         return "y".equalsIgnoreCase(booleanString);
     }
 
-    /**
-     * convert boolean to string true --> "Y" false --> "N"
-     *
-     * @param b
-     */
+    /** convert boolean to string true --> "Y" false --> "N" */
     protected String convertToString(boolean b) {
         return b ? "Y" : "N";
     }
@@ -227,11 +187,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
     }
 
-    /**
-     * create tables and indexes, statement order defined by {@link #getOrderedNamesForCreate()}
-     *
-     * @throws IOException
-     */
+    /** create tables and indexes, statement order defined by {@link #getOrderedNamesForCreate()} */
     public void createTables() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -249,11 +205,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
     }
 
-    /**
-     * drops tables, statement oder defined by {@link #getOrderedNamesForDrop()}
-     *
-     * @throws IOException
-     */
+    /** drops tables, statement oder defined by {@link #getOrderedNamesForDrop()} */
     public void dropTables() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -271,11 +223,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
     }
 
-    /**
-     * drops tables, ignore SQLExceptions
-     *
-     * @throws IOException
-     */
+    /** drops tables, ignore SQLExceptions */
     //    public void dropExistingTables() throws IOException {
     //        Connection con = null;
     //        PreparedStatement ps = null;
@@ -297,30 +245,17 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     //        }
     //    }
 
-    /**
-     * Check DML statements using {@link #checkSQLStatements(Properties)}
-     *
-     * @throws IOException
-     */
+    /** Check DML statements using {@link #checkSQLStatements(Properties)} */
     public Map<String, SQLException> checkDMLStatements() throws IOException {
         return checkSQLStatements(dmlProps);
     }
 
-    /**
-     * Check DDL statements using {@link #checkSQLStatements(Properties)}
-     *
-     * @throws IOException
-     */
+    /** Check DDL statements using {@link #checkSQLStatements(Properties)} */
     public Map<String, SQLException> checkDDLStatements() throws IOException {
         return checkSQLStatements(ddlProps);
     }
 
-    /**
-     * Checks if the tables are already created
-     *
-     * @param con
-     * @throws IOException
-     */
+    /** Checks if the tables are already created */
     public boolean tablesAlreadyCreated() throws IOException {
         ResultSet rs = null;
         Connection con = null;
@@ -369,11 +304,9 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * Checks if the sql statements contained in props can be prepared against the db
      *
-     * @param props
      * @return return error protocol containing key,statement and {@link SQLException}. The key is
      *     created as follows:
      *     <p>property key + "|" + statement string
-     * @throws IOException
      */
     protected Map<String, SQLException> checkSQLStatements(Properties props) throws IOException {
 
@@ -413,7 +346,6 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * @param fileName target location
      * @param namedRoot parent dir if fileName is relative
      * @param defaultResource the standard template
-     * @throws IOException
      * @return the file to use
      */
     protected Resource checkORCreateJDBCPropertyFile(

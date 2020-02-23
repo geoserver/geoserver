@@ -77,11 +77,7 @@ public class ExecuteRequest {
         return Ows11Util.name(request.getIdentifier());
     }
 
-    /**
-     * Returns the process inputs according to the GeoTools API expectations
-     *
-     * @param request
-     */
+    /** Returns the process inputs according to the GeoTools API expectations */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
         if (inputs == null) {
             inputs = getInputsInternal(manager);
@@ -235,11 +231,7 @@ public class ExecuteRequest {
         return null;
     }
 
-    /**
-     * Ensures the requested output are valid
-     *
-     * @param inputs
-     */
+    /** Ensures the requested output are valid */
     public void validateOutputs(Map inputs) {
         Map<String, Parameter<?>> resultInfo = pf.getResultInfo(getProcessName(), inputs);
 

@@ -121,12 +121,7 @@ public class AttributesTablePanel extends Panel {
         };
     }
 
-    /**
-     * Try to find the label from the resource bundle
-     *
-     * @param attribute
-     * @return
-     */
+    /** Try to find the label from the resource bundle */
     private String resolveLabelValue(AttributeConfiguration attribute) {
         return getString(
                 AttributeConfiguration.PREFIX + attribute.getKey(), null, attribute.getLabel());

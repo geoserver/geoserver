@@ -61,10 +61,6 @@ public class JsonLdConfiguration {
     /**
      * Get the template related to the featureType. If template has benn modified updates the cache
      * with the new JsonLdTemplate
-     *
-     * @param typeInfo
-     * @return
-     * @throws ExecutionException
      */
     public RootBuilder getTemplate(FeatureTypeInfo typeInfo) throws ExecutionException {
         CacheKey key = new CacheKey(typeInfo, JSON_LD_NAME);

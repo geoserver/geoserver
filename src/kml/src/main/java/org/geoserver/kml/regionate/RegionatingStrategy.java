@@ -22,9 +22,6 @@ public interface RegionatingStrategy {
      * features that have to be included in the output. An SLD based strategy will use the current
      * scale, a tiling based one the area occupied by the requested tile and some criteria to fit in
      * features, and so on.
-     *
-     * @param context
-     * @param layer
      */
     public Filter getFilter(WMSMapContent context, Layer layer);
 

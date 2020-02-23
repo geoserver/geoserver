@@ -65,11 +65,7 @@ public class ChangesetImageListener implements ImageListener {
         }
     }
 
-    /**
-     * Truncates all the GWC tiles involved in this change
-     *
-     * @param feature
-     */
+    /** Truncates all the GWC tiles involved in this change */
     private void truncateTilesForCoverage(CoverageInfo ci, SimpleFeature feature) {
         catalog.getLayers(ci)
                 .stream()
@@ -78,12 +74,7 @@ public class ChangesetImageListener implements ImageListener {
                 .forEach(tl -> truncateTilesForTileLayer(tl, feature));
     }
 
-    /**
-     * Truncates all the GWC tiles covered by the specified feature
-     *
-     * @param tl
-     * @param feature
-     */
+    /** Truncates all the GWC tiles covered by the specified feature */
     private void truncateTilesForTileLayer(GeoServerTileLayer tl, SimpleFeature feature) {
         try {
             // TODO: this could be optimized, if a multipolygon only truncate the single

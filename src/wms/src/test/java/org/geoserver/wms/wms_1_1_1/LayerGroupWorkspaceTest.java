@@ -565,12 +565,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertTrue(ordered.equals(normal));
     }
 
-    /**
-     * removes prefix from layer name
-     *
-     * @param prefixedName
-     * @return
-     */
+    /** removes prefix from layer name */
     private String removeLayerPrefix(String prefixedName) {
         if (prefixedName.indexOf(":") > -1) {
             return prefixedName.split(":")[1];
@@ -578,13 +573,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         return prefixedName;
     }
 
-    /**
-     * returns list of prefixed layer groups names from document
-     *
-     * @param doc
-     * @return
-     * @throws Exception
-     */
+    /** returns list of prefixed layer groups names from document */
     private List<String> layerGroupNameList(Document doc) throws Exception {
         List<Node> nlist =
                 xpathList("//WMT_MS_Capabilities/Capability/Layer/Layer[not(@opaque)]/Name", doc);

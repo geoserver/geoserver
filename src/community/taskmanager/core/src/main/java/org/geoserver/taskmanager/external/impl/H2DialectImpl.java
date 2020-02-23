@@ -11,12 +11,7 @@ package org.geoserver.taskmanager.external.impl;
  */
 public class H2DialectImpl extends DefaultDialectImpl {
 
-    /**
-     * Do not quote table names since this not supported by H2.
-     *
-     * @param tableName
-     * @return
-     */
+    /** Do not quote table names since this not supported by H2. */
     @Override
     public String quote(String tableName) {
         return tableName;

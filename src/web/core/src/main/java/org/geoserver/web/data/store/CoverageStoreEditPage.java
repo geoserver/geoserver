@@ -35,11 +35,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
     /** Dialog to ask for save confirmation in case the store can't be reached */
     private GeoServerDialog dialog;
 
-    /**
-     * Uses a "name" parameter to locate the datastore
-     *
-     * @param parameters
-     */
+    /** Uses a "name" parameter to locate the datastore */
     public CoverageStoreEditPage(PageParameters parameters) {
         String wsName = parameters.get(WS_NAME).toOptionalString();
         String storeName = parameters.get(STORE_NAME).toString();

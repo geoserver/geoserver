@@ -94,7 +94,6 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
      * Checks the JDBC quota store can be instantiated
      *
      * @param jdbcConfiguration the GWC diskquota JDBC configuration
-     * @throws ConfigurationException
      */
     public void testQuotaConfiguration(JDBCConfiguration jdbcConfiguration)
             throws ConfigurationException, IOException {

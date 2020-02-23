@@ -6,7 +6,6 @@
 package org.geoserver.wms.capabilities;
 
 import java.awt.Dimension;
-import java.io.IOException;
 import org.geoserver.catalog.StyleInfo;
 
 /**
@@ -20,10 +19,7 @@ public interface LegendSample {
     /**
      * Calculates sample icon size (width x height) for the given style.
      *
-     * @param style
      * @return legend dimensions
-     * @throws IOException
-     * @throws Exception
      */
     public Dimension getLegendURLSize(StyleInfo style) throws Exception;
 }

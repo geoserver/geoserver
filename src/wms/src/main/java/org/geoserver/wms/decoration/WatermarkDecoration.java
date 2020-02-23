@@ -61,15 +61,7 @@ public class WatermarkDecoration implements MapDecoration {
         }
     }
 
-    /**
-     * Print the WaterMarks into the graphic2D.
-     *
-     * @param g2D
-     * @param paintArea
-     * @throws IOException
-     * @throws ClassCastException
-     * @throws MalformedURLException
-     */
+    /** Print the WaterMarks into the graphic2D. */
     public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContent mapContent)
             throws MalformedURLException, ClassCastException, IOException {
         BufferedImage logo = getLogo();

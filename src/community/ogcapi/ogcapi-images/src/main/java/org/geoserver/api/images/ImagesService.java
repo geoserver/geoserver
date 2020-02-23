@@ -577,7 +577,6 @@ public class ImagesService implements ApplicationContextAware {
      * Clunky non scalable implementation, the harvest API should be modified to return the feature
      * after it has been inserted in the catalog...
      *
-     * @param harvestedSource
      * @return The id, or null if it could not be found
      */
     private String getFeatureIdFor(HarvestedSource harvestedSource, GranuleSource source) {
@@ -611,12 +610,7 @@ public class ImagesService implements ApplicationContextAware {
         return null;
     }
 
-    /**
-     * Recognizes zip types, including one added specifically for the images API
-     *
-     * @param request
-     * @return
-     */
+    /** Recognizes zip types, including one added specifically for the images API */
     private boolean isZipFile(HttpServletRequest request) {
         return request.getContentType()
                         .startsWith(

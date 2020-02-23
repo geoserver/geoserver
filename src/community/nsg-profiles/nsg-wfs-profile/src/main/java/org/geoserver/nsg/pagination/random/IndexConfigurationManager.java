@@ -452,33 +452,19 @@ public final class IndexConfigurationManager implements GeoServerInitializer {
 
         private Map<String, Object> currentDataStoreParams;
 
-        /**
-         * Store the DB parameters and the relative {@link DataStore}
-         *
-         * @param currentDataStoreParams
-         * @param currentDataStore
-         */
+        /** Store the DB parameters and the relative {@link DataStore} */
         public void setCurrentDataStore(
                 Map<String, Object> currentDataStoreParams, DataStore currentDataStore) {
             this.currentDataStoreParams = currentDataStoreParams;
             this.currentDataStore = currentDataStore;
         }
 
-        /**
-         * Store the reference to resource used to archive the serialized GetFeatureRequest
-         *
-         * @param storageResource
-         */
+        /** Store the reference to resource used to archive the serialized GetFeatureRequest */
         public void setStorageResource(Resource storageResource) {
             this.storageResource = storageResource;
         }
 
-        /**
-         * Store the value of time to live of stored GetFeatureRequest
-         *
-         * @param timeToLive
-         * @param timeUnit
-         */
+        /** Store the value of time to live of stored GetFeatureRequest */
         public void setTimeToLive(Long timeToLive, TimeUnit timeUnit) {
             this.timeToLiveInSec = timeUnit.toSeconds(timeToLive);
         }

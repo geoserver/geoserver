@@ -130,11 +130,7 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
                 });
     }
 
-    /**
-     * Turns the editor in a pure resolution editor
-     *
-     * @param enabled
-     */
+    /** Turns the editor in a pure resolution editor */
     public void setResolutionModeEnabled(boolean enabled) {
         shearXContainer.setVisible(!enabled);
         shearYContainer.setVisible(!enabled);

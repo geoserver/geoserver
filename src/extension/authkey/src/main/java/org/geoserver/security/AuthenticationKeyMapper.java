@@ -25,8 +25,6 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
      * user, or returns null if no corresponding user is found
      *
      * <p>Returns <code>null</code> if the user is disabled
-     *
-     * @param key
      */
     GeoServerUser getUser(String key) throws IOException;
 
@@ -35,8 +33,6 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
      * authentication key.
      *
      * <p>returns the number of added authentication keys
-     *
-     * @throws IOException
      */
     int synchronize() throws IOException;
 

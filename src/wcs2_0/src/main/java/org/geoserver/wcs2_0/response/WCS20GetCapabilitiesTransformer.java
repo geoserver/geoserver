@@ -699,12 +699,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             //            end("ows:Languages");
         }
 
-        /**
-         * Writes the element if and only if the content is not null and not empty
-         *
-         * @param elementName
-         * @param content
-         */
+        /** Writes the element if and only if the content is not null and not empty */
         private void elementIfNotEmpty(String elementName, String content) {
             if (isNotBlank(content)) element(elementName, content);
         }

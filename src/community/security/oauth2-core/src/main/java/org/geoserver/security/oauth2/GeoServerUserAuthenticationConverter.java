@@ -25,20 +25,12 @@ public class GeoServerUserAuthenticationConverter extends DefaultUserAuthenticat
 
     private Object usernameKey = USERNAME;
 
-    /**
-     * Default Constructor.
-     *
-     * @param username_key
-     */
+    /** Default Constructor. */
     public GeoServerUserAuthenticationConverter() {
         super();
     }
 
-    /**
-     * Default Constructor.
-     *
-     * @param username_key
-     */
+    /** Default Constructor. */
     public GeoServerUserAuthenticationConverter(final String username_key) {
         super();
 

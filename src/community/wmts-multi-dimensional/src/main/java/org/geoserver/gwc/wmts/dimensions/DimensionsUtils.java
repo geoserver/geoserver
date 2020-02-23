@@ -306,13 +306,7 @@ public final class DimensionsUtils {
         return values;
     }
 
-    /**
-     * Compute the resource bounds based on the provided filter
-     *
-     * @param resource
-     * @param filter
-     * @return
-     */
+    /** Compute the resource bounds based on the provided filter */
     public static ReferencedEnvelope getBounds(ResourceInfo resource, Filter filter) {
         try {
             if (resource instanceof FeatureTypeInfo) {

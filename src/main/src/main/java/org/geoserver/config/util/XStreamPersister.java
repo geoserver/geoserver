@@ -297,8 +297,6 @@ public class XStreamPersister {
     /**
      * Sets null handling in proxy objects. Defaults to unwrap. If set to false, proxy object are
      * not transformed to nulls.
-     *
-     * @param unwrapNulls
      */
     public void setUnwrapNulls(boolean unwrapNulls) {
         this.unwrapNulls = unwrapNulls;
@@ -555,9 +553,6 @@ public class XStreamPersister {
      * Use this method to register complex types that cannot be simply represented as a string in a
      * {@link BreifMapConverter}. The {@code typeId} will be used as a type discriminator in the
      * brief map, as well as the element root for the complex object to be converted.
-     *
-     * @param typeId
-     * @param clazz
      */
     public void registerBreifMapComplexType(String typeId, Class clazz) {
         forwardBreifMap.put(typeId, clazz);
@@ -640,7 +635,6 @@ public class XStreamPersister {
      *
      * @param obj The object to save.
      * @param out The stream to save the object to.
-     * @throws IOException
      */
     public void save(Object obj, OutputStream out) throws IOException {
         // unwrap dynamic proxies
@@ -665,7 +659,6 @@ public class XStreamPersister {
      *
      * @param in The input stream to read the object from.
      * @param clazz The class of the expected object.
-     * @throws IOException
      */
     public <T> T load(InputStream in, Class<T> clazz) throws IOException {
         T obj = clazz.cast(xs.fromXML(in));
@@ -683,8 +676,6 @@ public class XStreamPersister {
     /**
      * Builds a converter that will marshal/unmarshal the target class by reference, that is, by
      * storing the object id as opposed to fully serializing it
-     *
-     * @param clazz
      */
     public ReferenceConverter buildReferenceConverter(Class clazz) {
         return new ReferenceConverter(clazz);
@@ -692,8 +683,6 @@ public class XStreamPersister {
 
     /**
      * Same as {@link #buildReferenceConverter(Class)}, but works against a collection of objects
-     *
-     * @param clazz
      */
     public ReferenceCollectionConverter buildReferenceCollectionConverter(Class clazz) {
         return new ReferenceCollectionConverter(clazz);

@@ -119,7 +119,6 @@ public final class Requests {
      *
      * @param url The url to the sld file
      * @return The InputStream used to validate and parse the SLD xml.
-     * @throws IOException
      */
     public static InputStream getInputStream(URL url) throws IOException {
         // Open the connection

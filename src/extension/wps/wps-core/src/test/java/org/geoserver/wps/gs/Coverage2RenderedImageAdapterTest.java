@@ -145,11 +145,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         //        Thread.sleep(15000);
     }
 
-    /**
-     * Same raster dimension, subset word area
-     *
-     * @throws InterruptedException
-     */
+    /** Same raster dimension, subset word area */
     @Test
     public void testSameRasterSmallerWorld() throws InterruptedException {
         GridCoverage2D src = createTestCoverage(500, 500, 0, 0, 10, 10);
@@ -176,11 +172,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         //        Thread.sleep(15000);
     }
 
-    /**
-     * Same raster dimension, subset word area
-     *
-     * @throws InterruptedException
-     */
+    /** Same raster dimension, subset word area */
     @Test
     public void testSameRasterTranslatedWorld0() throws InterruptedException {
         GridCoverage2D src = createTestCoverage(500, 500, 0, 0, 5, 5);

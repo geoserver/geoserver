@@ -131,8 +131,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
 
     /**
      * Look for a ColorRamp string definition used by a {@link FilterFunction_svgColorMap} if any.
-     *
-     * @param styles
      */
     private ProcessFunction getDynamicColorMapTransformation(LegendRequest legendRequest) {
         if (legendRequest.getStyle() != null) {
@@ -161,10 +159,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
     /**
      * Look for a ColorRamp definition used by a {@link DynamicColorMapProcess} rendering
      * transformation.
-     *
-     * @param processFunction
-     * @throws IOException
-     * @throws ParseException
      */
     private Style getDynamicStyle(CoverageInfo coverageInfo, ProcessFunction transformation)
             throws IOException, ParseException {
@@ -218,8 +212,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
      * @param map the request parameters
      * @param reader the reader to be used to access the coverage
      * @return parameters setup on top of requested values.
-     * @throws IOException
-     * @throws ParseException
      */
     private GeneralParameterValue[] parseReadParameters(
             final CoverageInfo coverageInfo, final GridCoverage2DReader reader)
@@ -266,16 +258,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         return readParameters;
     }
 
-    /**
-     * Parse custom dimension values if present
-     *
-     * @param dimensions
-     * @param metadata
-     * @param readParameters
-     * @param parameterDescriptors
-     * @param map
-     * @throws IOException
-     */
+    /** Parse custom dimension values if present */
     private GeneralParameterValue[] parseCustomDomains(
             final ReaderDimensionsAccessor dimensions,
             final MetadataMap metadata,
@@ -327,7 +310,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
      * @param parameterDescriptors the reader's parameter descriptors
      * @param map the request's parameters
      * @return the updated parameter set
-     * @throws ParseException
      */
     private GeneralParameterValue[] parseElevationParameter(
             final MetadataMap metadata,
@@ -363,7 +345,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
      * @param parameterDescriptors the reader's parameter descriptors
      * @param map the request's parameters
      * @return the updated parameter set
-     * @throws ParseException
      */
     private GeneralParameterValue[] parseTimeParameter(
             final MetadataMap metadata,
@@ -404,8 +385,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
     /**
      * Create a small 2x2 envelope to be used to read a small coverage in order to retrieve
      * statistics from it
-     *
-     * @param coverageInfo
      */
     private ReferencedEnvelope createTestEnvelope(final CoverageInfo coverageInfo) {
         final ReferencedEnvelope envelope = coverageInfo.getNativeBoundingBox();

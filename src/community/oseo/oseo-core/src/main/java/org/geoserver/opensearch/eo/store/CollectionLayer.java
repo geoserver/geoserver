@@ -103,7 +103,6 @@ public class CollectionLayer {
      * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYERS} property of a
      * Collection feature.
      *
-     * @param feature
      * @return The layer, or null if the property was not found
      */
     public static List<CollectionLayer> buildCollectionLayersFromFeature(Feature feature)
@@ -150,11 +149,7 @@ public class CollectionLayer {
         return defaultLayer;
     }
 
-    /**
-     * Sets the default layer property (only one should be the default)
-     *
-     * @param defaultLayer
-     */
+    /** Sets the default layer property (only one should be the default) */
     public void setDefaultLayer(boolean defaultLayer) {
         this.defaultLayer = defaultLayer;
     }

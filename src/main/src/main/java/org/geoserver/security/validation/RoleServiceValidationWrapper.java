@@ -67,10 +67,6 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
      *
      * <p>Optionally, {@link GeoServerUserGroupService} objects can be passed if validation of user
      * names and group names is required
-     *
-     * @param service
-     * @param checkAgainstRules
-     * @param services
      */
     public RoleServiceValidationWrapper(
             GeoServerRoleService service,
@@ -82,12 +78,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
         this.checkAgainstRules = checkAgainstRules;
     }
 
-    /**
-     * Construct a wrapper without checking againset rules
-     *
-     * @param service
-     * @param services
-     */
+    /** Construct a wrapper without checking againset rules */
     public RoleServiceValidationWrapper(
             GeoServerRoleService service, GeoServerUserGroupService... services) {
         this(service, false, services);
@@ -100,9 +91,6 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
     /**
      * Checks if a user name is valid if this validator was constructed with {@link
      * GeoServerUserGroupService} objects, a cross check is done
-     *
-     * @param userName
-     * @throws RoleServiceException
      */
     protected void checkValidUserName(String userName) throws IOException {
         if (isNotEmpty(userName) == false) throw createSecurityException(USERNAME_REQUIRED);
@@ -117,9 +105,6 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
     /**
      * Prevents removal of a role used by access rules Only checks if {@link #checkAgainstRules} is
      * <code>true</code>
-     *
-     * @param role
-     * @throws IOException
      */
     public void checkRoleIsUsed(GeoServerRole role) throws IOException {
 
@@ -146,9 +131,6 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
      *
      * <p>{@link SecurityRoleServiceConfig#getAdminRoleName()} {@link
      * SecurityRoleServiceConfig#getGroupAdminRoleName()}
-     *
-     * @param role
-     * @throws IOException
      */
     public void checkRoleIsMapped(GeoServerRole role) throws IOException {
         GeoServerRole mappedRole = service.getAdminRole();
@@ -162,9 +144,6 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
     /**
      * Checks if a group name is valid if this validator was constructed with {@link
      * GeoServerUserGroupService} objects, a cross check is done
-     *
-     * @param groupName
-     * @throws RoleServiceException
      */
     protected void checkValidGroupName(String groupName) throws IOException {
         if (isNotEmpty(groupName) == false) throw createSecurityException(GROUPNAME_REQUIRED);
@@ -322,12 +301,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
         return service.getRoleCount();
     }
 
-    /**
-     * Helper method for creating a proper {@link SecurityConfigException} object
-     *
-     * @param errorid
-     * @param args
-     */
+    /** Helper method for creating a proper {@link SecurityConfigException} object */
     protected IOException createSecurityException(String errorid, Object... args) {
         RoleServiceException ex = new RoleServiceException(errorid, args);
         return new IOException("Details are in the nested exception", ex);

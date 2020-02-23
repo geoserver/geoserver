@@ -51,10 +51,7 @@ class QueryBuilder<T extends Info> {
 
     private boolean offsetLimitApplied = false;
 
-    /**
-     * @param clazz
-     * @param
-     */
+    /** */
     private QueryBuilder(
             Dialect dialect,
             final Class<T> clazz,

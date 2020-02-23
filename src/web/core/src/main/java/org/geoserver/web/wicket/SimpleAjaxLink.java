@@ -75,10 +75,6 @@ public abstract class SimpleAjaxLink<T> extends Panel {
         return link.getModel();
     }
 
-    /**
-     * Subclasses should override and provide the behaviour for
-     *
-     * @param target
-     */
+    /** Subclasses should override and provide the behaviour for */
     protected abstract void onClick(AjaxRequestTarget target);
 }

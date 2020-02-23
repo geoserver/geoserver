@@ -148,11 +148,7 @@ public class TiledFeatureService {
         }
     }
 
-    /**
-     * Exposes the TilesService API for the callbacks to use
-     *
-     * @return
-     */
+    /** Exposes the TilesService API for the callbacks to use */
     OpenAPI tileServiceAPI() {
         return delegate.api();
     }
@@ -160,9 +156,6 @@ public class TiledFeatureService {
     /**
      * Checks if the layer in question has a tile configuration, and exposes vector based tile
      * formats.
-     *
-     * @param collectionId
-     * @return
      */
     public boolean isTiledVectorLayer(String collectionId) {
         try {

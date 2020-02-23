@@ -49,8 +49,6 @@ public class StyleEditTabPanelInfo extends ComponentInfo<StyleEditTabPanel> {
      * StyleEditTabPanel} described by this tab panel info works against the {@link
      * AbstractStylePage} StyleInfo model. Subclasses may override as appropriate.
      *
-     * @param model
-     * @param isNew
      * @return {@code null} if no need for a custom model for the tab, the model to use otherwise
      * @see StyleEditTabPanel#save()
      */

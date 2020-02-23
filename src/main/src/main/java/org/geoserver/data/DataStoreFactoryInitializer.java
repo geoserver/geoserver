@@ -44,11 +44,7 @@ public abstract class DataStoreFactoryInitializer<T extends DataAccessFactory> {
     /** the class of the factory instances to initialie */
     protected final Class<T> factoryClass;
 
-    /**
-     * Constructs a new initializer.
-     *
-     * @param factoryClass
-     */
+    /** Constructs a new initializer. */
     protected DataStoreFactoryInitializer(Class<T> factoryClass) {
         this.factoryClass = factoryClass;
     }

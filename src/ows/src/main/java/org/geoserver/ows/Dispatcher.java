@@ -588,7 +588,6 @@ public class Dispatcher extends AbstractController {
     /**
      * Normalize a parameter, trimming whitespace
      *
-     * @param value
      * @return The value with whitespace trimmed, or null if this would result in an empty string.
      */
     public static String normalize(String value) {
@@ -606,7 +605,6 @@ public class Dispatcher extends AbstractController {
     /**
      * Normalize the version, handling cases like forcing "x.y" to "x.y.z".
      *
-     * @param version
      * @return normalized version
      */
     public static String normalizeVersion(String version) {

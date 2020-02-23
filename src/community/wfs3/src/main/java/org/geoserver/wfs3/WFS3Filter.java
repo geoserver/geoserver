@@ -284,9 +284,6 @@ public class WFS3Filter implements GeoServerFilter {
         /**
          * Extracts the path info in a way that accounts for virtual services, parameter extractor
          * and whatnot
-         *
-         * @param wrapped
-         * @return
          */
         private String getPathInfo(HttpServletRequest wrapped) {
             String fullPath = wrapped.getRequestURI();
@@ -392,12 +389,7 @@ public class WFS3Filter implements GeoServerFilter {
         }
     }
 
-    /**
-     * URL decodes the given string
-     *
-     * @param name
-     * @return
-     */
+    /** URL decodes the given string */
     private String urlDecode(String name) {
         try {
             name = URLDecoder.decode(name, "UTF-8");

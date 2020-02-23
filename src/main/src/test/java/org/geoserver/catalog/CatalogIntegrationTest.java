@@ -287,13 +287,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                 ModificationProxy.unwrap(lim3.getMetadata().get(key)));
     }
 
-    /**
-     * Serializes and de-serializes the provided object
-     *
-     * @param object
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
+    /** Serializes and de-serializes the provided object */
     <T> T serialize(T object) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);

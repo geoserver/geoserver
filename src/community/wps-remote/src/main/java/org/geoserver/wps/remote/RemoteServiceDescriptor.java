@@ -28,13 +28,7 @@ public class RemoteServiceDescriptor {
 
     private Map<String, Object> metadata;
 
-    /**
-     * @param name
-     * @param title
-     * @param description
-     * @param paramInfo
-     * @param outputInfo
-     */
+    /** */
     public RemoteServiceDescriptor(
             Name name,
             String title,

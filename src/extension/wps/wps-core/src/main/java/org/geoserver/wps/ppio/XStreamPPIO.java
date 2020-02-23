@@ -42,8 +42,6 @@ public class XStreamPPIO extends XMLPPIO {
     /**
      * Subclasses can override the XStream configuration here. By default XStream is setup to strip
      * package names, have tags starts with a capital letter, and flatten out collections
-     *
-     * @param xstream
      */
     protected SecureXStream buildXStream() {
         SecureXStream stream =

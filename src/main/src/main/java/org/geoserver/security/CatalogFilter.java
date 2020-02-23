@@ -27,11 +27,7 @@ import org.opengis.filter.Filter;
  * @author Andrea Aime - GeoSolutions
  */
 public interface CatalogFilter {
-    /**
-     * Return true to hide the specified layer from the catalog
-     *
-     * @param layer
-     */
+    /** Return true to hide the specified layer from the catalog */
     boolean hideLayer(LayerInfo layer);
 
     /**

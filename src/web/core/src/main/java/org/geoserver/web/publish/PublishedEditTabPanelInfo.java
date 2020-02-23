@@ -49,8 +49,6 @@ public abstract class PublishedEditTabPanelInfo<T extends PublishedInfo>
      * PublishedEditTabPanel} described by this tab panel info works against the {@link
      * ResourceConfigurationPage} LayerInfo model. Subclasses may override as appropriate.
      *
-     * @param model
-     * @param isNew
      * @return {@code null} if no need for a custom model for the tab, the model to use otherwise
      * @see PublishedEditTabPanel#save()
      */

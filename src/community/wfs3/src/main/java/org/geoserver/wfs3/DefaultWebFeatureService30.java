@@ -398,11 +398,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         return new Link(href, "style", styleFormat, null);
     }
 
-    /**
-     * Returns a list of styles that are not associated with any layer
-     *
-     * @return
-     */
+    /** Returns a list of styles that are not associated with any layer */
     private Set<StyleInfo> getLayerAssociatedStyles() {
         Set<StyleInfo> result = new HashSet<>();
         for (LayerInfo layer : getCatalog().getLayers()) {

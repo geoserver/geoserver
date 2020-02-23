@@ -45,10 +45,7 @@ public class GWCConfigPersister {
         this.resourceLoader = resourceLoader;
     }
 
-    /**
-     * @return the config file or {@code null} if it does not exist
-     * @throws IOException
-     */
+    /** @return the config file or {@code null} if it does not exist */
     Resource findConfigFile() throws IOException {
         final Resource configFile = resourceLoader.get(GWC_CONFIG_FILE);
         return configFile;
@@ -91,9 +88,6 @@ public class GWCConfigPersister {
     /**
      * Saves and applies the integrated GWC's GeoServer specific configuration to the {@code <data
      * dir>/gwc-gs.xml} file.
-     *
-     * @param config
-     * @throws IOException
      */
     public void save(final GWCConfig config) throws IOException {
         LOGGER.finer("Saving integrated GWC configuration");

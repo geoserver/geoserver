@@ -137,7 +137,6 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
      *
      * <p>Example: Linux systems expect around 1 second resolution for file modification.
      *
-     * @param file
      * @return resulting value of lastmodified
      */
     private long touch(File file) {

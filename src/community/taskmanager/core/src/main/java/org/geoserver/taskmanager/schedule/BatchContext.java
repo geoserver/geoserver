@@ -24,12 +24,7 @@ public interface BatchContext {
 
     Object get(Object original, Dependency dependency);
 
-    /**
-     * Whatever is put here in the task, must be removed in the commit!
-     *
-     * @param original
-     * @param temp
-     */
+    /** Whatever is put here in the task, must be removed in the commit! */
     void put(Object original, Object temp);
 
     void delete(Object original) throws TaskException;

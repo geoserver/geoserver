@@ -20,21 +20,13 @@ public interface ProcessGroupInfo extends Info, Cloneable {
     /** The process factory class (only means to identify it) */
     public Class<? extends ProcessFactory> getFactoryClass();
 
-    /**
-     * Sets the process factory class
-     *
-     * @param factoryClass
-     */
+    /** Sets the process factory class */
     public void setFactoryClass(Class<? extends ProcessFactory> factoryClass);
 
     /** True if the factory is enabled, false otherwise */
     public boolean isEnabled();
 
-    /**
-     * Enables/disables the factory
-     *
-     * @param enabled
-     */
+    /** Enables/disables the factory */
     public void setEnabled(boolean enabled);
 
     /**

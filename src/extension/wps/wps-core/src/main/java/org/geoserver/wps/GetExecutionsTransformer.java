@@ -294,14 +294,7 @@ public class GetExecutionsTransformer extends TransformerBase {
             end("wps:GetExecutionsResponse");
         }
 
-        /**
-         * Encodes {@link ExecuteType} to XML
-         *
-         * @param status
-         * @param exec
-         * @param attributes
-         * @return
-         */
+        /** Encodes {@link ExecuteType} to XML */
         protected void encodeExecuteRequest(
                 ExecutionStatus status, ExecuteType exec, AttributesImpl attributes) {
             final AttributesImpl executeTypeAttributes = new AttributesImpl(attributes);
@@ -364,12 +357,7 @@ public class GetExecutionsTransformer extends TransformerBase {
             end("wps:Execute");
         }
 
-        /**
-         * Encode Data Inputs from "lineage" as XML
-         *
-         * @param status
-         * @param inputs
-         */
+        /** Encode Data Inputs from "lineage" as XML */
         protected void encodeDataInputs(
                 ExecutionStatus status, EList inputs, AttributesImpl attributes) {
             start("wps:DataInputs");
@@ -647,12 +635,7 @@ public class GetExecutionsTransformer extends TransformerBase {
             end("wps:DataInputs");
         }
 
-        /**
-         * Encode Data Outputs from "lineage" as XML
-         *
-         * @param status
-         * @param outputs
-         */
+        /** Encode Data Outputs from "lineage" as XML */
         protected void encodeDataOutputs(
                 ExecutionStatus status, EList outputs, AttributesImpl attributes) {
             start("wps:DataOutputs");
@@ -708,9 +691,6 @@ public class GetExecutionsTransformer extends TransformerBase {
          * the next page; it this is not present then there are no more pages available -- add
          * "previous" attribute to the GetExecutionsResponse, representing the URL of the previous
          * page; it this is not present then we are at the first page
-         *
-         * @param serviceInstance
-         * @param attributes
          */
         protected void getPaginationAttributes(String serviceInstance, AttributesImpl attributes) {
             String baseRequestUrl =
@@ -763,9 +743,6 @@ public class GetExecutionsTransformer extends TransformerBase {
         /**
          * Register all namespaces as xmlns:xxx attributes for the top level element of a xml
          * document
-         *
-         * @param ns
-         * @param attributes
          */
         protected void registerNamespaces(NamespaceSupport ns, AttributesImpl attributes) {
             Enumeration declaredPrefixes = ns.getDeclaredPrefixes();

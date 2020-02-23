@@ -157,11 +157,7 @@ public class OpenSearchParameters {
                 TIME_RELATION);
     }
 
-    /**
-     * Returns the basic OpenSearch search parameters
-     *
-     * @return
-     */
+    /** Returns the basic OpenSearch search parameters */
     public static List<Parameter<?>> getBasicOpensearch(OSEOInfo info) {
         List<Parameter<?>> result = new ArrayList<>(BASIC_OPENSEARCH);
 
@@ -175,11 +171,7 @@ public class OpenSearchParameters {
         return result;
     }
 
-    /**
-     * Returns the OGC geo/time extension parameters
-     *
-     * @return
-     */
+    /** Returns the OGC geo/time extension parameters */
     public static List<Parameter<?>> getGeoTimeOpensearch() {
         return GEO_TIME_OPENSEARCH;
     }
@@ -190,7 +182,6 @@ public class OpenSearchParameters {
      *
      * @param oseo Reference to the service configuration
      * @param p the parameter
-     * @return
      */
     public static String getQualifiedParamName(OSEOInfo oseo, Parameter p) {
         return getQualifiedParamName(oseo, p, true);
@@ -201,8 +192,6 @@ public class OpenSearchParameters {
      * metadata, or the simple parameter key other
      *
      * @param oseo Reference to the service configuration
-     * @param p
-     * @return
      */
     public static String getQualifiedParamName(
             OSEOInfo oseo, Parameter p, boolean qualifyOpenSearchNative) {
@@ -226,12 +215,7 @@ public class OpenSearchParameters {
         }
     }
 
-    /**
-     * Returns the PARAM_PREFIX entry found in the parameter metadata, if any
-     *
-     * @param p
-     * @return
-     */
+    /** Returns the PARAM_PREFIX entry found in the parameter metadata, if any */
     public static String getParameterPrefix(Parameter p) {
         String prefix = p.metadata == null ? null : (String) p.metadata.get(PARAM_PREFIX);
         return prefix;
@@ -239,9 +223,6 @@ public class OpenSearchParameters {
 
     /**
      * Returns the PARAM_NAME entry found in the parameter metadata, if any, or the key otherwise
-     *
-     * @param p
-     * @return
      */
     public static String getParameterName(Parameter p) {
         String name = p.metadata == null ? null : (String) p.metadata.get(PARAM_NAME);
@@ -256,8 +237,6 @@ public class OpenSearchParameters {
      *
      * @param oseo Reference to the service configuration
      * @param ff The filter factory used to build the filters
-     * @param parameter
-     * @return
      */
     public static PropertyName getFilterPropertyFor(
             OSEOInfo oseo, FilterFactory2 ff, Parameter<?> parameter) {

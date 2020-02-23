@@ -28,7 +28,6 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
      * @param resource Spring resource
      * @param store the Resource Store
      * @return Spring resource relative to Data Directory
-     * @throws IOException
      */
     public static org.springframework.core.io.Resource relative(
             org.springframework.core.io.Resource resource, ResourceStore store) throws IOException {

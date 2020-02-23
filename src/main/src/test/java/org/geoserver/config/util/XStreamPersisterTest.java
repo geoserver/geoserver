@@ -1309,8 +1309,6 @@ public class XStreamPersisterTest {
     /**
      * Test for GEOS-7444. Check GridGeometry is correctly unmarshaled when XML elements are
      * provided on an different order than the marshaling one
-     *
-     * @throws Exception
      */
     @Test
     public void testGridGeometry2DConverterUnmarshalling() throws Exception {

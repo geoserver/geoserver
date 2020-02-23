@@ -356,7 +356,6 @@ public abstract class LegendGraphicBuilder {
      * @param schema the schema for which to create a sample Feature instance
      * @param dimensionality the geometry dimensionality required (ovverides the one defined in the
      *     schema) 1= points, 2= lines, 3= polygons
-     * @throws ServiceException
      */
     private Feature createSampleFeature(FeatureType schema, int dimensionality)
             throws ServiceException {
@@ -412,11 +411,7 @@ public abstract class LegendGraphicBuilder {
         return schema;
     }
 
-    /**
-     * Creates a Geometry class for the given dimensionality.
-     *
-     * @param dimensionality
-     */
+    /** Creates a Geometry class for the given dimensionality. */
     private Class<?> getGeometryForDimensionality(int dimensionality) {
         if (dimensionality == 1) {
             return Point.class;
@@ -432,7 +427,6 @@ public abstract class LegendGraphicBuilder {
      * legend graphic.
      *
      * @param schema the schema for which to create a sample Feature instance
-     * @throws ServiceException
      */
     protected Feature createSampleFeature(FeatureType schema) throws ServiceException {
         Feature sampleFeature;
@@ -455,8 +449,6 @@ public abstract class LegendGraphicBuilder {
 
     /**
      * Checks if the given schema contains a GeometryDescriptor that has a generic Geometry type.
-     *
-     * @param schema
      */
     private boolean hasMixedGeometry(SimpleFeatureType schema) {
         for (AttributeDescriptor attDesc : schema.getAttributeDescriptors()) {
@@ -467,11 +459,7 @@ public abstract class LegendGraphicBuilder {
         return false;
     }
 
-    /**
-     * Checks if the given AttributeDescriptor describes a generic Geometry.
-     *
-     * @param attDesc
-     */
+    /** Checks if the given AttributeDescriptor describes a generic Geometry. */
     private boolean isMixedGeometry(AttributeDescriptor attDesc) {
         if (attDesc instanceof GeometryDescriptor
                 && attDesc.getType().getBinding() == Geometry.class) {
@@ -490,10 +478,7 @@ public abstract class LegendGraphicBuilder {
         this.w = w;
     }
 
-    /**
-     * @param request
-     * @return
-     */
+    /** */
     public abstract Object buildLegendGraphic(GetLegendGraphicRequest request);
 
     /** @param gt2Style */

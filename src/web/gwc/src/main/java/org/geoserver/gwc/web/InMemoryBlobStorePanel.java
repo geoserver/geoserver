@@ -372,9 +372,6 @@ public class InMemoryBlobStorePanel extends Panel {
         /**
          * This method removes all the previous mappings from the container and then adds the
          * components again by setting as default value the one taken from the key mapped.
-         *
-         * @param key
-         * @param gwcConfigModel
          */
         public void setMapKey(final String key, IModel<GWCConfig> gwcConfigModel) {
             removeAll();

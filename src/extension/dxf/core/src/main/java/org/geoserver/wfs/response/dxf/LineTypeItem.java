@@ -38,11 +38,7 @@ public class LineTypeItem {
         return type;
     }
 
-    /**
-     * Sets type of item (DASH, DOT, EMPTY).
-     *
-     * @param type
-     */
+    /** Sets type of item (DASH, DOT, EMPTY). */
     public void setType(int type) {
         this.type = type;
     }
@@ -61,11 +57,7 @@ public class LineTypeItem {
         }
     }
 
-    /**
-     * Sets the length of the item (in terms of base length repetitions)
-     *
-     * @param length
-     */
+    /** Sets the length of the item (in terms of base length repetitions) */
     public void setLength(double length) {
         this.length = length;
     }

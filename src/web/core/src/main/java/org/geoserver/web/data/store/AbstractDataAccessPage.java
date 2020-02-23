@@ -63,10 +63,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
     public AbstractDataAccessPage() {}
 
-    /**
-     * @param storeInfo
-     * @throws IllegalArgumentException
-     */
+    /** */
     protected void initUI(final DataStoreInfo storeInfo) throws IllegalArgumentException {
 
         if (storeInfo.getWorkspace() == null) {
@@ -191,7 +188,6 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
      * saving the edits to an existing onefinal StoreEditPanel
      *
      * @param info the object to save
-     * @param requestTarget
      * @throws IllegalArgumentException with an appropriate message for the user if the operation
      *     failed
      */

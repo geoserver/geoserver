@@ -51,12 +51,6 @@ public class FrameCatalogVisitor {
     /**
      * Adds a new visitor to the runnables list and initializes the animatorExecutor service is not
      * yet initialied.
-     *
-     * @param request
-     * @param wms
-     * @param wmsConfiguration
-     * @param aparam
-     * @param avalue
      */
     public void visit(
             final GetMapRequest request,
@@ -78,12 +72,7 @@ public class FrameCatalogVisitor {
         wmsConfiguration.getAnimatorExecutorService().execute(task);
     }
 
-    /**
-     * Invokes the Executor service and produces the frames images.
-     *
-     * @param wmsConfiguration
-     * @throws IOException
-     */
+    /** Invokes the Executor service and produces the frames images. */
     public RenderedImageList produce(WMS wmsConfiguration) throws IOException {
         List<RenderedImage> images = new ArrayList<RenderedImage>();
 
@@ -164,15 +153,7 @@ class FrameLoader implements Callable<RenderedImage> {
 
     private String avalue;
 
-    /**
-     * Default constructor.
-     *
-     * @param request
-     * @param wms
-     * @param wmsConfiguration
-     * @param aparam
-     * @param avalue
-     */
+    /** Default constructor. */
     public FrameLoader(
             GetMapRequest request,
             WebMapService wms,
@@ -219,14 +200,7 @@ class FrameLoader implements Callable<RenderedImage> {
         return ((RenderedImageMap) wmsResponse).getImage();
     }
 
-    /**
-     * Replacing WMS Request parameter's value
-     *
-     * @param theRequest
-     * @param param
-     * @param value
-     * @throws Exception
-     */
+    /** Replacing WMS Request parameter's value */
     private static GetMapRequest replaceRequestParams(
             GetMapRequest theRequest, String param, String value) throws Exception {
         // look for the GetMapRequest reader

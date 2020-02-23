@@ -59,26 +59,15 @@ abstract class FileItemCache<T> {
      * The key used in the item cache to represent this file. It uses the file name, assuming we are
      * going to cache files originating from the same directory. Subclasses may override to get a
      * different behavior
-     *
-     * @param file
      */
     protected String getFileKey(Resource file) {
         return file.name();
     }
 
-    /**
-     * Loads an item from the file
-     *
-     * @param file
-     */
+    /** Loads an item from the file */
     protected abstract T loadItem(Resource file) throws IOException;
 
-    /**
-     * Manually updates the contents of the cache
-     *
-     * @param item
-     * @param file
-     */
+    /** Manually updates the contents of the cache */
     public void put(T item, Resource file) {
         CacheItem ci = new CacheItem<T>(item, file);
         String key = getFileKey(file);

@@ -53,7 +53,6 @@ public interface BatchJobService {
     /**
      * Start a batch right now.
      *
-     * @param batch
      * @return a (unique) scheduler reference that can be used to identify the batch run
      */
     String scheduleNow(Batch batch);

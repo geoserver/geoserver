@@ -58,11 +58,7 @@ public class SenderXStreamInitializer implements NotificationXStreamInitializer 
 
         private SenderXStreamInitializer senderXStreamInitializer;
 
-        /**
-         * @param mapper
-         * @param reflectionProvider
-         * @param senderXStreamInitializer
-         */
+        /** */
         public SenderConverter(
                 Mapper mapper,
                 ReflectionProvider reflectionProvider,

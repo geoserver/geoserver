@@ -40,8 +40,6 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
     /**
      * Test that the null values and range of a wrapped sampleDimension are the same configured on
      * the {@link CoverageDimensionInfo} object used to customize them
-     *
-     * @throws IOException
      */
     @Test
     public void testDimensionsWrapping() throws IOException {
@@ -139,11 +137,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(newMaximum, wrappedRange.getMaximum(), DELTA);
     }
 
-    /**
-     * Test that the wrapped nodata categories contains the defined nodata as an int
-     *
-     * @throws IOException
-     */
+    /** Test that the wrapped nodata categories contains the defined nodata as an int */
     @Test
     public void testIntegerNoDataCategoryWrapping() throws IOException {
 
@@ -187,11 +181,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(category.getRange().getMaximum(), noData1, DELTA);
     }
 
-    /**
-     * Test that the wrapped nodata categories contains the defined nodata
-     *
-     * @throws IOException
-     */
+    /** Test that the wrapped nodata categories contains the defined nodata */
     @Test
     public void testNoDataCategoryWrapping() throws IOException {
 
@@ -267,11 +257,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(category.getRange().getMaximum(), noData1, DELTA);
     }
 
-    /**
-     * Test that if no range is defined, Category values or Default values are used
-     *
-     * @throws IOException
-     */
+    /** Test that if no range is defined, Category values or Default values are used */
     @Test
     public void testNoRange() throws IOException {
         GridSampleDimension sampleDim =
@@ -319,11 +305,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(Double.POSITIVE_INFINITY, wrappedDim.getMaximumValue(), DELTA);
     }
 
-    /**
-     * Test GridCoverage unwrapping
-     *
-     * @throws IOException
-     */
+    /** Test GridCoverage unwrapping */
     @Test
     public void testGridCoverageUnwrapping() throws IOException {
 

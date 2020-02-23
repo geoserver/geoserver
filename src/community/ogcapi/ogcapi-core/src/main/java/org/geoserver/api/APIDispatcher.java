@@ -542,22 +542,12 @@ public class APIDispatcher extends AbstractController {
         return uri;
     }
 
-    /**
-     * Returns a read only list of available {@link HttpMessageConverter}
-     *
-     * @return
-     */
+    /** Returns a read only list of available {@link HttpMessageConverter} */
     public List<HttpMessageConverter<?>> getConverters() {
         return Collections.unmodifiableList(messageConverters);
     }
 
-    /**
-     * Returns a {@link List} of media types that can be produced for a given response object
-     *
-     * @param responseType
-     * @param addHTML
-     * @return
-     */
+    /** Returns a {@link List} of media types that can be produced for a given response object */
     public List<MediaType> getProducibleMediaTypes(Class<?> responseType, boolean addHTML) {
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
@@ -620,7 +610,6 @@ public class APIDispatcher extends AbstractController {
     /**
      * Applies all available callbacks to the document
      *
-     * @param dr
      * @param document The document the {@link DocumentCallback} will operate on
      */
     private void applyDocumentCallbacks(Request dr, AbstractDocument document) {
@@ -632,7 +621,6 @@ public class APIDispatcher extends AbstractController {
     /**
      * Applies all available callbacks to the API description
      *
-     * @param dr
      * @param api The document the {@link OpenAPICallback} will operate on
      */
     private void applyOpenAPICallbacks(Request dr, OpenAPI api) {

@@ -227,7 +227,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param outputFormats the list of output format names to declare in the GetCapabilities
      *     document, does not need to match {@code mime} (e.g., an output format of {@code
      *     image/geotiff8} may result in a map returned with MIME Type {@code image/tiff})
-     * @param wms
      */
     public RenderedImageMapOutputFormat(String mime, String[] outputFormats, WMS wms) {
         super(mime, outputFormats);
@@ -248,20 +247,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
     }
 
-    /**
-     * Returns the extension used for the file name in the content disposition header
-     *
-     * @param extension
-     */
+    /** Returns the extension used for the file name in the content disposition header */
     public String getExtension() {
         return extension;
     }
 
-    /**
-     * Sets the extension used for the file name in the content disposition header
-     *
-     * @param extension
-     */
+    /** Sets the extension used for the file name in the content disposition header */
     public void setExtension(String extension) {
         this.extension = extension;
     }
@@ -282,7 +273,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * Actually produces the map image, caring about meta tiling if {@code tiled == true}.
      *
-     * @param mapContent
      * @param tiled Indicates whether metatiling is activated for this map producer.
      */
     public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
@@ -711,11 +701,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return ImageUtils.prepareTransparency(transparent, bgColor, preparedImage, hintsMap);
     }
 
-    /**
-     * Allows subclasses to customize the renderer before the paint method gets invoked
-     *
-     * @param renderer
-     */
+    /** Allows subclasses to customize the renderer before the paint method gets invoked */
     protected void onBeforeRender(StreamingRenderer renderer) {
         // TODO Auto-generated method stub
     }
@@ -831,10 +817,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * Sets up a {@link BufferedImage#TYPE_4BYTE_ABGR} if the paletteInverter is not provided, or a
      * indexed image otherwise. Subclasses may override this method should they need a special kind
      * of image
-     *
-     * @param width
-     * @param height
-     * @param paletteInverter
      */
     protected RenderedImage prepareImage(
             int width, int height, IndexColorModel palette, boolean transparent) {
@@ -876,11 +858,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * When you override {@link #prepareImage(int, int, IndexColorModel, boolean)} remember to
      * override this one as well
-     *
-     * @param width
-     * @param height
-     * @param palette
-     * @param transparent
      */
     protected long getDrawingSurfaceMemoryUse(
             int width, int height, IndexColorModel palette, boolean transparent) {
@@ -895,8 +872,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * This takes an image with an indexed color model that uses less than 256 colors and has a 8bit
      * sample model, and transforms it to one that has the optimal sample model (for example, 1bit
      * if the palette only has 2 colors)
-     *
-     * @param source
      */
     private static RenderedImage optimizeSampleModel(RenderedImage source) {
         int w = source.getWidth();
@@ -928,7 +903,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      *     they can be disposed later
      * @return the result of rendering the coverage, or null if there was no coverage, or the
      *     coverage could not be renderer for some reason
-     * @throws FactoryException
      */
     private RenderedImage directRasterRender(
             WMSMapContent mapContent,
@@ -1655,32 +1629,17 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
     }
 
-    /**
-     * Optimized method for RGB images to turn noData value to transparent.
-     *
-     * @param image
-     * @return
-     */
+    /** Optimized method for RGB images to turn noData value to transparent. */
     private RenderedImage rgbNoDataTransparent(RenderedImage image) {
         return makeNoDataTransparent(image, 3);
     }
 
-    /**
-     * Optimized method for Gray Scale Byte images to turn noData value to transparent.
-     *
-     * @param image
-     * @return
-     */
+    /** Optimized method for Gray Scale Byte images to turn noData value to transparent. */
     private RenderedImage grayNoDataTransparent(RenderedImage image) {
         return makeNoDataTransparent(image, 1);
     }
 
-    /**
-     * Optimized method to turn noData value to transparent.
-     *
-     * @param image
-     * @return
-     */
+    /** Optimized method to turn noData value to transparent. */
     private RenderedImage makeNoDataTransparent(RenderedImage image, final int numBands) {
         // Using an ImageWorker
         ImageWorker iw = new ImageWorker(image);
@@ -1726,9 +1685,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * Given a one band (plus eventual alpha) color model and the red part of a gray color returns
      * the appropriate background color to be used in the mosaic operation
-     *
-     * @param red
-     * @param cm
      */
     double mapToGrayColor(Color gray, ComponentColorModel cm) {
         double[] rescaleFactors = new double[DataBuffer.TYPE_UNDEFINED + 1];
@@ -1742,11 +1698,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return gray.getRed() / rescaleFactors[cm.getTransferType()];
     }
 
-    /**
-     * Returns true if the color is a level of gray
-     *
-     * @param color
-     */
+    /** Returns true if the color is a level of gray */
     private static boolean isLevelOfGray(Color color) {
         return color.getRed() == color.getBlue() && color.getRed() == color.getGreen();
     }
@@ -1776,13 +1728,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews
      * as necessary
-     *
-     * @param mapContent
-     * @param reader
-     * @param params
-     * @param requestedRasterArea
-     * @param interpolation
-     * @throws IOException
      */
     private static GridCoverage2D readBestCoverage(
             final ReadingContext context,

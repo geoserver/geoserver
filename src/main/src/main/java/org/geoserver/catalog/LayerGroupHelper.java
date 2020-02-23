@@ -77,11 +77,7 @@ public class LayerGroupHelper {
         }
     }
 
-    /**
-     * Returns top level PublishedInfo, eventually expanding style groups
-     *
-     * @return
-     */
+    /** Returns top level PublishedInfo, eventually expanding style groups */
     public List<PublishedInfo> allPublished() {
         List<PublishedInfo> publisheds = new ArrayList<>();
         allPublished(group, publisheds);
@@ -124,11 +120,7 @@ public class LayerGroupHelper {
         return publisheds;
     }
 
-    /**
-     * Returns all the groups contained in this group (including the group itself)
-     *
-     * @return
-     */
+    /** Returns all the groups contained in this group (including the group itself) */
     public List<LayerGroupInfo> allGroups() {
         List<LayerGroupInfo> groups = new ArrayList<LayerGroupInfo>();
         allGroups(group, groups);
@@ -291,8 +283,6 @@ public class LayerGroupHelper {
      * Use the CRS's defined bounds to populate the LayerGroup bounds.
      *
      * <p>If the CRS has no bounds then the layer group bounds are set to null instead
-     *
-     * @param crs
      */
     public void calculateBoundsFromCRS(CoordinateReferenceSystem crs) {
         Envelope crsEnvelope = CRS.getEnvelope(crs);

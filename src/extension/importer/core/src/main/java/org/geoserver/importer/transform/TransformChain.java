@@ -81,12 +81,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         }
     }
 
-    /**
-     * Runs all {@link PreTransform} in the chain
-     *
-     * @param item
-     * @param data
-     */
+    /** Runs all {@link PreTransform} in the chain */
     public void pre(ImportTask item, ImportData data) throws Exception {
         for (PreTransform tx : filter(transforms, PreTransform.class)) {
             try {
@@ -97,12 +92,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         }
     }
 
-    /**
-     * Runs all {@link PostTransform} in the chain
-     *
-     * @param item
-     * @param data
-     */
+    /** Runs all {@link PostTransform} in the chain */
     public void post(ImportTask task, ImportData data) throws Exception {
         for (PostTransform tx : filter(transforms, PostTransform.class)) {
             try {

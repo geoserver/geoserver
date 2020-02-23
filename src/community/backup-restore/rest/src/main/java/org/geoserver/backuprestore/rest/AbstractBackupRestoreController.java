@@ -87,11 +87,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         return executionId;
     }
 
-    /**
-     * @param allowAll
-     * @param mustExist
-     * @return
-     */
+    /** */
     protected Object lookupBackupExecutionsContext(String i, boolean allowAll, boolean mustExist) {
         if (i != null) {
             BackupExecutionAdapter backupExecution = null;
@@ -112,11 +108,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         }
     }
 
-    /**
-     * @param allowAll
-     * @param mustExist
-     * @return
-     */
+    /** */
     protected Object lookupRestoreExecutionsContext(String i, boolean allowAll, boolean mustExist) {
         if (i != null) {
             RestoreExecutionAdapter restoreExecution = null;
@@ -391,10 +383,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
         private String fieldName;
 
-        /**
-         * @param mapper
-         * @param reflectionProvider
-         */
+        /** */
         public FilterConverter(
                 String fieldName, Mapper mapper, ReflectionProvider reflectionProvider) {
             super(mapper, reflectionProvider);

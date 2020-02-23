@@ -87,10 +87,7 @@ public class EOGetMapCallback extends GetMapCallbackAdapter implements GetMapCal
         return layer;
     }
 
-    /**
-     * @param params
-     * @param dimensions
-     */
+    /** */
     private void enforceStackingOrder(GeneralParameterValue[] params) {
 
         // look for it
@@ -103,10 +100,7 @@ public class EOGetMapCallback extends GetMapCallbackAdapter implements GetMapCal
         }
     }
 
-    /**
-     * @param params
-     * @param dimensions
-     */
+    /** */
     private void enforceParamCardinality(
             GeneralParameterValue[] params, Set<ParameterDescriptor<List>> dimensions) {
 

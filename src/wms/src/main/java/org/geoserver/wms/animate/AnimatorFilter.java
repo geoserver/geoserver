@@ -38,10 +38,7 @@ public class AnimatorFilter implements GeoServerFilter {
     private static final String REQUEST = "Request";
     private static final String GETMAP = "GetMap";
 
-    /**
-     * @param config
-     * @throws ServletException
-     */
+    /** */
     @Override
     public void init(FilterConfig config) throws ServletException {
         // nothing to do

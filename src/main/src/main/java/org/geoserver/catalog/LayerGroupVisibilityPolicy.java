@@ -14,11 +14,7 @@ import java.util.List;
  */
 public interface LayerGroupVisibilityPolicy {
 
-    /**
-     * @param group
-     * @param filteredLayers
-     * @return true if LayerGroup must be hidden, false otherwise
-     */
+    /** @return true if LayerGroup must be hidden, false otherwise */
     boolean hideLayerGroup(LayerGroupInfo group, List<PublishedInfo> filteredLayers);
 
     /** Never hide a LayerGroup */

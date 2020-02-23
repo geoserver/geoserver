@@ -50,21 +50,12 @@ public class XmlTestUtil {
         regenerateContext();
     }
 
-    /**
-     * Set an output stream to print XML to when a matcher fails. Null to disable.
-     *
-     * @param showXML
-     */
+    /** Set an output stream to print XML to when a matcher fails. Null to disable. */
     public void setShowXML(OutputStream showXML) {
         this.showXML = showXML;
     }
 
-    /**
-     * Add a namespace to be used when resolving XPath expressions.
-     *
-     * @param prefix
-     * @param uri
-     */
+    /** Add a namespace to be used when resolving XPath expressions. */
     public void addNamespace(String prefix, String uri) {
         namespaces.put(prefix, uri);
         regenerateContext();
@@ -73,41 +64,25 @@ public class XmlTestUtil {
     /**
      * Match a document where one node matched the XPath expression, and it also matches the given
      * matcher.
-     *
-     * @param xPath
-     * @param matcher
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Matcher<Document> hasOneNode(final String xPath, final Matcher<? super Node> matcher) {
         return hasNodes(xPath, (Matcher) contains(matcher));
     }
-    /**
-     * Match a document where one node matches the XPath expression.
-     *
-     * @param xPath
-     * @param matcher
-     */
+    /** Match a document where one node matches the XPath expression. */
     public Matcher<Document> hasOneNode(final String xPath) {
         return hasOneNode(xPath, any(Node.class));
     }
     /**
      * Match a document at least one of the nodes matched by the given XPath expression matches the
      * given matcher.
-     *
-     * @param xPath
-     * @param matcher
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Matcher<Document> hasNode(final String xPath, final Matcher<Node> matcher) {
         return hasNodes(xPath, (Matcher) hasItem(matcher));
     }
 
-    /**
-     * Match a document at least one node matches the given XPath.
-     *
-     * @param xPath
-     * @param matcher
-     */
+    /** Match a document at least one node matches the given XPath. */
     public Matcher<Document> hasNode(final String xPath) {
         return hasNode(xPath, any(Node.class));
     }
@@ -115,9 +90,6 @@ public class XmlTestUtil {
     /**
      * Match a document where the list of nodes selected by the given XPath expression also matches
      * the given matcher.
-     *
-     * @param xPath
-     * @param matcher
      */
     public Matcher<Document> hasNodes(
             final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
@@ -165,11 +137,7 @@ public class XmlTestUtil {
         };
     }
 
-    /**
-     * Make a Java List out of a DOM NodeList.
-     *
-     * @param nl
-     */
+    /** Make a Java List out of a DOM NodeList. */
     public static List<Node> nodeCollection(final NodeList nl) {
         return new AbstractList<Node>() {
 
@@ -188,9 +156,6 @@ public class XmlTestUtil {
     /**
      * Print a DOM tree to an output stream or if there is an exception while doing so, print the
      * stack trace.
-     *
-     * @param dom
-     * @param os
      */
     public static void printDom(Node dom, OutputStream os) {
         Transformer trans;

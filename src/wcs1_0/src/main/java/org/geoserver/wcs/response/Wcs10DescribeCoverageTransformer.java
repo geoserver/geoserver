@@ -250,10 +250,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * @param lonLatEnvelope
-         * @throws IOException
-         */
+        /** */
         private void handleLonLatEnvelope(CoverageInfo ci, ReferencedEnvelope referencedEnvelope)
                 throws IOException {
 
@@ -361,13 +358,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("wcs:domainSet");
         }
 
-        /**
-         * @param referencedEnvelope
-         * @param elevationMetadata
-         * @param timeMetadata
-         * @param set2
-         * @param set
-         */
+        /** */
         private void handleBoundingBox(
                 String srsName,
                 ReferencedEnvelope referencedEnvelope,
@@ -408,11 +399,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * @param ci
-         * @param timeMetadata
-         * @param elevationMetadata
-         */
+        /** */
         private void handleTemporalDomain(
                 CoverageInfo ci, DimensionInfo timeInfo, ReaderDimensionsAccessor dimensions)
                 throws IOException {
@@ -456,10 +443,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("wcs:temporalDomain");
         }
 
-        /**
-         * @param ci
-         * @param elevationMetadata
-         */
+        /** */
         private void handleGrid(CoverageInfo ci) throws Exception {
             final GridGeometry originalGrid = ci.getGrid();
             final GridEnvelope gridRange = originalGrid.getGridRange();
@@ -520,11 +504,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("gml:RectifiedGrid");
         }
 
-        /**
-         * @param ci
-         * @param field
-         * @throws IOException
-         */
+        /** */
         private void handleRange(CoverageInfo ci) throws IOException {
             // rangeSet
             start("wcs:rangeSet");

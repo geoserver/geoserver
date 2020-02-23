@@ -137,8 +137,6 @@ public class GeorectifyConfiguration implements ApplicationListener {
     /**
      * Load the configured parameters through the properties file. TODO: Move to XML instead of
      * properties file
-     *
-     * @throws IOException
      */
     private void loadConfig() throws IOException {
         final boolean hasPropertiesFile =

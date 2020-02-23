@@ -406,12 +406,7 @@ public interface Catalog extends CatalogInfo {
     /** The default datastore for the specified workspace */
     DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace);
 
-    /**
-     * Sets the default data store in the specified workspace
-     *
-     * @param workspace
-     * @param defaultStore
-     */
+    /** Sets the default data store in the specified workspace */
     void setDefaultDataStore(WorkspaceInfo workspace, DataStoreInfo defaultStore);
 
     /**

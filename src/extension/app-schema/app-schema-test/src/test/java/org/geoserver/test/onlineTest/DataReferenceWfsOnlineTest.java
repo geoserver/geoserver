@@ -553,11 +553,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 doc);
     }
 
-    /**
-     * Check schema location
-     *
-     * @param doc
-     */
+    /** Check schema location */
     private void checkSchemaLocation(Document doc) {
         String schemaLocation = evaluate("/wfs:FeatureCollection/@xsi:schemaLocation", doc);
         String gsmlLocation =

@@ -266,13 +266,7 @@ public class JDBCOpenSearchAccessTest {
         runScript("/product_test_data.sql", conn);
     }
 
-    /**
-     * Adds the granules table
-     *
-     * @param conn
-     * @throws SQLException
-     * @throws IOException
-     */
+    /** Adds the granules table */
     static void populateGranules(Connection conn) throws SQLException, IOException {
         runScript("/granule_test_data.sql", conn);
     }

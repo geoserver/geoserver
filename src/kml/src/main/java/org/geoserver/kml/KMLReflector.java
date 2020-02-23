@@ -211,9 +211,6 @@ public class KMLReflector {
     /**
      * Copy all the format_options parameters from the kvp map and put them into the formatOptions
      * map. If a parameter is already present in formatOption map it will be preserved.
-     *
-     * @param kvp
-     * @param formatOptions
      */
     public static void organizeFormatOptionsParams(
             Map<String, String> kvp, Map<String, Object> formatOptions) throws Exception {

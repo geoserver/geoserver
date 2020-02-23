@@ -133,11 +133,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    /**
-     * Returns the base path of the ACL resource
-     *
-     * @return
-     */
+    /** Returns the base path of the ACL resource */
     protected abstract String getBasePath();
 
     protected void checkUserIsAdmin() {
@@ -146,12 +142,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    /**
-     * Adds a rule to a map
-     *
-     * @param rule
-     * @param map
-     */
+    /** Adds a rule to a map */
     protected abstract void addRuleToMap(Comparable rule, Map<String, String> map);
 
     public RuleMap<String, String> getMap() throws Exception {
@@ -162,11 +153,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         return result;
     }
 
-    /**
-     * Calculate the the intersection of the keys
-     *
-     * @param map
-     */
+    /** Calculate the the intersection of the keys */
     protected Set<Object> intersection(Map map) {
 
         Set<Object> result = new HashSet<>();
@@ -184,11 +171,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         return result;
     }
 
-    /**
-     * Calculate the keys not contained in the rule data access object
-     *
-     * @param map
-     */
+    /** Calculate the keys not contained in the rule data access object */
     protected Set<Object> nonExistingKeys(Map map) {
 
         List<Comparable<?>> rules = ruleDAO.getRules();
@@ -206,11 +189,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         return result;
     }
 
-    /**
-     * Returns the key string for a rule
-     *
-     * @param rule
-     */
+    /** Returns the key string for a rule */
     protected abstract String keyFor(Comparable<?> rule);
 
     /**
@@ -227,23 +206,13 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     /**
      * Validates the string representation of a rule key. Return an error message or <code>null
      * </code> if the rule is ok
-     *
-     * @param ruleKey
      */
     protected abstract String validateRuleKey(String ruleKey);
 
-    /**
-     * Convert an {@link Entry} to a rule object
-     *
-     * @param entry
-     */
+    /** Convert an {@link Entry} to a rule object */
     protected abstract Comparable convertEntryToRule(Entry<String, String> entry);
 
-    /**
-     * Validates the string representation of rule keys and values
-     *
-     * @param ruleMap
-     */
+    /** Validates the string representation of rule keys and values */
     protected void validateMap(Map<String, String> ruleMap) {
         for (Entry<String, String> entry : ruleMap.entrySet()) {
             String msg = validateRule(entry.getKey(), entry.getValue());

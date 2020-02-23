@@ -53,8 +53,6 @@ public abstract class DataStoreUtils {
      * Looks up the {@link DataAccess} using the given params, verbatim, and then eventually wraps
      * it into a renaming wrapper so that feature type names are good ones from the wfs point of
      * view (that is, no ":" in the type names)
-     *
-     * @param params
      */
     public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(Map params)
             throws IOException {
@@ -88,8 +86,6 @@ public abstract class DataStoreUtils {
      * When loading from DTO use the params to locate factory.
      *
      * <p>bleck
-     *
-     * @param params
      */
     public static DataAccessFactory aquireFactory(Map params) {
         for (Iterator i = getAvailableDataStoreFactories().iterator(); i.hasNext(); ) {
@@ -113,8 +109,6 @@ public abstract class DataStoreUtils {
      *   <li>List of Params (attrb name, help text)
      *   <li>Checking user's input with factory.canProcess( params )
      * </ul>
-     *
-     * @param diplayName
      */
     public static DataAccessFactory aquireFactory(String displayName) {
         if (displayName == null) {
@@ -229,8 +223,6 @@ public abstract class DataStoreUtils {
      *
      * <p>The resulting map should still be checked with factory.acceptsMap( map )
      *
-     * @param factory
-     * @param params
      * @return Map with real values that may be acceptable to Factory
      */
     public static Map toConnectionParams(DataAccessFactory factory, Map params) throws IOException {

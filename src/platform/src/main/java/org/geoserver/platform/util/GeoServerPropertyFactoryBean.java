@@ -72,12 +72,7 @@ public abstract class GeoServerPropertyFactoryBean<T> extends AbstractFactoryBea
         return defaultBean;
     }
 
-    /**
-     * Create a bean based on the given property value
-     *
-     * @param propertyValue
-     * @return
-     */
+    /** Create a bean based on the given property value */
     protected abstract T createInstance(final String propertyValue) throws Exception;
 
     @Override

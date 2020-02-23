@@ -56,7 +56,6 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
      *
      * @param fileName Name of the file
      * @param scope Scope for looking up a default if the file doesn't exist.
-     * @throws IOException
      */
     public Resource getConfigFile(String fileName, Class<?> scope) throws IOException {
         return getConfigFile(fileName, scope, this.rl);
@@ -147,12 +146,7 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
         }
     }
 
-    /**
-     * For Spring initialisation, don't call otherwise.
-     *
-     * @param dd
-     * @throws IOException
-     */
+    /** For Spring initialisation, don't call otherwise. */
     public void setResourceStore(ResourceStore dd) throws IOException {
         rl = dd;
     }

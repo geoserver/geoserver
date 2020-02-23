@@ -195,9 +195,6 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
     /**
      * True if the request has the tiled hint, is 256x256 image, and the raw delegate is a raster
      * one
-     *
-     * @param request
-     * @param delegate
      */
     public static boolean isRequestTiled(GetMapRequest request, GetMapOutputFormat delegate) {
         boolean tiled = request.isTiled();
@@ -225,9 +222,6 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      *    3 4 5
      *    0 1 2
      * </pre>
-     *
-     * @param key
-     * @param metaTile
      */
     static RenderedImage[] split(MetaTileKey key, RenderedImage metaTile) {
         final int metaFactor = key.getMetaFactor();

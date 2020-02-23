@@ -56,7 +56,6 @@ public class WMSRequests {
      * @param layerIndex The index of the layer in the request
      * @param bbox The bounding box of the request, may be <code>null</code>.
      * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
-     * @param geoserver
      * @return The full url for a getMap request.
      */
     public static String getTiledGetMapUrl(
@@ -521,8 +520,6 @@ public class WMSRequests {
      * Copy the Entry matching the key from the kvp map and put it into the formatOptions map. If a
      * parameter is already present in formatOption map its value will be preserved.
      *
-     * @param kvp
-     * @param formatOptions
      * @param key the key to parse
      * @throws Exception - In the event of an unsuccesful parse.
      */

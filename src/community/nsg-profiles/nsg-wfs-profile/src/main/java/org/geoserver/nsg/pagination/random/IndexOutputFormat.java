@@ -106,10 +106,6 @@ public class IndexOutputFormat extends HitsOutputFormat {
     /**
      * Helper method that serialize GetFeature request, store it in the file system and associate it
      * with resultSetId
-     *
-     * @param resultSetId
-     * @param getFeatureType
-     * @throws RuntimeException
      */
     private void storeGetFeature(String resultSetId, Request request) throws RuntimeException {
         try {

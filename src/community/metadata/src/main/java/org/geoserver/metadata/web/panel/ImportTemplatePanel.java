@@ -207,11 +207,7 @@ public abstract class ImportTemplatePanel extends Panel {
         };
     }
 
-    /**
-     * Link the template and the current metadata
-     *
-     * @param selected
-     */
+    /** Link the template and the current metadata */
     public void linkTemplate(AjaxRequestTarget target, MetadataTemplate selected) {
         // add template link to metadata
         linkedTemplatesDataProvider.addLink(selected);

@@ -67,8 +67,6 @@ public class GeoServerUserDao implements UserDetailsService {
     /**
      * Either loads the default property file on the first access, or reloads it if it has been
      * modified since last access.
-     *
-     * @throws DataAccessResourceFailureException
      */
     void checkUserMap() throws DataAccessResourceFailureException {
         try {
@@ -166,11 +164,7 @@ public class GeoServerUserDao implements UserDetailsService {
         return new ArrayList<User>(userMap.values());
     }
 
-    /**
-     * Adds a user in the user map
-     *
-     * @param user
-     */
+    /** Adds a user in the user map */
     public void putUser(User user) {
         checkUserMap();
 
@@ -180,11 +174,7 @@ public class GeoServerUserDao implements UserDetailsService {
         else userMap.put(user.getUsername(), user);
     }
 
-    /**
-     * Updates a user in the user map
-     *
-     * @param user
-     */
+    /** Updates a user in the user map */
     public void setUser(User user) {
         checkUserMap();
 
@@ -194,11 +184,7 @@ public class GeoServerUserDao implements UserDetailsService {
                     "The user " + user.getUsername() + " already exists");
     }
 
-    /**
-     * Removes the specified user from the users list
-     *
-     * @param username
-     */
+    /** Removes the specified user from the users list */
     public boolean removeUser(String username) {
         checkUserMap();
 
@@ -232,12 +218,7 @@ public class GeoServerUserDao implements UserDetailsService {
         userDefinitionsFile = null;
     }
 
-    /**
-     * Loads the user from property file into the users map
-     *
-     * @param users
-     * @param props
-     */
+    /** Loads the user from property file into the users map */
     TreeMap<String, User> loadUsersFromProperties(Properties props) {
         TreeMap<String, User> users = new TreeMap<String, User>();
         UserAttributeEditor configAttribEd = new UserAttributeEditor();
@@ -271,11 +252,7 @@ public class GeoServerUserDao implements UserDetailsService {
         return new User(username, password, isEnabled, true, true, true, authorities);
     }
 
-    /**
-     * Stores the provided user map into a properties object
-     *
-     * @param userMap
-     */
+    /** Stores the provided user map into a properties object */
     Properties storeUsersToProperties(Map<String, User> userMap) {
         Properties p = new Properties();
         for (User user : userMap.values()) {
@@ -286,8 +263,6 @@ public class GeoServerUserDao implements UserDetailsService {
 
     /**
      * Turns the users password, granted authorities and enabled state into a property file value
-     *
-     * @param user
      */
     String serializeUser(User user) {
         StringBuffer sb = new StringBuffer();

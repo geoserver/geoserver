@@ -77,12 +77,7 @@ class RemovedObjectProxy implements InvocationHandler {
         this.catalogCollaborators = new HashMap<String, CatalogInfo>();
     }
 
-    /**
-     * Makes the proxy return a catalog object
-     *
-     * @param property
-     * @param id
-     */
+    /** Makes the proxy return a catalog object */
     public void addCatalogCollaborator(String property, CatalogInfo info) {
         String accessor = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
         catalogCollaborators.put(accessor, info);

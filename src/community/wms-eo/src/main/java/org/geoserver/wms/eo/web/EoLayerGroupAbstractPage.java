@@ -71,11 +71,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
     String groupName;
     private GeoServerDialog dialog;
 
-    /**
-     * Subclasses must call this method to initialize the UI for this page
-     *
-     * @param layerGroup
-     */
+    /** Subclasses must call this method to initialize the UI for this page */
     protected void initUI(LayerGroupInfo layerGroup) {
         this.returnPageClass = EoLayerGroupPage.class;
         lgModel = new LayerGroupDetachableModel(layerGroup);
@@ -378,11 +374,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
         form.add(cancelLink());
     }
 
-    /**
-     * True if we already have an outline layer, false otherwise
-     *
-     * @param items
-     */
+    /** True if we already have an outline layer, false otherwise */
     private boolean outlinesPresent(List<EoLayerGroupEntry> items) {
         for (EoLayerGroupEntry entry : items) {
             if (entry.getLayerType() == EoLayerType.COVERAGE_OUTLINE) {

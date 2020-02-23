@@ -35,10 +35,6 @@ public abstract class AbstractFeatureAttributeVisitorSelectionStrategy
     /**
      * Return the result of iterating through the dimension collection of the given dimension using
      * given calculator as the attribute value calculator.
-     *
-     * @param typeInfo
-     * @param dimension
-     * @param calculator
      */
     protected CalcResult getCalculatedResult(
             FeatureTypeInfo typeInfo, DimensionInfo dimension, FeatureCalc calculator) {

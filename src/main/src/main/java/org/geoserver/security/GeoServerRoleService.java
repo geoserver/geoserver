@@ -29,24 +29,15 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      */
     GeoServerRoleStore createStore() throws IOException;
 
-    /**
-     * Register for notifications on load
-     *
-     * @param listener
-     */
+    /** Register for notifications on load */
     void registerRoleLoadedListener(RoleLoadedListener listener);
 
-    /**
-     * Unregister for notifications on load
-     *
-     * @param listener
-     */
+    /** Unregister for notifications on load */
     void unregisterRoleLoadedListener(RoleLoadedListener listener);
 
     /**
      * Get group names for a {@link GeoServerRole} object Hierarchical roles are not considered
      *
-     * @param role
      * @return collection which cannot be modified
      */
     SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException;
@@ -54,7 +45,6 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     /**
      * Get user names for a {@link GeoServerRole} object Hierarchical roles are not considered
      *
-     * @param role
      * @return collection which cannot be modified
      */
     SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException;
@@ -62,7 +52,6 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     /**
      * Get the roles for the user Hierarchical roles are not considered
      *
-     * @param username
      * @return a collection which cannot be modified
      */
     SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException;
@@ -70,7 +59,6 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     /**
      * Get the roles for the group Hierarchical roles are not considered
      *
-     * @param groupname
      * @return a collection which cannot be modified
      */
     SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException;
@@ -89,22 +77,18 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      * <p>This method should be used by clients if they have to build a tree structure
      *
      * @return a collection which cannot be modified
-     * @throws IOException
      */
     Map<String, String> getParentMappings() throws IOException;
 
     /**
      * Creates a {@link GeoServerRole} object . Implementations can use their special classes
      * derived from {@link GeoServerRole}
-     *
-     * @param role
      */
     GeoServerRole createRoleObject(String role) throws IOException;
 
     /**
      * Get the parent {@link GeoServerRole} object
      *
-     * @param role
      * @return the parent role or null
      */
     GeoServerRole getParentRole(GeoServerRole role) throws IOException;
@@ -112,7 +96,6 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     /**
      * Loads a {@link GeoServerRole} by name
      *
-     * @param role
      * @throws null if the role is not found
      */
     GeoServerRole getRoleByName(String role) throws IOException;
@@ -138,7 +121,6 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      * @param userName the user name
      * @param userProps the properties of the user from {@link GeoServerUserGroupService}
      * @return null for no personalization, the personalized properties otherwise
-     * @throws IOException
      */
     Properties personalizeRoleParams(
             String roleName, Properties roleParams, String userName, Properties userProps)

@@ -23,11 +23,7 @@ public interface ProcessInfo extends Info, Cloneable {
     /** The name of the process */
     Name getName();
 
-    /**
-     * Sets the name of the process
-     *
-     * @param name
-     */
+    /** Sets the name of the process */
     void setName(Name name);
 
     /** Whether the process is enabled or disabled */

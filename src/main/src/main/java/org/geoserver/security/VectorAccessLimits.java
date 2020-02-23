@@ -92,11 +92,7 @@ public class VectorAccessLimits extends DataAccessLimits {
         }
     }
 
-    /**
-     * Turns a list of {@link PropertyName} into a list of {@link String}
-     *
-     * @param names
-     */
+    /** Turns a list of {@link PropertyName} into a list of {@link String} */
     List<String> flattenNames(List<PropertyName> names) {
         if (names == null) {
             return null;

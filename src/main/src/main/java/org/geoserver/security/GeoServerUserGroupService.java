@@ -12,7 +12,6 @@ import org.geoserver.security.event.UserGroupLoadedListener;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.PasswordValidator;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -34,54 +33,32 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
      */
     GeoServerUserGroupStore createStore() throws IOException;
 
-    /**
-     * Register for notifications on load
-     *
-     * @param listener
-     */
+    /** Register for notifications on load */
     void registerUserGroupLoadedListener(UserGroupLoadedListener listener);
 
-    /**
-     * Unregister for notifications on store/load
-     *
-     * @param listener
-     */
+    /** Unregister for notifications on store/load */
     void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener);
 
     /**
      * Returns the the group object, null if not found
      *
-     * @param groupname
      * @return null if group not found
-     * @throws DataAccessException
      */
     GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException;
 
     /**
      * Returns the the user object, null if not found
      *
-     * @param username
      * @return null if user not found
-     * @throws DataAccessException
      */
     GeoServerUser getUserByUsername(String username) throws IOException;
 
-    /**
-     * Create a user object. Implementations can use subclasses of {@link GeoServerUser}
-     *
-     * @param username
-     * @param password
-     * @param isEnabled
-     */
+    /** Create a user object. Implementations can use subclasses of {@link GeoServerUser} */
     GeoServerUser createUserObject(String username, String password, boolean isEnabled)
             throws IOException;
 
     /**
      * Create a user object. Implementations can use classes implementing {@link GeoServerUserGroup}
-     *
-     * @param groupname
-     * @param password
-     * @param isEnabled
      */
     GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException;
 
@@ -102,7 +79,6 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     /**
      * get users for a group
      *
-     * @param group
      * @return a collection which cannot be modified
      */
     SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException;
@@ -111,7 +87,6 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
      * get the groups for a user, an implementation not supporting user groups returns an empty
      * collection
      *
-     * @param user
      * @return a collection which cannot be modified
      */
     SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException;
@@ -138,44 +113,20 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     /** @return the number of groups */
     int getGroupCount() throws IOException;
 
-    /**
-     * Returns a set of {@link GeoServerUser} objects having the specified property
-     *
-     * @param propname
-     * @throws IOException
-     */
+    /** Returns a set of {@link GeoServerUser} objects having the specified property */
     SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException;
 
-    /**
-     * Returns the number of {@link GeoServerUser} objects having the specified property
-     *
-     * @param propname
-     * @throws IOException
-     */
+    /** Returns the number of {@link GeoServerUser} objects having the specified property */
     int getUserCountHavingProperty(String propname) throws IOException;
 
-    /**
-     * Returns a set of {@link GeoServerUser} objects NOT having the specified property
-     *
-     * @param propname
-     * @throws IOException
-     */
+    /** Returns a set of {@link GeoServerUser} objects NOT having the specified property */
     SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException;
 
-    /**
-     * Returns the number of {@link GeoServerUser} objects NOT having the specified property
-     *
-     * @param propname
-     * @throws IOException
-     */
+    /** Returns the number of {@link GeoServerUser} objects NOT having the specified property */
     int getUserCountNotHavingProperty(String propname) throws IOException;
 
     /**
      * Returns a set of {@link GeoServerUser} objects having the property with the specified value
-     *
-     * @param propname
-     * @param propvalue
-     * @throws IOException
      */
     SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
             throws IOException;
@@ -183,10 +134,6 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     /**
      * Returns the number of {@link GeoServerUser} objects having the property with the specified
      * value
-     *
-     * @param propname
-     * @param propvalue
-     * @throws IOException
      */
     int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException;
 }

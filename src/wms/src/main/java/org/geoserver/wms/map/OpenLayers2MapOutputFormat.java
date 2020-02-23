@@ -54,8 +54,6 @@ public class OpenLayers2MapOutputFormat extends AbstractOpenLayersMapOutputForma
      * OL does support only a limited number of unit types, we have to try and return one of those,
      * otherwise the scale won't be shown. From the OL guide: possible values are "degrees" (or
      * "dd"), "m", "ft", "km", "mi", "inches".
-     *
-     * @param request
      */
     @Override
     protected String getUnits(WMSMapContent mapContent) {

@@ -62,9 +62,6 @@ public class ProcessStatusTracker
     /**
      * Custom method that updates the status last updated field without touching anything else, to
      * make sure we let the cluster know the process is still running
-     *
-     * @param executionId
-     * @throws WPSException
      */
     public void touch(String executionId) throws WPSException {
         ExecutionStatus status = store.get(executionId);
@@ -145,8 +142,6 @@ public class ProcessStatusTracker
     /**
      * Removes the execution status for the given id, and returns its value, if found, or null, if
      * not found
-     *
-     * @param executionId
      */
     public ExecutionStatus remove(String executionId) {
         return store.remove(executionId);

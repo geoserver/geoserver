@@ -11,11 +11,6 @@ import org.geotools.referencing.CRS;
 /**
  * Store a minimal information about {@link ReferencedEnvelope}:
  *
- * @param minx
- * @param miny
- * @param maxx
- * @param maxy
- * @param crs
  * @author Xandros
  */
 public class Bounds {

@@ -386,10 +386,7 @@ public class RemoteProcessTest extends WPSTestSupport {
         }
     }
 
-    /**
-     * @param fname
-     * @throws IOException
-     */
+    /** */
     private static InputStream fullStream(File fname) throws IOException {
         FileInputStream fis = new FileInputStream(fname);
         DataInputStream dis = new DataInputStream(fis);

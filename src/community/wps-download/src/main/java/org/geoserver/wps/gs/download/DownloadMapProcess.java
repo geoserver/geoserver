@@ -374,15 +374,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         return result;
     }
 
-    /**
-     * Retrieves the image from the remote web map server
-     *
-     * @param layer
-     * @param template
-     * @param bbox
-     * @param cache
-     * @return
-     */
+    /** Retrieves the image from the remote web map server */
     private RenderedImage getImageFromWebMapServer(
             Layer layer, CaseInsensitiveMap template, ReferencedEnvelope bbox, Map cache)
             throws IOException, ServiceException, FactoryException {
@@ -563,8 +555,6 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     /**
      * Returns the current {@link Supplier<HTTPClient>} building http clients for remote WMS
      * connection
-     *
-     * @return
      */
     public Supplier<HTTPClient> getHttpClientSupplier() {
         return httpClientSupplier;
@@ -572,8 +562,6 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     /**
      * Sets the {@link Supplier<HTTPClient>} used to build http clients for remote WMS connections
-     *
-     * @param httpClientSupplier
      */
     public void setHttpClientSupplier(Supplier<HTTPClient> httpClientSupplier) {
         this.httpClientSupplier = httpClientSupplier;

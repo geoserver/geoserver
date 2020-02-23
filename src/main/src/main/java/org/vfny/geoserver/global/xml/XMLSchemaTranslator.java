@@ -33,8 +33,6 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      * XMLSchemaTranslator constructor.
      *
      * <p>Description
-     *
-     * @param prefix
      */
     public XMLSchemaTranslator(String prefix) {
         super(prefix);

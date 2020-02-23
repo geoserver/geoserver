@@ -30,20 +30,12 @@ public class Event implements Serializable {
         return uuid;
     }
 
-    /**
-     * Set an identifier for the node on which the event originates.
-     *
-     * @param source
-     */
+    /** Set an identifier for the node on which the event originates. */
     public void setSource(Serializable source) {
         this.source = source;
     }
 
-    /**
-     * Get an identifier of the node on which the event originated.
-     *
-     * @param source
-     */
+    /** Get an identifier of the node on which the event originated. */
     public Serializable getSource() {
         return source;
     }

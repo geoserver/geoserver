@@ -320,14 +320,7 @@ public class FeatureTemplate {
         return t;
     }
 
-    /**
-     * Returns true if the required template is empty or has its default content
-     *
-     * @param featureType
-     * @param template
-     * @param lookup
-     * @throws IOException
-     */
+    /** Returns true if the required template is empty or has its default content */
     public boolean isTemplateEmpty(
             SimpleFeatureType featureType,
             String template,

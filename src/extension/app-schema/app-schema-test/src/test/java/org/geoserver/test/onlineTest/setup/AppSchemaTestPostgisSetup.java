@@ -103,9 +103,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      * Write SQL string to create tables in the test database based on the property files.
      *
      * @param propertyFiles Property files from app-schema-test suite.
-     * @throws IllegalAttributeException
-     * @throws NoSuchElementException
-     * @throws IOException
      */
     private void createTables(Map<String, File> propertyFiles)
             throws IllegalAttributeException, NoSuchElementException, IOException {

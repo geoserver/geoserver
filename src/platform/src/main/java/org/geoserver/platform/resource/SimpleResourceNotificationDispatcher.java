@@ -44,11 +44,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
         return false;
     }
 
-    /**
-     * Send notification (without propagation), children may override this.
-     *
-     * @param notification
-     */
+    /** Send notification (without propagation), children may override this. */
     protected void changedInternal(ResourceNotification notification) {
         List<ResourceListener> listeners = handlers.get(notification.getPath());
         if (listeners != null) {

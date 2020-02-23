@@ -260,11 +260,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         return configurationFiles;
     }
 
-    /**
-     * @param loader
-     * @return
-     * @throws IOException
-     */
+    /** */
     public Resource getConfigurationFile(GeoServerResourceLoader loader) throws IOException {
         Resource f = loader.get(Paths.path("monitoring", MonitorConfig.PROPERTYFILENAME));
         if (!Resources.exists(f)) {

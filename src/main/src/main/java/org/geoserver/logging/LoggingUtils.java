@@ -40,8 +40,6 @@ public class LoggingUtils {
         /**
          * Returns the enum value corresponding to the name (using case insensitive comparison) or
          * Log4j if no match is found
-         *
-         * @param name
          */
         public static GeoToolsLoggingRedirection findValue(String name) {
             for (GeoToolsLoggingRedirection value : values()) {

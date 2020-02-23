@@ -21,10 +21,6 @@ public abstract class CDataPPIO extends ComplexPPIO {
         return decode((String) input);
     }
 
-    /**
-     * Decodes a String into the internal object (used for CDATA inputs)
-     *
-     * @param input
-     */
+    /** Decodes a String into the internal object (used for CDATA inputs) */
     public abstract Object decode(String input) throws Exception;
 }

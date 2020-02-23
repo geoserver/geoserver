@@ -134,9 +134,6 @@ public abstract class ScriptConverter extends XStreamCatalogListConverter {
     /**
      * The default href method adds an extension onto the link which for the Scripts module is not
      * wanted This method is called in place of the default href method.
-     *
-     * @param link
-     * @return
      */
     protected static String hrefNoExt(String link) {
         final RequestInfo pg = RequestInfo.get();
@@ -154,9 +151,6 @@ public abstract class ScriptConverter extends XStreamCatalogListConverter {
     /**
      * The default encodeAlternateAtomLink method calls the default href method and adds an
      * extension to the link, this method is used to override that behavior.
-     *
-     * @param link
-     * @param writer
      */
     protected static void encodeAlternateAtomLinkNoExt(
             String link, HierarchicalStreamWriter writer) {

@@ -19,21 +19,13 @@ import org.geoserver.platform.resource.Resource;
  */
 public interface GeoServerPluginConfigurator {
 
-    /**
-     * Get the list of Resources used by the plugin.
-     *
-     * @return
-     * @throws IOException
-     */
+    /** Get the list of Resources used by the plugin. */
     public List<Resource> getFileLocations() throws IOException;
 
     /**
      * Allows the plugin to store its configuration on the target {@link GeoServerResourceLoader}.
      * This way we delegate the plugin to save its configuration since it is the only on who knows
      * how to do it better.
-     *
-     * @param resourceLoader
-     * @throws IOException
      */
     public void saveConfiguration(GeoServerResourceLoader resourceLoader) throws IOException;
 
@@ -41,9 +33,6 @@ public interface GeoServerPluginConfigurator {
      * Allows the plugin to reload its configuration from the target {@link
      * GeoServerResourceLoader}. This way we delegate the plugin to load its configuration since it
      * is the only on who knows how to do it better.
-     *
-     * @param resourceLoader
-     * @throws IOException
      */
     public void loadConfiguration(GeoServerResourceLoader resourceLoader) throws IOException;
 }

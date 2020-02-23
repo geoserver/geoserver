@@ -218,10 +218,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
     /**
      * Searches the required layer in the capabilities document.
      *
-     * @param layerRequired
-     * @param capabilities
      * @return The layer element or null it the required layer isn't found
-     * @throws XpathException
      */
     private Element searchLayerElement(final String layerRequired, Document capabilities)
             throws XpathException {

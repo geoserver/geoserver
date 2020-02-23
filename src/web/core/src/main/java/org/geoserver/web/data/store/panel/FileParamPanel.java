@@ -58,11 +58,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
         return fileInput.getFormComponent();
     }
 
-    /**
-     * Sets the filter that will act in the file chooser dialog
-     *
-     * @param fileFilter
-     */
+    /** Sets the filter that will act in the file chooser dialog */
     public void setFileFilter(IModel<? extends FileFilter> fileFilter) {
         this.fileInput.setFileFilter(fileFilter);
     }

@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.process;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,8 +21,6 @@ public interface RawData {
     /**
      * Gives access to the raw data contents. TODO: decide if this one may be called only once, or
      * if the code should make it possible to extract the stream multiple times
-     *
-     * @throws FileNotFoundException
      */
     public InputStream getInputStream() throws IOException;
 

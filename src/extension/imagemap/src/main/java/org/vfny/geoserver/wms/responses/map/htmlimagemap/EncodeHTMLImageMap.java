@@ -90,9 +90,6 @@ public class EncodeHTMLImageMap extends WebMap {
     /**
      * Applies Filters from style rules to the given query, to optimize DataStore queries. Similar
      * to the method in StreamingRenderer.
-     *
-     * @param styles
-     * @param q
      */
     private Filter processRuleForQuery(FeatureTypeStyle[] styles) {
         try {
@@ -213,11 +210,7 @@ public class EncodeHTMLImageMap extends WebMap {
                 && ((r.getMaxScaleDenominator()) > scaleDenominator);
     }
 
-    /**
-     * Filter given rules, to consider only the rules compatible with the current scale.
-     *
-     * @param rules
-     */
+    /** Filter given rules, to consider only the rules compatible with the current scale. */
     private Rule[] filterRules(List<Rule> rules) {
         List<Rule> result = new ArrayList<Rule>();
         for (Rule rule : rules) {

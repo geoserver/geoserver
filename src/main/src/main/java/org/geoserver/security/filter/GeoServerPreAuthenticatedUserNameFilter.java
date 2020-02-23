@@ -169,10 +169,6 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
      * GeoServerSecurityManager#getActiveRoleService()}
      *
      * <p>The result contains all inherited roles, but no personalized roles
-     *
-     * @param request
-     * @param principal
-     * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromRoleService(
             HttpServletRequest request, String principal) throws IOException {
@@ -191,10 +187,6 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
     /**
      * Calculates roles using a {@link GeoServerUserGroupService} if the principal is not found, an
      * empty collection is returned
-     *
-     * @param request
-     * @param principal
-     * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromUserGroupService(
             HttpServletRequest request, String principal) throws IOException {
@@ -222,10 +214,6 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
      * found, anempty collection is returned
      *
      * <p>The result contains personalized roles
-     *
-     * @param request
-     * @param principal
-     * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromHttpAttribute(
             HttpServletRequest request, String principal) throws IOException {

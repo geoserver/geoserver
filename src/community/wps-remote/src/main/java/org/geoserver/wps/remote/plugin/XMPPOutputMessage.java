@@ -40,14 +40,7 @@ public abstract class XMPPOutputMessage implements XMPPMessage {
         return false;
     }
 
-    /**
-     * @param xmppClient
-     * @param result
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws PickleException
-     * @throws IOException
-     */
+    /** */
     protected Object getOutPuts(XMPPClient xmppClient, Entry<String, String> result)
             throws UnsupportedEncodingException, PickleException, IOException {
         final String serviceResultString = URLDecoder.decode(result.getValue(), "UTF-8");

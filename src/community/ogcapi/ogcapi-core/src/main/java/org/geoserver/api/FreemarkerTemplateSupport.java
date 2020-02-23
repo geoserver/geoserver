@@ -105,8 +105,6 @@ public class FreemarkerTemplateSupport {
      * @param referenceClass The reference class for classpath template loading
      * @param model The model to be applied
      * @param write The writer receiving the template output
-     * @return
-     * @throws IOException
      */
     public void processTemplate(
             ResourceInfo resource,
@@ -131,8 +129,6 @@ public class FreemarkerTemplateSupport {
      * @param templateName The template name
      * @param referenceClass The reference class for classpath template loading
      * @param model The model to be applied
-     * @return
-     * @throws IOException
      */
     public String processTemplate(
             ResourceInfo resource,

@@ -39,11 +39,7 @@ public class GeoServerDialog extends Panel {
         add(window = new ModalWindow("dialog"));
     }
 
-    /**
-     * Sets the window title
-     *
-     * @param title
-     */
+    /** Sets the window title */
     public void setTitle(IModel<String> title) {
         window.setTitle(title);
     }
@@ -99,9 +95,6 @@ public class GeoServerDialog extends Panel {
     /**
      * Shows an OK/cancel dialog. The delegate will provide contents and behavior for the OK button
      * (and if needed, for the cancel one as well)
-     *
-     * @param target
-     * @param delegate
      */
     public void showOkCancel(AjaxRequestTarget target, final DialogDelegate delegate) {
         // wire up the contents
@@ -253,19 +246,12 @@ public class GeoServerDialog extends Panel {
      */
     public abstract static class DialogDelegate implements Serializable {
 
-        /**
-         * Builds the contents for this dialog
-         *
-         * @param id
-         */
+        /** Builds the contents for this dialog */
         protected abstract Component getContents(String id);
 
         /**
          * Called when the form inside the dialog breaks. By default adds all feedback panels to the
          * target
-         *
-         * @param target
-         * @param form
          */
         public void onError(final AjaxRequestTarget target, Form<?> form) {
             form.getPage()
@@ -281,8 +267,6 @@ public class GeoServerDialog extends Panel {
         /**
          * Called when the dialog is closed, allows the delegate to perform ajax updates on the page
          * underlying the dialog
-         *
-         * @param target
          */
         public void onClose(AjaxRequestTarget target) {
             // by default do nothing
@@ -291,7 +275,6 @@ public class GeoServerDialog extends Panel {
         /**
          * Called when the dialog is submitted
          *
-         * @param target
          * @return true if the dialog is to be closed, false otherwise
          */
         protected abstract boolean onSubmit(AjaxRequestTarget target, Component contents);
@@ -299,7 +282,6 @@ public class GeoServerDialog extends Panel {
         /**
          * Called when the dialog is cancelled.
          *
-         * @param target
          * @return true if the dialog is to be closed, false otherwise
          */
         protected boolean onCancel(AjaxRequestTarget target) {

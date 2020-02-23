@@ -57,9 +57,6 @@ public abstract class AbstractSecurityValidator {
      * dir
      *
      * <p>false if file creation causes an {@link IOException}
-     *
-     * @param file
-     * @throws SecurityConfigException
      */
     protected boolean checkFile(File file) throws SecurityConfigException {
         File testFile = null;

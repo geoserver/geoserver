@@ -33,9 +33,6 @@ public class GETMAPValidator {
     /**
      * validates against the "normal" location of the schema (ie.
      * ".../capabilities/sld/StyleLayerDescriptor.xsd" uses the geoserver_home patch
-     *
-     * @param xml
-     * @param req
      */
     public List validateGETMAP(InputStream xml) {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
@@ -61,9 +58,6 @@ public class GETMAPValidator {
      * version in StylesEditorAction.
      *
      * <p>This will kick out a VERY LARGE errorMessage.
-     *
-     * @param xml
-     * @param errors
      */
     public static String getErrorMessage(Reader xml, List errors) {
         return SLDValidator.getErrorMessage(xml, errors);

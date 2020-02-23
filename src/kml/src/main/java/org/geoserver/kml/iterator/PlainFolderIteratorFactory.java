@@ -69,9 +69,6 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
          * Adds the feature centroids to the output features, without actually adding the full
          * geometry (used when doing raster overlays of vector data with a desire to retain the
          * popups)
-         *
-         * @param layer
-         * @param folder
          */
         private void addFeatureCentroids(Layer layer, Folder folder) {
             SimpleFeatureCollection centroids =
@@ -85,12 +82,7 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
             context.addFeatures(folder, features);
         }
 
-        /**
-         * Encodes the ground overlay for the specified layer
-         *
-         * @param folder
-         * @param layer
-         */
+        /** Encodes the ground overlay for the specified layer */
         private void addGroundOverlay(Folder folder, Layer layer) {
             int mapLayerOrder = context.getMapContent().layers().indexOf(layer);
 

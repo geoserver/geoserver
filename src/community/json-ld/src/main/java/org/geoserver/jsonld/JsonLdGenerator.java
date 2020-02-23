@@ -33,10 +33,6 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
      * Write contents from a Json Object. Used with {@link
      * org.geoserver.jsonld.builders.impl.StaticBuilder} to write content as it is from the json-ld
      * template to the json-ld output
-     *
-     * @param nodeName
-     * @param node
-     * @throws IOException
      */
     public void writeObjectNode(String nodeName, JsonNode node) throws IOException {
         if (nodeName != null && !nodeName.equals("")) delegate.writeFieldName(nodeName);
@@ -61,10 +57,6 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
      * Write contents from a Json Array. Used with {@link
      * org.geoserver.jsonld.builders.impl.StaticBuilder}ù to write content as it is from the json-ld
      * template to the json-ld output
-     *
-     * @param nodeName
-     * @param arNode
-     * @throws IOException
      */
     public void writeArrayNode(String nodeName, JsonNode arNode) throws IOException {
         if (nodeName != null && !nodeName.equals("")) delegate.writeFieldName(nodeName);
@@ -89,10 +81,6 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
      * Write contents from a Json attribute's value. Used with {@link
      * org.geoserver.jsonld.builders.impl.StaticBuilder}ù to write content as it is from the json-ld
      * template to the json-ld output
-     *
-     * @param entryName
-     * @param valueNode
-     * @throws IOException
      */
     public void writeValueNode(String entryName, JsonNode valueNode) throws IOException {
         if (entryName != null && !entryName.equals("")) delegate.writeFieldName(entryName);
@@ -112,9 +100,6 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
     /**
      * Write the result of an xpath or cql expression evaluation operated by the {@link
      * org.geoserver.jsonld.builders.impl.DynamicValueBuilder}
-     *
-     * @param result
-     * @throws IOException
      */
     public void writeResult(Object result) throws IOException {
         if (result instanceof String || result instanceof Number || result instanceof Boolean) {

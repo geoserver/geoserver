@@ -75,8 +75,6 @@ public class OpenLayers3MapOutputFormat extends AbstractOpenLayersMapOutputForma
     /**
      * OL3 does support a very limited set of unit types, we have to try and return one of those,
      * otherwise the scale won't be shown.
-     *
-     * @param request
      */
     @Override
     protected String getUnits(WMSMapContent mapContent) {

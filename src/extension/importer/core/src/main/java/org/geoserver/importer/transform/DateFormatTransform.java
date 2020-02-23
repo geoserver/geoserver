@@ -37,10 +37,6 @@ public class DateFormatTransform extends AttributeRemapTransform {
     /**
      * Default Constructor taking two parameters - [mandatory] The field used as time dimension -
      * [optional] The date-time pattern to be used in case of String fields
-     *
-     * @param field
-     * @param datePattern
-     * @throws ValidationException
      */
     public DateFormatTransform(String field, String datePattern) throws ValidationException {
         this(field, datePattern, null, null);
@@ -51,12 +47,6 @@ public class DateFormatTransform extends AttributeRemapTransform {
      * [optional] The date-time pattern to be used in case of String fields - [optional] The field
      * used as end date for the time dimension - [optional] The time dimension presentation type;
      * one of {LIST; DISCRETE_INTERVAL; CONTINUOUS_INTERVAL}
-     *
-     * @param field
-     * @param datePattern
-     * @param enddate
-     * @param presentation
-     * @throws ValidationException
      */
     public DateFormatTransform(
             String field, String datePattern, String enddate, String presentation)

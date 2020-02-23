@@ -23,12 +23,7 @@ public class RemoteMachineDescriptor {
 
     private Double loadAverage;
 
-    /**
-     * @param name
-     * @param available
-     * @param memPercUsed
-     * @param loadAverage
-     */
+    /** */
     public RemoteMachineDescriptor(
             String nodeJID,
             Name serviceName,

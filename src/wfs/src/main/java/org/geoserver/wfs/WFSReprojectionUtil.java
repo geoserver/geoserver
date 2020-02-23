@@ -26,12 +26,7 @@ class WFSReprojectionUtil {
 
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
 
-    /**
-     * Returns the declared CRS given the native CRS and the request WFS version
-     *
-     * @param nativeCRS
-     * @param wfsVersion
-     */
+    /** Returns the declared CRS given the native CRS and the request WFS version */
     public static CoordinateReferenceSystem getDeclaredCrs(
             CoordinateReferenceSystem nativeCRS, String wfsVersion) {
         try {
@@ -51,12 +46,7 @@ class WFSReprojectionUtil {
         }
     }
 
-    /**
-     * Returns the declared CRS given a feature type and the request WFS version
-     *
-     * @param nativeCRS
-     * @param wfsVersion
-     */
+    /** Returns the declared CRS given a feature type and the request WFS version */
     public static CoordinateReferenceSystem getDeclaredCrs(FeatureType schema, String wfsVersion) {
         if (schema == null) return null;
 
@@ -68,23 +58,13 @@ class WFSReprojectionUtil {
         return getDeclaredCrs(crs, wfsVersion);
     }
 
-    /**
-     * Applies a default CRS to all geometric filter elements that do not already have one
-     *
-     * @param nativeCRS
-     * @param wfsVersion
-     */
+    /** Applies a default CRS to all geometric filter elements that do not already have one */
     public static Filter applyDefaultCRS(Filter filter, CoordinateReferenceSystem defaultCRS) {
         DefaultCRSFilterVisitor defaultVisitor = new DefaultCRSFilterVisitor(ff, defaultCRS);
         return (Filter) filter.accept(defaultVisitor, null);
     }
 
-    /**
-     * Reprojects all geometric filter elements to the native CRS of the provided schema
-     *
-     * @param filter
-     * @param schema
-     */
+    /** Reprojects all geometric filter elements to the native CRS of the provided schema */
     public static Filter reprojectFilter(Filter filter, FeatureType schema) {
         ReprojectingFilterVisitor visitor = new ReprojectingFilterVisitor(ff, schema);
         return (Filter) filter.accept(visitor, null);
@@ -103,10 +83,6 @@ class WFSReprojectionUtil {
     /**
      * Convenience method, same as calling {@link #applyDefaultCRS} and then {@link
      * #reprojectFilter(Filter, SimpleFeatureType)} in a row
-     *
-     * @param filter
-     * @param schema
-     * @param defaultCRS
      */
     public static Filter normalizeFilterCRS(
             Filter filter, FeatureType schema, CoordinateReferenceSystem defaultCRS) {

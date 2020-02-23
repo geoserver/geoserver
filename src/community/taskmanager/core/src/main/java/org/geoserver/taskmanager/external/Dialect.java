@@ -21,20 +21,12 @@ public interface Dialect {
      */
     String quote(String tableName);
 
-    /**
-     * @param currentViewName
-     * @param newViewName
-     * @return statement to rename view
-     */
+    /** @return statement to rename view */
     String sqlRenameView(String currentViewName, String newViewName);
 
     /**
      * Returns the create index statement with the index name over the columns.
      *
-     * @param tableName
-     * @param columnNames
-     * @param isSpatialIndex
-     * @param isUniqueIndex
      * @return statement to create index
      */
     String createIndex(
@@ -43,27 +35,15 @@ public interface Dialect {
             boolean isSpatialIndex,
             boolean isUniqueIndex);
 
-    /**
-     * @param sourceConn
-     * @param tableName
-     * @param string
-     * @return set of spatial columns
-     */
+    /** @return set of spatial columns */
     Set<String> getSpatialColumns(Connection sourceConn, String tableName, String defaultSchema);
 
-    /**
-     * translate nullable code
-     *
-     * @param nullable
-     * @return
-     */
+    /** translate nullable code */
     int isNullable(int nullable);
 
     /**
      * Create the schema if it does not exist.
      *
-     * @param connection
-     * @param schema
      * @return statement to create schema if it doesn't exist
      */
     String createSchema(Connection connection, String schema);

@@ -135,8 +135,6 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
     /**
      * Returns the default values configuration if present, not empty, and has at least a dynamic
      * dimension to compute
-     *
-     * @param resource
      */
     private DefaultValueConfigurations getConfigurations(ResourceInfo resource) {
         DefaultValueConfigurations configurations =
@@ -387,11 +385,6 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
     /**
      * Separates values provided by the user that do not need defaulting, from those where the user
      * asked explicitly for a default value
-     *
-     * @param dimensionName
-     * @param values
-     * @param completeSpecs
-     * @param incompleteSpecs
      */
     private void addExplicitValues(
             String dimensionName,
@@ -515,8 +508,6 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
     /**
      * Dimension values are often wrapped in list and/or using ranges, unwrap them to get a single
      * value
-     *
-     * @param value
      */
     private Object getSimpleValue(Object value) {
         if (value instanceof List) {
@@ -662,14 +653,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
         return new CaseInsensitiveMap(result);
     }
 
-    /**
-     * Applies the normal policy, but restricted to the
-     *
-     * @param resource
-     * @param config
-     * @param restrictions
-     * @throws IOException
-     */
+    /** Applies the normal policy, but restricted to the */
     private Object getVectorDefaultValue(
             FeatureTypeInfo resource,
             DefaultValueConfiguration config,
@@ -736,11 +720,7 @@ public class DynamicDefaultValueSelectionFactory extends AbstractDispatcherCallb
         return result;
     }
 
-    /**
-     * If the object is not a List, it wraps it into one
-     *
-     * @param value
-     */
+    /** If the object is not a List, it wraps it into one */
     private List<Object> wrapIntoList(Object value) {
         List<Object> values;
         if (value == null) {

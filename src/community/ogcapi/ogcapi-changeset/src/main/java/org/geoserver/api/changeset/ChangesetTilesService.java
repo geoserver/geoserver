@@ -207,13 +207,7 @@ public class ChangesetTilesService {
         return changeSet;
     }
 
-    /**
-     * Checks if the the scale range actually hits a scale denominator in the gridset,
-     *
-     * @param gridset
-     * @param scaleRange
-     * @return
-     */
+    /** Checks if the the scale range actually hits a scale denominator in the gridset, */
     private boolean rangeHitsGridset(GridSubset gridSubset, NumberRange<Double> scaleRange) {
         GridSet gridSet = gridSubset.getGridSet();
         for (int z = gridSubset.getZoomStart(); z <= gridSubset.getZoomStop(); z++) {

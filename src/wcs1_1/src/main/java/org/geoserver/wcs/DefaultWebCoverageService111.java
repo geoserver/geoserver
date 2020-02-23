@@ -754,9 +754,6 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     /**
      * Checks that the elements of the Output part of the request do make sense by comparing them to
      * the coverage metadata
-     *
-     * @param info
-     * @param rangeSubset
      */
     private void checkOutput(CoverageInfo meta, OutputType output) {
         if (output == null) return;
@@ -892,8 +889,6 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     /**
      * Extracts only the final part of an EPSG code allowing for a specification independent
      * comparison (that is, it removes the EPSG:, urn:xxx:, http://... prefixes)
-     *
-     * @param srsName
      */
     private String extractCode(String srsName) {
         if (srsName.startsWith("http://www.opengis.net/gml/srs/epsg.xml#"))
@@ -907,9 +902,6 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
      * Checks if the supported format string list contains the specified format, doing a case
      * insensitive search. If found the declared output format name is returned, otherwise null is
      * returned.
-     *
-     * @param supportedFormats
-     * @param format
      */
     private String getDeclaredFormat(List supportedFormats, String format) {
         // supported formats may be setup using old style formats, first scan
@@ -930,9 +922,6 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     /**
      * Checks that the elements of the RangeSubset part of the request do make sense by comparing
      * them to the coverage metadata
-     *
-     * @param info
-     * @param rangeSubset
      */
     private void checkRangeSubset(CoverageInfo info, RangeSubsetType rangeSubset) {
         // quick escape if no range subset has been specified (it's legal)

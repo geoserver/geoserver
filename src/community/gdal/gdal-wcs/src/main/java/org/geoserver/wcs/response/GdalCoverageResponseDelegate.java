@@ -103,8 +103,6 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
     /**
      * Sets the gdal_translate executable full path. The default value is simply "gdal_translate",
      * which will work if gdal_translate is in the path.
-     *
-     * @param gdalTranslate
      */
     @Override
     public void setExecutable(String gdalTranslate) {
@@ -120,8 +118,6 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
     /**
      * Provides the environment variables that are set prior to invoking gdal_translate (notably the
      * GDAL_DATA variable, specifying the location of GDAL's data directory).
-     *
-     * @param environment
      */
     @Override
     public void setEnvironment(Map<String, String> environment) {
@@ -131,11 +127,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         }
     }
 
-    /**
-     * Adds a GDAL format among the supported ones
-     *
-     * @param format
-     */
+    /** Adds a GDAL format among the supported ones */
     @Override
     public void addFormat(Format format) {
         if (format == null) {
@@ -188,11 +180,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         formatsByMimeType.clear();
     }
 
-    /**
-     * Replaces currently supported formats with the provided list.
-     *
-     * @param formats
-     */
+    /** Replaces currently supported formats with the provided list. */
     @Override
     public void replaceFormats(List<Format> formats) {
         if (formats == null || formats.isEmpty()) {
@@ -348,12 +336,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
         }
     }
 
-    /**
-     * Writes to disk using GeoTIFF format.
-     *
-     * @param tempDir
-     * @param coverage
-     */
+    /** Writes to disk using GeoTIFF format. */
     private File writeToDisk(File tempDir, GridCoverage2D coverage) throws Exception {
         // create the temp file for this output
         // TODO: sanitize temp file name

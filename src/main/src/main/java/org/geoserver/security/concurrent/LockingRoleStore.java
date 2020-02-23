@@ -19,11 +19,7 @@ import org.geoserver.security.impl.GeoServerRole;
  */
 public class LockingRoleStore extends LockingRoleService implements GeoServerRoleStore {
 
-    /**
-     * Constructor for the locking wrapper
-     *
-     * @param store
-     */
+    /** Constructor for the locking wrapper */
     public LockingRoleStore(GeoServerRoleStore store) {
         super(store);
     }

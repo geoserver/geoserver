@@ -50,8 +50,6 @@ public interface RecordDescriptor {
      * Allow the descriptor to adjust the query to the internal representation of records. For
      * example, in the case of SimpleLiteral we have a complex type with simple content, something
      * that we cannot readily represent in GeoTools
-     *
-     * @param query
      */
     Query adaptQuery(Query query);
 
@@ -88,8 +86,6 @@ public interface RecordDescriptor {
      * Checks that the spatial filters are actually referring to a spatial property. The {@link
      * SpatialFilterChecker} utility class can be used against simple records (like CSW), but more
      * complex record types will need a more sophisticated approach
-     *
-     * @param filter
      */
     void verifySpatialFilters(Filter filter);
 }

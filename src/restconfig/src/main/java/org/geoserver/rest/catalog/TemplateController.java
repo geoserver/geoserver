@@ -204,14 +204,7 @@ public class TemplateController extends AbstractCatalogController {
                 return wrapList(list, TemplateInfo.class);
         }
     }
-    /**
-     * Verifies mime type
-     *
-     * @param directory
-     * @param filename
-     * @param request
-     * @return
-     */
+    /** Verifies mime type */
     private Resource fileUpload(Resource directory, String filename, HttpServletRequest request) {
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info(

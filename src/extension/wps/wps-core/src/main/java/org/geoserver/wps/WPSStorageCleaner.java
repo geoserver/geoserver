@@ -62,11 +62,7 @@ public class WPSStorageCleaner extends TimerTask {
         return expirationDelay;
     }
 
-    /**
-     * Sets the temp file expiration delay
-     *
-     * @param expirationDelay
-     */
+    /** Sets the temp file expiration delay */
     public void setExpirationDelay(long expirationDelay) {
         this.expirationDelay = expirationDelay;
     }

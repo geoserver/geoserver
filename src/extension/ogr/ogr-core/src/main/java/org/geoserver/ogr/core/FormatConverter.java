@@ -17,11 +17,7 @@ public interface FormatConverter {
     /** Returns the tool's executable full path. */
     public String getExecutable();
 
-    /**
-     * Sets the tool's executable full path.
-     *
-     * @param executable
-     */
+    /** Sets the tool's executable full path. */
     public void setExecutable(String executable);
 
     /** Returns the environment variables that are set prior to invoking the tool's executable. */
@@ -30,11 +26,7 @@ public interface FormatConverter {
     /** Provides the environment variables that are set prior to invoking the tool's executable. */
     public void setEnvironment(Map<String, String> environment);
 
-    /**
-     * Adds an output format among the supported ones.
-     *
-     * @param format
-     */
+    /** Adds an output format among the supported ones. */
     public void addFormat(Format format);
 
     /** Get a list of supported output formats. */
@@ -43,10 +35,6 @@ public interface FormatConverter {
     /** Programmatically removes all formats. */
     public void clearFormats();
 
-    /**
-     * Replaces currently supported formats with the provided list.
-     *
-     * @param formats
-     */
+    /** Replaces currently supported formats with the provided list. */
     public void replaceFormats(List<Format> formats);
 }

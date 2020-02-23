@@ -74,23 +74,13 @@ class UTFGridTester {
         return keys.size();
     }
 
-    /**
-     * Returns the feature for the given grid code
-     *
-     * @param code
-     */
+    /** Returns the feature for the given grid code */
     JSONObject getFeature(char code) {
         String key = "" + (int) gridToKey(code);
         return data.getJSONObject(key);
     }
 
-    /**
-     * Check the specified code can be found in the grid at row/col
-     *
-     * @param code
-     * @param row
-     * @param col
-     */
+    /** Check the specified code can be found in the grid at row/col */
     void assertGridPixel(char code, int row, int col) {
         String gridRow = grid.getString(row);
         assertEquals(

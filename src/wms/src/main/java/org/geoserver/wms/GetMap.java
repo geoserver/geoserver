@@ -409,12 +409,6 @@ public class GetMap {
     /**
      * Actually computes the WebMap, either in a single shot, or for a particular time/elevation
      * value should there be a list of them
-     *
-     * @param request
-     * @param mapContent
-     * @param delegate
-     * @param env
-     * @throws IOException
      */
     WebMap executeInternal(
             WMSMapContent mapContent,
@@ -802,9 +796,6 @@ public class GetMap {
     /**
      * Computes the rendering buffer in case the user did not specify one in the request, and the
      * admin setup some rendering buffer hints in the layer configurations
-     *
-     * @param map
-     * @param layers
      */
     public static void setupRenderingBuffer(WMSMapContent map, List<MapLayerInfo> layers) {
         // easy case, the buffer is already set in the call
@@ -848,12 +839,7 @@ public class GetMap {
         }
     }
 
-    /**
-     * Computes the rendering buffer for this layer
-     *
-     * @param style
-     * @param scaleDenominator
-     */
+    /** Computes the rendering buffer for this layer */
     static int computeLayerBuffer(Style style, double scaleDenominator) {
         final double TOLERANCE = 1e-6;
         MetaBufferEstimator estimator = new MetaBufferEstimator();
@@ -876,7 +862,6 @@ public class GetMap {
      * <p>With the exception of the SRS and STYLES parameters, for which default values are
      * assigned.
      *
-     * @param request
      * @throws ServiceException if any mandatory parameter has not been set on the request
      */
     private void assertMandatory(GetMapRequest request) throws ServiceException {

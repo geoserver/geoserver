@@ -50,8 +50,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     /**
      * Takes a str cql as $${cql} and makes all the necessary operation to convert it to a valid
      * Expression
-     *
-     * @param cql
      */
     private void strCqlToExpression(String cql) {
         // takes xpath fun from cql
@@ -70,8 +68,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     /**
      * Takes a str xpath as ${xpath} and makes all the necessary operation to produce a valid
      * PropertyName
-     *
-     * @param xpath
      */
     private void strXpathToPropertyName(String xpath) {
         String strXpath = extractXpath(xpath);
@@ -140,9 +136,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     /**
      * Searches for one or more literal xpath inside the expression. If found, substitutes it/them
      * with a ${@link PropertyName}
-     *
-     * @param expr
-     * @param literalXpath
      */
     private void literalXpathToPropertyName(Expression expr, String literalXpath) {
         List<Expression> params = null;
@@ -194,9 +187,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     /**
      * A value can only be wrote if it is non NULL and not an empty list. This method supports *
      * complex features attributes, this method will be invoked recursively on the attribute value.
-     *
-     * @param result
-     * @return
      */
     private boolean canWriteValue(Object result) {
         if (result instanceof ComplexAttributeImpl) {

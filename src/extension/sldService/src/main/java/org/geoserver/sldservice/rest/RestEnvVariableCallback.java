@@ -23,8 +23,6 @@ public class RestEnvVariableCallback extends DispatcherCallbackAdapter {
      * a {@link org.springframework.stereotype.Controller} retrieved from the request some way
      * (ideally via a "env" KVP parameter, but we don't want to be prescriptive about it, in REST
      * "env" could be used for something else
-     *
-     * @param unparsedOptions
      */
     public static void setOptions(String unparsedOptions) {
         try {

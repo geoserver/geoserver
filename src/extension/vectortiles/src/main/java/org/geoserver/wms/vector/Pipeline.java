@@ -31,23 +31,13 @@ public abstract class Pipeline {
 
     private Pipeline next = END;
 
-    /**
-     * Set the next operation in the pipeline
-     *
-     * @param step
-     */
+    /** Set the next operation in the pipeline */
     void setNext(Pipeline step) {
         Preconditions.checkNotNull(next);
         this.next = step;
     }
 
-    /**
-     * Execute pipeline including all downstream pipelines.
-     *
-     * @param geom
-     * @return
-     * @throws Exception
-     */
+    /** Execute pipeline including all downstream pipelines. */
     public Geometry execute(Geometry geom) throws Exception {
         Preconditions.checkNotNull(next, getClass().getName());
         Geometry g = _run(geom);
@@ -57,12 +47,6 @@ public abstract class Pipeline {
         return next.execute(g);
     }
 
-    /**
-     * Implementation of the pipeline. A unary operation on a geometry.
-     *
-     * @param geom
-     * @return
-     * @throws Exception
-     */
+    /** Implementation of the pipeline. A unary operation on a geometry. */
     protected abstract Geometry _run(Geometry geom) throws Exception;
 }

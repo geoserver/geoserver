@@ -30,13 +30,7 @@ public class JpegOrPngChooser {
         return getFromMapContent(map.getImage(), ctx);
     }
 
-    /**
-     * Returns the chooser from the map content, eventually creating it if missing
-     *
-     * @param image
-     * @param ctx
-     * @return
-     */
+    /** Returns the chooser from the map content, eventually creating it if missing */
     public static JpegOrPngChooser getFromMapContent(RenderedImage image, WMSMapContent ctx) {
         JpegOrPngChooser chooser = (JpegOrPngChooser) ctx.getMetadata().get(JPEG_PNG_CHOOSER);
         if (chooser == null) {
@@ -55,19 +49,13 @@ public class JpegOrPngChooser {
     /**
      * Returns the full mime type of the chosen format (<code>image/jpeg</code> or <code>image/png
      * </code>)
-     *
-     * @return
      */
     public String getMime() {
         final String mime = jpegPreferred ? "image/jpeg" : "image/png";
         return mime;
     }
 
-    /**
-     * Returns the extension of the chosen format (<code>jpeg</code> or <code>png</code>)
-     *
-     * @return
-     */
+    /** Returns the extension of the chosen format (<code>jpeg</code> or <code>png</code>) */
     public String getExtension() {
         String extension = jpegPreferred ? "jpeg" : "png";
         return extension;
@@ -76,10 +64,6 @@ public class JpegOrPngChooser {
     /**
      * Returns true if the best format to encode the image is jpeg (the image is rgb, or rgba
      * without any actual transparency use)
-     *
-     * @param renderedImage
-     * @param renderingHints
-     * @return
      */
     private boolean isBestFormatJpeg(RenderedImage renderedImage) {
         int numBands = renderedImage.getSampleModel().getNumBands();

@@ -29,8 +29,6 @@ public interface ProcessFilter {
      * factory. In case {@link DelegatingProcessFactory} is used the {@link
      * DelegatingProcessFactory#getInnermostDelegate()} method can be used to reach the original
      * factory
-     *
-     * @param pf
      */
     ProcessFactory filterFactory(ProcessFactory pf);
 }

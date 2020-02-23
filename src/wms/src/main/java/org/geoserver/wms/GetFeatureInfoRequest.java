@@ -144,11 +144,7 @@ public class GetFeatureInfoRequest extends WMSRequest {
         return propertyNames;
     }
 
-    /**
-     * Sets the property selection
-     *
-     * @param propertyNames
-     */
+    /** Sets the property selection */
     public void setPropertyNames(List<List<String>> propertyNames) {
         this.propertyNames = propertyNames;
     }

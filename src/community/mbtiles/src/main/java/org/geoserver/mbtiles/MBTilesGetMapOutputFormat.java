@@ -164,13 +164,7 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
         return "EPSG:900913";
     }
 
-    /**
-     * Add tiles to an existing MBtile file
-     *
-     * @param mbtiles
-     * @param map
-     * @throws IOException
-     */
+    /** Add tiles to an existing MBtile file */
     public void addTiles(MBTilesFile mbtiles, GetMapRequest req, String name) throws IOException {
         addTiles(new MbTilesFileWrapper(mbtiles), req, name);
     }

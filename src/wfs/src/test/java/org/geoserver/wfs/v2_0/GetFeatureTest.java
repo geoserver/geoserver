@@ -1187,11 +1187,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         checkOws11Exception(dom, "2.0.0", "InvalidParameterValue", "STOREDQUERY_ID");
     }
 
-    /**
-     * Used to NPE, see GEOS-7532
-     *
-     * @throws Exception
-     */
+    /** Used to NPE, see GEOS-7532 */
     @Test
     public void testDefaultStoredQueryGetWorkspaceQualified() throws Exception {
         Document dom =
@@ -1638,7 +1634,6 @@ public class GetFeatureTest extends WFS20TestSupport {
      * for a given {@code matchCase}.
      *
      * @param matchCase value of {@code matchCase} filter attribute or {@code null} if none
-     * @param expectedBuildings
      */
     private void checkPropertyIsLikeMatchCase(Boolean matchCase, int expectedBuildings)
             throws Exception {

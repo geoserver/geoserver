@@ -45,9 +45,6 @@ public class SLDValidator {
     /**
      * returns a better formated error message - suitable for framing. There's a more complex
      * version in StylesEditorAction. This will kick out a VERY LARGE errorMessage.
-     *
-     * @param xml
-     * @param errors
      */
     public static String getErrorMessage(Reader xml, List errors) {
         BufferedReader reader = null;

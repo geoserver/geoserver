@@ -203,13 +203,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         }
     }
 
-    /**
-     * Iterates the given features and ensures their namespaceURI matches the given namespace
-     *
-     * @param features
-     * @param ns
-     * @param t
-     */
+    /** Iterates the given features and ensures their namespaceURI matches the given namespace */
     private void ensureFeatureNamespaceUriMatches(
             List features, NamespaceInfo ns, TransactionRequest t) {
         for (Iterator j = features.iterator(); j.hasNext(); ) {

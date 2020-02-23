@@ -26,11 +26,7 @@ import org.springframework.security.ldap.authentication.SpringSecurityAuthentica
  */
 public class LDAPUtils {
 
-    /**
-     * Creates an LdapContext from a configuration object.
-     *
-     * @param ldapConfig
-     */
+    /** Creates an LdapContext from a configuration object. */
     public static LdapContextSource createLdapContext(LDAPBaseSecurityServiceConfig ldapConfig) {
         LdapContextSource ldapContext =
                 new DefaultSpringSecurityContextSource(ldapConfig.getServerURL());
@@ -56,12 +52,7 @@ public class LDAPUtils {
         return ldapContext;
     }
 
-    /**
-     * Returns an LDAP template bounded to the given context, if not null.
-     *
-     * @param ctx
-     * @param template
-     */
+    /** Returns an LDAP template bounded to the given context, if not null. */
     public static SpringSecurityLdapTemplate getLdapTemplateInContext(
             final DirContext ctx, final SpringSecurityLdapTemplate template) {
         SpringSecurityLdapTemplate authTemplate;

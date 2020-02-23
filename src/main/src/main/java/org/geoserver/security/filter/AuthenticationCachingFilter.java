@@ -31,8 +31,6 @@ public interface AuthenticationCachingFilter {
      * If the HTTP request attribute named
      * GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR is true, this method
      * should return <code>null</code>
-     *
-     * @param request
      */
     public String getCacheKey(HttpServletRequest request);
 }

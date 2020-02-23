@@ -163,8 +163,6 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
     /**
      * Designed for testing, allows to manually configure the catalog filters bypassing the Spring
      * context lookup
-     *
-     * @param filters
      */
     public void setCatalogFilters(List<? extends CatalogFilter> filters) {
         this.filters = filters;

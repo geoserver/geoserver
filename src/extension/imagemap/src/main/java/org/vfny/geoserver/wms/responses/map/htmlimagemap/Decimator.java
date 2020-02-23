@@ -53,9 +53,6 @@ public final class Decimator {
      *
      * <p>NOTE: this could need more work based on CRS, but the rectangle is in pixels so it should
      * be fairly immune to all but crazy projections.
-     *
-     * @param screenToWorld
-     * @param paintArea
      */
     public Decimator(MathTransform screenToWorld, Rectangle paintArea) {
         if (screenToWorld != null) {
@@ -166,10 +163,7 @@ public final class Decimator {
         return geom;
     }
 
-    /**
-     * @param geom
-     * @param seq
-     */
+    /** */
     private boolean decimateOnEnvelope(Geometry geom, LiteCoordinateSequence seq) {
         Envelope env = geom.getEnvelopeInternal();
         if (env.getWidth() <= spanx && env.getHeight() <= spany) {
@@ -189,9 +183,6 @@ public final class Decimator {
     /**
      * 1. remove any points that are within the spanx,spany. We ALWAYS keep 1st and last point 2.
      * transform to screen coordinates 3. remove any points that are close (span <1)
-     *
-     * @param seq
-     * @param tranform
      */
     private final void decimateTransformGeneralize(
             LiteCoordinateSequence seq, MathTransform transform) throws TransformException {
@@ -317,12 +308,7 @@ public final class Decimator {
         return seq;
     }
 
-    /**
-     * @param coords
-     * @param dimension
-     * @param readDoubles
-     * @param currentDoubles
-     */
+    /** */
     private int copyCoordinate(
             double[] coords, int dimension, int readDoubles, int currentDoubles) {
         for (int i = 0; i < dimension; i++) {

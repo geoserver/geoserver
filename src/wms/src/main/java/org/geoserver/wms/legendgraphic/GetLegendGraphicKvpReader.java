@@ -233,7 +233,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param layerInfo of Cascaded Layer, should WMSLayerInfo
      * @param request should be instance of GetLegendGraphicRequest
      * @return GetCascadedLegendGraphicRequest
-     * @throws IOException
      */
     private LegendRequest getCascadeLegendRequest(
             LayerInfo layerInfo, GetLegendGraphicRequest request) throws IOException {
@@ -279,10 +278,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param layerInfo The layer description
      * @param request The GetLegendGrapicRequest used for context
      * @return created LegendRequest
-     * @throws FactoryRegistryException
-     * @throws IOException
-     * @throws TransformException
-     * @throws SchemaException
      */
     private LegendRequest addLayer(LayerInfo layerInfo, GetLegendGraphicRequest request)
             throws FactoryRegistryException, IOException, TransformException, SchemaException {
@@ -398,10 +393,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      *
      * @param layerInfo vector or raster layer
      * @return the FeatureType for the given layer
-     * @throws IOException
-     * @throws FactoryRegistryException
-     * @throws TransformException
-     * @throws SchemaException
      */
     private FeatureType getLayerFeatureType(LayerInfo layerInfo)
             throws IOException, FactoryRegistryException, TransformException, SchemaException {
@@ -446,7 +437,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param req The request to set the properties to.
      * @param infoObj a {@link LayerInfo layer} or a {@link LayerGroupInfo layerGroup} for which the
      *     legend graphic is to be produced, from where to extract the style information.
-     * @throws IOException
      * @task TODO: validate EXCEPTIONS parameter
      */
     private void parseOptionalParameters(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
@@ -464,10 +454,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      *
      * <p>As I don't completely understand which takes priority over which from the spec, I assume
      * the precedence order as follow: SLD, SLD_BODY, STYLE, in decrecent order of precedence.
-     *
-     * @param req
-     * @param ftype
-     * @throws IOException
      */
     private void parseStyleAndRule(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
             throws IOException {

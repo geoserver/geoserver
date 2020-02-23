@@ -434,13 +434,7 @@ public class TilesService {
         }
     }
 
-    /**
-     * Checks the specified griset is supported by the tile layer, and returns it
-     *
-     * @param tileLayer
-     * @param tileMatrixSetId
-     * @return
-     */
+    /** Checks the specified griset is supported by the tile layer, and returns it */
     public static GridSubset getGridSubset(TileLayer tileLayer, String tileMatrixSetId) {
         GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixSetId);
         if (gridSubset == null) {
@@ -586,12 +580,7 @@ public class TilesService {
                                 .getResource());
     }
 
-    /**
-     * Utility method to check if a given tile layer supports filtering
-     *
-     * @param tileLayer
-     * @return
-     */
+    /** Utility method to check if a given tile layer supports filtering */
     public static boolean supportsFiltering(TileLayer tileLayer) {
         return (tileLayer instanceof GeoServerTileLayer)
                 && (((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerInfo)

@@ -155,11 +155,7 @@ public class Log4JFormatter extends Formatter {
         return buffer.toString();
     }
 
-    /**
-     * Returns the full stack trace of the given exception
-     *
-     * @param record
-     */
+    /** Returns the full stack trace of the given exception */
     private String getStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

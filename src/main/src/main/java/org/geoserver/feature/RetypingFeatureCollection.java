@@ -82,10 +82,6 @@ public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection
      * Given a feature id following the <typename>.<internalId> convention, the original type and
      * the destination type, this converts the id from <original>.<internalid> to
      * <target>.<internalid>
-     *
-     * @param id
-     * @param original
-     * @param target
      */
     public static FeatureId reTypeId(
             FeatureId sourceId, SimpleFeatureType original, SimpleFeatureType target) {

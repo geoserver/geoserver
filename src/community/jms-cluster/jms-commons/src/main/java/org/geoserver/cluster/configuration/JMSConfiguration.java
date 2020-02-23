@@ -68,11 +68,7 @@ public final class JMSConfiguration {
         configuration.put(key, o);
     }
 
-    /**
-     * Initialize configuration
-     *
-     * @throws IOException
-     */
+    /** Initialize configuration */
     @PostConstruct
     private void init() throws IOException {
         try {
@@ -112,11 +108,7 @@ public final class JMSConfiguration {
         }
     }
 
-    /**
-     * Initialize configuration with default parameters
-     *
-     * @throws IOException
-     */
+    /** Initialize configuration with default parameters */
     public void initDefaults() throws IOException {
         // set the group
         configuration.put(GROUP_KEY, DEFAULT_GROUP);

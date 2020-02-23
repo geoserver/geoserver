@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,11 +73,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
-    /**
-     * Returns the image id, or null if it's missing or the request is not a images API one
-     *
-     * @return
-     */
+    /** Returns the image id, or null if it's missing or the request is not a images API one */
     private String getImageId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(
@@ -90,14 +85,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
                 .orElse(null);
     }
 
-    /**
-     * Writes a single feature using the facilities provided by the base class
-     *
-     * @param value
-     * @param output
-     * @param operation
-     * @throws UnsupportedEncodingException
-     */
+    /** Writes a single feature using the facilities provided by the base class */
     private void writeSingleItem(
             FeatureCollectionResponse value, OutputStream output, Operation operation)
             throws IOException {

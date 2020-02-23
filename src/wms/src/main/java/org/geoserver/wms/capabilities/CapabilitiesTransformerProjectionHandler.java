@@ -38,8 +38,6 @@ class CapabilitiesTransformerProjectionHandler extends ProjectionHandler {
      * @param sourceCrs the source CoordinateReferenceSystem
      * @param targetCrs the target CoordinateReferenceSystem
      * @return a proper ProjectionHandler or null if unable to get one.
-     * @throws MismatchedDimensionException
-     * @throws FactoryException
      */
     public static CapabilitiesTransformerProjectionHandler create(
             CoordinateReferenceSystem sourceCrs, CoordinateReferenceSystem targetCrs)

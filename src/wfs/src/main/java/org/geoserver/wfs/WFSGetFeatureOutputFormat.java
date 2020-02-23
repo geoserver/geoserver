@@ -167,9 +167,6 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     /**
      * Allows to have version specific output formats. By default a WFS format is allowed on every
      * version, override to filter specific ones
-     *
-     * @param version
-     * @return
      */
     public boolean canHandle(Version version) {
         return true;
@@ -339,12 +336,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         return fileName + "." + getExtension(response);
     }
 
-    /**
-     * Sets the rigth extension for the response
-     *
-     * @param response
-     * @return
-     */
+    /** Sets the rigth extension for the response */
     protected String getExtension(FeatureCollectionResponse response) {
         String mimeType = getMimeType(null, null);
         if (mimeType != null) {

@@ -68,10 +68,7 @@ public class DataLinkInfoImpl implements DataLinkInfo {
     }
 
     static final List<String> protocols = Arrays.asList("http", "https", "ftp");
-    /**
-     * @throws IllegalArgumentException if the url is invalid for use as a Link
-     * @param url
-     */
+    /** @throws IllegalArgumentException if the url is invalid for use as a Link */
     public static void validate(String url) {
         if (url == null) return;
         URL dummy;

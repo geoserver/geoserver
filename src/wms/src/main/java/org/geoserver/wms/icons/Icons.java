@@ -76,12 +76,7 @@ public class Icons {
                 + Math.abs(Math.cos(Math.toRadians(rotation)));
     }
 
-    /**
-     * Get the rotation of the given graphic when applied to the given feature
-     *
-     * @param g
-     * @param f
-     */
+    /** Get the rotation of the given graphic when applied to the given feature */
     public static @Nullable Double getRotation(Graphic g, @Nullable Feature f) {
         if (g.getRotation() != null) {
             return g.getRotation().evaluate(f, Double.class);
@@ -90,12 +85,7 @@ public class Icons {
         }
     }
 
-    /**
-     * Get the size of the given graphic when applied to the given feature
-     *
-     * @param g
-     * @param f
-     */
+    /** Get the size of the given graphic when applied to the given feature */
     public static @Nullable Double getSpecifiedSize(Graphic g, @Nullable Feature f) {
         if (g.getSize() != null) {
             return g.getSize().evaluate(f, Double.class);
@@ -128,12 +118,7 @@ public class Icons {
         return i;
     }
 
-    /**
-     * Get the largest dimension of an external graphic
-     *
-     * @param eg
-     * @param f
-     */
+    /** Get the largest dimension of an external graphic */
     public static @Nullable Integer getExternalSize(ExternalGraphic eg, @Nullable Feature f) {
         Icon i = getIcon(eg, f);
         if (i == null) {
@@ -146,11 +131,9 @@ public class Icons {
     /**
      * Get the size of a symbolizer graphic
      *
-     * @param g
      * @param rotation Treat the graphic as a square and rotate it, then find a square big enough to
      *     accomodate the rotated square. If {@code null} the rotation will be calculated based on
      *     the feature.
-     * @param f
      */
     public static @Nullable Double graphicSize(
             Graphic g, @Nullable Double rotation, @Nullable Feature f) {
@@ -192,7 +175,6 @@ public class Icons {
     /**
      * Get the scale factor to put in the KML
      *
-     * @param g
      * @param f rotation Treat the graphic as a square and rotate it, then find a square big enough
      *     to accomodate the rotated square. If {@code null} the rotation will be calculated based
      *     on the feature.

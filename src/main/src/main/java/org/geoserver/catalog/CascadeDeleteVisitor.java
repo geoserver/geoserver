@@ -291,10 +291,6 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
      * Between modification proxies and security buffering the list of layers of a group it's just
      * safer and more predictable to use a id comparison instead of a equals that accounts for each
      * and every field
-     *
-     * @param layerGroup
-     * @param container
-     * @return
      */
     private int getLayerGroupIndex(LayerGroupInfo layerGroup, LayerGroupInfo container) {
         int idx = 0;

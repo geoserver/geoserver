@@ -253,11 +253,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         }
     }
 
-    /**
-     * Get a {@link FeatureCustomizer} for this info.
-     *
-     * @param info
-     */
+    /** Get a {@link FeatureCustomizer} for this info. */
     private FeatureCustomizer getCustomizer(CatalogInfo info) {
         FeatureCustomizer customizer = null;
 

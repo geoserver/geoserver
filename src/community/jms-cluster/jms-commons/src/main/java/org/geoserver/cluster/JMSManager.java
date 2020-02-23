@@ -33,9 +33,7 @@ public class JMSManager {
      *
      * @param <S>
      * @param <O>
-     * @param eventType
      * @return the handler
-     * @throws IllegalArgumentException
      */
     public <S extends Serializable, O> JMSEventHandler<S, O> getHandler(final O eventType)
             throws IllegalArgumentException {

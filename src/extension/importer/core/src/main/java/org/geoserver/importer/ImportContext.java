@@ -314,9 +314,6 @@ public class ImportContext implements Serializable {
      *
      * <p>Whenever a ".locking" file is present, the scheduler won't wipe out the directory.
      * Otherwise the folder will be completely removed.
-     *
-     * @param directory
-     * @throws IOException
      */
     public void lockUploadFolder(Directory directory) throws IOException {
         if (directory != null) {
@@ -332,8 +329,6 @@ public class ImportContext implements Serializable {
      *
      * <p>Whenever a ".locking" file is present, the scheduler won't wipe out the directory.
      * Otherwise the folder will be completely removed.
-     *
-     * @param directory
      */
     public void unlockUploadFolder(Directory directory) {
         if (directory != null) {
@@ -366,7 +361,6 @@ public class ImportContext implements Serializable {
      *
      * <p>Default: a folder named "uploads" into the GEOSERVER_DATA_DIR/
      *
-     * @param context
      * @return {@linkplain Directory}
      */
     public Directory getUploadDirectory() {

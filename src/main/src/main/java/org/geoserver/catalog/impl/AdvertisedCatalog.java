@@ -68,8 +68,6 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         /**
          * Returns the original layers, including the advertised ones. Use this method only if
          * strictly necessary (current use case, figuring out if the group is queryable or not)
-         *
-         * @return
          */
         public List<PublishedInfo> getOriginalLayers() {
             return delegate.getLayers();
@@ -78,18 +76,12 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         /**
          * Returns the original styles, including the advertised ones. Use this method only if
          * strictly necessary (current use case, figuring out if the group is queryable or not)
-         *
-         * @return
          */
         public List<StyleInfo> getOriginalStyles() {
             return delegate.getStyles();
         }
 
-        /**
-         * Returns the delegate. Thread carefully when using this!
-         *
-         * @return
-         */
+        /** Returns the delegate. Thread carefully when using this! */
         public LayerGroupInfo unwrap() {
             return delegate;
         }
@@ -102,20 +94,12 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         super(catalog);
     }
 
-    /**
-     * Set LayerGroup visibility policy.
-     *
-     * @param layerGroupPolicy
-     */
+    /** Set LayerGroup visibility policy. */
     public void setLayerGroupVisibilityPolicy(LayerGroupVisibilityPolicy layerGroupPolicy) {
         this.layerGroupPolicy = layerGroupPolicy;
     }
 
-    /**
-     * Hide Layer if Request is GetCapabilities and Layer or its Resource are not advertised.
-     *
-     * @param layer
-     */
+    /** Hide Layer if Request is GetCapabilities and Layer or its Resource are not advertised. */
     private boolean hideLayer(LayerInfo layer) {
         if (!layer.isAdvertised()) {
             return checkCapabilitiesRequest(layer.getResource());
@@ -124,11 +108,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         }
     }
 
-    /**
-     * Hide Resource if it's not advertised and Request is GetCapabilities.
-     *
-     * @param resource
-     */
+    /** Hide Resource if it's not advertised and Request is GetCapabilities. */
     private boolean hideResource(ResourceInfo resource) {
         if (!resource.isAdvertised()) {
             return checkCapabilitiesRequest(resource);

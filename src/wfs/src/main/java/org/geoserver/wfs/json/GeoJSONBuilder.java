@@ -235,7 +235,6 @@ public class GeoJSONBuilder extends JSONBuilder {
      * Writes a polygon
      *
      * @param geometry The polygon to write
-     * @throws JSONException
      */
     private void writePolygon(Polygon geometry) throws JSONException {
         this.array();
@@ -386,8 +385,6 @@ public class GeoJSONBuilder extends JSONBuilder {
     /**
      * Set the axis order to assume all input will be provided in. Has no effect on geometries that
      * have already been written.
-     *
-     * @param axisOrder
      */
     public void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;

@@ -26,16 +26,7 @@ public class XMPPOutputDefaultProducer {
         this.visitor = new XMPPOutputDefaultVisitor();
     }
 
-    /**
-     * @param outputs
-     * @param value
-     * @param type
-     * @param pID
-     * @param baseURL
-     * @param xmppClient
-     * @param publish
-     * @param metadata
-     */
+    /** */
     public Object produceOutput(
             Object value,
             String type,

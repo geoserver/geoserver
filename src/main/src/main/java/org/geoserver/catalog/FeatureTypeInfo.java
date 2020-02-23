@@ -82,32 +82,18 @@ public interface FeatureTypeInfo extends ResourceInfo {
      */
     void setNumDecimals(int numDecimals);
 
-    /**
-     * If numbers float should be formatted right-padding them with zeros.
-     *
-     * @return
-     */
+    /** If numbers float should be formatted right-padding them with zeros. */
     boolean getPadWithZeros();
 
-    /**
-     * Sets wether float numbers should be formatted right-padding them with zeros.
-     *
-     * @param padWithZeros
-     */
+    /** Sets wether float numbers should be formatted right-padding them with zeros. */
     void setPadWithZeros(boolean padWithZeros);
 
-    /**
-     * True if numbers should always be formatted as decimal (no scientific notation allowed).
-     *
-     * @return
-     */
+    /** True if numbers should always be formatted as decimal (no scientific notation allowed). */
     boolean getForcedDecimal();
 
     /**
      * Set to true if numbers should always be formatted as decimal (no scientific notation
      * allowed).
-     *
-     * @param forcedDecimal
      */
     void setForcedDecimal(boolean forcedDecimal);
 
@@ -134,8 +120,6 @@ public interface FeatureTypeInfo extends ResourceInfo {
 
     /**
      * Set to true if this feature type info is overriding the default counting of numberMatched.
-     *
-     * @param skipNumberMatched
      */
     void setSkipNumberMatched(boolean skipNumberMatched);
 

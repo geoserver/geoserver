@@ -21,11 +21,7 @@ public class Triangle {
         C = c;
     }
 
-    /**
-     * Verifies if the given point is internal for this triangle.
-     *
-     * @param point
-     */
+    /** Verifies if the given point is internal for this triangle. */
     public boolean ContainsPoint(Vertex point) {
         // return true if the point to test is one of the vertices
         if (point.equals(A) || point.equals(B) || point.equals(C)) return true;
@@ -39,11 +35,7 @@ public class Triangle {
         return oddNodes;
     }
 
-    /**
-     * Verifies if the given point is internal for the triangle build from (a,b,c).
-     *
-     * @param point
-     */
+    /** Verifies if the given point is internal for the triangle build from (a,b,c). */
     public static boolean ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point) {
         return new Triangle(a, b, c).ContainsPoint(point);
     }

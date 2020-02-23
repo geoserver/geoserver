@@ -151,12 +151,7 @@ public class ModificationProxyTest {
         assertThat(newBean.getListValue(), contains("Cunning", "Plan"));
     }
 
-    /**
-     * Matches a modification proxy wrapping an object matching the given matcher
-     *
-     * @param objectMatcher
-     * @return
-     */
+    /** Matches a modification proxy wrapping an object matching the given matcher */
     public static <T> Matcher<T> modProxy(Matcher<T> objectMatcher) {
         return new BaseMatcher<T>() {
 

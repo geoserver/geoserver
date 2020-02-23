@@ -23,11 +23,7 @@ import org.geoserver.platform.ServiceException;
  */
 public class StreamingKMLBuilder {
 
-    /**
-     * Builds a lazily evaluated KML document given a encoding context
-     *
-     * @param context
-     */
+    /** Builds a lazily evaluated KML document given a encoding context */
     public Kml buildKMLDocument(KmlEncodingContext context) {
         // prepare kml, document and folder
         Kml kml = new Kml();

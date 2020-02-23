@@ -12,10 +12,6 @@ public interface ImagesServiceInfo extends ServiceInfo {
     /** Returns the max number of images returned during paging */
     public int getMaxImages();
 
-    /**
-     * Sets the maximum number of images returned during paging
-     *
-     * @param maxImages
-     */
+    /** Sets the maximum number of images returned during paging */
     public void setMaxImages(int maxImages);
 }

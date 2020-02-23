@@ -83,13 +83,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         return IS_WINDOWS;
     }
 
-    /**
-     * Parses a multipart message from the response
-     *
-     * @param response
-     * @throws MessagingException
-     * @throws IOException
-     */
+    /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
         MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));

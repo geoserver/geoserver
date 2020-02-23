@@ -112,7 +112,6 @@ public class SextanteProcess implements Process {
      * Sets the input of the SEXTANTE algorithm from the input map of this process
      *
      * @param input the input map of this process
-     * @throws WrongParameterIDException
      */
     private void setAlgorithmInputs(Map<String, Object> input)
             throws GeoAlgorithmExecutionException {

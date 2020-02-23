@@ -16,7 +16,6 @@ public interface OpenAPICallback {
     /**
      * Allows to alter the OpenAPI being built before it's returned to the client
      *
-     * @param dr
      * @param api The OpenAPI about to be returned to the client
      */
     public void apply(Request dr, OpenAPI api);

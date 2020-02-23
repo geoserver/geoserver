@@ -10,10 +10,6 @@ import org.geoserver.catalog.LayerInfo;
  */
 public interface SampleDataProvider {
 
-    /**
-     * Returns links to sample data, or an empty list if no sample data link can be produced
-     *
-     * @return
-     */
+    /** Returns links to sample data, or an empty list if no sample data link can be produced */
     List<Link> getSampleData(LayerInfo layer);
 }

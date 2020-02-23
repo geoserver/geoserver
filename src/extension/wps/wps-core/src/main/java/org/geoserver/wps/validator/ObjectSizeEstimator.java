@@ -12,8 +12,6 @@ public interface ObjectSizeEstimator {
     /**
      * Returns the size of the specified object, in bytes, or {@link #UNKNOWN_SIZE} if the
      * estimation can not be performed
-     *
-     * @param object
      */
     public long getSizeOf(Object object);
 }

@@ -806,10 +806,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     private static class StyleEditTabPanelTest extends StyleEditTabPanel {
 
-        /**
-         * @param id The id given to the panel.
-         * @param parent
-         */
+        /** @param id The id given to the panel. */
         public StyleEditTabPanelTest(String id, AbstractStylePage parent) {
             super(id, parent);
         }

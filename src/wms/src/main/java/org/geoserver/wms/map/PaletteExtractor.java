@@ -138,8 +138,6 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     /**
      * Checks whether translucency is used in the provided expression. Raises the flag of used
      * translucency unless it's possible to determine it's not.
-     *
-     * @param opacity
      */
     void handleOpacity(Expression opacity) {
         if (opacity == null) return;
@@ -156,8 +154,6 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     /**
      * Adds a color to the color set, and raises the unknown color flag if the color is an
      * expression other than a literal
-     *
-     * @param color
      */
     void handleColor(Expression color) {
         if (color == null) return;

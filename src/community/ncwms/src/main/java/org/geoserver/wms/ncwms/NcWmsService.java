@@ -146,9 +146,6 @@ public class NcWmsService {
     /**
      * Implements the GetTimeSeries method, which can retrieve a time series of values on a certain
      * point, using a syntax similar to the GetFeatureInfo operation.
-     *
-     * @param request
-     * @return
      */
     @SuppressWarnings("rawtypes")
     public FeatureCollectionType getTimeSeries(GetFeatureInfoRequest request) {

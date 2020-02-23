@@ -100,7 +100,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      * associate it to a DataStore.
      *
      * @param name the repository name
-     * @throws Exception
      */
     void initRepo(String name) throws Exception {
         testData.setUp(name);
@@ -125,7 +124,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      *
      * @param name the repository name
      * @return a newly created {@link TestData} for the repository.
-     * @throws Exception
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
@@ -249,7 +247,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     /**
      * @return the content of the last response as an {@link InputStream}
-     * @throws Exception
      */
     @Override
     public InputStream getLastResponseInputStream() throws Exception {

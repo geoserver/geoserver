@@ -52,7 +52,6 @@ class VectorEstimator {
      * @param clip whether or not to clip the resulting data (useless for the moment)
      * @param filter the {@link Filter} to load the data
      * @param targetCRS the reproject {@link CoordinateReferenceSystem} (useless for the moment)
-     * @param progressListener
      * @return <code>true</code> if we do not exceeds the limits, <code>false</code> otherwise.
      * @throws Exception in case something bad happens.
      */

@@ -64,11 +64,7 @@ public class CSWLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(maxDownloadSize);
     }
 
-    /**
-     * Get DefaultSettings from {@link CSWInfo} config or default value.
-     *
-     * @param cswInfo
-     */
+    /** Get DefaultSettings from {@link CSWInfo} config or default value. */
     private DirectDownloadSettings setDefaultSettings(CSWInfo info) {
         if (info != null) {
             MetadataMap serviceInfoMetadata = info.getMetadata();

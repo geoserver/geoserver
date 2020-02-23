@@ -70,11 +70,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return editable;
     }
 
-    /**
-     * Sets the data provider as editable/non editable
-     *
-     * @param editable
-     */
+    /** Sets the data provider as editable/non editable */
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
@@ -84,11 +80,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return keywords;
     }
 
-    /**
-     * Sets the keywords used for filtering
-     *
-     * @param keywords
-     */
+    /** Sets the keywords used for filtering */
     public void setKeywords(String[] keywords) {
         this.keywords = keywords;
         this.matchers = null;
@@ -120,11 +112,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return matchers;
     }
 
-    /**
-     * Escape any character that's special for the regex api
-     *
-     * @param keyword
-     */
+    /** Escape any character that's special for the regex api */
     private String escape(String keyword) {
         final String escapeSeq = "\\";
         final int len = keyword.length();
@@ -273,11 +261,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     /** Returns a non filtered list of all the items the provider must return */
     protected abstract List<T> getItems();
 
-    /**
-     * Returns a comparator given the sort property.
-     *
-     * @param sort
-     */
+    /** Returns a comparator given the sort property. */
     protected Comparator<T> getComparator(SortParam<?> sort) {
         if (sort == null) {
             return null;
@@ -352,8 +336,6 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     /**
      * Simply wraps the object into a Model assuming the Object is serializable. Subclasses can
      * override this
-     *
-     * @param object
      */
     @SuppressWarnings("unchecked")
     protected IModel<T> newModel(T object) {
@@ -371,18 +353,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     public interface Property<T> extends Serializable {
         public String getName();
 
-        /**
-         * Given the item, returns the property
-         *
-         * @param item
-         */
+        /** Given the item, returns the property */
         public Object getPropertyValue(T item);
 
-        /**
-         * Given the item model, returns a model for the property value
-         *
-         * @param itemModel
-         */
+        /** Given the item model, returns a model for the property value */
         public IModel<?> getModel(IModel<T> itemModel);
 
         /** Allows for sorting the property */

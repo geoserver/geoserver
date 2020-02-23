@@ -33,20 +33,12 @@ public class SearchResults {
         return request;
     }
 
-    /**
-     * The search results
-     *
-     * @return
-     */
+    /** The search results */
     public FeatureCollection getResults() {
         return results;
     }
 
-    /**
-     * Total number of matched features
-     *
-     * @return
-     */
+    /** Total number of matched features */
     public int getTotalResults() {
         return totalResults;
     }

@@ -21,22 +21,13 @@ public class InformixDialectImpl extends DefaultDialectImpl {
     /**
      * Override because in a view informix returns the value of the underlying column definition of
      * the table. Even when performing left join in the create view statement.
-     *
-     * @param nullable
-     * @return
      */
     @Override
     public int isNullable(int nullable) {
         return -1;
     }
 
-    /**
-     * No schemas in informix 11.
-     *
-     * @param connection
-     * @param schema
-     * @return
-     */
+    /** No schemas in informix 11. */
     @Override
     public String createSchema(Connection connection, String schema) {
         return "";

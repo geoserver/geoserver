@@ -66,9 +66,6 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
      * object is not in the cache, the key will be returned.
      *
      * <p>A not <code>null</code> return value indicates a missing cache entry
-     *
-     * @param filter
-     * @param request
      */
     protected String authenticateFromCache(
             AuthenticationCachingFilter filter, HttpServletRequest request) {

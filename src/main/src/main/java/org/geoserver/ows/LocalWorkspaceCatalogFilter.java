@@ -102,11 +102,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     }
 
     static Boolean groupInherit = null;
-    /**
-     * Should local workspaces include layer groups from the global workspace
-     *
-     * @return
-     */
+    /** Should local workspaces include layer groups from the global workspace */
     public static boolean workspaceLayerGroupInherit() {
         if (groupInherit == null) {
             // Just sets it based on the property so no need to synchronize
@@ -163,11 +159,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         return hideWorkspace(layerGroup.getWorkspace());
     }
 
-    /**
-     * Returns true if the sublayers of a layer group are all hidden.
-     *
-     * @param layerGroup
-     */
+    /** Returns true if the sublayers of a layer group are all hidden. */
     protected boolean subLayersHidden(LayerGroupInfo layerGroup) {
         boolean anySublayersVisible = false;
         for (PublishedInfo subLayer : layerGroup.getLayers()) {

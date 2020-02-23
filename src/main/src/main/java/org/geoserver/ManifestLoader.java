@@ -116,7 +116,6 @@ public class ManifestLoader {
     /**
      * load an about model
      *
-     * @param loader
      * @throws IllegalArgumentException if arguments are null
      */
     private static AboutModel getAboutModel(final ClassLoader loader)
@@ -338,10 +337,7 @@ public class ManifestLoader {
             manifests = new TreeSet<ManifestModel>(new ManifestModel.ManifestComparator());
         }
 
-        /**
-         * @param am
-         * @throws IllegalArgumentException
-         */
+        /** */
         public AboutModel(AboutModel am) throws IllegalArgumentException {
             if (am == null) {
                 throw new IllegalArgumentException("Unable to initialize model with a null model");
@@ -363,8 +359,6 @@ public class ManifestLoader {
          * Note that objects are shared between models so changes to objects in the filtered model
          * will also affect the current model.
          *
-         * @param from
-         * @param to
          * @return the filtered model
          * @throws IllegalArgumentException if from or to are null
          */
@@ -523,8 +517,6 @@ public class ManifestLoader {
         /**
          * Add a manifest file as resource with the given name
          *
-         * @param name
-         * @param manifest
          * @return true if this set did not already contain the specified name
          */
         public boolean add(final String name, final Manifest manifest) {
@@ -538,7 +530,6 @@ public class ManifestLoader {
         /**
          * Add a manifest file as resource
          *
-         * @param manifest
          * @return true if this set did not already contain the specified name
          */
         public boolean add(final ManifestModel manifest) {
@@ -670,11 +661,7 @@ public class ManifestLoader {
                     return filterIncludingAttributes(at, include);
                 }
 
-                /**
-                 * @param at
-                 * @param include
-                 * @return a map of properties
-                 */
+                /** @return a map of properties */
                 private static Map<String, String> filterIncludingAttributes(
                         final Attributes at, String[] include) {
                     if (at == null) throw new IllegalArgumentException("Null argument");

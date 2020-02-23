@@ -35,7 +35,6 @@ public interface TaskType extends Named {
      * Do a clean-up for this task (for example, if this task publishes something, remove it).
      *
      * @param ctx task context
-     * @throws TaskException
      */
     void cleanup(TaskContext ctx) throws TaskException;
 

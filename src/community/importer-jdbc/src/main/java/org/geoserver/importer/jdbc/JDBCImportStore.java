@@ -57,12 +57,7 @@ public class JDBCImportStore implements ImportStore {
         this.backingStore = loader.getStore();
     }
 
-    /**
-     * Used mostly for tests
-     *
-     * @param backingStore
-     * @param importer
-     */
+    /** Used mostly for tests */
     JDBCImportStore(JDBCDataStore backingStore, Importer importer) {
         this.mapper = new ImportContextMapper(importer);
         this.backingStore = backingStore;

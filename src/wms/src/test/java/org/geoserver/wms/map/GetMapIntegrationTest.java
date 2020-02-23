@@ -244,8 +244,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     /**
      * https://osgeo-org.atlassian.net/browse/GEOS-4893, make meta-tiler work with WMS 1.3 as well
-     *
-     * @throws Exception
      */
     @Test
     public void testMetaWMS13() throws Exception {

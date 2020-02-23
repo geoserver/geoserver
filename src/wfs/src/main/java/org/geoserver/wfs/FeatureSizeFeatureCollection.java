@@ -71,11 +71,6 @@ public class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollect
     /**
      * Wraps the {@link FeatureCollection} into {@link FeatureSizeFeatureCollection} in case the
      * feature caching is enabled and the the features are simple ones
-     *
-     * @param features
-     * @param source
-     * @param gtQuery
-     * @return
      */
     static FeatureCollection<? extends FeatureType, ? extends Feature> wrap(
             FeatureCollection<? extends FeatureType, ? extends Feature> features,

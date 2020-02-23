@@ -43,11 +43,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
         return servicesUrl;
     }
 
-    /**
-     * Remote GeoFence services url.
-     *
-     * @param servicesUrl
-     */
+    /** Remote GeoFence services url. */
     public void setServicesUrl(String servicesUrl) {
         this.servicesUrl = servicesUrl;
     }
@@ -70,11 +66,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
         return instanceName;
     }
 
-    /**
-     * Flag to allow usage of remote and inline layers in SLDs.
-     *
-     * @param allowRemoteAndInlineLayers
-     */
+    /** Flag to allow usage of remote and inline layers in SLDs. */
     public void setAllowRemoteAndInlineLayers(boolean allowRemoteAndInlineLayers) {
         this.allowRemoteAndInlineLayers = allowRemoteAndInlineLayers;
     }

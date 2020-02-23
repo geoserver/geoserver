@@ -37,8 +37,6 @@ public class AbstractCollectionDocument<T> extends AbstractDocument {
      * Returns the subject around which the collection is build, might be a {@link
      * org.geoserver.catalog.ResourceInfo}, a tiled layer, or anything else. Meant to be used by
      * {@link DocumentCallback} to decide if acting on a collection, or not
-     *
-     * @return
      */
     @JsonIgnore
     public T getSubject() {

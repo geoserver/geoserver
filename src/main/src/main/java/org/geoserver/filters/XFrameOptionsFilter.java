@@ -40,8 +40,6 @@ public class XFrameOptionsFilter implements Filter {
     /**
      * Whether the X-Frame-Option header should be set at all. Check this on the fly for easier
      * testing and in order to potentially make this a GUI controlled option in the future.
-     *
-     * @return
      */
     private static boolean shouldSetPolicy() {
         boolean shouldSetPolicy = DEFAULT_SHOULD_SET_POLICY;

@@ -32,13 +32,7 @@ public class WicketHierarchyPrinter {
 
     boolean pathDumpEnabled;
 
-    /**
-     * Utility method to dump a single component/page to standard output
-     *
-     * @param c
-     * @param dumpClass
-     * @param dumpValue
-     */
+    /** Utility method to dump a single component/page to standard output */
     public static void print(Component c, boolean dumpClass, boolean dumpValue, boolean dumpPath) {
         WicketHierarchyPrinter printer = new WicketHierarchyPrinter();
         printer.setPathDumpEnabled(dumpClass);
@@ -51,13 +45,7 @@ public class WicketHierarchyPrinter {
         }
     }
 
-    /**
-     * Utility method to dump a single component/page to standard output
-     *
-     * @param c
-     * @param dumpClass
-     * @param dumpValue
-     */
+    /** Utility method to dump a single component/page to standard output */
     public static void print(Component c, boolean dumpClass, boolean dumpValue) {
         print(c, dumpClass, dumpValue, false);
     }
@@ -72,29 +60,17 @@ public class WicketHierarchyPrinter {
         this.out = out;
     }
 
-    /**
-     * Set to true if you want to see the model values in the dump
-     *
-     * @param valueDumpEnabled
-     */
+    /** Set to true if you want to see the model values in the dump */
     public void setValueDumpEnabled(boolean valueDumpEnabled) {
         this.valueDumpEnabled = valueDumpEnabled;
     }
 
-    /**
-     * Set to true if you want to see the component classes in the dump
-     *
-     * @param classDumpEnabled
-     */
+    /** Set to true if you want to see the component classes in the dump */
     public void setClassDumpEnabled(boolean classDumpEnabled) {
         this.classDumpEnabled = classDumpEnabled;
     }
 
-    /**
-     * Prints the component containment hierarchy
-     *
-     * @param c
-     */
+    /** Prints the component containment hierarchy */
     public void print(Component c) {
         walkHierarchy(c, 0);
     }
@@ -155,11 +131,7 @@ public class WicketHierarchyPrinter {
         return pathDumpEnabled;
     }
 
-    /**
-     * Sets/unsets the relative path dumping
-     *
-     * @param pathDumpEnabled
-     */
+    /** Sets/unsets the relative path dumping */
     public void setPathDumpEnabled(boolean pathDumpEnabled) {
         this.pathDumpEnabled = pathDumpEnabled;
     }

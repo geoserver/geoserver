@@ -34,12 +34,7 @@ class MimeTypeSupport {
         }
     }
 
-    /**
-     * Tries to guess a flie
-     *
-     * @param mimeType
-     * @return
-     */
+    /** Tries to guess a flie */
     public static String guessFileExtension(String mimeType) {
         if (mimeType != null) {
             if (mimeType.startsWith("image")) {

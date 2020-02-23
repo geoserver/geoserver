@@ -42,21 +42,12 @@ abstract class LambdaTransformerBase extends TransformerBase {
         /**
          * Encodes an element, delegating encoding its sub-elements to the content encoder, with no
          * attributes
-         *
-         * @param elementName
-         * @param contentsEncoder
          */
         protected void element(String elementName, Runnable contentsEncoder) {
             element(elementName, contentsEncoder, null);
         }
 
-        /**
-         * Encodes an element, delegating encoding its sub-elements to the content encoder
-         *
-         * @param elementName
-         * @param contentsEncoder
-         * @param attributes
-         */
+        /** Encodes an element, delegating encoding its sub-elements to the content encoder */
         protected void element(
                 String elementName, Runnable contentsEncoder, Attributes attributes) {
             if (attributes != null) {
@@ -70,12 +61,7 @@ abstract class LambdaTransformerBase extends TransformerBase {
             end(elementName);
         }
 
-        /**
-         * Builds {@link Attributes} from a map
-         *
-         * @param map
-         * @return
-         */
+        /** Builds {@link Attributes} from a map */
         protected Attributes attributes(Map<String, String> map) {
             AttributesImpl attributes = new AttributesImpl();
             for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -88,9 +74,6 @@ abstract class LambdaTransformerBase extends TransformerBase {
 
         /**
          * Builds {@link Attributes} from an array of string pairs, key1, value1, key2, value2, ...
-         *
-         * @param map
-         * @return
          */
         protected AttributesImpl attributes(String... kvp) {
             String[] atts = kvp;

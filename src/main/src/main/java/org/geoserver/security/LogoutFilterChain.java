@@ -29,13 +29,6 @@ public class LogoutFilterChain extends ConstantFilterChain {
     /**
      * Convenience method for {@link GeoServerLogoutFilter#doLogout(HttpServletRequest,
      * HttpServletResponse, String...)}
-     *
-     * @param manager
-     * @param request
-     * @param response
-     * @param skipHandlerName
-     * @throws IOException
-     * @throws ServletException
      */
     public void doLogout(
             GeoServerSecurityManager manager,

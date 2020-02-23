@@ -50,11 +50,7 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
         NODE_DATA = GeoServerNodeData.createFromEnvironment();
     }
 
-    /**
-     * The element is visible if an admin is logged in, and the id is not null
-     *
-     * @param parent
-     */
+    /** The element is visible if an admin is logged in, and the id is not null */
     protected boolean isNodeIdVisible(WebMarkupContainer parent) {
         if (NODE_DATA.getId() == null) {
             return false;

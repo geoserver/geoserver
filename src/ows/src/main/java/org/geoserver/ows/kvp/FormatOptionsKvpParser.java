@@ -36,8 +36,6 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
     /**
      * Builds a {@link FormatOptionsKvpParser} with a user specified key (for params that have the
      * syntax of format_options, but not the same name)
-     *
-     * @param key
      */
     public FormatOptionsKvpParser(String key) {
         super(key, Map.class);

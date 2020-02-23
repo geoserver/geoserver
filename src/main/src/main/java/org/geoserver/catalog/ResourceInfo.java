@@ -360,11 +360,7 @@ public interface ResourceInfo extends CatalogInfo {
      */
     boolean isAdvertised();
 
-    /**
-     * Set to true if the resource should be advertised, false otherwise
-     *
-     * @param advertised
-     */
+    /** Set to true if the resource should be advertised, false otherwise */
     void setAdvertised(boolean advertised);
 
     /** Returns true if the resource will configure services access, false otherwise */

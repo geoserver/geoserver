@@ -96,43 +96,25 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
         invalidated = new HashSet<String>();
     }
 
-    /**
-     * Checks if the given SLD resource is newer than the given sample file.
-     *
-     * @param styleResource
-     * @param sampleFile
-     */
+    /** Checks if the given SLD resource is newer than the given sample file. */
     private boolean isStyleNewerThanSample(Resource styleResource, Resource sampleFile) {
         return styleResource != null
                 && styleResource.getType() == Resource.Type.RESOURCE
                 && styleResource.lastmodified() > sampleFile.lastmodified();
     }
 
-    /**
-     * Returns the cached sample for the given file, if it exists, null otherwise.
-     *
-     * @param style
-     * @throws IOException
-     */
+    /** Returns the cached sample for the given file, if it exists, null otherwise. */
     private Resource getSampleFile(StyleInfo style) throws IOException {
         String fileName = getSampleFileName(style);
         return getSampleFile(fileName);
     }
 
-    /**
-     * Returns the cached sample with the given name.
-     *
-     * @param fileName
-     */
+    /** Returns the cached sample with the given name. */
     private Resource getSampleFile(String fileName) {
         return getSamplesFolder().get(fileName);
     }
 
-    /**
-     * Gets a unique fileName for a sample.
-     *
-     * @param style
-     */
+    /** Gets a unique fileName for a sample. */
     private String getSampleFileName(StyleInfo style) {
         String prefix = "";
         if (style.getWorkspace() != null) {
@@ -142,11 +124,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
         return fileName;
     }
 
-    /**
-     * Gets an SLD resource for the given style.
-     *
-     * @param style
-     */
+    /** Gets an SLD resource for the given style. */
     private Resource getStyleResource(StyleInfo style) {
         String[] prefix = new String[0];
         if (style.getWorkspace() != null) {
@@ -162,9 +140,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
     /**
      * Calculates legendURL size (width x height) for the given style.
      *
-     * @param style
      * @return legend dimensions
-     * @throws IOException
      */
     public Dimension getLegendURLSize(StyleInfo style) throws Exception {
         synchronized (style) {
@@ -190,9 +166,6 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
     /**
      * Creates a new sample file for the given style and stores it on disk. The sample dimensions
      * (width x height) are returned.
-     *
-     * @param style
-     * @param pngOutputFormat
      */
     private Dimension createNewSample(StyleInfo style, GetLegendGraphicOutputFormat pngOutputFormat)
             throws Exception {
@@ -266,31 +239,19 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
         }
     }
 
-    /**
-     * Set the given style sample as invalid.
-     *
-     * @param event
-     */
+    /** Set the given style sample as invalid. */
     private void invalidateStyleSample(StyleInfo style) {
         synchronized (style) {
             invalidated.add(getStyleName(style));
         }
     }
 
-    /**
-     * Remove the given style sample from invalid ones.
-     *
-     * @param style
-     */
+    /** Remove the given style sample from invalid ones. */
     private void removeStyleSampleInvalidation(StyleInfo style) {
         invalidated.remove(getStyleName(style));
     }
 
-    /**
-     * Checks if the given style sample is marked as invalid.
-     *
-     * @param style
-     */
+    /** Checks if the given style sample is marked as invalid. */
     private boolean isStyleSampleInvalid(StyleInfo style) {
         return invalidated.contains(getStyleName(style));
     }
@@ -298,8 +259,6 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
     /**
      * Gets a unique name for a style, considering the workspace definition, in the form
      * worspacename:stylename (or stylename if the style is global).
-     *
-     * @param styleInfo
      */
     private String getStyleName(StyleInfo styleInfo) {
         return styleInfo.getWorkspace() != null

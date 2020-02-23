@@ -375,11 +375,7 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertNull(dates.getValidTill());
     }
 
-    /**
-     * Read and put back, check it can be written as it was produced
-     *
-     * @throws Exception
-     */
+    /** Read and put back, check it can be written as it was produced */
     @Test
     public void testRoundTrip() throws Exception {
         String metadatPath = "ogc/styles/styles/raster/metadata";

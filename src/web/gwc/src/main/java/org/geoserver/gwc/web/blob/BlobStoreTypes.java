@@ -39,11 +39,7 @@ public final class BlobStoreTypes {
         return TYPES;
     }
 
-    /**
-     * Get BlobStoreType from BlobStoreInfo class
-     *
-     * @param clazz
-     */
+    /** Get BlobStoreType from BlobStoreInfo class */
     public static BlobStoreType<?> getFromClass(Class<? extends BlobStoreInfo> clazz) {
         return getTypes().get(clazz);
     }

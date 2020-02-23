@@ -18,11 +18,7 @@ import org.geoserver.platform.ServiceException;
  */
 public interface GetFeatureCallback extends ExtensionPriority {
 
-    /**
-     * Called before the actual data query happens
-     *
-     * @param context
-     */
+    /** Called before the actual data query happens */
     void beforeQuerying(GetFeatureContext context) throws IOException, ServiceException;
 
     @Override

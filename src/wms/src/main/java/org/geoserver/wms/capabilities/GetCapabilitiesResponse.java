@@ -204,8 +204,6 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
      * ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()}, and {@code <!ELEMENT
      * Resolutions (#PCDATA) >} and {@code <!ELEMENT TestChild (#PCDATA) >} through {@link
      * ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()}
-     *
-     * @param request
      */
     private String getInternalDTDDeclaration(final GetCapabilitiesRequest request) {
 

@@ -15,13 +15,7 @@ import java.util.Map;
  */
 class QuickTemplate {
 
-    /**
-     * Simple replacement of a set of variables in a string with their values
-     *
-     * @param template
-     * @param variables
-     * @return
-     */
+    /** Simple replacement of a set of variables in a string with their values */
     static String replaceVariables(CharSequence template, Map<String, String> variables) {
         StringBuilder sb = new StringBuilder(template);
         for (Map.Entry<String, String> entry : variables.entrySet()) {

@@ -102,8 +102,6 @@ public class GeoServerApplication extends WebApplication
     /**
      * Set default redirect mode. (must be called before init method, usually by Spring
      * PropertyOverriderConfigurer)
-     *
-     * @param defaultIsRedirect
      */
     public void setDefaultIsRedirect(boolean defaultIsRedirect) {
         this.defaultIsRedirect = defaultIsRedirect;

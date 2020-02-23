@@ -1076,8 +1076,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     /**
      * The rendering engine has a 10-6 tolerance when evaluating rule scale activation,
      * GetFeatureInfo did not
-     *
-     * @throws Exception
      */
     @Test
     public void testScaleTolerance() throws Exception {
@@ -1095,11 +1093,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertPixel(image, 150, 150, Color.BLUE);
     }
 
-    /**
-     * Test GetFeatureInfo on a group layer with some no-queryable layers
-     *
-     * @throws Exception
-     */
+    /** Test GetFeatureInfo on a group layer with some no-queryable layers */
     @Test
     public void testGroupLayerWithNotQueryableLayers() throws Exception {
         Catalog catalog = getCatalog();
@@ -1151,11 +1145,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         catalog.remove(layerGroup);
     }
 
-    /**
-     * Test GetFeatureInfo on a group layer with no-queryable flag activated
-     *
-     * @throws Exception
-     */
+    /** Test GetFeatureInfo on a group layer with no-queryable flag activated */
     @Test
     public void testNotQueryableGroupLayer() throws Exception {
         Catalog catalog = getCatalog();

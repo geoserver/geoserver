@@ -48,7 +48,6 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
     private WebMarkupContainer table;
 
     /**
-     * @param id
      * @see WMSInfo#getAuthorityURLs()
      * @see LayerInfo#getAuthorityURLs()
      * @see LayerGroupInfo#getAuthorityURLs()

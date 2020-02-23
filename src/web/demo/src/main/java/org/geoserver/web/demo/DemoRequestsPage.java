@@ -78,11 +78,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         setUpDemoRequestsForm(demoDir);
     }
 
-    /**
-     * Package visible constructor aimed to help in setting up unit tests for this class
-     *
-     * @param demoDir
-     */
+    /** Package visible constructor aimed to help in setting up unit tests for this class */
     DemoRequestsPage(final Resource demoDir) {
         this.demoDir = Resources.serializable(demoDir);
         DemoRequest model = new DemoRequest(demoDir.path());

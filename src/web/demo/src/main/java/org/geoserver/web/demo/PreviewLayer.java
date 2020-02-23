@@ -133,11 +133,7 @@ public class PreviewLayer {
         }
     }
 
-    /**
-     * Builds a fake GetMap request
-     *
-     * @param prefixedName
-     */
+    /** Builds a fake GetMap request */
     GetMapRequest getRequest() {
         if (request == null) {
             GeoServerApplication app = GeoServerApplication.get();
@@ -167,12 +163,7 @@ public class PreviewLayer {
         return request;
     }
 
-    /**
-     * Expands the specified name into a list of layer info names
-     *
-     * @param name
-     * @param catalog
-     */
+    /** Expands the specified name into a list of layer info names */
     private List<MapLayerInfo> expandLayers(Catalog catalog) {
         List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
 
@@ -217,12 +208,7 @@ public class PreviewLayer {
         }
     }
 
-    /**
-     * Given a request and a target format, builds the WMS request
-     *
-     * @param request
-     * @param string
-     */
+    /** Given a request and a target format, builds the WMS request */
     public String getWmsLink() {
         GetMapRequest request = getRequest();
         final Envelope bbox = request.getBbox();

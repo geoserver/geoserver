@@ -11,7 +11,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -76,11 +75,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
-    /**
-     * Returns the WFS3 featureId, or null if it's missing or the request is not a WFS3 one
-     *
-     * @return
-     */
+    /** Returns the WFS3 featureId, or null if it's missing or the request is not a WFS3 one */
     private String getWFS3FeatureId() {
         Request dr = Dispatcher.REQUEST.get();
         String featureId = null;
@@ -93,14 +88,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         return featureId;
     }
 
-    /**
-     * Writes a single feature using the facilities provided by the base class
-     *
-     * @param value
-     * @param output
-     * @param operation
-     * @throws UnsupportedEncodingException
-     */
+    /** Writes a single feature using the facilities provided by the base class */
     private void writeSingleFeature(
             FeatureCollectionResponse value, OutputStream output, Operation operation)
             throws IOException {

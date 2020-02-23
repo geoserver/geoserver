@@ -138,20 +138,13 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
         return modified;
     }
 
-    /**
-     * Setter for modified flag
-     *
-     * @param value
-     */
+    /** Setter for modified flag */
     public void setModified(Boolean value) {
         modified = value;
     }
 
     /**
      * validates and encodes the password. Do nothing for a not changed password of an existing user
-     *
-     * @param user
-     * @throws IOException
      */
     protected void preparePassword(GeoServerUser user) throws IOException, PasswordPolicyException {
 

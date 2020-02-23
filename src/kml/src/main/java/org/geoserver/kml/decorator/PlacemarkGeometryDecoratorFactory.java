@@ -135,12 +135,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             return feature;
         }
 
-        /**
-         * Extracts the
-         *
-         * @param sf
-         * @param context
-         */
+        /** Extracts the */
         private Geometry getFeatureGeometry(SimpleFeature sf, final double height) {
             Geometry geom = (Geometry) sf.getDefaultGeometry();
 

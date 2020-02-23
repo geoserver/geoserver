@@ -64,11 +64,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
         }
     }
 
-    /**
-     * The remain values are used in the dropdown.
-     *
-     * @return
-     */
+    /** The remain values are used in the dropdown. */
     public List<MetadataTemplate> getUnlinkedItems() {
         MetadataTemplateService service =
                 GeoServerApplication.get()

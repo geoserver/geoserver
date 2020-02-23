@@ -107,11 +107,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         }
     }
 
-    /**
-     * Test if: 1) the template data is updated 2) the metadata for linked layers is updated.
-     *
-     * @throws IOException
-     */
+    /** Test if: 1) the template data is updated 2) the metadata for linked layers is updated. */
     @Test
     public void testUpdate() throws IOException {
         MetadataTemplate initial = templateService.findByName("simple fields");

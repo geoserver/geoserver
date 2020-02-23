@@ -775,8 +775,6 @@ public abstract class GeoServerLoader {
     /**
      * Some config directories in GeoServer are used to store workspace specific configurations,
      * identify them so that we don't log complaints about their existence
-     *
-     * @param f
      */
     private boolean isConfigDirectory(Resource dir) {
         String name = dir.name();

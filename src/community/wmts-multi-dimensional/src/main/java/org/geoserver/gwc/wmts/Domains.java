@@ -70,29 +70,17 @@ public class Domains {
         return this;
     }
 
-    /**
-     * The maximum number of returned values in a GetDomainValues request
-     *
-     * @return
-     */
+    /** The maximum number of returned values in a GetDomainValues request */
     public int getMaxReturnedValues() {
         return maxReturnedValues;
     }
 
-    /**
-     * Returns the "fromValue" parameter in a GetDomainValues request
-     *
-     * @return
-     */
+    /** Returns the "fromValue" parameter in a GetDomainValues request */
     public String getFromValue() {
         return fromValue;
     }
 
-    /**
-     * The sort direction in a GetDomainValues request
-     *
-     * @return
-     */
+    /** The sort direction in a GetDomainValues request */
     public SortOrder getSortOrder() {
         return sortOrder;
     }

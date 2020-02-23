@@ -223,12 +223,7 @@ public abstract class ProcessParameterIO {
         return findByDirection(p, context, PPIODirection.DECODING);
     }
 
-    /**
-     * Returns true if the specified parameter is a complex one
-     *
-     * @param param
-     * @param applicationContext
-     */
+    /** Returns true if the specified parameter is a complex one */
     public static boolean isComplex(Parameter<?> param, ApplicationContext applicationContext) {
         List<ProcessParameterIO> ppios = findAll(param, applicationContext);
         if (ppios.isEmpty()) {

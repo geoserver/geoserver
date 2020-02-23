@@ -51,13 +51,7 @@ public class Tile {
 
     protected ReferencedEnvelope envelope;
 
-    /**
-     * Creates a new tile with the given coordinates
-     *
-     * @param x
-     * @param y
-     * @param z
-     */
+    /** Creates a new tile with the given coordinates */
     public Tile(long x, long y, long z) {
         this.x = x;
         this.y = y;
@@ -76,9 +70,6 @@ public class Tile {
      * </ul>
      *
      * This code takes care of the first, whilst the second issue remains as a TODO
-     *
-     * @param x
-     * @param y
      */
     public boolean contains(double x, double y) {
         double minx = envelope.getMinX();

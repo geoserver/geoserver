@@ -86,7 +86,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     /**
      * Initial settings for the root key, mapper and expression used
      *
-     * @param expression
      */
     private void initialSetup(String expression) {
         // Selection of the root directory
@@ -112,13 +111,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * Private method for adding the selected coverage inside the defined workspace via REST and
      * then checking if the coverage has been placed inside the defined directory
      *
-     * @param root
-     * @param workspace
-     * @param coverageStore
-     * @param fileName
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws SAXException
      */
     private void testExpression(
             String workspace, String coverageStore, String expression, List<String> fileNames)
@@ -171,10 +163,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     /**
      * Private method for creating a new file object associated to the input path.
      *
-     * @param expression
-     * @param cs
-     * @param filename
-     * @throws CQLException
      */
     private File extractFile(
             String expression, CoverageStoreInfo cs, String itemPath, String filename)
@@ -195,7 +183,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     /**
      * Creation of a new workspace defined by the input "workspace" name
      *
-     * @param workspace
      */
     private void createWorkSpace(String workspace) throws Exception {
         // Check if the workspace is already present

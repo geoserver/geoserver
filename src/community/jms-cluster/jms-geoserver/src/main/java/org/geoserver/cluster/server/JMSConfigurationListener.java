@@ -42,7 +42,6 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
 
     /**
      * @param topicTemplate the JmsTemplate object used to send message to the topic queue
-     * @param geoserver
      * @param props properties to attach to all the message. May contains at least the producer name
      *     which should be unique.
      */

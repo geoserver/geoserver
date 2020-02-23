@@ -274,8 +274,6 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     /**
      * Returns true if the {@link NameDequalifyingProxy} should be used, that is, if there is a
      * local workspace and the settings do not ask for workspace prefixes to be included
-     *
-     * @return
      */
     private boolean useNameDequalifyingProxy() {
         WorkspaceInfo workspaceInfo = LocalWorkspace.get();
@@ -289,8 +287,6 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
      * Returns true if {@link #useNameDequalifyingProxy()} returns true and the DEQUALIFY_ALL flag
      * has been raised in the Spring request context (used for example in the context of local
      * workspace services for the OGC API based services)
-     *
-     * @return
      */
     private boolean useNameDequalifyingProxyForAll() {
         if (!useNameDequalifyingProxy()) {

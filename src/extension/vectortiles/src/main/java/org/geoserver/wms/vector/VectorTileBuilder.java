@@ -34,7 +34,6 @@ public interface VectorTileBuilder {
      *
      * @param mapContent The context for building the tile.
      * @return A WebMap containing the completed tile
-     * @throws IOException
      */
     WebMap build(WMSMapContent mapContent) throws IOException;
 }

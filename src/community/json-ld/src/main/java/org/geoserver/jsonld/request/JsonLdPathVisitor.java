@@ -95,11 +95,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     /**
      * Find the corresponding function to which json-ld path is pointing, by iterating over
      * builder's tree
-     *
-     * @param children
-     * @param eles
-     * @return
-     * @throws ServiceException
      */
     public Object findFunction(List<JsonBuilder> children, String[] eles) throws ServiceException {
         if (children != null) {
@@ -157,9 +152,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     /**
      * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
      * Features only
-     *
-     * @param xpath
-     * @return
      */
     private String completeXPath(String xpath) {
         if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;

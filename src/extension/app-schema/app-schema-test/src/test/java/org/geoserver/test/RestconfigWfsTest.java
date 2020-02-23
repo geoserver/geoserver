@@ -289,13 +289,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         }
     }
 
-    /**
-     * Assert that there are count occurrences of xpath.
-     *
-     * @param count
-     * @param xpath
-     * @param document
-     */
+    /** Assert that there are count occurrences of xpath. */
     private void assertXpathCount(int count, String xpath, Document document) throws Exception {
         XpathEngine xpathEngine = XMLUnit.newXpathEngine();
         Map<String, String> namespaces = new HashMap<String, String>();

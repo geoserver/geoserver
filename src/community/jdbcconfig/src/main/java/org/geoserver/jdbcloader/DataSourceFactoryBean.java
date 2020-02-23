@@ -119,11 +119,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         return new BasicDataSource();
     }
 
-    /**
-     * Try to lookup a configured DataSource using JNDI.
-     *
-     * @throws NamingException
-     */
+    /** Try to lookup a configured DataSource using JNDI. */
     protected Optional<DataSource> getJNDIDataSource(Optional<String> name) {
         if (jndiCtx == null) return Optional.absent();
 

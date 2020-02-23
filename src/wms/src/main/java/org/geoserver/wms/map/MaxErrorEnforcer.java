@@ -27,9 +27,6 @@ public class MaxErrorEnforcer {
 
     /**
      * Builds a new max errors enforcer. If maxErrors is not positive the enforcer will do nothing
-     *
-     * @param renderer
-     * @param maxErrors
      */
     public MaxErrorEnforcer(GTRenderer renderer, int maxErrors) {
         this.renderer = renderer;

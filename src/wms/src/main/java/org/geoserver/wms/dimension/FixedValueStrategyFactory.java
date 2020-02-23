@@ -13,11 +13,7 @@ package org.geoserver.wms.dimension;
  */
 public interface FixedValueStrategyFactory {
 
-    /**
-     * Returns a fixed default value strategy.
-     *
-     * @param value
-     */
+    /** Returns a fixed default value strategy. */
     public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value);
 
     /**

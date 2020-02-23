@@ -19,9 +19,6 @@ class TranslatorHelper {
 
     /**
      * Register all namespaces as xmlns:xxx attributes for the top level element of a xml document
-     *
-     * @param ns
-     * @param attributes
      */
     void registerNamespaces(NamespaceSupport ns, AttributesImpl attributes) {
         Enumeration declaredPrefixes = ns.getDeclaredPrefixes();
@@ -40,12 +37,7 @@ class TranslatorHelper {
         }
     }
 
-    /**
-     * Adds together two sets of schema locations
-     *
-     * @param locations1
-     * @param locations2
-     */
+    /** Adds together two sets of schema locations */
     String[] append(String[] locations1, String[] locations2) {
         String[] result = new String[locations1.length + locations2.length];
         System.arraycopy(locations1, 0, result, 0, locations1.length);
@@ -54,11 +46,7 @@ class TranslatorHelper {
         return result;
     }
 
-    /**
-     * Builds the schema locations from the provided namespace/location list
-     *
-     * @param schemaLocations
-     */
+    /** Builds the schema locations from the provided namespace/location list */
     String buildSchemaLocation(String... schemaLocations) {
         StringBuilder schemaLocation = new StringBuilder();
         try {

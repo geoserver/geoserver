@@ -89,31 +89,19 @@ class TimeDimensionHelper {
         return accessor.getTimeDomain();
     }
 
-    /**
-     * Returns the minimum time, formatted according to ISO8601
-     *
-     * @throws IOException
-     */
+    /** Returns the minimum time, formatted according to ISO8601 */
     public String getBeginPosition() throws IOException {
         Date minTime = accessor.getMinTime();
         return format(minTime);
     }
 
-    /**
-     * Returns the maximum time, formatted according to ISO8601
-     *
-     * @throws IOException
-     */
+    /** Returns the maximum time, formatted according to ISO8601 */
     public String getEndPosition() throws IOException {
         Date maxTime = accessor.getMaxTime();
         return format(maxTime);
     }
 
-    /**
-     * Formats a Date into ISO86011
-     *
-     * @param time
-     */
+    /** Formats a Date into ISO86011 */
     public String format(Date time) {
         if (time != null) {
             return formatter.format(time);

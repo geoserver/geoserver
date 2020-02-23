@@ -409,9 +409,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      *     props.store(new FileOutputStream(users), &quot;&quot;);
      * }
      * </pre>
-     *
-     * @param username
-     * @param password
      */
     protected void authenticate(String username, String password) {
         this.username = username;
@@ -444,8 +441,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     /**
      * Given a qualified layer name returns a string in the form "prefix:localPart" if prefix is
      * available, "localPart" if prefix is null
-     *
-     * @param layerName
      */
     public String getLayerId(QName layerName) {
         if (layerName.getPrefix() != null)
@@ -685,8 +680,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * Extracts the true binary stream out of the response. The usual way (going thru {@link
      * MockHttpServletResponse#getOutputStreamContent()}) mangles bytes if the content is not made
      * of chars.
-     *
-     * @param response
      */
     protected ByteArrayInputStream getBinaryInputStream(MockHttpServletResponse response) {
         return new ByteArrayInputStream(response.getContentAsByteArray());
@@ -838,7 +831,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     /**
      * Parses a stream into a dom.
      *
-     * @param input
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
     protected Document dom(InputStream input, boolean skipDTD)
@@ -889,10 +881,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     /**
      * Given a dom and a schema, checks that the dom validates against the schema of the validation
      * errors instead
-     *
-     * @param validationErrors
-     * @throws IOException
-     * @throws SAXException
      */
     protected void checkValidationErrors(Document dom, Schema schema)
             throws SAXException, IOException {

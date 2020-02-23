@@ -58,11 +58,7 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
         return maxFeatures;
     }
 
-    /**
-     * Sets the max number of features returned by a free query
-     *
-     * @param maxFeatures
-     */
+    /** Sets the max number of features returned by a free query */
     public void setMaxFeatures(int maxFeatures) {
         if (maxFeatures <= 0) {
             throw new IllegalArgumentException(
@@ -74,18 +70,12 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
 
     /**
      * Sets the maximum number of coordinates to be collected, a non positive value implies no limit
-     *
-     * @param maxCoordinates
      */
     public void setMaxCoordinates(long maxCoordinates) {
         this.maxCoordinates = maxCoordinates;
     }
 
-    /**
-     * Initializes the catalog reference, without it the factory won't generate any function
-     *
-     * @param catalog
-     */
+    /** Initializes the catalog reference, without it the factory won't generate any function */
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
     }

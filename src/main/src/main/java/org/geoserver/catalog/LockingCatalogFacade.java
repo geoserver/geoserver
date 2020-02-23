@@ -48,10 +48,6 @@ public class LockingCatalogFacade implements InvocationHandler, WrappingProxy {
     /**
      * Returns a wrapped {@link CatalogFacade} that will upgrade read locks to write before
      * attempting any write operation
-     *
-     * @param facade
-     * @param configurationLock
-     * @return
      */
     public static CatalogFacade create(
             CatalogFacade facade, GeoServerConfigurationLock configurationLock) {

@@ -204,10 +204,6 @@ public class ExecuteProcessResponse extends Response {
 
     /**
      * Write out complex data assuming {@link Execute} has set up the proper encoder as the output
-     *
-     * @param output
-     * @param result
-     * @throws IOException
      */
     void writeComplex(OutputStream output, OutputDataType result) throws IOException {
         Object rawResult = result.getData().getComplexData().getData().get(0);
@@ -249,12 +245,7 @@ public class ExecuteProcessResponse extends Response {
         }
     }
 
-    /**
-     * Write out literal results by converting them to strings
-     *
-     * @param output
-     * @param literal
-     */
+    /** Write out literal results by converting them to strings */
     void writeLiteral(OutputStream output, LiteralDataType literal) {
         PrintWriter writer = new PrintWriter(output);
         writer.write(literal.getValue());

@@ -581,13 +581,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         }
     }
 
-    /**
-     * Add a datastore and record its prefix in the lookup table.
-     *
-     * @param dataStoreName
-     * @param namespacePrefix
-     * @param params
-     */
+    /** Add a datastore and record its prefix in the lookup table. */
     protected void addDataStore(
             String dataStoreName, String namespacePrefix, Map<String, Serializable> params) {
         datastoreParams.put(dataStoreName, params);
@@ -730,7 +724,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @param mappingFileName Mapping file to be copied
      * @return Modified content string
-     * @throws IOException
      */
     private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
         InputStream is = openResource(mappingFileName);

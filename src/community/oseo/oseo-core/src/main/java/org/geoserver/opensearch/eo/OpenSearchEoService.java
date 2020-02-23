@@ -13,48 +13,19 @@ public interface OpenSearchEoService {
     /**
      * Returns the request for the response object to produce either the global or the collection
      * specific response
-     *
-     * @param request
-     * @return
-     * @throws IOException
      */
     public OSEODescription description(OSEODescriptionRequest request) throws IOException;
 
-    /**
-     * Searches either collection or products, returned as complex features
-     *
-     * @param request
-     * @return
-     * @throws IOException
-     */
+    /** Searches either collection or products, returned as complex features */
     public SearchResults search(SearchRequest request) throws IOException;
 
-    /**
-     * Retrieves a product/collection metadata in a particular format
-     *
-     * @param request
-     * @return
-     * @throws IOException
-     */
+    /** Retrieves a product/collection metadata in a particular format */
     public MetadataResults metadata(MetadataRequest request) throws IOException;
 
-    /**
-     * Returns the search parameters applicable to collections
-     *
-     * @param service
-     * @return
-     * @throws IOException
-     */
+    /** Returns the search parameters applicable to collections */
     Collection<Parameter<?>> getCollectionSearchParameters() throws IOException;
 
-    /**
-     * Returns the search parameters applicable to products of a certain collection
-     *
-     * @param service
-     * @param parentId
-     * @return
-     * @throws IOException
-     */
+    /** Returns the search parameters applicable to products of a certain collection */
     Collection<Parameter<?>> getProductSearchParameters(String parentId) throws IOException;
 
     /** Returns the quicklook of a product (a PNG or JPEG image normally) */

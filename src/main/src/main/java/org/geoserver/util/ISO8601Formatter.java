@@ -44,8 +44,6 @@ public class ISO8601Formatter {
     /**
      * Formats the specified object either as a single time, if it's a Date, or as a continuous
      * interval, if it's a DateRange (and will throw an {@link IllegalArgumentException} otherwise)
-     *
-     * @param date
      */
     public String format(Object date) {
         if (date instanceof Date) {
@@ -66,11 +64,7 @@ public class ISO8601Formatter {
         }
     }
 
-    /**
-     * Formats the specified Date in ISO8601 format
-     *
-     * @param date
-     */
+    /** Formats the specified Date in ISO8601 format */
     public String format(Date date) {
         return format(date, new StringBuilder()).toString();
     }

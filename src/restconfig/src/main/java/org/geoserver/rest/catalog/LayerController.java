@@ -90,7 +90,6 @@ public class LayerController extends AbstractCatalogController {
     /**
      * A single layer as JSON, XML or HTML.
      *
-     * @param layerName
      * @return A single layer
      */
     @GetMapping(

@@ -30,9 +30,6 @@ public abstract class BeanUtils {
      * @param info the bean instance to update
      * @param properties the list of string of properties to update
      * @param values the list of new values to update
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
      */
     public static <T> void smartUpdate(
             final T info, final List<String> properties, final List<Object> values)

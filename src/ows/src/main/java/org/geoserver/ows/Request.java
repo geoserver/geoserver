@@ -435,20 +435,12 @@ public class Request {
         return true;
     }
 
-    /**
-     * Sets the SOAP namespace used in the request
-     *
-     * @param soapNamespace
-     */
+    /** Sets the SOAP namespace used in the request */
     public void setSOAPNamespace(String soapNamespace) {
         this.soapNamespace = soapNamespace;
     }
 
-    /**
-     * Returns the SOAP namespace used in the request, or null if the request was not a SOAP one
-     *
-     * @return
-     */
+    /** Returns the SOAP namespace used in the request, or null if the request was not a SOAP one */
     public String getSOAPNamespace() {
         return soapNamespace;
     }

@@ -54,12 +54,7 @@ class FeatureTypeMap {
         return featureType;
     }
 
-    /**
-     * * Takes into account eventual joins
-     *
-     * @param query
-     * @return
-     */
+    /** * Takes into account eventual joins */
     public SimpleFeatureType getFeatureType(Query query) {
         SimpleFeatureType result;
         if (query.getPropertyNames() != Query.ALL_NAMES) {

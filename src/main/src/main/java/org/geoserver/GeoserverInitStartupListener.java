@@ -229,8 +229,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      * Unregisters providers in the "https://github.com/geosolutions-it/evo-odas/issues/102" for a
      * given category (reader, writer). ImageIO contains a pure java reader and a writer, but also a
      * couple based on native libs (if present).
-     *
-     * @param category
      */
     private <T extends ImageReaderWriterSpi> void unregisterImageIOJpeg2000Support(
             Class<T> category) {

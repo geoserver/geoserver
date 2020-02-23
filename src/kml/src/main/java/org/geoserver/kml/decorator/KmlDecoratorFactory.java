@@ -28,9 +28,6 @@ public interface KmlDecoratorFactory {
         /**
          * Decorates/alters the specified feature. If the return value is null, the feature has to
          * be skipped and won't be encoded
-         *
-         * @param feature
-         * @param context
          */
         public Feature decorate(Feature feature, KmlEncodingContext context);
     }

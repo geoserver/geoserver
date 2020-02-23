@@ -24,7 +24,6 @@ public interface NetCDFEncoderFactory {
      * CoverageResponseDelegate#encode(GridCoverage2D, String, Map, OutputStream)}
      *
      * @return A {@link NetCDFEncoder}, or null if this factory could not generate one
-     * @throws IOException
      */
     NetCDFEncoder getEncoderFor(
             GranuleStack granuleStack,
@@ -33,13 +32,7 @@ public interface NetCDFEncoderFactory {
             String outputFormat)
             throws IOException;
 
-    /**
-     * Builds a file name from the object to be encoded, or returns null
-     *
-     * @param granuleStack
-     * @param id
-     * @return
-     */
+    /** Builds a file name from the object to be encoded, or returns null */
     default String getOutputFileName(GranuleStack granuleStack, String coverageId, String format) {
         return null;
     }

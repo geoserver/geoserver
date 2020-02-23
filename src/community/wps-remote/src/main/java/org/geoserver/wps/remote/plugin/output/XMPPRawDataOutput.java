@@ -313,15 +313,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         throw new IOException("Produced Output file is not accessible!");
     }
 
-    /**
-     * @param value
-     * @param type
-     * @param pID
-     * @param baseURL
-     * @param xmppClient
-     * @param publish
-     * @throws IOException
-     */
+    /** */
     private Object encodeAsPlainRawData(
             Object value,
             String type,
@@ -384,15 +376,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return value;
     }
 
-    /**
-     * @param value
-     * @param type
-     * @param pID
-     * @param baseURL
-     * @param xmppClient
-     * @param publish
-     * @throws IOException
-     */
+    /** */
     private Object encodeAsPlainOWCMapContext(
             Object value,
             String type,
@@ -505,12 +489,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return getWmc(xmppClient, wmc, type, pID, baseURL, metadata);
     }
 
-    /**
-     * @param xmppClient
-     * @param wmc
-     * @param baseURL
-     * @throws IOException
-     */
+    /** */
     private Object getWmc(
             XMPPClient xmppClient,
             List<LayerInfo> wmc,
@@ -579,11 +558,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return value;
     }
 
-    /**
-     * @param xmppClient
-     * @param baseURL
-     * @param layer
-     */
+    /** */
     private static WmcFeature wrapFeature(XMPPClient xmppClient, String baseURL, LayerInfo layer) {
         GeoServer geoserver = xmppClient.getGeoServer();
         Catalog catalog = geoserver.getCatalog();
@@ -635,10 +610,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return ft;
     }
 
-    /**
-     * @param ft
-     * @param string
-     */
+    /** */
     private static String owcTemplate(WmcFeature ft, String srcMetadata) {
         String trgMetadata = srcMetadata;
 
@@ -685,8 +657,6 @@ public class XMPPRawDataOutput implements XMPPOutputType {
     /**
      * Makes sure the url does not end with "/", otherwise we would have URL lik
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
-     *
-     * @param baseUrl
      */
     private static String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

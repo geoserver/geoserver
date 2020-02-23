@@ -89,13 +89,7 @@ public class ImporterInfoDAO {
         return defaultValueSupplier.get();
     }
 
-    /**
-     * Writes the importer configuration form the specified resource
-     *
-     * @param configuration
-     * @param resource
-     * @throws IOException
-     */
+    /** Writes the importer configuration form the specified resource */
     void write(ImporterInfo configuration, Resource resource) throws IOException {
         Properties props = new Properties();
         if (configuration.getUploadRoot() != null) {

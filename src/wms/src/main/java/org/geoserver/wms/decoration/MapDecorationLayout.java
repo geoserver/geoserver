@@ -371,8 +371,6 @@ public class MapDecorationLayout {
     /**
      * Resets the graphics to most of its default values, making each block paint independent of
      * what happened before the decoration layout was called, and from each other
-     *
-     * @param g2d
      */
     private void resetGraphics(Graphics2D g2d) {
         g2d.setComposite(AlphaComposite.SrcOver);

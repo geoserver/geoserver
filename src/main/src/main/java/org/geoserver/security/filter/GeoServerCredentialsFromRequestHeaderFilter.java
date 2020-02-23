@@ -119,9 +119,6 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
     /**
      * Try to authenticate. If credentials are found in the configured header(s), then
      * authentication is delegated to the AuthenticationProvider chain.
-     *
-     * @param request
-     * @param response
      */
     protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response)
             throws IOException {

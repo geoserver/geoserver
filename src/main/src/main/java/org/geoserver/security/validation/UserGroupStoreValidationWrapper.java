@@ -28,11 +28,7 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 public class UserGroupStoreValidationWrapper extends UserGroupServiceValidationWrapper
         implements GeoServerUserGroupStore {
 
-    /**
-     * Creates a wrapper object.
-     *
-     * @param store
-     */
+    /** Creates a wrapper object. */
     public UserGroupStoreValidationWrapper(GeoServerUserGroupStore store) {
         super(store);
     }

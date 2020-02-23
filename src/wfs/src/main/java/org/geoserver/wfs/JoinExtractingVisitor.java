@@ -520,8 +520,6 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
      * Geotools only support "star" joins with a primary being the center of the join. Figure out if
      * we have one feature type that is acting as the center of the star, or throw an exception if
      * we don't have one.
-     *
-     * @param filters2
      */
     private int getPrimaryFeatureTypeIndex(List<Filter> filters) {
         if (featureTypes.size() == 2) {

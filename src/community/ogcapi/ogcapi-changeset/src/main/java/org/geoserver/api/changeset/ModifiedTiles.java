@@ -186,18 +186,12 @@ public class ModifiedTiles {
     /**
      * Iterates over all the tiles, in all zoom levels, affected by the list of changes. The
      * positions are [x, y, z] with coordinates in the GWC internal order
-     *
-     * @return
      */
     public Iterator<long[]> getTiles() {
         return new TileIterator(subsets, zoomStart, zoomEnd);
     }
 
-    /**
-     * Retruns the number of tiles modified by the list of changes
-     *
-     * @return
-     */
+    /** Retruns the number of tiles modified by the list of changes */
     public long getModifiedTiles() {
         // dump implementation, just count while iterating, surely possible
         // to compute it faster by just counting the tiles in each subset, but

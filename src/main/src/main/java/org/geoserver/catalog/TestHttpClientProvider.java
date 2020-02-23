@@ -22,22 +22,12 @@ public class TestHttpClientProvider {
 
     private static boolean TEST_MODE = false;
 
-    /**
-     * Binds the specified http client to the specified path
-     *
-     * @param client
-     * @param path
-     */
+    /** Binds the specified http client to the specified path */
     public static void bind(HTTPClient client, URL url) {
         bind(client, url.toExternalForm());
     }
 
-    /**
-     * Binds the specified http client to the specified path
-     *
-     * @param client
-     * @param path
-     */
+    /** Binds the specified http client to the specified path */
     public static void bind(HTTPClient client, String url) {
         if (!url.startsWith(MOCKSERVER)) {
             throw new IllegalArgumentException("The URL must start with " + MOCKSERVER);

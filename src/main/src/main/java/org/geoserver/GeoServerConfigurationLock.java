@@ -61,8 +61,6 @@ public class GeoServerConfigurationLock {
     /**
      * Opens a lock in the specified mode. To avoid deadlocks make sure the corresponding unlock
      * method is called as well before the code exits
-     *
-     * @param type
      */
     public void lock(LockType type) {
         if (!enabled) {
@@ -104,7 +102,6 @@ public class GeoServerConfigurationLock {
      * This usage ensures that the lock is unlocked if it was acquired, and doesn't try to unlock if
      * the lock was not acquired.
      *
-     * @param type
      * @return true if the lock was acquired and false otherwise
      */
     public boolean tryLock(LockType type) {
@@ -180,8 +177,6 @@ public class GeoServerConfigurationLock {
     /**
      * Unlocks a previously acquired lock. The lock type must match the previous {@link
      * #lock(LockType)} call
-     *
-     * @param type
      */
     public void unlock() {
         if (!enabled) {
@@ -217,10 +212,7 @@ public class GeoServerConfigurationLock {
         this.enabled = enabled;
     }
 
-    /**
-     * @param type
-     * @return
-     */
+    /** */
     private Lock getLock(LockType type) {
         Lock lock;
         if (type == LockType.WRITE) {
@@ -235,11 +227,7 @@ public class GeoServerConfigurationLock {
         return lock;
     }
 
-    /**
-     * Returns the lock type owned by the current thread (could be {@code null} for no lock)
-     *
-     * @return
-     */
+    /** Returns the lock type owned by the current thread (could be {@code null} for no lock) */
     public LockType getCurrentLock() {
         return currentLock.get();
     }

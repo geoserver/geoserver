@@ -347,9 +347,6 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Checks the view definition works as expected and returns the feature type guessed solely by
      * looking at the sql and the first row of its output
-     *
-     * @param newSchema
-     * @throws IOException
      */
     protected SimpleFeatureType testViewDefinition(boolean guessGeometrySrid) throws IOException {
         // check out if the view can be used
@@ -396,9 +393,6 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Checks the view definition works as expected and returns the feature type guessed solely by
      * looking at the sql and the first row of its output
-     *
-     * @param newSchema
-     * @throws IOException
      */
     protected SimpleFeatureType testViewDefinition(
             VirtualTable virtualTable, boolean guessGeometrySrid) throws IOException {
@@ -428,8 +422,6 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Grabs the feature type from the store, but takes a peek at figuring out the geoemtry type and
      * srids
-     *
-     * @param schema
      */
     SimpleFeatureType guessFeatureType(
             JDBCDataStore store, String vtName, boolean guessGeometrySrid) throws IOException {
@@ -518,8 +510,6 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     /**
      * Data stores tend to return IOExceptions with no explanation, and the actual error coming from
      * the db is in the cause. This method extracts the first not null message in the cause chain
-     *
-     * @param t
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;

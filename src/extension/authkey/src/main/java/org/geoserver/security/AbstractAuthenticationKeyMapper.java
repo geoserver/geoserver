@@ -110,8 +110,6 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     /**
      * Gets the default value for the given parameter. Default implementation always returns an
      * empty string.
-     *
-     * @param paramName
      */
     protected String getDefaultParamValue(String paramName) {
         return "";
@@ -124,12 +122,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     /** Validates the given parameter (used by the filter validator). */
     public void validateParameter(String paramName, String value) throws FilterConfigException {}
 
-    /**
-     * Creates a validation exception (used by inheriting mappers).
-     *
-     * @param errorid
-     * @param args
-     */
+    /** Creates a validation exception (used by inheriting mappers). */
     protected AuthenticationKeyFilterConfigException createFilterException(
             String errorid, Object... args) {
         return new AuthenticationKeyFilterConfigException(errorid, args);

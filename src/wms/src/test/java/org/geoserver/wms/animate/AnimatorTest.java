@@ -187,12 +187,7 @@ public class AnimatorTest extends WMSTestSupport {
         }
     }
 
-    /**
-     * Utility method to print a metadata node
-     *
-     * @param prefix
-     * @param node
-     */
+    /** Utility method to print a metadata node */
     private void print(String prefix, IIOMetadataNode node) {
         Object user = node.getUserObject();
         System.out.println(

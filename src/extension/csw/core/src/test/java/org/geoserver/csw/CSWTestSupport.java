@@ -14,8 +14,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -60,22 +58,12 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         return "csw?";
     }
 
-    /**
-     * Validates a document based on the CSW schemas
-     *
-     * @throws TransformerException
-     * @throws ParserConfigurationException
-     */
+    /** Validates a document based on the CSW schemas */
     protected void checkValidationErrors(Document dom) throws Exception {
         checkValidationErrors(dom, new CSWConfiguration());
     }
 
-    /**
-     * Validates a document against the
-     *
-     * @param dom
-     * @param configuration
-     */
+    /** Validates a document against the */
     protected void checkValidationErrors(Document dom, Configuration configuration)
             throws Exception {
         Parser p = new Parser(configuration);
@@ -92,22 +80,14 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         }
     }
 
-    /**
-     * Loads the specified resource into a string
-     *
-     * @param resourceLocation
-     */
+    /** Loads the specified resource into a string */
     protected String getResourceAsString(String resourceLocation) throws IOException {
         try (InputStream is = getClass().getResourceAsStream(resourceLocation)) {
             return IOUtils.toString(is, "UTF-8");
         }
     }
 
-    /**
-     * Loads the specified resource into a reader
-     *
-     * @param resourceLocation
-     */
+    /** Loads the specified resource into a reader */
     protected Reader getResourceAsReader(String resourceLocation) throws IOException {
         InputStream is = getClass().getResourceAsStream(resourceLocation);
         return new InputStreamReader(is);

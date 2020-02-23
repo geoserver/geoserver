@@ -456,7 +456,6 @@ public class CatalogBuilder {
      *   <li>updates, if possible, the geographic bounds accordingly by re-projecting the native
      *       bounds into WGS84
      *
-     * @param ftinfo
      * @throws IOException if computing the native bounds fails or if a transformation error occurs
      *     during the geographic bounds computation
      */
@@ -519,9 +518,7 @@ public class CatalogBuilder {
      * Computes the geographic bounds of a {@link ResourceInfo} by reprojecting the available native
      * bounds
      *
-     * @param rinfo
      * @return the geographic bounds, or null if the native bounds are not available
-     * @throws IOException
      */
     public ReferencedEnvelope getLatLonBounds(
             ReferencedEnvelope nativeBounds, CoordinateReferenceSystem declaredCRS)
@@ -548,9 +545,7 @@ public class CatalogBuilder {
      * Computes the native bounds of a {@link ResourceInfo} taking into account the nature of the
      * data and the reprojection policy in act
      *
-     * @param rinfo
      * @return the native bounds, or null if the could not be computed
-     * @throws IOException
      */
     public ReferencedEnvelope getNativeBounds(ResourceInfo rinfo) throws IOException {
         return getNativeBounds(rinfo, null);
@@ -667,10 +662,8 @@ public class CatalogBuilder {
      * Looks up and sets the SRS based on the feature type info native {@link
      * CoordinateReferenceSystem}
      *
-     * @param ftinfo
      * @param extensive if true an extenstive lookup will be performed (more accurate, but might
      *     take various seconds)
-     * @throws IOException
      */
     public void lookupSRS(FeatureTypeInfo ftinfo, boolean extensive) throws IOException {
         lookupSRS(ftinfo, null, extensive);
@@ -680,11 +673,9 @@ public class CatalogBuilder {
      * Looks up and sets the SRS based on the feature type info native {@link
      * CoordinateReferenceSystem}, obtained from an optional feature source.
      *
-     * @param ftinfo
      * @param data A feature source (possibily null)
      * @param extensive if true an extenstive lookup will be performed (more accurate, but might
      *     take various seconds)
-     * @throws IOException
      */
     public void lookupSRS(FeatureTypeInfo ftinfo, FeatureSource data, boolean extensive)
             throws IOException {
@@ -979,21 +970,13 @@ public class CatalogBuilder {
         return buildCoverageInternal(reader, nativeCoverageName, null, specifiedName);
     }
 
-    /**
-     * Builds a coverage from a geotools grid coverage reader.
-     *
-     * @param customParameters
-     */
+    /** Builds a coverage from a geotools grid coverage reader. */
     public CoverageInfo buildCoverage(GridCoverage2DReader reader, Map customParameters)
             throws Exception {
         return buildCoverage(reader, null, customParameters);
     }
 
-    /**
-     * Builds a coverage from a geotools grid coverage reader.
-     *
-     * @param customParameters
-     */
+    /** Builds a coverage from a geotools grid coverage reader. */
     public CoverageInfo buildCoverage(
             GridCoverage2DReader reader, String coverageName, Map customParameters)
             throws Exception {
@@ -1599,9 +1582,6 @@ public class CatalogBuilder {
     /**
      * Returns the default style for the specified resource, or null if the layer is vector and
      * geometryless
-     *
-     * @param resource
-     * @throws IOException
      */
     public StyleInfo getDefaultStyle(ResourceInfo resource) throws IOException {
         // raster wise, only one style
@@ -1672,7 +1652,6 @@ public class CatalogBuilder {
      * Calculate the bounds of a layer group from the CRS defined bounds. Relies on the {@link
      * LayerGroupHelper}
      *
-     * @param layerGroup
      * @param crs the CRS who's bounds should be used
      * @see LayerGroupHelper#calculateBoundsFromCRS(CoordinateReferenceSystem)
      */
@@ -1833,7 +1812,6 @@ public class CatalogBuilder {
      *   <li>keep native: use the native SRS bounding box
      *       <ul>
      *
-     * @param resource
      * @return the new referenced envelope or null if there is no bounding box associated with the
      *     CRS
      */

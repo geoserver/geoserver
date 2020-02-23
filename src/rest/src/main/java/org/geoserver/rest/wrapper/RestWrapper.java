@@ -32,7 +32,6 @@ public interface RestWrapper<T> {
      * Apply configuration to the XStreamPersister based on the converter
      *
      * @param persister The XStream persister
-     * @param xStreamMessageConverter
      */
     void configurePersister(
             XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter);

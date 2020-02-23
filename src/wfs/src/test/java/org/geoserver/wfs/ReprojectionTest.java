@@ -361,11 +361,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         .getLength());
     }
 
-    /**
-     * Returns the transformed corners of the POLYGON layer bbox
-     *
-     * @throws TransformException
-     */
+    /** Returns the transformed corners of the POLYGON layer bbox */
     private double[] getTransformedPolygonsLayerBBox() throws Exception, TransformException {
         String q =
                 "wfs?request=getfeature&service=wfs&version=1.0&typeName="

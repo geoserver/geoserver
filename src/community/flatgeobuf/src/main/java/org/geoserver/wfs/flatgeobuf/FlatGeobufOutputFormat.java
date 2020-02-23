@@ -69,11 +69,7 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
         FeatureCollectionConversions.serialize(fc, 0, output);
     }
 
-    /**
-     * Is WFS configured to return feature and collection bounds?
-     *
-     * @return
-     */
+    /** Is WFS configured to return feature and collection bounds? */
     protected boolean isFeatureBounding() {
         WFSInfo wfs = getInfo();
         return wfs.isFeatureBounding();

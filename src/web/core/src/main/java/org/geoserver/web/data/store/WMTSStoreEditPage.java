@@ -18,11 +18,7 @@ public class WMTSStoreEditPage extends AbstractWMTSStorePage {
     public static final String STORE_NAME = "storeName";
     public static final String WS_NAME = "wsName";
 
-    /**
-     * Uses a "name" parameter to locate the datastore
-     *
-     * @param parameters
-     */
+    /** Uses a "name" parameter to locate the datastore */
     public WMTSStoreEditPage(PageParameters parameters) {
         String wsName = parameters.get(WS_NAME).toOptionalString();
         String storeName = parameters.get(STORE_NAME).toString();

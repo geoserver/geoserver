@@ -162,8 +162,6 @@ public class GetRecordById {
     /**
      * Search for the record descriptor maching the request, throws a service exception in case none
      * is found
-     *
-     * @param request
      */
     private List<RecordDescriptor> getRecordDescriptors(GetRecordByIdType request) {
         String outputSchema = request.getOutputSchema();

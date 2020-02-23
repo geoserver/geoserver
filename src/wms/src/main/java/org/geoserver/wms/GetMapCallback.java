@@ -52,10 +52,6 @@ public interface GetMapCallback {
      */
     WebMap finished(WebMap map);
 
-    /**
-     * Called if the GetMap fails for any reason.
-     *
-     * @param t
-     */
+    /** Called if the GetMap fails for any reason. */
     void failed(Throwable t);
 }

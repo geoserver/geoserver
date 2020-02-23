@@ -32,10 +32,7 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder, BeanNameAware
     /** The name of the password encoder. */
     String getName();
 
-    /**
-     * @param encPass
-     * @return true if this encoder has encoded encPass
-     */
+    /** @return true if this encoder has encoded encPass */
     boolean isResponsibleForEncoding(String encPass);
 
     /**
@@ -44,7 +41,6 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder, BeanNameAware
      * {@link #isReversible()}.
      *
      * @param encPass The encoded password.
-     * @throws UnsupportedOperationException
      */
     String decode(String encPass) throws UnsupportedOperationException;
 

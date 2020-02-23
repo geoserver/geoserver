@@ -33,9 +33,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     /**
      * Checks that dxf contains all the elements of sequence, in order. Used by many tests to verify
      * DXF structure.
-     *
-     * @param dxf
-     * @param sequence
      */
     private void checkSequence(String dxf, String[] sequence, int pos) {
         for (String item : sequence) {
@@ -47,9 +44,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     /**
      * Checks that dxf contains all the elements of sequence, in order. Used by many tests to verify
      * DXF structure.
-     *
-     * @param dxf
-     * @param sequence
      */
     private void checkSequence(String dxf, String[] sequence) {
         checkSequence(dxf, sequence, -1);
@@ -270,12 +264,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         }
     }
 
-    /**
-     * Test basic extension functionality: mime/type, headers, not empty output generation.
-     *
-     * @param resp
-     * @param featureName
-     */
+    /** Test basic extension functionality: mime/type, headers, not empty output generation. */
     public String testBasicResult(MockHttpServletResponse resp, String featureName)
             throws Exception {
         // check mime type
@@ -346,11 +335,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                 new String[] {"LAYER", "LAYER", "LAYER", "MYLAYER1", "LAYER", "MYLAYER2"});
     }
 
-    /**
-     * Get a search starting point.
-     *
-     * @param response
-     */
+    /** Get a search starting point. */
     private int getGeometrySearchStart(String response) {
         return response.indexOf("BLOCKS");
     }

@@ -31,9 +31,6 @@ public abstract class GeoServerSecurityProvider {
 
     /**
      * Find the provider for a service type and a concrete class name. May return <code>null</code>
-     *
-     * @param serviceClass
-     * @param className
      */
     public static GeoServerSecurityProvider getProvider(Class<?> serviceClass, String className) {
 
@@ -241,11 +238,7 @@ public abstract class GeoServerSecurityProvider {
         return null;
     }
 
-    /**
-     * Create the standard password validator or return <code>null</code>
-     *
-     * @param config
-     */
+    /** Create the standard password validator or return <code>null</code> */
     public PasswordValidator createPasswordValidator(
             PasswordPolicyConfig config, GeoServerSecurityManager securityManager) {
         return null;

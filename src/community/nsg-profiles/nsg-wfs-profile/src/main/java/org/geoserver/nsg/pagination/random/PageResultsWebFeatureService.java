@@ -69,10 +69,6 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
      *
      * Then executes the GetFeature operation using the WFS 2.0 service implementation and return is
      * result.
-     *
-     * @param request
-     * @return
-     * @throws Exception
      */
     public FeatureCollectionResponse pageResults(GetFeatureType request) throws Exception {
         // Retrieve stored request
@@ -102,13 +98,7 @@ public class PageResultsWebFeatureService extends DefaultWebFeatureService20 {
         return super.getFeature(gft);
     }
 
-    /**
-     * Helper method that deserializes GetFeature request and updates its last utilization
-     *
-     * @param resultSetID
-     * @return
-     * @throws Exception
-     */
+    /** Helper method that deserializes GetFeature request and updates its last utilization */
     private GetFeatureType getFeature(String resultSetId) throws IOException {
         GetFeatureType feature = null;
         Transaction transaction = new DefaultTransaction("Update");

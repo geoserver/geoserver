@@ -48,11 +48,7 @@ public interface WCSInfo extends ServiceInfo {
     /** Returns the overview policy used when returning WCS data */
     OverviewPolicy getOverviewPolicy();
 
-    /**
-     * Sets the overview policyt to be used when processing WCS data
-     *
-     * @param policy
-     */
+    /** Sets the overview policyt to be used when processing WCS data */
     void setOverviewPolicy(OverviewPolicy policy);
 
     /** Enables the use of subsampling */
@@ -84,8 +80,6 @@ public interface WCSInfo extends ServiceInfo {
      * Returns the maximum number of dimension items that can be requested by a client without
      * getting a service exception. The default is
      * {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
-     *
-     * @return
      */
     default int getMaxRequestedDimensionValues() {
         return DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES;

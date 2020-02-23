@@ -150,11 +150,6 @@ public class PDFGetMapTest extends WMSTestSupport {
      * Returns the last tiling pattern found during a render of the PDF document. Can be used to
      * extract one tiling pattern that gets actually used to render shapes (meant to be used against
      * a document that only has a single tiling pattern)
-     *
-     * @param pdfDocument
-     * @return
-     * @throws InvalidPasswordException
-     * @throws IOException
      */
     PDTilingPattern getTilingPattern(byte[] pdfDocument)
             throws InvalidPasswordException, IOException {

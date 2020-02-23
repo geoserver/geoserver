@@ -1672,10 +1672,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertFalse(result.isEmpty());
     }
 
-    /**
-     * @param sldName
-     * @throws IOException
-     */
+    /** */
     private Style readSLD(String sldName) throws IOException {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
         SLDParser stylereader = new SLDParser(styleFactory, getClass().getResource(sldName));
@@ -1684,10 +1681,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         Style style = readStyles[0];
         return style;
     }
-    /**
-     * @param style
-     * @throws TransformerException
-     */
+    /** */
     private void printStyle(Style style) throws TransformerException {
         if (isQuietTests()) {
             return;

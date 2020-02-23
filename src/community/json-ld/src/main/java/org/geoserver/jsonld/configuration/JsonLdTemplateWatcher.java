@@ -30,9 +30,7 @@ public class JsonLdTemplateWatcher extends FileWatcher<RootBuilder> {
     /**
      * Parse Json-Ld template file and return a builder tree as a {@link RootBuilder}
      *
-     * @param in
      * @return builderTree
-     * @throws IOException
      */
     @Override
     public RootBuilder parseFileContents(InputStream in) throws IOException {

@@ -138,7 +138,6 @@ public class FileRootsFinder implements Serializable {
      *     matched against the data directory)
      * @param fileFilter An optional file filter to filter the returned files. The file filter
      *     should accept directories.
-     * @return
      */
     public Stream<String> getMatches(String input, FileFilter fileFilter) {
         // check the data directory (which lives in its own *nix dream, so paths need conversion)

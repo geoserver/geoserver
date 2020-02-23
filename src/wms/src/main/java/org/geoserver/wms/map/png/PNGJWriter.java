@@ -55,8 +55,6 @@ public class PNGJWriter {
     /**
      * SUB filtering is useful for raster images with "high" variation, otherwise we go for NONE,
      * empirically it provides better compression at lower effort
-     *
-     * @param mapContent
      */
     private FilterType getFilterType(WMSMapContent mapContent) {
         RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor();

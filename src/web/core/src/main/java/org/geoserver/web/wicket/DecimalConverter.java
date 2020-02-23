@@ -21,11 +21,7 @@ public class DecimalConverter extends DoubleConverter {
 
     int maximumFractionDigits = 16;
 
-    /**
-     * Returns the maximum number of fraction digits allowed in the configuration
-     *
-     * @return
-     */
+    /** Returns the maximum number of fraction digits allowed in the configuration */
     public int getMaximumFractionDigits() {
         return maximumFractionDigits;
     }

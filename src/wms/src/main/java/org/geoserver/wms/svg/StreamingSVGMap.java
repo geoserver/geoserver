@@ -47,11 +47,7 @@ public class StreamingSVGMap extends WebMap {
 
     private SVGWriter writer;
 
-    /**
-     * Creates a new EncodeSVG object.
-     *
-     * @param mapContent
-     */
+    /** Creates a new EncodeSVG object. */
     public StreamingSVGMap(WMSMapContent mapContent) {
         super(mapContent);
     }

@@ -241,12 +241,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         response.setTotalInserted(BigInteger.valueOf(inserted));
     }
 
-    /**
-     * Checks that all features coordinates are within the expected coordinate range
-     *
-     * @param collection
-     * @throws PointOutsideEnvelopeException
-     */
+    /** Checks that all features coordinates are within the expected coordinate range */
     void checkFeatureCoordinatesRange(SimpleFeatureCollection collection)
             throws PointOutsideEnvelopeException {
         List types = collection.getSchema().getAttributeDescriptors();

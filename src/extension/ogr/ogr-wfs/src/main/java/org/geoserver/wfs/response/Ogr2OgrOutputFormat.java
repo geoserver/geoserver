@@ -109,8 +109,6 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Sets the ogr2ogr executable full path. The default value is simply "ogr2ogr", which will work
      * if ogr2ogr is in the path
-     *
-     * @param ogrExecutable
      */
     @Override
     public void setExecutable(String ogrExecutable) {
@@ -126,8 +124,6 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Provides the environment variables that are set prior to invoking ogr2ogr (notably the
      * GDAL_DATA variable, specifying the location of GDAL's data directory).
-     *
-     * @param environment
      */
     @Override
     public void setEnvironment(Map<String, String> environment) {
@@ -203,11 +199,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         }
     }
 
-    /**
-     * Adds a ogr format among the supported ones
-     *
-     * @param parameters
-     */
+    /** Adds a ogr format among the supported ones */
     @Override
     public void addFormat(Format parameters) {
         formats.put(parameters.getGeoserverFormat(), parameters);
@@ -299,12 +291,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         }
     }
 
-    /**
-     * Writes to disk using shapefile if the feature type allows for it, GML otherwise
-     *
-     * @param tempDir
-     * @param curCollection
-     */
+    /** Writes to disk using shapefile if the feature type allows for it, GML otherwise */
     private File writeToDisk(File tempDir, SimpleFeatureCollection curCollection) throws Exception {
         // ogr2ogr cannot handle empty gml collections, but it can handle empty
         // shapefiles
@@ -348,11 +335,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         return tb.buildFeatureType();
     }
 
-    /**
-     * Returns true if the schema has just one geometry and the geom type is known
-     *
-     * @param schema
-     */
+    /** Returns true if the schema has just one geometry and the geom type is known */
     private boolean isShapefileCompatible(SimpleFeatureType schema) {
         GeometryType gt = null;
         for (AttributeDescriptor at : schema.getAttributeDescriptors()) {

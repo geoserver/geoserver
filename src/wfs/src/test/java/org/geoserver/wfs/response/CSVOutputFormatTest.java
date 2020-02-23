@@ -163,12 +163,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         assertEquals(f2.getAttribute("d"), Double.parseDouble(lines.get(2)[5]));
     }
 
-    /**
-     * Convenience to read the csv content and
-     *
-     * @param csvContent
-     * @throws IOException
-     */
+    /** Convenience to read the csv content and */
     private List<String[]> readLines(String csvContent) throws IOException {
         CSVReader reader = new CSVReader(new StringReader(csvContent));
 

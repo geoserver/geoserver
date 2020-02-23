@@ -72,8 +72,6 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     /**
      * Returns the feature source backing collections (dynamic, as the store has to respect the
      * namespace URI given by GeoServer)
-     *
-     * @throws IOException
      */
     FeatureSource<FeatureType, Feature> getCollectionSource() throws IOException;
 
@@ -83,14 +81,7 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      */
     FeatureSource<FeatureType, Feature> getProductSource() throws IOException;
 
-    /**
-     * Returns a feature source to access the granules of a particular product
-     *
-     * @param collectionId
-     * @param productId
-     * @return
-     * @throws IOException
-     */
+    /** Returns a feature source to access the granules of a particular product */
     SimpleFeatureSource getGranules(String collectionId, String productId) throws IOException;
 
     SimpleFeatureType getCollectionLayerSchema() throws IOException;

@@ -301,9 +301,6 @@ public class GWCInitializer implements GeoServerReinitializer {
     /**
      * Private method for adding all the Layer that must not be cached to the {@link CacheProvider}
      * instance.
-     *
-     * @param cache
-     * @param defaultSettings
      */
     private void addLayersToNotCache(CacheProvider cache, GWCConfig defaultSettings) {
         if (LOGGER.isLoggable(Level.FINEST)) {
@@ -331,11 +328,7 @@ public class GWCInitializer implements GeoServerReinitializer {
         }
     }
 
-    /**
-     * Setter for the blobStore parameter
-     *
-     * @param blobStore
-     */
+    /** Setter for the blobStore parameter */
     public void setBlobStore(ConfigurableBlobStore blobStore) {
         this.blobStore = blobStore;
     }

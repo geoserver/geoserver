@@ -28,13 +28,7 @@ public class RemoteRequestDescriptor {
 
     private String baseURL;
 
-    /**
-     * @param servicename
-     * @param input
-     * @param metadata
-     * @param pid
-     * @param baseURL
-     */
+    /** */
     public RemoteRequestDescriptor(
             Name servicename,
             Map<String, Object> input,

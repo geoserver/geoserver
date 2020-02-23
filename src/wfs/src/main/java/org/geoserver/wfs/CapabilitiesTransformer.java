@@ -147,9 +147,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * description for what the updatesequence parameter in the capabilities document should *do*.
      *
      * <p>So this behaviour is not used right now, at all (as of Jan 2007)
-     *
-     * @param request
-     * @throws ServiceException
      */
     public void verifyUpdateSequence(GetCapabilitiesRequest request) throws ServiceException {
         long reqUS = -1;
@@ -1664,8 +1661,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *      &lt;/xsd:sequence&gt;
              *   &lt;/xsd:complexType&gt;
              *         </pre>
-             *
-             * @param featureType
              */
             protected void featureType(FeatureTypeInfo featureType, boolean crs) {
                 GMLInfo gml = wfs.getGML().get(version);
@@ -1934,8 +1929,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *     &lt;/sequence&gt;
              * &lt;/complexType&gt;
              * </pre>
-             *
-             * @param keywords
              */
             protected void keywords(KeywordInfo[] keywords) {
                 if ((keywords == null) || (keywords.length == 0)) {
@@ -2002,11 +1995,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *      &lt;/attribute&gt;
              *    &lt;/complexType&gt;
              * </pre>
-             *
-             * @param name
-             * @param parameters
-             * @param get
-             * @param post
              */
             protected void operation(
                     String name,

@@ -48,24 +48,13 @@ public class Animator {
     /** The WMS configuration */
     WMS wmsConfiguration;
 
-    /**
-     * The prototype Constructor
-     *
-     * @param wms
-     * @param wmsConfiguration
-     */
+    /** The prototype Constructor */
     public Animator(WebMapService wms, WMS wmsConfiguration) {
         this.wms = wms;
         this.wmsConfiguration = wmsConfiguration;
     }
 
-    /**
-     * Produce method. Returns the full animation WebMap request.
-     *
-     * @param request
-     * @param wms
-     * @param wmsConfiguration
-     */
+    /** Produce method. Returns the full animation WebMap request. */
     public static org.geoserver.wms.WebMap produce(
             GetMapRequest request, WebMapService wms, WMS wmsConfiguration) throws Exception {
 
@@ -133,12 +122,7 @@ public class Animator {
                 wmsResponse.getMimeType());
     }
 
-    /**
-     * Initializes the Animator engine.
-     *
-     * @param request
-     * @param wmsConfiguration
-     */
+    /** Initializes the Animator engine. */
     private static FrameCatalog initRequestManager(
             GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         return new FrameCatalog(request, wms, wmsConfiguration);

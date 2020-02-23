@@ -27,11 +27,7 @@ public class GetRepositoryItem {
         this.store = store;
     }
 
-    /**
-     * Returns the requested RepositoryItem
-     *
-     * @param request
-     */
+    /** Returns the requested RepositoryItem */
     public RepositoryItem run(GetRepositoryItemType request) {
         try {
             RepositoryItem item = store.getRepositoryItem(request.getId());

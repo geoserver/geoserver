@@ -176,8 +176,6 @@ enum ScalingPolicy {
          * In this case we must retain the lower bounds by scale the size, hence {@link
          * ScaleDescriptor} JAI operation cannot be used. Same goes for {@link AffineDescriptor},
          * the only real option is {@link WarpDescriptor}.
-         *
-         * @param wcsinfo
          */
         @Override
         public GridCoverage2D scale(
@@ -540,11 +538,7 @@ enum ScalingPolicy {
             Hints hints,
             WCSInfo wcsinfo);
 
-    /**
-     * Retrieve the {@link ScalingPolicy} from the provided {@link ScalingType}
-     *
-     * @param scaling
-     */
+    /** Retrieve the {@link ScalingPolicy} from the provided {@link ScalingType} */
     public static ScalingPolicy getPolicy(ScalingType scaling) {
         if (scaling != null) {
             if (scaling.getScaleAxesByFactor() != null) {
@@ -568,8 +562,6 @@ enum ScalingPolicy {
      * a ScaleToSizeType type.
      *
      * <p>Throw an {@link IllegalArgumentException} in case the scaling type is not a supported one.
-     *
-     * @param scaling
      */
     public static int[] getTargetSize(ScalingType scaling) {
         if (scaling.getScaleToSize() != null) {
@@ -655,8 +647,6 @@ enum ScalingPolicy {
      * is a ScaleXXXFactor type.
      *
      * <p>Throw an {@link IllegalArgumentException} in case the scaling type is not a supported one.
-     *
-     * @param scaling
      */
     public static double[] getScaleFactors(ScalingType scaling) {
         ScalingPolicy policy = getPolicy(scaling);
@@ -734,8 +724,6 @@ enum ScalingPolicy {
      * scaleFactor of 0.00001 and the worst overview provide you a scale factor of 0.0001, then the
      * current scaleFactor need to be adjusted by a remaining 0.1 factor.
      *
-     * @param hints
-     * @param scaleFactors
      * @return the arranged scaleFactor
      */
     private static double[] arrangeScaleFactors(Hints hints, final double[] scaleFactors) {

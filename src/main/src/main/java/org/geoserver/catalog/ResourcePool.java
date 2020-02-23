@@ -435,20 +435,12 @@ public class ResourcePool {
         listeners.remove(l);
     }
 
-    /**
-     * Sets the entity resolver provider injected in the code doing XML parsing
-     *
-     * @param entityResolverProvider
-     */
+    /** Sets the entity resolver provider injected in the code doing XML parsing */
     public void setEntityResolverProvider(EntityResolverProvider entityResolverProvider) {
         this.entityResolverProvider = entityResolverProvider;
     }
 
-    /**
-     * Returns the entity resolver provider injected in the code doing XML parsing
-     *
-     * @return
-     */
+    /** Returns the entity resolver provider injected in the code doing XML parsing */
     public EntityResolverProvider getEntityResolverProvider() {
         return entityResolverProvider;
     }
@@ -1004,12 +996,6 @@ public class ResourcePool {
     /**
      * Builds a temporary name for a feature type making sure there is no conflict with other
      * existing type names in the store
-     *
-     * @param info
-     * @param dataAccess
-     * @param initializer
-     * @return
-     * @throws IOException
      */
     protected Name getTemporaryName(
             FeatureTypeInfo info,
@@ -1043,10 +1029,6 @@ public class ResourcePool {
      * Looks up a FetureTypeInitializer for this FeatureTypeInfo and DataAccess.
      * FeatureTypeInitializer are used to init and dispose configured feature types (as opposed to
      * ones that natively originate from the source)
-     *
-     * @param info
-     * @param dataAccess
-     * @param initializer
      */
     FeatureTypeCallback getFeatureTypeInitializer(
             FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
@@ -1123,8 +1105,6 @@ public class ResourcePool {
      * Returns true if this object is saved in the catalog and not a modified proxy. We don't want
      * to cache the result of computations made against a dirty object, nor the ones made against an
      * object that still haven't been saved
-     *
-     * @param info
      */
     boolean isCacheable(CatalogInfo info) {
         // saved?
@@ -1825,7 +1805,6 @@ public class ResourcePool {
      * Returns the {@link WebMapServer} for a {@link WMSStoreInfo} object
      *
      * @param info The WMS configuration
-     * @throws IOException
      */
     public WebMapServer getWebMapServer(WMSStoreInfo info) throws IOException {
 
@@ -1879,7 +1858,6 @@ public class ResourcePool {
      * Returns the {@link WebMapTileServer} for a {@link WMTSStoreInfo} object
      *
      * @param info The WMTS configuration
-     * @throws IOException
      */
     public WebMapTileServer getWebMapTileServer(WMTSStoreInfo info) throws IOException {
         WMTSStoreInfo expandedStore = (WMTSStoreInfo) clone(info, true);
@@ -1927,8 +1905,6 @@ public class ResourcePool {
     /**
      * Returns the entity resolver from the {@link EntityResolverProvider}, or null if none is
      * configured
-     *
-     * @return
      */
     public EntityResolver getEntityResolver() {
         EntityResolver entityResolver = null;
@@ -1972,11 +1948,7 @@ public class ResourcePool {
         return client;
     }
 
-    /**
-     * Locates and returns a WMS {@link Layer} based on the configuration stored in WMSLayerInfo
-     *
-     * @param info
-     */
+    /** Locates and returns a WMS {@link Layer} based on the configuration stored in WMSLayerInfo */
     public Layer getWMSLayer(WMSLayerInfo info) throws IOException {
         // check which actual name we have to use
         String name = info.getName();
@@ -1997,9 +1969,6 @@ public class ResourcePool {
 
     /**
      * Locates and returns a WTMS {@link Layer} based on the configuration stored in WMTSLayerInfo
-     *
-     * @param info
-     * @throws IOException
      */
     public WMTSLayer getWMTSLayer(WMTSLayerInfo info) throws IOException {
 
@@ -2223,7 +2192,6 @@ public class ResourcePool {
      *
      * @param in the new stream to write to styleFile
      * @param styleFile file to update
-     * @throws IOException
      */
     public static void writeStyle(final InputStream in, final Resource styleFile)
             throws IOException {
@@ -2573,7 +2541,6 @@ public class ResourcePool {
      * <p>The DataStore is still active as the listeners are called allowing any required clean up
      * to occur.
      *
-     * @param dataStoreInfo
      * @param da Data access
      */
     void fireDisposed(DataStoreInfo dataStore, DataAccess da) {
@@ -2866,10 +2833,7 @@ public class ResourcePool {
         return target;
     }
 
-    /**
-     * @param source
-     * @param target
-     */
+    /** */
     private void setConnectionParameters(final WMSStoreInfo source, WMSStoreInfo target) {
         target.setCapabilitiesURL(source.getCapabilitiesURL());
         target.setUsername(source.getUsername());
@@ -2880,10 +2844,7 @@ public class ResourcePool {
         target.setReadTimeout(source.getReadTimeout());
     }
 
-    /**
-     * @param source
-     * @param target
-     */
+    /** */
     private void setConnectionParameters(final WMTSStoreInfo source, WMTSStoreInfo target) {
         target.setCapabilitiesURL(source.getCapabilitiesURL());
         target.setUsername(source.getUsername());
@@ -2930,8 +2891,6 @@ public class ResourcePool {
     /**
      * The catalog repository, used to gather store references by name by some GeoTools stores like
      * pre-generalized or image mosaic
-     *
-     * @return
      */
     public CatalogRepository getRepository() {
         return repository;

@@ -144,7 +144,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
     /**
      * Creates a new WMSCapsTransformer object.
      *
-     * @param wms
      * @param baseURL the base URL of the current request (usually "http://host:port/geoserver")
      * @param getMapFormats the list of supported output formats to state for the GetMap request
      * @param getLegendGraphicFormats the list of supported output formats to state for the
@@ -269,7 +268,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * Creates a new CapabilitiesTranslator object.
          *
          * @param handler content handler to send sax events to.
-         * @param wmsConfig2
          */
         public CapabilitiesTranslator(
                 ContentHandler handler,
@@ -375,11 +373,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             end("Service");
         }
 
-        /**
-         * Encodes contact information in the WMS capabilities document
-         *
-         * @param geoServer
-         */
+        /** Encodes contact information in the WMS capabilities document */
         public void handleContactInfo(ContactInfo contact) {
             start("ContactInformation");
 
@@ -406,11 +400,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             end("ContactInformation");
         }
 
-        /**
-         * Turns the keyword list to XML
-         *
-         * @param keywords
-         */
+        /** Turns the keyword list to XML */
         private void handleKeywordList(List<KeywordInfo> keywords) {
             start("KeywordList");
 
@@ -423,11 +413,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             end("KeywordList");
         }
 
-        /**
-         * Turns the metadata URL list to XML
-         *
-         * @param keywords
-         */
+        /** Turns the metadata URL list to XML */
         private void handleMetadataList(Collection<MetadataLinkInfo> metadataURLs) {
             if (metadataURLs == null) {
                 return;
@@ -455,11 +441,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * Turns the data URL list to XML
-         *
-         * @param keywords
-         */
+        /** Turns the data URL list to XML */
         private void handleDataList(Collection<DataLinkInfo> dataURLs) {
             if (dataURLs == null) {
                 return;
@@ -995,8 +977,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * LatLonBoundingBox, and then writes WMS specific layer properties as Styles, Scale Hint,
          * etc.
          *
-         * @throws RuntimeException
-         * @throws IOException
          * @task TODO: write wms specific elements.
          */
         @SuppressWarnings("deprecation")
@@ -1140,8 +1120,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * b) max=value => <ScaleHint min=0 max=value/>
          * c) min=value => <ScaleHint min=value max=infinity/>
          * </pre>
-         *
-         * @param layer
          */
         private void handleScaleHint(PublishedInfo layer) {
 
@@ -1402,8 +1380,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         /**
          * Returns a list of top level groups, that is, the ones that are not nested within other
          * layer groups
-         *
-         * @param allGroups
          */
         private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
             LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<LayerGroupInfo>(allGroups);
@@ -1565,11 +1541,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             end("LegendURL");
         }
 
-        /**
-         * Encodes a LatLonBoundingBox for the given Envelope.
-         *
-         * @param bbox
-         */
+        /** Encodes a LatLonBoundingBox for the given Envelope. */
         private void handleLatLonBBox(Envelope bbox) {
             String minx = String.valueOf(bbox.getMinX());
             String miny = String.valueOf(bbox.getMinY());
@@ -1585,11 +1557,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             element("LatLonBoundingBox", null, bboxAtts);
         }
 
-        /**
-         * Encodes a BoundingBox for the given Envelope.
-         *
-         * @param bbox
-         */
+        /** Encodes a BoundingBox for the given Envelope. */
         private void handleBBox(Envelope bbox, String SRS) {
             String minx = String.valueOf(bbox.getMinX());
             String miny = String.valueOf(bbox.getMinY());

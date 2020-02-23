@@ -120,10 +120,6 @@ class CatalogInfoLookup<T extends CatalogInfo> {
      * on it. Just using this approach instead of the stream makes the overall startup of GeoServer
      * with 20k layers go down from 50s to 44s (which is a lot, considering there is a lot of other
      * things going on)
-     *
-     * @param clazz
-     * @param predicate
-     * @return
      */
     <U extends CatalogInfo> List<U> list(Class<U> clazz, Predicate<U> predicate) {
         ArrayList<U> result = new ArrayList<U>();
@@ -144,13 +140,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         return result;
     }
 
-    /**
-     * Looks up a CatalogInfo by class and identifier
-     *
-     * @param id
-     * @param clazz
-     * @return
-     */
+    /** Looks up a CatalogInfo by class and identifier */
     public <U extends CatalogInfo> U findById(String id, Class<U> clazz) {
         for (Class<T> key : idMultiMap.keySet()) {
             if (clazz.isAssignableFrom(key)) {
@@ -167,13 +157,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         return null;
     }
 
-    /**
-     * Looks up a CatalogInfo by class and name
-     *
-     * @param clazz
-     * @param id
-     * @return
-     */
+    /** Looks up a CatalogInfo by class and name */
     public <U extends CatalogInfo> U findByName(Name name, Class<U> clazz) {
         for (Class<T> key : nameMultiMap.keySet()) {
             if (clazz.isAssignableFrom(key)) {
@@ -197,10 +181,6 @@ class CatalogInfoLookup<T extends CatalogInfo> {
      * on it. Just using this approach instead of the stream makes the overall startup of GeoServer
      * with 20k layers go down from 50s to 44s (which is a lot, considering there is a lot of other
      * things going on)
-     *
-     * @param clazz
-     * @param predicate
-     * @return
      */
     <U extends CatalogInfo> U findFirst(Class<U> clazz, Predicate<U> predicate) {
         for (Class<T> key : nameMultiMap.keySet()) {
@@ -220,11 +200,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         return null;
     }
 
-    /**
-     * Sets the specified catalog into all CatalogInfo objects contained in this lookup
-     *
-     * @param catalog
-     */
+    /** Sets the specified catalog into all CatalogInfo objects contained in this lookup */
     public CatalogInfoLookup setCatalog(Catalog catalog) {
         for (Map<Name, T> valueMap : nameMultiMap.values()) {
             if (valueMap != null) {

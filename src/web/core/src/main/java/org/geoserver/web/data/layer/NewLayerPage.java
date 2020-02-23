@@ -378,11 +378,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         }
     }
 
-    /**
-     * Turns a resource name into a full {@link ResourceInfo}
-     *
-     * @param resource
-     */
+    /** Turns a resource name into a full {@link ResourceInfo} */
     LayerInfo buildLayerInfo(Resource resource) {
         Catalog catalog = getCatalog();
         StoreInfo store = catalog.getStore(getSelectedStoreId(), StoreInfo.class);

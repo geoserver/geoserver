@@ -60,10 +60,7 @@ public class LockFeature {
     /** Filter factory */
     FilterFactory filterFactory;
 
-    /**
-     * @param wfs
-     * @param catalog
-     */
+    /** */
     public LockFeature(WFSInfo wfs, Catalog catalog) {
         this(wfs, catalog, null);
     }
@@ -81,7 +78,6 @@ public class LockFeature {
     /**
      * Locks features according to the request.
      *
-     * @param request
      * @return the WFS 1.1 required response
      * @throws WFSException if a lock failed and the lock specified all locks, or if an another
      *     error occurred processing the lock operation
@@ -307,11 +303,7 @@ public class LockFeature {
         }
     }
 
-    /**
-     * Release lock by authorization
-     *
-     * @param lockID
-     */
+    /** Release lock by authorization */
     public void release(String lockId) throws WFSException {
         try {
             List dataStores = catalog.getDataStores();

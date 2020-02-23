@@ -106,8 +106,6 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
     /**
      * DescribeCoverage requires a special exemption to run as it needs to access actual data to
      * fill in the time and elevation
-     *
-     * @throws Exception
      */
     @Test
     public void testDescribeWithTimeElevation() throws Exception {

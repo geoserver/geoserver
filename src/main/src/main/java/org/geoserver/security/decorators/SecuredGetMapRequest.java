@@ -90,11 +90,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
         return delegate.getFinalURL();
     }
 
-    /**
-     * Checks security and build the eventual CQL filter to cascade
-     *
-     * @param layerFilters
-     */
+    /** Checks security and build the eventual CQL filter to cascade */
     public String buildCQLFilter() {
         List<Filter> layerFilters = new ArrayList<Filter>();
         // scan and check the layers

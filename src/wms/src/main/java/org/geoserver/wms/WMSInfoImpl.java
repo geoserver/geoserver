@@ -209,11 +209,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
         this.rootLayerAbstract = rootLayerAbstract;
     }
 
-    /**
-     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
-     *
-     * @param dynamicStylingDisabled
-     */
+    /** Sets the status of dynamic styling (SLD and SLD_BODY params) allowance */
     @Override
     public void setDynamicStylingDisabled(Boolean dynamicStylingDisabled) {
         this.dynamicStylingDisabled = dynamicStylingDisabled;

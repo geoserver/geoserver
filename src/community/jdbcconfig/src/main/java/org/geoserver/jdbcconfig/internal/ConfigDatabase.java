@@ -654,10 +654,7 @@ public class ConfigDatabase {
         template.update(insertPropertySQL, params);
     }
 
-    /**
-     * @param info
-     * @param prop
-     */
+    /** */
     private Info lookUpRelatedObject(
             final Info info, final Property prop, @Nullable Integer collectionIndex) {
 
@@ -1187,10 +1184,7 @@ public class ConfigDatabase {
         real.setGeoServer(getGeoServer());
     }
 
-    /**
-     * @param type
-     * @return immutable list of results
-     */
+    /** @return immutable list of results */
     public <T extends Info> List<T> getAll(final Class<T> clazz) {
 
         Map<String, ?> params = params("types", typesParam(clazz));

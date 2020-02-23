@@ -31,11 +31,7 @@ public class AbstractDocument {
     protected String htmlTitle;
     protected final List<Link> links = new ArrayList<>();
 
-    /**
-     * Adds a link to the document
-     *
-     * @param link
-     */
+    /** Adds a link to the document */
     public void addLink(Link link) {
         links.add(link);
     }
@@ -103,8 +99,6 @@ public class AbstractDocument {
     /**
      * Same as {@link #addSelfLinks(String, MediaType)} using {@link MediaType#APPLICATION_JSON} as
      * the default media type
-     *
-     * @param path
      */
     protected void addSelfLinks(String path) {
         addSelfLinks(path, MediaType.APPLICATION_JSON);
@@ -148,21 +142,13 @@ public class AbstractDocument {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /**
-     * Returns the document id, as is
-     *
-     * @return
-     */
+    /** Returns the document id, as is */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getId() {
         return id;
     }
 
-    /**
-     * Returns a URL encoded id (or null if the id is missing), useful to encode links in HTML
-     *
-     * @return
-     */
+    /** Returns a URL encoded id (or null if the id is missing), useful to encode links in HTML */
     @JsonIgnore
     public String getEncodedId() {
         if (id == null) {
@@ -174,8 +160,6 @@ public class AbstractDocument {
     /**
      * Returns the id where the column is replaced by a double underscore. Mostly used to generate
      * HTML ids for testing purposes
-     *
-     * @return
      */
     @JsonIgnore
     public String getHtmlId() {
@@ -187,8 +171,6 @@ public class AbstractDocument {
 
     /**
      * Returns the title for HTML pages. If not set, uses the id, if also missing, an empty string
-     *
-     * @return
      */
     @JsonIgnore
     public String getHtmlTitle() {

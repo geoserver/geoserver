@@ -4,19 +4,15 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static java.util.UUID.randomUUID;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -41,9 +37,7 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.DateRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
-import org.jcodec.api.awt.AWTSequenceEncoder;
 import org.jcodec.api.awt.SequenceMuxer;
-import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Rational;
 import org.opengis.util.ProgressListener;
 
@@ -149,8 +143,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         final Resource output = resourceManager.getTemporaryResource("mp4");
         Rational frameRate = getFrameRate(fps);
 
-        SequenceMuxer enc =
-                new SequenceMuxer(output.file());
+        SequenceMuxer enc = new SequenceMuxer(output.file());
 
         DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
         TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
@@ -163,6 +156,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         try {
             List<Future<Void>> futures = new ArrayList<>();
             int totalTimes = parsedTimes.size();
+            UUID uniqueFileName = randomUUID();
             for (Object parsedTime : parsedTimes) {
                 // turn parsed time into a specification and generate a "WMS" like request based on
                 // it
@@ -181,7 +175,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 serverCache);
                 BufferedImage frame = toBufferedImage(image);
                 LOGGER.log(Level.FINE, "Got frame %s", frame);
-                File outputFile = new File(System.getProperty("java.io.tmpdir"), "saved.png");
+                File outputFile =
+                        new File(System.getProperty("java.io.tmpdir"), uniqueFileName + ".png");
                 ImageIO.write(frame, "png", outputFile);
                 Future<Void> future =
                         executor.submit(

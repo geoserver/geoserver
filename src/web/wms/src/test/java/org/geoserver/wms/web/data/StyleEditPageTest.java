@@ -862,4 +862,81 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             resource.file().delete();
         }
     }
+
+    @Test
+    public void testValidateLineSymbolizerVendorOption() throws Exception {
+
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+                        + "<StyledLayerDescriptor version=\"1.0.0\"\n"
+                        + "                       xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\"\n"
+                        + "                       xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+                        + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                        + "  <NamedLayer>\n"
+                        + "    <Name>line_vendor</Name>\n"
+                        + "    <UserStyle>\n"
+                        + "      <Title>A gold line style</Title>\n"
+                        + "      <FeatureTypeStyle>\n"
+                        + "        <Rule> \n"
+                        + "          <Name>Vendor Style</Name> \n"
+                        + "          <LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
+                        + "            <Stroke> \n"
+                        + "              <GraphicStroke> \n"
+                        + "                <Graphic> \n"
+                        + "                  <Mark> \n"
+                        + "                    <WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</WellKnownName> \n"
+                        + "                  </Mark> \n"
+                        + "                  <Size>1</Size> \n"
+                        + "                </Graphic> \n"
+                        + "              </GraphicStroke> \n"
+                        + "            </Stroke> \n"
+                        + "            <VendorOption name=\"markAlongLine\">true</VendorOption> \n"
+                        + "          </LineSymbolizer> \n"
+                        + "        </Rule> \n"
+                        + "      </FeatureTypeStyle>\n"
+                        + "    </UserStyle>\n"
+                        + "  </NamedLayer>\n"
+                        + "</StyledLayerDescriptor>\n";
+
+        tester.newFormTester("styleForm")
+                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+
+        tester.executeAjaxEvent("validate", "click");
+        tester.assertNoErrorMessage();
+
+        String xml11 =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" xmlns:se=\"http://www.opengis.net/se\">\n"
+                        + "  <NamedLayer>\n"
+                        + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
+                        + "    <UserStyle>\n"
+                        + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
+                        + "      <se:FeatureTypeStyle>\n"
+                        + "        <se:Rule>\n"
+                        + "          <se:Name>Single symbol</se:Name>\n"
+                        + "          <se:LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
+                        + "            <se:Stroke> \n"
+                        + "              <se:GraphicStroke> \n"
+                        + "                <se:Graphic> \n"
+                        + "                  <se:Mark> \n"
+                        + "                    <se:WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</se:WellKnownName> \n"
+                        + "                  </se:Mark> \n"
+                        + "                  <se:Size>1</se:Size> \n"
+                        + "                </se:Graphic> \n"
+                        + "              </se:GraphicStroke> \n"
+                        + "            </se:Stroke> \n"
+                        + "            <se:VendorOption name=\"markAlongLine\">true</se:VendorOption> \n"
+                        + "          </se:LineSymbolizer> \n"
+                        + "        </se:Rule>\n"
+                        + "      </se:FeatureTypeStyle>\n"
+                        + "    </UserStyle>\n"
+                        + "  </NamedLayer>\n"
+                        + "</StyledLayerDescriptor>";
+
+        tester.newFormTester("styleForm")
+                .setValue("styleEditor:editorContainer:editorParent:editor", xml11);
+
+        tester.executeAjaxEvent("validate", "click");
+        tester.assertNoErrorMessage();
+    }
 }

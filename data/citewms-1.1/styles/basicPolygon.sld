@@ -9,7 +9,7 @@
     <!-- again they have names, titles and abstracts -->
   <Name>Blue</Name>
   <Title>Blue Polygon</Title>
-  <Abstract>Blue filled polygon with black outline with width of 2 pixels/Abstract>
+  <Abstract>Blue filled polygon with black outline with width of 2 pixels</Abstract>
     <!-- FeatureTypeStyles describe how to render different features -->
     <!-- a feature type for polygons -->
     <FeatureTypeStyle>

@@ -37,7 +37,7 @@ In order to change any server settings or configure data, a user must first be a
 
       Login
    
-#. Once logged in, the Welcome screen changes to show the available admin functions. These are primarily shown in the menus on the lest side of the page.
+#. Once logged in, the Welcome screen changes to show the available admin functions. These are primarily shown in the menus on the left side of the page.
 
    .. figure:: logged_in.png
    

@@ -16,6 +16,9 @@
 			<label for="prefix"><wicket:message key="prefix"/></label>
 			<input id="prefix" wicket:id="prefix" type="text" class="text" />
 			
+			<label for="endpoint"><wicket:message key="endpoint"/></label>
+			<input id="endpoint" wicket:id="endpoint" type="text" class="text" />
+			
 			<label for="maxConnections"><wicket:message key="maxConnections"/></label>
 			<input id="maxConnections" wicket:id="maxConnections" type="text" class="text" />
 						
@@ -42,7 +45,19 @@
 							
 			<label for="useGzip"><wicket:message key="useGzip" /></label>
 			<input id="useGzip" wicket:id="useGzip" type="checkbox"/>
-			
+			<div wicket:id="accessType">
+                <label><wicket:message key="accessType">Access Type:</wicket:message></label>
+                <ul class="choiceList">
+                    <li>
+                        <input id="accessTypePublic" type="radio" wicket:id="accessTypePublic" value="Public"/>
+                        <label for="accessTypePublic"><wicket:message key="accessTypePublic">Public</wicket:message></label>
+                    </li>
+                    <li>
+                        <input id="accessTypePrivate" type="radio" wicket:id="accessTypePrivate" value="Private"/>
+                        <label for="accessTypePrivate"><wicket:message key="accessTypePrivate">Private</wicket:message></label>
+                    </li>
+                </ul>
+            </div>
 		</fieldset>
 	</wicket:panel>
 </body>

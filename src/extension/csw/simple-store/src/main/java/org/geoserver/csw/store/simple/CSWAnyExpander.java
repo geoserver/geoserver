@@ -6,7 +6,6 @@
 package org.geoserver.csw.store.simple;
 
 import javax.xml.namespace.QName;
-
 import org.geoserver.csw.util.QNameResolver;
 import org.geotools.csw.CSW;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
@@ -15,7 +14,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Replaces references to csw:AnyText to a call to the RecordText filter function
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWAnyExpander extends DuplicatingFilterVisitor {

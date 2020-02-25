@@ -7,7 +7,7 @@ This plugin supports the use of the `AWS <https://aws.amazon.com>`_ Simple Stora
 Installing the S3 BlobStore plugin
 ----------------------------------
 
- #. Download the extension from the `nightly GeoServer community module builds <http://ares.opengeo.org/geoserver/master/community-latest/>`_.
+ #. Download the extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
@@ -17,7 +17,7 @@ Configuring the S3 BlobStore plugin
 -----------------------------------
 
 Once the plugin has been installed, one or more S3 BlobStores may be configured through :ref:`gwc_webadmin_blobstores`.
-Afterwards, cached layers can be explicitely assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
+Afterwards, cached layers can be explicitly assigned to it or one blobstore could be marked as 'default' to use it for all unassigned layers.
 
 .. figure:: img/s3blobstore.png
    :align: center
@@ -75,6 +75,12 @@ Password the client will use if connecting through a proxy (optional).
 Use Gzip
 ~~~~~~~~
 When enabled, the stored tiles will be GZIP compressed.
+
+Access Type
+~~~~~~~~~~~
+Stored tiles will be created either as Public (readable and writable by any user that can access the S3 bucket), or Private
+(readable and writable only by the user identified by the AWS credentials specified above).
+
 
 
 

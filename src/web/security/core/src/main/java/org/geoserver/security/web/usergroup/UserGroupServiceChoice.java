@@ -8,7 +8,6 @@ package org.geoserver.security.web.usergroup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -19,18 +18,17 @@ import org.geoserver.web.GeoServerApplication;
 
 /**
  * Drop down choice widget for {@link GeoServerUserGroupService} configurations.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class UserGroupServiceChoice extends DropDownChoice<String> {
 
     public UserGroupServiceChoice(String id) {
-        super(id,new UserGroupServiceNamesModel(), new UserGroupServiceChoiceRenderer());
+        super(id, new UserGroupServiceNamesModel(), new UserGroupServiceChoiceRenderer());
     }
 
     public UserGroupServiceChoice(String id, IModel<String> model) {
-        super(id, model, new UserGroupServiceNamesModel(), new UserGroupServiceChoiceRenderer()); 
+        super(id, model, new UserGroupServiceNamesModel(), new UserGroupServiceChoiceRenderer());
     }
 
     static class UserGroupServiceNamesModel implements IModel<List<String>> {
@@ -39,8 +37,11 @@ public class UserGroupServiceChoice extends DropDownChoice<String> {
 
         UserGroupServiceNamesModel() {
             try {
-                this.serviceNames = new ArrayList(
-                    GeoServerApplication.get().getSecurityManager().listUserGroupServices());
+                this.serviceNames =
+                        new ArrayList(
+                                GeoServerApplication.get()
+                                        .getSecurityManager()
+                                        .listUserGroupServices());
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
@@ -57,7 +58,7 @@ public class UserGroupServiceChoice extends DropDownChoice<String> {
 
         @Override
         public void detach() {
-            //do nothing
+            // do nothing
         }
 
         @Override
@@ -69,9 +70,10 @@ public class UserGroupServiceChoice extends DropDownChoice<String> {
     static class UserGroupServiceChoiceRenderer extends ChoiceRenderer<String> {
         @Override
         public Object getDisplayValue(String object) {
-            //do a resource lookup
+            // do a resource lookup
             return new ResourceModel(object, object).getObject();
         }
+
         @Override
         public String getIdValue(String object, int index) {
             return object;

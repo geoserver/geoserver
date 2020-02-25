@@ -7,14 +7,13 @@ package org.geoserver.wps.gs.download;
 
 /**
  * Bean that includes the configurations parameters for the download service
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions
- * 
  */
 public class DownloadServiceConfiguration {
 
     /** Value used to indicate no limits */
-    public static final long NO_LIMIT = 0;
+    public static final int NO_LIMIT = 0;
 
     public static final String COMPRESSION_LEVEL_NAME = "compressionLevel";
 
@@ -26,6 +25,8 @@ public class DownloadServiceConfiguration {
 
     public static final String MAX_FEATURES_NAME = "maxFeatures";
 
+    public static final String MAX_ANIMATION_FRAMES_NAME = "maxAnimationFrames";
+
     public static final int DEFAULT_COMPRESSION_LEVEL = 4;
 
     public static final long DEFAULT_HARD_OUTPUT_LIMITS = NO_LIMIT;
@@ -35,6 +36,8 @@ public class DownloadServiceConfiguration {
     public static final long DEFAULT_WRITE_LIMITS = NO_LIMIT;
 
     public static final long DEFAULT_MAX_FEATURES = NO_LIMIT;
+
+    public static final int DEFAULT_MAX_ANIMATION_FRAMES = NO_LIMIT;
 
     /** Max #of features */
     private long maxFeatures = DEFAULT_MAX_FEATURES;
@@ -51,20 +54,33 @@ public class DownloadServiceConfiguration {
     /** STORE =0, BEST =8 */
     private int compressionLevel = DEFAULT_COMPRESSION_LEVEL;
 
+    private int maxAnimationFrames = DEFAULT_MAX_ANIMATION_FRAMES;
+
     /** Constructor: */
-    public DownloadServiceConfiguration(long maxFeatures, long rasterSizeLimits, long writeLimits,
-            long hardOutputLimit, int compressionLevel) {
+    public DownloadServiceConfiguration(
+            long maxFeatures,
+            long rasterSizeLimits,
+            long writeLimits,
+            long hardOutputLimit,
+            int compressionLevel,
+            int maxAnimationFrames) {
         this.maxFeatures = maxFeatures;
         this.rasterSizeLimits = rasterSizeLimits;
         this.writeLimits = writeLimits;
         this.hardOutputLimit = hardOutputLimit;
         this.compressionLevel = compressionLevel;
+        this.maxAnimationFrames = maxAnimationFrames;
     }
 
     /** Default constructor */
     public DownloadServiceConfiguration() {
-        this(DEFAULT_MAX_FEATURES, DEFAULT_RASTER_SIZE_LIMITS, DEFAULT_WRITE_LIMITS,
-                DEFAULT_HARD_OUTPUT_LIMITS, DEFAULT_COMPRESSION_LEVEL);
+        this(
+                DEFAULT_MAX_FEATURES,
+                DEFAULT_RASTER_SIZE_LIMITS,
+                DEFAULT_WRITE_LIMITS,
+                DEFAULT_HARD_OUTPUT_LIMITS,
+                DEFAULT_COMPRESSION_LEVEL,
+                DEFAULT_MAX_ANIMATION_FRAMES);
     }
 
     public long getMaxFeatures() {
@@ -87,11 +103,22 @@ public class DownloadServiceConfiguration {
         return compressionLevel;
     }
 
-    @Override
-    public String toString() {
-        return "DownloadServiceConfiguration [maxFeatures=" + maxFeatures + ", rasterSizeLimits="
-                + rasterSizeLimits + ", writeLimits=" + writeLimits + ", hardOutputLimit="
-                + hardOutputLimit + ", compressionLevel=" + compressionLevel + "]";
+    public int getMaxAnimationFrames() {
+        return maxAnimationFrames;
     }
 
+    @Override
+    public String toString() {
+        return "DownloadServiceConfiguration [maxFeatures="
+                + maxFeatures
+                + ", rasterSizeLimits="
+                + rasterSizeLimits
+                + ", writeLimits="
+                + writeLimits
+                + ", hardOutputLimit="
+                + hardOutputLimit
+                + ", compressionLevel="
+                + compressionLevel
+                + "]";
+    }
 }

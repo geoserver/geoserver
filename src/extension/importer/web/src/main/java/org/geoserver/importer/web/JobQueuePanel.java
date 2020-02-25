@@ -17,14 +17,14 @@ public class JobQueuePanel extends Panel {
         final JobQueueTable table = new JobQueueTable("table");
         add(table);
 
-        final AjaxLink refreshLink = new AjaxLink("refresh") {
+        final AjaxLink refreshLink =
+                new AjaxLink("refresh") {
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                target.add(table);
-            }
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        target.add(table);
+                    }
+                };
         add(refreshLink);
     }
-
 }

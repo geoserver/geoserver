@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
@@ -20,7 +19,7 @@ import org.opengis.coverage.grid.GridCoverageReader;
 
 /**
  * This class is used for testing the {@link GranuleCoverageExtensionTest} class.
- * 
+ *
  * @author Nicola Lagomarsini
  */
 public class GranuleCoverageExtensionTest extends WCSEOTestSupport {

@@ -1,0 +1,9 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema">
+  <!--  Just collecting the various schemas involved to perform search results validation -->
+  <import namespace="http://www.w3.org/2005/Atom" schemaLocation="./atom.xsd"/>
+  <import namespace="http://a9.com/-/spec/opensearch/1.1/" schemaLocation="./OpenSearch.xsd"/>
+  <import namespace="http://www.georss.org/georss" schemaLocation="./georss.xsd"/>
+  <import namespace="http://a9.com/-/opensearch/extensions/geo/1.0/" schemaLocation="./opensearch-geo.xsd"/>
+  <import namespace="http://www.opengis.net/owc/1.0" schemaLocation="./owc.xsd"/>
+  <import namespace="http://search.yahoo.com/mrss/" schemaLocation="./mediarss.xsd"/>
+</schema>

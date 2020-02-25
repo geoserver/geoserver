@@ -9,15 +9,15 @@ import java.net.URL;
 
 /**
  * Parses interpolation values
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class URLPPIO extends LiteralPPIO {
 
     protected URLPPIO() {
         super(URL.class);
     }
-    
+
     @Override
     public Object decode(String value) throws Exception {
         return new URL(value);

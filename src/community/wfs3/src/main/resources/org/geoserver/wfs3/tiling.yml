@@ -1,0 +1,294 @@
+---
+openapi: 3.0.1
+paths:
+  "/tilingSchemes":
+    get:
+      tags:
+      - Tiles
+      summary: retrieve all available tiling schemes
+      operationId: getTilingSchemes
+      parameters:
+      - $ref: "#/components/parameters/tilingSchemeFormat"
+      responses:
+        '200':
+          description: A list of tiling schemes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tilingSchemes"
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/exception"
+  "/tilingSchemes/{tilingSchemeId}":
+    get:
+      tags:
+      - Tiles
+      summary: retrieve a tiling scheme by id
+      operationId: getTilingScheme
+      parameters:
+      - $ref: "#/components/parameters/tilingSchemeId"
+      - $ref: "#/components/parameters/tilingSchemeFormat"
+      responses:
+        '200':
+          description: A tiling scheme.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tilingScheme"
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/exception"
+  "/collections/{collectionId}/tiles":
+    get:
+      tags:
+      - Tiles
+      summary: retrieve all available tiling schemes for the collection
+      operationId: getCollectionTilingSchemes
+      parameters:
+      - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: A list of tiling schemes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tilingSchemes"
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/exception"
+  "/collections/{collectionId}/tiles/{tilingSchemeId}":
+    get:
+      tags:
+      - Tiles
+      summary: retrieve a tiling scheme for the specified collection and id
+      operationId: getCollectionTilingScheme
+      parameters:
+      - $ref: "#/components/parameters/tilingSchemeId"
+      - $ref: "#/components/parameters/tilingSchemeFormat"
+      responses:
+        '200':
+          description: A tiling scheme.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tilingScheme"
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/exception"                
+  "/collections/{collectionId}/tiles/{tilingSchemeId}/{zoomLevel}/{row}/{column}":
+    get:
+      tags:
+      - Tiles
+      summary: retrieve a tile of the dataset
+      description: The tile in the requested tiling scheme, on the requested zoom
+        level in the tiling scheme, with the requested grid coordinates (row, column)
+        is returned. Each collection of the dataset is returned as a separate layer.
+        The collections and the feature properties to include in the tile representation
+        can be limited using query parameters.
+      operationId: getTilesDataset
+      parameters:
+      - $ref: '#/components/parameters/collectionId'
+      - $ref: "#/components/parameters/tilingSchemeId"
+      - $ref: "#/components/parameters/zoomLevel"
+      - $ref: "#/components/parameters/row"
+      - $ref: "#/components/parameters/column"
+      - $ref: "#/components/parameters/tileFormat"
+      responses:
+        '200':
+          description: A tile of the dataset.
+          content:
+            application/vnd.mapbox-vector-tile:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/exception"
+components:
+  schemas:
+    tilingSchemes:
+      required:
+      - type
+      type: object
+      properties:
+        tilingSchemes:
+          type: array
+          items:
+            type: string
+            example: GoogleMapsCompatible
+    tilingScheme:
+      required:
+      - identifier
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - TileMatrixSet
+        identifier:
+          type: string
+          example: default
+        TileMatrix:
+          type: array
+          items:
+            $ref: "#/components/schemas/tileMatrix"
+        boundingBox:
+          type: array
+          items:
+            $ref: "#/components/schemas/boundingBox"
+        supportedCrs:
+          type: string
+          example: http://www.opengis.net/def/crs/EPSG/0/3857
+          enum:
+          - http://www.opengis.net/def/crs/EPSG/0/3857
+        title:
+          type: string
+          example: Google Maps Compatible for the World
+        wellKnownScaleSet:
+          type: string
+          example: http://www.opengis.net/def/wkss/OGC/1.0/GoogleMapsCompatible
+          enum:
+          - http://www.opengis.net/def/wkss/OGC/1.0/GoogleMapsCompatible
+    tileMatrix:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - TileMatrix
+        identifier:
+          type: string
+          example: '0'
+        MatrixHeight:
+          minimum: 0
+          type: integer
+          example: 1
+        MatrixWidth:
+          minimum: 0
+          type: integer
+          example: 1
+        TileHeight:
+          minimum: 0
+          type: integer
+          example: 256
+        TileWidth:
+          minimum: 0
+          type: integer
+          example: 256
+        scaleDenominator:
+          type: number
+          example: 2132.729583849784
+        topLeftCorner:
+          type: string
+          example: "-20037508.340000 20037508.000000"
+    boundingBox:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - BoundingBox
+        crs:
+          type: string
+          example: http://www.opengis.net/def/crs/EPSG/0/3857
+        lowerCorner:
+          type: string
+          example: "-20037508.340000 -20037508.000000"
+        upperCorner:
+          type: string
+          example: "20037508.340000 20037508.000000"
+  parameters:
+    f2:
+      name: f
+      in: query
+      description: |-
+        \
+                The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header shall be used to determine the format.\
+                Pre-defined values are "json" and "mvt". The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+        - json
+        - mvt
+      example: json
+    tilingSchemeFormat:
+      name: f
+      in: query
+      description: |-
+        \
+                The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header shall be used to determine the format.\
+                The only pre-defined value is "json". The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+        - json
+      example: json
+    tileFormat:
+      name: f
+      in: query
+      description: |-
+        \
+                The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header shall be used to determine the format.\
+                The only pre-defined value is "mvt". The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+        - mvt
+      example: mvt
+    tilingSchemeId:
+      name: tilingSchemeId
+      in: path
+      description: Local identifier of a specific tiling scheme
+      required: true
+      schema:
+        type: string
+    zoomLevel:
+      name: zoomLevel
+      in: path
+      description: Zoom level of the tile
+      required: true
+      schema:
+        type: string
+    row:
+      name: row
+      in: path
+      description: Row index of the tile on the selected zoom level
+      required: true
+      schema:
+        type: string
+    column:
+      name: column
+      in: path
+      description: Column index of the tile on the selected zoom level
+      required: true
+      schema:
+        type: string

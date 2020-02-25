@@ -6,12 +6,11 @@
 package org.geoserver.csw.feature.sort;
 
 import java.util.Comparator;
-
 import org.geoserver.catalog.Info;
 
 /**
  * Compares two feature based on their catalog info id
- * 
+ *
  * @author Niels Charlier
  */
 class InfoComparator implements Comparator<Info> {
@@ -20,7 +19,7 @@ class InfoComparator implements Comparator<Info> {
 
     /**
      * Builds a new comparator
-     * 
+     *
      * @param ascending If true the comparator will force an ascending order (descending otherwise)
      */
     public InfoComparator(boolean ascending) {
@@ -52,5 +51,4 @@ class InfoComparator implements Comparator<Info> {
             return id1.compareTo(id2);
         }
     }
-
 }

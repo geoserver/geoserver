@@ -12,7 +12,7 @@ import org.opengis.util.ProgressListener;
 /**
  * Interface used by scripts to report about current progress and eventually throw service
  * exceptions with the necessary OGC details
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class StatusMonitor {
@@ -24,39 +24,23 @@ public class StatusMonitor {
 
     private float base;
 
-    /**
-     * Creates a status object wrapping a {@link ProgressListener}
-     * 
-     * @param listener
-     */
+    /** Creates a status object wrapping a {@link ProgressListener} */
     public StatusMonitor(ProgressListener listener) {
         super();
         this.listener = listener;
     }
 
-    /**
-     * Returns the wrapped listener
-     * 
-     *
-     */
+    /** Returns the wrapped listener */
     public ProgressListener getListener() {
         return listener;
     }
 
-    /**
-     * Sets the global progress, between 0 and 100
-     * 
-     * @param progress
-     */
+    /** Sets the global progress, between 0 and 100 */
     public void setProgress(float progress) {
         listener.progress(progress);
     }
 
-    /**
-     * Sets the current task
-     * 
-     * @param status
-     */
+    /** Sets the current task */
     public void setTask(String status) {
         listener.setTask(Text.text(status));
     }
@@ -64,9 +48,6 @@ public class StatusMonitor {
     /**
      * Starts a sub-task that will take "total" percentage. Call "work" to report progress within
      * the sub-task
-     * 
-     * @param status
-     * @param total
      */
     public void start(String status, int total) {
         listener.setTask(Text.text(status));
@@ -75,19 +56,13 @@ public class StatusMonitor {
         this.work = 0;
     }
 
-    /**
-     * Reports progress within the current sub-task, with a number between 0 and 100
-     * 
-     * @param worked
-     */
+    /** Reports progress within the current sub-task, with a number between 0 and 100 */
     public void work(int worked) {
         work += worked;
         listener.progress(base + work / total);
     }
 
-    /**
-     * Throws a WPS exception, specifying a message
-     */
+    /** Throws a WPS exception, specifying a message */
     public void throwException(String message) {
         throw new WPSException(message);
     }

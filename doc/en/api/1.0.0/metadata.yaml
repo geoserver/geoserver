@@ -1,0 +1,93 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Metadata Community Module
+  description: Customized Metadata Bulk Operations.
+paths:
+  /metadata/import:
+    post:
+      summary: Bulk import from geonetwork and/or template linking.
+      description: 
+         Will perform a bulk import and/or template linking for every layer specified in CSV file.
+         CSV file must be of form "prefix:layername; [geonetwork-id] [; template-1 [;template-2 ... ] ]"
+         Existing template links will be removed first.
+      consumes: text/csv
+      parameters:
+        - name: geonetwork
+          required: false
+          description: 
+            Name of geonetwork (as configured, see general documentation).
+          type: string
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+  /metadata/nativeToCustom:
+    get:
+      summary: Perform native-to-custom mapping for all layers.
+      description: 
+        With respect to your custom-to-native mapping file (see general documentation), this operation will perform an
+        opposite synchronization from native fields to custom fields.
+      parameters:
+        - name: indexes
+          required: false
+          description: 
+            Comma-separated list of positive integers. Will only perform the mapping for a selection of mappings 
+            (indexed, following the order of mapping file).
+          type: string
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+    post:
+      summary: Perform native-to-custom mapping for selected layers.
+      description: 
+        With respect to your custom-to-native mapping file (see metadata module documentation), this operation will perform an
+        opposite synchronization from native fields to custom fields. Your body must be a list layers, where each row is of
+        the form "prefix:layername".
+      consumes: text/csv
+      parameters:
+        - name: indexes
+          required: false
+          description: 
+            Comma-separated list of positive integers. Will only perform the mapping for a selection of mappings 
+            (indexed, following the order of mapping file).
+          type: string
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+  /metadata:
+    delete:
+      summary: Delete all custom metadata
+      description: Remove ALL custom metadata from ALL layers. All template links are removed. Used for testing and debugging.
+      parameters:
+        - name: iAmSure
+          required: false
+          description: Safety flag, must be true or request will fail.
+          type: boolean
+        - name: templatesToo
+          required: false          
+          description: If this flag is true, all metadata templates will be removed as well.
+          type: boolean
+      responses:
+        200:
+          description: OK
+        400:
+          description: You must be sure (if safety flag not set)
+        401:
+          description: Unauthorized
+  /metadata/fix:
+    get:
+      summary: Fix all custom metadata
+      description: Calls routine operations that may fix corrupted custom metadata in all layers. Used for testing and debugging.
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+

@@ -10,9 +10,7 @@ import static org.geoserver.wcs2_0.util.RequestUtils.checkVersion;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.opengis.wcs20.DescribeEOCoverageSetType;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.geoserver.catalog.Catalog;
@@ -22,7 +20,6 @@ import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.eo.response.DescribeEOCoverageSetTransformer;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
@@ -32,7 +29,7 @@ import org.geoserver.wcs2_0.util.StringUtils;
 
 /**
  * AOP interceptor running DescribeEOCoverageSet for WCS 2.O EO
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
@@ -43,19 +40,17 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
 
     private Catalog catalog;
 
-    private CoverageResponseDelegateFinder responseFactory;
-
     private EnvelopeAxesLabelsMapper envelopeAxesMapper;
 
     private MIMETypeMapper mimemapper;
 
-    public DescribeEOCoverageSetInterceptor(GeoServer geoServer,
-            CoverageResponseDelegateFinder responseFactory,
-            EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimemappe,
+    public DescribeEOCoverageSetInterceptor(
+            GeoServer geoServer,
+            EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
+            MIMETypeMapper mimemappe,
             EOCoverageResourceCodec resourceCodec) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
-        this.responseFactory = responseFactory;
         this.envelopeAxesMapper = envelopeDimensionsMapper;
         this.mimemapper = mimemappe;
         this.resourceCodec = resourceCodec;
@@ -64,7 +59,7 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
     public WCSInfo getServiceInfo() {
         return geoServer.getService(WCSInfo.class);
     }
-    
+
     private boolean isEarthObservationEnabled() {
         WCSInfo wcs = getServiceInfo();
         Boolean enabled = wcs.getMetadata().get(WCSEOMetadata.ENABLED.key, Boolean.class);
@@ -73,10 +68,11 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        if (invocation.getMethod().getName().equals("describeEOCoverageSet") && isEarthObservationEnabled()) {
+        if (invocation.getMethod().getName().equals("describeEOCoverageSet")
+                && isEarthObservationEnabled()) {
             try {
-                DescribeEOCoverageSetType dcs = (DescribeEOCoverageSetType) invocation
-                        .getArguments()[0];
+                DescribeEOCoverageSetType dcs =
+                        (DescribeEOCoverageSetType) invocation.getArguments()[0];
                 return describeEOCoverageSet(dcs);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
@@ -95,8 +91,10 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
         checkVersion(dcs.getVersion());
 
         if (dcs.getEoId() == null || dcs.getEoId().isEmpty()) {
-            throw new OWS20Exception("Required parameter eoID missing", new OWSExceptionCode(
-                    "emptyEoIdList", 404), "eoid");
+            throw new OWS20Exception(
+                    "Required parameter eoID missing",
+                    new OWSExceptionCode("emptyEoIdList", 404),
+                    "eoid");
         }
 
         // check coverages are legit
@@ -110,13 +108,15 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
         }
         if (!badCoverageIds.isEmpty()) {
             String mergedIds = StringUtils.merge(badCoverageIds);
-            throw new WCS20Exception("Could not find the requested coverage(s): " + mergedIds,
-                    new OWSExceptionCode("noSuchEODataset", 404), "eoid");
+            throw new WCS20Exception(
+                    "Could not find the requested coverage(s): " + mergedIds,
+                    new OWSExceptionCode("noSuchEODataset", 404),
+                    "eoid");
         }
 
-        WCS20DescribeCoverageTransformer tx = new WCS20DescribeCoverageTransformer(
-                getServiceInfo(), catalog, responseFactory, envelopeAxesMapper, mimemapper);
-        return new DescribeEOCoverageSetTransformer(getServiceInfo(), resourceCodec, envelopeAxesMapper, tx);
+        WCS20DescribeCoverageTransformer tx =
+                new WCS20DescribeCoverageTransformer(catalog, envelopeAxesMapper, mimemapper);
+        return new DescribeEOCoverageSetTransformer(
+                getServiceInfo(), resourceCodec, envelopeAxesMapper, tx);
     }
-
 }

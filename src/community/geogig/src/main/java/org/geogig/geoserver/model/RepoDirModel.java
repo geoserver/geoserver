@@ -7,7 +7,6 @@ package org.geogig.geoserver.model;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.wicket.model.IModel;
 import org.geogig.geoserver.config.RepositoryInfo;
 
@@ -53,5 +52,4 @@ public class RepoDirModel implements IModel<String> {
         }
         this.parentDirectory = null;
     }
-
 }

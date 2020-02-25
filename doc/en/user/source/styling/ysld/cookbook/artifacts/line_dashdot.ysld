@@ -1,0 +1,21 @@
+title: 'YSLD Cook Book: Dash/Symbol line'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#0000FF'
+        stroke-width: 1
+        stroke-dasharray: 10 10
+    - line:
+        stroke-color: '#000033'
+        stroke-width: 1
+        stroke-dasharray: 5 15
+        stroke-dashoffset: 7.5
+        stroke-graphic-stroke:
+          size: 5
+          symbols:
+          - mark:
+              shape: circle
+              stroke-color: '#000033'
+              stroke-width: 1

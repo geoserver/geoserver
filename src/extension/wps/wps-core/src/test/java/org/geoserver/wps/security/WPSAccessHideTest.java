@@ -40,7 +40,8 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
     public void testNotAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth(null, null);
         Document d = getAsDOM("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
-        assertXpathEvaluatesTo("0", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
+        assertXpathEvaluatesTo(
+                "0", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
         assertXpathEvaluatesTo(
                 "1",
                 "count(//ows:Exception[contains(ows:ExceptionText,'No such process: JTS:buffer')])",
@@ -51,7 +52,8 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
     public void testAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth("test", "test");
         Document d = getAsDOM("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
-        assertXpathEvaluatesTo("1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
+        assertXpathEvaluatesTo(
+                "1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
     }
 
     // Execute process
@@ -61,7 +63,8 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
         setRequestAuth(null, null);
         Document d = postAsDOM("wps", executeRequestXml);
         checkValidationErrors(d);
-        assertXpathEvaluatesTo("1",
+        assertXpathEvaluatesTo(
+                "1",
                 "count(//ows:Exception[contains(ows:ExceptionText,'Unknown process JTS:buffer')])",
                 d);
     }
@@ -82,5 +85,4 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
     protected CatalogMode getMode() {
         return CatalogMode.HIDE;
     }
-
 }

@@ -1,0 +1,446 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Manifests API
+  description: GeoServer provides a REST service to expose a listing of all loaded JARs and resources on the running instance. This is useful for bug reports and to keep track of extensions deployed into the application. 
+host: localhost:8080
+basePath: /geoserver/rest
+schemes:
+  - http
+  - https
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+security:
+  - basicAuth: []  
+
+paths:
+  /about/manifest:
+    get:
+      operationId: getManifest
+      description: |
+        This endpoint retrieves details on all loaded JARs. All the GeoServer manifest JARs are marked with the property GeoServerModule and classified by type, so you can use filtering capabilities to search for a set of manifests using regular expressions (see the manifest parameter) or a type category (see the key and value parameter).
+
+        The available types are core, extension, or community. To filter modules by a particular type, append a request with key=GeoServerModule&value={type}
+
+        Use the "Accept:" header to specify format or append an extension to the endpoint (example "/about/manifest.xml" for XML).
+
+        The model is very simple and is shared between the version and the resource requests to parse both requests. You can customize the results adding a properties file called manifest.properties into the root of the data directory.
+      produces:
+        - application/json
+        - application/xml
+        - text/html
+      parameters:
+        - name: manifest
+          type: string 
+          in: query
+          description: | 
+            The manifest parameter is used to filter over resulting resource (manifest) names attribute using Java regular expressions.
+          required: false
+        - name: key
+          type: string
+          in: query
+          description: |
+            Only return manifest entries with this key in their properties. It can be optionally combined with the value parameter. 
+          required: false
+        - name: value
+          type: string
+          in: query
+          description: |
+            Only return manifest entries that have this value for the provided key parameter.          
+          required: false
+      responses:
+        200:
+          description: Returns the manifest
+          schema:
+            $ref: "#/definitions/Manifest"
+          examples:
+            application/json: |
+              { "about": {
+                  "resource": [      
+                    {
+                      "@name": "postgresql-9.4.1211",
+                      "Bundle-License": "http://www.postgresql.org/about/licence/",
+                      "Specification-Version": 4.2,
+                      "Bnd-LastModified": 1474207285788,
+                      "Bundle-Name": "PostgreSQL JDBC Driver JDBC42",
+                      "Bundle-Description": "Java JDBC 4.2 (JRE 8+) driver for PostgreSQL database",
+                      "Build-Jdk": "1.8.0_60",
+                      "Specification-Vendor": "Oracle Corporation",
+                      "Bundle-SymbolicName": "org.postgresql.jdbc42",
+                      "Bundle-Copyright": "Copyright (c) 2003-2015, PostgreSQL Global Development Group",
+                      "Built-By": "vladimirsitnikov",
+                      "Main-Class": "org.postgresql.util.PGJDBCMain",
+                      "Bundle-Activator": "org.postgresql.osgi.PGBundleActivator",
+                      "Require-Capability": "osgi.ee;filter:=\"(&(|(osgi.ee=J2SE)(osgi.ee=JavaSE))(version>=1.8))\"",
+                      "Tool": "Bnd-2.4.0.201411031534",
+                      "Implementation-Title": "PostgreSQL JDBC Driver - JDBC 4.2",
+                      "Implementation-Version": "9.4.1211",
+                      "Manifest-Version": 1,
+                      "Created-By": "Apache Maven Bundle Plugin",
+                      "Implementation-Vendor-Id": "org.postgresql",
+                      "Bundle-DocURL": "http://jdbc.postgresql.org/",
+                      "Bundle-Vendor": "PostgreSQL Global Development Group",
+                      "Implementation-Vendor": "PostgreSQL Global Development Group",
+                      "Bundle-ManifestVersion": 2,
+                      "Bundle-Version": "9.4.1211",
+                      "Specification-Title": "JDBC"
+                    },
+                    {
+                      "@name": "wicket-core-7.6.0",
+                      "Archiver-Version": "Plexus Archiver",
+                      "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                      "Specification-Version": "7.6.0",
+                      "Bnd-LastModified": 1482777231886,
+                      "Bundle-Name": "Wicket Core",
+                      "DynamicImport-Package": "*",
+                      "Bundle-Description": "Wicket is a Java web application framework that takes simplicity, \t\tseparation of concerns and ease of development to a whole new level. \t\tWicket pages can be mocked up, previewed and later revised using \t\tstandard WYSIWYG HTML design tools. Dynamic content processing and \t\tform handling is all handled in Java code using a first-class \t\tcomponent model backed by POJO data beans that can easily be \t\tpersisted using your favorite technology.",
+                      "Build-Jdk": "1.8.0_111",
+                      "Specification-Vendor": "Apache Software Foundation",
+                      "Bundle-SymbolicName": "org.apache.wicket.core",
+                      "Built-By": "andrea",
+                      "Require-Capability": "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.7))\"",
+                      "Tool": "Bnd-2.3.0.201405100607",
+                      "Implementation-Title": "Wicket Core",
+                      "Implementation-Version": "7.6.0",
+                      "Manifest-Version": 1,
+                      "Created-By": "Apache Maven Bundle Plugin",
+                      "Implementation-Vendor-Id": "org.apache.wicket",
+                      "Bundle-DocURL": "http://apache.org",
+                      "Bundle-Vendor": "Apache Software Foundation",
+                      "Implementation-Vendor": "Apache Software Foundation",
+                      "Bundle-ManifestVersion": 2,
+                      "Bundle-Version": "7.6.0",
+                      "Specification-Title": "Wicket Core"
+                    }
+                  ]
+                }
+              }
+            application/xml: |
+              <about>
+                  <resource name="postgresql-9.4.1208">
+                      <Bundle-License>http://www.postgresql.org/about/licence/</Bundle-License>
+                      <Specification-Version>4.2</Specification-Version>
+                      <Bnd-LastModified>1455913825221</Bnd-LastModified>
+                      <Bundle-Name>PostgreSQL JDBC Driver JDBC42</Bundle-Name>
+                      <Bundle-Description>Java JDBC 4.2 (JRE 8+) driver for PostgreSQL database</Bundle-Description>
+                      <Build-Jdk>1.8.0_66</Build-Jdk>
+                      <Specification-Vendor>Oracle Corporation</Specification-Vendor>
+                      <Bundle-SymbolicName>org.postgresql.jdbc42</Bundle-SymbolicName>
+                      <Bundle-Copyright>Copyright (c) 2003-2015, PostgreSQL Global Development Group</Bundle-Copyright>
+                      <Built-By>vladimirsitnikov</Built-By>
+                      <Main-Class>org.postgresql.util.PGJDBCMain</Main-Class>
+                      <Bundle-Activator>org.postgresql.osgi.PGBundleActivator</Bundle-Activator>
+                      <Require-Capability>osgi.ee;filter:=&quot;(&amp;(|(osgi.ee=J2SE)(osgi.ee=JavaSE))(version&gt;=1.8))&quot;</Require-Capability>
+                      <Tool>Bnd-2.3.0.201405100607</Tool>
+                      <Implementation-Title>PostgreSQL JDBC Driver - JDBC 4.2</Implementation-Title>
+                      <Implementation-Version>9.4.1208</Implementation-Version>
+                      <Manifest-Version>1.0</Manifest-Version>
+                      <Created-By>Apache Maven Bundle Plugin</Created-By>
+                      <Implementation-Vendor-Id>org.postgresql</Implementation-Vendor-Id>
+                      <Bundle-DocURL>http://jdbc.postgresql.org/</Bundle-DocURL>
+                      <Bundle-Vendor>PostgreSQL Global Development Group</Bundle-Vendor>
+                      <Implementation-Vendor>PostgreSQL Global Development Group</Implementation-Vendor>
+                      <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                      <Bundle-Version>9.4.1208</Bundle-Version>
+                      <Specification-Title>JDBC</Specification-Title>
+                  </resource>    
+                  <resource name="wicket-core-7.6.0">
+                      <Archiver-Version>Plexus Archiver</Archiver-Version>
+                      <Bundle-License>http://www.apache.org/licenses/LICENSE-2.0.txt</Bundle-License>
+                      <Specification-Version>7.6.0</Specification-Version>
+                      <Bnd-LastModified>1482777231886</Bnd-LastModified>
+                      <Bundle-Name>Wicket Core</Bundle-Name>
+                      <DynamicImport-Package>*</DynamicImport-Package>
+                      <Bundle-Description>Wicket is a Java web application framework that takes simplicity,       separation of concerns and ease of development to a whole new level.        Wicket pages can be mocked up, previewed and later revised using        standard WYSIWYG HTML design tools. Dynamic content processing and      form handling is all handled in Java code using a first-class       component model backed by POJO data beans that can easily be        persisted using your favorite technology.</Bundle-Description>
+                      <Build-Jdk>1.8.0_111</Build-Jdk>
+                      <Specification-Vendor>Apache Software Foundation</Specification-Vendor>
+                      <Bundle-SymbolicName>org.apache.wicket.core</Bundle-SymbolicName>
+                      <Built-By>andrea</Built-By>
+                      <Require-Capability>osgi.ee;filter:=&quot;(&amp;(osgi.ee=JavaSE)(version=1.7))&quot;</Require-Capability>
+                      <Tool>Bnd-2.3.0.201405100607</Tool>
+                      <Implementation-Title>Wicket Core</Implementation-Title>
+                      <Implementation-Version>7.6.0</Implementation-Version>
+                      <Manifest-Version>1.0</Manifest-Version>
+                      <Created-By>Apache Maven Bundle Plugin</Created-By>
+                      <Implementation-Vendor-Id>org.apache.wicket</Implementation-Vendor-Id>
+                      <Bundle-DocURL>http://apache.org</Bundle-DocURL>
+                      <Bundle-Vendor>Apache Software Foundation</Bundle-Vendor>
+                      <Implementation-Vendor>Apache Software Foundation</Implementation-Vendor>
+                      <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                      <Bundle-Version>7.6.0</Bundle-Version>
+                      <Specification-Title>Wicket Core</Specification-Title>
+                  </resource>    
+              </about>
+  /about/version:
+    get:
+      description: |
+        'This endpoint shows only the details for the high-level components: GeoServer, GeoTools, and GeoWebCache.'
+
+        Use the "Accept:" header to specify format or append an extension to the endpoint (example "/about/manifest.xml" for XML).'
+      parameters:
+        - name: manifest
+          type: string 
+          in: query
+          description: | 
+            The manifest parameter is used to filter over resulting resource (manifest) names attribute using Java regular expressions.
+          required: false
+        - name: key
+          type: string
+          in: query
+          description: |
+            Only return manifest entries with this key in their properties. It can be optionally combined with the value parameter. 
+          required: false
+        - name: value
+          type: string
+          in: query
+          description: |
+            Only return manifest entries that have this value for the provided key parameter.          
+          required: false
+      responses:
+        200:
+          description: Returns the manifest
+          examples:
+            application/xml: |
+              <about>
+                  <resource name="GeoTools">
+                      <Build-Timestamp>28-Mar-2017 15:44</Build-Timestamp>
+                      <Version>18-SNAPSHOT</Version>
+                      <Git-Revision>a96cee38ad6c8e87cb8ccdf75e1fb837bff35ef0</Git-Revision>
+                  </resource>
+                  <resource name="GeoWebCache">
+                      <Version>1.12-SNAPSHOT</Version>
+                      <Git-Revision>e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990/e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990</Git-Revision>
+                  </resource>
+              </about> 
+            application/json: | 
+              { "about": {
+                  "resource": [
+                    {
+                      "@name": "GeoTools",
+                      "Build-Timestamp": "28-Mar-2017 15:44",
+                      "Version": "18-SNAPSHOT",
+                      "Git-Revision": "a96cee38ad6c8e87cb8ccdf75e1fb837bff35ef0"
+                    },
+                    {
+                      "@name": "GeoWebCache",
+                      "Version": "1.12-SNAPSHOT",
+                      "Git-Revision": "e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990/e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990"
+                    }
+                  ]
+                }
+              }                            
+  /about/status:
+    get:
+      description: |
+        This endpoint shows the status details of all installed and configured modules. Status details always include human readable name, and module name. Optional details include version, availability, status message, and links to documentation.
+
+        Use the "Accept:" header to specify format or append an extension to the endpoint (example "/about/manifest.xml" for XML).
+      parameters:
+        - name: manifest
+          type: string 
+          in: query
+          description: | 
+            The manifest parameter is used to filter over resulting resource (manifest) names attribute using Java regular expressions.
+          required: false
+        - name: key
+          type: string
+          in: query
+          description: |
+            Only return manifest entries with this key in their properties. It can be optionally combined with the value parameter. 
+          required: false
+        - name: value
+          type: string
+          in: query
+          description: |
+            Only return manifest entries that have this value for the provided key parameter.          
+          required: false
+      responses:
+        200:
+          description: Successfully retrieved status details.
+          schema:
+            $ref: "#/definitions/Status"
+          examples: 
+            application/json: |
+              {"about": {
+                  "status": [
+                    {
+                      "module": "gs-web-core",
+                      "name": "GeoServer Web UI Core",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "gs-main",
+                      "name": "GeoServer Main",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "jvm",
+                      "name": "Rendering Engine",
+                      "component": "java2d",
+                      "version": "1.8.0_121",
+                      "message": "Java 2D configured with DuctusRenderingEngine.\nProvider: OracleJDK\n",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "system-properties",
+                      "name": "system-properties",
+                      "component": "system-properties",
+                      "message": "java.runtime.name=Java(TM) SE Runtime Environment\nsun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib\n",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "system-environment",
+                      "name": "system-environment",
+                      "component": "system-environment",
+                      "message": "PATH=/usr/bin:/bin:/usr/sbin:/sbin\nSHELL=/usr/local/bin/bash\n",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "gs-web-wms",
+                      "name": "GeoServer Web UI Web Map Service",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "gs-wms",
+                      "name": "GeoServer Web Map Service",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    }
+                  ]
+                }
+              }
+            application/xml: |
+              <about>
+                <status>
+                  <module>gs-web-core</module>
+                  <name>GeoServer Web UI Core</name>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+                <status>
+                  <module>gs-main</module>
+                  <name>GeoServer Main</name>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+                <status>
+                  <module>jvm</module>
+                  <name>Rendering Engine</name>
+                  <component>java2d</component>
+                  <version>1.8.0_121</version>
+                  <message>Java 2D configured with DuctusRenderingEngine.
+                  Provider: OracleJDK
+                  </message>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+                <status>
+                  <module>system-properties</module>
+                  <name>system-properties</name>
+                  <component>system-properties</component>
+                  <message>java.runtime.name=Java(TM) SE Runtime Environment
+                  sun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib
+                  java.vm.version=25.121-b13
+                  java.util.prefs.syncInterval=5000000
+                  </message>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+                <status>
+                  <module>system-environment</module>
+                  <name>system-environment</name>
+                  <component>system-environment</component>
+                  <message>PATH=/usr/bin:/bin:/usr/sbin:/sbin
+                  SHELL=/usr/local/bin/bash
+                  </message>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+                <status>
+                  <module>gs-web-wms</module>
+                  <name>GeoServer Web UI Web Map Service</name>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+                <status>
+                  <module>gs-wms</module>
+                  <name>GeoServer Web Map Service</name>
+                  <isEnabled>true</isEnabled>
+                  <isAvailable>true</isAvailable>
+                </status>
+              </about>
+        
+
+          
+
+
+definitions:
+  Manifest:
+    type: object
+    description:  Details on loaded JARs.
+    properties:
+      about:
+        type: object
+        properties:
+          resource:
+            type: array
+            description: Contains key/value pairs for the resource (the resource name is found in the name XML attribute and @name JSON property).
+            items:
+              type: object              
+              properties:
+                '@name': 
+                  type: string
+                  description:  The name of the resource.
+              additionalProperties: true    
+
+  Status:
+    type: object
+    description: Details of installed and configured modules. Status details always include human readable name, and module name. Optional details include version, availability, status message, and links to documentation.
+    properties:
+      about:
+        type: object
+        properties:
+          status:
+            type: array
+            items:
+              type: object
+              properties:
+                module:
+                  type: string
+                  description: |
+                    Module identifier based on artifact bundle. For example, gs-main, gs-oracle.
+                name:
+                  type: string
+                  description:  |
+                    Human readable name (from GeoServer documentation), or as defined in the extension pom.xml, ie. <name>ArcSDE DataStore Extensions</name>
+                component:
+                  type: string
+                  description: |
+                    Optional component identifier within module. For example, rendering-engine.
+                version:
+                  type: string
+                  description: |
+                    Human readable version, ie. for geotools it would be 15-SNAPSHOT
+                message:
+                  type: string
+                  description: |
+                    Optional status message such as what Java rendering engine is in use, or the library path if the module/driver is unavailable
+                isEnabled:
+                  type: boolean
+                  description: |
+                    Returns whether the module is enabled in the current GeoServer configuration.
+                isAvailable:
+                  type: boolean
+                  description: |
+                    Returns whether the module is available to GeoServer
+                
+

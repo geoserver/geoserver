@@ -12,7 +12,7 @@ import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 
 /**
  * Security provider for {@link GeoServerUserNamePasswordAuthenticationFilter}
- * 
+ *
  * @author mcr
  */
 public class GeoServerUserNamePasswordAuthenticationProvider extends AbstractFilterProvider {
@@ -20,7 +20,8 @@ public class GeoServerUserNamePasswordAuthenticationProvider extends AbstractFil
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("usernamePasswordFilter", UsernamePasswordAuthenticationFilterConfig.class);
+        xp.getXStream()
+                .alias("usernamePasswordFilter", UsernamePasswordAuthenticationFilterConfig.class);
     }
 
     @Override
@@ -32,5 +33,4 @@ public class GeoServerUserNamePasswordAuthenticationProvider extends AbstractFil
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerUserNamePasswordAuthenticationFilter();
     }
-
 }

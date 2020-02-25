@@ -1,0 +1,35 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+	<wicket:panel>
+	<fieldset>
+	<legend>
+    	<span><wicket:message key="vectorCustomDimensionsPanelTitle" /></span>
+    </legend>
+	<div wicket:id="mainDiv">
+		<form wicket:id="form">
+			<div wicket:id="addVectorCustomDimensionPanel">
+				<div wicket:id="feedback"></div>
+				<label for="nameInput"><wicket:message key="nameInput" /></label>
+        		<input wicket:id="nameInput" id="nameInput" type="text" size="40"/>
+        		<button type="submit" wicket:id="addButton">
+        			<wicket:message key="addButton">Add new dimension</wicket:message>
+        		</button>
+			</div>
+			<br/>
+			<div wicket:id="vectorCustomDimensionsView">
+				<div wicket:id="vectorCustomDimension">
+			        <fieldset>
+			          <legend>
+			            <span wicket:id="dimensionName"></span>
+			          </legend>
+			          <div wicket:id="customVectorEditor"></div>
+			        </fieldset>
+		        </div>
+	      </div>
+      </form>
+      </div>
+      </fieldset>
+	</wicket:panel>
+</body>
+</html>

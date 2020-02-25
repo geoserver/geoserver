@@ -7,7 +7,6 @@ package org.geoserver.web.data.store;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.Catalog;
@@ -15,9 +14,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
-/**
- * Simple detachable model listing all the stores in a specific workspace.
- */
+/** Simple detachable model listing all the stores in a specific workspace. */
 @SuppressWarnings("serial")
 public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
 
@@ -26,7 +23,7 @@ public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
     public StoresModel(IModel workspaceModel) {
         this.workspace = workspaceModel;
     }
-    
+
     @Override
     protected List<StoreInfo> load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
@@ -35,7 +32,7 @@ public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
         Collections.sort(stores, new StoreNameComparator());
         return stores;
     }
-    
+
     @Override
     public void detach() {
         super.detach();

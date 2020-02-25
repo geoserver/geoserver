@@ -25,7 +25,9 @@ On the other hand, the main disadvantage of vector tiles is that the geographic 
 Vector tile formats
 -------------------
 
-GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and MapBox Vector (MVT). These are also supported by OpenLayers 3 and other clients.
+GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and MapBox Vector (MVT). These are also supported by OpenLayers and other clients.
+
+.. warning:: When using vector tiles, be sure to use an up-to-date client. Older clients do not support all vector tiles capabilites and may result in rendering errors. We recommend using the latest version of OpenLayers (Currently v5.3.0).
 
 * MVT is the preferred format for production.
 
@@ -37,7 +39,7 @@ GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and
      - MIME
      - Description
    * - `MapBox Vector (MVT) <https://github.com/mapbox/vector-tile-spec>`_
-     - ``application/x-protobuf;type=mapbox-vector``
+     - ``application/vnd.mapbox-vector-tile``
      - **Recommended Format** This is an efficient binary format that is widely supported by almost all Vector Tile applications.
    * - `GeoJSON <http://geojson.org/>`_
      - ``application/json;type=geojson``
@@ -68,7 +70,7 @@ For this tutorial, we'll be using the layer ``opengeo:countries`` to show off th
 
    * ``application/json;type=geojson``
    * ``application/json;type=topojson``
-   * ``application/x-protobuf;type=mapbox-vector``
+   * ``application/vnd.mapbox-vector-tile``
 
    .. figure:: img/vectortiles_tileformats.png
 

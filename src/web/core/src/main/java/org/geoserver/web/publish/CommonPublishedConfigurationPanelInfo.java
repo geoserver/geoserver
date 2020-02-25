@@ -7,13 +7,13 @@ package org.geoserver.web.publish;
 import org.geoserver.catalog.PublishedInfo;
 
 /**
- * 
- * Extension point for sections of the configuration pages that work for both layers and layergroups.
- * 
- * @author Niels Charlier
+ * Extension point for sections of the configuration pages that work for both layers and
+ * layergroups.
  *
+ * @author Niels Charlier
  */
-public class CommonPublishedConfigurationPanelInfo extends PublishedConfigurationPanelInfo<PublishedInfo> {
+public class CommonPublishedConfigurationPanelInfo
+        extends PublishedConfigurationPanelInfo<PublishedInfo> {
 
     private static final long serialVersionUID = 8382295309912226673L;
 
@@ -21,5 +21,4 @@ public class CommonPublishedConfigurationPanelInfo extends PublishedConfiguratio
     public Class<PublishedInfo> getPublishedInfoClass() {
         return PublishedInfo.class;
     }
-
 }

@@ -1,7 +1,7 @@
 <coverage format = "gtopo" >
 <name>W020N90</name>
-<label>W020N90 is a Gtopo30 Coverage Format</label>
-<description>Generated from gtopo</description>
+<label>W020N90 is a GeoTIFF Coverage Format</label>
+<description>Generated from gtopo and converted to geotiff</description>
 <wmspath>/</wmspath>
 <metadataLink about = "http://edcdaac.usgs.gov/gtopo30/gtopo30.asp" metadataType = "other" >
 null

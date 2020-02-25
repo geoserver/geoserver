@@ -22,9 +22,9 @@ public class XCQLTest {
         try {
             CQL.toFilter(filter);
             fail("filter should have thrown exception");
+        } catch (CQLException e) {
         }
-        catch(CQLException e) {}
-        
+
         Filter f1 = ECQL.toFilter(filter);
         Filter f2 = XCQL.toFilter(filter);
         assertEquals(f1, f2);
@@ -33,17 +33,15 @@ public class XCQLTest {
     @Test
     public void testToFilterFallback() throws Exception {
         String filter = "id = 2";
-        
+
         try {
             ECQL.toFilter(filter);
             fail("filter should have thrown exception");
+        } catch (CQLException e) {
         }
-        catch(CQLException e) {
-        }
-        
+
         Filter f1 = CQL.toFilter(filter);
         Filter f2 = XCQL.toFilter(filter);
         assertEquals(f1, f2);
-        
     }
 }

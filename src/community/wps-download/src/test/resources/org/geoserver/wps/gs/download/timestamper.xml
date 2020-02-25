@@ -1,0 +1,8 @@
+<layout>
+  <decoration type="text" affinity="bottom,right" offset="6,6" size="auto">
+    <option name="message" value="${time}"/>
+    <option name="font-family" value="Bitstream Vera Sans"/>
+    <option name="font-size" value="12"/>
+    <option name="halo-radius" value="2"/>
+  </decoration>
+</layout>

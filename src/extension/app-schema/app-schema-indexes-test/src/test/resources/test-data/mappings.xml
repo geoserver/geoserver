@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:AppSchemaDataAccess xmlns:ns2="http://www.opengis.net/ogc" xmlns:ns3="http://www.geotools.org/app-schema">
+    <namespaces>
+        <Namespace>
+            <prefix>st</prefix>
+            <uri>http://www.stations.org/1.0</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml/3.2</uri>
+        </Namespace>
+    </namespaces>
+    <includedTypes>
+        <Include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">includedTypes.xml</Include>
+    </includedTypes>
+    <sourceDataStores>
+        <SolrDataStore>
+            <id>stations_solr</id>
+            <url>${solr_url}</url>
+            <index name="${solr_core}"/>
+        </SolrDataStore>
+        <DataStore>
+            <id>dataStore</id>
+            <parameters>
+                <Parameter>
+                    <name>Connection timeout</name>
+                    <value>20</value>
+                </Parameter>
+                <Parameter>
+                    <name>port</name>
+                    <value>${pg_port}</value>
+                </Parameter>
+                <Parameter>
+                    <name>passwd</name>
+                    <value>${pg_password}</value>
+                </Parameter>
+                <Parameter>
+                    <name>dbtype</name>
+                    <value>postgis</value>
+                </Parameter>
+                <Parameter>
+                    <name>encode functions</name>
+                    <value>false</value>
+                </Parameter>
+                <Parameter>
+                    <name>Evictor run periodicity</name>
+                    <value>300</value>
+                </Parameter>
+                <Parameter>
+                    <name>namespace</name>
+                    <value></value>
+                </Parameter>
+                <Parameter>
+                    <name>schema</name>
+                    <value>${pg_schema}</value>
+                </Parameter>
+                <Parameter>
+                    <name>create database</name>
+                    <value>false</value>
+                </Parameter>
+                <Parameter>
+                    <name>fetch size</name>
+                    <value>1000</value>
+                </Parameter>
+                <Parameter>
+                    <name>preparedStatements</name>
+                    <value>false</value>
+                </Parameter>
+                <Parameter>
+                    <name>min connections</name>
+                    <value>1</value>
+                </Parameter>
+                <Parameter>
+                    <name>Evictor tests per run</name>
+                    <value>3</value>
+                </Parameter>
+                <Parameter>
+                    <name>host</name>
+                    <value>${pg_host}</value>
+                </Parameter>
+                <Parameter>
+                    <name>validate connections</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>max connections</name>
+                    <value>10</value>
+                </Parameter>
+                <Parameter>
+                    <name>database</name>
+                    <value>${pg_database}</value>
+                </Parameter>
+                <Parameter>
+                    <name>Support on the fly geometry simplification</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>Max connection idle time</name>
+                    <value>300</value>
+                </Parameter>
+                <Parameter>
+                    <name>Test while idle</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>Loose bbox</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>Expose primary keys</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>Max open prepared statements</name>
+                    <value>50</value>
+                </Parameter>
+                <Parameter>
+                    <name>Estimated extends</name>
+                    <value>true</value>
+                </Parameter>
+                <Parameter>
+                    <name>user</name>
+                    <value>${pg_user}</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>meteo.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <mappingName>ObservationType-e17fbd44-fd26-46e7-bd71-e2568073c6c5</mappingName>
+            <sourceDataStore>dataStore</sourceDataStore>
+            <sourceType>meteo_observations</sourceType>
+            <targetElement>st:Observation</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>st:Observation</targetAttribute>
+                    <idExpression>
+                        <OCQL>id</OCQL>
+                    </idExpression>
+                    <indexField>observation_id</indexField>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st:value</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>value</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+				<AttributeMapping>
+                    <targetAttribute>st:description</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>description</OCQL>
+                    </sourceExpression>
+                    <indexField>observation_description</indexField>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st:parameter</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>parameter_id</OCQL>
+                        <linkElement>'ParameterType-59fe639f-f5eb-44a8-9bf0-f764eeefe1d0'</linkElement>
+                        <linkField>FEATURE_LINK[1]</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>FEATURE_LINK[1]</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>station_id</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>StationType-f46d72da-5591-4873-b210-5ed30a6ffb0d</mappingName>
+            <sourceDataStore>dataStore</sourceDataStore>
+            <sourceType>meteo_stations</sourceType>
+            <targetElement>st:Station</targetElement>
+            <defaultGeometry>st:position</defaultGeometry>
+            <indexDataStore>stations_solr</indexDataStore>
+            <indexType>${solr_core}</indexType>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>st:observation</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>id</OCQL>
+                        <linkElement>'ObservationType-e17fbd44-fd26-46e7-bd71-e2568073c6c5'</linkElement>
+                        <linkField>FEATURE_LINK[1]</linkField>
+                    </sourceExpression>
+                    <isMultiple>true</isMultiple>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st:Station</targetAttribute>
+                    <idExpression>
+                        <OCQL>id</OCQL>
+                    </idExpression>
+                    <indexField>station_id</indexField>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st:stationName</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>strConcat('1_', common_name)</OCQL>
+                    </sourceExpression>
+                    <indexField>station_name</indexField>
+                </AttributeMapping>
+				<AttributeMapping>
+                    <targetAttribute>st:comments</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>comments</OCQL>
+                    </sourceExpression>
+                    <indexField>stations_comments</indexField>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>st:position</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>position</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</ns3:AppSchemaDataAccess>

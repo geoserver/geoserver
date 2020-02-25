@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd">
+<WMT_MS_Capabilities version="1.1.1" updateSequence="473">
+  <Service>
+    <Name>WMS</Name>
+    <Title>WMS</Title>
+    <Abstract>Minimal test caps document for a WMS 1.1.1 server</Abstract>
+    <KeywordList>
+      <Keyword>GEOSERVER</Keyword>
+    </KeywordList>
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org"/>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>text/plain</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>application/vnd.ogc.gml/3.1.1</Format>
+        <Format>text/html</Format>
+        <Format>application/json</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/vnd.ogc.se_inimage</Format>
+    </Exception>
+    <UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="1"/>
+    <Layer>
+      <Title>Root</Title>
+      <SRS>EPSG:4326</SRS>
+      <LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180" maxy="90"/>
+      <Layer queryable="1">
+        <Name>world4326</Name>
+        <Title>world4326</Title>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>
+        <BoundingBox SRS="EPSG:4326" minx="-180" miny="-90" maxx="180" maxy="90"/>
+      </Layer>
+      <Layer queryable="1" opaque="0">
+            <Name>roads</Name>
+            <Title>roads</Title>
+            <Abstract/>
+            <KeywordList>
+              <Keyword>features</Keyword>
+              <Keyword>roads</Keyword>
+            </KeywordList>
+            <SRS>EPSG:26713</SRS>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:3857</SRS>
+            <LatLonBoundingBox minx="-103.87779468316292" miny="44.37288961726252" maxx="-103.62268570651278" maxy="44.50217396380937"/>
+            <BoundingBox SRS="EPSG:26713" minx="589434.85646865" miny="4914006.33783702" maxx="609527.21021496" maxy="4928063.39801461"/>
+            <Style>
+              <Name>line1</Name>
+              <Title>simple blue line</Title>
+              <Abstract>A sample style that just prints out a blue line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>line3</Name>
+              <Title>simple green line</Title>
+              <Abstract>A sample style that just prints out a green line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line3"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>line2</Name>
+              <Title>simple red line</Title>
+              <Abstract>A sample style that just prints out a red line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line2"/>
+              </LegendURL>
+            </Style>
+          </Layer>
+          <Layer queryable="1" opaque="0">
+        <Name>topp:states</Name>
+        <Title>states</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>features</Keyword>
+          <Keyword>states</Keyword>
+        </KeywordList>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="36.0460729490001" miny="32.614108317" maxx="36.153265193" maxy="32.686323626"/>
+        <BoundingBox SRS="EPSG:4326" minx="36.0460729490001" miny="32.614108317" maxx="36.153265193" maxy="32.686323626"/>
+<!--         <Style> -->
+<!--           <Name>point</Name> -->
+<!--           <Title>A simple default style</Title> -->
+<!--           <Abstract>A sample style that just prints out a purple square</Abstract> -->
+<!--           <LegendURL width="20" height="20"> -->
+<!--             <Format>image/png</Format> -->
+<!--             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=vtp%3AAeronauticPnt"/> -->
+<!--           </LegendURL> -->
+<!--         </Style> -->
+<!--         <Style> -->
+<!--           <Name>polygon</Name> -->
+<!--           <Title>polygon</Title> -->
+<!--           <LegendURL width="111" height="60"> -->
+<!--             <Format>image/png</Format> -->
+<!--             <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Astates&amp;style=polygon"/> -->
+<!--           </LegendURL> -->
+<!--         </Style> -->
+      </Layer>
+    </Layer>  
+  </Capability>
+</WMT_MS_Capabilities>

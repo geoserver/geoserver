@@ -25,7 +25,7 @@ The default catalog store is the Internal Catalog Store, which retrieves informa
 
 If there are multiple catalog stores present (for example, when the Simple Catalog Store module is loaded), set the Java system property ``DefaultCatalogStore`` to make sure that the correct catalog store will be used. To use the Internal Catalog Store, this property must be set to::
 
-  DefaultCatalogStore=org.geoserver.csw.store.internal.GeoServerInternalCatalogStore
+  DefaultCatalogStore=org.geoserver.csw.store.internal.InternalCatalogStore
   
 To use the Simple Catalog Store::
 
@@ -34,10 +34,12 @@ To use the Simple Catalog Store::
 Supported schemes
 -----------------
 
-The Internal Catalog Store supports two metadata schemes: 
+The Internal Catalog Store currently supports two metadata schemes: 
 
-* Dublin Core
-* ISO Metadata Profile
+* Dublin Core, by default.
+* ISO Metadata Profile, if you install the :ref:`csw_iso` Community Module.
+
+.. _csw_mapping_file:
 
 Mapping Files
 -------------
@@ -45,7 +47,7 @@ Mapping Files
 Mapping files are located in the ``csw`` directory inside the :ref:`datadir`. Each mapping file must have the exact name of the record type name combined with the ``.properties`` extension. For example:
 
 * Dublin Core mapping can be found in the file ``csw/Record.properties`` inside the data directory.
-* ISO Metadata mapping can be found in the file ``csw/MD_Metadata.properties`` inside the data directory.
+* ISO Metadata mapping can be found in the file ``csw/MD_Metadata.properties`` inside the data directory (see :ref:`csw_iso` Community Module).
 
 The mapping files take the syntax from Java properties files. The left side of the equals sign specifies the target field name or path in the metadata record, paths being separated with dots. The right side of the equals sign specifies any CQL expression that denotes the value of the target property. The CQL expression is applied to each ResourceInfo_ object in the catalog and can retrieve all properties from this object. These expressions can make use of literals, properties present in the ResourceInfo_ object, and all normal CQL operators and functions. 
 There is also support for complex datastructures such as Maps using the dot notation and Lists using the bracket notation (Example mapping files are given below).
@@ -116,10 +118,6 @@ It is also possible to use a filter function called ``list`` to map multiple sin
 
 Placing the ``@`` symbol in front of the field will set that to use as identifier for each metadata record. This may be useful for ID filters.  Use a ``$`` sign in front of fields that are required to make sure the mapping is aware of the requirement (specifically for the purpose of property selection).
   
-
-Dublin Core
-~~~~~~~~~~~
-
 Below is an example of a Dublin Core mapping file::
 
   @identifier.value=id
@@ -145,26 +143,5 @@ All fields have the form of ``<fieldname>.value`` for the actual value in the fi
 Examples of attributes extracted from the ResourceInfo are ``id``, ``title``, and ``keywords``, etc. The attribute ``metadata.date`` uses the metadata (``java.util.``)Map from the Resource object. In this map, it searches for the keyword "date".
 
 Note that double quotes are necessary in order to preserve this meaning of the dots.
-
-ISO Metadata Profile
-~~~~~~~~~~~~~~~~~~~~
-
-Below is an example of an ISO Metadata Profile Mapping File::
-
-  @fileIdentifier.CharacterString=id
-  identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title
-  identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle.CharacterString=list(description,alias,strConcat('##',title)) 
-  identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=keywords 
-  identificationInfo.AbstractMD_Identification.abstract.CharacterString=abstract
-  $dateStamp.Date= if_then_else ( isNull("metadata.date") , 'Unknown', "metadata.date")
-  hierarchyLevel.MD_ScopeCode.@codeListValue='http://purl.org/dc/dcmitype/Dataset'
-  $contact.CI_ResponsibleParty.individualName.CharacterString=
-
-The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation.
-
-To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contact.CI_ResponsibleParty.individualName.CharacterString`` must be preceded by a ``$`` sign to make sure that they are always included even when using property selection.
-
-For more information on the ISO Metadata standard, please see the `OGC Implementation Specification 07-045 <http://www.opengeospatial.org/standards/specifications/catalog>`_. 
-
 
 

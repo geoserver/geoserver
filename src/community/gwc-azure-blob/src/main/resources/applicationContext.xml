@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2019 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <description>
+   Bean configuration file for the gwc-azure-blob module
+  </description>
+  
+  <bean id="AzureBlobStoreConfigProvider" class="org.geowebcache.azure.AzureBlobStoreConfigProvider">
+    <description>
+      Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode AzureBlobStoreInfo instances
+    </description>
+  </bean>
+
+  <bean class="org.geoserver.gwc.web.blob.AzureBlobStoreType" />
+</beans>

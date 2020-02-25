@@ -12,7 +12,7 @@ All directives are declared at the beginning of the CSS sheet and follow the sam
   
 For example:
 
-.. code-block:: css
+.. code-block:: scss
 
   @mode 'Flat';
   @styleTitle 'The title;

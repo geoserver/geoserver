@@ -19,18 +19,20 @@ Set the following performance settings in the Java virtual machine (JVM) for you
      - By starting with a larger heap GeoServer will not need to pause and ask the operating system for more memory during heavy load. The setting ``-Xms128m`` will tell the virtual machine to acquire grab a 128m heap memory on initial startup.
    * - ``-Xmx756M``
      - Defines an upper limit on how much heap memory Java will request from the operating system  (use more if you have excess memory). By default, the JVM will use 1/4 of available system memory. The setting ``-Xms756m`` allocates 756MB of memory to GeoServer.
-   * - ``-XX:MaxPermSize=512m``
-     - This setting is **no longer needed for Java 8** to to a change in how applications are loaded. Previously we asked administrators to rase this value as GeoServer is a relatively large application.
    * - ``-XX:SoftRefLRUPolicyMSPerMB=36000``
      - Increases the lifetime of "soft references" in GeoServer.  GeoServer uses soft references to cache datastore, spatial reference systems, and other data structures. By increasing this value to ``36000`` (which is 36 seconds) these values will stay in memory longer increasing the effectiveness of the cache.
    * - ``-XX:+UseParallelGC``
-     - The default garbage collector, **pauses the application while using several threads to recover memory**. Recommended if your GeoServer will be under light load and can tolerate pauses to clean up memory.
-   * - ``--XX:+UseParNewGC``
+     - The default garbage collector up to Java 8, **pauses the application while using several threads to recover memory**. Recommended if your GeoServer will be under light load and can tolerate pauses to clean up memory.
+   * - ``-XX:+UseParNewGC``
      - Enables use of the concurrent mark sweep (CMS) garbage collector **uses multiple threads to recover memory while the application is running**. Recommended for GeoServer under continuous use, with heap sizes of less than 6GB.
    * - ``–XX:+UseG1GC``
-     - Enables use of the `Garbage First Garbage Collector (G1) <http://www.oracle.com/technetwork/java/javase/tech/g1-intro-jsp-135488.html>`_ using **background threads to scan memory while the application is running** prior to cleanup. Recommended for GeoServer under continuous load and heap sizes of 6GB or more. Additionally you may experiment with ``-XX:+UseStringDeduplicationJVM`` to ask G1 to better manage common text strings in memory.
+     - The default garbage collector since Java 9. Enables use of the `Garbage First Garbage Collector (G1) <http://www.oracle.com/technetwork/java/javase/tech/g1-intro-jsp-135488.html>`_ using **background threads to scan memory while the application is running** prior to cleanup. Recommended for GeoServer under continuous load and heap sizes of 6GB or more. Additionally you may experiment with ``-XX:+UseStringDeduplicationJVM`` to ask G1 to better manage common text strings in memory.
 
 For more information about JVM configuration, see the article `Performance tuning garbage collection in Java <http://www.petefreitag.com/articles/gctuning/>`_ and `The 4 Java Garbage Collectors <http://blog.takipi.com/garbage-collectors-serial-vs-parallel-vs-cms-vs-the-g1-and-whats-new-in-java-8/>`_.
+
+.. note::
+
+   You can only use one garbage collector at a time. Please refrain from combining garbage collectors at runtime. 
 
 .. note:: 
    
@@ -45,7 +47,7 @@ For more information about JVM configuration, see the article `Performance tunin
       uintx InitialHeapSize   := 134217728     {product}
       uintx MaxHeapSize       := 792723456     {product}
 
-   Which when converted from bytes matches ``128`` MB initial heap size, and ``512`` MB max heap size.
+   Which when converted from bytes matches ``128`` MB initial heap size, and ``756`` MB max heap size.
    
    Check defaults for your hardware using ``java -XX:+PrintFlagsFinal -version | grep HeapSize``::
 
@@ -53,3 +55,36 @@ For more information about JVM configuration, see the article `Performance tunin
       uintx MaxHeapSize       := 4294967296    {product}
     
    The above results (from a 16 GB laptop) amount to initial heap size of 256m, and a max heap size of around 4 GB (or around 1/4 of system memory).
+   
+Enable the Marlin rasterizer
+----------------------------
+
+The Marlin rasterizer in Java 8 and getting better performance and scalability while rendering vector data in Java 8. 
+In order to enable it add the following among the JVM startup options::
+
+     -Xbootclasspath/a:$MARLIN_JAR 
+     -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine 
+
+where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory.
+
+.. _production_container.enable_cors:
+
+Enable CORS
+-----------
+
+The standalone distributions of GeoServer include the Jetty application server. Enable Cross-Origin Resource Sharing (CORS) to allow JavaScript applications outside of your own domain to use GeoServer.
+
+For more information on what this does and other options see `Jetty Documentation <http://www.eclipse.org/jetty/documentation>`_
+
+Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoserver/WEB-INF/web.xml`::
+  
+  <web-app>
+    <filter>
+        <filter-name>cross-origin</filter-name>
+        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>cross-origin</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+   </web-app>

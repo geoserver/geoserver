@@ -8,13 +8,12 @@ package org.geoserver.cluster.client;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;
@@ -26,20 +25,18 @@ import org.springframework.jms.listener.SessionAwareMessageListener;
 
 /**
  * JMS Client (Consumer)
- * 
- * Class which leverages on commons classes to define a Topic consumer handling incoming messages using runtime loaded SPI to instantiate needed
- * handlers.
- * 
+ *
+ * <p>Class which leverages on commons classes to define a Topic consumer handling incoming messages
+ * using runtime loaded SPI to instantiate needed handlers.
+ *
  * @see {@link JMSManager}
- * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
  */
-public class JMSQueueListener extends JMSApplicationListener implements
-        SessionAwareMessageListener<Message> {
+public class JMSQueueListener extends JMSApplicationListener
+        implements SessionAwareMessageListener<Message> {
 
-    private final static java.util.logging.Logger LOGGER = Logging
-            .getLogger(JMSQueueListener.class);
+    private static final java.util.logging.Logger LOGGER =
+            Logging.getLogger(JMSQueueListener.class);
 
     private final JMSManager jmsManager;
 
@@ -47,6 +44,8 @@ public class JMSQueueListener extends JMSApplicationListener implements
         super(ToggleType.SLAVE);
         this.jmsManager = jmsManager;
     }
+
+    private AtomicLong consumedEvents = new AtomicLong();
 
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
@@ -64,20 +63,23 @@ public class JMSQueueListener extends JMSApplicationListener implements
         }
         // FILTERING INCOMING MESSAGE
         if (!message.propertyExists(JMSConfiguration.INSTANCE_NAME_KEY)) {
-            throw new JMSException("Unable to handle incoming message, property \'"
-                    + JMSConfiguration.INSTANCE_NAME_KEY + "\' not set.");
+            throw new JMSException(
+                    "Unable to handle incoming message, property \'"
+                            + JMSConfiguration.INSTANCE_NAME_KEY
+                            + "\' not set.");
         }
-        
+
         // FILTERING INCOMING MESSAGE
         if (!message.propertyExists(JMSConfiguration.GROUP_KEY)) {
-            throw new JMSException("Unable to handle incoming message, property \'"
-                    + JMSConfiguration.GROUP_KEY + "\' not set.");
+            throw new JMSException(
+                    "Unable to handle incoming message, property \'"
+                            + JMSConfiguration.GROUP_KEY
+                            + "\' not set.");
         }
-        
-        
+
         // check if message comes from a master with the same name of this slave
-        if (message.getStringProperty(JMSConfiguration.INSTANCE_NAME_KEY).equals(
-                config.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY))) {
+        if (message.getStringProperty(JMSConfiguration.INSTANCE_NAME_KEY)
+                .equals(config.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY))) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Incoming message discarded: source is equal to destination");
             }
@@ -90,17 +92,23 @@ public class JMSQueueListener extends JMSApplicationListener implements
         final String localGroup = config.getConfiguration(JMSConfiguration.GROUP_KEY);
         if (!group.equals(localGroup)) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Incoming message discarded: incoming group-->"+group+" is different from the local one-->"+localGroup);
+                LOGGER.fine(
+                        "Incoming message discarded: incoming group-->"
+                                + group
+                                + " is different from the local one-->"
+                                + localGroup);
             }
             // if so discard the message
             return;
         }
-        
+
         // check the property which define the SPI used (to serialize on the
         // server side).
         if (!message.propertyExists(JMSEventHandlerSPI.getKeyName()))
-            throw new JMSException("Unable to handle incoming message, property \'"
-                    + JMSEventHandlerSPI.getKeyName() + "\' not set.");
+            throw new JMSException(
+                    "Unable to handle incoming message, property \'"
+                            + JMSEventHandlerSPI.getKeyName()
+                            + "\' not set.");
 
         // END -> FILTERING INCOMING MESSAGE
 
@@ -111,8 +119,10 @@ public class JMSQueueListener extends JMSApplicationListener implements
                     "Unable to handle a message without a generator class name");
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Incoming message was serialized using an handler generated by: \'"
-                    + generatorClass + "\'");
+            LOGGER.fine(
+                    "Incoming message was serialized using an handler generated by: \'"
+                            + generatorClass
+                            + "\'");
         }
 
         // USING INCOMING MESSAGE
@@ -124,11 +134,13 @@ public class JMSQueueListener extends JMSApplicationListener implements
             try {
                 // lookup the SPI handler, search is performed using the
                 // name
-                final JMSEventHandler<Serializable, Object> handler = jmsManager
-                        .getHandlerByClassName(generatorClass);
+                final JMSEventHandler<Serializable, Object> handler =
+                        jmsManager.getHandlerByClassName(generatorClass);
                 if (handler == null) {
-                    throw new JMSException("Unable to find SPI named \'" + generatorClass
-                            + "\', be shure to load that SPI into your context.");
+                    throw new JMSException(
+                            "Unable to find SPI named \'"
+                                    + generatorClass
+                                    + "\', be shure to load that SPI into your context.");
                 }
 
                 final Enumeration<String> keys = message.getPropertyNames();
@@ -141,24 +153,22 @@ public class JMSQueueListener extends JMSApplicationListener implements
 
                 // try to synchronize object locally
                 if (!handler.synchronize(handler.deserialize(obj))) {
-                    throw new JMSException("Unable to synchronize message locally.\n SPI: "
-                            + generatorClass);
+                    throw new JMSException(
+                            "Unable to synchronize message locally.\n SPI: " + generatorClass);
                 }
 
             } catch (Exception e) {
                 final JMSException jmsE = new JMSException(e.getLocalizedMessage());
                 jmsE.initCause(e);
                 throw jmsE;
+            } finally {
+                this.consumedEvents.incrementAndGet();
             }
-
-        } else
-            throw new JMSException("Unrecognized message type for catalog incoming event");
+        } else throw new JMSException("Unrecognized message type for catalog incoming event");
     }
 
     // /**
     // * @deprecated unused/untested
-    // * @param message
-    // * @throws JMSException
     // */
     // private static void getStreamMessage(Message message) throws JMSException
     // {
@@ -206,4 +216,11 @@ public class JMSQueueListener extends JMSApplicationListener implements
     // "Unrecognized message type for catalog incoming event");
     // }
 
+    public long getConsumedEvents() {
+        return consumedEvents.get();
+    }
+
+    public void resetconsumedevents() {
+        consumedEvents.set(0);
+    }
 }

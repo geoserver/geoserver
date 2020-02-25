@@ -9,20 +9,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import com.sleepycat.je.DatabaseEntry;
 import java.io.File;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
 import org.junit.Test;
 
-import com.sleepycat.je.DatabaseEntry;
-
 public class SerialVersionSafeSerialBindingTest extends ImporterTestSupport {
+
+    @Override
+    protected void setupImporterFieldInternal() {
+        importer = (Importer) applicationContext.getBean("importer");
+    }
 
     @Test
     public void testSerialize() throws Exception {
@@ -43,7 +47,7 @@ public class SerialVersionSafeSerialBindingTest extends ImporterTestSupport {
 
         DatabaseEntry e = new DatabaseEntry();
         binding.objectToEntry(context, e);
-        
+
         ImportContext context2 = (ImportContext) binding.entryToObject(e);
         context2.reattach(cat, true);
 

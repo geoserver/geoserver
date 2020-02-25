@@ -1,0 +1,27 @@
+<assembly>
+	<id>arcsde-plugin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>arcsde</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>README.*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>release/target/dependency</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>gs-arcsde*.jar</include>
+				<include>gt-arcsde*.jar</include>
+				<include>commons-pool*.jar</include>
+				<include>jsqlparser*.jar</include>
+				<include>icu4j*.jar</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>

@@ -11,24 +11,25 @@ import java.util.Map;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 
-
 /**
  * Coverage format SPI for custom dimensions tests.
- * 
+ *
  * @author Mike Benowitz
  */
 public final class CustomFormatFactory implements GridFormatFactorySpi {
-    
-    @Override public AbstractGridFormat createFormat() {
+
+    @Override
+    public AbstractGridFormat createFormat() {
         return new CustomFormat();
     }
 
-    @Override public boolean isAvailable() {
+    @Override
+    public boolean isAvailable() {
         return true;
     }
 
-    @Override public Map<Key, ?> getImplementationHints() {
+    @Override
+    public Map<Key, ?> getImplementationHints() {
         return Collections.emptyMap();
     }
-
 }

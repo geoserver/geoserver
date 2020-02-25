@@ -11,25 +11,24 @@ import org.geoserver.web.ComponentInfo;
 
 /**
  * Extension point for configuration panels for named security service classes.
- *  
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  * @param <C> The configuration class.
  * @param <T> The configuration panel class.
  */
-public class SecurityNamedServicePanelInfo
-    <C extends SecurityNamedServiceConfig, T extends SecurityNamedServicePanel<C>> 
-    extends ComponentInfo<T> implements ExtensionPriority {
+public class SecurityNamedServicePanelInfo<
+                C extends SecurityNamedServiceConfig, T extends SecurityNamedServicePanel<C>>
+        extends ComponentInfo<T> implements ExtensionPriority {
 
     String shortTitleKey;
     Class serviceClass;
     Class<C> serviceConfigClass;
     int priority = 10;
-    
+
     public String getShortTitleKey() {
         return shortTitleKey;
     }
-    
+
     public void setShortTitleKey(String shortTitleKey) {
         this.shortTitleKey = shortTitleKey;
     }
@@ -54,7 +53,7 @@ public class SecurityNamedServicePanelInfo
     public int getPriority() {
         return priority;
     }
-    
+
     public void setPriority(int priority) {
         this.priority = priority;
     }

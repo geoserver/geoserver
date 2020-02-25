@@ -4,9 +4,8 @@
  */
 package org.geoserver.params.extractor;
 
-import org.geotools.util.logging.Logging;
-
 import java.io.Closeable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,13 +13,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 public final class Utils {
 
     private static final Logger LOGGER = Logging.getLogger(Utils.class);
 
-    private Utils() {
-    }
+    private Utils() {}
 
     public static void info(Logger logger, String message, Object... messageArguments) {
         logger.info(() -> String.format(message, messageArguments));
@@ -30,11 +29,13 @@ public final class Utils {
         logger.fine(() -> String.format(message, messageArguments));
     }
 
-    public static void error(Logger logger, Throwable cause, String message, Object... messageArguments) {
+    public static void error(
+            Logger logger, Throwable cause, String message, Object... messageArguments) {
         logger.log(Level.SEVERE, cause, () -> String.format(message, messageArguments));
     }
 
-    public static void checkCondition(boolean condition, String failMessage, Object... failMessageArguments) {
+    public static void checkCondition(
+            boolean condition, String failMessage, Object... failMessageArguments) {
         if (!condition) {
             throw exception(failMessage, failMessageArguments);
         }
@@ -48,13 +49,15 @@ public final class Utils {
         return new ParamsExtractorException(null, message, messageArguments);
     }
 
-    public static ParamsExtractorException exception(Throwable cause, String message, Object... messageArguments) {
+    public static ParamsExtractorException exception(
+            Throwable cause, String message, Object... messageArguments) {
         return new ParamsExtractorException(cause, message, messageArguments);
     }
 
-    private final static class ParamsExtractorException extends RuntimeException {
+    private static final class ParamsExtractorException extends RuntimeException {
 
-        public ParamsExtractorException(Throwable cause, String message, Object... messageArguments) {
+        public ParamsExtractorException(
+                Throwable cause, String message, Object... messageArguments) {
             super(String.format(message, messageArguments), cause);
         }
     }
@@ -67,7 +70,8 @@ public final class Utils {
         }
     }
 
-    public static Map<String, String[]> parseParameters(Optional<String> queryString) {
+    public static Map<String, String[]> parseParameters(Optional<String> queryString)
+            throws UnsupportedEncodingException {
         Map<String, String[]> parameters = new HashMap<>();
         if (!queryString.isPresent()) {
             return parameters;
@@ -78,11 +82,11 @@ public final class Utils {
             if (parameterParts.length < 2) {
                 continue;
             }
-            String name = URLDecoder.decode(parameterParts[0]);
-            String value = URLDecoder.decode(parameterParts[1]);
+            String name = URLDecoder.decode(parameterParts[0], "UTF-8");
+            String value = URLDecoder.decode(parameterParts[1], "UTF-8");
             String[] values = parameters.get(name);
             if (values == null) {
-                parameters.put(name, new String[]{value});
+                parameters.put(name, new String[] {value});
             } else {
                 values = Arrays.copyOf(values, value.length() + 1);
                 values[value.length()] = value;
@@ -93,9 +97,12 @@ public final class Utils {
     }
 
     public static Map.Entry caseInsensitiveSearch(String key, Map<?, ?> map) {
-        for (Map.Entry entry : map.entrySet()) {
-            if (entry.getKey() instanceof String && ((String) entry.getKey()).toLowerCase().equals(key.toLowerCase())) {
-                return entry;
+        if (map != null) {
+            for (Map.Entry entry : map.entrySet()) {
+                if (entry.getKey() instanceof String
+                        && ((String) entry.getKey()).toLowerCase().equals(key.toLowerCase())) {
+                    return entry;
+                }
             }
         }
         return null;

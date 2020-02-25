@@ -6,13 +6,10 @@
 
 package org.geoserver.security.jdbc;
 
-
 public class DB2UserDetailsServiceTest extends JDBCUserDetailsServiceTest {
 
-    
     @Override
     protected String getFixtureId() {
         return "db2";
     }
-        
 }

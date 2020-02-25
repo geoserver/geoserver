@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.11-SNAPSHOT</version>
+ <version>2.17-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -200,11 +200,6 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
-    <artifactId>gt-gtopo30</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
     <artifactId>gt-jp2k</artifactId>
     <version>${gt.version}</version>
    </dependency>
@@ -226,11 +221,6 @@
    <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-imagepyramid</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-api</artifactId>
     <version>${gt.version}</version>
    </dependency>
    <dependency>
@@ -283,7 +273,13 @@
     <artifactId>gt-xsd-core</artifactId>
     <version>${gt.version}</version>
    </dependency>
-    <dependency>
+   <dependency>
+    <groupId>org.geotools.xsd</groupId>
+    <artifactId>gt-xsd-core</artifactId>
+    <version>${gt.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
     <groupId>org.geotools.xsd</groupId>
     <artifactId>gt-xsd-ows</artifactId>
     <version>${gt.version}</version>
@@ -321,11 +317,6 @@
    <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-shapefile</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-data</artifactId>
     <version>${gt.version}</version>
    </dependency>
    <dependency>
@@ -380,17 +371,17 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
-    <artifactId>gt-wfs</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
     <artifactId>gt-wfs-ng</artifactId>
     <version>${gt.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-wms</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-wmts</artifactId>
     <version>${gt.version}</version>
    </dependency>
    <dependency>
@@ -473,6 +464,21 @@
     <artifactId>gt-process-feature</artifactId>
     <version>${gt.version}</version>
    </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-geopkg</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-mongodb</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.jdom</groupId>
+     <artifactId>jdom2</artifactId>
+     <version>2.0.6</version>
+   </dependency>
 
    <dependency>
      <groupId>com.google.code.gson</groupId>
@@ -520,6 +526,13 @@
        <artifactId>jai_imageio</artifactId>
      </exclusion>
     </exclusions>
+   </dependency>
+   <dependency>
+    <groupId>org.geowebcache</groupId>
+    <artifactId>gwc-core</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+    <version>${gwc.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geowebcache</groupId>
@@ -600,7 +613,14 @@
    <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
-    <version>4.11</version>
+    <version>4.12</version>
+    <scope>test</scope>
+   </dependency>
+   <dependency>
+     <groupId>org.awaitility</groupId>
+     <artifactId>awaitility</artifactId>
+     <version>4.0.1</version>
+     <scope>test</scope>
    </dependency>
    <dependency>
     <groupId>org.hamcrest</groupId>
@@ -613,6 +633,11 @@
     <version>1.3</version>
    </dependency>
    <dependency>
+    <groupId>org.hamcrest</groupId>
+    <artifactId>hamcrest-integration</artifactId>
+    <version>1.3</version>
+   </dependency>
+   <dependency>
     <groupId>xmlunit</groupId>
     <artifactId>xmlunit</artifactId>
     <version>1.3</version>
@@ -620,12 +645,7 @@
    <dependency>
     <groupId>org.easymock</groupId>
     <artifactId>easymock</artifactId>
-    <version>3.1</version>
-   </dependency>
-   <dependency>
-    <groupId>org.easymock</groupId>
-    <artifactId>easymockclassextension</artifactId>
-    <version>2.5.2</version>
+    <version>3.6</version>
    </dependency>
    <dependency>
     <groupId>cglib</groupId>
@@ -640,12 +660,17 @@
    <dependency>
      <groupId>org.mockito</groupId>
      <artifactId>mockito-core</artifactId>
-     <version>1.8.5</version>
+     <version>2.23.0</version>
    </dependency>    
    <dependency>
      <groupId>xalan</groupId>
      <artifactId>xalan</artifactId>
-     <version>2.7.0</version>
+     <version>2.7.2</version>
+   </dependency>
+   <dependency>
+     <groupId>xalan</groupId>
+     <artifactId>serializer</artifactId>
+     <version>2.7.2</version>
    </dependency>
    <dependency>
     <groupId>xpp3</groupId>
@@ -697,12 +722,12 @@
    <dependency>
     <groupId>commons-fileupload</groupId>
     <artifactId>commons-fileupload</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.3</version>
    </dependency>
    <dependency>
     <groupId>commons-io</groupId>
     <artifactId>commons-io</artifactId>
-    <version>2.1</version>
+    <version>2.6</version>
    </dependency>
    <dependency>
     <groupId>commons-codec</groupId>
@@ -715,9 +740,9 @@
     <version>3.1</version>
    </dependency>
    <dependency>
-    <groupId>commons-lang</groupId>
-    <artifactId>commons-lang</artifactId>
-    <version>2.6</version>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.8.1</version>
    </dependency>
    <dependency>
     <groupId>commons-validator</groupId>
@@ -755,19 +780,29 @@
 	<version>1.3</version>
    </dependency>
    <dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-text</artifactId>
+    <version>1.4</version>
+   </dependency>
+   <dependency>
     <groupId>com.jayway.jsonpath</groupId>
     <artifactId>json-path</artifactId>
-    <version>2.2.0</version>
+    <version>2.4.0</version>
    </dependency>
    <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpcore</artifactId>
-    <version>4.4.4</version>
+    <version>4.4.10</version>
    </dependency>
    <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.5.1</version>
+    <version>4.5.5</version>
+   </dependency>
+   <dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient-cache</artifactId>
+    <version>4.5.5</version>
    </dependency>
    <dependency>
     <groupId>org.springframework</groupId>
@@ -837,8 +872,9 @@
    <dependency>
     <groupId>org.springframework.ldap</groupId>
     <artifactId>spring-ldap-test</artifactId>
-    <version>1.3.2.RELEASE</version>
+    <version>2.3.2.RELEASE</version>
    </dependency>
+
 <!--
    <dependency>
     <groupId>org.springframework.security</groupId>
@@ -866,12 +902,17 @@
    <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
-      <version>1.8</version>
+      <version>${jasypt.version}</version>
    </dependency>
+      <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt-springsecurity3</artifactId>
+      <version>${jasypt.version}</version>
+    </dependency>
    <dependency>
     <groupId>org.bouncycastle</groupId>
     <artifactId>bcprov-jdk15on</artifactId>
-    <version>1.54</version>
+    <version>1.60</version>
    </dependency>
    <dependency>
      <groupId>org.apache.wicket</groupId>
@@ -896,6 +937,11 @@
    <dependency>
      <groupId>org.apache.wicket</groupId>
      <artifactId>wicket-extensions</artifactId>
+     <version>${wicket.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.wicketstuff</groupId>
+     <artifactId>wicketstuff-select2</artifactId>
      <version>${wicket.version}</version>
    </dependency>
    <dependency>
@@ -949,7 +995,12 @@
     <version>${jetty.version}</version>
     <type>pom</type>
    </dependency>
-   <dependency>
+  <dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-servlets</artifactId>
+    <version>${jetty.version}</version>
+  </dependency>
+  <dependency>
     <groupId>tomcat</groupId>
     <artifactId>jasper-compiler-jdt</artifactId>
     <version>5.5.15</version>
@@ -999,16 +1050,28 @@
     <artifactId>jt-concurrent-tile-cache</artifactId>
     <version>${jaiext.version}</version>
    </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>common</artifactId>
-    <version>2.6.0</version>
-   </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>ecore</artifactId>
-    <version>2.6.1</version>
-   </dependency>
+         <!-- EMF -->
+
+      <dependency>
+	    <groupId>org.eclipse.emf</groupId>
+	    <artifactId>org.eclipse.emf.common</artifactId>
+	    <version>2.12.0</version>
+    </dependency>
+	<dependency>
+		<groupId>org.eclipse.emf</groupId>
+		<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+		<version>2.12.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.emf</groupId>
+		<artifactId>org.eclipse.emf.ecore</artifactId>
+		<version>2.12.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.xsd</groupId>
+		<artifactId>org.eclipse.xsd</artifactId>
+		<version>2.12.0</version>
+	</dependency>
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>
@@ -1016,9 +1079,8 @@
    </dependency>
    <dependency> 
      <groupId>net.sf.json-lib</groupId> 
-     <artifactId>json-lib</artifactId> 
-     <version>2.2.3</version> 
-     <classifier>jdk15</classifier>
+     <artifactId>json-lib</artifactId>
+     <version>2.4.2-geoserver</version>
    </dependency>
    <dependency>
      <groupId>org.codehaus.jackson</groupId>
@@ -1042,9 +1104,14 @@
    </dependency>
 
    <dependency>
-   <groupId>javax.mail</groupId>
+     <groupId>javax.mail</groupId>
      <artifactId>mail</artifactId>
      <version>1.4</version>
+   </dependency>
+   <dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>javax.activation-api</artifactId>
+    <version>1.2.0</version>
    </dependency>
    <dependency>
      <groupId>javax.activation</groupId>
@@ -1101,7 +1168,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.7</version>
+      <version>1.4.11.1</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -1116,7 +1183,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>17.0</version>
+      <version>27.0-jre</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -1198,8 +1265,103 @@
     <dependency>
       <groupId>no.ecc.vectortile</groupId>
       <artifactId>java-vector-tile</artifactId>
-      <version>1.0.9</version>
+      <version>1.3.7</version>
     </dependency>
+    <dependency>
+      <groupId>com.ning</groupId>
+      <artifactId>compress-lzf</artifactId>
+      <version>${compress-lzf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.10.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.svenmeier.wicket-dnd</groupId>
+      <artifactId>wicket-dnd</artifactId>
+      <version>0.7.3</version>
+      <exclusions>
+        <!-- wicket-dnd depends on wicket 7.0, we use a more recent version -->
+        <exclusion>
+           <groupId>org.apache.wicket</groupId>
+           <artifactId>wicket-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.marlin</groupId>
+      <artifactId>marlin</artifactId>
+      <version>${marlin.version}</version>
+    </dependency>
+    <dependency>
+     <groupId>com.github.oshi</groupId>
+     <artifactId>oshi-core</artifactId>
+     <version>3.13.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.jdbc.version}</version>
+    </dependency>
+   <dependency>
+    <groupId>org.apache.solr</groupId>
+    <artifactId>solr-solrj</artifactId>
+    <version>${solrj.version}</version>
+    <exclusions>
+     <exclusion>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+     </exclusion>
+    </exclusions>
+   </dependency>
+   <dependency>
+     <groupId>org.locationtech.jts</groupId>
+     <artifactId>jts-core</artifactId>
+     <version>${jts.version}</version>
+     <exclusions>
+     <exclusion>
+       <groupId>xerces</groupId>
+       <artifactId>xercesImpl</artifactId>
+       </exclusion>
+     </exclusions>
+   </dependency>
+  <dependency>
+    <groupId>org.apache.directory.server</groupId>
+    <artifactId>apacheds-all</artifactId>
+    <version>2.0.0-M24</version>
+  </dependency>
+  <dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.4.0-b180830.0359</version>
+  </dependency>
+  <dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+    <version>2.4.0-b180830.0438</version>
+  </dependency>
+  <dependency>
+    <groupId>javax.annotation</groupId>
+    <artifactId>javax.annotation-api</artifactId>
+    <version>1.3.1</version>
+  </dependency>
+  <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+    <version>${hazelcast.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+    <version>${hazelcast.version}</version>
+    <classifier>tests</classifier>
+  </dependency>
+  <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast-spring</artifactId>
+    <version>${hazelcast.version}</version>
+  </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1222,10 +1384,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-api</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-main</artifactId>
   </dependency>
   <dependency>
@@ -1236,17 +1394,6 @@
  </dependencies>
 
  <build>
-  <!-- Forces some plugin versions since latest and greatest are not working properly -->
-  <pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.6</version>
-      </plugin>
-    </plugins>
-  </pluginManagement>
- 
   <!-- TODO: the resources stuff hardcodes paths to source + test directories,
       we should be able to use some properties here -->
   <resources>
@@ -1337,7 +1484,7 @@
    <plugin>
      <groupId>org.apache.maven.plugins</groupId>
      <artifactId>maven-compiler-plugin</artifactId>
-     <version>2.3.2</version>
+     <version>3.8.0</version>
      <configuration>
        <source>1.8</source>
        <target>1.8</target>
@@ -1361,7 +1508,7 @@
    <!-- unit testing -->
    <plugin>
     <artifactId>maven-surefire-plugin</artifactId>
-    <version>2.12.3</version>
+    <version>2.22.2</version>
     <configuration>
      <runOrder>alphabetical</runOrder>
      <source>1.8</source>
@@ -1373,11 +1520,11 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
      <excludedGroups>${test.excludedGroups}</excludedGroups>
+     <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions --illegal-access=debug -Dfile.encoding=UTF-8</argLine>
     </configuration>
    </plugin>
 
@@ -1396,7 +1543,6 @@
       <descriptor>release/ext-jp2k.xml</descriptor>
       <descriptor>release/ext-mysql.xml</descriptor>
       <descriptor>release/ext-oracle.xml</descriptor>
-      <descriptor>release/ext-arcsde.xml</descriptor>
       <descriptor>release/ext-pyramid.xml</descriptor>
       <descriptor>release/ext-gdal.xml</descriptor>
       <descriptor>release/ext-h2.xml</descriptor>
@@ -1414,7 +1560,7 @@
       <descriptor>release/ext-teradata.xml</descriptor>
       <descriptor>release/ext-cas.xml</descriptor>
       <descriptor>release/ext-monitor.xml</descriptor>
-      <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+      <descriptor>release/ext-mongodb.xml</descriptor>
       <descriptor>release/ext-xslt.xml</descriptor>
       <descriptor>release/ext-inspire.xml</descriptor>
       <descriptor>release/ext-css.xml</descriptor>      
@@ -1429,29 +1575,21 @@
       <descriptor>release/ext-netcdf.xml</descriptor>
       <descriptor>release/ext-netcdf-out.xml</descriptor>
       <descriptor>release/ext-vectortiles.xml</descriptor>
+      <descriptor>release/ext-ysld.xml</descriptor>
+      <descriptor>release/ext-sldservice.xml</descriptor>
+      <descriptor>release/ext-geofence.xml</descriptor>
+      <descriptor>release/ext-geofence-server.xml</descriptor>
+      <descriptor>release/ext-authkey.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.11-SNAPSHOT</finalName>
+     <finalName>geoserver-2.17-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
-   </plugin>
-
-   <!-- code coverage -->
-   <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>cobertura-maven-plugin</artifactId>
-    <executions>
-     <execution>
-      <goals>
-       <goal>clean</goal>
-      </goals>
-     </execution>
-    </executions>
    </plugin>
 
    <!-- eclipse ide integration -->
    <plugin>
     <artifactId>maven-eclipse-plugin</artifactId>
-    <version>2.4</version>
+    <version>2.10</version>
     <configuration>
      <!--downloadSources>true</downloadSources-->
      <additionalProjectnatures>
@@ -1607,6 +1745,43 @@
     </configuration>
    </plugin>
 
+   <plugin>
+     <groupId>com.coveo</groupId>
+     <artifactId>fmt-maven-plugin</artifactId>
+     <version>2.4.0</version>
+     <configuration>
+       <verbose>false</verbose>
+       <filesNamePattern>.*\.java</filesNamePattern>
+       <skip>${fmt.skip}</skip>
+       <style>aosp</style>
+     </configuration>
+     <executions>
+       <execution>
+         <goals>
+           <goal>${fmt.action}</goal>
+         </goals>
+       </execution>
+     </executions>
+   </plugin>
+   
+   <plugin>
+    <groupId>org.commonjava.maven.plugins</groupId>
+    <artifactId>directory-maven-plugin</artifactId>
+    <version>0.3.1</version>
+    <executions>
+      <execution>
+        <id>directories</id>
+        <goals>
+          <goal>highest-basedir</goal>
+        </goals>
+        <phase>initialize</phase>
+        <configuration>
+          <property>geoserverBaseDir</property>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
+
   </plugins>
 
   <extensions>
@@ -1729,11 +1904,11 @@
     </configuration>
    </plugin>
 
-   <!-- cobertura plugin (test code coverage reports) -->
+   <!-- jacoco plugin (test code coverage reports) -->
    <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>cobertura-maven-plugin</artifactId>
-    <version>2.5.2</version>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>${jacoco.version}</version>
     <configuration>
        <formats>
           <format>html</format>
@@ -1746,18 +1921,18 @@
  </reporting>
 
  <distributionManagement>
-  <repository>
-   <id>boundless</id>
-   <name>Boundless Release Repository</name>
-   <url>https://repo.boundlessgeo.com/release/</url>
-   <uniqueVersion>false</uniqueVersion>
-  </repository>
-  <snapshotRepository>
-   <id>boundless</id>
-   <uniqueVersion>false</uniqueVersion>
-   <name>Boundless Snapshot Repository</name>
-   <url>https://repo.boundlessgeo.com/snapshot/</url>
-  </snapshotRepository>
+    <repository>
+      <id>boundless</id>
+      <name>Boundless Release Repository</name>
+      <url>https://repo.boundlessgeo.com/release/</url>
+      <uniqueVersion>false</uniqueVersion>
+    </repository>
+    <snapshotRepository>
+      <id>boundless</id>
+      <uniqueVersion>false</uniqueVersion>
+      <name>Boundless Snapshot Repository</name>
+      <url>https://repo.boundlessgeo.com/snapshot/</url>
+    </snapshotRepository>
  </distributionManagement>
 
  <modules>
@@ -1775,26 +1950,32 @@
   <module>gwc</module>
   <module>rest</module>
   <module>restconfig</module>
+  <module>restconfig-wcs</module>
+  <module>restconfig-wfs</module>
+  <module>restconfig-wms</module>
+  <module>restconfig-wmts</module>
   <module>web</module>
   <module>community</module>
   <module>extension</module>
-</modules>
+ </modules>
 
  <properties>
-  <gs.version>2.11-SNAPSHOT</gs.version>
-  <gt.version>17-SNAPSHOT</gt.version>
-  <gwc.version>1.11-SNAPSHOT</gwc.version>
-  <spring.version>4.2.5.RELEASE</spring.version>
-  <spring.security.version>4.0.4.RELEASE</spring.security.version> 
+  <gs.version>2.17-SNAPSHOT</gs.version>
+  <gt.version>23-SNAPSHOT</gt.version>
+  <gwc.version>1.17-SNAPSHOT</gwc.version>
+  <jts.version>1.16.1</jts.version>
+  <spring.version>5.1.13.RELEASE</spring.version>
+  <spring.security.version>5.1.8.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>
-  <jetty.version>9.2.13.v20150730</jetty.version>
+  <jetty.version>9.4.18.v20190429</jetty.version>
   <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
-  <poi.version>3.14</poi.version>
-  <wicket.version>7.1.0</wicket.version>
+  <poi.version>4.0.0</poi.version>
+  <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.17</imageio-ext.version>
-  <jaiext.version>1.0.12</jaiext.version>
+  <imageio-ext.version>1.3.2</imageio-ext.version>
+  <jaiext.version>1.1.12</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
+  <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>
   <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
@@ -1806,23 +1987,42 @@
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
-  <fork.javac>true</fork.javac>
-  <javac.maxHeapSize>256m</javac.maxHeapSize>
+  <fork.javac>false</fork.javac>
+  <javac.maxHeapSize>256M</javac.maxHeapSize>
   <image.tests>true</image.tests>
-  <interactive.tests>false</interactive.tests>
+  <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
-  <gf.version>3.2-SNAPSHOT</gf.version>
-  <hibernate-version>3.6.0.Final</hibernate-version>
+  <gf.version>3.4.2</gf.version>
+  <jasypt.version>1.9.2</jasypt.version>
+  <hibernate-version>3.6.9.Final</hibernate-version>
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
-  <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
-  <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
+  <hibernate-spatial-version>1.1.3.1</hibernate-spatial-version>
+  <hibernate-spatial-h2-version>1.1.3.1</hibernate-spatial-h2-version>
+  <opengeo-geodb.version>0.9</opengeo-geodb.version>
   <!-- NOTE: be careful if upgrading slf4j, check the netcdf and netcdf-out build correcly -->
   <slf4j.version>1.6.4</slf4j.version>
   <joda-time.version>2.8.1</joda-time.version>
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
   <jackson1.version>1.9.13</jackson1.version>
-  <jackson2.version>2.3.2</jackson2.version>
+  <jackson2.version>2.10.1</jackson2.version>
+  <compress-lzf.version>1.0.3</compress-lzf.version>
+  <marlin.version>0.9.3</marlin.version>
+  <postgresql.jdbc.version>42.2.5</postgresql.jdbc.version>
+  <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
+  <solrj.version>7.2.1</solrj.version>
+  <jacoco.version>0.8.1</jacoco.version>
+  <hazelcast.version>3.11.1</hazelcast.version>
+  <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+  <fmt.action>format</fmt.action>
+  <fmt.skip>false</fmt.skip>
+  <errorProneFlags></errorProneFlags>
+  <errorProne.version>2.3.4</errorProne.version>
+  <javac.version>9+181-r4173-1</javac.version>
+  <pmd.version>6.20.0</pmd.version>
+  <checkstyle.skip>false</checkstyle.skip>
+  <qa>false</qa>
+  <lint>deprecation</lint>
  </properties>
 
  <profiles>
@@ -1879,6 +2079,10 @@
     </activation>
     <dependencies>
       <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-main</artifactId>
+      </dependency>
+      <dependency>
         <groupId>org.geowebcache</groupId>
         <artifactId>gwc-core</artifactId>
       </dependency>
@@ -1898,7 +2102,7 @@
             </goals>
             <configuration>
               <includeGroupIds>org.geotools,org.geowebcache</includeGroupIds>
-              <includeArtifactIds>gt-api,gwc-core</includeArtifactIds>
+              <includeArtifactIds>gt-main,gwc-core</includeArtifactIds>
             </configuration>
           </execution>
         </executions>
@@ -1927,7 +2131,7 @@
           <configuration>
             <tasks>
                <loadproperties prefix="gt">
-                  <zipentry zipfile="target/dependency/gt-api-${gt.version}.jar" name="META-INF/MANIFEST.MF"/>
+                  <zipentry zipfile="target/dependency/gt-main-${gt.version}.jar" name="META-INF/MANIFEST.MF"/>
                </loadproperties>
                <loadproperties prefix="gwc">
                   <zipentry zipfile="target/dependency/gwc-core-${gwc.version}.jar" name="META-INF/MANIFEST.MF"/>
@@ -1987,6 +2191,261 @@
        <remoteOwsTests>true</remoteOwsTests>
      </properties>
     </profile>
- </profiles>
+
+    <!-- code coverage -->
+    <profile>
+      <id>jacoco</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+            <executions>
+              <execution>
+                <id>pre-unit-test</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-unit-test</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Dependency version checks -->
+    <profile>
+      <id>dependencycheck</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>3.2.1</version>
+            <configuration>
+              <failBuildOnCVSS>8</failBuildOnCVSS>
+              <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>pmd</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>3.11.0</version>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-core</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-java</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-javascript</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-jsp</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <rulesets>
+                <ruleset>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml</ruleset>
+              </rulesets>
+              <failurePriority>3</failurePriority>
+              <minimumPriority>3</minimumPriority>
+              <verbose>true</verbose>
+              <printFailingErrors>true</printFailingErrors>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- for those using JDK 11 -->
+    <profile>
+      <id>errorprone</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+        <jdk>(1.8,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <fork>false</fork>
+              <compilerArgs>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-Xlint:${lint}</arg>
+                <arg>-Werror</arg>
+                <arg>-Xmaxwarns</arg>
+                <arg>1000</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${errorProne.version}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- using github.com/google/error-prone-javac is required when running on JDK 8 -->
+    <profile>
+      <id>errorprone8</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+        <jdk>1.8</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <fork>true</fork>
+              <compilerArgs combine.children="append">
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+                <arg>-Xlint:${lint}</arg>
+                <arg>-Werror</arg>
+                <arg>-Xmaxwarns</arg>
+                <arg>1000</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${errorProne.version}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>spotbugs</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>3.1.10</version>
+            <configuration>
+              <effort>More</effort>
+              <!--threshold>High</threshold-->
+              <xmlOutput>true</xmlOutput>
+              <maxRank>15</maxRank>
+              <excludeFilterFile>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
+              <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>checkstyle</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+           <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>3.1.1</version>
+              <configuration>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <!-- ignore generated classes, e.g., javacc ones -->
+                    <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+                    <skip>${checkstyle.skip}</skip>
+                    <configLocation>${geoserverBaseDir}/../build/qa/checkstyle.xml</configLocation>
+                  </configuration>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>  
+    </profile>
+  </profiles>
 
 </project>

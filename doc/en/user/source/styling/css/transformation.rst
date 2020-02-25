@@ -3,7 +3,7 @@
 Rendering transformations in CSS
 ================================
 
-.. highlight:: css
+.. highlight:: scss
 
 Starting with GeoServer 2.10 the CSS modules supports rendering transformations via the
 ``transform`` property.
@@ -34,14 +34,14 @@ when a suitable zoom level is reached::
       font-weight: bold;
       halo-color: white;
       halo-radius: 2;
-      -gt-label-follow-line: true;
-      -gt-label-repeat: 200;
-      -gt-label-max-angle-delta: 45;
-      -gt-label-priority: 2000;
+      label-follow-line: true;
+      label-repeat: 200;
+      label-max-angle-delta: 45;
+      label-priority: 2000;
     }
     
     /* @title Values */
-    [@scale < 12000] {
+    [@sd < 12000] {
       transform: ras:RasterAsPointCollection(scale: 0.5);
       z-index: 1;
       label: [GRAY_INDEX];
@@ -49,7 +49,7 @@ when a suitable zoom level is reached::
       font-family: Arial;
       font-fill: black;
       font-size: 6;
-      -gt-label-priority: 1000;
+      label-priority: 1000;
     }
 
 .. figure:: images/transformation.png

@@ -7,12 +7,13 @@ package org.geoserver.jdbcconfig.internal;
 
 import static com.google.common.base.Preconditions.*;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.catalog.Predicates;
 import org.geoserver.function.IsInstanceOf;
 import org.geotools.filter.Capabilities;
@@ -74,21 +75,18 @@ import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.filter.temporal.TOverlaps;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-
-/**
- */
+/** */
 public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
     public static final FilterCapabilities CAPABILITIES;
+
     static {
         Capabilities builder = new Capabilities();
         builder.addType(PropertyIsEqualTo.class);
         builder.addType(PropertyIsNotEqualTo.class);
         builder.addType(PropertyIsLike.class);
-        builder.addType(PropertyIsNull.class);// whether a property exists at all
-        builder.addType(PropertyIsNil.class);// whether the property exists AND it's value is null
+        builder.addType(PropertyIsNull.class); // whether a property exists at all
+        builder.addType(PropertyIsNil.class); // whether the property exists AND it's value is null
         builder.addType(And.class);
         builder.addType(Or.class);
         builder.addName(IsInstanceOf.NAME.getName());
@@ -110,9 +108,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         namedParams.put("types", concreteQueryTypes);
     }
 
-    /**
-     *
-     */
+    /** */
     public Map<String, Object> getNamedParameters() {
         return namedParams;
     }
@@ -125,9 +121,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return sb;
     }
 
-    /**
-     * @see org.opengis.filter.FilterVisitor#visitNullFilter(java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visitNullFilter(java.lang.Object) */
     @Override
     public Object visitNullFilter(Object extraData) {
         throw new UnsupportedOperationException("Do not use null as filter");
@@ -135,7 +129,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
     /**
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.ExcludeFilter,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(ExcludeFilter filter, Object extraData) {
@@ -145,7 +139,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
     /**
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.IncludeFilter,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(IncludeFilter filter, Object extraData) {
@@ -155,147 +149,202 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
     /**
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsEqualTo,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsEqualTo filter, Object extraData) {
 
         MatchAction matchAction = filter.getMatchAction();
-        boolean matchingCase = filter.isMatchingCase(); 
-        
-        if (!(filter.getExpression1() instanceof Literal) && !(filter.getExpression2() instanceof Literal)) {
-            
-            //comparing two fields with each other
-            
+        boolean matchingCase = filter.isMatchingCase();
+
+        if (!(filter.getExpression1() instanceof Literal)
+                && !(filter.getExpression2() instanceof Literal)) {
+
+            // comparing two fields with each other
+
             PropertyName expression1 = (PropertyName) filter.getExpression1();
             PropertyName expression2 = (PropertyName) filter.getExpression2();
-                
+
             final String propertyTypesParam1 = propertyTypesParam(expression1);
             final String propertyTypesParam2 = propertyTypesParam(expression2);
-            
-            //respect matchCase
+
+            // respect matchCase
             String valueCol1 = matchingCase ? "o1.value" : "UPPER(o1.value)";
             String valueCol2 = matchingCase ? "o2.value" : "UPPER(o2.value)";
-        
+
             StringBuilder builder;
-            
+
             switch (matchAction) {
-            //respect matchaction
-            case ALL: // all = another value for the property may not occur
-                builder = append(extraData,
-                        "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
-                        "AND o1.property_type IN (:", propertyTypesParam1, ") ",
-                        "AND o2.property_type IN (:", propertyTypesParam2, ") ",
-                        "AND ", valueCol1, " != ", valueCol2, " ) /* ", filter.toString(), 
-                      " */ \n");
-                break;
-            case ANY: //any = the value for the property must occur at least once
-                builder = append(extraData,
-                        "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
-                        "AND o1.property_type IN (:", propertyTypesParam1, ") ",
-                        "AND o2.property_type IN (:", propertyTypesParam2, ") ",
-                        "AND ", valueCol1, " = ", valueCol2, " ) /* ", filter.toString(),
-                        " */ \n");
-                break;
-            case ONE: //one = the value for the property must occur exactly once
-                builder = append(extraData,
-                        "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid) ",
-                        "AND o1.property_type IN (:", propertyTypesParam1, ") ",
-                        "AND o2.property_type IN (:", propertyTypesParam2, ") ",
-                        "AND ", valueCol1, " = ", valueCol2,
-                        " GROUP BY (oid) HAVING COUNT(oid)=1) /* ", filter.toString(), "/* ", filter.toString(),
-                        " */ \n");
-                break;
-            default:
-                throw new IllegalArgumentException("MatchAction: " + matchAction);
+                    // respect matchaction
+                case ALL: // all = another value for the property may not occur
+                    builder =
+                            append(
+                                    extraData,
+                                    "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
+                                    "AND o1.property_type IN (:",
+                                    propertyTypesParam1,
+                                    ") ",
+                                    "AND o2.property_type IN (:",
+                                    propertyTypesParam2,
+                                    ") ",
+                                    "AND ",
+                                    valueCol1,
+                                    " != ",
+                                    valueCol2,
+                                    " ) /* ",
+                                    filter.toString(),
+                                    " */ \n");
+                    break;
+                case ANY: // any = the value for the property must occur at least once
+                    builder =
+                            append(
+                                    extraData,
+                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
+                                    "AND o1.property_type IN (:",
+                                    propertyTypesParam1,
+                                    ") ",
+                                    "AND o2.property_type IN (:",
+                                    propertyTypesParam2,
+                                    ") ",
+                                    "AND ",
+                                    valueCol1,
+                                    " = ",
+                                    valueCol2,
+                                    " ) /* ",
+                                    filter.toString(),
+                                    " */ \n");
+                    break;
+                case ONE: // one = the value for the property must occur exactly once
+                    builder =
+                            append(
+                                    extraData,
+                                    "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid) ",
+                                    "AND o1.property_type IN (:",
+                                    propertyTypesParam1,
+                                    ") ",
+                                    "AND o2.property_type IN (:",
+                                    propertyTypesParam2,
+                                    ") ",
+                                    "AND ",
+                                    valueCol1,
+                                    " = ",
+                                    valueCol2,
+                                    " GROUP BY (oid) HAVING COUNT(oid)=1) /* ",
+                                    filter.toString(),
+                                    "/* ",
+                                    filter.toString(),
+                                    " */ \n");
+                    break;
+                default:
+                    throw new IllegalArgumentException("MatchAction: " + matchAction);
             }
-              
+
             return builder;
-            
+
         } else {
-            
-            if(filter.getExpression1() instanceof IsInstanceOf){
-                StringBuilder builder = append(extraData, handleInstanceOf((IsInstanceOf) filter.getExpression1()));
-                return builder; 
+
+            if (filter.getExpression1() instanceof IsInstanceOf) {
+                StringBuilder builder =
+                        append(extraData, handleInstanceOf((IsInstanceOf) filter.getExpression1()));
+                return builder;
             }
-            
-            //comparing a literal with a field
-            
+
+            // comparing a literal with a field
+
             PropertyName expression1;
             Literal expression2;
-            
-            
-            //decide which is the literal
-            if (filter.getExpression1() instanceof Literal) {            
+
+            // decide which is the literal
+            if (filter.getExpression1() instanceof Literal) {
                 expression1 = (PropertyName) filter.getExpression2();
                 expression2 = (Literal) filter.getExpression1();
-                
+
             } else {
                 expression1 = (PropertyName) filter.getExpression1();
                 expression2 = (Literal) filter.getExpression2();
-            }        
-                
+            }
+
             final String propertyTypesParam = propertyTypesParam(expression1);
-    
-            //respect match case
+
+            // respect match case
             String expectedValue = expression2.evaluate(null, String.class);
             if (!matchingCase) {
                 expectedValue = expectedValue.toUpperCase();
             }
             String valueParam = newParam("value", expectedValue);
-                        
+
             StringBuilder builder;
             String valueCol = matchingCase ? "value" : "UPPER(value)";
-                
+
             switch (matchAction) {
-            // respect match action
-            case ALL: // all = another value for the property may not occur
-                builder = append(extraData,
-                        "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                        propertyTypesParam, ") AND ", valueCol, " != :", valueParam, ") /* ", filter.toString(),
-                        " */ \n");
-                break;
-            case ANY: //any = the value for the property must occur at least once
-                builder = append(extraData,
-                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                        propertyTypesParam, ") AND ", valueCol, " = :", valueParam, ") /* ", filter.toString(),
-                        " */ \n");
-                break;
-            case ONE: //one = the value for the property must occur exactly once
-                builder = append(extraData,
-                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                       propertyTypesParam, ") AND ", valueCol, " = :", valueParam,
-                        " GROUP BY (oid) HAVING COUNT(oid)=1) /* ", filter.toString(),
-                        " */ \n");
-                break;
-            default:
-                throw new IllegalArgumentException("MatchAction: " + matchAction);
+                    // respect match action
+                case ALL: // all = another value for the property may not occur
+                    builder =
+                            append(
+                                    extraData,
+                                    "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                                    propertyTypesParam,
+                                    ") AND ",
+                                    valueCol,
+                                    " != :",
+                                    valueParam,
+                                    ") /* ",
+                                    filter.toString(),
+                                    " */ \n");
+                    break;
+                case ANY: // any = the value for the property must occur at least once
+                    builder =
+                            append(
+                                    extraData,
+                                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                                    propertyTypesParam,
+                                    ") AND ",
+                                    valueCol,
+                                    " = :",
+                                    valueParam,
+                                    ") /* ",
+                                    filter.toString(),
+                                    " */ \n");
+                    break;
+                case ONE: // one = the value for the property must occur exactly once
+                    builder =
+                            append(
+                                    extraData,
+                                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                                    propertyTypesParam,
+                                    ") AND ",
+                                    valueCol,
+                                    " = :",
+                                    valueParam,
+                                    " GROUP BY (oid) HAVING COUNT(oid)=1) /* ",
+                                    filter.toString(),
+                                    " */ \n");
+                    break;
+                default:
+                    throw new IllegalArgumentException("MatchAction: " + matchAction);
             }
-    
+
             return builder;
         }
     }
 
     private String handleInstanceOf(IsInstanceOf instanceOf) {
         Expression expression1 = instanceOf.getParameters().get(0);
-        
+
         Class clazz = expression1.evaluate(null, Class.class);
 
-        if(clazz == null || dbMappings.getTypeId(clazz) == null){
+        if (clazz == null || dbMappings.getTypeId(clazz) == null) {
             return "(1=0) /* EXCLUDE */\n";
         }
-        
+
         Integer typeId = dbMappings.getTypeId(clazz);
-        
+
         return "type_id = " + typeId + "/* isInstanceOf " + clazz.toString() + " */ \n";
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsLike,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsLike filter, Object extraData) {
@@ -311,38 +360,63 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final char single = filter.getSingleChar().charAt(0);
         final boolean matchCase = filter.isMatchingCase();
 
-        final String pattern = LikeFilterImpl
-                .convertToSQL92(esc, multi, single, matchCase, literal);
+        final String pattern =
+                LikeFilterImpl.convertToSQL92(esc, multi, single, matchCase, literal);
 
-        //respect match case
+        // respect match case
         String valueCol = matchCase ? "value" : "UPPER(value)";
 
         StringBuilder builder;
-        
+
         switch (matchAction) {
-        // respect match action
-        case ALL: // all = another value for the property may not occur
-            builder = append(extraData,
-                    "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                    propertyTypesParam, ") AND NOT(", valueCol, " LIKE '", pattern, "')) /* ",
-                    filter.toString(), " */ \n");
-            break;
-        case ANY: //any = the value for the property must occur at least once
-            builder = append(extraData,
-                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                    propertyTypesParam, ") AND ", valueCol, " LIKE '", pattern, "') /* ",
-                    filter.toString(), " */ \n");
-            break;
-        case ONE:  //one = the value for the property must occur exactly once
-            builder = append(extraData,
-                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                    propertyTypesParam, ") AND ", valueCol, " LIKE '", pattern, "' ",
-                    "GROUP BY (oid) HAVING COUNT(oid)=1 ) /* ", filter.toString(), " */ \n");
-            break;
-        default:
-            throw new IllegalArgumentException("MatchAction: " + matchAction);
+                // respect match action
+            case ALL: // all = another value for the property may not occur
+                builder =
+                        append(
+                                extraData,
+                                "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                                propertyTypesParam,
+                                ") AND NOT(",
+                                valueCol,
+                                " LIKE '",
+                                pattern,
+                                "')) /* ",
+                                filter.toString(),
+                                " */ \n");
+                break;
+            case ANY: // any = the value for the property must occur at least once
+                builder =
+                        append(
+                                extraData,
+                                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                                propertyTypesParam,
+                                ") AND ",
+                                valueCol,
+                                " LIKE '",
+                                pattern,
+                                "') /* ",
+                                filter.toString(),
+                                " */ \n");
+                break;
+            case ONE: // one = the value for the property must occur exactly once
+                builder =
+                        append(
+                                extraData,
+                                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                                propertyTypesParam,
+                                ") AND ",
+                                valueCol,
+                                " LIKE '",
+                                pattern,
+                                "' ",
+                                "GROUP BY (oid) HAVING COUNT(oid)=1 ) /* ",
+                                filter.toString(),
+                                " */ \n");
+                break;
+            default:
+                throw new IllegalArgumentException("MatchAction: " + matchAction);
         }
-        
+
         return builder;
     }
 
@@ -354,8 +428,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         String propertyName = property.getPropertyName();
         propertyTypes = dbMappings.getPropertyTypes(queryType, propertyName);
 
-        Preconditions.checkState(!propertyTypes.isEmpty(), "Found no mapping for property '"
-                + property + "' of type " + queryType.getName());
+        Preconditions.checkState(
+                !propertyTypes.isEmpty(),
+                "Found no mapping for property '" + property + "' of type " + queryType.getName());
 
         List<Integer> propTypeIds = new ArrayList<Integer>(propertyTypes.size());
         for (PropertyType pt : propertyTypes) {
@@ -366,11 +441,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return propertyTypesParam;
     }
 
-    /**
-     * @param string
-     * @param propertyTypes
-     *
-     */
+    /** */
     private String newParam(String paramNamePrefix, Object paramValue) {
         int sufix = 0;
         while (true) {
@@ -385,26 +456,26 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
 
     /**
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNotEqualTo,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsNotEqualTo filter, Object extraData) {
         // equivalent to not(propertyisequalto)
 
         FilterFactory ff = Predicates.factory;
-        Not not = ff.not(ff.equal(filter.getExpression1(), filter.getExpression2(),
-                filter.isMatchingCase(), filter.getMatchAction()));
+        Not not =
+                ff.not(
+                        ff.equal(
+                                filter.getExpression1(),
+                                filter.getExpression2(),
+                                filter.isMatchingCase(),
+                                filter.getMatchAction()));
         visit(not, extraData);
 
         return extraData;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     *
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.And, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.And, java.lang.Object) */
     @Override
     public Object visit(And filter, Object extraData) {
         StringBuilder sql = (StringBuilder) extraData;
@@ -413,7 +484,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         checkArgument(children.size() > 0);
         sql.append("(\n\t");
 
-        for (Iterator<Filter> it = children.iterator(); it.hasNext();) {
+        for (Iterator<Filter> it = children.iterator(); it.hasNext(); ) {
             Filter child = it.next();
             sql = (StringBuilder) child.accept(this, sql);
             if (it.hasNext()) {
@@ -424,12 +495,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return sql;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     *
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Or, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Or, java.lang.Object) */
     @Override
     public Object visit(Or filter, Object extraData) {
         StringBuilder sql = (StringBuilder) extraData;
@@ -437,7 +503,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         List<Filter> children = filter.getChildren();
         checkArgument(children.size() > 0);
         sql.append("(");
-        for (Iterator<Filter> it = children.iterator(); it.hasNext();) {
+        for (Iterator<Filter> it = children.iterator(); it.hasNext(); ) {
             Filter child = it.next();
             sql = (StringBuilder) child.accept(this, sql);
             if (it.hasNext()) {
@@ -448,37 +514,23 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return sql;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     *
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Id, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Id, java.lang.Object) */
     @Override
     public Object visit(Id filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @param filter
-     * @param extraData
-     *
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Not, java.lang.Object)
-     */
+    /** @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.Not, java.lang.Object) */
     @Override
     public Object visit(Not filter, Object extraData) {
-        
-        return filter.getFilter().accept(this, append (extraData, " NOT "));
 
+        return filter.getFilter().accept(this, append(extraData, " NOT "));
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsBetween,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsBetween filter, Object extraData) {
@@ -487,11 +539,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsGreaterThan,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsGreaterThan filter, Object extraData) {
@@ -500,11 +549,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
-     * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsGreaterThanOrEqualTo,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsGreaterThanOrEqualTo,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
@@ -513,11 +560,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsLessThan,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsLessThan filter, Object extraData) {
@@ -526,11 +570,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsLessThanOrEqualTo,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
@@ -539,49 +580,50 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNull,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsNull filter, Object extraData) {
         final PropertyName propertyName = (PropertyName) filter.getExpression();
         final String propertyTypesParam = propertyTypesParam(propertyName);
 
-        StringBuilder builder = append(extraData,
-                "oid IN (select oid from object_property where property_type in (:",
-                propertyTypesParam,
-                ") and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
-                        + propertyTypesParam + ")) /* ", filter.toString(), " */ \n");
+        StringBuilder builder =
+                append(
+                        extraData,
+                        "(oid IN (select oid from object_property where property_type in (:",
+                        propertyTypesParam,
+                        ") and value IS NULL) OR oid NOT  in (select oid from object_property where property_type in (:"
+                                + propertyTypesParam
+                                + "))) /* ",
+                        filter.toString(),
+                        " */ \n");
         return builder;
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.PropertyIsNil,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsNil filter, Object extraData) {
         final PropertyName propertyName = (PropertyName) filter.getExpression();
         final String propertyTypesParam = propertyTypesParam(propertyName);
 
-        StringBuilder builder = append(extraData,
-                "oid IN (select oid from object_property where property_type in (:",
-                propertyTypesParam, ") and value IS NULL) /* ", filter.toString(), " */ \n");
+        StringBuilder builder =
+                append(
+                        extraData,
+                        "oid IN (select oid from object_property where property_type in (:",
+                        propertyTypesParam,
+                        ") and value IS NULL) /* ",
+                        filter.toString(),
+                        " */ \n");
         return builder;
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.BBOX,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(BBOX filter, Object extraData) {
@@ -590,11 +632,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Beyond,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Beyond filter, Object extraData) {
@@ -603,11 +642,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Contains,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Contains filter, Object extraData) {
@@ -616,11 +652,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Crosses,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Crosses filter, Object extraData) {
@@ -629,11 +662,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Disjoint,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Disjoint filter, Object extraData) {
@@ -642,11 +672,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.DWithin,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(DWithin filter, Object extraData) {
@@ -655,11 +682,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Equals,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Equals filter, Object extraData) {
@@ -668,11 +692,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Intersects,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Intersects filter, Object extraData) {
@@ -681,11 +702,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Overlaps,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Overlaps filter, Object extraData) {
@@ -694,11 +712,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Touches,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Touches filter, Object extraData) {
@@ -707,11 +722,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param filter
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.spatial.Within,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Within filter, Object extraData) {
@@ -720,11 +732,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param after
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.After,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(After after, Object extraData) {
@@ -733,11 +742,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param anyInteracts
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.AnyInteracts,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(AnyInteracts anyInteracts, Object extraData) {
@@ -746,11 +752,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param before
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Before,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Before before, Object extraData) {
@@ -759,11 +762,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param begins
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Begins,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Begins begins, Object extraData) {
@@ -772,11 +772,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param begunBy
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.BegunBy,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(BegunBy begunBy, Object extraData) {
@@ -785,11 +782,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param during
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.During,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(During during, Object extraData) {
@@ -798,11 +792,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param endedBy
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.EndedBy,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(EndedBy endedBy, Object extraData) {
@@ -811,11 +802,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param ends
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Ends,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Ends ends, Object extraData) {
@@ -824,11 +812,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param meets
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.Meets,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Meets meets, Object extraData) {
@@ -837,11 +822,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param metBy
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.MetBy,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(MetBy metBy, Object extraData) {
@@ -850,11 +832,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param overlappedBy
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.OverlappedBy,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(OverlappedBy overlappedBy, Object extraData) {
@@ -863,11 +842,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param contains
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TContains,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(TContains contains, Object extraData) {
@@ -876,11 +852,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param equals
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TEquals,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(TEquals equals, Object extraData) {
@@ -889,11 +862,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param contains
-     * @param extraData
-     *
      * @see org.opengis.filter.FilterVisitor#visit(org.opengis.filter.temporal.TOverlaps,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(TOverlaps contains, Object extraData) {
@@ -902,11 +872,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.NilExpression,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.NilExpression,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(NilExpression expression, Object extraData) {
@@ -915,11 +883,8 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
      * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Add,
-     *      java.lang.Object)
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Add expression, Object extraData) {
@@ -928,11 +893,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Divide,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Divide,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Divide expression, Object extraData) {
@@ -941,11 +904,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Function,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Function,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Function expression, Object extraData) {
@@ -954,11 +915,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Literal,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Literal,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Literal expression, Object extraData) {
@@ -967,11 +926,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Multiply,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Multiply,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Multiply expression, Object extraData) {
@@ -980,11 +937,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.PropertyName,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.PropertyName,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(PropertyName expression, Object extraData) {
@@ -993,16 +948,13 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @param expression
-     * @param extraData
-     *
-     * @see org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Subtract,
-     *      java.lang.Object)
+     * @see
+     *     org.opengis.filter.expression.ExpressionVisitor#visit(org.opengis.filter.expression.Subtract,
+     *     java.lang.Object)
      */
     @Override
     public Object visit(Subtract expression, Object extraData) {
 
         throw new UnsupportedOperationException();
     }
-
 }

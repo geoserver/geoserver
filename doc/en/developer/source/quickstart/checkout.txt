@@ -1,0 +1,24 @@
+Check out source code
+---------------------
+
+Check out the source code from the git repository.::
+
+   git clone git://github.com/geoserver/geoserver.git geoserver
+
+To list the available branches.::
+
+  % git branch
+     2.15.x
+     2.16.x
+   * master
+
+Choose ``master`` for the latest development.::
+
+  % git checkout master
+
+Or chose a stable branch for versions less likely to change often::
+
+  % git checkout 2.16.x
+
+In this example we will pretend that your source code is in a directory
+called ``geoserver``, but a more descriptive name is recommended.

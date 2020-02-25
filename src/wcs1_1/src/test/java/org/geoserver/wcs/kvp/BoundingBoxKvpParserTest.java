@@ -9,8 +9,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
-import net.opengis.ows11.BoundingBoxType;
 
+import net.opengis.ows11.BoundingBoxType;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -33,15 +33,16 @@ public class BoundingBoxKvpParserTest {
 
     @Test
     public void testOutOfDimRange() throws Exception {
-        executeFailingBBoxTest("10,20,30,40,50,60,EPSG:4326",
-                "This bbox has more dimensions than the crs?");
-        executeFailingBBoxTest("10,20,30,40,EPSG:4979",
-                "This bbox has less dimensions than the crs?");
+        executeFailingBBoxTest(
+                "10,20,30,40,50,60,EPSG:4326", "This bbox has more dimensions than the crs?");
+        executeFailingBBoxTest(
+                "10,20,30,40,EPSG:4979", "This bbox has less dimensions than the crs?");
     }
 
     @Test
     public void testUnknownCRS() throws Exception {
-        executeFailingBBoxTest("10,20,30,40,50,60,EPSG:MakeNoPrisoners!",
+        executeFailingBBoxTest(
+                "10,20,30,40,50,60,EPSG:MakeNoPrisoners!",
                 "This crs should definitely be unknown...");
     }
 
@@ -95,8 +96,8 @@ public class BoundingBoxKvpParserTest {
 
     @Test
     public void testWgs84FullExtent() throws Exception {
-        BoundingBoxType bbox = (BoundingBoxType) parser
-                .parse("-180,-90,180,90,urn:ogc:def:crs:EPSG:4326");
+        BoundingBoxType bbox =
+                (BoundingBoxType) parser.parse("-180,-90,180,90,urn:ogc:def:crs:EPSG:4326");
         assertEquals(2, bbox.getLowerCorner().size());
         assertEquals(-180.0, bbox.getLowerCorner().get(0));
         assertEquals(-90.0, bbox.getLowerCorner().get(1));
@@ -105,5 +106,4 @@ public class BoundingBoxKvpParserTest {
         assertEquals(90.0, bbox.getUpperCorner().get(1));
         assertEquals("urn:ogc:def:crs:EPSG:4326", bbox.getCrs());
     }
-
 }

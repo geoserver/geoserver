@@ -27,6 +27,7 @@
       </GetCapabilities>
       <GetMap>
         <Format>image/png</Format>
+        <Format>image/jpeg</Format>
         <DCPType>
           <HTTP>
             <Get>
@@ -52,6 +53,19 @@
           </HTTP>
         </DCPType>
       </GetFeatureInfo>
+      <GetLegendGraphic>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <Format>application/json</Format>
+        <Format>image/gif</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms11?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetLegendGraphic>
     </Request>
     <Exception>
       <Format>application/vnd.ogc.se_xml</Format>
@@ -69,6 +83,113 @@
         <LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>
         <BoundingBox SRS="EPSG:4326" minx="-180" miny="-90" maxx="180" maxy="90"/>
       </Layer>
+            <Layer queryable="1" opaque="0">
+            <Name>roads_wms</Name>
+            <Title>roads_wms</Title>
+            <Abstract/>
+            <KeywordList>
+              <Keyword>features</Keyword>
+              <Keyword>roads</Keyword>
+            </KeywordList>
+            <SRS>EPSG:26713</SRS>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:3857</SRS>
+            <LatLonBoundingBox minx="-103.87779468316292" miny="44.37288961726252" maxx="-103.62268570651278" maxy="44.50217396380937"/>
+            <BoundingBox SRS="EPSG:26713" minx="589434.85646865" miny="4914006.33783702" maxx="609527.21021496" maxy="4928063.39801461"/>
+            <Style>
+              <Name>line1</Name>
+              <Title>simple blue line</Title>
+              <Abstract>A sample style that just prints out a blue line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>line3</Name>
+              <Title>simple green line</Title>
+              <Abstract>A sample style that just prints out a green line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line3"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>line2</Name>
+              <Title>simple red line</Title>
+              <Abstract>A sample style that just prints out a red line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line2"/>
+              </LegendURL>
+            </Style>
+      </Layer>
+      <Layer queryable="1" opaque="0">
+            <Name>styleless_roads</Name>
+            <Title>styleless_roads</Title>
+            <Abstract/>
+            <KeywordList>
+              <Keyword>features</Keyword>
+              <Keyword>styleless_roads</Keyword>
+            </KeywordList>
+            <SRS>EPSG:26713</SRS>
+            <LatLonBoundingBox minx="-103.87779468316292" miny="44.37288961726252" maxx="-103.62268570651278" maxy="44.50217396380937"/>
+            <BoundingBox SRS="EPSG:26713" minx="589434.85646865" miny="4914006.33783702" maxx="609527.21021496" maxy="4928063.39801461"/>            
+      </Layer>
+      <Layer queryable="1" opaque="1">
+            <Name>group_lyr_1</Name>
+            <Title>group_lyr_1</Title>
+            <Abstract/>
+            <KeywordList>
+              <Keyword>features</Keyword>
+              <Keyword>group_lyr_1</Keyword>
+            </KeywordList>
+            <SRS>EPSG:26713</SRS>          
+            <LatLonBoundingBox minx="-10" miny="-10" maxx="10" maxy="10"/>
+            <BoundingBox SRS="EPSG:4326" minx="-10" miny="-10" maxx="10" maxy="10"/>      
+            <Style>
+              <Name>line_group</Name>
+              <Title>simple blue line</Title>
+              <Abstract>A sample style that just prints out a blue line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22"/>
+              </LegendURL>
+            </Style>      
+      </Layer>
+      <Layer queryable="1" opaque="1">
+            <Name>group_lyr_2</Name>
+            <Title>group_lyr_2</Title>
+            <Abstract/>
+            <KeywordList>
+              <Keyword>features</Keyword>
+              <Keyword>group_lyr_2</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <LatLonBoundingBox minx="0" miny="0" maxx="20" maxy="20"/>
+            <BoundingBox SRS="EPSG:4326" minx="0" miny="0" maxx="20" maxy="20"/>    
+            <Style>
+              <Name>line_group2</Name>
+              <Title>simple blue line</Title>
+              <Abstract>A sample style that just prints out a blue line</Abstract>
+              <LegendURL width="20" height="20">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22"/>
+              </LegendURL>
+            </Style>        
+      </Layer>    
+      <Layer queryable="1" opaque="1">
+            <Name>legacy_group_lyr</Name>
+            <Title>legacy_group_lyr</Title>
+            <Abstract/>
+            <KeywordList>
+              <Keyword>features</Keyword>
+              <Keyword>legacy_group_lyr</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <LatLonBoundingBox minx="0" miny="0" maxx="20" maxy="20"/>
+            <BoundingBox SRS="EPSG:4326" minx="0" miny="0" maxx="20" maxy="20"/>
+      </Layer>    
     </Layer>
   </Capability>
 </WMT_MS_Capabilities>

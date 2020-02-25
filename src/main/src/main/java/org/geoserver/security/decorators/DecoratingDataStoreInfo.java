@@ -7,28 +7,28 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.data.DataAccess;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates every method to the wrapped {@link DataStoreInfo}. Subclasses will
- * override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the wrapped {@link DataStoreInfo}. Subclasses will override selected
+ * methods to perform their "decoration" job
+ *
  * @author Andrea Aime
  */
 @SuppressWarnings("serial")
-public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo> implements
-        DataStoreInfo {
+public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo>
+        implements DataStoreInfo {
 
     public DecoratingDataStoreInfo(DataStoreInfo delegate) {
         super(delegate);
@@ -50,7 +50,7 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo> im
     public String getDescription() {
         return delegate.getDescription();
     }
-    
+
     public String getType() {
         return delegate.getType();
     }
@@ -86,7 +86,7 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo> im
     public void setType(String type) {
         delegate.setType(type);
     }
-    
+
     public void setEnabled(boolean enabled) {
         delegate.setEnabled(enabled);
     }
@@ -106,9 +106,28 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo> im
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
-    
+
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return delegate.getAdapter(adapterClass, hints);
     }
 
+    @Override
+    public Date getDateModified() {
+        return delegate.getDateModified();
+    }
+
+    @Override
+    public Date getDateCreated() {
+        return delegate.getDateCreated();
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        delegate.setDateCreated(dateCreated);
+    }
+
+    @Override
+    public void setDateModified(Date dateModified) {
+        delegate.setDateModified(dateModified);
+    }
 }

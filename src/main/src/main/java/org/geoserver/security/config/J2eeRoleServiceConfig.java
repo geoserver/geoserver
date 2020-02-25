@@ -6,15 +6,12 @@
 
 package org.geoserver.security.config;
 
-import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
-import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.impl.GeoServerJ2eeRoleService;
 
 /**
- * Configuration class for {@link GeoServerJ2eeRoleService} 
- * 
- * @author christian
+ * Configuration class for {@link GeoServerJ2eeRoleService}
  *
+ * @author christian
  */
 public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig
         implements SecurityRoleServiceConfig {
@@ -22,16 +19,13 @@ public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig
     protected String adminRoleName;
     protected String groupAdminRoleName;
 
-
-    public J2eeRoleServiceConfig() {
-    }
+    public J2eeRoleServiceConfig() {}
 
     public J2eeRoleServiceConfig(J2eeRoleServiceConfig other) {
         super(other);
         adminRoleName = other.getAdminRoleName();
         groupAdminRoleName = other.getGroupAdminRoleName();
     }
-
 
     @Override
     public String getAdminRoleName() {
@@ -40,7 +34,7 @@ public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig
 
     @Override
     public void setAdminRoleName(String name) {
-        adminRoleName=name;
+        adminRoleName = name;
     }
 
     public String getGroupAdminRoleName() {
@@ -50,5 +44,4 @@ public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
     }
-
 }

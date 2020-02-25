@@ -1,0 +1,46 @@
+{
+  "name": "geoserver-geostyler-module",
+  "version": "0.0.2",
+  "description": "GeoStyler - GeoServer integration",
+  "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
+  "contributors": [
+    "Andreas Schmitz <schmitz@terrestris.de>",
+    "André Henn <henn@terrestris.de>",
+    "Kai Volland <volland@terrestris.de>",
+    "Nils Bühner <buehner@terrestris.de>"
+  ],
+  "scripts": {
+    "pack:lib": "node ./npm-pack-libs.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/geoserver/geoserver.git"
+  },
+  "keywords": [
+    "GeoServer",
+    "GeoStyler",
+    "Style",
+    "SLD"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/geoserver/geoserver/issues"
+  },
+  "homepage": "https://github.com/geoserver/geoserver#readme",
+  "browserslist": [
+    ">1%",
+    "last 4 versions",
+    "Firefox ESR",
+    "not ie < 9"
+  ],
+  "dependencies": {
+    "antd": "^3.20.1",
+    "geostyler": "4.3.0",
+    "geostyler-geojson-parser": "^1.0.0",
+    "geostyler-sld-parser": "^1.2.0",
+    "geostyler-wfs-parser": "^1.0.0",
+    "react": "16.x",
+    "react-dom": "16.x"
+  }
+}

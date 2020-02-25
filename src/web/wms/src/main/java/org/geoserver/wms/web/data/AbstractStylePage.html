@@ -1,17 +1,14 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
+    <div wicket:id="dialog"></div>
+    <div id="fullscreen-div" class="expand"><a href="#" id="fullscreen-link"><img id="fullscreen-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="fullscreen-image-out" alt="Fullscreen"/></a></div>
     <form wicket:id="styleForm" id="styleForm">
-        <div wicket:id="context" style="margin-bottom: 3em"> </div>
-        <fieldset>
-            <legend>
-              <span><wicket:message key="editorSpan">Style Editor</wicket:message></span>
-            </legend>
-        <div class="field textarea" wicket:id="styleEditor"> </div>
-        </fieldset>
+        <div wicket:id="context" style="margin-bottom: 0.5em"> </div>
+        <div class="field" wicket:id="styleEditor"> </div>
         <div wicket:id="popup"></div>
     </form>
-    <div class="button-group selfclear">
+    <div class="button-group selfclear" style="margin-top: 0.5em; margin-left: -1px; clear: left">
        <a href="#" wicket:id="validate"><wicket:message key="validate">Validate</wicket:message></a>
        <a href="#" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a>
        <a href="#" wicket:id="submit"><wicket:message key="submit">Submit</wicket:message></a>

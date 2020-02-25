@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  ~  
+  -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+
+    <bean id="dispatcher" class="org.geoserver.api.APIDispatcher"/>
+    <bean id="hello" class="org.geoserver.api.HelloController"/>
+    <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl"/>
+    <bean id="defaultExceptionHandler" class="org.geoserver.api.DefaultAPIExceptionHandler">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+</beans>

@@ -4,13 +4,12 @@
  */
 package org.geoserver.params.extractor.web;
 
+import java.io.Serializable;
+import java.util.UUID;
 import org.geoserver.params.extractor.EchoParameter;
 import org.geoserver.params.extractor.EchoParameterBuilder;
 import org.geoserver.params.extractor.Rule;
 import org.geoserver.params.extractor.RuleBuilder;
-
-import java.io.Serializable;
-import java.util.UUID;
 
 public class RuleModel implements Serializable {
 
@@ -25,6 +24,7 @@ public class RuleModel implements Serializable {
     private String transform;
     private Integer remove;
     private String combine;
+    private Boolean repeat;
     private boolean activated;
     private boolean echo;
 
@@ -50,6 +50,7 @@ public class RuleModel implements Serializable {
         transform = rule.getTransform();
         remove = rule.getRemove();
         combine = rule.getCombine();
+        repeat = rule.getRepeat();
         if (position != null && transform != null) {
             transform = transform.replace("$2", "{PARAMETER}");
         }
@@ -64,14 +65,17 @@ public class RuleModel implements Serializable {
     }
 
     public Rule toRule() {
-        RuleBuilder ruleBuilder = new RuleBuilder().withId(id)
-                .withActivated(activated)
-                .withPosition(position)
-                .withMatch(match)
-                .withActivation(activation)
-                .withParameter(parameter)
-                .withRemove(remove)
-                .withCombine(combine);
+        RuleBuilder ruleBuilder =
+                new RuleBuilder()
+                        .withId(id)
+                        .withActivated(activated)
+                        .withPosition(position)
+                        .withMatch(match)
+                        .withActivation(activation)
+                        .withParameter(parameter)
+                        .withRemove(remove)
+                        .withCombine(combine)
+                        .withRepeat(repeat);
         if (position != null && transform != null) {
             ruleBuilder.withTransform(transform.replace("{PARAMETER}", "$2"));
         } else {
@@ -150,6 +154,14 @@ public class RuleModel implements Serializable {
 
     public void setCombine(String combine) {
         this.combine = combine;
+    }
+
+    public Boolean getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(Boolean repeat) {
+        this.repeat = repeat;
     }
 
     public boolean getActivated() {

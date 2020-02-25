@@ -1,0 +1,69 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="http://www.stations_${GML_PREFIX}.org/1.0" version="1.0" xmlns:gml="${GML_NAMESPACE}"
+           xmlns:st="http://www.stations_${GML_PREFIX}.org/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:import namespace="${GML_NAMESPACE}" schemaLocation="${GML_LOCATION}"/>
+    <xs:complexType name="StationType">
+        <xs:complexContent>
+            <xs:extension base="gml:AbstractFeatureType">
+                <xs:sequence>
+                    <xs:element name="contact" type="st:ContactType"/>
+                    <xs:element name="name">
+                        <xs:complexType>
+                            <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                    <xs:attribute name="code" type="xs:string"/>
+                                </xs:extension>
+                            </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="location" type="gml:GeometryPropertyType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="measurements"
+                                type="st:MeasurementPropertyType"/>
+                    <xs:element name="featureLinkA" type="gml:FeaturePropertyType" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="featureLinkB" type="gml:FeaturePropertyType" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="featureLinkC" type="gml:FeaturePropertyType" nillable="true"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ContactType">
+        <xs:sequence>
+            <xs:element name="phone">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="timeZone" type="xs:string"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="mail" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="MeasurementPropertyType">
+        <xs:sequence>
+            <xs:element ref="st:Measurement_${GML_PREFIX}"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+    </xs:complexType>
+    <xs:complexType name="MeasurementType">
+        <xs:complexContent>
+            <xs:extension base="gml:AbstractFeatureType">
+                <xs:sequence>
+                    <xs:element name="value">
+                        <xs:complexType>
+                            <xs:simpleContent>
+                                <xs:extension base="xs:double">
+                                    <xs:attribute name="name" type="xs:string"/>
+                                    <xs:attribute name="unit" type="xs:string"/>
+                                </xs:extension>
+                            </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="Station_${GML_PREFIX}" substitutionGroup="gml:AbstractFeature" type="st:StationType"/>
+    <xs:element name="Measurement_${GML_PREFIX}" substitutionGroup="gml:AbstractFeature" type="st:MeasurementType"/>
+</xs:schema>

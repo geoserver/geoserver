@@ -6,7 +6,6 @@
 package org.geoserver.wms.eo.web;
 
 import java.io.Serializable;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
@@ -14,16 +13,14 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wms.eo.EoLayerType;
 
-/**
- * Represents one layer in the layer group
- */
+/** Represents one layer in the layer group */
 @SuppressWarnings("serial")
 public class EoLayerGroupEntry implements Serializable {
 
     String styleId;
 
     String layerId;
-    
+
     String layerSubName;
 
     EoLayerType layerType;
@@ -34,17 +31,13 @@ public class EoLayerGroupEntry implements Serializable {
     }
 
     public StyleInfo getStyle() {
-        if (styleId == null)
-            return null;
-        else
-            return GeoServerApplication.get().getCatalog().getStyle(styleId);
+        if (styleId == null) return null;
+        else return GeoServerApplication.get().getCatalog().getStyle(styleId);
     }
 
     public void setStyle(StyleInfo style) {
-        if (style == null)
-            styleId = null;
-        else
-            styleId = style.getId();
+        if (style == null) styleId = null;
+        else styleId = style.getId();
     }
 
     public PublishedInfo getLayer() {
@@ -55,15 +48,15 @@ public class EoLayerGroupEntry implements Serializable {
         layerId = layer.getId();
         MetadataMap metadata = layer.getMetadata();
         layerType = metadata.get(EoLayerType.KEY, EoLayerType.class);
-        if(layerType == EoLayerType.BAND_COVERAGE) {
+        if (layerType == EoLayerType.BAND_COVERAGE) {
             layerSubName = "bands";
-        } else if(layerType == EoLayerType.BROWSE_IMAGE) {
+        } else if (layerType == EoLayerType.BROWSE_IMAGE) {
             layerSubName = "browse";
         } else {
             layerSubName = layer.getName();
-            if(layerGroupName != null) {
+            if (layerGroupName != null) {
                 String prefix = layerGroupName + "_";
-                if(layerSubName.startsWith(prefix)) {
+                if (layerSubName.startsWith(prefix)) {
                     layerSubName = layerSubName.substring(prefix.length());
                 }
             }
@@ -73,14 +66,14 @@ public class EoLayerGroupEntry implements Serializable {
     public EoLayerType getLayerType() {
         return layerType;
     }
-    
+
     public String getLayerSubName() {
         return layerSubName;
     }
-    
+
     @Override
     public String toString() {
-        return "[LayerGroupEntry: " + getLayer().prefixedName() + ", " + getStyle().getName() + "]"; 
+        return "[LayerGroupEntry: " + getLayer().prefixedName() + ", " + getStyle().getName() + "]";
     }
 
     @Override
@@ -96,31 +89,20 @@ public class EoLayerGroupEntry implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         EoLayerGroupEntry other = (EoLayerGroupEntry) obj;
         if (layerId == null) {
-            if (other.layerId != null)
-                return false;
-        } else if (!layerId.equals(other.layerId))
-            return false;
+            if (other.layerId != null) return false;
+        } else if (!layerId.equals(other.layerId)) return false;
         if (layerSubName == null) {
-            if (other.layerSubName != null)
-                return false;
-        } else if (!layerSubName.equals(other.layerSubName))
-            return false;
-        if (layerType != other.layerType)
-            return false;
+            if (other.layerSubName != null) return false;
+        } else if (!layerSubName.equals(other.layerSubName)) return false;
+        if (layerType != other.layerType) return false;
         if (styleId == null) {
-            if (other.styleId != null)
-                return false;
-        } else if (!styleId.equals(other.styleId))
-            return false;
+            if (other.styleId != null) return false;
+        } else if (!styleId.equals(other.styleId)) return false;
         return true;
     }
-
 }

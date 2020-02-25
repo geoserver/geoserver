@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.wfs.servlets;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,69 +13,55 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
-
 /**
- * Simple tester for WFS post requests. Can be called two ways. If called with
- * no parameters, it displays the form, otherwise it displays the result page.
+ * Simple tester for WFS post requests. Can be called two ways. If called with no parameters, it
+ * displays the form, otherwise it displays the result page.
  *
  * @author Doug Cates: Moxi Media Inc.
  * @version 1.0
  */
 public class TestWfsPost extends HttpServlet {
-    
+
     /**
-     * The path at which TestWfsPost is exposed. Used to find the full location of GeoServer
-     * without doing complex and error prone string building
+     * The path at which TestWfsPost is exposed. Used to find the full location of GeoServer without
+     * doing complex and error prone string building
      */
     static final String TEST_WFS_POST_PATH = "/TestWfsPost";
-    
+
     static final Logger LOGGER = Logging.getLogger(TestWfsPost.class);
-    
-    /**
-     * Initializes the servlet.
-     *
-     * @param config DOCUMENT ME!
-     *
-     * @throws ServletException DOCUMENT ME!
-     */
+
+    /** Initializes the servlet. */
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
 
-    /**
-     * Destroys the servlet.
-     */
-    public void destroy() {
-    }
+    /** Destroys the servlet. */
+    public void destroy() {}
 
     /**
      * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
-     *
-     * @throws ServletException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -83,41 +70,31 @@ public class TestWfsPost extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     *
-     * @throws ServletException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return DOCUMENT ME!
-     */
+    /** Returns a short description of the servlet. */
     public String getServletInfo() {
         return "Tests a WFS post request using a form entry.";
     }
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
-     *
-     * @throws ServletException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         String requestString = request.getParameter("body");
         String urlString = request.getParameter("url");
         boolean doGet = (requestString == null) || requestString.trim().equals("");
 
         if ((urlString == null)) {
+            @SuppressWarnings("PMD.CloseResource") // managed by the servlet
             PrintWriter out = response.getWriter();
             StringBuffer urlInfo = request.getRequestURL();
 
@@ -125,8 +102,8 @@ public class TestWfsPost extends HttpServlet {
                 urlInfo.delete(urlInfo.indexOf("?"), urlInfo.length());
             }
 
-            String geoserverUrl = urlInfo.substring(0, urlInfo.indexOf("/", 8))
-                + request.getContextPath();
+            String geoserverUrl =
+                    urlInfo.substring(0, urlInfo.indexOf("/", 8)) + request.getContextPath();
             response.setContentType("text/html");
             out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">");
             out.println("<html>");
@@ -159,7 +136,8 @@ public class TestWfsPost extends HttpServlet {
             out.println("</script>");
             out.println("<body>");
             out.println("<form name=\"frm\" action=\"JavaScript:doNothing()\" method=\"POST\">");
-            out.println("<table align=\"center\" cellspacing=\"2\" cellpadding=\"2\" border=\"0\">");
+            out.println(
+                    "<table align=\"center\" cellspacing=\"2\" cellpadding=\"2\" border=\"0\">");
             out.println("<tr>");
             out.println("<td><b>URL:</b></td>");
             out.print("<td><input name=\"url\" value=\"");
@@ -174,9 +152,9 @@ public class TestWfsPost extends HttpServlet {
             out.println("<table align=\"center\">");
             out.println("<tr>");
             out.println(
-                "<td><input type=\"button\" value=\"Clear\" onclick=\"clearRequest()\"></td>");
+                    "<td><input type=\"button\" value=\"Clear\" onclick=\"clearRequest()\"></td>");
             out.println(
-                "<td><input type=\"button\" value=\"Submit\" onclick=\"sendRequest()\"></td>");
+                    "<td><input type=\"button\" value=\"Submit\" onclick=\"sendRequest()\"></td>");
             out.println("<td></td>");
             out.println("</tr>");
             out.println("</table>");
@@ -189,21 +167,18 @@ public class TestWfsPost extends HttpServlet {
 
             BufferedReader xmlIn = null;
             PrintWriter xmlOut = null;
-            StringBuffer sbf = new StringBuffer();
-            String resp = null;
-
             try {
                 URL u = new URL(urlString);
-                validateURL(request, urlString, getProxyBaseURL() );
+                validateURL(request, urlString, getProxyBaseURL());
                 java.net.HttpURLConnection acon = (java.net.HttpURLConnection) u.openConnection();
                 acon.setAllowUserInteraction(false);
 
                 if (!doGet) {
-                    //System.out.println("set to post");
+                    // System.out.println("set to post");
                     acon.setRequestMethod("POST");
                     acon.setRequestProperty("Content-Type", "application/xml");
                 } else {
-                    //System.out.println("set to get");
+                    // System.out.println("set to get");
                     acon.setRequestMethod("GET");
                 }
 
@@ -211,27 +186,21 @@ public class TestWfsPost extends HttpServlet {
                 acon.setDoInput(true);
                 acon.setUseCaches(false);
 
-                //SISfixed - if there was authentication info in the request,
-                //           Pass it along the way to the target URL
-                //DJB: applied patch in GEOS-335
-                String authHeader = request.getHeader("Authorization");
-
                 String username = request.getParameter("username");
 
                 if ((username != null) && !username.trim().equals("")) {
                     String password = request.getParameter("password");
                     String up = username + ":" + password;
                     byte[] encoded = Base64.encodeBase64(up.getBytes());
-                    authHeader = "Basic " + new String(encoded);
-                }
-
-                if (authHeader != null) {
+                    String authHeader = "Basic " + new String(encoded);
                     acon.setRequestProperty("Authorization", authHeader);
                 }
 
                 if (!doGet) {
-                    xmlOut = new PrintWriter(new BufferedWriter(
-                                new OutputStreamWriter(acon.getOutputStream())));
+                    xmlOut =
+                            new PrintWriter(
+                                    new BufferedWriter(
+                                            new OutputStreamWriter(acon.getOutputStream())));
                     xmlOut = new java.io.PrintWriter(acon.getOutputStream());
 
                     xmlOut.write(requestString);
@@ -241,13 +210,23 @@ public class TestWfsPost extends HttpServlet {
                 // Above 400 they're all error codes, see:
                 // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
                 if (acon.getResponseCode() >= 400) {
+                    // Construct the full response before writing, so that we don't throw an
+                    // exception partway through.
+                    StringBuilder responseContent = new StringBuilder();
+                    responseContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+                    responseContent.append("<servlet-exception>\n");
+                    responseContent.append("HTTP response: ");
+                    responseContent.append(acon.getResponseCode());
+                    responseContent.append("\n");
+                    if (acon.getResponseMessage() != null) {
+                        responseContent.append(
+                                URLDecoder.decode(acon.getResponseMessage(), "UTF-8"));
+                    }
+                    responseContent.append("</servlet-exception>\n");
+
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     PrintWriter out = response.getWriter();
-                    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    out.println("<servlet-exception>");
-                    out.println("HTTP response: " + acon.getResponseCode() + "\n"
-                        + URLDecoder.decode(acon.getResponseMessage(), "UTF-8"));
-                    out.println("</servlet-exception>");
-                    out.close();
+                    out.print(responseContent.toString());
                 } else {
                     // xmlIn = new BufferedReader(new InputStreamReader(
                     // acon.getInputStream()));
@@ -256,31 +235,25 @@ public class TestWfsPost extends HttpServlet {
                     // System.out.println("got encoding from acon: "
                     // + acon.getContentType());
                     response.setContentType(acon.getContentType());
-                    response.setHeader("Content-disposition",
-                        acon.getHeaderField("Content-disposition"));
+                    response.setHeader(
+                            "Content-disposition", acon.getHeaderField("Content-disposition"));
 
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     OutputStream output = response.getOutputStream();
                     int c;
-                    InputStream in = acon.getInputStream();
-
-                    while ((c = in.read()) != -1)
-                        output.write(c);
-
-                    in.close();
-                    output.close();
+                    try (InputStream in = acon.getInputStream()) {
+                        while ((c = in.read()) != -1) output.write(c);
+                    }
                 }
 
-                //while ((line = xmlIn.readLine()) != null) {
+                // while ((line = xmlIn.readLine()) != null) {
                 //    out.print(line);
-                //}
+                // }
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, "Failure dealing with the request", e);
+                @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                 PrintWriter out = response.getWriter();
-                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                out.println("<servlet-exception>");
-                out.println(ResponseUtils.encodeXML(e.toString()));
-                out.println("</servlet-exception>");
-                out.close();
+                out.print(errorResponse(e));
             } finally {
                 try {
                     if (xmlIn != null) {
@@ -288,12 +261,9 @@ public class TestWfsPost extends HttpServlet {
                     }
                 } catch (Exception e1) {
                     LOGGER.log(Level.FINE, "Internal failure dealing with the request", e1);
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     PrintWriter out = response.getWriter();
-                    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    out.println("<servlet-exception>");
-                    out.println(ResponseUtils.encodeXML(e1.toString()));
-                    out.println("</servlet-exception>");
-                    out.close();
+                    out.print(errorResponse(e1));
                 }
 
                 try {
@@ -302,40 +272,111 @@ public class TestWfsPost extends HttpServlet {
                     }
                 } catch (Exception e2) {
                     LOGGER.log(Level.FINE, "Internal failure dealing with the request", e2);
+                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
                     PrintWriter out = response.getWriter();
-                    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    out.println("<servlet-exception>");
-                    out.println(ResponseUtils.encodeXML(e2.toString()));
-                    out.println("</servlet-exception>");
-                    out.close();
+                    out.print(errorResponse(e2));
                 }
             }
         }
     }
 
+    public String errorResponse(Exception e) {
+        StringBuilder responseContent = new StringBuilder();
+        responseContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        responseContent.append("<servlet-exception>\n");
+        responseContent.append(ResponseUtils.encodeXML(e.toString()));
+        responseContent.append("</servlet-exception>\n");
+
+        return responseContent.toString();
+    }
+
     String getProxyBaseURL() {
-        GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
-        if( geoServer != null ){
-            geoServer.getGlobal().getSettings().getProxyBaseUrl();
+        GeoServer geoServer = getGeoServer();
+        if (geoServer != null) {
+            return geoServer.getGlobal().getSettings().getProxyBaseUrl();
         }
         return null;
     }
 
-    void validateURL(HttpServletRequest request, String url, String proxyBase) {
-        if(proxyBase != null) {
-            if(!url.startsWith(proxyBase)) {
-                throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + proxyBase);
+    @VisibleForTesting
+    protected GeoServer getGeoServer() {
+        return (GeoServer) GeoServerExtensions.bean("geoServer");
+    }
+
+    /**
+     * Validates the destination URL parameter sent to the TestWfsPost to execute, to verify it is
+     * valid, and the request is actually coming from geoserver.
+     *
+     * <p>Two cases are checked, depending on whether or not GeoServer's Proxy Base URL is set.
+     *
+     * <p>If the Proxy Base URL is set, the host of the url parameter should match that of the Proxy
+     * Base URL (since the HTTP request is coming from inside GeoServer, while the url parameter is
+     * external)
+     *
+     * <p>Otherwise, the host of the url parameter should match that of the HTTP request.
+     *
+     * <p>In both cases, the path of the request url should be that of the TestWfsPost servlet
+     * endpoint.
+     *
+     * @param request The HTTP request sent from Wicket to the TestWfsPost servlet
+     * @param urlString The url that the TestWfsPost servlet is being asked to send an OWS request
+     *     to.
+     * @param proxyBase The proxy base URL of GeoServer
+     * @throws IllegalArgumentException - If the arguments are malformed or otherwise invalid
+     * @throws IllegalStateException - If something else is wrong
+     */
+    void validateURL(HttpServletRequest request, String urlString, String proxyBase) {
+        URL url;
+        URL requestUrl;
+
+        try {
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid url requested; not a URL: " + urlString, e);
+        }
+        String requestString = request.getRequestURL().toString();
+        try {
+            requestUrl = new URL(requestString);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Invalid request url; not a URL: " + requestString, e);
+        }
+
+        // this should not happen, but let's not make it an open proxy if it does
+        if (!request.getServletPath().equals(TEST_WFS_POST_PATH)) {
+            throw new IllegalStateException(
+                    "Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: "
+                            + requestString);
+        }
+        if (null != requestUrl.getQuery()) {
+            throw new IllegalStateException(
+                    "Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: "
+                            + requestString);
+        }
+        if (!request.getContextPath().equals(this.getServletContext().getContextPath())) {
+            throw new IllegalStateException(
+                    "Unepected, the TestWfsPost was accessed by a path from a different servlet context: "
+                            + requestString);
+        }
+
+        if (proxyBase != null) {
+            try {
+                URL proxyBaseUrl = new URL(proxyBase);
+
+                if (!url.getHost().equals(proxyBaseUrl.getHost())) {
+                    throw new IllegalArgumentException(
+                            "Invalid url requested, the demo requests should be hitting: "
+                                    + proxyBase);
+                }
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException(
+                        "Invalid Proxy Base URL; not a URL: " + proxyBase, e);
             }
         } else {
-            // use the requested url then, and remove the TestWfsPort
-            String requestedUrl = request.getRequestURL().toString();
-            // this should not happen, but let's not make it an open proxy if it does
-            if(!requestedUrl.endsWith(TEST_WFS_POST_PATH)) {
-                throw new IllegalStateException("Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: " + requestedUrl);
-            }
-            String base = requestedUrl.substring(0, requestedUrl.lastIndexOf(TEST_WFS_POST_PATH));
-            if(!url.startsWith(base)) {
-                throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + base);
+            if (!url.getHost().equals(requestUrl.getHost())) {
+                throw new IllegalStateException(
+                        "Invalid url requested, the demo requests should be hitting: "
+                                + requestString.substring(
+                                        0, requestString.lastIndexOf(TEST_WFS_POST_PATH)));
             }
         }
     }

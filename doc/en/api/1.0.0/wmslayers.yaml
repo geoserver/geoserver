@@ -1,0 +1,867 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer WMS Store Layers
+  description: A WMS store is a store whose source is another WMS. Also known as "Cascading WMS" or "External WMS". A WMS store layer is a layer from this store.
+
+
+paths:
+  /workspaces/{workspace}/wmslayers:
+
+    get:
+      operationId: getWMSStoreLayers
+      description: Retrieves the WMS layers available on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmslayers" for XML).
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: list
+          in: query
+          description: Set "list=available" to see all possible layers in the store, not just ones currently published
+          type: string
+          default: configured
+          enum:
+          - available
+          - configured
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSStoreLayersList"
+          examples:
+            application/xml: |
+              <wmsLayers>
+                <wmsLayer>
+                  <name>dem</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers/dem.xml" type="application/xml"/>
+                </wmsLayer>
+                <wmsLayer>
+                  <name>states</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers/states.xml" type="application/xml"/>
+                </wmsLayer>
+              </wmsLayers>
+            application/json: |
+              {"wmsLayers":{"wmsLayer":[{"name":"dem","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite\/wmsstores\/altgs\/wmslayers\/dem.json"},{"name":"states","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite\/wmsstores\/altgs\/wmslayers\/states.json"}]}}
+            application/xml (list=available): |
+              <list>
+                <wmsLayerName>ne:basemap</wmsLayerName>
+                <wmsLayerName>ne:ne1</wmsLayerName>
+                <wmsLayerName>ne:boundary_lines_land</wmsLayerName>
+                <wmsLayerName>ne:states_provinces_lines</wmsLayerName>
+                <wmsLayerName>ne:populated_places</wmsLayerName>
+                <wmsLayerName>opengeo:countries</wmsLayerName>
+                <wmsLayerName>usgs:dem</wmsLayerName>
+                <wmsLayerName>ne:ocean</wmsLayerName>
+                <wmsLayerName>ne:roads</wmsLayerName>
+                <wmsLayerName>usa:states</wmsLayerName>
+                <wmsLayerName>ne:states_provinces_shp</wmsLayerName>
+                <wmsLayerName>ne:urban_areas</wmsLayerName>
+              </list>
+            application/json (list=available): |
+              {"list":{"string":["ne:basemap","ne:ne1","ne:boundary_lines_land","ne:states_provinces_lines","ne:populated_places","opengeo:countries","usgs:dem","ne:ocean","ne:roads","usa:states","ne:states_provinces_shp","ne:urban_areas"]}}
+
+    post:
+      operationId: postWMSStoreLayers
+      description: Publishes a new WMS store layer.
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: WMSStoreLayerBody
+          in: body
+          description: Body of the WMS store layer
+          required: true
+          schema:
+            $ref: "#/definitions/WMSStoreLayerInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: Location of the newly created layer.
+              type: string
+
+    put:
+      operationId: putWMSStoreLayers
+      description: Invalid. Use POST for adding a new layer, or PUT on an individual layer to edit it.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteWMSStoreLayers
+      description: Invalid. Can only delete an individual layer.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /workspaces/{workspace}/wmslayers/{wmslayer}:
+
+    get:
+      operationId: getWMSStoreLayer
+      description: Retrieves an individual WMS layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmslayers/{wmslayer}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmslayer
+          in: path
+          description: Name of the layer
+          required: true
+          type: string
+        - name: quietOnNotFound
+          in: query
+          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSStoreLayerInfo"
+          examples:
+            application/xml: |
+              <wmsLayer>
+                <name>dem</name>
+                <nativeName>usgs:dem</nativeName>
+                <namespace>
+                  <name>cite</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/cite.xml" type="application/xml"/>
+                </namespace>
+                <title>Digital elevation model</title>
+                <description>USGS GTOPO30 digital elevation model</description>
+                <abstract>USGS GTOPO30 digital elevation model</abstract>
+                <keywords>
+                  <string>WCS</string>
+                  <string>GeoTIFF</string>
+                  <string>W100N40</string>
+                </keywords>
+                <nativeCRS>GEOGCS[&quot;WGS 84&quot;, &#xd;
+                DATUM[&quot;World Geodetic System 1984&quot;, &#xd;
+                  SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], &#xd;
+                  AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], &#xd;
+                PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], &#xd;
+                UNIT[&quot;degree&quot;, 0.017453292519943295], &#xd;
+                AXIS[&quot;Geodetic longitude&quot;, EAST], &#xd;
+                AXIS[&quot;Geodetic latitude&quot;, NORTH], &#xd;
+                AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+                <srs>EPSG:4326</srs>
+                <nativeBoundingBox>
+                  <minx>-100.0</minx>
+                  <maxx>-60.000000000015994</maxx>
+                  <miny>-9.999999999980012</miny>
+                  <maxy>39.99999999999999</maxy>
+                  <crs>EPSG:4326</crs>
+                </nativeBoundingBox>
+                <latLonBoundingBox>
+                  <minx>-100.0</minx>
+                  <maxx>-60.000000000015994</maxx>
+                  <miny>-9.999999999980012</miny>
+                  <maxy>39.99999999999999</maxy>
+                  <crs>EPSG:4326</crs>
+                </latLonBoundingBox>
+                <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+                <enabled>true</enabled>
+                <metadata>
+                  <entry key="cachingEnabled">false</entry>
+                </metadata>
+                <store class="wmsStore">
+                  <name>cite:altgs</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.xml" type="application/xml"/>
+                </store>
+                <forcedRemoteStyle>dem_style</forcedRemoteStyle>
+                <preferredFormat>image/png</preferredFormat>
+                <selectedRemoteFormats>
+                   <string>image/png</string>
+                   <string>image/jpeg</string>
+                   <string>image/tiff</string>
+                   <string>image/gif</string>
+                   <string>image/geotiff</string>
+                   <string>image/png8</string>
+                   <string>image/tiff8</string>
+                   <string>image/geotiff8</string>
+                </selectedRemoteFormats>
+                <selectedRemoteStyles>
+                   <string>dem_style</string>
+                   <string>another_dem_style</string>
+                </selectedRemoteStyles>
+                <minScale>1000000.0</minScale>
+                <maxScale>1.0E7</maxScale>
+                <metadataBBoxRespected>false</metadataBBoxRespected>
+                <allAvailableRemoteStyles>
+                   <style>
+                      <name>another_dem_style</name>
+                      <format>sld</format>
+                      <languageVersion>
+                         <version>1.0.0</version>
+                      </languageVersion>
+                      <legend>
+                         <width>20</width>
+                         <height>20</height>
+                         <format>image/png</format>
+                         <onlineResource>https://remote.wms.server/geoserver/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Astates&amp;style=another_dem_style</onlineResource>
+                      </legend>
+                      <metadata>
+                         <entry key="isRemote">true</entry>
+                      </metadata>
+                   </style>
+                   <style>
+                      <name>dem_style</name>
+                      <format>sld</format>
+                      <languageVersion>
+                         <version>1.0.0</version>
+                      </languageVersion>
+                      <legend>
+                         <width>20</width>
+                         <height>20</height>
+                         <format>image/png</format>
+                         <onlineResource>https://remote.wms.server/geoserver/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Astates&amp;style=dem_style</onlineResource>
+                      </legend>
+                      <metadata>
+                         <entry key="isRemote">true</entry>
+                      </metadata>
+                   </style>
+                </allAvailableRemoteStyles>
+              </wmsLayer>
+            application/json: |
+              {"wmsLayer":{"name":"dem","nativeName":"usgs:dem","namespace":{"name":"cite","href":"http://localhost:8080/geoserver/rest/namespaces/cite.json"},"title":"Digital elevation model","description":"USGS GTOPO30 digital elevation model","abstract":"USGS GTOPO30 digital elevation model","keywords":{"string":["WCS","GeoTIFF","W100N40"]},"nativeCRS":"GEOGCS[\"WGS 84\", \r\n  DATUM[\"World Geodetic System 1984\", \r\n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \r\n    AUTHORITY[\"EPSG\",\"6326\"]], \r\n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n  UNIT[\"degree\", 0.017453292519943295], \r\n  AXIS[\"Geodetic longitude\", EAST], \r\n  AXIS[\"Geodetic latitude\", NORTH], \r\n  AUTHORITY[\"EPSG\",\"4326\"]]","srs":"EPSG:4326","nativeBoundingBox":{"minx":-100,"maxx":-60,"miny":-10,"maxy":40,"crs":"EPSG:4326"},"latLonBoundingBox":{"minx":-100,"maxx":-60,"miny":-10,"maxy":40,"crs":"EPSG:4326"},"projectionPolicy":"FORCE_DECLARED","enabled":true,"metadata":{"entry":{"@key":"cachingEnabled","$":"false"}},"store":{"@class":"wmsStore","name":"cite:altgs","href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.json"},"forcedRemoteStyle":"polygon","preferredFormat":"image/png","selectedRemoteFormats":{"string":["image/png","image/png; mode=8bit","image/vnd.jpeg-png","image/jpeg","image/tiff","image/gif","image/geotiff","image/gif;subtype=animated","image/png8","image/tiff8","image/geotiff8"]},"selectedRemoteStyles":{"string":["pophatch","population-region","polygon","population"]},"minScale":1000000,"maxScale":1.0E7,"metadataBBoxRespected":false,"allAvailableRemoteStyles":{"style":[{"name":"population-region","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates&style=population-region"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}},{"name":"polygon","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates&style=polygon"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}},{"name":"population","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}},{"name":"pophatch","format":"sld","languageVersion":{"version":"1.0.0"},"legend":{"width":20,"height":20,"format":"image/png","onlineResource":"https://demo.geo-solutions.it:443/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=topp%3Astates&style=pophatch"},"metadata":{"entry":{"@key":"isRemote","$":"true"}}}]}}}
+
+    post:
+      operationId: postWMSStoreLayer
+      description: Invalid. Use PUT to edit a layer, or POST on the /wmslayers endpoint to add a new layer.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMSStoreLayer
+      description: Edits an existing WMS store layer.
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmslayer
+          in: path
+          description: Name of the layer to be edited
+          required: true
+          type: string
+        - name: WMSStoreLayerBody
+          in: body
+          description: Body of the WMS store layer
+          required: true
+          schema:
+            $ref: "#/definitions/WMSStoreLayerInfo"
+        - name: calculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a wms layer. Some properties are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          required: false
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: Location of the newly created layer.
+              type: string 
+
+    delete:
+      operationId: deleteWMSStoreLayer
+      description: Deletes a layer from the server.
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmslayer
+          in: path
+          description: Name of the layer to be deleted
+          required: true
+          type: string
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified wmslayer. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layers reference the wmslayer.
+          required: false
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: OK
+ 
+
+  /workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers:
+
+    get:
+      operationId: getWMSStoreStoreLayers
+      description: Retrieves the WMS store layers available in the given store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers.xml" for XML).
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmsstore
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: list
+          in: query
+          description: Set "list=available" to see all possible layers in the store, not just ones currently published
+          default: configured
+          enum:
+          - available
+          - configured
+          type: string
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+            description: OK
+            schema:
+              $ref: "#/definitions/WMSStoreLayersList"
+            examples:
+              application/xml: |
+                <wmsLayers>
+                  <wmsLayer>
+                    <name>dem</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers/dem.xml" type="application/xml"/>
+                  </wmsLayer>
+                  <wmsLayer>
+                    <name>states</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers/states.xml" type="application/xml"/>
+                  </wmsLayer>
+                </wmsLayers>
+              application/json: |
+                {"wmsLayers":{"wmsLayer":[{"name":"dem","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite\/wmsstores\/altgs\/wmslayers\/dem.json"},{"name":"states","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite\/wmsstores\/altgs\/wmslayers\/states.json"}]}}
+              application/xml (list=available): |
+                <list>
+                  <wmsLayerName>ne:basemap</wmsLayerName>
+                  <wmsLayerName>ne:ne1</wmsLayerName>
+                  <wmsLayerName>ne:boundary_lines_land</wmsLayerName>
+                  <wmsLayerName>ne:states_provinces_lines</wmsLayerName>
+                  <wmsLayerName>ne:populated_places</wmsLayerName>
+                  <wmsLayerName>opengeo:countries</wmsLayerName>
+                  <wmsLayerName>usgs:dem</wmsLayerName>
+                  <wmsLayerName>ne:ocean</wmsLayerName>
+                  <wmsLayerName>ne:roads</wmsLayerName>
+                  <wmsLayerName>usa:states</wmsLayerName>
+                  <wmsLayerName>ne:states_provinces_shp</wmsLayerName>
+                  <wmsLayerName>ne:urban_areas</wmsLayerName>
+                </list>
+              application/json (list=available): |
+                {"list":{"string":["ne:basemap","ne:ne1","ne:boundary_lines_land","ne:states_provinces_lines","ne:populated_places","opengeo:countries","usgs:dem","ne:ocean","ne:roads","usa:states","ne:states_provinces_shp","ne:urban_areas"]}}
+
+    post:
+      operationId: postWMSStoreStoreLayers
+      description: Publishes a new WMS store layer in the given store.
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmsstore
+          in: path
+          description: Name of the data store
+          required: true
+          type: string
+        - name: WMSStoreLayerBody
+          in: body
+          description: Body of the WMS store layer
+          required: true
+          schema:
+            $ref: "#/definitions/WMSStoreLayerInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: Location of the newly created layer
+              type: string
+
+    put:
+      operationId: putWMSStoreStoreLayers
+      description: Invalid. Use POST for adding a new layer, or PUT on an individual layer to edit it.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteWMSStoreStoreLayers
+      description: Invalid. Can only delete an individual layer.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers/{wmslayer}:
+
+    get:
+      operationId: getWMSStoreStoreLayer
+      description: Retrieves an individual WMS store layer for a given store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers/{wmslayer}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmsstore
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: wmslayer
+          in: path
+          description: Name of the layer
+          required: true
+          type: string
+        - name: quietOnNotFound
+          in: query
+          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSStoreLayerInfo"
+          examples:
+            application/xml: |
+              <wmsLayer>
+                <name>dem</name>
+                <nativeName>usgs:dem</nativeName>
+                <namespace>
+                  <name>cite</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/cite.xml" type="application/xml"/>
+                </namespace>
+                <title>Digital elevation model</title>
+                <description>USGS GTOPO30 digital elevation model</description>
+                <abstract>USGS GTOPO30 digital elevation model</abstract>
+                <keywords>
+                  <string>WCS</string>
+                  <string>GeoTIFF</string>
+                  <string>W100N40</string>
+                </keywords>
+                <nativeCRS>GEOGCS[&quot;WGS 84&quot;, &#xd;
+                DATUM[&quot;World Geodetic System 1984&quot;, &#xd;
+                  SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], &#xd;
+                  AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], &#xd;
+                PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], &#xd;
+                UNIT[&quot;degree&quot;, 0.017453292519943295], &#xd;
+                AXIS[&quot;Geodetic longitude&quot;, EAST], &#xd;
+                AXIS[&quot;Geodetic latitude&quot;, NORTH], &#xd;
+                AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+                <srs>EPSG:4326</srs>
+                <nativeBoundingBox>
+                  <minx>-100.0</minx>
+                  <maxx>-60.000000000015994</maxx>
+                  <miny>-9.999999999980012</miny>
+                  <maxy>39.99999999999999</maxy>
+                  <crs>EPSG:4326</crs>
+                </nativeBoundingBox>
+                <latLonBoundingBox>
+                  <minx>-100.0</minx>
+                  <maxx>-60.000000000015994</maxx>
+                  <miny>-9.999999999980012</miny>
+                  <maxy>39.99999999999999</maxy>
+                  <crs>EPSG:4326</crs>
+                </latLonBoundingBox>
+                <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+                <enabled>true</enabled>
+                <metadata>
+                  <entry key="cachingEnabled">false</entry>
+                </metadata>
+                <store class="wmsStore">
+                  <name>cite:altgs</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.xml" type="application/xml"/>
+                </store>
+              </wmsLayer>
+            application/json: |
+              {"wmsLayer":{"name":"dem","nativeName":"usgs:dem","namespace":{"name":"cite","href":"http://localhost:8080/geoserver/rest/namespaces/cite.json"},"title":"Digital elevation model","description":"USGS GTOPO30 digital elevation model","abstract":"USGS GTOPO30 digital elevation model","keywords":{"string":["WCS","GeoTIFF","W100N40"]},"nativeCRS":"GEOGCS[\"WGS 84\", \r\n  DATUM[\"World Geodetic System 1984\", \r\n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \r\n    AUTHORITY[\"EPSG\",\"6326\"]], \r\n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n  UNIT[\"degree\", 0.017453292519943295], \r\n  AXIS[\"Geodetic longitude\", EAST], \r\n  AXIS[\"Geodetic latitude\", NORTH], \r\n  AUTHORITY[\"EPSG\",\"4326\"]]","srs":"EPSG:4326","nativeBoundingBox":{"minx":-100,"maxx":-60.000000000015994,"miny":-9.999999999980012,"maxy":39.99999999999999,"crs":"EPSG:4326"},"latLonBoundingBox":{"minx":-100,"maxx":-60.000000000015994,"miny":-9.999999999980012,"maxy":39.99999999999999,"crs":"EPSG:4326"},"projectionPolicy":"FORCE_DECLARED","enabled":true,"metadata":{"entry":{"@key":"cachingEnabled","$":"false"}},"store":{"@class":"wmsStore","name":"cite:altgs","href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.json"}}}
+
+    post:
+      operationId: postWMSStoreStoreLayer
+      description: Invalid. Use PUT to edit a layer, or POST on the /wmslayers endpoint to add a new layer.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMSStoreStoreLayer
+      description: Edits an existing WMS store layer.
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmsstore
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: wmslayer
+          in: path
+          description: Name of the layer to be edited
+          required: true
+          type: string
+        - name: WMSStoreLayerBody
+          in: body
+          description: Body of the WMS store layer
+          required: true
+          schema:
+            $ref: "#/definitions/WMSStoreLayerInfo"
+        - name: calculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a wms layer. Some properties are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          required: false
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: Location of the newly created layer
+              type: string
+
+    delete:
+      operationId: deleteWMSStoreStoreLayer
+      description: Deletes a layer from the server.
+      parameters:
+        - name: workspace
+          in: path
+          description: Name of the workspace
+          required: true
+          type: string
+        - name: wmsstore
+          in: path
+          description: Name of the store
+          required: true
+          type: string
+        - name: wmslayer
+          in: path
+          description: Name of the layer to be deleted
+          required: true
+          type: string
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified wmslayer. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layers reference the wmslayer.
+          required: false
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: OK
+
+
+definitions:
+
+  WMSStoreLayersList:
+    title: wmsLayers
+    type: array
+    items:
+      title: wmsLayer
+      type: object
+      properties:
+         name:
+           type: string
+           description: Name of the layer
+         link:
+           type: string
+           description: URL of the layer representation
+
+  WMSStoreLayersAvailableList:
+    title: list
+    type: array
+    items:
+      title: wmsLayerName
+      type: object
+      properties:
+         name:
+           type: string
+           description: Name of the layer
+         link:
+           type: string
+           description: URL of the layer representation
+
+  WMSStoreLayerInfo:
+    title: wmsLayer
+    xml:
+      name: wmsLayer
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the layer, corresponding to the published name of the resource
+      nativeName:
+        type: string
+        description: Name of the layer as known on the remote WMS
+      namespace:
+        type: object
+        description: Namespace of the layer
+        properties:
+          name:
+            type: string
+            description: Name of the namespace
+          link:
+            type: string
+            description: URL to the namespace representation.
+      title:
+        type: string
+        description: Title of the layer
+      abstract:
+        type: string
+        description: Description of the layer
+      description:
+        type: string
+        description: Same as abstract
+      keywords:
+        type: array
+        description: Collection of keywords associated with the layer
+        items:
+          type: object
+          properties:
+            string:
+              type: string
+              description: Keyword
+      metadatalinks:
+        type: object
+        description: Wraps a collection of metadata links
+        properties:
+          metadataLink:
+            type: array
+            description: A collection of metadata links
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: MIME type
+                metadataType:
+                  type: string
+                  description: Type of metadata such as "FGDC"
+                content:
+                  type: string
+                  description: Link URL
+      dataLinks:
+        type: object
+        description: Wraps a collection of data links
+        properties:
+          metadataLink:
+            type: array
+            description: Collection of data links
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: MIME type
+                content:
+                  type: string
+                  description: Link URL
+      nativeCRS:
+        type: string
+        description: Native coordinate reference system object in WKT
+      srs:
+        type: string
+        description: Identifier of coordinate reference system
+      nativeBoundingBox:
+        type: object
+        description: Bounds of the layer in its declared CRS.
+        properties:
+          minx:
+            type: number
+            description: Min x coordinate
+          maxx:
+            type: number
+            description: Max x coordinate
+          miny:
+            type: number
+            description: Min y coordinate
+          maxy:
+            type: number
+            description: Max y coordinate
+          crs:
+            type: string
+            description: Coordinate reference system of the bounding box
+      latLonBoundingBox:
+        type: object
+        description: Bounds of the layer in latitude / longitude. This value represents a "fixed value" and is not calculated.
+        properties:
+          minx:
+            type: number
+            description: Min x coordinate
+          maxx:
+            type: number
+            description: Max x coordinate
+          miny:
+            type: number
+            description: Min y coordinate
+          maxy:
+            type: number
+            description: Max y coordinate
+          crs:
+            type: string
+            description: Coordinate reference system object of the bounding box  
+      projectionPolicy:
+        type: string
+        description: How to handle the coordinate reference system (native versus declared)
+        enum:
+        - FORCE_DECLARED
+        - REPROJECT_TO_DECLARE
+        - NONE
+      enabled:
+        type: boolean
+        description: Whether the layer is enabled
+      metadata:
+        type: array
+        description: A list of key/value metadata pairs.
+        items:
+          $ref: "#/definitions/MetadataEntry"
+      store:
+        type: object
+        description: Store conaining the resource
+        properties:
+          '@class':
+            type: string
+            description: Class of the store
+          name:
+            type: string
+            description: Name of the store
+          href:
+            type: string
+            description: URL to the data store
+      forcedRemoteStyle:
+        type: string
+        description: Remote style to be used in remote GetMap request.
+      selectedRemoteFormats:
+        type: array
+        description: Additional list of image formats supported by remote WMS Server.
+        items:
+          type: string
+      preferredFormat:
+        type: string
+        description: Output image format to be used in remote GetMap request
+      selectedRemoteStyles:
+        type: array
+        description: Additional list of remote styles that can be used to remote GetMap requests.
+        items:
+          type: string
+      allAvailableRemoteStyles:
+        type: array
+        description: List of complete style info objects that contain name, sld format and GetLegendRequests.
+        items:
+          $ref: '#/definitions/StyleInfo'
+      minScale:
+        type: number
+        description: minimum scale denominator, works like Scale denomintors in SLD.
+      maxScale:
+        type: number
+        description: maximum scale denominator, works like Scale denomintors in SLD.
+      metadataBBoxRespected:
+        type: boolean
+        description: An optimization that skips remote GetMap requests if requested Map is outside advertised bounds.
+
+  MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+          enum:
+          - regionateStrategy
+          - regionateFeatureLimit
+          - cacheAgeMax
+          - cachingEnabled
+          - regionateAttribute
+          - indexingEnabled
+          - dirName
+          description: Key used for metadata entry
+        text:
+          type: string
+          description: Value of given key
+
+  StyleInfo:
+      type: object
+      title: style
+      properties:
+        name:
+          type: string
+          description: Name of remote style
+        format:
+          type: string
+          description: format of style
+          example: "sld"
+        languageVersion:
+          type: object
+          properties:
+            version:
+              type: string
+              description: versioon of format
+              example: "1.0.0"
+        legend:
+          type: object
+          properties:
+            width:
+              type: number
+              description: width of remote legend graphic              
+            height:
+              type: number
+              description: height of remote legend graphics              
+            format:
+              type: string
+              description: image format of legend graphic
+              example: "image/png"
+            onlineResource:
+              type: string
+              description: GetLegendGraphic request URL

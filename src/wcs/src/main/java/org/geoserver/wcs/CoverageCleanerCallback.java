@@ -11,14 +11,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.media.jai.PlanarImage;
-
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverage;
 
@@ -46,11 +44,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         clean();
     }
 
-    /**
-     * Mark coverage for cleaning.
-     * 
-     * @param coverages
-     */
+    /** Mark coverage for cleaning. */
     public static void addCoverages(GridCoverage... coverages) {
         List<GridCoverage> list = COVERAGES.get();
         if (list == null) {
@@ -60,11 +54,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         list.addAll(Arrays.asList(coverages));
     }
 
-    /**
-     * Cleans up a coverage and its internal rendered image
-     * 
-     * @param coverage
-     */
+    /** Cleans up a coverage and its internal rendered image */
     public static void disposeCoverage(GridCoverage coverage) {
         RenderedImage ri = coverage.getRenderedImage();
         if (coverage instanceof GridCoverage2D) {
@@ -75,9 +65,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
         }
     }
 
-    /**
-     * Clean up any coverages collected by {@link #addCoverages(GridCoverage...)}
-     */
+    /** Clean up any coverages collected by {@link #addCoverages(GridCoverage...)} */
     public void clean() {
         try {
             List<GridCoverage> coverages = COVERAGES.get();
@@ -86,8 +74,8 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
                     try {
                         disposeCoverage(coverage);
                     } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage,
-                                e);
+                        LOGGER.log(
+                                Level.WARNING, "Failed to fully dispose coverage: " + coverage, e);
                     }
                 }
             }

@@ -5,42 +5,16 @@
 package org.geoserver.platform;
 
 import java.util.Optional;
-import sun.java2d.pipe.RenderingEngine;
 
-/**
- * @author Morgan Thompson - Boundless
- */
+/** @author Morgan Thompson - Boundless */
 public class RenderingEngineStatus implements ModuleStatus {
 
-    private static final String UNKNOWN = "unknown";
+    private static final String DEFAULT = "PLATFORM DEFAULT";
 
-    private String engine;
     private String provider;
 
-    @SuppressWarnings("unchecked")
     public RenderingEngineStatus() {
-
-        Class<RenderingEngine> renderer;
-        try {
-            renderer = (Class<RenderingEngine>) sun.java2d.pipe.RenderingEngine.getInstance()
-                    .getClass();
-        } catch (Throwable e) {
-            engine = UNKNOWN;
-            provider = UNKNOWN;
-            return;
-        }
-        engine = renderer.getSimpleName();
-
-        Package pkg = renderer.getPackage();
-        if (pkg.getName().contains("marlin")) {
-            provider = "Marlin";
-        } else if (pkg.getName().contains("sun.dc")) {
-            provider = "OracleJDK";
-        } else if (pkg.getName().contains("sun.java2d")) {
-            provider = "OpenJDK";
-        } else {
-            provider = pkg.getName();
-        }
+        this.provider = System.getProperty("sun.java2d.renderer", DEFAULT);
     }
 
     @Override
@@ -60,11 +34,7 @@ public class RenderingEngineStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getVersion() {
-        if (provider.contains("OracleJDK")) {
-            return Optional.ofNullable(System.getProperty("java.version"));
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(System.getProperty("java.version"));
     }
 
     @Override
@@ -80,20 +50,10 @@ public class RenderingEngineStatus implements ModuleStatus {
     @Override
     public Optional<String> getMessage() {
         StringBuilder msg = new StringBuilder();
-        msg.append("Java 2D configured with ");
-        msg.append(engine);
-        msg.append(".\n");
+        msg.append("Java 2D renderer configured with: ");
 
-        msg.append("Provider: ");
         msg.append(provider);
-        msg.append("\n");
 
-        String config = System.getProperty("sun.java2d.renderer");
-
-        if (config != null) {
-            msg.append("Configuration: -Dsun.java2d.renderer=");
-            msg.append(config);
-        }
         return Optional.of(msg.toString());
     }
 
@@ -102,5 +62,4 @@ public class RenderingEngineStatus implements ModuleStatus {
         // TODO Auto-generated method stub
         return Optional.empty();
     }
-
 }

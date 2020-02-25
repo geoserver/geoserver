@@ -7,13 +7,12 @@ package org.geoserver.wms;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.util.logging.Logging;
 
 /**
  * Helper that injects enviroment variables in the {@link EnvFunction} given a map context
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class RenderingVariables {
@@ -23,8 +22,8 @@ public class RenderingVariables {
     public static void setupEnvironmentVariables(WMSMapContent mapContent) {
         // setup some SLD variable substitution environment used by rendering transformations
         EnvFunction.setLocalValue("wms_bbox", mapContent.getRenderingArea());
-        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea()
-                .getCoordinateReferenceSystem());
+        EnvFunction.setLocalValue(
+                "wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
         EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
         EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
         EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());

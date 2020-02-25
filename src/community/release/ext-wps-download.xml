@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-wps-download*.jar</include>
+        <include>jcodec*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

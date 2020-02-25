@@ -7,7 +7,7 @@ Using the ImageMosaic plugin for raster with time and elevation data
 Introduction
 ------------
 
-This tutorial is the following of :ref:`tutorial_imagemosaic_timeseries` and explains how manage an Imagemosaic using both **Time** and **Elevation** attributes.
+This tutorial is the following of :ref:`tutorial_imagemosaic_timeseries` and explains how manage an ImageMosaic using both **Time** and **Elevation** attributes.
 
 The dataset used is a set of raster images used in weather forecast, representing the temperature in a certain zone at different times and elevations.
 
@@ -17,7 +17,7 @@ This tutorial explains just how to configure the **elevationregex.properties** t
 
 The dataset used is different so also a fix to the **timeregex.properties** used in the previous tutorial is needed.
 
-Will be shown also how query geoserver asking for layers specifying both time and elevation dimensions.
+Will be shown also how query GeoServer asking for layers specifying both time and elevation dimensions.
 
 The dataset used in the tutorial can be downloaded :download:`Here <temperatureLZWdataset.zip>`
 
@@ -32,7 +32,7 @@ The additional configurations needed in order to handle also the elevation attri
 indexer.properties:
 """""""""""""""""""
 
-Here the user can specify the information that needs Geoserver for creating the table in the database. 
+Here the user can specify the information that needs GeoServer for creating the table in the database. 
 
 In this case the time values are stored in the column ingestion as shown in the previous tutorial but now is mandatory specify the elevation column too.
 
@@ -52,7 +52,7 @@ an example of filename, that is used in this tutorial is::
 
 		gfs50kmTemperature20130310T180000000Z_0600.000_.tiff
 
-The geoserver imagemosaic plugin scans the filename and search for the first occurrence that match with the pattern specified. Here the content of **timeregex.properties**:
+The GeoServer ImageMosaic plugin scans the filename and search for the first occurrence that match with the pattern specified. Here the content of **elevationregex.properties**:
 
 .. include:: src/elevationregex.properties
    :literal:
@@ -73,7 +73,7 @@ Instead of the form **yyyymmdd** as in the previous tutorial. So the regex to sp
 Coverage based on filestore
 ---------------------------
 
-Once the mosaic configuration is ready the store mosaic could be loaded on geoserver.
+Once the mosaic configuration is ready the store mosaic could be loaded on GeoServer.
 
 The steps needed are the same shown the previous chapter. After the store is loaded and a layer published note the differences in WMS Capabilities document and in the table on postgres.
 

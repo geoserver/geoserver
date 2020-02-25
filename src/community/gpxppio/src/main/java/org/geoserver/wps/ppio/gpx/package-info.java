@@ -4,4 +4,3 @@
  * application directory.
  */
 package org.geoserver.wps.ppio.gpx;
-

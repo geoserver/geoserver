@@ -10,7 +10,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -31,8 +30,8 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         target.add(auth);
     }
 
-    private void addIdentifier(final String authName, final String id,
-            List<LayerIdentifierInfo> target) {
+    private void addIdentifier(
+            final String authName, final String id, List<LayerIdentifierInfo> target) {
         LayerIdentifierInfo identifier = new LayerIdentifier();
         identifier.setAuthority(authName);
         identifier.setIdentifier(id);
@@ -44,7 +43,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("ows", "http://www.opengis.net/ows");
     }
-    
+
     @Test
     public void testRootLayer() throws Exception {
         WMSInfo serviceInfo = getWMS().getServiceInfo();
@@ -98,20 +97,32 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         addIdentifier("layerAuth1", "layerId1", layer.getIdentifiers());
         getCatalog().save(layer);
 
-        Document doc = getAsDOM(
-                "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.3.0",
-                true);
+        Document doc =
+                getAsDOM(
+                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.3.0",
+                        true);
 
         String layerName = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
-        assertXpathExists("//wms:Layer[wms:Name='" + layerName
-                + "']/wms:AuthorityURL[@name = 'layerAuth1']", doc);
-        assertXpathEvaluatesTo("http://geoserver/wms/auth1", "//wms:Layer[wms:Name='" + layerName
-                + "']/wms:AuthorityURL[@name = 'layerAuth1']/wms:OnlineResource/@xlink:href", doc);
+        assertXpathExists(
+                "//wms:Layer[wms:Name='" + layerName + "']/wms:AuthorityURL[@name = 'layerAuth1']",
+                doc);
+        assertXpathEvaluatesTo(
+                "http://geoserver/wms/auth1",
+                "//wms:Layer[wms:Name='"
+                        + layerName
+                        + "']/wms:AuthorityURL[@name = 'layerAuth1']/wms:OnlineResource/@xlink:href",
+                doc);
 
-        assertXpathExists("//wms:Layer[wms:Name='" + layerName
-                + "']/wms:Identifier[@authority = 'layerAuth1']", doc);
-        assertXpathEvaluatesTo("layerId1", "//wms:Layer[wms:Name='" + layerName
-                + "']/wms:Identifier[@authority = 'layerAuth1']", doc);
+        assertXpathExists(
+                "//wms:Layer[wms:Name='"
+                        + layerName
+                        + "']/wms:Identifier[@authority = 'layerAuth1']",
+                doc);
+        assertXpathEvaluatesTo(
+                "layerId1",
+                "//wms:Layer[wms:Name='"
+                        + layerName
+                        + "']/wms:Identifier[@authority = 'layerAuth1']",
+                doc);
     }
-
 }

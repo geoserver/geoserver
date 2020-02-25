@@ -69,6 +69,27 @@ An example of a simple CQL filter is::
    cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
    
 
+sortBy
+------
+
+The ``sortBy`` parameter allows to control the order of features/rasters displayed in the map, using the same
+syntax as WFS 1.0, that is:
+
+* ``&sortBy=att1 A|D,att2 A|D, ...`` for a single layer request
+* ``&sortBy=(att1Layer1 A|D,att2Layer1 A|D, ...)(att1Layer2 A|D,att2Layer2 A|D, ...)...`` when requesting multiple layers
+
+Care should be taken when using it as it has different behavior for raster layers, vector layers, and layer groups.
+In particular:
+
+* | For **raster layers**, ``sortBy`` maps to a "SORTING" read parameter that the reader might expose (image mosaic exposes such parameter).
+  | In image mosaic, this causes the first granule found in the sorting will display on top, and then the others will follow.
+  | Thus, to sort a scattered mosaic of satellite images so that the most recent image shows on top, and assuming the time attribute is called ``ingestion`` in the mosaic index, the specification will be ``&sortBy=ingestion D``.
+* | For **vector layers**, ``sortBy`` maps to a sort by clause in the vector data source, and then painting happens using the normal "painter model" rules, so the first item returned is painted first, and then all others on top of it.
+  | Thus, to sort a set of event points so that the most recent event is painted on top, and assuming the attribute is called "date" in the vector layer, the specification will be ``&sortBy=date`` or ``&sortBy=date A`` (ascending direction being the default one).
+* | For **layer groups**, the sort specification is going to be copied over all internal layers, so the spec has to be valid for all of them, or an error will be reported. 
+  | An empty spec can be used for layer groups in this case, for example, ``layers=theGroup,theLayer&sortBy=(),(date A)``
+ 
+
 env
 ---
 
@@ -272,6 +293,8 @@ The two possible values are:
 The two methods tend to return values rather close to each other near the equator, but they
 do diverge to larger differences as the latitude approaches the poles.
 
+.. _wms_vendor_parameter_interpolations:
+
 interpolations
 --------------
 
@@ -291,5 +314,61 @@ method<n> values can be one of the following:
 
 or empty if the default method has to be used for the related layer. 
 
-The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), on a layer by layer basis. 
+The parameter allows to override the global *WMS Raster Rendering Options* setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), as well as the layer specific *Default Interpolation Method* publishing parameter (see :ref:`Layers <data_webadmin_layers>` for more info), on a layer by layer basis.
 
+format
+------
+
+The ``format`` parameter can be used to request capabilities documents in a certain format. If the requested format is not supported the default format will be used.
+
+An example request:
+
+  http://localhost:8080/geoserver/ows?service=wms&version=1.1.1&request=GetCapabilities&format=text/xml
+
+.. note::  
+  Currently this parameter can only be used to request WMS 1.1.1 capabilities documents encoded in ``text/xml``, if used with other WMS versions or other formats it will have no effect.
+
+  
+rootLayer
+---------
+
+The ``rootLayer`` parameter can be used to request capabilities documents to include or not a top level root Layer container.
+By default this top level root is always included as a parent of the configured layers and groups. The default can be changed at the service (WMS) level,
+or at the layer / group level.
+
+Using this parameter it is possible to exclude the default root when the resulting document has a single top element (e.g. a single group with nested children).
+To do that, use the **false** value.
+
+The parameter can also be used to override what is defined at the WMS or layer / group level. For example if the service is configure to exclude the Root element, we can force it
+with **rootLayer=true**.
+
+
+
+An example request:
+
+  http://localhost:8080/geoserver/ows?service=wms&version=1.1.1&request=GetCapabilities&rootLayer=false
+
+An example with XML POST:
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <ogc:GetCapabilities xmlns:ogc="http://www.opengis.net/ows"
+               xmlns:gml="http://www.opengis.net/gml"
+      version="1.1.1" service="WMS" rootLayer="false">
+   </ogc:GetCapabilities>
+
+   
+clip
+------
+
+The ``clip`` parameter can be used to clip WMS response using a Polygon mask represented by a valid WKT String.
+
+Here are two examples, the first one using WKT, the second using EWKT::
+
+   clip=POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))
+   clip=srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))
+
+.. note::  
+  The Axis order of WKT must be East/North regardless of WMS version.
+  Currently this parameter is ignored for layers with Complex features.

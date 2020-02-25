@@ -10,21 +10,20 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
  * A mapper specifically thought for formats that do have a corresponding JAI image reader
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
 
@@ -34,8 +33,13 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
     public String getMimeType(CoverageInfo cInfo) throws IOException {
         // no mapping let's go with the ImageIO reader code
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        
-        final File sourceFile = loader.url(cInfo.getStore().getURL());
+
+        final File sourceFile =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()),
+                                cInfo.getStore().getURL()),
+                        true);
         if (sourceFile == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Original source is null");
@@ -61,10 +65,10 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
                     LOGGER.fine("Found reader for format: " + reader.getFormatName());
                 }
                 String mime = reader.getOriginatingProvider().getMIMETypes()[0];
-                // the native format rules says "the range set values can be obtained unaltered", 
+                // the native format rules says "the range set values can be obtained unaltered",
                 // so we cannot allow lossy compressions (which would alter the range set values)
                 String lcMime = mime.toLowerCase();
-                if(lcMime.contains("jpeg") || lcMime.contains("mrsid") || lcMime.contains("ecw")) {
+                if (lcMime.contains("jpeg") || lcMime.contains("mrsid") || lcMime.contains("ecw")) {
                     return null;
                 }
             }
@@ -95,5 +99,4 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
         }
         return null;
     }
-
 }

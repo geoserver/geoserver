@@ -9,9 +9,8 @@ import java.io.InputStream;
 
 /**
  * A RawData based on a single InputStream.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class StreamRawData extends AbstractRawData {
 
@@ -41,8 +40,12 @@ public class StreamRawData extends AbstractRawData {
 
     @Override
     public String toString() {
-        return "StreamRawData [mimeType=" + mimeType + ", inputStream=" + inputStream
-                + ", extension=" + extension + "]";
+        return "StreamRawData [mimeType="
+                + mimeType
+                + ", inputStream="
+                + inputStream
+                + ", extension="
+                + extension
+                + "]";
     }
-
 }

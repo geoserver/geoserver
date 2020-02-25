@@ -58,6 +58,14 @@ Available options are:
 
 #. ``BK_BEST_EFFORT``: Skip any failing resources and proceed with the backup procedure
 
+#. ``BK_PARAM_PASSWORDS``: Whether outgoing store passwords should be parameterized in the backup. With this option set
+   all store passwords will be replaced with a token that looks like `${workspaceName:storeName.passwd.encryptedValue}`
+
+#. ``BK_SKIP_SECURITY``: _Experimental_. This will exclude security settings from the backup.
+
+#. ``BK_SKIP_SETTINGS``: _Experimental_. This will attempt to exclude most global settings from the backup, as well as
+   security settings.
+
 Also an optional ``Filter`` can be passed to restrict the scope of the restore operation to a list of workspaces. 
 
     For example ::
@@ -193,6 +201,19 @@ Available Options are:
 #. ``BK_DRY_RUN``: Only test the archive do not persist the restored configuration
 
 #. ``BK_BEST_EFFORT``: Skip any failing resources and proceed with the restore procedure
+
+#. ``BK_PASSWORD_TOKENS``: A comma separated list of equal sign separated key/values to be replaced in data store passwords
+   in an incoming backup. For example ::
+
+       BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValye}=foo,${workspace:store2.passwd.encryptedValue}=bar
+
+#. ``BK_SKIP_SECURITY``: _Experimental_. This will exclude security settings from the restore. Default: `false`.
+
+#. ``BK_SKIP_SETTINGS``: _Experimental_. This will attempt to exclude most global settings from the backup, as well as
+   security settings. Default: `false`
+
+#. ``BK_PURGE_RESOURCES``: _Experimental_. This will skip deleting incoming resources where possible. In particular,
+existing workspaces will not be deleted during the restore. Default: `true`
 
 Also an optional ``Filter`` can be passed to restict the scope of the restore operation to a list of workspaces.
 

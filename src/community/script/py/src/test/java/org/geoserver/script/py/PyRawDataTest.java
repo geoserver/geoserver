@@ -1,7 +1,10 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.script.py;
 
 import java.util.Map;
-
 import org.geoserver.script.wps.ScriptProcessFactory;
 import org.geoserver.script.wps.ScriptProcessTestSupport;
 import org.geoserver.wps.process.RawData;
@@ -37,10 +40,12 @@ public class PyRawDataTest extends ScriptProcessTestSupport {
         assertNotNull(inputs);
         assertEquals(2, inputs.size());
 
-        Parameter<?> param = checkParameter(inputs, "input", RawData.class, "The raw data input", 1, 1);
+        Parameter<?> param =
+                checkParameter(inputs, "input", RawData.class, "The raw data input", 1, 1);
         assertEquals("application/json,text/xml", param.metadata.get("mimeTypes"));
-        checkParameter(inputs, "outputMimeType", String.class, "The user chosen output mime type", 0, 1);
-        
+        checkParameter(
+                inputs, "outputMimeType", String.class, "The user chosen output mime type", 0, 1);
+
         // check outputs
         Map<String, Parameter<?>> resultInfo = pf.getResultInfo(raw, null);
         assertEquals(1, resultInfo.size());
@@ -49,9 +54,13 @@ public class PyRawDataTest extends ScriptProcessTestSupport {
         assertEquals("outputMimeType", param.metadata.get("chosenMimeType"));
     }
 
-    public Parameter<?> checkParameter(Map<String, Parameter<?>> parameters, String name,
+    public Parameter<?> checkParameter(
+            Map<String, Parameter<?>> parameters,
+            String name,
             Class type,
-            String description, int minOccurs, int maxOccurs) {
+            String description,
+            int minOccurs,
+            int maxOccurs) {
         assertTrue(parameters.containsKey(name));
         Parameter<?> param = parameters.get(name);
         assertTrue(type.isAssignableFrom(param.type));
@@ -60,11 +69,9 @@ public class PyRawDataTest extends ScriptProcessTestSupport {
         assertEquals(maxOccurs, param.maxOccurs);
 
         return param;
-
     }
-    
-    public static void main(String[] args) {
-		System.out.println(Integer.MAX_VALUE);
-	}
 
+    public static void main(String[] args) {
+        System.out.println(Integer.MAX_VALUE);
+    }
 }

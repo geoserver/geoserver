@@ -6,21 +6,18 @@
 package org.geoserver.wps.property;
 
 import org.geoserver.wps.executor.ExecutionStatus;
-import org.geotools.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
+import org.geotools.util.factory.Hints;
 
-/**
- * Property accessor for GeoServer ExecutionStatus beans
- * 
- */
+/** Property accessor for GeoServer ExecutionStatus beans */
 public class ExecutionStatusAccessorFactory implements PropertyAccessorFactory {
 
     private static final BeanPropertyAccessor INSTANCE = new BeanPropertyAccessor();
 
     @Override
-    public PropertyAccessor createPropertyAccessor(Class<?> type, String xpath, Class<?> target,
-            Hints hints) {
+    public PropertyAccessor createPropertyAccessor(
+            Class<?> type, String xpath, Class<?> target, Hints hints) {
         if (ExecutionStatus.class.isAssignableFrom(type)) {
             return INSTANCE;
         }

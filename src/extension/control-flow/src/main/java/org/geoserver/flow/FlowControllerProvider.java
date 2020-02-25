@@ -5,14 +5,12 @@
 package org.geoserver.flow;
 
 import java.util.List;
-
 import org.geoserver.ows.Request;
 
 /**
  * Sources of FlowContoller for the {@link ControlFlowCallback}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public interface FlowControllerProvider {
 
@@ -26,7 +24,7 @@ public interface FlowControllerProvider {
 
     /**
      * Maximum time the request can be held in queue before giving up to it.
-     * 
+     *
      * @return The maximum time in milliseconds. Use 0 or a negative number for no timeout
      */
     long getTimeout(Request request);

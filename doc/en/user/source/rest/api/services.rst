@@ -215,4 +215,74 @@ Controls Web Map Service settings for a given workspace.
      -
      -
 
+``/services/wmts/settings[.<format>]``
+--------------------------------------
+
+Controls Web Map Tile Service settings.
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Status code
+     - Formats
+     - Default Format
+   * - GET
+     - Return global WMTS settings
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify global WMTS settings
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - 
+     - 405
+     -
+     -
+
+
+``/services/wmts/workspaces/<ws>/settings[.<format>]``
+-------------------------------------------------------
+
+Controls Web Map Tile Service settings for a given workspace.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Status code
+     - Formats
+     - Default Format
+   * - GET
+     - Return WMTS settings for workspace ``ws``
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify WMTS settings for workspace ``ws``
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - Delete WMTS settings for workspace ``ws``
+     - 200
+     -
+     -
+
 .. todo:: WPS?

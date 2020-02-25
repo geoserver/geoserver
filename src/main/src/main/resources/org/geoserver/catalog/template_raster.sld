@@ -6,7 +6,6 @@ http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
     <UserStyle>
       <Title>A raster style</Title>
       <FeatureTypeStyle>
-        <FeatureTypeName>Raster</FeatureTypeName>
         <Rule>
           <RasterSymbolizer>
             <Opacity>1.0</Opacity>

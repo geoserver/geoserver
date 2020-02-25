@@ -22,7 +22,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     protected FeatureTypeInfo featureType;
     protected Class binding;
     protected Integer length;
-        
+
     public String getId() {
         return id;
     }
@@ -34,7 +34,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -42,11 +42,11 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     public int getMaxOccurs() {
         return maxOccurs;
     }
-    
+
     public void setMaxOccurs(int maxOccurs) {
         this.maxOccurs = maxOccurs;
     }
-    
+
     public int getMinOccurs() {
         return minOccurs;
     }
@@ -54,7 +54,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     public void setMinOccurs(int minOccurs) {
         this.minOccurs = minOccurs;
     }
-    
+
     public boolean isNillable() {
         return nillable;
     }
@@ -66,19 +66,19 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     public FeatureTypeInfo getFeatureType() {
         return featureType;
     }
-    
+
     public void setFeatureType(FeatureTypeInfo featureType) {
         this.featureType = featureType;
     }
-    
+
     public AttributeDescriptor getAttribute() {
         return attribute;
     }
-    
+
     public void setAttribute(AttributeDescriptor attribute) {
         this.attribute = attribute;
     }
-    
+
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -86,12 +86,12 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     public void setMetadata(MetadataMap metadata) {
         this.metadata = metadata;
     }
-    
+
     @Override
     public String toString() {
         return name;
     }
-    
+
     public Class getBinding() {
         return binding;
     }
@@ -127,56 +127,64 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         AttributeTypeInfoImpl other = (AttributeTypeInfoImpl) obj;
         if (attribute == null) {
-            if (other.attribute != null)
-                return false;
-        } else if (!attribute.equals(other.attribute))
-            return false;
+            if (other.attribute != null) return false;
+        } else if (!attribute.equals(other.attribute)) return false;
         if (binding == null) {
-            if (other.binding != null)
-                return false;
-        } else if (!binding.equals(other.binding))
-            return false;
+            if (other.binding != null) return false;
+        } else if (!binding.equals(other.binding)) return false;
         if (featureType == null) {
-            if (other.featureType != null)
-                return false;
-        } else if (!featureType.equals(other.featureType))
-            return false;
+            if (other.featureType != null) return false;
+        } else if (!featureType.equals(other.featureType)) return false;
         if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
+            if (other.id != null) return false;
+        } else if (!id.equals(other.id)) return false;
         if (length == null) {
-            if (other.length != null)
-                return false;
-        } else if (!length.equals(other.length))
-            return false;
-        if (maxOccurs != other.maxOccurs)
-            return false;
+            if (other.length != null) return false;
+        } else if (!length.equals(other.length)) return false;
+        if (maxOccurs != other.maxOccurs) return false;
         if (metadata == null) {
-            if (other.metadata != null)
-                return false;
-        } else if (!metadata.equals(other.metadata))
-            return false;
-        if (minOccurs != other.minOccurs)
-            return false;
+            if (other.metadata != null) return false;
+        } else if (!metadata.equals(other.metadata)) return false;
+        if (minOccurs != other.minOccurs) return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (nillable != other.nillable)
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
+        if (nillable != other.nillable) return false;
         return true;
     }
-    
-    
+
+    @Override
+    public boolean equalsIngnoreFeatureType(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        AttributeTypeInfoImpl other = (AttributeTypeInfoImpl) obj;
+        if (attribute == null) {
+            if (other.attribute != null) return false;
+        } else if (!attribute.equals(other.attribute)) return false;
+        if (binding == null) {
+            if (other.binding != null) return false;
+        } else if (!binding.equals(other.binding)) return false;
+        if (id == null) {
+            if (other.id != null) return false;
+        } else if (!id.equals(other.id)) return false;
+        if (length == null) {
+            if (other.length != null) return false;
+        } else if (!length.equals(other.length)) return false;
+        if (maxOccurs != other.maxOccurs) return false;
+        if (metadata == null) {
+            if (other.metadata != null) return false;
+        } else if (!metadata.equals(other.metadata)) return false;
+        if (minOccurs != other.minOccurs) return false;
+        if (name == null) {
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
+        if (nillable != other.nillable) return false;
+        return true;
+    }
 }

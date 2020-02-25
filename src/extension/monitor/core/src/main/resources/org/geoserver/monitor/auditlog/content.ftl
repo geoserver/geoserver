@@ -5,6 +5,8 @@
    <Operation>${operation!""}</Operation>
    <SubOperation>${subOperation!""}</SubOperation>
    <Resources>${resourcesList!""}</Resources>
+   <ResourcesProcessingTime>${resourcesProcessingTimeList!""}</ResourcesProcessingTime>
+   <LabelsProcessingTime>${labellingProcessingTime!""}</LabelsProcessingTime>
    <Path>${path!""}</Path>
    <QueryString>${queryString!""}</QueryString>
    <#if bodyAsString??>
@@ -23,6 +25,8 @@
    <ResponseStatus>${responseStatus!""}</ResponseStatus>
    <ResponseLength>${responseLength?c}</ResponseLength>
    <ResponseContentType>${responseContentType!""}</ResponseContentType>
+   <CacheResult>${cacheResult!""}</CacheResult>
+   <MissReason>${missReason!""}</MissReason>
    <#if error??>
    <Failed>true</Failed>
    <ErrorMessage>${errorMessage!""}</ErrorMessage>

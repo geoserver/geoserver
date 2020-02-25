@@ -5,9 +5,16 @@
  */
 package org.geoserver.kml.decorator;
 
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.ExtendedData;
+import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.Schema;
+import de.micromata.opengis.kml.v_2_2_0.SchemaData;
+import de.micromata.opengis.kml.v_2_2_0.SimpleData;
+import de.micromata.opengis.kml.v_2_2_0.SimpleField;
 import java.util.Date;
 import java.util.logging.Logger;
-
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Converter;
@@ -20,36 +27,27 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.GeometryDescriptor;
 
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.ExtendedData;
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.Schema;
-import de.micromata.opengis.kml.v_2_2_0.SchemaData;
-import de.micromata.opengis.kml.v_2_2_0.SimpleData;
-import de.micromata.opengis.kml.v_2_2_0.SimpleField;
-
 /**
  * Adds schema and attributes to the KML output
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
-            KmlEncodingContext context) {
+    public KmlDecorator getDecorator(
+            Class<? extends Feature> featureClass, KmlEncodingContext context) {
 
-        if(!context.isExtendedDataEnabled()) {
+        if (!context.isExtendedDataEnabled()) {
             return null;
         }
-        
+
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkDataDecorator();
-        } else if(Document.class.isAssignableFrom(featureClass)){
+        } else if (Document.class.isAssignableFrom(featureClass)) {
             return new DocumentSchemaDecorator();
         }
-        
+
         return null;
     }
 
@@ -63,7 +61,7 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
             // Document, can't be placed in a Folder unfortunately
             int i = 1;
             for (SimpleFeatureType schema : context.getFeatureTypes()) {
-                if(schema != null) {
+                if (schema != null) {
                     String id = schema.getTypeName() + "_" + i;
                     addSchema(doc, id, schema);
                 }
@@ -105,14 +103,12 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
                 return "string";
             }
         }
-
     }
 
     static class PlacemarkDataDecorator implements KmlDecorator {
         static final Logger LOGGER = Logging.getLogger(PlacemarkDataDecorator.class);
-        static final Converter DATE_CONVERTER = new XmlConverterFactory().createConverter(Date.class,
-                String.class, null);
-
+        static final Converter DATE_CONVERTER =
+                new XmlConverterFactory().createConverter(Date.class, String.class, null);
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
@@ -122,7 +118,11 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
             // create the extended data, and encode any non null, non geometric attribute
             ExtendedData exd = pm.createAndSetExtendedData();
             SchemaData schemaData = exd.createAndAddSchemaData();
-            schemaData.setSchemaUrl("#" + context.getCurrentFeatureType().getTypeName() + "_" + context.getCurrentLayerIndex());
+            schemaData.setSchemaUrl(
+                    "#"
+                            + context.getCurrentFeatureType().getTypeName()
+                            + "_"
+                            + context.getCurrentLayerIndex());
             for (AttributeDescriptor ad : sf.getFeatureType().getAttributeDescriptors()) {
                 // skip geometry attributes
                 if (ad instanceof GeometryDescriptor) {
@@ -140,8 +140,10 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
                     try {
                         kmlValue = DATE_CONVERTER.convert(value, String.class);
                     } catch (Exception e) {
-                        throw new ServiceException("Failed to convert date into string while "
-                                + "generating extended data section", e);
+                        throw new ServiceException(
+                                "Failed to convert date into string while "
+                                        + "generating extended data section",
+                                e);
                     }
                 } else {
                     kmlValue = Converters.convert(value, String.class);
@@ -150,10 +152,8 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
                 SimpleData sd = schemaData.createAndAddSimpleData(ad.getLocalName());
                 sd.setValue(kmlValue);
             }
-            
+
             return pm;
         }
-
     }
-
 }

@@ -231,7 +231,7 @@ So, for example, if you wanted to have the state abbreviation sitting on the nex
   ]]>(<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
   </Label>
 
-Geoserver Enhanced Options
+GeoServer Enhanced Options
 -----------------------------------
 
 GeoServer provides a number of label styling options as extensions to the SLD specification.
@@ -283,7 +283,7 @@ To do this we include the following code in the ``<TextSymbolizer>``:
 .. code-block:: xml 
 
   <Priority>
-      <PropertyName>population</PropertyName>
+      <ogc:PropertyName>population</ogc:PropertyName>
   </Priority>
   
 This ensures that at small scales New York is labeled in preference to the less populous cities nearby: 
@@ -521,7 +521,7 @@ This means the label will be drawn even if it overlaps with other labels, and ot
 goodnessOfFit
 ^^^^^^^^^^^^^
 
-Geoserver will remove labels if they are a particularly bad fit for the geometry they are labeling.
+GeoServer will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
 .. list-table::
    :widths: 30 70 
@@ -640,3 +640,67 @@ Some underlines examples:
 
 .. figure:: img/label_underlines.png
    :align: center
+
+.. _labeling_strikethrough_text:
+
+strikethroughText
+^^^^^^^^^^^^^^^^^
+
+The ``strikethroughText`` option instruct the renderer to strikethrough labels. The strikethrough will work like a typical word processor text strikethrough. The thickness and position of the line will be defined by the font and color will be the same as the text. Spaces will also be stroken.
+
+.. code-block:: xml
+
+  <VendorOption name="strikethroughText">true</VendorOption>
+
+Some strikethrough examples:
+
+.. figure:: img/label_strikethrough.png
+   :align: center
+ 
+charSpacing
+^^^^^^^^^^^
+
+The ``charSpacing`` option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap).
+The value is specified in pixels. 
+
+.. code-block:: xml
+
+  <VendorOption name="charSpacing">3</VendorOption>
+
+Example of adding 3 extra pixels of space between chars on road names:
+
+.. figure:: img/charSpacing.png
+   :align: center
+
+wordSpacing
+^^^^^^^^^^^
+
+The ``wordSpacing`` option controls the amount of space between words, for this option only positive values (or zero) are accepted.
+The value is specified in pixels. 
+
+.. code-block:: xml
+
+  <VendorOption name="wordSpacing">5</VendorOption>
+
+Example of adding 5 extra pixels of space between words on road names:
+
+.. figure:: img/wordSpacing.png
+   :align: center
+   
+displacementMode
+^^^^^^^^^^^^^^^^
+Comma separated list of label displacement directions for point/polygon labels (used along with maxDisplacement). 
+The indicated directions will be tried in turn. 
+Valid values are cardinal directions abbreviations, in particular, ``N, W, E, S, NW, NE, SW, SE``.
+
+The following example sets the typical "diagonal displacement" typically used for points: 
+
+.. code-block:: xml
+
+  <VendorOption name="displacementMode">NE, NW, SW, SE</VendorOption>
+
+While this one allows displacement only in the vertical direction:
+
+.. code-block:: xml
+
+  <VendorOption name="displacementMode">N, S</VendorOption>

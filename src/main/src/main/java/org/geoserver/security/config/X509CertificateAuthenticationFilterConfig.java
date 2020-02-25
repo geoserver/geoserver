@@ -10,14 +10,13 @@ import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilte
 
 /**
  * {@link GeoServerX509CertificateAuthenticationFilter} configuration object.
- * <p>
- * @author christian
  *
+ * <p>
+ *
+ * @author christian
  */
-public class X509CertificateAuthenticationFilterConfig extends J2eeAuthenticationBaseFilterConfig 
-    implements SecurityAuthFilterConfig {
+public class X509CertificateAuthenticationFilterConfig extends J2eeAuthenticationBaseFilterConfig
+        implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
-
-
 }

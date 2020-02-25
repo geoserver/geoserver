@@ -9,13 +9,10 @@ import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import org.geoserver.catalog.Info;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
-
-import com.google.common.base.Throwables;
 
 public final class InfoRowMapper<T extends Info> implements RowMapper<T> {
 
@@ -31,8 +28,8 @@ public final class InfoRowMapper<T extends Info> implements RowMapper<T> {
         this(type, binding, 1);
     }
 
-    public InfoRowMapper(final Class<T> type, final XStreamInfoSerialBinding binding,
-            final int colNum) {
+    public InfoRowMapper(
+            final Class<T> type, final XStreamInfoSerialBinding binding, final int colNum) {
 
         this.type = type;
         this.binding = binding;
@@ -52,7 +49,7 @@ public final class InfoRowMapper<T extends Info> implements RowMapper<T> {
             byte[] bytes = xml.getBytes("UTF-8");
             in = new ByteArrayInputStream(bytes);
         } catch (UnsupportedEncodingException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
         return binding.entryToObject(in, type);
     }

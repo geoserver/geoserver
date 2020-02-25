@@ -12,22 +12,21 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.web.data.settings.SettingsPluginPanel;
 import org.geoserver.web.util.MetadataMapModel;
 
-/**
- *
- * @author Nicola Lagomarsini Geosolutions S.A.S.
- * 
- */
+/** @author Nicola Lagomarsini Geosolutions S.A.S. */
 public class NetCDFOutSettingsPanel extends SettingsPluginPanel {
 
     public NetCDFOutSettingsPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);
         // Model associated to the metadata map
-        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model,
-                "metadata");
+        final PropertyModel<MetadataMap> metadata =
+                new PropertyModel<MetadataMap>(model, "metadata");
 
         // Getting the NetcdfSettingsContainer model from MetadataMap
-        IModel<NetCDFSettingsContainer> netcdfModel = new MetadataMapModel(metadata,
-                NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
+        IModel<NetCDFSettingsContainer> netcdfModel =
+                new MetadataMapModel(
+                        metadata,
+                        NetCDFSettingsContainer.NETCDFOUT_KEY,
+                        NetCDFSettingsContainer.class);
 
         // New Container
         // container for ajax updates

@@ -6,13 +6,11 @@
  */
 package org.geoserver.importer;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author Ian Schneider <ischneider@opengeo.org>
- */
+import org.junit.Test;
+
+/** @author Ian Schneider <ischneider@opengeo.org> */
 public class MemoryImportStoreTest {
 
     @Test
@@ -22,23 +20,23 @@ public class MemoryImportStoreTest {
         // verify base - first one is zero
         ImportContext zero = new ImportContext();
         store.add(zero);
-        assertEquals(new Long(0), zero.getId());
+        assertEquals(Long.valueOf(0), zero.getId());
 
         // try for zero again (less than current case - client out of sync)
         Long advanceId = store.advanceId(0L);
-        assertEquals(new Long(1), advanceId);
+        assertEquals(Long.valueOf(1), advanceId);
 
         // and again for current (equals current case - normal mode)
         advanceId = store.advanceId(2L);
-        assertEquals(new Long(2), advanceId);
+        assertEquals(Long.valueOf(2), advanceId);
 
         // now jump ahead (client advances case - server out of sync)
         advanceId = store.advanceId(666L);
-        assertEquals(new Long(666), advanceId);
+        assertEquals(Long.valueOf(666), advanceId);
 
         // the next created import should be one higher
         ImportContext dumby = new ImportContext();
         store.add(dumby);
-        assertEquals(new Long(667), dumby.getId());
+        assertEquals(Long.valueOf(667), dumby.getId());
     }
 }

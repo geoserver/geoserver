@@ -1,8 +1,11 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.function;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.Predicates;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.Converters;
@@ -14,19 +17,23 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.VolatileFunction;
 
 /**
- * This class implements the {@link Function} interface and can be used for checking if an object is an instance of the provided input class.
- * 
- * Users can call this function using the {@link Predicates} class:
- * 
- * Predicates.isInstanceOf(Class clazz);
- * 
+ * This class implements the {@link Function} interface and can be used for checking if an object is
+ * an instance of the provided input class.
+ *
+ * <p>Users can call this function using the {@link Predicates} class:
+ *
+ * <p>Predicates.isInstanceOf(Class clazz);
+ *
  * @author Nicola Lagomarsini geosolutions
  */
 public class IsInstanceOf implements VolatileFunction, Function {
 
     /** Function name and related parameters */
-    public static FunctionName NAME = new FunctionNameImpl("isInstanceOf", Boolean.class,
-            FunctionNameImpl.parameter("class", Class.class));
+    public static FunctionName NAME =
+            new FunctionNameImpl(
+                    "isInstanceOf",
+                    Boolean.class,
+                    FunctionNameImpl.parameter("class", Class.class));
 
     /** Function parameters */
     private List<Expression> parameters;
@@ -116,5 +123,4 @@ public class IsInstanceOf implements VolatileFunction, Function {
             return "IsInstanceOf(" + params.get(0) + ")";
         }
     }
-
 }

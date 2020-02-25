@@ -2,21 +2,33 @@
 # as environment variables
 
 # constants
+GS_GIT_URL=git://github.com/geoserver/geoserver.git
 GT_GIT_URL=git://github.com/geotools/geotools.git
 GWC_GIT_URL=git://github.com/GeoWebCache/geowebcache.git
 JIRA_REST=https://osgeo-org.atlassian.net/rest/api/latest
 JIRA_PROJ=GEOS
-WIN_JENKINS=http://162.209.53.106:8080
-WIN_JENKINS_USER=build
-WIN_JENKINS_KEY=c7df8777ad146449f39272c596e963e4
-MAC_JENKINS=https://desktop-ci.boundlessgeo.com:8443
-MAC_JENKINS_USER=build
-MAC_JENKINS_KEY=7babda1c4cf05ee099baa3d4c6579dab
 SF_HOST=frs.sourceforge.net
+
+SKIP_INSTALLERS=true
+# not currently in use, installers are called from jenkins
+#WIN_JENKINS=
+#WIN_JENKINS_USER=
+#WIN_JENKINS_KEY=
+#MAC_JENKINS=
+#MAC_JENKINS_USER=
+#MAC_JENKINS_KEY=
+
+# maven environment
+MAVEN_FLAGS="--batch-mode -Dfmt.skip=true"
+
+# Use settings.xml override if provided
+if [ -n "$MAVEN_SETTINGS" ]; then
+  MAVEN_FLAGS="-s $MAVEN_SETTINGS $MAVEN_FLAGS"
+fi
 
 # parameter defaults
 if [ -z $branch ]; then
-  branch="trunk"
+  branch="master"
 fi
 
 if [ -z $rev ]; then
@@ -28,15 +40,15 @@ if [ -z $DIST_PATH ]; then
 fi
 
 if [ -z $DIST_HOST ]; then
-  DIST_HOST=ares.boundlessgeo.com
+  DIST_HOST=build.geoserver.org
 fi
 
 if [ -z $DIST_URL ]; then
-  DIST_URL=http://$DIST_HOST/geoserver/release
+  DIST_URL=https://$DIST_HOST/geoserver/release
 fi
 
 if [ -z $DIST_PORT ]; then
-  DIST_PORT=7777
+  DIST_PORT=22
 fi
 
 if [ -z $DIST_USER ]; then
@@ -54,3 +66,4 @@ fi
 if [ -z $SF_PK ]; then
   SF_PK=$HOME/.ssh/id_dsa_${SF_USER}_frs.sourceforge.net
 fi
+

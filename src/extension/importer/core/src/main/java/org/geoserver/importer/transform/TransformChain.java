@@ -12,16 +12,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geotools.util.logging.Logging;
 
 /**
  * Chain of transformations to apply during the import process.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
- * 
  * @see {@link VectorTransformChain} {@link RasterTransformChain}
  */
 public abstract class TransformChain<T extends ImportTransform> implements Serializable {
@@ -31,7 +29,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
     static Logger LOGGER = Logging.getLogger(TransformChain.class);
 
     protected List<T> transforms;
-    
+
     public TransformChain() {
         this(new ArrayList<T>(3));
     }
@@ -82,13 +80,8 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
             }
         }
     }
-    
-    /**
-     * Runs all {@link PreTransform} in the chain
-     * 
-     * @param item
-     * @param data
-     */
+
+    /** Runs all {@link PreTransform} in the chain */
     public void pre(ImportTask item, ImportData data) throws Exception {
         for (PreTransform tx : filter(transforms, PreTransform.class)) {
             try {
@@ -99,12 +92,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         }
     }
 
-    /**
-     * Runs all {@link PostTransform} in the chain
-     * 
-     * @param item
-     * @param data
-     */
+    /** Runs all {@link PostTransform} in the chain */
     public void post(ImportTask task, ImportData data) throws Exception {
         for (PostTransform tx : filter(transforms, PostTransform.class)) {
             try {
@@ -115,7 +103,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         }
     }
 
-    private Object readResolve() {
+    protected Object readResolve() {
         if (transforms == null) {
             transforms = new ArrayList();
         }

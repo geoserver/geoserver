@@ -13,12 +13,36 @@ GeoServer documentation aims to mirror the development process of the software i
 Check out source
 ----------------
 
+Software
+````````
+
+You must use the version control software `git` to retrieve files. 
+
+* https://windows.github.com
+* https://mac.github.com
+* http://git-scm.com/downloads/guis
+* Or use git on the command line
+
+
 Repository
 ``````````
 
 This documentation source code exists in the same repository as the GeoServer source code::
 
    https://github.com/geoserver/geoserver
+
+Follow these instructions to fork the GeoServer repository:
+
+* https://help.github.com/articles/fork-a-repo
+
+  Substituting ``geoserver/geoserver`` in place of ``octocat/Spoon-Knife``,
+  when you are finished ``git remote -v`` should show::
+
+   $  git remote -v
+   origin    https://github.com/YOUR_USERNAME/geoserver.git (fetch)
+   origin    https://github.com/YOUR_USERNAME/geoserver.git (push)
+   upstream  https://github.com/geoserver/geoserver.git (fetch)
+   upstream  https://github.com/geoserver/geoserver.git (push)
 
 Within this repository are the various branches and tags associated with releases, and the documentation is always inside a :file:`doc` path.  Inside this path, the repository contains directories corresponding to different translations.  The languages are referred to by a two letter code, with ``en`` (English) being the default.
 
@@ -47,19 +71,6 @@ Inside this directory, there are four directories::
    * - :file:`theme`
      - GeoServer Sphinx theme (common to all three projects)
 
-Software
-````````
-
-You must use a version control software to retrieve files. 
-
-* https://windows.github.com
-* https://mac.github.com
-* http://git-scm.com/downloads/guis
-* Or use git on the command line
-
-Follow these instructions to fork the GeoServer repository:
-
-* https://help.github.com/articles/fork-a-repo
 
 Make changes
 ------------
@@ -70,7 +81,7 @@ Documentation in Sphinx is written in `reStructuredText <http://docutils.sourcef
 Build and test locally
 ----------------------
 
-You should install Sphinx on your local system to build the documentation locally and view any changes made.  Sphinx builds the reStructuredText files into HTML pages and PDF files.
+You should install Sphinx on your local system (see :ref:`install_sphinx`) to build the documentation locally and view any changes made.  Sphinx builds the reStructuredText files into HTML pages and PDF files.
 
 HTML
 ````
@@ -79,9 +90,9 @@ HTML
 
 #. Run the following command::
 
-      make html
+      ant user
 
-   The resulting HTML pages will be contained in :file:`doc/en/user/build/html`.
+   The resulting HTML pages will be contained in :file:`doc/en/target/user/html`.
 
 #. Watch the output of the above command for any errors and warnings.  These could be indicative of problems with your markup.  Please fix any errors and warnings before continuing.
 
@@ -92,15 +103,8 @@ PDF
 
 #. Run the following command::
 
-      make latex
-
-   The resulting LaTeX pages will be contained in :file:`doc/en/user/build/latex`.
-
-#. Change to the :file:`doc/en/user/build/latex` directory.
-
-#. Run the following command::
-
-      pdflatex [GeoServerProject].tex
+    
+      ant user-pdf
 
    This will create a PDF file called :file:`{GeoServerProject}.pdf` in the same directory
 
@@ -116,13 +120,30 @@ Commit changes
 
 .. warning:: If you have any errors or warnings in your project, please fix them before committing!
 
-The final step is to commit the changes to the repository.  If you are using Subversion, the command to use is::
+The final step is to commit the changes to a branch in *your* repository,
+using these commands:: 
 
+   git checkout -b doc-fix
    git add [path/file(s)]
    git commit -m "message describing your fix"
-   git push
+   git push origin doc-fix
    
-where :file:`{path/file(s)}` is the path and file(s) you wish to commit to the repository.
+You can use any name you like for the branch, often I use the issue number so I
+can tell my branches apart if I need to find them later.
+:file:`{path/file(s)}` is the path and file(s) you wish to commit to the repository. If you are unclear about which files you have changed you can use ``git status -sb`` to list the files that you have changed, this will give you a list of changed files, and indicate the ones that still need to be added to this commit::
+
+    $ git status -sb 
+    ## update
+     M docguide/source/background.rst
+     M docguide/source/contributing.rst
+     M docguide/source/install.rst
+     M docguide/source/installlatex.rst
+     M docguide/source/workflow.rst
+
+Here the ``M`` indicate these files are modified but not added. Once ``git add
+*.rst`` is run the indicator will change to ``A``, files that are not under
+git's control will show a ``?`` these are new files that you may need to add if
+you have created them for the documentation.
 
 When ready return to the GitHub website and submit a pull request:
 

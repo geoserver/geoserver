@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.ogr.core.AbstractToolWrapper;
 import org.geoserver.ogr.core.Format;
 import org.geotools.util.logging.Logging;
@@ -23,10 +22,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Helper used to invoke ogr2ogr
- * 
+ *
  * @author Andrea Aime - OpenGeo
  * @author Stefano Costa - GeoSolutions
- * 
  */
 public class OGRWrapper extends AbstractToolWrapper {
 
@@ -48,21 +46,17 @@ public class OGRWrapper extends AbstractToolWrapper {
         return false;
     }
 
-    /**
-     * Returns a list of the ogr2ogr supported formats
-     * 
-     *
-     */
+    /** Returns a list of the ogr2ogr supported formats */
     public Set<String> getSupportedFormats() {
         try {
             // this one works up to ogr2ogr 1.7
             List<String> commands = new ArrayList<String>();
             commands.add(getExecutable());
             commands.add("--help");
-            
+
             Set<String> formats = new HashSet<String>();
             addFormats(commands, formats);
-            
+
             // this one is required starting with ogr2ogr 1.8
             commands = new ArrayList<String>();
             commands.add(getExecutable());
@@ -71,18 +65,20 @@ public class OGRWrapper extends AbstractToolWrapper {
 
             return formats;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "Could not get the list of output formats supported by ogr2ogr", e);
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Could not get the list of output formats supported by ogr2ogr",
+                    e);
             return Collections.emptySet();
         }
     }
 
-    private void addFormats(List<String> commands, Set<String> formats) throws IOException,
-            InterruptedException {
+    private void addFormats(List<String> commands, Set<String> formats)
+            throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         // can't trust the exit code, --help exits with -1 on my pc
         run(commands, sb);
-        
+
         String[] lines = sb.toString().split("\n");
         for (String line : lines) {
             if (line.matches("\\s*-f \".*")) {
@@ -93,10 +89,8 @@ public class OGRWrapper extends AbstractToolWrapper {
     }
 
     /**
-     * Returns true if ogr2ogr is available, that is, if executing
-     * "ogr2ogr --version" returns 0 as the exit code
-     * 
-     *
+     * Returns true if ogr2ogr is available, that is, if executing "ogr2ogr --version" returns 0 as
+     * the exit code
      */
     public boolean isAvailable() {
         List<String> commands = new ArrayList<String>();
@@ -105,15 +99,21 @@ public class OGRWrapper extends AbstractToolWrapper {
 
         try {
             return run(commands, null) == 0;
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, getExecutable() + " is not available", e);
             return false;
         }
     }
 
     @Override
-    public void onBeforeRun(List<String> cmd, File inputData, File outputDirectory,
-            String typeName, Format format, CoordinateReferenceSystem crs) throws IOException {
+    public void onBeforeRun(
+            List<String> cmd,
+            File inputData,
+            File outputDirectory,
+            String typeName,
+            Format format,
+            CoordinateReferenceSystem crs)
+            throws IOException {
         crsFile = dumpCrs(inputData.getParentFile(), crs);
 
         if (crsFile != null) {
@@ -129,5 +129,4 @@ public class OGRWrapper extends AbstractToolWrapper {
             crsFile = null;
         }
     }
-
 }

@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
@@ -32,18 +31,14 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
-/**
- * Process factory that creates processes from scripts located in the data directory.
- */
+/** Process factory that creates processes from scripts located in the data directory. */
 public class ScriptProcessFactory extends ScriptFactory implements ProcessFactory {
 
     /** logger */
     static Logger LOGGER = Logging.getLogger(ScriptProcessFactory.class);
 
-    /**
-     * softly cached process objects
-     */
-    SoftValueHashMap<Name, ScriptProcess> processes = new SoftValueHashMap<Name,ScriptProcess>(10);
+    /** softly cached process objects */
+    SoftValueHashMap<Name, ScriptProcess> processes = new SoftValueHashMap<Name, ScriptProcess>(10);
 
     public ScriptProcessFactory() {
         super(null);
@@ -68,8 +63,11 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
                     // condition
                     NameImpl name = new NameImpl(getScriptNamespace(f), getBaseName(f.name()));
                     if (names.contains(name)) {
-                        throw new RuntimeException("Script " + f.path()
-                                + " conflicts with an already existing process named " + name);
+                        throw new RuntimeException(
+                                "Script "
+                                        + f.path()
+                                        + " conflicts with an already existing process named "
+                                        + name);
                     }
                     names.add(name);
                 }
@@ -109,8 +107,7 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
                     }
                 };
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error looking up processes", e);
         }
         return names;
@@ -137,8 +134,8 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
     }
 
     /**
-     * Get description given a process identifier.  Returns null if process
-     * has no description (WPS spec says process abstract is optional).
+     * Get description given a process identifier. Returns null if process has no description (WPS
+     * spec says process abstract is optional).
      */
     public InternationalString getDescription(Name name) {
         String desc;
@@ -149,7 +146,7 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
         }
         return desc != null ? new SimpleInternationalString(desc) : null;
     }
-    
+
     public Map<String, Parameter<?>> getParameterInfo(Name name) {
         try {
             return process(name).getInputs();
@@ -157,24 +154,24 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
             throw new RuntimeException(e);
         }
     }
-    
+
     public Map<String, Parameter<?>> getResultInfo(Name name, Map<String, Object> parameters)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         try {
             return process(name).getOutputs();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     public boolean supportsProgress(Name name) {
         return false;
     }
-    
+
     public Process create(Name name) {
         return process(name);
     }
-    
+
     public boolean isAvailable() {
         return true;
     }
@@ -186,7 +183,7 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
     ScriptProcess process(Name name) {
         ScriptProcess process = processes.get(name);
         if (process == null) {
-            synchronized(this) {
+            synchronized (this) {
                 process = processes.get(name);
                 if (process == null) {
                     try {
@@ -200,13 +197,15 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
                             // see if it's nested in a directory then
                             Resource directory = scriptMgr.wps().get(namespace);
                             if (!Resources.exists(directory)) {
-                                throw new FileNotFoundException("Could not find script file "
-                                        + f.name() + " nor a directory of scripts named "
-                                        + directory.name());
+                                throw new FileNotFoundException(
+                                        "Could not find script file "
+                                                + f.name()
+                                                + " nor a directory of scripts named "
+                                                + directory.name());
                             }
                             Resource script = null;
                             for (Resource file : directory.list()) {
-                                if(Resources.isHidden(file) || file.getType() != Type.RESOURCE) {
+                                if (Resources.isHidden(file) || file.getType() != Type.RESOURCE) {
                                     continue;
                                 }
                                 if (localName.equals(getBaseName(file.name()))) {
@@ -214,16 +213,20 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
                                 }
                             }
                             if (script == null) {
-                                throw new FileNotFoundException("Could not find script file "
-                                        + f.name() + " nor a script named " + localName
-                                        + " in the " + directory.name() + " sub-directory");
+                                throw new FileNotFoundException(
+                                        "Could not find script file "
+                                                + f.name()
+                                                + " nor a script named "
+                                                + localName
+                                                + " in the "
+                                                + directory.name()
+                                                + " sub-directory");
                             }
                             f = script;
                         }
 
                         process = new ScriptProcess(name, f, scriptMgr);
-                    } 
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                     processes.put(name, process);

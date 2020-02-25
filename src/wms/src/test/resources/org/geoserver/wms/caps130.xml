@@ -27,6 +27,7 @@
       </GetCapabilities>
       <GetMap>
         <Format>image/png</Format>
+        <Format>image/jpeg</Format>
         <DCPType>
           <HTTP>
             <Get>
@@ -80,7 +81,149 @@
         </EX_GeographicBoundingBox>
         <BoundingBox CRS="EPSG:4326" minx="-90" miny="-180"
           maxx="90" maxy="180" />
+        <Style>
+             <Name>raster</Name>
+             <Title>Default RasterSymbolizer</Title>
+             <LegendURL width="20" height="20">
+                 <Format>image/png</Format>
+                 <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://mock.test.geoserver.org/wms13?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;width=20&amp;height=20&amp;layer=world4326" />
+             </LegendURL>
+        </Style>
       </Layer>
-    </Layer>
+      <Layer queryable="1" opaque="0">
+        <Name>roads_wms_130</Name>
+        <Title>roads_wms_130</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>roads</Keyword>
+        </KeywordList>
+       <CRS>EPSG:26713</CRS>
+       <CRS>CRS:84</CRS>
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>-103.87779468316292</westBoundLongitude>
+           <eastBoundLongitude>-103.62268570651278</eastBoundLongitude>
+           <southBoundLatitude>44.37288961726252</southBoundLatitude>
+           <northBoundLatitude>44.50217396380937</northBoundLatitude>
+       </EX_GeographicBoundingBox>
+       <BoundingBox maxy="44.50217396380937" maxx="-103.62268570651278" miny="44.37288961726252" minx="-103.87779468316292" CRS="CRS:84"/>
+       <BoundingBox maxy="4928063.39801461" maxx="609527.21021496" miny="4914006.33783702" minx="589434.85646865" CRS="EPSG:26713"/>
+       <Style>
+           <Name>line1</Name>
+           <Title>simple green line</Title>
+           <Abstract>A sample style that just prints out a green line</Abstract>
+           <LegendURL height="20" width="20">
+           <Format>image/png</Format>
+           <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org/ows?service=WMS&amp;amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+           </LegendURL>
+       </Style>
+       <Style>
+           <Name>line3</Name>
+           <Title>simple green line</Title>
+           <Abstract>A sample style that just prints out a green line</Abstract>
+           <LegendURL height="20" width="20">
+           <Format>image/png</Format>
+           <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line3" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+           </LegendURL>
+           </Style>
+       <Style>
+           <Name>line2</Name>
+           <Title>simple green line</Title>
+           <Abstract>A sample style that just prints out a green line</Abstract>
+           <LegendURL height="20" width="20">
+           <Format>image/png</Format>
+           <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22&amp;style=line2" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+           </LegendURL>
+       </Style>
+      </Layer>
+      <Layer queryable="1" opaque="0">
+        <Name>roads_styleless_130</Name>
+        <Title>roads_styleless_130</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>roads</Keyword>
+        </KeywordList>
+       <CRS>EPSG:26713</CRS>
+       <CRS>CRS:84</CRS>
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>-103.87779468316292</westBoundLongitude>
+           <eastBoundLongitude>-103.62268570651278</eastBoundLongitude>
+           <southBoundLatitude>44.37288961726252</southBoundLatitude>
+           <northBoundLatitude>44.50217396380937</northBoundLatitude>
+       </EX_GeographicBoundingBox>
+       <BoundingBox maxy="44.50217396380937" maxx="-103.62268570651278" miny="44.37288961726252" minx="-103.87779468316292" CRS="CRS:84"/>
+       <BoundingBox maxy="4928063.39801461" maxx="609527.21021496" miny="4914006.33783702" minx="589434.85646865" CRS="EPSG:26713"/>
+      </Layer>
+      <Layer queryable="1" opaque="0">
+        <Name>group_lyr_130</Name>
+        <Title>group_lyr_130</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>group_lyr_130</Keyword>
+        </KeywordList>
+       <CRS>EPSG:4326</CRS>       
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>-10.0</westBoundLongitude>
+           <eastBoundLongitude>10.0</eastBoundLongitude>
+           <southBoundLatitude>-10.0</southBoundLatitude>
+           <northBoundLatitude>10.0</northBoundLatitude>
+       </EX_GeographicBoundingBox>       
+       <BoundingBox minx="-10" miny="-10" maxx="10" maxy="10" CRS="EPSG:4326"/>       
+       <Style>
+           <Name>line_group</Name>
+           <Title>A boring default style</Title>
+           <Abstract>A sample style that just prints out a green line</Abstract>
+           <LegendURL height="20" width="20">
+           <Format>image/png</Format>
+           <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org/ows?service=WMS&amp;amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+           </LegendURL>
+       </Style>       
+      </Layer>
+      <Layer queryable="1" opaque="0">
+        <Name>group_lyr_230</Name>
+        <Title>group_lyr_230</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>group_lyr_130</Keyword>
+        </KeywordList>
+       <CRS>EPSG:4326</CRS>       
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>0.0</westBoundLongitude>
+           <eastBoundLongitude>20.0</eastBoundLongitude>
+           <southBoundLatitude>0.0</southBoundLatitude>
+           <northBoundLatitude>20.0</northBoundLatitude>
+       </EX_GeographicBoundingBox>       
+       <BoundingBox minx="0" miny="0" maxx="20" maxy="20" CRS="EPSG:4326"/>       
+       <Style>
+           <Name>line_group2</Name>
+           <Title>A boring default style</Title>
+           <Abstract>A sample style that just prints out a green line</Abstract>
+           <LegendURL height="20" width="20">
+           <Format>image/png</Format>
+           <OnlineResource xlink:type="simple" xlink:href="http://mock.test.geoserver.org/ows?service=WMS&amp;amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=topp%3Aroads22" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+           </LegendURL>
+       </Style>       
+      </Layer>
+      <Layer queryable="1" opaque="0">
+        <Name>legacy_group_lyr_130</Name>
+        <Title>legacy_group_lyr_130</Title>
+        <Abstract/>
+        <KeywordList>
+            <Keyword>features</Keyword>
+            <Keyword>legacy_group_lyr_130</Keyword>
+        </KeywordList>
+       <CRS>EPSG:4326</CRS>       
+       <EX_GeographicBoundingBox>
+           <westBoundLongitude>0.0</westBoundLongitude>
+           <eastBoundLongitude>20.0</eastBoundLongitude>
+           <southBoundLatitude>0.0</southBoundLatitude>
+           <northBoundLatitude>20.0</northBoundLatitude>
+       </EX_GeographicBoundingBox>       
+       <BoundingBox minx="0" miny="0" maxx="20" maxy="20" CRS="EPSG:4326"/>
+      </Layer>
+    </Layer>    
   </Capability>
 </WMS_Capabilities>

@@ -21,11 +21,12 @@
 				<include>*imageio-ext-geocore*.jar</include>
 				<include>*imageio-ext-imagereadmt*.jar</include>
 				<include>gs-gdal-*.jar</include>
+				<include>gdal-*.jar</include>
 			</includes>
 			<excludes>
-				<exclude>*imageio-ext-gdal-bindings*.jar</exclude>
         <exclude>*arcgrid*.jar</exclude>
         <exclude>*customstreams*.jar</exclude>
+        <exclude>*imageio-ext-gdalgeotiff*.jar</exclude>
       </excludes>
 		</fileSet>
 		<fileSet>

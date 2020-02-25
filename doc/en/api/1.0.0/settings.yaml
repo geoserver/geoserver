@@ -1,0 +1,487 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Settings
+  description: The Settings area shows global configuration for the server
+
+paths:
+  /settings:
+    get:
+      operationId: getSettings
+      summary: Get a list of all global settings
+      description: Displays a list of all global settings on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Global"
+          examples:
+            application/xml: |
+              <global>
+                <settings>
+                  <id>SettingsInfoImpl-68f6c583:154ca420c47:-8000</id>
+                  <contact>
+                    <addressCity>Alexandria</addressCity>
+                    <addressCountry>Egypt</addressCountry>
+                    <addressType>Work</addressType>
+                    <contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>
+                    <contactOrganization>The Ancient Geographers</contactOrganization>
+                    <contactPerson>Claudius Ptolomaeus</contactPerson>
+                    <contactPosition>Chief Geographer</contactPosition>
+                  </contact>
+                  <charset>UTF-8</charset>
+                  <numDecimals>8</numDecimals>
+                  <onlineResource>http://geoserver.org</onlineResource>
+                  <verbose>false</verbose>
+                  <verboseExceptions>false</verboseExceptions>
+                  <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+                </settings>
+                <jai>
+                  <allowInterpolation>false</allowInterpolation>
+                  <recycling>false</recycling>
+                  <tilePriority>5</tilePriority>
+                  <tileThreads>7</tileThreads>
+                  <memoryCapacity>0.5</memoryCapacity>
+                  <memoryThreshold>0.75</memoryThreshold>
+                  <imageIOCache>false</imageIOCache>
+                  <pngAcceleration>true</pngAcceleration>
+                  <jpegAcceleration>true</jpegAcceleration>
+                  <allowNativeMosaic>false</allowNativeMosaic>
+                  <allowNativeWarp>false</allowNativeWarp>
+                </jai>
+                <coverageAccess>
+                  <maxPoolSize>10</maxPoolSize>
+                  <corePoolSize>5</corePoolSize>
+                  <keepAliveTime>30000</keepAliveTime>
+                  <queueType>UNBOUNDED</queueType>
+                  <imageIOCacheThreshold>10240</imageIOCacheThreshold>
+                </coverageAccess>
+                <updateSequence>180</updateSequence>
+                <featureTypeCacheSize>0</featureTypeCacheSize>
+                <globalServices>true</globalServices>
+                <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>
+              </global>
+            
+            application/json: |
+              {
+                "global": {
+                  "settings": {
+                    "id": "SettingsInfoImpl-68f6c583:154ca420c47:-8000",
+                    "contact": {
+                      "addressCity": "Alexandria",
+                      "addressCountry": "Egypt",
+                      "addressType": "Work",
+                      "contactEmail": "claudius.ptolomaeus@gmail.com",
+                      "contactOrganization": "The Ancient Geographers",
+                      "contactPerson": "Claudius Ptolomaeus",
+                      "contactPosition": "Chief Geographer"
+                    },
+                    "charset": "UTF-8",
+                    "numDecimals": 8,
+                    "onlineResource": "http://geoserver.org",
+                    "verbose": false,
+                    "verboseExceptions": false,
+                    "localWorkspaceIncludesPrefix": false
+                  },
+                  "jai": {
+                    "allowInterpolation": false,
+                    "recycling": false,
+                    "tilePriority": 5,
+                    "tileThreads": 7,
+                    "memoryCapacity": 0.5,
+                    "memoryThreshold": 0.75,
+                    "imageIOCache": false,
+                    "pngAcceleration": true,
+                    "jpegAcceleration": true,
+                    "allowNativeMosaic": false,
+                    "allowNativeWarp": false
+                  },
+                  "coverageAccess": {
+                    "maxPoolSize": 10,
+                    "corePoolSize": 5,
+                    "keepAliveTime": 30000,
+                    "queueType": "UNBOUNDED",
+                    "imageIOCacheThreshold": 10240
+                  },
+                  "updateSequence": 180,
+                  "featureTypeCacheSize": 0,
+                  "globalServices": true,
+                  "xmlPostRequestLogBufferSize": 1024
+                }
+              }
+            
+    post:
+      operationId: postSettings
+      description: Invalid. Use PUT to update settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putSettings
+      summary: Update settings
+      description: Updates global settings on the server.
+
+      parameters:
+        - name: settingsBody
+          description: The settings information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/Global"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+
+    delete:
+      operationId: deleteSettings
+      description: Invalid. Use PUT to update settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /settings/contact:
+    get:
+      operationId: getContactSettings
+      summary: Get a list of all global contact settings
+      description: Displays a list of all global contact settings on the server. This is a subset of what is available at the /settings endpoint. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings/contact.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Contact"
+          examples:
+            application/xml: |
+              <contact>
+                <addressCity>Alexandria</addressCity>
+                <addressCountry>Egypt</addressCountry>
+                <addressType>Work</addressType>
+                <contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>
+                <contactOrganization>The Ancient Geographers</contactOrganization>
+                <contactPerson>Claudius Ptolomaeus</contactPerson>
+                <contactPosition>Chief Geographer</contactPosition>
+              </contact>
+            
+            application/json: |
+              {
+                "contact": {
+                  "addressCity": "Alexandria",
+                  "addressCountry": "Egypt",
+                  "addressType": "Work",
+                  "contactEmail": "claudius.ptolomaeus@gmail.com",
+                  "contactOrganization": "The Ancient Geographers",
+                  "contactPerson": "Claudius Ptolomaeus",
+                  "contactPosition": "Chief Geographer"
+                }
+              }
+            
+    post:
+      operationId: postContactSettings
+      description: Invalid. Use PUT to update contact settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putContactSettings
+      summary: Update contact settings
+      description: Updates global contact settings on the server.
+
+      parameters:
+        - name: settingscontactBody
+          description: The contact settings information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/Contact"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+
+    delete:
+      operationId: deleteContactSettings
+      description: Invalid. Use PUT to update contact settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
+    get:
+      operationId: getWorkspaceSettings
+      summary: Get a list of all workspace-specific settings
+      description: Displays a list of all workspace-specific settings. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WorkspaceSettings"
+          examples:
+            application/xml: |
+              <settings>
+                <contact>
+                  <id>contact</id>
+                </contact>
+                <charset>UTF-8</charset>
+                <numDecimals>4</numDecimals>
+                <verbose>false</verbose>
+                <verboseExceptions>false</verboseExceptions>
+                <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+              </settings>
+            
+            application/json: |
+              {
+                "settings": {
+                  "contact": {
+                    "id": "contact"
+                  },
+                  "charset": "UTF-8",
+                  "numDecimals": 4,
+                  "verbose": false,
+                  "verboseExceptions": false,
+                  "localWorkspaceIncludesPrefix": false
+                }
+              }
+            
+    post:
+      operationId: postWorkspaceSettings
+      summary: Create workspace-specific settings
+      description: Create new workspace-specific settings on the server.
+      parameters:
+        - name: settingsBody
+          description: The settings information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/WorkspaceSettings"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+        500:
+          description: "Internal Server Error: Settings already exist for workspace"
+
+    put:
+      operationId: putWorkspaceSettings
+      summary: Update workspace-specific settings
+      description: Updates workspace-specific settings on the server.
+
+      parameters:
+        - name: settingsBody
+          description: The settings information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/WorkspaceSettings"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+
+    delete:
+      operationId: deleteWorkspaceSettings
+      description: Delete the settings for this workspace.
+      responses:
+        200:
+          description: OK 
+
+
+definitions:
+
+  Global:
+    type: object
+    xml:
+      name: global
+    properties:
+      settings:
+        $ref: "#/definitions/Settings"
+      jai:
+        $ref: "#/definitions/JAI"
+      coverageAccess:
+        $ref: "#/definitions/CoverageAccess"
+      updateSequence:
+        type: number
+        description: Number of times the server configuration has been modified
+      featureTypeCacheSize:
+        type: number
+        description: Maximum number of datastore connections and schemas that can be kept in memory
+      globalServices:
+        type: boolean
+        description: Allow access to both global services and virtual services
+      xmlPostRequestLogBufferSize:
+        type: number
+        description: With more verbose logging levels, sets the size of the buffer GeoServer will use to log the body of POST requests
+
+  Settings:
+    type: object
+    xml:
+      name: settings
+    properties:
+      id:
+        type: string
+        description: For internal use only. Do not modify.
+      contact:
+        $ref: "#/definitions/Contact"
+      charset:
+        type: string
+        description: Character set to use for encoding (such as UTF-8)
+      numDecimals:
+        type: number
+        description: Maximum nuber of decimal places to use (GML and GeoJSON output)
+      onlineResource:
+        type: string
+        description: Server admin URL
+      verbose:
+        type: boolean
+        description: Return XML with newlines and indents
+      verboseExceptions:
+        type: boolean
+        description: Return service exceptions with full Java stack traces
+      localWorkspaceIncludesPrefix:
+        type: boolean
+        description: Show namespace prefix when using virtual service
+
+  Contact:
+    type: object
+    xml:
+      name: contact
+    properties:
+      addressCity:
+        type: string
+        description: Server admin city
+      addressCountry:
+        type: string
+        description: Server admin country
+      addressType:
+        type: string
+        description: Type of address
+      contactEmail:
+        type: string
+        description: Server admin email
+      contactOrganization:
+        type: string
+        description: Server admin organization
+      contactPerson:
+        type: string
+        description: Server admin point of contact
+      contactPosition:
+        type: string
+        description: Server admin point of contact job title
+
+  JAI:
+    type: object
+    properties:
+      allowInterpolation:
+        type: boolean
+        description: No longer used
+      recycling:
+        type: boolean
+        description: Tile recycling
+      tilePriority:
+        type: number
+        description: Tile thread priority
+      tileThreads:
+        type: number
+        description: Tile threads
+      memoryCapacity:
+        type: number
+        description: Memory capacity
+      memoryThreshold:
+        type: number
+        description: Memory threshold
+      imageIOCache:
+        type: boolean
+        description: Enables Image IO cache
+      pngAcceleration:
+        type: boolean
+        description: Enable JAI PNG native acceleration
+      jpegAcceleration:
+        type: boolean
+        description: Enable JAI JPEG native acceleration
+      allowNativeMosaic:
+        type: boolean
+        description: Enable JAI mosaic native acceleration
+      allowNativeWarp:
+        type: boolean
+        description: Enable JAI native warp acceleration
+
+  CoverageAccess:
+    type: object
+    properties:
+      maxPoolSize:
+        type: number
+        description: Maximum number of threads that the Java ThreadPoolExecutor will create
+      corePoolSize:
+        type: number
+        description: Number of threads that the Java ThreadPoolExecutor will create
+      keepAlilveTime:
+        type: number
+        description: Timeout for threads to be terminated if they are idle and more than the core pool number exist.
+      queueType:
+        type: string
+        description: Type of Blocking Queue to managed submitted tasks. Can be either UNBOUNDED or DIRECT.
+      imageIOCacheThreshold:
+        type: number
+        description: Threshold size to choose between file-based cache and memory-based cach
+
+  WorkspaceSettings:
+    title: settings
+    type: object
+    properties:
+      contact:
+        $ref: "#/definitions/WorkspaceContact"
+      charset:
+        type: string
+        description: Character set to use for encoding (such as UTF-8)
+      numDecimals:
+        type: number
+        description: Maximum nuber of decimal places to use (GML and GeoJSON output)
+      onlineResource:
+        type: string
+        description: Server admin URL
+      verbose:
+        type: boolean
+        description: Return XML with newlines and indents
+      verboseExceptions:
+        type: boolean
+        description: Return service exceptions with full Java stack traces
+      localWorkspaceIncludesPrefix:
+        type: boolean
+        description: Show namespace prefix when using virtual service
+
+  WorkspaceContact:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Contact ID

@@ -12,5 +12,4 @@ public class OracleRoleServiceTest extends JDBCRoleServiceTest {
     protected String getFixtureId() {
         return "oracle";
     }
-
 }

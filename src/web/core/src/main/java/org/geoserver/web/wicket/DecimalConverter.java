@@ -8,23 +8,20 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
-
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.DoubleConverter;
 
 /**
- * A {@link IConverter} for {@code java.lang.Double} representations that allows for arbitrary number of decimal places, since the default TextField rounds up
- * doubles to three decimals. This class will also handle positive and negative infinity symbols
+ * A {@link IConverter} for {@code java.lang.Double} representations that allows for arbitrary
+ * number of decimal places, since the default TextField rounds up doubles to three decimals. This
+ * class will also handle positive and negative infinity symbols
  */
 @SuppressWarnings("serial")
 public class DecimalConverter extends DoubleConverter {
 
     int maximumFractionDigits = 16;
 
-    /**
-     * Returns the maximum number of fraction digits allowed in the configuration
-     * @return
-     */
+    /** Returns the maximum number of fraction digits allowed in the configuration */
     public int getMaximumFractionDigits() {
         return maximumFractionDigits;
     }
@@ -39,13 +36,13 @@ public class DecimalConverter extends DoubleConverter {
             return null;
         }
         final NumberFormat format = getNumberFormat(locale);
-        final DecimalFormatSymbols symbols = ((DecimalFormat)format).getDecimalFormatSymbols();
+        final DecimalFormatSymbols symbols = ((DecimalFormat) format).getDecimalFormatSymbols();
         if (value.equals(symbols.getNaN())) {
-            return new Double(Double.NaN);
+            return Double.valueOf(Double.NaN);
         } else if (value.equals(symbols.getInfinity())) {
-            return new Double(Double.POSITIVE_INFINITY);
-        } else if (value.equals("-"+symbols.getInfinity())) {
-            return new Double(Double.NEGATIVE_INFINITY);
+            return Double.valueOf(Double.POSITIVE_INFINITY);
+        } else if (value.equals("-" + symbols.getInfinity())) {
+            return Double.valueOf(Double.NEGATIVE_INFINITY);
         } else {
             return super.convertToObject(value, locale);
         }
@@ -57,5 +54,4 @@ public class DecimalConverter extends DoubleConverter {
         format.setMaximumFractionDigits(16);
         return format;
     }
-
 }

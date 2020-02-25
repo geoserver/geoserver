@@ -1,0 +1,281 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer monitoring requests
+  description: Request provides details about OWS and REST requests that GeoServer has handled 
+
+paths:
+
+  /monitor/requests:
+    get:
+      operationId: getMonitorRequests
+      summary: Get a list of requests
+      description: |
+                   Returns a list of all requests known to the monitoring system.
+                   If no list of fields is specified, the full list will be returned, with the exception of of Class, Body and Error fields.
+                   The HTML format return a summary of the requests, and links to the single request to gather details.
+                   Use the "Accept:" header to specify format or append an extension to the endpoint (example "/requests.xls" for Excel).
+      produces:
+        - application/csv
+        - application/zip
+        - application/vnd.ms-excel
+        - text/html
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: |
+                       Specifies an inclusive lower bound on the timestamp for the start of a request. 
+                       The timestamp must be expressed as an ISO can be specified to any desired precision (e..g, "2010-07-23", "2010-07-23T16:16:44")  
+          type: string
+        - name: to
+          in: query
+          required: false
+          description: |
+                       Specifies an inclusive lower bound on the timestamp for the start of a request. 
+                       The timestamp must be expressed as an ISO can be specified to any desired precision (e..g, "2010-07-23", "2010-07-23T16:16:44")  
+          type: string
+        - name: filter
+          in: query
+          required: false
+          description: |
+                       Specifies generic filter against the available fields, in the form "attributeName:OP:value" where OP can be:
+                       - EQ: equals
+                       - NEQ: not equals
+                       - LT: less than
+                       - LTE: less than or equals
+                       - GT: greater than
+                       - GTE: greater than or equals
+                       - IN: in list ("value" must be a comma separated list of values
+          type: string
+        - name: order
+          in: query
+          required: false
+          description: |
+                       Specifies which request attribute to sort by, and optionally specifies the sort direction.
+                       The syntax is "attribute[;ASC|DESC]", where the sorting direction is optional
+          type: string
+        - name: offset
+          in: query
+          required: false
+          description: Specifies where in the result set records should be returned from
+          type: integer
+        - name: count
+          in: query
+          required: false
+          description: Specifies how many records should be returned.
+          type: integer
+        - name: live
+          in: query
+          required: false
+          description: |
+                       Specifies which requests to return based on status. If true, only returns live (RUNNING, WAITING, CANCELLING) requests.
+                       If false, only returns completed (FINISHED, FAILED) requests. If not specified, all requests are returned regardless of status.
+          type: boolean
+        - name: fields
+          in: query
+          required: false
+          description: Comma separated list of fields to be returned
+          type: string
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/RequestList"
+          examples:
+            application/csv: |
+              id,path,startTime
+              2,/tiger/wms,2017-04-01T11:26:06.011
+              3,/tiger/wms,2017-04-01T11:26:06.603
+              4,/tiger/wms,2017-04-01T11:26:07.369
+              5,/rest/monitor/requests.csv,2017-04-01T11:26:37.919
+    post:
+      operationId: postMonitorRequests
+      description: Invalid. This resource cannot be modified.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putMonitorRequests
+      description: Invalid. This resource cannot be modified.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteMonitorRequests
+      description: Clears all reqests
+      responses:
+        200:
+          description: OK
+          
+  /monitor/requests/{request}:
+    get:
+      operationId: getMonitorRequest
+      summary: Get a list of requests
+      description: |
+                   Returns a specific request, by identifier
+                   The HTML format returns all details of the request.
+                   Use the "Accept:" header to specify format or append an extension to the endpoint (example "/request/1.xls" for Excel).
+      produces:
+        - application/csv
+        - application/zip
+        - application/vnd.ms-excel
+        - text/html
+      parameters:
+        - name: request
+          in: path
+          required: true
+          description: The request identifier  
+          type: string
+        - name: fields
+          in: query
+          required: false
+          description: Comma separated list of fields to be returned
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Request"
+          examples:
+            application/csv: |
+              Bbox,BodyAsString,BodyContentLength,BodyContentType,Category,EndTime,ErrorMessage,Host,HttpMethod,HttpReferer,Id,InternalHost,Operation,OwsVersion,Path,QueryString,RemoteAddr,RemoteCity,RemoteCountry,RemoteHost,RemoteLat,RemoteLon,RemoteUser,RemoteUserAgent,Resources,ResourcesList,ResponseContentType,ResponseLength,ResponseStatus,Service,StartTime,Status,SubOperation,TotalTime
+              "ReferencedEnvelope[-180.0 : 180.0, -90.0 : 90.0]",,0,,OWS,2017-04-01T11:26:06.439,,localhost,GET,http://localhost:8080/geoserver/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage?7,2,hydra,GetMap,1.3.0,/tiger/wms,"service=WMS&version=1.1.0&request=GetMap&layers=tiger:giant_polygon&styles=&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384&srs=EPSG:4326&format=application/openlayers",127.0.0.1,,,localhost,0.0,0.0,admin,"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36",[tiger:giant_polygon],tiger:giant_polygon,"text/html; subtype=openlayers",21997,200,WMS,2017-04-01T11:26:06.011,FINISHED,,428
+    post:
+      operationId: postMonitorRequest
+      description: This resource cannot be modified
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putMonitorRequest
+      description: This resource cannot be modified
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteMonitorRequest
+      description: Invalid. Cannot delete a specific request
+      responses:
+        405:
+          description: Method Not Allowed
+
+definitions:
+  RequestList:
+    title: requests
+    type: array
+    items:
+      $ref: '#/definitions/Request'
+
+  Request:
+    title: request
+    type: object
+    properties:
+      Bbox:
+        type: string
+        description: Requested bounding box
+      BodyAsString:
+        type: string
+        description: Body of the request (for POST/PUT) 
+      BodyContentLength:
+        type: integer
+        description: Request body content lenght
+      BodyContentType:
+        type: string
+        description: Request body content type
+      Category:
+        type: string
+        description: Can be OWS or REST
+      EndTime:
+        type: string
+        description: Request completion time
+      ErrorMessage:
+        type: string
+        description: The error message, in case the request failed, empt otherwise
+      Host:
+        type: string
+        description: Host GeoServer is running on
+      HttpMethod:
+        type: string
+        description: HTTP method of the request (e.g., GET, POST, ...)
+      HttpReferer:
+        type: string
+        description: HTTP referrer, if any
+      Id:
+        type: string
+        description: Request identifier
+      InternalHost:
+        type: string
+        description: Name of the host GeoServer is running on
+      Operation:
+        type: string
+        description: OGC operation, e.g. GetMap, GetFeature (available only for OWS requests)
+      OwsVersion:
+        type: string
+        description: OGC protocol version (e.g., 1.1.0, 1.1.3)
+      Path:
+        type: string
+        description: HTTP request path (e.g. "/topp/wms")
+      QueryString:
+        type: string
+        description: The HTTP request query string
+      RemoteAddr:
+        type: string
+        description: Remote request IP address
+      RemoteCity:
+        type: string
+        description: Remote client city (available only if GeoIP lookup is enabled)
+      RemoteCountry:
+        type: string
+        description: Remote client country (available only if GeoIP lookup is enabled)
+      RemoteHost:
+        type: string
+        description: Remote client  host
+      RemoteLat:
+        type: string
+        description: Remote client latitude (available only if GeoIP lookup is enabled)
+      RemoteLon:
+        type: string
+        description: Remote client longitude (available only if GeoIP lookup is enabled) 
+      RemoteUser: 
+        type: string
+        description: User issuing the request
+      RemoteUserAgent:
+        type: string
+        description: Remote client user agent
+      Resources:
+        type: string
+        description: Name of the resources (layers, processes, ...) specified as part of the request
+      ResourcesList:
+        type: string
+        description: Name of the resources (layers, processes, ...) specified as part of the request
+      ResponseContentType:
+        type: string
+        description: Content type of the response 
+      ResponseLength:
+        type: integer
+        description: Size of the response in bytes 
+      ResponseStatus:
+        type: string
+        description: HTTP status of the response
+      Service:
+        type: string
+        description: OGC service in use (available only for OGC requests)
+      StartTime:
+        type: string
+        description: Request start time
+      Status:
+        type: string
+        description: Status of the request (WAITING, RUNNING, CANCELLING, FAILED, FINISHED, CANCELLED, INTERRUPTED)
+      SubOperation:
+        type: string
+        description: The OGC sub operations, for the cases in which it applies (e.g., for WFS-T it can be Insert/Delete/Update)
+      TotalTime:
+        type: integer
+        description: Total request time in milliseconds          

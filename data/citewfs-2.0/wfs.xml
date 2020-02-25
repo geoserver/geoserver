@@ -1,0 +1,68 @@
+<wfs>
+  <id>wfs</id>
+  <enabled>true</enabled>
+  <name>TOPP GeoServer</name>
+  <title>The Open Planning Project Basemap Server</title>
+  <maintainer>http://geoserver.org/comm</maintainer>
+  <abstrct>This is a test server.  It contains some basemap data &#xd;
+from New York City.</abstrct>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.0.0</version>
+    </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>1.1.0</version>
+    </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>2.0.0</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>WFS</string>
+    <string>TEST</string>
+    <string>NY</string>
+    <string>New York</string>
+  </keywords>
+  <metadataLink/>
+  <citeCompliant>true</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <metadata>
+    <entry key="SHAPE-ZIP_DEFAULT_PRJ_IS_ESRI">false</entry>
+  </metadata>
+  <gml>
+    <entry>
+      <version>V_20</version>
+      <gml>
+        <srsNameStyle>URN2</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_11</version>
+      <gml>
+        <srsNameStyle>URN2</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_10</version>
+      <gml>
+        <srsNameStyle>XML</srsNameStyle>
+        <overrideGMLAttributes>true</overrideGMLAttributes>
+      </gml>
+    </entry>
+  </gml>
+  <serviceLevel>COMPLETE</serviceLevel>
+  <maxFeatures>10000</maxFeatures>
+  <featureBounding>true</featureBounding>
+  <canonicalSchemaLocation>true</canonicalSchemaLocation>
+  <encodeFeatureMember>false</encodeFeatureMember>
+  <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
+  <srs>
+    <string>3875</string>
+  </srs>
+</wfs>

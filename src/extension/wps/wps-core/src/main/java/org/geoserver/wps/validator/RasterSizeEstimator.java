@@ -6,12 +6,11 @@ package org.geoserver.wps.validator;
 
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 
 /**
  * Estimates the size of a raster as an uncompressed in memory grid
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class RasterSizeEstimator implements ObjectSizeEstimator {
@@ -37,5 +36,4 @@ public class RasterSizeEstimator implements ObjectSizeEstimator {
         int pixelSizeByte = (int) Math.ceil(bits / 8d);
         return renderedImage.getWidth() * renderedImage.getHeight() * pixelSizeByte;
     }
-
 }

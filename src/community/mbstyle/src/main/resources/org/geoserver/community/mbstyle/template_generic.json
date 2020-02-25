@@ -1,0 +1,39 @@
+{
+  "version": 8,
+  "name": "A ${colorName} generic style",
+  "layers": [
+    {
+      "id": "${layerName} raster",
+      "filter": ["!in", "$type", "Polygon","LineString","Point"],
+      "type": "raster",
+      "paint": {
+        "raster-opacity": 1
+      }
+    },
+    {
+      "id": "${colorName} polygon",
+      "filter": ["==", "$type", "Polygon"],
+      "type": "fill",
+      "paint": {
+        "fill-color": "${colorCode}",
+        "fill-outline-color":"#000000"
+      }
+    },
+    {
+      "id": "${colorName} line",
+      "filter": ["==", "$type", "LineString"],
+      "type": "line",
+      "paint": {
+        "line-color": "${colorCode}"
+      }
+    },
+    {
+      "id": "${colorName} circle",
+      "filter": ["==", "$type", "Point"],
+      "type": "circle",
+      "paint": {
+        "circle-color": "${colorCode}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright (C) 2016 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
+  under the GPL 2.0 license, available at the root application directory. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.17-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-netcdf-ghrsst</artifactId>
+  <packaging>jar</packaging>
+  <version>2.17-SNAPSHOT</version>
+  <name>NetCDF GHRSST encoder</name>
+
+  <properties>
+    <netcdf.version>4.6.11</netcdf.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-netcdf-out</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--  NetCDF logging dependencies -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+    </dependency>
+
+    <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>udunits</artifactId>
+      <version>${netcdf.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-netcdf</artifactId>
+    <version>${gt.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+      </exclusion>
+      <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+      </exclusion>
+    </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wcs2_0</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>process-resources</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
+                  <include name="netcdf.properties"/>
+                  <replacefilter token="@netcdf.version@" value="${netcdf.version}"/>
+                </replace>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

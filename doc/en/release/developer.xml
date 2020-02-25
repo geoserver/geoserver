@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================
+       Assembly descriptor for binaries. This descriptor is a modified
+       copy of the Maven "bin" predefined descriptor published there:
+
+       http://maven.apache.org/plugins/maven-assembly-plugin/descriptor-refs.html#bin
+
+       It will creates a "gt2-${project.version}-bin.zip" file.  This file
+       will contains a "gt2-${project.version}" root directory, which will
+       contains every JAR copied by our custom "jar-collector" plugin.
+
+       $Id$
+       $URL$
+     ====================================================================== -->
+<assembly>
+  <id>developer</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>..</directory>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+        <include>NOTICE*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <includes>
+        <include>VERSION*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/developer/html</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

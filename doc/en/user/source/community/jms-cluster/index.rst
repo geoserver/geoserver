@@ -49,7 +49,7 @@ This structure allows to have:
 This full blown deployment is composed by:
 
 * A pure Master GeoServer(s), this instance can only send events to the topic. It cannot act as a slave
-* A set of Geoserver which can work as both Master and Slave. These instances can send and receive messages to/from the topic. They can work as Masters (sending message to other subscribers) as well as Slaves (these instances are also subscribers of the topic).
+* A set of GeoServer which can work as both Master and Slave. These instances can send and receive messages to/from the topic. They can work as Masters (sending message to other subscribers) as well as Slaves (these instances are also subscribers of the topic).
 * A set of pure Slaves GeoServer instances whic can only receive messages from the topic.
 * A set of MOM brokers so that each GeoServer instance is configured with a set of available brokers (failover). Each broker use the shared database as persistence. Doing so if a broker fails for some reason, messages can still be written and read from the shared database.
 
@@ -130,7 +130,7 @@ Snyder Bosanac Davies - ActiveMQ in action - Manning
 http://docs.geoserver.org/
 
 [GeoServer REST]
-http://docs.geoserver.org/latest/en/user/restconfig/rest-config-api.html
+http://docs.geoserver.org/latest/en/user/rest/index.html#rest
 
 [ActiveMQ]
 http://activemq.apache.org/

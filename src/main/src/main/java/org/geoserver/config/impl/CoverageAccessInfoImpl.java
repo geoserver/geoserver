@@ -7,7 +7,6 @@ package org.geoserver.config.impl;
 
 import java.io.Serializable;
 import java.util.concurrent.ThreadPoolExecutor;
-
 import org.geoserver.config.CoverageAccessInfo;
 
 public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo {
@@ -15,7 +14,7 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
     private static final long serialVersionUID = 8909514231467268331L;
 
     transient ThreadPoolExecutor threadPoolExecutor;
-    
+
     public static final int DEFAULT_MaxPoolSize = 5;
     int maxPoolSize = DEFAULT_MaxPoolSize;
 
@@ -27,14 +26,14 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
 
     public static final QueueType DEFAULT_QUEUE_TYPE = QueueType.UNBOUNDED;
     QueueType queueType = DEFAULT_QUEUE_TYPE;
-    
+
     public static final long DEFAULT_ImageIOCacheThreshold = 10 * 1024;
     long imageIOCacheThreshold = DEFAULT_ImageIOCacheThreshold;
 
-    public CoverageAccessInfoImpl(){
+    public CoverageAccessInfoImpl() {
         threadPoolExecutor = null;
     }
-    
+
     public ThreadPoolExecutor getThreadPoolExecutor() {
         return threadPoolExecutor;
     }
@@ -74,17 +73,16 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
     public void setQueueType(QueueType queueType) {
         this.queueType = queueType;
     }
-    
+
     public void setImageIOCacheThreshold(long imageIOCacheThreshold) {
         this.imageIOCacheThreshold = imageIOCacheThreshold;
     }
-    
+
     public long getImageIOCacheThreshold() {
         return imageIOCacheThreshold;
     }
-    
-    public void dispose(){
-    }
+
+    public void dispose() {}
 
     @Override
     public int hashCode() {
@@ -100,29 +98,20 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         CoverageAccessInfoImpl other = (CoverageAccessInfoImpl) obj;
-        if (corePoolSize != other.corePoolSize)
-            return false;
-        if (imageIOCacheThreshold != other.imageIOCacheThreshold)
-            return false;
-        if (keepAliveTime != other.keepAliveTime)
-            return false;
-        if (maxPoolSize != other.maxPoolSize)
-            return false;
+        if (corePoolSize != other.corePoolSize) return false;
+        if (imageIOCacheThreshold != other.imageIOCacheThreshold) return false;
+        if (keepAliveTime != other.keepAliveTime) return false;
+        if (maxPoolSize != other.maxPoolSize) return false;
         if (queueType == null) {
-            if (other.queueType != null)
-                return false;
-        } else if (!queueType.equals(other.queueType))
-            return false;
+            if (other.queueType != null) return false;
+        } else if (!queueType.equals(other.queueType)) return false;
         return true;
     }
-    
+
     public CoverageAccessInfoImpl clone() {
         try {
             return (CoverageAccessInfoImpl) super.clone();

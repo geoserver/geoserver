@@ -37,31 +37,42 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     protected Class<CSWInfo> getServiceClass() {
         return CSWInfo.class;
     }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void build(final IModel info, Form form) {
 
-        CSWInfo model = (CSWInfo) info.getObject();
-        MetadataMap metadata = model.getMetadata();
-
-        DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(metadata, null);
-        metadata = metadata == null ? new MetadataMap() : metadata;
-        if (settings == null) {
-            metadata.getMap().put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
+        final PropertyModel<MetadataMap> metadata =
+                new PropertyModel<MetadataMap>(info, "metadata");
+        if (metadata.getObject() == null) {
+            metadata.setObject(new MetadataMap());
         }
 
-        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel(metadata,
-                DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
-                DirectDownloadSettings.class);
+        DirectDownloadSettings settings =
+                DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
+        if (settings == null) {
+            metadata.getObject()
+                    .put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
+        }
 
-        form.add(new CheckBox("directDownloadEnabled", new PropertyModel(directDownloadModel, "directDownloadEnabled")));
-        TextField maxDownloadSize = new TextField<Integer>("maxDownloadSize", new PropertyModel(
-                directDownloadModel, "maxDownloadSize"));
+        IModel<DirectDownloadSettings> directDownloadModel =
+                new MetadataMapModel(
+                        metadata,
+                        DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
+                        DirectDownloadSettings.class);
+
+        form.add(
+                new CheckBox(
+                        "directDownloadEnabled",
+                        new PropertyModel(directDownloadModel, "directDownloadEnabled")));
+        TextField maxDownloadSize =
+                new TextField<Integer>(
+                        "maxDownloadSize",
+                        new PropertyModel(directDownloadModel, "maxDownloadSize"));
         maxDownloadSize.add(RangeValidator.minimum(0l));
         form.add(maxDownloadSize);
     }
 
-    protected String getServiceName(){
-       return "CSW";
+    protected String getServiceName() {
+        return "CSW";
     }
 }

@@ -6,11 +6,11 @@
 package org.geoserver.wcs.xml.v1_0_0;
 
 import org.geotools.wcs.WCSConfiguration;
-import org.geotools.xml.XSDParserDelegate;
+import org.geotools.xsd.XSDParserDelegate;
 
 /**
  * Parser delegate for WCS 1.0.0.
- * 
+ *
  * @author Chad Phillips
  */
 public class WCSParserDelegate extends XSDParserDelegate {

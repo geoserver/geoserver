@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.17-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
@@ -44,7 +44,6 @@
   <dependency>
    <groupId>net.sf.json-lib</groupId>
    <artifactId>json-lib</artifactId>
-   <classifier>jdk15</classifier>
   </dependency>
   <dependency>
    <groupId>commons-beanutils</groupId>
@@ -81,7 +80,7 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-data</artifactId>
+   <artifactId>gt-main</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -106,6 +105,10 @@
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-wms</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-wmts</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools.xsd</groupId>
@@ -135,7 +138,16 @@
     <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
     <artifactId>jt-concurrent-tile-cache</artifactId>
   </dependency>
-  
+  <dependency>
+   <groupId>javax.activation</groupId>
+   <artifactId>activation</artifactId>
+  </dependency>
+  <dependency>
+	<groupId>com.github.oshi</groupId>
+	<artifactId>oshi-core</artifactId>
+  </dependency>
+
+
   <dependency>
    <groupId>org.springframework</groupId>
    <artifactId>spring-test</artifactId>
@@ -149,11 +161,6 @@
   <dependency>
    <groupId>org.easymock</groupId>
    <artifactId>easymock</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.easymock</groupId>
-   <artifactId>easymockclassextension</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>
@@ -174,12 +181,6 @@
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-geotiff</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-gtopo30</artifactId>
-   <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -202,7 +203,7 @@
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-core</artifactId>
-  </dependency> 
+  </dependency>
 <!-- 
   <dependency>
    <groupId>org.springframework.security</groupId>
@@ -211,6 +212,18 @@
    <scope>test</scope>
   </dependency>  
 -->
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-core</artifactId>
+   <version>${spring.version}</version>
+   <exclusions>
+    <exclusion>
+    <!-- This dependency will conflict with commons-logging's LogFactory class -->
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-jcl</artifactId>
+    </exclusion>
+   </exclusions>
+  </dependency>
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-web</artifactId>
@@ -224,6 +237,10 @@
       <artifactId>jasypt</artifactId>
    </dependency>
    <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt-springsecurity3</artifactId>
+   </dependency>
+   <dependency>
     <groupId>org.bouncycastle</groupId>
     <artifactId>bcprov-jdk15on</artifactId>    
   </dependency>
@@ -233,7 +250,17 @@
     <version>${gt.version}</version>
     <scope>test</scope>
   </dependency>
-</dependencies> 
+     <dependency>
+         <groupId>org.codehaus.jettison</groupId>
+         <artifactId>jettison</artifactId>
+     </dependency>
+     <dependency>
+     	<groupId>org.geotools</groupId>
+     	<artifactId>gt-imagepyramid</artifactId>
+     	<version>${gt.version}</version>
+     	<scope>test</scope>
+     </dependency>
+ </dependencies>
 
  <build>
   <plugins>

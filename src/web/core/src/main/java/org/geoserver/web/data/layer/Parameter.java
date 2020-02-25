@@ -7,7 +7,6 @@ package org.geoserver.web.data.layer;
 
 import java.io.Serializable;
 import java.util.logging.Level;
-
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.jdbc.VirtualTableParameter.Validator;
@@ -21,8 +20,6 @@ class Parameter implements Serializable {
     String defaultValue;
 
     String regexp;
-    
-    
 
     public Parameter(String name, String defaultValue, String regexp) {
         this.name = name;
@@ -38,15 +35,15 @@ class Parameter implements Serializable {
             if (validator instanceof RegexpValidator) {
                 this.regexp = ((RegexpValidator) validator).getPattern().pattern();
             } else {
-                SQLViewParamProvider.LOGGER.log(Level.WARNING, "Skipping unknown validator type "
-                        + validator.getClass());
+                SQLViewParamProvider.LOGGER.log(
+                        Level.WARNING, "Skipping unknown validator type " + validator.getClass());
             }
         }
     }
-    
+
     public VirtualTableParameter toVirtualTableParameter() {
         VirtualTableParameter result = new VirtualTableParameter(name, defaultValue);
-        if(regexp != null) {
+        if (regexp != null) {
             result.setValidator(new RegexpValidator(regexp));
         }
         return result;
@@ -75,7 +72,7 @@ class Parameter implements Serializable {
     public void setRegexp(String regexp) {
         this.regexp = regexp;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -88,36 +85,30 @@ class Parameter implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         Parameter other = (Parameter) obj;
         if (defaultValue == null) {
-            if (other.defaultValue != null)
-                return false;
-        } else if (!defaultValue.equals(other.defaultValue))
-            return false;
+            if (other.defaultValue != null) return false;
+        } else if (!defaultValue.equals(other.defaultValue)) return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
         if (regexp == null) {
-            if (other.regexp != null)
-                return false;
-        } else if (!regexp.equals(other.regexp))
-            return false;
+            if (other.regexp != null) return false;
+        } else if (!regexp.equals(other.regexp)) return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "Parameter [defaultValue=" + defaultValue + ", name=" + name + ", regexp=" + regexp
+        return "Parameter [defaultValue="
+                + defaultValue
+                + ", name="
+                + name
+                + ", regexp="
+                + regexp
                 + "]";
     }
-    
-    
 }

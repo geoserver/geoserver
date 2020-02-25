@@ -6,7 +6,4 @@ package org.geoserver.wfs.v1_1;
 
 import org.geoserver.wfs.AbstractTransactionCurveTest;
 
-public class TransactionCurveTest extends AbstractTransactionCurveTest {
-
-
-}
+public class TransactionCurveTest extends AbstractTransactionCurveTest {}

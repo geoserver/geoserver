@@ -1,0 +1,1587 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: OWS Services
+  description: An OWS service refers to any of the OGC services that GeoServer supports, such as WFS, WMS, and WCS. These endpoints controls the settings of these services.
+
+paths:
+
+  /services/wms/settings:
+
+    get:
+      operationId: getWMSSettings
+      description: Retrieves Web Map Service settings globally for the server.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSInfo"
+          examples:
+            application/xml: |
+              <wms>
+                <enabled>true</enabled>
+                <name>My GeoServer WMS</name>
+                <title>My GeoServer WMS</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>
+              This is a description of your Web Map Server.
+                   </abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.1.1</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>1.3.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WFS</string>
+                  <string>WMS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+                <metadata>
+                  <entry key="svgAntiAlias">true</entry>
+                  <entry key="svgRenderer">Batik</entry>
+                </metadata>
+                <watermark>
+                  <enabled>false</enabled>
+                  <position>BOT_RIGHT</position>
+                  <transparency>0</transparency>
+                </watermark>
+                <interpolation>Nearest</interpolation>
+                <getFeatureInfoMimeTypeCheckingEnabled>false</getFeatureInfoMimeTypeCheckingEnabled>
+                <getMapMimeTypeCheckingEnabled>false</getMapMimeTypeCheckingEnabled>
+                <dynamicStylingDisabled>false</dynamicStylingDisabled>
+                <maxBuffer>25</maxBuffer>
+                <maxRequestMemory>0</maxRequestMemory>
+                <maxRenderingTime>0</maxRenderingTime>
+                <maxRenderingErrors>0</maxRenderingErrors>
+              </wms>
+            application/json: |
+              {
+                "wms": {
+                  "enabled": true,
+                  "name": "My GeoServer WMS",
+                  "title": "My GeoServer WMS",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "\nThis is a description of your Web Map Server.\n     ",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.1.1"
+                      },
+                      {
+                        "version": "1.3.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WFS",
+                      "WMS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false,
+                  "metadata": {
+                    "entry": [
+                      {
+                        "@key": "svgAntiAlias",
+                        "$": "true"
+                      },
+                      {
+                        "@key": "svgRenderer",
+                        "$": "Batik"
+                      }
+                    ]
+                  },
+                  "watermark": {
+                    "enabled": false,
+                    "position": "BOT_RIGHT",
+                    "transparency": 0
+                  },
+                  "interpolation": "Nearest",
+                  "getFeatureInfoMimeTypeCheckingEnabled": false,
+                  "getMapMimeTypeCheckingEnabled": false,
+                  "dynamicStylingDisabled": false,
+                  "maxBuffer": 25,
+                  "maxRequestMemory": 0,
+                  "maxRenderingTime": 0,
+                  "maxRenderingErrors": 0
+                }
+              }
+
+    post:
+      operationId: postWMSSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMSSettings
+      description: Edits a global WMS setting.
+      parameters:
+        - name: WMSSettingsBody
+          in: body
+          description: Body of the WMS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WMSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWMSSettings
+      description: Invalid. Use PUT to edit settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /services/wms/workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
+    get:
+      operationId: getWMSWorkspaceSettings
+      description: Retrieves Web Map Service settings for a given workspace.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSInfo"
+          examples:
+            application/xml: |
+              <wms>
+                <workspace>
+                  <name>nurc</name>
+                </workspace>
+                <enabled>true</enabled>
+                <name>My GeoServer WMS</name>
+                <title>My GeoServer WMS</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>
+              This is a description of your Web Map Server.
+                   </abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.1.1</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>1.3.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WFS</string>
+                  <string>WMS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+                <metadata>
+                  <entry key="svgAntiAlias">true</entry>
+                  <entry key="svgRenderer">Batik</entry>
+                </metadata>
+                <watermark>
+                  <enabled>false</enabled>
+                  <position>BOT_RIGHT</position>
+                  <transparency>0</transparency>
+                </watermark>
+                <interpolation>Nearest</interpolation>
+                <getFeatureInfoMimeTypeCheckingEnabled>false</getFeatureInfoMimeTypeCheckingEnabled>
+                <getMapMimeTypeCheckingEnabled>false</getMapMimeTypeCheckingEnabled>
+                <dynamicStylingDisabled>false</dynamicStylingDisabled>
+                <maxBuffer>25</maxBuffer>
+                <maxRequestMemory>0</maxRequestMemory>
+                <maxRenderingTime>0</maxRenderingTime>
+                <maxRenderingErrors>0</maxRenderingErrors>
+              </wms>
+            application/json: |
+              {
+                "wms": {
+                  "workspace": {
+                    "name": "nurc"
+                  },
+                  "enabled": true,
+                  "name": "My GeoServer WMS",
+                  "title": "My GeoServer WMS",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "\nThis is a description of your Web Map Server.\n     ",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.1.1"
+                      },
+                      {
+                        "version": "1.3.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WFS",
+                      "WMS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false,
+                  "metadata": {
+                    "entry": [
+                      {
+                        "@key": "svgAntiAlias",
+                        "$": "true"
+                      },
+                      {
+                        "@key": "svgRenderer",
+                        "$": "Batik"
+                      }
+                    ]
+                  },
+                  "watermark": {
+                    "enabled": false,
+                    "position": "BOT_RIGHT",
+                    "transparency": 0
+                  },
+                  "interpolation": "Nearest",
+                  "getFeatureInfoMimeTypeCheckingEnabled": false,
+                  "getMapMimeTypeCheckingEnabled": false,
+                  "dynamicStylingDisabled": false,
+                  "maxBuffer": 25,
+                  "maxRequestMemory": 0,
+                  "maxRenderingTime": 0,
+                  "maxRenderingErrors": 0
+                }
+              }
+
+    post:
+      operationId: postWMSWorkspaceSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMSWorkspaceSettings
+      description: Edits a workspace-specific WMS setting.
+      parameters:
+        - name: WMSSettingsBody
+          in: body
+          description: Body of the WMS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WMSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWMSWorkspaceSettings
+      description: Deletes a workspace-specific WMS setting.
+      responses:
+        200:
+          description: OK
+
+
+  /services/wfs/settings:
+
+    get:
+      operationId: getWFSSettings
+      description: Retrieves Web Feature Service settings globally for the server.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WFSInfo"
+          examples:
+            application/xml: |
+              <wfs>
+                <enabled>true</enabled>
+                <name>WFS</name>
+                <title>GeoServer Web Feature Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.</abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>1.1.0</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>2.0.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WFS</string>
+                  <string>WMS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink/>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+                <gml>
+                  <entry>
+                    <version>V_20</version>
+                    <gml>
+                      <srsNameStyle>URN2</srsNameStyle>
+                      <overrideGMLAttributes>false</overrideGMLAttributes>
+                    </gml>
+                  </entry>
+                  <entry>
+                    <version>V_10</version>
+                    <gml>
+                      <srsNameStyle>XML</srsNameStyle>
+                      <overrideGMLAttributes>true</overrideGMLAttributes>
+                    </gml>
+                  </entry>
+                  <entry>
+                    <version>V_11</version>
+                    <gml>
+                      <srsNameStyle>URN</srsNameStyle>
+                      <overrideGMLAttributes>false</overrideGMLAttributes>
+                    </gml>
+                  </entry>
+                </gml>
+                <serviceLevel>COMPLETE</serviceLevel>
+                <maxFeatures>1000000</maxFeatures>
+                <featureBounding>false</featureBounding>
+                <canonicalSchemaLocation>false</canonicalSchemaLocation>
+                <encodeFeatureMember>false</encodeFeatureMember>
+                <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
+              </wfs>
+            application/json: |
+              {
+                "wfs": {
+                  "enabled": true,
+                  "name": "WFS",
+                  "title": "GeoServer Web Feature Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      },
+                      {
+                        "version": "1.1.0"
+                      },
+                      {
+                        "version": "2.0.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WFS",
+                      "WMS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": "",
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false,
+                  "gml": {
+                    "entry": [
+                      {
+                        "version": "V_20",
+                        "gml": {
+                          "srsNameStyle": [
+                            "URN2"
+                          ],
+                          "overrideGMLAttributes": false
+                        }
+                      },
+                      {
+                        "version": "V_10",
+                        "gml": {
+                          "srsNameStyle": [
+                            "XML"
+                          ],
+                          "overrideGMLAttributes": true
+                        }
+                      },
+                      {
+                        "version": "V_11",
+                        "gml": {
+                          "srsNameStyle": [
+                            "URN"
+                          ],
+                          "overrideGMLAttributes": false
+                        }
+                      }
+                    ]
+                  },
+                  "serviceLevel": "COMPLETE",
+                  "maxFeatures": 1000000,
+                  "featureBounding": false,
+                  "canonicalSchemaLocation": false,
+                  "encodeFeatureMember": false,
+                  "hitsIgnoreMaxFeatures": false
+                }
+              }
+
+    post:
+      operationId: postWFSSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWFSSettings
+      description: Edits a global WFS setting.
+      parameters:
+        - name: WFSSettingsBody
+          in: body
+          description: Body of the WFS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WFSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWFSSettings
+      description: Invalid. Use PUT to edit settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /services/wfs/workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
+    get:
+      operationId: getWFSWorkspaceSettings
+      description: Retrieves Web Feature Service settings for a given workspace.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WFSInfo"
+          examples:
+            application/xml: |
+              <wfs>
+                <workspace>
+                  <name>nurc</name>
+                </workspace>
+                <enabled>true</enabled>
+                <name>WFS</name>
+                <title>GeoServer Web Feature Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.</abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>1.1.0</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>2.0.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WFS</string>
+                  <string>WMS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink/>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+                <gml>
+                  <entry>
+                    <version>V_20</version>
+                    <gml>
+                      <srsNameStyle>URN2</srsNameStyle>
+                      <overrideGMLAttributes>false</overrideGMLAttributes>
+                    </gml>
+                  </entry>
+                  <entry>
+                    <version>V_10</version>
+                    <gml>
+                      <srsNameStyle>XML</srsNameStyle>
+                      <overrideGMLAttributes>true</overrideGMLAttributes>
+                    </gml>
+                  </entry>
+                  <entry>
+                    <version>V_11</version>
+                    <gml>
+                      <srsNameStyle>URN</srsNameStyle>
+                      <overrideGMLAttributes>false</overrideGMLAttributes>
+                    </gml>
+                  </entry>
+                </gml>
+                <serviceLevel>COMPLETE</serviceLevel>
+                <maxFeatures>1000000</maxFeatures>
+                <featureBounding>false</featureBounding>
+                <canonicalSchemaLocation>false</canonicalSchemaLocation>
+                <encodeFeatureMember>false</encodeFeatureMember>
+                <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
+              </wfs>
+            application/json: |
+              {
+                "wfs": {
+                  "workspace": {
+                    "name": "nurc"
+                  },
+                  "enabled": true,
+                  "name": "WFS",
+                  "title": "GeoServer Web Feature Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      },
+                      {
+                        "version": "1.1.0"
+                      },
+                      {
+                        "version": "2.0.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WFS",
+                      "WMS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": "",
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false,
+                  "gml": {
+                    "entry": [
+                      {
+                        "version": "V_20",
+                        "gml": {
+                          "srsNameStyle": [
+                            "URN2"
+                          ],
+                          "overrideGMLAttributes": false
+                        }
+                      },
+                      {
+                        "version": "V_10",
+                        "gml": {
+                          "srsNameStyle": [
+                            "XML"
+                          ],
+                          "overrideGMLAttributes": true
+                        }
+                      },
+                      {
+                        "version": "V_11",
+                        "gml": {
+                          "srsNameStyle": [
+                            "URN"
+                          ],
+                          "overrideGMLAttributes": false
+                        }
+                      }
+                    ]
+                  },
+                  "serviceLevel": "COMPLETE",
+                  "maxFeatures": 1000000,
+                  "featureBounding": false,
+                  "canonicalSchemaLocation": false,
+                  "encodeFeatureMember": false,
+                  "hitsIgnoreMaxFeatures": false
+                }
+              }
+
+    post:
+      operationId: postWFSWorkspaceSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWFSWorkspaceSettings
+      description: Edits a workspace-specific WFS setting.
+      parameters:
+        - name: WFSSettingsBody
+          in: body
+          description: Body of the WFS settings layer
+          required: true
+          schema:
+            $ref: "#/definitions/WFSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWFSWorkspaceSettings
+      description: Deletes a workspace-specific WFS setting.
+      responses:
+        200:
+          description: OK
+
+
+  /services/wcs/settings:
+
+    get:
+      operationId: getWCSSettings
+      description: Retrieves Web Coverage Service settings globally for the server.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WCSInfo"
+          examples:
+            application/xml: |
+              <wcs>
+                <enabled>true</enabled>
+                <name>WCS</name>
+                <title>Web Coverage Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This server implements the WCS specification 1.0 and 1.1.1, it's reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.
+                   </abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>1.1.1</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>2.0.1</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WCS</string>
+                  <string>WMS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink>
+                  <type>undef</type>
+                  <about>http://geoserver.sourceforge.net/html/index.php</about>
+                  <metadataType>other</metadataType>
+                </metadataLink>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+                <gmlPrefixing>false</gmlPrefixing>
+                <latLon>false</latLon>
+                <maxInputMemory>0</maxInputMemory>
+                <maxOutputMemory>0</maxOutputMemory>
+              </wcs>
+
+            application/json: |
+              {
+                "wcs": {
+                  "enabled": true,
+                  "name": "WCS",
+                  "title": "Web Coverage Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This server implements the WCS specification 1.0 and 1.1.1, it's reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.\n     ",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      },
+                      {
+                        "version": "1.1.1"
+                      },
+                      {
+                        "version": "2.0.1"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WCS",
+                      "WMS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": {
+                    "type": "undef",
+                    "about": "http://geoserver.sourceforge.net/html/index.php",
+                    "metadataType": "other"
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false,
+                  "gmlPrefixing": false,
+                  "latLon": false,
+                  "maxInputMemory": 0,
+                  "maxOutputMemory": 0
+                }
+              }
+
+
+    post:
+      operationId: postWCSSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWCSSettings
+      description: Edits a global WCS setting.
+      parameters:
+        - name: WCSSettingsBody
+          in: body
+          description: Body of the WCS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WCSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWCSSettings
+      description: Invalid. Use PUT to edit settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /services/wcs/workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
+    get:
+      operationId: getWCSWorkspaceSettings
+      description: Retrieves Web Coverage Service settings for a given workspace.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WCSInfo"
+          examples:
+            application/xml: |
+              <wcs>
+                <workspace>
+                  <name>nurc</name>
+                </workspace>
+                <enabled>true</enabled>
+                <name>WCS</name>
+                <title>Web Coverage Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This server implements the WCS specification 1.0 and 1.1.1, it&apos;s reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.
+                   </abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>1.1.1</version>
+                  </org.geotools.util.Version>
+                  <org.geotools.util.Version>
+                    <version>2.0.1</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WCS</string>
+                  <string>WMS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink>
+                  <type>undef</type>
+                  <about>http://geoserver.sourceforge.net/html/index.php</about>
+                  <metadataType>other</metadataType>
+                </metadataLink>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+                <gmlPrefixing>false</gmlPrefixing>
+                <latLon>false</latLon>
+                <maxInputMemory>0</maxInputMemory>
+                <maxOutputMemory>0</maxOutputMemory>
+                <subsamplingEnabled>true</subsamplingEnabled>
+                <overviewPolicy>IGNORE</overviewPolicy>
+              </wcs>
+            application/json: |
+              {
+                "wcs": {
+                  "workspace": {
+                    "name": "nurc"
+                  },
+                  "enabled": true,
+                  "name": "WCS",
+                  "title": "Web Coverage Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This server implements the WCS specification 1.0 and 1.1.1, it's reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.\n     ",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      },
+                      {
+                        "version": "1.1.1"
+                      },
+                      {
+                        "version": "2.0.1"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WCS",
+                      "WMS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": {
+                    "type": "undef",
+                    "about": "http://geoserver.sourceforge.net/html/index.php",
+                    "metadataType": "other"
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false,
+                  "gmlPrefixing": false,
+                  "latLon": false,
+                  "maxInputMemory": 0,
+                  "maxOutputMemory": 0,
+                  "subsamplingEnabled": true,
+                  "overviewPolicy": "IGNORE"
+                }
+              }
+
+
+    post:
+      operationId: postWCSWorkspaceSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWCSWorkspaceSettings
+      description: Edits a workspace-specific WCS setting.
+      parameters:
+        - name: WCSSettingsBody
+          in: body
+          description: Body of the WCS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WCSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWCSWorkspaceSettings
+      description: Deletes a workspace-specific WCS setting.
+      responses:
+        200:
+          description: OK
+
+  /services/wmts/settings:
+    get:
+      operationId: getWMTSSettings
+      description: Retrieves Web Map Tile Service settings globally for the server.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+          examples:
+            application/xml: |
+              <wmts>
+                <enabled>true</enabled>
+                <name>WMTS</name>
+                <title>Web Map Tile Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This server implements the WMTS specification 1.0</abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WMTS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink>
+                  <type>undef</type>
+                  <about>http://geoserver.sourceforge.net/html/index.php</about>
+                  <metadataType>other</metadataType>
+                </metadataLink>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+              </wmts>
+
+            application/json: |
+              {
+                "wmts": {
+                  "enabled": true,
+                  "name": "WMTS",
+                  "title": "Web Map Tile Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This server implements the WMTS specification 1.0",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WMTS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": {
+                    "type": "undef",
+                    "about": "http://geoserver.sourceforge.net/html/index.php",
+                    "metadataType": "other"
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false
+                }
+              }
+    post:
+      operationId: postWMTSSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+    put:
+      operationId: putWMTSSettings
+      description: Edits a global WMTS setting.
+      parameters:
+        - name: WMTSSettingsBody
+          in: body
+          description: Body of the WMTS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+
+    delete:
+      operationId: deleteWMTSSettings
+      description: Invalid. Use PUT to edit settings.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /services/wmts/workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
+    get:
+      operationId: getWMTSWorkspaceSettings
+      description: Retrieves Web Map Tile Service settings for a given workspace.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+          examples:
+            application/xml: |
+              <wmts>
+                <workspace>
+                  <name>nurc</name>
+                </workspace>
+                <enabled>true</enabled>
+                <name>WMTS</name>
+                <title>Web Map Tile Service</title>
+                <maintainer>http://geoserver.org/comm</maintainer>
+                <abstrct>This server implements the WMTS specification 1.0</abstrct>
+                <accessConstraints>NONE</accessConstraints>
+                <fees>NONE</fees>
+                <versions>
+                  <org.geotools.util.Version>
+                    <version>1.0.0</version>
+                  </org.geotools.util.Version>
+                </versions>
+                <keywords>
+                  <string>WMTS</string>
+                  <string>GEOSERVER</string>
+                </keywords>
+                <metadataLink>
+                  <type>undef</type>
+                  <about>http://geoserver.sourceforge.net/html/index.php</about>
+                  <metadataType>other</metadataType>
+                </metadataLink>
+                <citeCompliant>false</citeCompliant>
+                <onlineResource>http://geoserver.org</onlineResource>
+                <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+                <verbose>false</verbose>
+              </wmts>
+            application/json: |
+              {
+                "wmts": {
+                  "workspace": {
+                    "name": "nurc"
+                  },
+                  "enabled": true,
+                  "name": "WMTS",
+                  "title": "Web Map Tile Service",
+                  "maintainer": "http://geoserver.org/comm",
+                  "abstrct": "This server implements the WMTS specification 1.0",
+                  "accessConstraints": "NONE",
+                  "fees": "NONE",
+                  "versions": {
+                    "org.geotools.util.Version": [
+                      {
+                        "version": "1.0.0"
+                      }
+                    ]
+                  },
+                  "keywords": {
+                    "string": [
+                      "WMTS",
+                      "GEOSERVER"
+                    ]
+                  },
+                  "metadataLink": {
+                    "type": "undef",
+                    "about": "http://geoserver.sourceforge.net/html/index.php",
+                    "metadataType": "other"
+                  },
+                  "citeCompliant": false,
+                  "onlineResource": "http://geoserver.org",
+                  "schemaBaseURL": "http://schemas.opengis.net",
+                  "verbose": false
+                }
+              }
+
+
+    post:
+      operationId: postWMTSWorkspaceSettings
+      description: Invalid. Use PUT to edit a service setting.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMTSWorkspaceSettings
+      description: Edits a workspace-specific WMTS setting.
+      parameters:
+        - name: WMTSSettingsBody
+          in: body
+          description: Body of the WMTS settings
+          required: true
+          schema:
+            $ref: "#/definitions/WMTSInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+    delete:
+      operationId: deleteWMTSWorkspaceSettings
+      description: Deletes a workspace-specific WMTS setting.
+      responses:
+        200:
+          description: OK
+
+
+definitions:
+  WMSInfo:
+    xml:
+      name: wms
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        description: Status of the service
+      name:
+        type: string
+        description: Name of the service. This value is unique among all instances of ServiceInfo and can be used as an identifier.
+      title:
+        type: string
+        description: Title of the service
+      workspace:
+        type: string
+        description: Workspace the service is specific or local to. Will not exist if the service is global.
+      maintainer:
+        type: string
+        description: maintainer of the service
+      abstrct:
+        type: string
+        description: description of the service
+      accessConstraints:
+        type: string
+        description: ''
+      fees:
+        type: string
+        description: ''
+      versions:
+        type: object
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
+              type: string
+              description: version number
+      keywords:
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
+      citeCompliant:
+        type: boolean
+        description: Status of service CITE compliance.
+      onlineResource:
+        type: string
+        description: ''
+      schemaBaseURL:
+        type: string
+        description: The base url for the schemas describing the service.
+      verbose:
+        type: boolean
+        description: Flag indicating if the service should be verbose or not.
+      metadataLink:
+        type: array
+        items:
+          type: object
+          properties:
+            "@key":
+              type: string
+              description: Metadata key
+            text:
+              type: string
+              description: Metadata value
+      watermark:
+        type: object
+        description: Watermarking configuration
+        properties:
+          enabled:
+            type: boolean
+            description: Flag indicating if watermarking is enabled
+          position:
+            type: string
+            description: Position of the watermark
+            enum:
+              - TOP_LEFT
+              - TOP_CENTER
+              - TOP_RIGHT
+              - MID_LEFT
+              - MID_CENTER
+              - MID_RIGHT
+              - BOT_LEFT
+              - BOT_CENTER
+              - BOT_RIGHT
+          transparency:
+            type: integer
+            description: The transparency of the watermark logo, ranging from 0 to 255
+      interpolation:
+        type: string
+        enum:
+          - Nearest
+          - Bilinear
+          - Bicubic
+      getFeatureInfoMimeTypeCheckingEnabled:
+        type: boolean
+        description: Flag indicating if getFeatureInfo MIME type checking is enabled
+      getMapMimeTypeCheckingEnabled:
+        type: boolean
+        description: Flag indicating if getMap MIME type checking is enabled.
+      dynamicStylingDisabled:
+        type: boolean
+        description: status of dynamic styling (SLD and SLD_BODY params) allowance
+      maxBuffer:
+        type: integer
+        description: Maximum search radius for GetFeatureInfo
+      maxRequestMemory:
+        type: integer
+        description: Max amount of memory, in kilobytes, that each WMS request can allocate (each output format will make a best effort attempt to respect it, but there are no guarantees). 0 indicates no limit.
+      maxRenderingTime:
+        type: integer
+        description: Max time, in seconds, a WMS request is allowed to spend rendering the map. Various output formats will do a best effort to respect it (raster formats, for example, will account just rendering time, but not image encoding time).
+      maxRenderingErrors:
+        type: integer
+        description: Max number of rendering errors that will be tolerated before stating the rendering operation failed by throwing a service exception back to the client
+
+  WFSInfo:
+    type: object
+    xml:
+      name: wfs
+    properties:
+      enabled:
+        type: boolean
+        description: Status of the service
+      name:
+        type: string
+        description: Name of the service. This value is unique among all instances of ServiceInfo and can be used as an identifier.
+      title:
+        type: string
+        description: Title of the service
+      maintainer:
+        type: string
+        description: Maintainer of the service
+      abstrct:
+        type: string
+        description: Description of the service
+      accessConstraints:
+        type: string
+        description: Access constraints
+      fees:
+        type: string
+        description: Any fees associated with the service
+      versions:
+        type: object
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
+              type: string
+              description: version number
+      keywords:
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
+      metadataLink:
+        type: array
+        items:
+          type: object
+          properties:
+            "@key":
+              type: string
+              description: Metadata key
+              enum:
+              - svgAntiAlias
+              - svgRenderer
+            text:
+              type: string
+              description: Metadata value
+      citeCompliant:
+        type: boolean
+        description: Status of service CITE compliance
+      onlineResource:
+        type: string
+        description: URL resource
+      schemaBaseURL:
+        type: string 
+        description: Base URL for the schemas describing the service
+      verbose:
+        type: boolean
+        description: Flag indicating if the service should be verbose
+      gml:
+        type: object
+        description: A map of WFS version to GML encoding configuration
+        properties:
+          entry:
+            type: array
+            items:
+              type: object
+              properties:
+                version:
+                  type: string
+                  enum:
+                    - 1.0.0
+                    - 1.1.0
+                    - 2.0.0
+                gml:
+                  type: object
+                  description: Enumeration for srsName style
+                  properties:
+                    srsNameStyle:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                          - NORMAL
+                          - XML
+                          - URN
+                          - URN2
+                          - URL
+      serviceLevel:
+        type: string
+        description: Level of service provided by the WFS
+        enum:
+          - BASIC
+          - TRANSACTIONAL
+          - COMPLETE
+      maxFeatures:
+        type: integer
+        description: Global cap on the number of features to allow when processing a request
+      featureBounding:
+        type: boolean
+        description: Flag which determines if gml:bounds elements should be encoded at the feature level in GML output
+      canonicalSchemaLocation:
+        type: boolean
+        description: Flag that determines the encoding of the WFS schemaLocation. True if the WFS schemaLocation should refer to the canonical location, false if the WFS schemaLocation should refer to a copy served by GeoServer.
+      encodeFeatureMember:
+        type: boolean
+        description: Flag that determines encoding of featureMember or featureMembers. True if the featureMember should be encoded False if the featureMembers should be encoded.
+      hitsIgnoreMaxFeatures:
+        type: boolean
+        description: Flag that determines if WFS hit requests (counts) will ignore the maximum features limit for this server
+
+
+  WCSInfo:
+    type: object
+    xml:
+      name: wcs
+    properties:
+      enabled:
+        type: boolean
+        description: Status of the service
+      name:
+        type: string
+        description: Name of the service. This value is unique among all instances of ServiceInfo and can be used as an identifier.
+      title:
+        type: string
+        description: Title of the service
+      maintainer:
+        type: string
+        description: Maintainer of the service
+      abstrct:
+        type: string
+        description: Description of the service
+      accessConstraints:
+        type: string
+        description: Access constraints
+      fees:
+        type: string
+        description: Any fees associated with the service
+      versions:
+        type: object
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
+              type: string
+              description: version number
+      keywords:
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
+      metadataLink:
+        type: array
+        items:
+          type: object
+          properties:
+            "@key":
+              type: string
+              description: Metadata key
+            text:
+              type: string
+              description: Metadata value
+      citeCompliant:
+        type: boolean
+        description: Status of service CITE compliance
+      onlineResource:
+        type: string
+        description: URL resource
+      schemaBaseURL:
+        type: string 
+        description: Base URL for the schemas describing the service
+      verbose:
+        type: boolean
+        description: Flag indicating if the service should be verbose
+      gmlPrefixing:
+        type: boolean
+        description: ""
+      latLon:
+        type: boolean
+        description: ""
+      maxInputMemory:
+        type: boolean
+        description: ""
+      maxOutputMemory:
+        type: boolean
+        description: ""
+
+  WMTSInfo:
+    type: object
+    xml:
+      name: wmts
+    properties:
+      enabled:
+        type: boolean
+        description: Status of the service
+      name:
+        type: string
+        description: Name of the service. This value is unique among all instances of ServiceInfo and can be used as an identifier.
+      title:
+        type: string
+        description: Title of the service
+      maintainer:
+        type: string
+        description: Maintainer of the service
+      abstrct:
+        type: string
+        description: Description of the service
+      accessConstraints:
+        type: string
+        description: Access constraints
+      fees:
+        type: string
+        description: Any fees associated with the service
+      versions:
+        type: object
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
+              type: string
+              description: version number
+      keywords:
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
+      metadataLink:
+        type: array
+        items:
+          type: object
+          properties:
+            "@key":
+              type: string
+              description: Metadata key
+            text:
+              type: string
+              description: Metadata value
+      citeCompliant:
+        type: boolean
+        description: Status of service CITE compliance
+      onlineResource:
+        type: string
+        description: URL resource
+      schemaBaseURL:
+        type: string 
+        description: Base URL for the schemas describing the service
+      verbose:
+        type: boolean
+        description: Flag indicating if the service should be verbose

@@ -1,0 +1,22 @@
+<assembly>
+  <id>mbtiles-store-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gt-mbtiles-*.jar</include>
+        <include>sqlite*.jar</include>
+        <include>jackson-core*.jar</include>
+        <include>jackson-annotation*.jar</include>
+        <include>jackson-databind*.jar</include>
+        <include>java-vector-tile*.jar</include>
+        <include>protobuf-java*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

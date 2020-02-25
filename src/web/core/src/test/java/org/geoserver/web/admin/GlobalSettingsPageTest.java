@@ -18,6 +18,14 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(GlobalSettingsPage.class);
         tester.assertComponent("form:verbose", CheckBox.class);
-        tester.assertModelValue("form:verbose", info.isVerbose());
+        tester.assertModelValue("form:verbose", info.getSettings().isVerbose());
+        tester.assertComponent("form:showCreatedTimeCols", CheckBox.class);
+        tester.assertModelValue(
+                "form:showCreatedTimeCols",
+                info.getSettings().isShowCreatedTimeColumnsInAdminList());
+        tester.assertComponent("form:showModifiedTimeCols", CheckBox.class);
+        tester.assertModelValue(
+                "form:showModifiedTimeCols",
+                info.getSettings().isShowModifiedTimeColumnsInAdminList());
     }
 }

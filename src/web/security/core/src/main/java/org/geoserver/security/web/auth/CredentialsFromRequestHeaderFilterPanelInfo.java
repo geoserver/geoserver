@@ -7,16 +7,16 @@ package org.geoserver.security.web.auth;
 import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderFilter;
 
-
 /**
- * Configuration panel extension for {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
- * 
+ * Configuration panel extension for {@link
+ * GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
+ *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
- *
  */
-public class CredentialsFromRequestHeaderFilterPanelInfo 
-extends AuthenticationFilterPanelInfo<CredentialsFromRequestHeaderFilterConfig, CredentialsFromRequestHeaderFilterPanel> {
+public class CredentialsFromRequestHeaderFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<
+                CredentialsFromRequestHeaderFilterConfig, CredentialsFromRequestHeaderFilterPanel> {
 
     private static final long serialVersionUID = 1L;
 

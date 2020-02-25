@@ -8,9 +8,7 @@ import org.geoserver.config.impl.GeoServerLifecycleHandler;
 
 public class GeoGigGeoServerLifeCycleListener implements GeoServerLifecycleHandler {
 
-    /**
-     * Called by geoserver to flush caches
-     */
+    /** Called by geoserver to flush caches */
     @Override
     public void onReset() {
         RepositoryManager.close();
@@ -30,5 +28,4 @@ public class GeoGigGeoServerLifeCycleListener implements GeoServerLifecycleHandl
     public void beforeReload() {
         //
     }
-
 }

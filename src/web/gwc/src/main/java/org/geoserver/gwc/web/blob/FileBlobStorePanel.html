@@ -4,11 +4,19 @@
 <body>
 	<wicket:panel>
 		<fieldset>
+			<ul>
+			<li>	
 			<div wicket:id="baseDirectory"></div>
-			
+			</li>
+			<li>	
 			<label for="fileSystemBlockSize"><wicket:message key="fileSystemBlockSize"/></label>
 			<input id="fileSystemBlockSize" wicket:id="fileSystemBlockSize" type="text" class="text" />
-			
+			</li>
+			<li>
+			<label for="layout"><wicket:message key="fileSystemLayout"/></label>
+			<select class="select" id="layout" wicket:id="fileSystemLayout"/>
+			</li>
+			</ul>
 		</fieldset>
 	</wicket:panel>
 </body>

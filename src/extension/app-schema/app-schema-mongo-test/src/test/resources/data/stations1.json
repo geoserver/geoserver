@@ -1,0 +1,39 @@
+{
+  "_id": { "$oid" : "58e5889ce4b02461ad5af080"},
+  "id": "1",
+  "name": "station 1",
+  "inferredAttribute2": "ok",
+  "contact": {
+    "mail": "station1@mail.com"
+  },
+  "geometry": {
+    "coordinates": [
+      50,
+      60
+    ],
+    "type": "Point"
+  },
+  "nullableField": null,
+  "measurements": [
+    {
+      "name": "temp",
+      "unit": "c",
+      "values": [
+        {
+          "time": 1482146800,
+          "value": 20
+        }
+      ]
+    },
+    {
+      "name": "wind",
+      "unit": "km/h",
+      "values": [
+        {
+          "time": 1482146833,
+          "value": 155
+        }
+      ]
+    }
+  ]
+}

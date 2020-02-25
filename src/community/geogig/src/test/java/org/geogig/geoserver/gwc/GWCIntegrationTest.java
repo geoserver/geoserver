@@ -7,8 +7,9 @@ package org.geogig.geoserver.gwc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
 import java.util.Map;
-
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
 import org.geoserver.catalog.Catalog;
@@ -28,48 +29,44 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.junit.Rule;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.vividsolutions.jts.geom.Envelope;
-
-/**
- * Integration test for GeoServer cached layers using the GWC REST API
- * 
- */
-@TestSetup(run = TestSetupFrequency.REPEAT)
+/** Integration test for GeoServer cached layers using the GWC REST API */
+@TestSetup(run = TestSetupFrequency.ONCE)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
-    private GWC mediator;
+    private static GWC mediator;
 
-    private GeoServerTileLayer pointsLayer;
+    private static GeoServerTileLayer pointsLayer;
 
-    private GeoServerTileLayer linesLayer;
+    private static GeoServerTileLayer linesLayer;
 
-    private StorageBroker storageBroker;
+    private static StorageBroker storageBroker;
 
-    @Rule
-    public GeoGigTestData geogigData = new GeoGigTestData();
+    @Rule public GeoGigTestData geogigData = new GeoGigTestData();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        geogigData.init()//
-                .config("user.name", "gabriel")//
-                .config("user.email", "gabriel@test.com")//
-                .createTypeTree("lines", "geom:LineString:srid=4326")//
-                .createTypeTree("points", "geom:Point:srid=4326")//
-                .add()//
-                .commit("created type trees")//
+        geogigData
+                .init() //
+                .config("user.name", "gabriel") //
+                .config("user.email", "gabriel@test.com") //
+                .createTypeTree("lines", "geom:LineString:srid=4326") //
+                .createTypeTree("points", "geom:Point:srid=4326") //
+                .add() //
+                .commit("created type trees") //
                 .get();
 
-        geogigData.insert("points",//
-                "p1=geom:POINT(0 0)",//
-                "p2=geom:POINT(1 1)",//
+        geogigData.insert(
+                "points", //
+                "p1=geom:POINT(0 0)", //
+                "p2=geom:POINT(1 1)", //
                 "p3=geom:POINT(2 2)");
 
-        geogigData.insert("lines",//
-                "l1=geom:LINESTRING(-10 0, 10 0)",//
+        geogigData.insert(
+                "lines", //
+                "l1=geom:LINESTRING(-10 0, 10 0)", //
                 "l2=geom:LINESTRING(0 0, 180 0)");
 
         geogigData.add().commit("Added test features");
@@ -100,17 +97,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(lineLayerInfo);
         linesLayer = mediator.getTileLayer(lineLayerInfo);
         assertNotNull(lineLayerInfo);
-
     }
-    
+
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
-    	getCatalog().dispose();
+        getCatalog().dispose();
     }
 
-    /**
-     * Override so that default layers are not added
-     */
+    /** Override so that default layers are not added */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         //
@@ -121,11 +115,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         ConveyorTile tile = createTileProto(pointsLayer);
 
-        SimpleFeature feature = geogigData.getFeature("points/p2");// POINT(1 1)
+        SimpleFeature feature = geogigData.getFeature("points/p2"); // POINT(1 1)
 
         Envelope bounds = (Envelope) feature.getBounds();
-        org.geowebcache.grid.BoundingBox featureBounds = new org.geowebcache.grid.BoundingBox(
-                bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+        org.geowebcache.grid.BoundingBox featureBounds =
+                new org.geowebcache.grid.BoundingBox(
+                        bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
 
         GridSubset gridSubset = pointsLayer.getGridSubset(tile.getGridSetId());
 
@@ -149,11 +144,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         cacheResult = result.getCacheResult();
         assertEquals(CacheResult.HIT, cacheResult);
 
-        geogigData.update("points/p1", "geom", "POINT(-1 -1)")//
-                .add()//
-                .commit("moved POINT(1 1) to POINT(-1 -1)")//
-                .update("lines/l1", "geom", "LINESTRING(0 10, 0 -10)")//
-                .add()//
+        geogigData
+                .update("points/p1", "geom", "POINT(-1 -1)") // 9570
+                .add() //
+                .commit("moved POINT(1 1) to POINT(-1 -1)") //
+                .update("lines/l1", "geom", "LINESTRING(0 10, 0 -10)") //
+                .add() //
                 .commit("moved LINESTRING(-10 0, 10 0) to LINESTRING(0 10, 0 -10)");
 
         // give the hook some time to run
@@ -174,8 +170,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Map<String, String> filteringParameters = null;
 
         long[] tileIndex = new long[3];
-        ConveyorTile tile = new ConveyorTile(storageBroker, layerName, gridsetId, tileIndex,
-                mimeType, filteringParameters, req, resp);
+        ConveyorTile tile =
+                new ConveyorTile(
+                        storageBroker,
+                        layerName,
+                        gridsetId,
+                        tileIndex,
+                        mimeType,
+                        filteringParameters,
+                        req,
+                        resp);
         return tile;
     }
 }

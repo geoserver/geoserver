@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd"
+        >
+
+  <context:component-scan base-package="org.geoserver.mapml"/>
+  <bean id="mapmlLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="mapmlLayerConfig"/>
+    <property name="componentClass" value="org.geoserver.mapml.MapMLLayerConfigurationPanel"/>
+  </bean>
+  <bean id="mapmlLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
+    <property name="id" value="mapmlLayerGroupConfig"/>
+    <property name="componentClass" value="org.geoserver.mapml.MapMLLayerGroupConfigurationPanel"/>
+  </bean>
+  <!-- The constructor adds the MapML gridsets through the GWC GridSetBroker  depends-on="gwcFacade"-->
+  <bean id="mapMLGridsets" class="org.geoserver.mapml.gwc.gridset.MapMLGridsets" />
+  
+  <bean id="mapMLGetFeatureOutputFormat" class="org.geoserver.mapml.MapMLGetFeatureOutputFormat">
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="wmsGetFeatureInfoMapML" class="org.geoserver.mapml.MapMLGetFeatureInfoOutputFormat">
+    <constructor-arg ref="wms"/>
+  </bean>
+  <mvc:resources mapping="/mapml/viewer/**" location="classpath:/viewer/"/>
+  <bean class="org.geoserver.mapml.MapMLMessageConverter" id="mapmlMessageConverter"/>
+  <bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller" id="mapmlMarshaller">
+    <property name="contextPath" value="org.geoserver.mapml.xml"/>
+    <property name="marshallerProperties">
+      <map>
+        <entry>
+          <key>
+            <util:constant static-field="javax.xml.bind.Marshaller.JAXB_FRAGMENT"/>
+          </key>
+          <value type="java.lang.Boolean">true</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  <bean id="mapmlPreview" class="org.geoserver.web.demo.MapMLFormatLink">
+    <property name="id" value="mapml"/>
+    <property name="titleKey" value="MapMLPreviewLink.title"/>
+    <property name="order" value="35"/>
+  </bean>
+</beans>

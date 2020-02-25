@@ -10,9 +10,8 @@ import org.apache.wicket.model.IModel;
 
 /**
  * Base class for admin panel extensions.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class AdminPagePanel extends Panel {
 
@@ -20,4 +19,5 @@ public class AdminPagePanel extends Panel {
         super(id, model);
     }
 
+    public void onMainFormSubmit() {}
 }

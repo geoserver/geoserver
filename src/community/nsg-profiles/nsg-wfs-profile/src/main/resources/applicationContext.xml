@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:task="http://www.springframework.org/schema/task" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+  <bean id="versioning" class="org.geoserver.nsg.versioning.TimeVersioningCallback">
+    <constructor-arg ref="catalog"/>
+  </bean>
+	<!-- Index result dispatcher callback -->
+	<bean class="org.geoserver.nsg.pagination.random.IndexResultTypeDispatcherCallback" id="indexResultTypeDispatcherCallback">
+		<description>When a request using the index result type comes in a
+			dispatcher callback
+			this switch the &quot;index&quot; value by the &quot;hits&quot; value
+		</description>
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg ref="indexConfiguration"/>
+	</bean>
+	<!-- Page result dispatcher callback -->
+	<bean class="org.geoserver.nsg.pagination.random.PageResultsDispatcherCallback" id="pageResultsDispatcherCallback">
+		<description>The PageResults operation will allow clients to query
+			random positions of an existing result set (stored GetFeature
+			request) that was previously created using the index result type
+		</description>
+		<constructor-arg ref="geoServer"/>
+    <constructor-arg ref="pageResultsService"/>
+	</bean>
+	<!-- Page result service -->
+	<bean class="org.geoserver.nsg.pagination.random.PageResultsWebFeatureService" id="pageResultsService">
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg ref="indexConfiguration"/>
+	</bean>
+	<bean class="org.geoserver.nsg.pagination.random.ResultTypeKvpParser" id="resultType202KvpParser"/>
+
+	<bean class="org.geoserver.nsg.pagination.random.IndexConfigurationManager" id="indexConfiguration">
+		<constructor-arg ref="dataDirectory"/>
+	</bean>
+	<!-- Clean scheduler -->
+	<task:scheduler id="scheduler"/>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled fixed-delay="1000" initial-delay="10000" method="clean" ref="indexConfiguration"/>
+	</task:scheduled-tasks>
+	<!-- Timeout support -->
+	<bean name="nsgTimeoutCallback" class="org.geoserver.nsg.timeout.TimeoutCallback">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+	<!-- User interface -->
+	<bean id="versioningLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+		<property name="id" value="wfsVersioningConfig"/>
+		<property name="titleKey" value="data.resource.config.wfs"/>
+		<property name="componentClass" value="org.geoserver.nsg.versioning.web.WfsVersioningConfig"/>
+		<property name="supportedTypes">
+			<list>
+				<value>org.geoserver.catalog.FeatureTypeInfo</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="nsgTimeoutPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+		<property name="id" value="nsgTimeoutPanel"/>
+		<property name="titleKey" value="nsg"/>
+		<property name="componentClass" value="org.geoserver.nsg.timeout.web.NSGTimeoutPanel"/>
+		<property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+	</bean>
+	<!-- Capabilities customization -->
+	<bean id="nsgWfsCapabilitiesCustomizer" class="org.geoserver.nsg.NSGWFSExtendedCapabilitiesProvider">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+	<!-- NSG custom XML reader for WFS GetFeature operation -->
+	<bean id="nsgWfsXmlReader" class="org.geoserver.nsg.pagination.random.NsgWfsXmlReader">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+	<!-- NSG GeoServer extensions filter -->
+	<bean id="nsgExtensionsFilter" class="org.geoserver.nsg.NsgExtensionsFilter"/>
+</beans>

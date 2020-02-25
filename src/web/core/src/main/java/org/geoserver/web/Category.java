@@ -13,33 +13,29 @@ import java.io.Serializable;
  * @author David Winslow <dwinslow@opengeo.org>
  */
 public class Category implements Comparable<Category>, Serializable {
-    /**
-     * The sort key to determine the order of the categories in the menu.
-     */
+    /** The sort key to determine the order of the categories in the menu. */
     private int order;
 
-    /**
-     * The key to look up the internationalized name for this category.
-     */
+    /** The key to look up the internationalized name for this category. */
     private String namekey;
 
-    public int getOrder(){
+    public int getOrder() {
         return order;
     }
 
-    public void setOrder(int order){
+    public void setOrder(int order) {
         this.order = order;
     }
 
-    public String getNameKey(){
+    public String getNameKey() {
         return namekey;
     }
 
-    public void setNameKey(String namekey){
+    public void setNameKey(String namekey) {
         this.namekey = namekey;
     }
 
-    public int compareTo(Category other){
+    public int compareTo(Category other) {
         return getOrder() - other.getOrder();
     }
 }

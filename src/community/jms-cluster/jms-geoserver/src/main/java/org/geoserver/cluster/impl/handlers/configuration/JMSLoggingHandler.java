@@ -5,20 +5,16 @@
  */
 package org.geoserver.cluster.impl.handlers.configuration;
 
+import com.thoughtworks.xstream.XStream;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.LoggingInfo;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
  * JMS Handler is used to synchronize
- * 
- * 
+ *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
  */
 public class JMSLoggingHandler extends JMSConfigurationHandler<LoggingInfo> {
     private final GeoServer geoServer;
@@ -40,7 +36,7 @@ public class JMSLoggingHandler extends JMSConfigurationHandler<LoggingInfo> {
     @Override
     public boolean synchronize(LoggingInfo info) throws Exception {
         if (info == null) {
-            throw new NullArgumentException("Incoming object is null");
+            throw new NullPointerException("Incoming object is null");
         }
         try {
             // LOCALIZE service
@@ -56,15 +52,13 @@ public class JMSLoggingHandler extends JMSConfigurationHandler<LoggingInfo> {
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: "
-                        + info);
+                LOGGER.severe(
+                        this.getClass() + " is unable to synchronize the incoming event: " + info);
             throw e;
         } finally {
             // enable message the producer
             producer.enable();
         }
         return true;
-
     }
-
 }

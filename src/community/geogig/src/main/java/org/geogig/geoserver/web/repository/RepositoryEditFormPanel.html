@@ -3,23 +3,45 @@
 <title><wicket:message key="title">Repositories</wicket:message></title>
 </head>
 <body>
-<wicket:panel>
-		<form wicket:id="repoForm">
-
-			<div wicket:id="repo"></div>
-	
-			<fieldset>
+  <wicket:panel>
+	<form wicket:id="repoForm">
+	  <div wicket:id="repo"></div>
+	  <ul>
+  		<li>
+		  <fieldset>
 	  		<legend><span>Remotes Configuration</span></legend>
-				<a class="add-link" href="#" wicket:id="addRemote"><wicket:message key="addRemote">Add remote</wicket:message></a>
-				<div wicket:id="remotes"></div>
-			</fieldset>
-	    <div class="button-group selfclear">
-	      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-	      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
-	    </div>			
-		  <div wicket:id="feedback"/>
-		</form>
+			<a class="add-link" href="#" wicket:id="addRemote"><wicket:message key="addRemote">Add remote</wicket:message></a>
+			<div wicket:id="remotes"></div>
+		  </fieldset>
+		</li>
+		<li>
+		  <fieldset>
+	  		<legend><span>Local Repository Configuration</span></legend>
+			<a class="add-link" href="#" wicket:id="addLocalConfig"><wicket:message key="addLocalConfig">Add local config entry</wicket:message></a>
+			<div wicket:id="localConfig"></div>
+		  </fieldset>
+		</li>
+		<li>
+		  <fieldset>
+	  	    <legend><span>Global Repository Configuration</span></legend>
+			<a class="add-link" href="#" wicket:id="addGlobalConfig"><wicket:message key="addGlobalConfig">Add global config entry</wicket:message></a>
+			<div wicket:id="globalConfig"></div>
+		  </fieldset>
+		</li>
+		<li>
+		  <fieldset>
+	  		<legend><span>Repository Indexes</span></legend>
+			<div wicket:id="indexes"></div>
+		  </fieldset>
+		</li>
+	  </ul>
+	  <div class="button-group selfclear">
+	    <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+	    <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+	  </div>			
+	  <div wicket:id="feedback"/>
+	</form>
     <div wicket:id="popupWindow"></div>
-</wicket:panel>
+  </wicket:panel>
 </body>
 </html>

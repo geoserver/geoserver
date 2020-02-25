@@ -10,11 +10,12 @@ import org.geoserver.security.filter.GeoServerRememberMeAuthenticationFilter;
 
 /**
  * Configuration panel extension for {@link GeoServerRememberMeAuthenticationFilter}.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class RememberMeAuthFilterPanelInfo extends
-        AuthenticationFilterPanelInfo<RememberMeAuthenticationFilterConfig, RememberMeAuthFilterPanel> {
+public class RememberMeAuthFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<
+                RememberMeAuthenticationFilterConfig, RememberMeAuthFilterPanel> {
 
     public RememberMeAuthFilterPanelInfo() {
         setServiceClass(GeoServerRememberMeAuthenticationFilter.class);

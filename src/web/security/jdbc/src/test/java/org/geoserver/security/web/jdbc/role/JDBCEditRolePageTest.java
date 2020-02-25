@@ -18,19 +18,19 @@ public class JDBCEditRolePageTest extends EditRolePageTest {
     }
 
     @Test
-    public void testFill() throws Exception{
+    public void testFill() throws Exception {
         doTestFill();
     }
 
     @Test
-    public void testFill2() throws Exception{
+    public void testFill2() throws Exception {
         doTestFill2();
     }
 
     void initializeForJDBC() throws Exception {
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }
-    
+
     @Override
     public String getRoleServiceName() {
         return "h2";
@@ -40,5 +40,4 @@ public class JDBCEditRolePageTest extends EditRolePageTest {
     public String getUserGroupServiceName() {
         return "h2";
     }
-
 }

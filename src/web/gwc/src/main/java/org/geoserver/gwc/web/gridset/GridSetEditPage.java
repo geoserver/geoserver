@@ -15,7 +15,7 @@ import org.geowebcache.grid.GridSet;
 public class GridSetEditPage extends AbstractGridSetPage {
 
     private static final long serialVersionUID = 1748616637023642755L;
-	
+
     private String originalName;
 
     public GridSetEditPage(PageParameters parameters) {
@@ -42,13 +42,10 @@ public class GridSetEditPage extends AbstractGridSetPage {
     @Override
     protected void onSave(AjaxRequestTarget target, Form<?> form) {
         GridSetInfo info = (GridSetInfo) form.getModelObject();
-
-        GWC gwc = GWC.get();
-
-        final GridSet newGridset;
+        GridSet newGridset = null;
         try {
-            newGridset = GridSetBuilder.build(info);
-        } catch (IllegalStateException e) {
+            newGridset = toGridSet(target, form, info);
+        } catch (Exception e) {
             form.error(e.getMessage());
             target.add(form);
             return;
@@ -56,6 +53,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
 
         try {
             // TODO: warn and eliminate caches
+            GWC gwc = GWC.get();
             gwc.modifyGridSet(originalName, newGridset);
             doReturn(GridSetsPage.class);
         } catch (Exception e) {
@@ -64,5 +62,4 @@ public class GridSetEditPage extends AbstractGridSetPage {
             target.add(form);
         }
     }
-
 }

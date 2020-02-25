@@ -7,29 +7,23 @@ package org.geoserver.test;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
-
-import org.geoserver.test.OneTimeSetupTest.OneTimeTestSetup;
 import org.geoserver.wfs.WFSInfo;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-/**
- * @author Xiangtan Lin, CSIRO Information Management and Technology
- * 
- */
+/** @author Xiangtan Lin, CSIRO Information Management and Technology */
 public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
 
     @Override
     protected PropertyEncodingOrderMockData createTestData() {
         return new PropertyEncodingOrderMockData();
     }
-    
+
     /**
      * Test the gmsl:Borehole is encoded in the right order, in particular this test is created for
      * an encoding order issue with gsml:indexData according to the schema
      * http://www.geosciml.org/geosciml/2.0/xsd/borehole.xsd
-     * 
      */
     @Test
     public void testPropertyEncodingOrder_Borehole() throws Exception {
@@ -43,8 +37,8 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         assertEquals("gsml:Borehole", borehole.getNodeName());
 
         // check for gml:id
-        assertEquals("BOREHOLE.WTB5", borehole.getAttributes().getNamedItem("gml:id")
-                .getNodeValue());
+        assertEquals(
+                "BOREHOLE.WTB5", borehole.getAttributes().getNamedItem("gml:id").getNodeValue());
 
         // gml:name
         Node name = borehole.getFirstChild();
@@ -69,12 +63,20 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
 
         Node boreholeCollar = collarLocation.getFirstChild();
         assertEquals("gsml:BoreholeCollar", boreholeCollar.getNodeName());
-        assertEquals("BOREHOLE.COLLAR.WTB5", boreholeCollar.getAttributes().getNamedItem("gml:id")
-                .getNodeValue());
-        assertEquals("-28.4139 121.142", boreholeCollar.getFirstChild().getFirstChild()
-                .getFirstChild().getFirstChild().getNodeValue());
-        assertEquals("1.0", boreholeCollar.getFirstChild().getNextSibling().getFirstChild()
-                .getNodeValue());
+        assertEquals(
+                "BOREHOLE.COLLAR.WTB5",
+                boreholeCollar.getAttributes().getNamedItem("gml:id").getNodeValue());
+        assertEquals(
+                "-28.4139 121.142",
+                boreholeCollar
+                        .getFirstChild()
+                        .getFirstChild()
+                        .getFirstChild()
+                        .getFirstChild()
+                        .getNodeValue());
+        assertEquals(
+                "1.0",
+                boreholeCollar.getFirstChild().getNextSibling().getFirstChild().getNodeValue());
 
         // gsml:indexData
         Node indexData = collarLocation.getNextSibling();
@@ -99,14 +101,22 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         assertEquals("vertical", inclinationType.getFirstChild().getNodeValue());
 
         Node coreInterval = inclinationType.getNextSibling();
-        assertEquals("106.0", coreInterval.getFirstChild().getFirstChild().getFirstChild()
-                .getNodeValue());
-        assertEquals("249.0", coreInterval.getFirstChild().getFirstChild().getNextSibling()
-                .getFirstChild().getNodeValue());
+        assertEquals(
+                "106.0",
+                coreInterval.getFirstChild().getFirstChild().getFirstChild().getNodeValue());
+        assertEquals(
+                "249.0",
+                coreInterval
+                        .getFirstChild()
+                        .getFirstChild()
+                        .getNextSibling()
+                        .getFirstChild()
+                        .getNodeValue());
 
         Node coreCustodian = coreInterval.getNextSibling();
-        assertEquals("CSIRONR", coreCustodian.getAttributes().getNamedItem("xlink:title")
-                .getNodeValue());
+        assertEquals(
+                "CSIRONR",
+                coreCustodian.getAttributes().getNamedItem("xlink:title").getNodeValue());
 
         validateGet(path);
     }
@@ -114,7 +124,6 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
     /**
      * Test the gmsl:PlanarOrientation is encoded in the order of aziumth, convention, dip, polarity
      * according to the schema CGI_Value.xsd
-     * 
      */
     @Test
     public void testPropertyEncodingOrder_PlanarOrientation() throws Exception {
@@ -127,13 +136,15 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         assertEquals("er:MineralOccurrence", feature.getNodeName());
 
         // check for gml:id
-        assertXpathEvaluatesTo("er.mineraloccurrence.S0032895", "//er:MineralOccurrence/@gml:id",
-                doc);
+        assertXpathEvaluatesTo(
+                "er.mineraloccurrence.S0032895", "//er:MineralOccurrence/@gml:id", doc);
 
         Node name = feature.getFirstChild();
         assertEquals("gml:name", name.getNodeName());
-        assertXpathEvaluatesTo("Robinson Range - Deposit D",
-                "//er:MineralOccurrence[@gml:id='er.mineraloccurrence.S0032895']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "Robinson Range - Deposit D",
+                "//er:MineralOccurrence[@gml:id='er.mineraloccurrence.S0032895']/gml:name",
+                doc);
 
         // er:planarOrientation
         Node planarOrientation = name.getNextSibling();
@@ -180,20 +191,19 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * 
      * Test elements are encoded in the order as defined in the schema GeologicUnit is tested here
-     * 
      */
-
     @Test
     public void testPropertyEncodingOrder_GeologicUnit() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
-        String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gu.25699";
+        String path =
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gu.25699";
         Document doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&featureid=gu.25699:\n"
-                + prettyString(doc));
+        LOGGER.info(
+                "WFS GetFeature&typename=gsml:GeologicUnit&featureid=gu.25699:\n"
+                        + prettyString(doc));
 
         assertEquals(1, doc.getElementsByTagName("gml:featureMember").getLength());
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gu.25699']", doc);
@@ -205,14 +215,18 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // description
         Node description = feature.getFirstChild();
         assertEquals("gml:description", description.getNodeName());
-        assertXpathEvaluatesTo("Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
-                "//gsml:GeologicUnit[@gml:id='gu.25699']/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+                "//gsml:GeologicUnit[@gml:id='gu.25699']/gml:description",
+                doc);
 
         // name1
         Node name1 = description.getNextSibling();
         assertEquals("gml:name", name1.getNodeName());
-        assertXpathEvaluatesTo("Yaugher Volcanic Group",
-                "//gsml:GeologicUnit[@gml:id='gu.25699']/gml:name[1]", doc);
+        assertXpathEvaluatesTo(
+                "Yaugher Volcanic Group",
+                "//gsml:GeologicUnit[@gml:id='gu.25699']/gml:name[1]",
+                doc);
 
         // name2
         Node name2 = name1.getNextSibling();
@@ -234,8 +248,8 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // purpose
         Node purpose = observationMethod.getNextSibling();
         assertEquals("gsml:purpose", purpose.getNodeName());
-        assertXpathEvaluatesTo("instance", "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:purpose",
-                doc);
+        assertXpathEvaluatesTo(
+                "instance", "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:purpose", doc);
 
         // occurrence
         Node occurrence = purpose.getNextSibling();
@@ -248,8 +262,10 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // geologicUnitType
         Node geologicUnitType = occurrence.getNextSibling();
         assertEquals("gsml:geologicUnitType", geologicUnitType.getNodeName());
-        assertXpathEvaluatesTo("urn:ogc:def:nil:OGC::unknown",
-                "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:geologicUnitType/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "urn:ogc:def:nil:OGC::unknown",
+                "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:geologicUnitType/@xlink:href",
+                doc);
 
         // exposureColor
         Node exposureColor = geologicUnitType.getNextSibling();
@@ -285,18 +301,21 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // lithology
         Node lithology = role.getNextSibling();
         assertEquals("gsml:lithology", lithology.getNodeName());
-        assertXpathEvaluatesTo("urn:ogc:def:nil:OGC::missing",
+        assertXpathEvaluatesTo(
+                "urn:ogc:def:nil:OGC::missing",
                 "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:composition/gsml:CompositionPart/gsml:lithology"
-                        + "/gsml:ControlledConcept/gsml:vocabulary/@xlink:href", doc);
+                        + "/gsml:ControlledConcept/gsml:vocabulary/@xlink:href",
+                doc);
 
         // proportion
         Node proportion = lithology.getNextSibling();
         assertEquals("gsml:proportion", proportion.getNodeName());
-        assertXpathEvaluatesTo("nonexistent",
+        assertXpathEvaluatesTo(
+                "nonexistent",
                 "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:composition/gsml:CompositionPart/gsml:proportion"
-                        + "/gsml:CGI_TermValue/gsml:value", doc);
+                        + "/gsml:CGI_TermValue/gsml:value",
+                doc);
 
         validateGet(path);
     }
-
 }

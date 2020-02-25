@@ -311,7 +311,7 @@ Here are a few examples of how the structure changes based on different security
     +- singleGroupC (contains only layerD when requested)
 
 
-* Denying access to ``namedTreeGroupB``by ::
+* Denying access to ``namedTreeGroupB`` by ::
 
     namedTreeGroupB.r=ROLE_PRIVATE 
 

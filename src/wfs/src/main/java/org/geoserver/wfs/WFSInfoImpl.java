@@ -9,23 +9,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
 
-    protected Map<Version,GMLInfo> gml = new HashMap<Version, GMLInfo>();
+    protected Map<Version, GMLInfo> gml = new HashMap<Version, GMLInfo>();
     protected ServiceLevel serviceLevel = ServiceLevel.COMPLETE;
     protected int maxFeatures = Integer.MAX_VALUE;
     protected boolean featureBounding = true;
     protected boolean canonicalSchemaLocation = false;
-    protected boolean encodeFeatureMember = false;    
+    protected boolean encodeFeatureMember = false;
     protected boolean hitsIgnoreMaxFeatures = false;
     protected List<String> srs = new ArrayList<String>();
-    
-    public WFSInfoImpl() {
-    }
-    
+    protected Boolean allowGlobalQueries = true;
+
+    public WFSInfoImpl() {}
+
     public Map<Version, GMLInfo> getGML() {
         return gml;
     }
@@ -41,11 +41,11 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setServiceLevel(ServiceLevel serviceLevel) {
         this.serviceLevel = serviceLevel;
     }
-    
+
     public void setMaxFeatures(int maxFeatures) {
         this.maxFeatures = maxFeatures;
     }
-    
+
     public int getMaxFeatures() {
         return maxFeatures;
     }
@@ -53,39 +53,35 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setFeatureBounding(boolean featureBounding) {
         this.featureBounding = featureBounding;
     }
-    
+
     public boolean isFeatureBounding() {
         return featureBounding;
     }
-    
-    /**
-     * @see org.geoserver.wfs.WFSInfo#isCanonicalSchemaLocation()
-     */
+
+    /** @see org.geoserver.wfs.WFSInfo#isCanonicalSchemaLocation() */
     public boolean isCanonicalSchemaLocation() {
         return canonicalSchemaLocation;
     }
 
-    /**
-     * @see org.geoserver.wfs.WFSInfo#setCanonicalSchemaLocation(boolean)
-     */
+    /** @see org.geoserver.wfs.WFSInfo#setCanonicalSchemaLocation(boolean) */
     public void setCanonicalSchemaLocation(boolean canonicalSchemaLocation) {
         this.canonicalSchemaLocation = canonicalSchemaLocation;
     }
 
-    /* 
+    /*
      * @see org.geoserver.wfs.WFSInfo#isEncodingFeatureMember()
      */
     public boolean isEncodeFeatureMember() {
         return this.encodeFeatureMember;
     }
-    
-    /* 
+
+    /*
      * @see org.geoserver.wfs.WFSInfo#setEncodeFeatureMember(java.lang.Boolean)
      */
     public void setEncodeFeatureMember(boolean encodeFeatureMember) {
-        this.encodeFeatureMember = encodeFeatureMember;        
+        this.encodeFeatureMember = encodeFeatureMember;
     }
-   
+
     @Override
     public boolean isHitsIgnoreMaxFeatures() {
         return hitsIgnoreMaxFeatures;
@@ -106,13 +102,23 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     public void setMaxNumberOfFeaturesForPreview(Integer maxNumberOfFeaturesForPreview) {
         getMetadata().put("maxNumberOfFeaturesForPreview", maxNumberOfFeaturesForPreview);
     }
-    
+
     public List<String> getSRS() {
         return srs;
     }
 
     public void setSRS(List<String> srs) {
         this.srs = srs;
+    }
+
+    @Override
+    public Boolean getAllowGlobalQueries() {
+        return allowGlobalQueries == null ? Boolean.TRUE : allowGlobalQueries;
+    }
+
+    @Override
+    public void setAllowGlobalQueries(Boolean allowGlobalQueries) {
+        this.allowGlobalQueries = allowGlobalQueries;
     }
 
     @Override
@@ -127,44 +133,34 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + maxFeatures;
         result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
+        result = prime * result + (allowGlobalQueries == null ? 0 : allowGlobalQueries.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (!( obj instanceof WFSInfo) )
-            return false;
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (!(obj instanceof WFSInfo)) return false;
         final WFSInfo other = (WFSInfo) obj;
         if (gml == null) {
-            if (other.getGML() != null)
-                return false;
-        } else if (!gml.equals(other.getGML()))
-            return false;
-        if (maxFeatures != other.getMaxFeatures())
-            return false;
-        if (featureBounding != other.isFeatureBounding())
-            return false;
-        if (canonicalSchemaLocation != other.isCanonicalSchemaLocation())
-            return false;
+            if (other.getGML() != null) return false;
+        } else if (!gml.equals(other.getGML())) return false;
+        if (maxFeatures != other.getMaxFeatures()) return false;
+        if (featureBounding != other.isFeatureBounding()) return false;
+        if (canonicalSchemaLocation != other.isCanonicalSchemaLocation()) return false;
         if (serviceLevel == null) {
-            if (other.getServiceLevel() != null)
-                return false;
-        } else if (!serviceLevel.equals(other.getServiceLevel()))
-            return false;
-        if (encodeFeatureMember != other.isEncodeFeatureMember())
-            return false;
-        if (hitsIgnoreMaxFeatures != other.isHitsIgnoreMaxFeatures())
-            return false;
+            if (other.getServiceLevel() != null) return false;
+        } else if (!serviceLevel.equals(other.getServiceLevel())) return false;
+        if (encodeFeatureMember != other.isEncodeFeatureMember()) return false;
+        if (hitsIgnoreMaxFeatures != other.isHitsIgnoreMaxFeatures()) return false;
         if (srs == null) {
-            if (other.getSRS() != null)
-                return false;
-        } else if (!srs.equals(other.getSRS()))
+            if (other.getSRS() != null) return false;
+        } else if (!srs.equals(other.getSRS())) return false;
+        if (allowGlobalQueries == null && other.getAllowGlobalQueries() != null
+                || !Objects.equals(allowGlobalQueries, other.getAllowGlobalQueries())) {
             return false;
-        
+        }
         return true;
     }
 }

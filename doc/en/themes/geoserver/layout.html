@@ -55,16 +55,15 @@
         </div>
         {%- endif %}
       {%- endblock %}
-      {%- if sourcename %}
+      {%- if sourcename or display_github %}
         <div class="section">
         <h3>This Page</h3>
         <ul class="this-page-menu">
-        {%- if builder == 'web' %}
-          <li><a href="#comments">Comments ({{ comments|length }} so far)</a></li>
-          <li><a href="{{ pathto('@edit/' + sourcename)|e }}">Suggest Change</a></li>
-          <li><a href="{{ pathto('@source/' + sourcename)|e }}">Show Source</a></li>
-        {%- elif builder == 'html' %}
-          <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}">Show Source</a></li>
+        {% if display_github %}        
+        <li><a href="https://github.com/{{github_user}}/{{ github_repo }}/tree/{{ github_version }}/{{ conf_py_path }}/{{ pagename }}{{ page_source_suffix }}">Edit</a></li>
+        {%- endif %}
+        {%- if show_source and has_source and sourcename %}
+          <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}">Source</a></li>
         {%- endif %}
         </ul>
         </div>

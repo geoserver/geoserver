@@ -218,7 +218,7 @@ thickness for the main line and a 1 pixel width for the perpendicular hatches.
 Code
 ~~~~
 
-.. code-block:: css 
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -255,7 +255,7 @@ Without using the dash array the lines would be densely populated with dots, eac
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -311,7 +311,7 @@ Code
 ~~~~
 
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -421,7 +421,7 @@ Code
       stroke: red;
       label: [name];
       font-fill: black;
-      -gt-label-follow-line: true;
+      label-follow-line: true;
     }
 
 Details
@@ -430,7 +430,7 @@ Details
 As the :ref:`css_cookbook_lines_defaultlabel` example showed, the default label behavior isn't optimal.
 
 This example is similar to the :ref:`css_cookbook_lines_defaultlabel` example with the exception of **line 5** where the
-"-gt-label-follow-line" option is specified, which forces the labels to strickly follow the line.
+"label-follow-line" option is specified, which forces the labels to strickly follow the line.
 
 Not all labels are visible partly because of conflict resolution, and partly because the renderer cannot find a line
 segment long and "straight" enough to paint the label (labels are not painted over sharp turns by default).
@@ -457,10 +457,10 @@ Code
       stroke: red;
       label: [name];
       font-fill: black;
-      -gt-label-follow-line: true;
-      -gt-label-max-angle-delta: 90;
-      -gt-label-max-displacement: 400;
-      -gt-label-repeat: 150;
+      label-follow-line: true;
+      label-max-angle-delta: 90;
+      label-max-displacement: 400;
+      label-repeat: 150;
     }
 
 Details
@@ -497,10 +497,10 @@ Code
       font-size: 10;
       halo-color: white;
       halo-radius: 1;
-      -gt-label-follow-line: true;
-      -gt-label-max-angle-delta: 90;
-      -gt-label-max-displacement: 400;
-      -gt-label-repeat: 150;
+      label-follow-line: true;
+      label-max-angle-delta: 90;
+      label-max-displacement: 400;
+      label-repeat: 150;
     }
 
 Details
@@ -615,15 +615,15 @@ Code
       stroke: #009933;
     }
 
-    [@scale < 180000000] {
+    [@sd < 180M] {
       stroke-width: 6;
     }
 
-    [@scale > 180000000] [@scale < 360000000] {
+    [@sd > 180M] [@sd < 360M] {
       stroke-width: 4;
     }
 
-    [@scale > 360000000] {
+    [@sd > 360M] {
       stroke-width: 2;
     }
 
@@ -661,7 +661,7 @@ This style contains three rules.  The three rules are designed as follows:
 
 The order of these rules does not matter since the scales denominated in each rule do not overlap.
 
-The first rule provides the stroke color used at all zoom levels, dark gray, while the other three rules cascade over it applying the different stroke widths based on the current zoom level leveraging the "@scale" pseudo attribute. The "@scale" pseudo attribute can only be compared using the "<" and ">" operators, using any other operator will result in errors.
+The first rule provides the stroke color used at all zoom levels, dark gray, while the other three rules cascade over it applying the different stroke widths based on the current zoom level leveraging the "@sd" pseudo attribute. The "@sd" pseudo attribute can only be compared using the "<" and ">" operators, using any other operator will result in errors.
 
 The result of this style is that lines are drawn with larger widths as one zooms in and smaller widths as one zooms out.
 

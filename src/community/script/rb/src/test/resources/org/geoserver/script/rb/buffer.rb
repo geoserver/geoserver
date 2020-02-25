@@ -6,7 +6,7 @@ $description = 'Buffers a geometry'
 $inputs = { 
   "geom" => { 
     "title" => "The geometry to buffer", 
-    "type" => com.vividsolutions.jts.geom.Geometry.java_class
+    "type" => org.locationtech.jts.geom.Geometry.java_class
    },
   "distance" => { 
     "title" => "The buffer distance", 
@@ -17,7 +17,7 @@ $inputs = {
 $outputs = {
   "result" => {
     "title" => "The buffered geometry", 
-    "type" => com.vividsolutions.jts.geom.Geometry.java_class
+    "type" => org.locationtech.jts.geom.Geometry.java_class
   }
 }
 

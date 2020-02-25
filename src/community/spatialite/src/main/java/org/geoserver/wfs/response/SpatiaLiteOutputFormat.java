@@ -4,7 +4,7 @@
  * application directory.
  */
 package org.geoserver.wfs.response;
- 
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
@@ -33,49 +32,40 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
 /**
+ * WFS output format for a GetFeature operation in which the outputFormat is "spatialite". The
+ * reference documentation for this format can be found in this link:
  *
- * WFS output format for a GetFeature operation in which the outputFormat is "spatialite".
- * The reference documentation for this format can be found in this link:
  * @link:http://www.gaia-gis.it/spatialite/docs.html.
- * 
- * Based on CSVOutputFormat.java and ShapeZipOutputFormat.java from geoserver 2.2.x
- *
+ *     <p>Based on CSVOutputFormat.java and ShapeZipOutputFormat.java from geoserver 2.2.x
  * @author Pablo Velazquez, Geotekne, info@geotekne.com
  * @author Jose Macchi, Geotekne, jmacchi@geotekne.com
- *
  */
-
 public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
-    
-    
+
     public SpatiaLiteOutputFormat(GeoServer gs) {
-        super(gs,"SpatiaLite");
-        
+        super(gs, "SpatiaLite");
     }
 
-    /**
-     * @return "application/x-sqlite3";
-     */
+    /** @return "application/x-sqlite3"; */
     @Override
-    public String getMimeType(Object value, Operation operation)
-            throws ServiceException {
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "application/zip";
-        //return "application/x-sqlite3";
+        // return "application/x-sqlite3";
     }
 
     @Override
-    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, 
-        Operation getFeature) throws IOException, ServiceException {
+    protected void write(
+            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+            throws IOException, ServiceException {
 
         SpatiaLiteDataStoreFactory dsFactory = new SpatiaLiteDataStoreFactory();
         if (!dsFactory.isAvailable()) {
-            throw new ServiceException("SpatiaLite support not avaialable, ensure all required " +
-                "native libraries are installed");
+            throw new ServiceException(
+                    "SpatiaLite support not avaialable, ensure all required "
+                            + "native libraries are installed");
         }
 
-        /**
-         * base location to temporally store spatialite database `es
-         */
+        /** base location to temporally store spatialite database `es */
         File dbFile = File.createTempFile("spatialite", ".db");
         try {
             Map dbParams = new HashMap();
@@ -90,8 +80,9 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                     // create a feature type
                     dataStore.createSchema(featureType);
 
-                    FeatureWriter fw = dataStore.getFeatureWriterAppend(featureType.getTypeName(),
-                            Transaction.AUTO_COMMIT);
+                    FeatureWriter fw =
+                            dataStore.getFeatureWriterAppend(
+                                    featureType.getTypeName(), Transaction.AUTO_COMMIT);
 
                     // Start populating the table: tbl_name.
                     SimpleFeatureIterator it = (SimpleFeatureIterator) fc.features();
@@ -99,7 +90,8 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                         SimpleFeature f = it.next();
                         SimpleFeature g = (SimpleFeature) fw.next();
 
-                        for (AttributeDescriptor att : f.getFeatureType().getAttributeDescriptors()) {
+                        for (AttributeDescriptor att :
+                                f.getFeatureType().getAttributeDescriptors()) {
                             String attName = att.getLocalName();
                             g.setAttribute(attName, f.getAttribute(attName));
                         }
@@ -140,10 +132,11 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
     String getDbFileName(Operation operation) {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
 
-        //check format options
+        // check format options
         String outputFileName = (String) request.getFormatOptions().get("FILENAME");
         if (outputFileName == null) {
-            outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart() + ".db";
+            outputFileName =
+                    request.getQueries().get(0).getTypeNames().get(0).getLocalPart() + ".db";
         }
 
         return outputFileName;

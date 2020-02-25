@@ -7,11 +7,9 @@ package org.geoserver.wms.topojson;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineString;
 
 public class Topology {
 
@@ -23,7 +21,9 @@ public class Topology {
 
     private Map<String, GeometryColleciton> layers;
 
-    public Topology(AffineTransform screenToWorld, List<LineString> arcs,
+    public Topology(
+            AffineTransform screenToWorld,
+            List<LineString> arcs,
             Map<String, TopoGeom.GeometryColleciton> layers) {
 
         this.screenToWorld = screenToWorld;
@@ -46,5 +46,4 @@ public class Topology {
     public Map<String, TopoGeom.GeometryColleciton> getLayers() {
         return layers;
     }
-
 }

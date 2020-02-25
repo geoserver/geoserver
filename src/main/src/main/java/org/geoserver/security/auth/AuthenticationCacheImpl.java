@@ -10,22 +10,18 @@ import org.springframework.security.core.Authentication;
 
 /**
  * @author mcr
- *
- * Null implementation doing nothing
+ *     <p>Null implementation doing nothing
  */
 public class AuthenticationCacheImpl implements AuthenticationCache {
 
     @Override
-    public void removeAll() {
-    }
+    public void removeAll() {}
 
     @Override
-    public void removeAll(String filterName) {
-    }
+    public void removeAll(String filterName) {}
 
     @Override
-    public void remove(String filterName, String cacheKey) {
-    }
+    public void remove(String filterName, String cacheKey) {}
 
     @Override
     public Authentication get(String filterName, String cacheKey) {
@@ -33,11 +29,13 @@ public class AuthenticationCacheImpl implements AuthenticationCache {
     }
 
     @Override
-    public void put(String filterName, String cacheKey, Authentication auth,
-            Integer timeToIdleSeconds, Integer timeToLiveSeconds) {
-    }
+    public void put(
+            String filterName,
+            String cacheKey,
+            Authentication auth,
+            Integer timeToIdleSeconds,
+            Integer timeToLiveSeconds) {}
 
     @Override
-    public void put(String filterName, String cacheKey, Authentication auth) {
-    }
+    public void put(String filterName, String cacheKey, Authentication auth) {}
 }

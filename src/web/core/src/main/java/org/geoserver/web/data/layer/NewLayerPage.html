@@ -10,11 +10,14 @@
   </form>
   
   <div wicket:id="selectLayersContainer">
+      <div wicket:id="createWMTSLayerImportContainer">
+         <wicket:message key="createWMTSImportMessage">You can import all cascading WMTS layers from selected store at once using </wicket:message>
+         <b><a href="#" wicket:id="createWMTSImport"><wicket:message key="createWMTSImportLink">batch import</wicket:message></a></b>
+      </div>
       <div wicket:id="createWMSLayerImportContainer">
          <wicket:message key="createWMSImportMessage">You can import all cascading WMS layers from selected store at once using </wicket:message>
          <b><a href="#" wicket:id="createWMSImport"><wicket:message key="createWMSImportLink">batch import</wicket:message></a></b>
       </div>
-      
       <div wicket:id="createTypeContainer">
       	 <wicket:message key="createFeatureTypeMessage">You can create a new feature type by manually configuring the attribute names and types. </wicket:message>
       	 <b><a href="#" wicket:id="createFeatureType"><wicket:message key="createFeatureTypeLink">Create new feature type...</wicket:message></a></b>

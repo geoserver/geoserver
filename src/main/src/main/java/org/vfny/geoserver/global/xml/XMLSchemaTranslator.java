@@ -10,22 +10,18 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * XMLSchemaTranslator purpose.
- * <p>
- * This instance of the NameSpaceTranslator should be used with http://www.w3.org/2001/XMLSchema namespace.
- * </p>
- * <p>
- * Instances of this object should always be retrieved through the NameSpaceTranslatorFactory.
- * </p>
- * <p>
- * Added a bit of a hack to get the right default mappings.  Added isDefault to
- * the classes we want.  Note that this list comes from
- * org.geotools.gml.producer.FeatureTypeTransformer.
- * </p>
- * @see NameSpaceTranslatorFactory
  *
+ * <p>This instance of the NameSpaceTranslator should be used with http://www.w3.org/2001/XMLSchema
+ * namespace.
+ *
+ * <p>Instances of this object should always be retrieved through the NameSpaceTranslatorFactory.
+ *
+ * <p>Added a bit of a hack to get the right default mappings. Added isDefault to the classes we
+ * want. Note that this list comes from org.geotools.gml.producer.FeatureTypeTransformer.
+ *
+ * @see NameSpaceTranslatorFactory
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
  * @version $Id$
@@ -35,10 +31,8 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
 
     /**
      * XMLSchemaTranslator constructor.
-     * <p>
-     * Description
-     * </p>
-     * @param prefix
+     *
+     * <p>Description
      */
     public XMLSchemaTranslator(String prefix) {
         super(prefix);
@@ -88,8 +82,6 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      * Implementation of getElements.
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
-     *
-     *
      */
     public Set getElements() {
         return elements;
@@ -99,14 +91,11 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      * Implementation of getNameSpace.
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getNameSpace()
-     *
-     *
      */
     public String getNameSpace() {
         return "http://www.w3.org/2001/XMLSchema";
     }
 }
-
 
 class BooleanElement extends NameSpaceElement {
     public BooleanElement(String prefix) {
@@ -161,7 +150,6 @@ class BooleanElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class DecimalElement extends NameSpaceElement {
     public DecimalElement(String prefix) {
@@ -221,7 +209,6 @@ class DecimalElement extends NameSpaceElement {
     }
 }
 
-
 class IntegerElement extends NameSpaceElement {
     public IntegerElement(String prefix) {
         super(prefix);
@@ -275,7 +262,6 @@ class IntegerElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class NegativeIntegerElement extends NameSpaceElement {
     public NegativeIntegerElement(String prefix) {
@@ -331,7 +317,6 @@ class NegativeIntegerElement extends NameSpaceElement {
     }
 }
 
-
 class NonNegativeIntegerElement extends NameSpaceElement {
     public NonNegativeIntegerElement(String prefix) {
         super(prefix);
@@ -386,7 +371,6 @@ class NonNegativeIntegerElement extends NameSpaceElement {
     }
 }
 
-
 class PositiveIntegerElement extends NameSpaceElement {
     public PositiveIntegerElement(String prefix) {
         super(prefix);
@@ -440,7 +424,6 @@ class PositiveIntegerElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class LongElement extends NameSpaceElement {
     public LongElement(String prefix) {
@@ -500,7 +483,6 @@ class LongElement extends NameSpaceElement {
     }
 }
 
-
 class IntElement extends NameSpaceElement {
     public IntElement(String prefix) {
         super(prefix);
@@ -558,7 +540,6 @@ class IntElement extends NameSpaceElement {
         return true;
     }
 }
-
 
 class ShortElement extends NameSpaceElement {
     public ShortElement(String prefix) {
@@ -618,7 +599,6 @@ class ShortElement extends NameSpaceElement {
     }
 }
 
-
 class ByteElement extends NameSpaceElement {
     public ByteElement(String prefix) {
         super(prefix);
@@ -677,7 +657,6 @@ class ByteElement extends NameSpaceElement {
     }
 }
 
-
 class UnsignedLongElement extends NameSpaceElement {
     public UnsignedLongElement(String prefix) {
         super(prefix);
@@ -731,7 +710,6 @@ class UnsignedLongElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class UnsignedShortElement extends NameSpaceElement {
     public UnsignedShortElement(String prefix) {
@@ -787,7 +765,6 @@ class UnsignedShortElement extends NameSpaceElement {
     }
 }
 
-
 class UnsignedIntElement extends NameSpaceElement {
     public UnsignedIntElement(String prefix) {
         super(prefix);
@@ -842,7 +819,6 @@ class UnsignedIntElement extends NameSpaceElement {
     }
 }
 
-
 class UnsignedByteElement extends NameSpaceElement {
     public UnsignedByteElement(String prefix) {
         super(prefix);
@@ -896,7 +872,6 @@ class UnsignedByteElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class FloatElement extends NameSpaceElement {
     public FloatElement(String prefix) {
@@ -956,7 +931,6 @@ class FloatElement extends NameSpaceElement {
     }
 }
 
-
 class DoubleElement extends NameSpaceElement {
     public DoubleElement(String prefix) {
         super(prefix);
@@ -1015,7 +989,6 @@ class DoubleElement extends NameSpaceElement {
     }
 }
 
-
 class DateElement extends NameSpaceElement {
     public DateElement(String prefix) {
         super(prefix);
@@ -1069,7 +1042,6 @@ class DateElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class DateTimeElement extends NameSpaceElement {
     public DateTimeElement(String prefix) {
@@ -1129,7 +1101,6 @@ class DateTimeElement extends NameSpaceElement {
     }
 }
 
-
 class DurationElement extends NameSpaceElement {
     public DurationElement(String prefix) {
         super(prefix);
@@ -1183,7 +1154,6 @@ class DurationElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class GDayElement extends NameSpaceElement {
     public GDayElement(String prefix) {
@@ -1239,7 +1209,6 @@ class GDayElement extends NameSpaceElement {
     }
 }
 
-
 class GMonthElement extends NameSpaceElement {
     public GMonthElement(String prefix) {
         super(prefix);
@@ -1293,7 +1262,6 @@ class GMonthElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class GMonthDayElement extends NameSpaceElement {
     public GMonthDayElement(String prefix) {
@@ -1349,7 +1317,6 @@ class GMonthDayElement extends NameSpaceElement {
     }
 }
 
-
 class GYearElement extends NameSpaceElement {
     public GYearElement(String prefix) {
         super(prefix);
@@ -1403,7 +1370,6 @@ class GYearElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class GYearMonthElement extends NameSpaceElement {
     public GYearMonthElement(String prefix) {
@@ -1459,7 +1425,6 @@ class GYearMonthElement extends NameSpaceElement {
     }
 }
 
-
 class TimeElement extends NameSpaceElement {
     public TimeElement(String prefix) {
         super(prefix);
@@ -1513,7 +1478,6 @@ class TimeElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class IDElement extends NameSpaceElement {
     public IDElement(String prefix) {
@@ -1569,7 +1533,6 @@ class IDElement extends NameSpaceElement {
     }
 }
 
-
 class IDREFElement extends NameSpaceElement {
     public IDREFElement(String prefix) {
         super(prefix);
@@ -1623,7 +1586,6 @@ class IDREFElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class IDREFSElement extends NameSpaceElement {
     public IDREFSElement(String prefix) {
@@ -1679,7 +1641,6 @@ class IDREFSElement extends NameSpaceElement {
     }
 }
 
-
 class ENTITYElement extends NameSpaceElement {
     public ENTITYElement(String prefix) {
         super(prefix);
@@ -1733,7 +1694,6 @@ class ENTITYElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class ENTITIESElement extends NameSpaceElement {
     public ENTITIESElement(String prefix) {
@@ -1789,7 +1749,6 @@ class ENTITIESElement extends NameSpaceElement {
     }
 }
 
-
 class NMTOKENElement extends NameSpaceElement {
     public NMTOKENElement(String prefix) {
         super(prefix);
@@ -1843,7 +1802,6 @@ class NMTOKENElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class NMTOKENSElement extends NameSpaceElement {
     public NMTOKENSElement(String prefix) {
@@ -1899,7 +1857,6 @@ class NMTOKENSElement extends NameSpaceElement {
     }
 }
 
-
 class NOTATIONElement extends NameSpaceElement {
     public NOTATIONElement(String prefix) {
         super(prefix);
@@ -1953,7 +1910,6 @@ class NOTATIONElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class StringElement extends NameSpaceElement {
     public StringElement(String prefix) {
@@ -2013,7 +1969,6 @@ class StringElement extends NameSpaceElement {
     }
 }
 
-
 class NormalizedStringElement extends NameSpaceElement {
     public NormalizedStringElement(String prefix) {
         super(prefix);
@@ -2067,7 +2022,6 @@ class NormalizedStringElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class TokenElement extends NameSpaceElement {
     public TokenElement(String prefix) {
@@ -2123,7 +2077,6 @@ class TokenElement extends NameSpaceElement {
     }
 }
 
-
 class QNameElement extends NameSpaceElement {
     public QNameElement(String prefix) {
         super(prefix);
@@ -2178,7 +2131,6 @@ class QNameElement extends NameSpaceElement {
     }
 }
 
-
 class NameElement extends NameSpaceElement {
     public NameElement(String prefix) {
         super(prefix);
@@ -2232,7 +2184,6 @@ class NameElement extends NameSpaceElement {
         return false;
     }
 }
-
 
 class NCNameElement extends NameSpaceElement {
     public NCNameElement(String prefix) {

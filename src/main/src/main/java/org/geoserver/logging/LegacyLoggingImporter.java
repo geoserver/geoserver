@@ -9,16 +9,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.geoserver.config.util.LegacyServicesReader;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
 /**
  * Imports logging configuration from the legacy services.xml file.
- * 
+ *
  * @author Justin Deoliveira, OpenGEO
- * 
  */
 public class LegacyLoggingImporter {
 
@@ -35,8 +33,8 @@ public class LegacyLoggingImporter {
         // services.xml
         File servicesFile = new File(dir, "services.xml");
         if (!servicesFile.exists()) {
-            throw new FileNotFoundException("Could not find services.xml under:"
-                    + dir.getAbsolutePath());
+            throw new FileNotFoundException(
+                    "Could not find services.xml under:" + dir.getAbsolutePath());
         }
 
         // create a services.xml reader
@@ -53,7 +51,8 @@ public class LegacyLoggingImporter {
         configFileName = (String) global.get("log4jConfigFile");
         logFile = (String) global.get("logLocation");
 
-        suppressStdOutLogging = Converters.convert(global.get("suppressStdOutLogging"), Boolean.class);
+        suppressStdOutLogging =
+                Converters.convert(global.get("suppressStdOutLogging"), Boolean.class);
     }
 
     public String getConfigFileName() {

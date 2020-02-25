@@ -8,9 +8,9 @@ public class EchoParameter {
 
     private final String id;
     private final String parameter;
-    private final Boolean activated;
+    private final boolean activated;
 
-    public EchoParameter(String id, String parameter, Boolean activated) {
+    public EchoParameter(String id, String parameter, boolean activated) {
         this.id = id;
         this.parameter = parameter;
         this.activated = activated;

@@ -1,0 +1,24 @@
+<assembly>
+    <id>gwc-azure-blobstore-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>release/target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>*azure-*.jar</include>
+                <include>client-runtime*.jar</include>
+                <include>netty*.jar</include>
+                <include>rxjava*.jar</include>
+                <include>reactive-streams*.jar</include>
+                <include>joda-time*.jar</include>
+                <include>jackson*.jar</include>
+                <include>woodstox*.jar</include>
+                <include>*stax2*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

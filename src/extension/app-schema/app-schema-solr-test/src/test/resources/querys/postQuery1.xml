@@ -1,0 +1,18 @@
+<wfs:GetFeature service="WFS" version="1.1.0"
+                xmlns:wfs="http://www.opengis.net/wfs"
+                xmlns:ogc="http://www.opengis.net/ogc"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <wfs:Query typeName="st:Station" srsName="EPSG:4326">
+    <ogc:Filter>
+      <ogc:PropertyIsEqualTo>
+        <ogc:PropertyName>
+          st:Station/st:stationName
+        </ogc:PropertyName>
+        <ogc:Literal>
+          Bologna
+        </ogc:Literal>
+      </ogc:PropertyIsEqualTo>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

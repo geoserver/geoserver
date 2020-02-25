@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.0.3" xml:lang="en">
+	<annotation>
+		<appinfo>owsInputOutputData.xsd</appinfo>
+		<documentation>This XML Schema Document specifies types and elements for input and output of operation data, allowing including multiple data items with each data item either included or referenced. The contents of each type and element specified here can be restricted and/or extended for each use in a specific OWS specification.
+		
+		OWS is an OGC Standard.
+		Copyright (c) 2006,2010 Open Geospatial Consortium.
+		To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="owsAll.xsd"/>
+	<include schemaLocation="owsManifest.xsd"/>
+	<!-- ==========================================================
+		Types and elements
+	    ========================================================== -->
+	<element name="OperationResponse" type="ows:ManifestType">
+		<annotation>
+			<documentation>Response from an OWS operation, allowing including multiple output data items with each item either included or referenced. This OperationResponse element, or an element using the ManifestType with a more specific element name, shall be used whenever applicable for responses from OWS operations. </documentation>
+			<documentation>This element is specified for use where the ManifestType contents are needed for an operation response, but the Manifest element name is not fully applicable. This element or the ManifestType shall be used instead of using the ows:ReferenceType proposed in OGC 04-105. </documentation>
+		</annotation>
+	</element>
+	<!-- ========================================================== -->
+	<element name="InputData" type="ows:ManifestType">
+		<annotation>
+			<documentation>Input data in a XML-encoded OWS operation request, allowing including multiple data items with each data item either included or referenced. This InputData element, or an element using the ManifestType with a more-specific element name (TBR), shall be used whenever applicable within XML-encoded OWS operation requests. </documentation>
+		</annotation>
+	</element>
+	<!-- ========================================================== -->
+	<element name="ServiceReference" type="ows:ServiceReferenceType" substitutionGroup="ows:Reference"/>
+	<!-- ========================================================== -->
+	<complexType name="ServiceReferenceType">
+		<annotation>
+			<documentation>Complete reference to a remote resource that needs to be retrieved from an OWS using an XML-encoded operation request. This element shall be used, within an InputData or Manifest element that is used for input data, when that input data needs to be retrieved from another web service using a XML-encoded OWS operation request. This element shall not be used for local payload input data or for requesting the resource from a web server using HTTP Get. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="ows:ReferenceType">
+				<choice>
+					<element name="RequestMessage" type="anyType">
+						<annotation>
+							<documentation>The XML-encoded operation request message to be sent to request this input data from another web server using HTTP Post. </documentation>
+						</annotation>
+					</element>
+					<element name="RequestMessageReference" type="anyURI">
+						<annotation>
+							<documentation>Reference to the XML-encoded operation request message to be sent to request this input data from another web server using HTTP Post. The referenced message shall be attached to the same message (using the cid scheme), or be accessible using a URL. </documentation>
+						</annotation>
+					</element>
+				</choice>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ========================================================== -->
+</schema>

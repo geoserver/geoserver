@@ -7,14 +7,25 @@ package org.geogig.geoserver.config;
 import static org.geogig.geoserver.config.LogEvent.Severity.DEBUG;
 import static org.geogig.geoserver.config.LogEvent.Severity.ERROR;
 import static org.geogig.geoserver.config.LogEvent.Severity.INFO;
+import static org.geogig.geoserver.config.LogStore.PROP_DRIVER_CLASS;
+import static org.geogig.geoserver.config.LogStore.PROP_ENABLED;
+import static org.geogig.geoserver.config.LogStore.PROP_MAX_CONNECTIONS;
+import static org.geogig.geoserver.config.LogStore.PROP_PASSWORD;
+import static org.geogig.geoserver.config.LogStore.PROP_RUN_SCRIPT;
+import static org.geogig.geoserver.config.LogStore.PROP_SCRIPT;
+import static org.geogig.geoserver.config.LogStore.PROP_URL;
+import static org.geogig.geoserver.config.LogStore.PROP_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -29,31 +40,25 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
+import org.geogig.geoserver.HeapResourceStore;
 import org.geogig.geoserver.config.LogEvent.Severity;
-import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Resources;
-
+@Ignore
 public class AbstractLogStoreTest {
 
-    @Rule
-    public TemporaryFolder tmpDir = new TemporaryFolder();
+    @Rule public TemporaryFolder tmpDir = new TemporaryFolder();
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     protected ResourceStore resourceStore;
 
@@ -63,11 +68,14 @@ public class AbstractLogStoreTest {
 
     @Before
     public void before() {
-        File resourceDirectory = tmpDir.getRoot();
-        resourceStore = new FileSystemResourceStore(resourceDirectory);
+        resourceStore = getResourceStore();
         logStore = new LogStore(resourceStore);
         SecurityContextHolder.clearContext();
         setUpConfigFile();
+    }
+
+    protected ResourceStore getResourceStore() {
+        return new HeapResourceStore();
     }
 
     @After
@@ -79,18 +87,13 @@ public class AbstractLogStoreTest {
 
     private void setUpConfigFile() {
         Resource dirResource = resourceStore.get(LogStore.CONFIG_DIR_NAME);
-        File dir = dirResource.dir();
 
         Properties properties = new Properties();
-        populateConfigProperties(properties, dir);
+        populateConfigProperties(properties);
         if (!properties.isEmpty()) {
-            File configFile = new File(dir, LogStore.CONFIG_FILE_NAME);
+            Resource configFile = dirResource.get(LogStore.CONFIG_FILE_NAME);
             try {
-                if (!configFile.exists()) {
-                    assertTrue(configFile.createNewFile());
-                }
-                try (Writer writer = new OutputStreamWriter(new FileOutputStream(configFile),
-                        Charsets.UTF_8)) {
+                try (Writer writer = new OutputStreamWriter(configFile.out(), Charsets.UTF_8)) {
                     properties.store(writer, "");
                 }
             } catch (Exception e) {
@@ -99,8 +102,19 @@ public class AbstractLogStoreTest {
         }
     }
 
-    protected void populateConfigProperties(Properties properties, File configDirectory) {
-        // do nothing, override to create a config file for a non default database
+    protected void populateConfigProperties(Properties properties) {
+        final String driverClassName = "org.sqlite.JDBC";
+        final File dbFile = new File(tmpDir.getRoot(), "logstore.sqlite");
+        final String jdbcUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+
+        properties.setProperty(PROP_ENABLED, "true");
+        properties.setProperty(PROP_DRIVER_CLASS, driverClassName);
+        properties.setProperty(PROP_URL, jdbcUrl);
+        properties.setProperty(PROP_USER, "");
+        properties.setProperty(PROP_PASSWORD, "");
+        properties.setProperty(PROP_MAX_CONNECTIONS, "1");
+        properties.setProperty(PROP_SCRIPT, "sqlite.sql");
+        properties.setProperty(PROP_RUN_SCRIPT, "true");
     }
 
     @Test
@@ -231,15 +245,17 @@ public class AbstractLogStoreTest {
         assertEquals(3, logStore.getFullSize());
     }
 
-    protected void runScript(String driverClassName, String jdbcUrl, URL script, String user,
-            String password) {
+    protected void runScript(
+            String driverClassName, String jdbcUrl, URL script, String user, String password) {
         List<String> statements = parseStatements(script);
 
         Connection connection;
         try {
             Driver d = (Driver) Class.forName(driverClassName).newInstance();
             connection = DriverManager.getConnection(jdbcUrl, user, password);
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
+        } catch (InstantiationException
+                | IllegalAccessException
+                | ClassNotFoundException
                 | SQLException e) {
             throw Throwables.propagate(e);
         }

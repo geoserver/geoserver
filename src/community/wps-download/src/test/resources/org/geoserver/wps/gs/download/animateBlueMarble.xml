@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
+             xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0"
+             xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml"
+             xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+  <ows:Identifier>gs:DownloadAnimation</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>bbox</ows:Identifier>
+      <wps:Data>
+        <wps:BoundingBoxData crs="EPSG:4326">
+          <ows:LowerCorner>-180 -90</ows:LowerCorner>
+          <ows:UpperCorner>180 90</ows:UpperCorner>
+        </wps:BoundingBoxData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>time</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>2004-02-01,2004-03-01,2004-04-01,2004-05-01</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>width</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>540</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>height</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>270</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>fps</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>0.5</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>sf:bmtime</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="image/png">
+      <ows:Identifier>result</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>

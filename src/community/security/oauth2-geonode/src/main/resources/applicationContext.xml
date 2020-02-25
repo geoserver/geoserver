@@ -22,14 +22,7 @@
 
 	<!-- OAuth2 Security Extension -->
 		<bean id="geoNodeOAuth2TokenServices" class="org.geoserver.security.oauth2.services.GeoNodeTokenServices">
-			<property name="accessTokenConverter">
-				<bean class="org.geoserver.security.oauth2.services.GeoNodeAccessTokenConverter">
-					<property name="userTokenConverter">
-						<bean class="org.geoserver.security.oauth2.services.GeoNodeUserAuthenticationConverter">
-						</bean>
-					</property>
-				</bean>
-			</property>
+
 		</bean>
 
 		<bean id="geoNodeOAuth2AuthenticationProvider"
@@ -67,6 +60,7 @@
 	 		<property name="componentClass" value="org.geoserver.web.security.oauth2.GeoNodeOAuth2AuthProviderPanel" />
 	 		<property name="name" value="geonode" />
 	 		<property name="icon" value="geonode.png" />
+	 		<property name="filterClass" value="org.geoserver.security.oauth2.GeoNodeOAuthAuthenticationFilter" />
 	 		<property name="loginPath" value="web/j_spring_oauth2_geonode_login" />
 	 	</bean>
 

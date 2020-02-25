@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
-
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
@@ -51,15 +50,15 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        
+
         addUser("cite", "cite", null, Arrays.asList("ROLE_CITE_ADMIN"));
         addUser("sf", "sf", null, Arrays.asList("ROLE_SF_ADMIN"));
-        
+
         setupAccessRules();
 
         Catalog cat = getCatalog();
 
-        //add two workspace local layer group
+        // add two workspace local layer group
         LayerGroupInfo lg = cat.getFactory().createLayerGroup();
         lg.setName("cite_local");
         lg.setWorkspace(cat.getWorkspaceByName("cite"));
@@ -115,14 +114,15 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();
 
-        //assert only cite workspace visible
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        // assert only cite workspace visible
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(1, dv.size());
 
-        //the actual web request is finished, so we need to fake another one
+        // the actual web request is finished, so we need to fake another one
         AdminRequest.start(new Object());
         assertEquals(1, dv.getDataProvider().size());
-        
+
         WorkspaceInfo ws = (WorkspaceInfo) dv.getDataProvider().iterator(0, 1).next();
         assertEquals("cite", ws.getName());
     }
@@ -139,7 +139,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testWorkspaceEditPage() throws Exception {
         loginAsCite();
 
-        tester.startPage(WorkspaceEditPage.class,new PageParameters().add("name", "cite"));
+        tester.startPage(WorkspaceEditPage.class, new PageParameters().add("name", "cite"));
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertNoErrorMessage();
     }
@@ -147,8 +147,8 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     @Test
     public void testWorkspaceEditPageUnauthorized() throws Exception {
         loginAsCite();
-        tester.startPage(WorkspaceEditPage.class,new PageParameters().add("name", "cdf"));
-        tester.assertErrorMessages(new String[]{"Could not find workspace \"cdf\""});
+        tester.startPage(WorkspaceEditPage.class, new PageParameters().add("name", "cdf"));
+        tester.assertErrorMessages(new String[] {"Could not find workspace \"cdf\""});
     }
 
     @Test
@@ -158,9 +158,10 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.assertRenderedPage(LayerPage.class);
         print(tester.getLastRenderedPage(), true, true, true);
 
-        DataView dv = 
-            (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
-        assertEquals(getCatalog().getResourcesByNamespace("cite", ResourceInfo.class).size(), dv.size());
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(
+                getCatalog().getResourcesByNamespace("cite", ResourceInfo.class).size(), dv.size());
     }
 
     @Test
@@ -170,25 +171,29 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.startPage(StorePage.class);
         tester.assertRenderedPage(StorePage.class);
         tester.assertNoErrorMessage();
-        
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(getCatalog().getStoresByWorkspace("cite", StoreInfo.class).size(), dv.size());
     }
 
     @Test
     public void testStoreNewPage() throws Exception {
         loginAsCite();
+        AdminRequest.start(new Object());
 
         final String dataStoreFactoryDisplayName = new PropertyDataStoreFactory().getDisplayName();
         tester.startPage(new DataAccessNewPage(dataStoreFactoryDisplayName));
         tester.assertRenderedPage(DataAccessNewPage.class);
         tester.assertNoErrorMessage();
 
-        //the actual web request is finished, so we need to fake another one
+        // the actual web request is finished, so we need to fake another one
         AdminRequest.start(new Object());
 
-        DropDownChoice<WorkspaceInfo> wsChoice = (DropDownChoice<WorkspaceInfo>) 
-            tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:border_body:paramValue");
+        DropDownChoice<WorkspaceInfo> wsChoice =
+                (DropDownChoice<WorkspaceInfo>)
+                        tester.getComponentFromLastRenderedPage(
+                                "dataStoreForm:workspacePanel:border:border_body:paramValue");
 
         assertEquals(1, wsChoice.getChoices().size());
         assertEquals("cite", wsChoice.getChoices().get(0).getName());
@@ -197,8 +202,10 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     @Test
     public void testStoreEditPage() throws Exception {
         loginAsCite();
-        
-        tester.startPage(DataAccessEditPage.class, new PageParameters().add("wsName", "cite").add("storeName", "cite"));
+
+        tester.startPage(
+                DataAccessEditPage.class,
+                new PageParameters().add("wsName", "cite").add("storeName", "cite"));
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
     }
@@ -206,10 +213,13 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     @Test
     public void testStoreEditPageUnauthorized() throws Exception {
         loginAsCite();
-        
-        tester.startPage(DataAccessEditPage.class, new PageParameters().add("wsName", "cdf").add("storeName", "cdf"));
+
+        tester.startPage(
+                DataAccessEditPage.class,
+                new PageParameters().add("wsName", "cdf").add("storeName", "cdf"));
         tester.assertRenderedPage(StorePage.class);
-        tester.assertErrorMessages(new String[]{"Could not find data store \"cdf\" in workspace \"cdf\""});
+        tester.assertErrorMessages(
+                new String[] {"Could not find data store \"cdf\" in workspace \"cdf\""});
     }
 
     @Test
@@ -220,8 +230,8 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
 
         Catalog cat = getCatalog();
 
-        DataView view = 
-            (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView view =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
     }
 
@@ -231,18 +241,20 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
 
         tester.startPage(LayerGroupPage.class);
         tester.assertRenderedPage(LayerGroupPage.class);
-        
+
         Catalog cat = getCatalog();
 
-        DataView view = 
-            (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView view =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         AdminRequest.start(new Object());
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
-        for (Iterator<Item> it = view.getItems(); it.hasNext();) {
-            String name = it.next().get("itemProperties:0:component:link:label")
-                .getDefaultModelObjectAsString();
+        for (Iterator<Item> it = view.getItems(); it.hasNext(); ) {
+            String name =
+                    it.next()
+                            .get("itemProperties:0:component:link:label")
+                            .getDefaultModelObjectAsString();
             assertFalse("sf_local".equals(name));
         }
     }
@@ -254,9 +266,11 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.startPage(LayerGroupEditPage.class);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         tester.assertModelValue("publishedinfo:tabs:panel:workspace", null);
-        
-        DropDownChoice choice = 
-            (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace");
+
+        DropDownChoice choice =
+                (DropDownChoice)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:workspace");
         assertTrue(choice.isNullValid());
         assertFalse(choice.isRequired());
     }
@@ -269,10 +283,13 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
         Catalog cat = getCatalog();
-        tester.assertModelValue("publishedinfo:tabs:panel:workspace", cat.getWorkspaceByName("cite"));
-        
-        DropDownChoice choice = 
-            (DropDownChoice) tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace");
+        tester.assertModelValue(
+                "publishedinfo:tabs:panel:workspace", cat.getWorkspaceByName("cite"));
+
+        DropDownChoice choice =
+                (DropDownChoice)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:workspace");
         assertFalse(choice.isNullValid());
         assertTrue(choice.isRequired());
     }
@@ -281,12 +298,18 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     public void testLayerGroupEditPageGlobal() throws Exception {
         loginAsCite();
 
-        tester.startPage(LayerGroupEditPage.class, new PageParameters().add(LayerGroupEditPage.GROUP, "cite_global"));
+        tester.startPage(
+                LayerGroupEditPage.class,
+                new PageParameters().add(LayerGroupEditPage.GROUP, "cite_global"));
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
-        //assert all form components disabled except for cancel
-        assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:name").isEnabled());
-        assertFalse(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace").isEnabled());
+        // assert all form components disabled except for cancel
+        assertFalse(
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:name")
+                        .isEnabled());
+        assertFalse(
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:workspace")
+                        .isEnabled());
         assertNull(tester.getComponentFromLastRenderedPage("publishedinfo:save"));
         assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:cancel").isEnabled());
     }
@@ -297,15 +320,16 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         PageParameters pp = new PageParameters();
         pp.add(SQLViewNewPage.WORKSPACE, "cite");
 
-        //not a jdbc datastore obviously but we don't need one to simply test that the 
+        // not a jdbc datastore obviously but we don't need one to simply test that the
         // page will render with worksapce admin privilieges
         pp.add(SQLViewNewPage.DATASTORE, "cite");
 
         new SQLViewNewPage(pp);
-        
+
         RequestCycle cycle = RequestCycle.get();
-        RenderPageRequestHandler handler = (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
-        assertFalse(UnauthorizedPage.class.equals( handler.getPageClass() ));
+        RenderPageRequestHandler handler =
+                (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
+        assertFalse(UnauthorizedPage.class.equals(handler.getPageClass()));
     }
 
     public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
@@ -314,14 +338,15 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         PageParameters pp = new PageParameters();
         pp.add(NewFeatureTypePage.WORKSPACE, "cite");
 
-        //not a jdbc datastore obviously but we don't need one to simply test that the 
+        // not a jdbc datastore obviously but we don't need one to simply test that the
         // page will render with worksapce admin privilieges
         pp.add(NewFeatureTypePage.DATASTORE, "cite");
 
         new NewFeatureTypePage(pp);
-        
+
         RequestCycle cycle = RequestCycle.get();
-        RenderPageRequestHandler handler = (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
-        assertFalse(UnauthorizedPage.class.equals( handler.getPageClass() ));
+        RenderPageRequestHandler handler =
+                (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
+        assertFalse(UnauthorizedPage.class.equals(handler.getPageClass()));
     }
 }

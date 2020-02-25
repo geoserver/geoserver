@@ -7,15 +7,10 @@ package org.geoserver.security.config;
 
 /**
  * RoleSource interface for {@link PreAuthenticaticatedUserNameFilterConfig}
- * 
+ *
  * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
  */
 public interface RoleSource {
-    /**
-     * We need a method to compare different RoleSource.
-     * 
-     * @param other
-     *
-     */
+    /** We need a method to compare different RoleSource. */
     public boolean equals(RoleSource other);
 }

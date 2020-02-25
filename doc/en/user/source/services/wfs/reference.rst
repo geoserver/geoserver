@@ -17,7 +17,7 @@ The WFS standard defines the framework for providing access to, and supporting t
 Operations
 ----------
 
-All versions of WFS support the these operations: 
+All versions of WFS support these operations: 
 
 .. list-table::
    :widths: 20 80
@@ -224,7 +224,7 @@ This request will execute a GetFeature request for a given layer ``namespace:fea
      request=GetFeature&
      typeNames=namespace:featuretype
 
-Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
+Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output, you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -292,7 +292,7 @@ For a single property from just one feature, use both ``featureID`` and ``proper
      featureID=feature&
      propertyName=attribute
 
-For more than one property from a single feature, use a comma-seaprated list of values for ``propertyName``::
+For more than one property from a single feature, use a comma-separated list of values for ``propertyName``::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -304,11 +304,14 @@ For more than one property from a single feature, use a comma-seaprated list of 
 
 While the above permutations for a GetFeature request focused on non-spatial parameters, it is also possible to query for features based on geometry. While there are limited options available in a GET request for spatial queries (more are available in POST requests using filters), filtering by bounding box (BBOX) is supported.
 
-The BBOX parameter allows you to search for features that are contained (or partially contained) inside a box of user-defined coordinates. The format of the BBOX parameter is ``bbox=a1,b1,a2,b2``where ``a1``, ``b1``, ``a2``, and ``b2`` represent the coordinate values. The order of coordinates passed to the BBOX parameter depends on the coordinate system used. (This is why the coordinate syntax isn't represented with ``x`` or ``y``.) To specify the coordinate system, append ``srsName=CRS`` to the WFS request, where ``CRS`` is the Coordinate Reference System you wish to use.
+The BBOX parameter allows you to search for features that are contained (or partially contained) inside a box of user-defined coordinates. The format of the BBOX parameter is ``bbox=a1,b1,a2,b2,[crs]`` where ``a1``, ``b1``, ``a2``, and ``b2`` represent the coordinate values. The optional ``crs`` parameter is used to name the CRS for the bbox coordinates (if they are different to the featureTypes native CRS.) The order of coordinates passed to the BBOX parameter depends on the coordinate system used
+(this is why the coordinate syntax isn't represented with ``x`` or ``y``.)
+
+To specify the coordinate system for the returned features, append ``srsName=CRS`` to the WFS request, where ``CRS`` is the Coordinate Reference System you wish to use.
 
 As for which corners of the bounding box to specify, the only requirement is for a bottom corner (left or right) to be provided first. For example, bottom left and top right, or bottom right and top left.
 
-An example request involving returning features based on bounding box would be in the following format::  
+An example request returning features based on a bounding box (using the featureTypes native CRS)::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -318,6 +321,15 @@ An example request involving returning features based on bounding box would be i
      srsName=CRS
      bbox=a1,b1,a2,b2
 
+To request features using a bounding box with CRS different from featureTypes native CRS::
+
+   http://example.com/geoserver/wfs?
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeNames=namespace:featuretype&
+     srsName=CRS
+     bbox=a1,b1,a2,b2,CRS
 
 LockFeature
 ~~~~~~~~~~~
@@ -332,7 +344,7 @@ In practice, few clients support this operation.
 Transaction
 ~~~~~~~~~~~
 
-The **Transaction** operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is *atomic*, meaning that if any of the elements fail, the transaction is abandoned and the data is unaltered. A WFS server that supports **transactions** is sometimes known as a WFS-T server. **GeoServer fully supports transactions.** 
+The **Transaction** operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is *atomic*, meaning that if any of the elements fail, the transaction is abandoned, and the data is unaltered. A WFS server that supports **transactions** is sometimes known as a WFS-T server. **GeoServer fully supports transactions.** 
 
 More information on the syntax of transactions can be found in the `WFS specification <http://www.opengeospatial.org/standards/wfs>`_ and in the :ref:`GeoServer sample requests <demos>`.
 
@@ -487,7 +499,7 @@ DescribeStoredQueries
 A **DescribeStoredQuery** operation returns detailed metadata about each stored query maintained by the WFS server. A description of an individual query may be requested by providing the ID of the specific query. If no ID is provided, all queries are described.
 
 
-This example describes the exsting stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById``::
+This example describes the existing stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById``::
 
   http://example.com/geoserver/wfs?
     request=DescribeStoredQueries&

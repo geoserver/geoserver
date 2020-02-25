@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -23,18 +22,13 @@ import org.geotools.gce.image.WorldImageFormat;
 
 /**
  * Runs gdalwarp on a input raster file
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public class GdalWarpTransform extends AbstractCommandLineTransform implements RasterTransform {
+public class GdalWarpTransform extends AbstractCommandLinePreTransform implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
-    /**
-     * Checks if gdalwarp is available
-     * 
-     *
-     * @throws IOException
-     */
+    /** Checks if gdalwarp is available */
     public static boolean isAvailable() throws IOException {
         return new GdalWarpTransform(new ArrayList<String>()).checkAvailable();
     }
@@ -42,7 +36,7 @@ public class GdalWarpTransform extends AbstractCommandLineTransform implements R
     public GdalWarpTransform(List<String> options) {
         super(options);
     }
-    
+
     @Override
     public void apply(ImportTask task, ImportData data) throws Exception {
         // let the transform run
@@ -59,8 +53,7 @@ public class GdalWarpTransform extends AbstractCommandLineTransform implements R
         }
 
         DataFormat format = DataFormat.lookup(((FileData) data).getFile());
-        List<ImportTask> tasks = format.list(data, resource.getCatalog(),
-                new ProgressMonitor());
+        List<ImportTask> tasks = format.list(data, resource.getCatalog(), new ProgressMonitor());
         if (tasks == null || tasks.isEmpty()) {
             return;
         }
@@ -117,5 +110,4 @@ public class GdalWarpTransform extends AbstractCommandLineTransform implements R
     protected List<String> getAvailabilityTestOptions() {
         return Collections.singletonList("--version");
     }
-
 }

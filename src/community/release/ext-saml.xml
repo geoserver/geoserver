@@ -1,0 +1,28 @@
+<assembly>
+  <id>saml-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>bcprov-jdk15-1.46.jar</include>
+        <include>gs-saml*.jar</include>
+        <include>xmlsec*.jar</include>
+        <include>xmltooling*.jar</include>
+        <include>xmlunit*.jar</include>
+        <include>hamcrest-core*.jar</include>
+        <include>joda-time*.jar</include>
+        <include>not-yet-commons-ssl*.jar</include>
+        <include>spring-security-saml2-core*.jar</include>
+        <include>opensaml*.jar</include>
+        <include>openws*.jar</include>
+        <include>velocity*.jar</include>
+        <include>esapi*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

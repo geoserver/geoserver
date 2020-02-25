@@ -7,7 +7,6 @@ package org.geoserver.wms.kvp;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.ows.FlatKvpParser;
@@ -18,7 +17,7 @@ import org.geoserver.wms.WMS;
 
 /**
  * KVP parser to parse a comma separated list of layer names into a list of {@link MapLayerInfo}
- * 
+ *
  * @author Gabriel Roldan
  */
 public class MapLayerInfoKvpParser extends KvpParser {
@@ -55,27 +54,27 @@ public class MapLayerInfoKvpParser extends KvpParser {
             LayerInfo layerInfo = wms.getLayerByName(layerName);
             if (layerInfo == null) {
                 LayerGroupInfo groupInfo = wms.getLayerGroupByName(layerName);
-                if (groupInfo == null || LayerGroupInfo.Mode.CONTAINER.equals(groupInfo.getMode())) {
-                    throw new ServiceException(layerName + ": no such layer on this server",
-                            "LayerNotDefined", getClass().getSimpleName());
+                if (groupInfo == null
+                        || LayerGroupInfo.Mode.CONTAINER.equals(groupInfo.getMode())) {
+                    throw new ServiceException(
+                            layerName + ": no such layer on this server",
+                            "LayerNotDefined",
+                            getClass().getSimpleName());
                 } else {
-                    if (skipResource(groupInfo))
-                        continue;
+                    if (skipResource(groupInfo)) continue;
 
                     for (LayerInfo li : groupInfo.layers()) {
-                        
-                        if (skipResource(li))
-                            continue;
+
+                        if (skipResource(li)) continue;
 
                         layer = new MapLayerInfo(li);
                         layers.add(layer);
                     }
                 }
             } else {
-                
-                if (skipResource(layerInfo))
-                    continue;
-                
+
+                if (skipResource(layerInfo)) continue;
+
                 layer = new MapLayerInfo(layerInfo);
                 layers.add(layer);
             }
@@ -83,5 +82,4 @@ public class MapLayerInfoKvpParser extends KvpParser {
 
         return layers;
     }
-
 }

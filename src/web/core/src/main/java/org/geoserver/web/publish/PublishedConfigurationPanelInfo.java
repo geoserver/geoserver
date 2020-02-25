@@ -10,16 +10,17 @@ import org.geoserver.web.ComponentInfo;
 
 /**
  * Extension point for sections of the configuration pages for layers/layergroups.
- * 
+ *
  * @author David Winslow <dwinslow@openplans.org>
  * @author Niels Charlier
  */
-public abstract class PublishedConfigurationPanelInfo<T extends PublishedInfo> extends ComponentInfo<PublishedConfigurationPanel<T>> {
+public abstract class PublishedConfigurationPanelInfo<T extends PublishedInfo>
+        extends ComponentInfo<PublishedConfigurationPanel<T>> {
 
     private static final long serialVersionUID = 6115999990499640707L;
-    
+
     public abstract Class<T> getPublishedInfoClass();
-    
+
     public boolean canHandle(PublishedInfo pi) {
         return getPublishedInfoClass().isAssignableFrom(pi.getClass());
     }

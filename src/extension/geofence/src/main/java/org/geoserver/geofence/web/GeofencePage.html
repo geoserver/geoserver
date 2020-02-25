@@ -1,0 +1,137 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+     <wicket:extend>
+        <form wicket:id="form">
+            <br/>
+            <fieldset>
+              <legend>
+                <span><wicket:message key="generalSettings"></wicket:message></span>
+              </legend>
+	        <ul>
+	            <li>
+	              <label for="instanceName"><wicket:message key="instanceName"></wicket:message></label>
+	              <input id="instanceName" wicket:id="instanceName" type="text" class="text"></input>
+	            </li>
+	            <li>
+                  <label for="servicesUrl"><wicket:message key="servicesUrl"></wicket:message></label>
+                  <input id="servicesUrl" wicket:id="servicesUrl" type="text" class="text"></input>
+                </li>
+                <li class="button-group">
+                  <a href="#" wicket:id="test"><span><wicket:message key="testConnection"></wicket:message></span></a>
+                </li>
+             </ul>
+             </fieldset>
+             <br/>
+             <fieldset>
+              <legend>
+                <span><wicket:message key="options"></wicket:message></span>
+              </legend>
+                <ul>
+	            <li class="choiceItem">
+	              <input id="allowRemoteAndInlineLayers" wicket:id="allowRemoteAndInlineLayers" type="checkbox"></input>
+	              <label for="allowRemoteAndInlineLayers"><wicket:message key="allowRemoteAndInlineLayers"></wicket:message></label>
+	            </li>
+                <li class="choiceItem">
+                  <input id="grantWriteToWorkspacesToAuthenticatedUsers" wicket:id="grantWriteToWorkspacesToAuthenticatedUsers" type="checkbox"></input>
+                  <label for="grantWriteToWorkspacesToAuthenticatedUsers"><wicket:message key="grantWriteToWorkspacesToAuthenticatedUsers"></wicket:message></label>
+                </li>
+                <li class="choiceItem">
+                  <input id="useRolesToFilter" wicket:id="useRolesToFilter" type="checkbox"></input>
+                  <label for="useRolesToFilter"><wicket:message key="useRolesToFilter"></wicket:message></label>
+                </li>
+                <li>
+                  <label for="acceptedRoles"><wicket:message key="acceptedRoles"></wicket:message></label>
+                  <input id="acceptedRoles" wicket:id="acceptedRoles" type="text" class="text"></input>
+                </li>
+	            
+    
+            </ul>
+            </fieldset>
+            <br/>
+            <fieldset>
+	          <legend>
+	            <span><wicket:message key="cacheSettings"></wicket:message></span>
+	          </legend>
+	          <ul>
+	          <li>
+                  <label for="cacheSize"><wicket:message key="cacheSize"></wicket:message></label>
+                  <input id="cacheSize" wicket:id="cacheSize" type="text" class="text"></input>
+                </li>
+                <li>
+                  <label for="cacheRefresh"><wicket:message key="cacheRefresh"></wicket:message></label>
+                  <input id="cacheRefresh" wicket:id="cacheRefresh" type="text" class="text"></input>
+                </li>
+                <li>
+                  <label for="cacheExpire"><wicket:message key="cacheExpire"></wicket:message></label>
+                  <input id="cacheExpire" wicket:id="cacheExpire" type="text" class="text"></input>
+                </li>
+	           <li>
+
+                       <table>
+                           <thead>
+                               <tr>
+                                   <th><span class="noshow"></span></th>
+                                   <th class="actions"><wicket:message key="statsCacheSize">Size</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsCacheHits">Hits</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsCacheMisses">Misses</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsLoadOk">Load ok</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsLoadKo">Load ko</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsLoadTime">Load time</wicket:message></th>
+                                   <th class="actions"><wicket:message key="statsEvict">Evictions</wicket:message></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd">
+                                    <th scope="row"><wicket:message key="ruleCache">Rule cache</wicket:message></th>
+                                    <td wicket:id="rule.size">-</td>
+                                    <td wicket:id="rule.hit">-</td>
+                                    <td wicket:id="rule.miss">-</td>
+                                    <td wicket:id="rule.loadok">-</td>
+                                    <td wicket:id="rule.loadko">-</td>
+                                    <td wicket:id="rule.loadtime">-</td>
+                                    <td wicket:id="rule.evict">-</td>
+                                </tr>
+                                <tr class="even">
+                                    <th scope="row"><wicket:message key="adminCache">Admin cache</wicket:message></th>
+                                    <td wicket:id="admin.size">-</td>
+                                    <td wicket:id="admin.hit">-</td>
+                                    <td wicket:id="admin.miss">-</td>
+                                    <td wicket:id="admin.loadok">-</td>
+                                    <td wicket:id="admin.loadko">-</td>
+                                    <td wicket:id="admin.loadtime">-</td>
+                                    <td wicket:id="admin.evict">-</td>
+                                </tr>
+                                <tr class="odd">
+                                    <th scope="row"><wicket:message key="userCache">User cache</wicket:message></th>
+                                    <td wicket:id="user.size">-</td>
+                                    <td wicket:id="user.hit">-</td>
+                                    <td wicket:id="user.miss">-</td>
+                                    <td wicket:id="user.loadok">-</td>
+                                    <td wicket:id="user.loadko">-</td>
+                                    <td wicket:id="user.loadtime">-</td>
+                                    <td wicket:id="user.evict">-</td>
+                                </tr>
+                            </tbody>
+                       </table>
+
+	           </li>
+	           <li>
+		        <div class="button-group">
+		          <a href="#" wicket:id="invalidate"><span><wicket:message key="cacheInvalidate"></wicket:message></span></a>
+		        </div>
+		      </li>
+	          </ul>
+	        </fieldset>
+	        <fieldset>
+              
+              <ul>
+               <li class="button-group selfclear">
+                  <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+                  <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+                </li>
+              </ul>
+            </fieldset>
+	    </form>
+     </wicket:extend>
+  </body>
+</html>

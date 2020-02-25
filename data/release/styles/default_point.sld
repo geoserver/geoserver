@@ -10,14 +10,14 @@
     <Name>default_point</Name>
     <UserStyle>
     <!-- Styles can have names, titles and abstracts -->
-      <Title>Default Point</Title>
-      <Abstract>A sample style that draws a point</Abstract>
+      <Title>Red Square Point</Title>
+      <Abstract>A sample style that draws a red square point</Abstract>
       <!-- FeatureTypeStyles describe how to render different features -->
       <!-- A FeatureTypeStyle for rendering points -->
       <FeatureTypeStyle>
         <Rule>
           <Name>rule1</Name>
-          <Title>Red Square</Title>
+          <Title>Red Square Point</Title>
           <Abstract>A 6 pixel square with a red fill and no stroke</Abstract>
             <PointSymbolizer>
               <Graphic>

@@ -7,7 +7,7 @@ package org.geoserver.wps;
 
 /**
  * The execution status request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class GetExecutionStatusType {
@@ -54,8 +54,13 @@ public class GetExecutionStatusType {
 
     @Override
     public String toString() {
-        return "StatusType [service=" + service + ", version=" + version + ", executionId="
-                + executionId + "]";
+        return "StatusType [service="
+                + service
+                + ", version="
+                + version
+                + ", executionId="
+                + executionId
+                + "]";
     }
 
     @Override
@@ -71,34 +76,22 @@ public class GetExecutionStatusType {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         GetExecutionStatusType other = (GetExecutionStatusType) obj;
         if (baseUrl == null) {
-            if (other.baseUrl != null)
-                return false;
-        } else if (!baseUrl.equals(other.baseUrl))
-            return false;
+            if (other.baseUrl != null) return false;
+        } else if (!baseUrl.equals(other.baseUrl)) return false;
         if (executionId == null) {
-            if (other.executionId != null)
-                return false;
-        } else if (!executionId.equals(other.executionId))
-            return false;
+            if (other.executionId != null) return false;
+        } else if (!executionId.equals(other.executionId)) return false;
         if (service == null) {
-            if (other.service != null)
-                return false;
-        } else if (!service.equals(other.service))
-            return false;
+            if (other.service != null) return false;
+        } else if (!service.equals(other.service)) return false;
         if (version == null) {
-            if (other.version != null)
-                return false;
-        } else if (!version.equals(other.version))
-            return false;
+            if (other.version != null) return false;
+        } else if (!version.equals(other.version)) return false;
         return true;
     }
-
 }

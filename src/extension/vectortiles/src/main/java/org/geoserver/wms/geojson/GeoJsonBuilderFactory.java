@@ -4,15 +4,13 @@
  */
 package org.geoserver.wms.geojson;
 
+import com.google.common.collect.ImmutableSet;
 import java.awt.Rectangle;
 import java.util.Set;
-
-import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geoserver.wms.vector.VectorTileBuilderFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
-import com.google.common.collect.ImmutableSet;
-
+@SuppressWarnings("PMD")
 public class GeoJsonBuilderFactory implements VectorTileBuilderFactory {
     public static final String MIME_TYPE = "application/json;type=geojson";
 
@@ -32,5 +30,4 @@ public class GeoJsonBuilderFactory implements VectorTileBuilderFactory {
     public GeoJsonWMSBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
         return new GeoJsonWMSBuilder(screenSize, mapArea);
     }
-
 }

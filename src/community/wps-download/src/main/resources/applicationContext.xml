@@ -24,11 +24,36 @@
 		<constructor-arg index="1" ref="downloadEstimatorProcess"/>
 		<constructor-arg index="2" ref="wpsResourceManager"/>
 	</bean>
+	
+	<bean id="downloadMapProcess" class="org.geoserver.wps.gs.download.DownloadMapProcess">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+
+	<bean id="downloadAnimationProcess" class="org.geoserver.wps.gs.download.DownloadAnimationProcess">
+		<constructor-arg index="0" ref="downloadMapProcess"/>
+		<constructor-arg index="1" ref="wpsResourceManager"/>
+		<constructor-arg index="2" ref="downloadServiceConfigurationWatcher" />
+	</bean>
 
 
 	<!-- The PPIO that need to be registered into SPI because of their dependencies -->
 	<bean id="archiveZipPPIO" class="org.geoserver.wps.ppio.ZipArchivePPIO">
 	  <constructor-arg index="0" value="4"/>
-    </bean>
+	</bean>
+
+	<bean id="downloadLayerPPIO" class="org.geoserver.wps.gs.download.JaxbPPIO">
+		<constructor-arg index="0" value="org.geoserver.wps.gs.download.Layer"/>
+		<constructor-arg index="1" ref="entityResolverProvider"/>
+	</bean>
+
+	<bean id="downloadParametersPPIO" class="org.geoserver.wps.gs.download.JaxbPPIO">
+		<constructor-arg index="0" value="org.geoserver.wps.gs.download.Parameters"/>
+		<constructor-arg index="1" ref="entityResolverProvider"/>
+	</bean>
+
+	<bean id="downloadFormatPPIO" class="org.geoserver.wps.gs.download.JaxbPPIO">
+		<constructor-arg index="0" value="org.geoserver.wps.gs.download.Format"/>
+		<constructor-arg index="1" ref="entityResolverProvider"/>
+	</bean>
     
 </beans>

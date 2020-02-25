@@ -8,16 +8,13 @@ package org.vfny.geoserver.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-/**
- * A wrapper allowing a EntityResolver to participate in schema validation
- */
+/** A wrapper allowing a EntityResolver to participate in schema validation */
 class EntityResolverToLSResourceResolver implements LSResourceResolver {
 
     static class InputSourceToLSResource implements LSInput {
@@ -76,7 +73,7 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
         @Override
         public void setStringData(String stringData) {
             // nothing to do
-            
+
         }
 
         @Override
@@ -86,7 +83,7 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
 
         @Override
         public void setBaseURI(String baseURI) {
-            // 
+            //
         }
 
         @Override
@@ -98,28 +95,26 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
         @Override
         public void setCertifiedText(boolean certifiedText) {
             // TODO Auto-generated method stub
-            
+
         }
-
-        
-
     }
 
     EntityResolver entityResolver;
     LSResourceResolver delegate;
 
-    public EntityResolverToLSResourceResolver(LSResourceResolver delegate, EntityResolver entityResolver) {
-        this.entityResolver= entityResolver;
+    public EntityResolverToLSResourceResolver(
+            LSResourceResolver delegate, EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
         this.delegate = delegate;
     }
 
     @Override
-    public LSInput resolveResource(String type, String namespaceURI, String publicId,
-            String systemId, String baseURI) {
+    public LSInput resolveResource(
+            String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         // give the entity resolver an opportunity (mostly to throw an exception)
         try {
             InputSource is = entityResolver.resolveEntity(publicId, systemId);
-            if(is != null) {
+            if (is != null) {
                 return new InputSourceToLSResource(is);
             }
         } catch (SAXException | IOException e) {
@@ -128,6 +123,4 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
         // otherwise fall back on the default resolution path
         return delegate.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
     }
-    
-    
 }

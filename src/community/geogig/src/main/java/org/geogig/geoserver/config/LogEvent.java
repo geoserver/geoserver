@@ -4,16 +4,17 @@
  */
 package org.geogig.geoserver.config;
 
+import com.google.common.base.MoreObjects;
 import java.io.Serializable;
-
-import com.google.common.base.Objects;
 
 public class LogEvent implements Serializable {
 
     private static final long serialVersionUID = -7446826318796072678L;
 
     public enum Severity {
-        DEBUG, INFO, ERROR
+        DEBUG,
+        INFO,
+        ERROR
     }
 
     private long timestamp;
@@ -28,7 +29,12 @@ public class LogEvent implements Serializable {
 
     private String message;
 
-    LogEvent(long eventId, long timestamp, Severity severity, String repoUrl, String user,
+    LogEvent(
+            long eventId,
+            long timestamp,
+            Severity severity,
+            String repoUrl,
+            String user,
             String message) {
         this.eventId = eventId;
         this.timestamp = timestamp;
@@ -64,8 +70,13 @@ public class LogEvent implements Serializable {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).addValue(eventId).addValue(severity)
-                .add("time", timestamp).add("user", user).add("repo", repoUrl)
-                .add("message", message).toString();
+        return MoreObjects.toStringHelper(this)
+                .addValue(eventId)
+                .addValue(severity)
+                .add("time", timestamp)
+                .add("user", user)
+                .add("repo", repoUrl)
+                .add("message", message)
+                .toString();
     }
 }

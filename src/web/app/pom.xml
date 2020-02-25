@@ -10,14 +10,18 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.17-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>
-  <name>GeoServer Web Application</name>    
+  <version>2.17-SNAPSHOT</version>
+  <name>GeoServer Web Application</name>
   <dependencies>
+    <dependency>
+        <groupId>org.marlin</groupId>
+        <artifactId>marlin</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
@@ -58,7 +62,7 @@
       <artifactId>gs-web-sec-ldap</artifactId>
       <version>${project.version}</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-rest</artifactId>
       <version>${project.version}</version>
@@ -124,6 +128,26 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig-wcs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig-wms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig-wmts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.security</groupId>
       <artifactId>gs-sec-jdbc</artifactId>
       <version>${project.version}</version>
@@ -136,6 +160,10 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -176,6 +204,16 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlets</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -282,6 +320,9 @@
               <maxIdleTime>10000</maxIdleTime>
             </connector>
           </connectors>
+          <supportedPackagings>
+            <supportedPackaging>jar</supportedPackaging>
+          </supportedPackagings>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
           <daemon>false</daemon>
@@ -292,6 +333,7 @@
           -->
           <!-- Make sure it's not looking for annotations everywhere -->
           <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
+          <useTestScope>true</useTestScope>
         </configuration>
       </plugin>
 	  <plugin>
@@ -330,7 +372,7 @@
 	<plugin>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>build-helper-maven-plugin</artifactId>
-		<version>1.8</version>
+		<version>3.0.0</version>
 		<executions>
 			<execution>
 				<id>attach-war</id>
@@ -384,9 +426,9 @@
       <id>arcsde</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.extension</groupId>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-arcsde</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.17-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -415,7 +457,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-sqlserver</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.17-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -425,7 +467,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.17-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -435,7 +477,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.17-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
@@ -449,7 +491,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-mysql</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.17-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -504,16 +546,6 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-imagemosaic-jdbc</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>dem</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-dem</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -735,6 +767,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>qos</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-qos</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>querylayer</id>
       <dependencies>
         <dependency>
@@ -800,42 +842,42 @@
       </dependencies>
     </profile>
     <profile>
-      <id>imagecollection</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-imagecollection</artifactId>
-          <version>${gt.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>feature-aggregate</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-feature-aggregate</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>authkey</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-authkey</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
     <profile>
-      <id>gt-ogr</id>
+      <id>gt-ogr-jni</id>
       <dependencies>
         <dependency>
           <groupId>org.geotools</groupId>
-          <artifactId>gt-ogr</artifactId>
+          <artifactId>gt-ogr-jni</artifactId>
           <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>gt-ogr-bridj</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-ogr-bridj</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>web-ogr</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-ogr</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -847,7 +889,22 @@
           <artifactId>gs-csw-core</artifactId>
           <version>${project.version}</version>
         </dependency>
-	<dependency>
+		<dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>gs-web-csw</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>csw-iso</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>gs-csw-iso</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+		<dependency>
           <groupId>org.geoserver.csw</groupId>
           <artifactId>gs-web-csw</artifactId>
           <version>${project.version}</version>
@@ -1188,7 +1245,7 @@
       <id>geofence</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-geofence</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1198,12 +1255,12 @@
       <id>sldService</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-sldservice</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>   
+    </profile>
 	<profile>
       <id>gwc-distributed</id>
       <dependencies>
@@ -1238,21 +1295,21 @@
       <id>geofence-server</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
-        </dependency>              
-      </dependencies>      
+        </dependency>
+      </dependencies>
    </profile>
    <profile>
       <id>vectortiles</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-vectortiles</artifactId>
           <version>${project.version}</version>
-        </dependency>              
-      </dependencies>      
+        </dependency>
+      </dependencies>
    </profile>
    <profile>
       <id>gdal-translate</id>
@@ -1274,7 +1331,7 @@
         </dependency>
       </dependencies>
    </profile>
-    <profile>
+   <profile>
       <id>gwc-s3</id>
       <dependencies>
         <dependency>
@@ -1284,6 +1341,17 @@
         </dependency>
       </dependencies>
    </profile>
+   <profile>
+      <id>gwc-azure-blob</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gwc-azure-blob</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    
    <profile>
       <id>geogig</id>
       <dependencies>
@@ -1318,7 +1386,7 @@
       <id>ysld</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ysld</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1414,7 +1482,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1429,7 +1497,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1444,12 +1512,27 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-sec-oauth2-geonode</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oauth2-openid-connect</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-sec-oauth2-openid-connect</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1465,14 +1548,260 @@
       </dependencies>
     </profile>
     <profile>
-      <id>onelogin</id>
+      <id>saml</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-onelogin</artifactId>
+          <artifactId>gs-saml</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
- </profiles>
+    <profile>
+      <id>notification</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-notification</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-notification-common</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-notification-geonode</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mbstyle</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-mbstyle</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oseo</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-oseo-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-oseo-rest</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-oseo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>s3-geotiff</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-s3-geotiff</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>nsg-wfs-profile</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-nsg-wfs-profile</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>nsg-wmts-profile</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-nsg-wmts-profile</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>ghrsst</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-netcdf-ghrsst</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+    <profile>
+      <id>taskmanager</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-taskmanager-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>taskmanager-s3</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-taskmanager-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-taskmanager-s3</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mongodb</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-mongodb</artifactId>
+          <version>${project.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>org.geotools</groupId>
+              <artifactId>gt-app-schema</artifactId>
+            </exclusion>
+          </exclusions> 
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wfs3</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wfs3</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+    <profile>
+      <id>mapml</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-mapml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>metadata</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-metadata</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geostyler</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-geostyler</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>ogcapi</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-features</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-styles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-tiles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-images</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-changeset</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-tiled-features</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>importer-jdbc</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-importer-jdbc</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mbtiles-store</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-mbtiles</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>json-ld</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-json-ld</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  <profile>
+    <id>flatgeobuf</id>
+    <dependencies>
+      <dependency>
+        <groupId>org.geoserver.community</groupId>
+        <artifactId>gs-flatgeobuf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </profile>
+</profiles>
 </project>

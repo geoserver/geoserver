@@ -6,6 +6,7 @@
 package org.geoserver.netcdf;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 public class NetCDFStatusTest {

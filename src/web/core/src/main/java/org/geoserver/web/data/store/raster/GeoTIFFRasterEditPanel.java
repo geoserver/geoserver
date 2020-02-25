@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.form.Form;
 public class GeoTIFFRasterEditPanel extends AbstractRasterFileEditPanel {
 
     public GeoTIFFRasterEditPanel(String componentId, Form storeEditForm) {
-        super(componentId, storeEditForm, new String[] { ".tiff", ".tif" });
+        super(componentId, storeEditForm, new String[] {".tiff", ".tif"});
     }
-
 }

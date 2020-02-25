@@ -8,17 +8,15 @@ package org.geoserver.cluster.configuration;
 import java.io.IOException;
 
 /**
- * 
  * class to store and load configuration from global var or properties file
- * 
+ *
  * @author carlo cancellieri - GeoSolutions SAS
- * 
  */
-final public class TopicConfiguration implements JMSConfigurationExt {
+public final class TopicConfiguration implements JMSConfigurationExt {
 
     public static final String TOPIC_NAME_KEY = "topicName";
 
-    public static final String DEFAULT_TOPIC_NAME = "VirtualTopic.>";
+    public static final String DEFAULT_TOPIC_NAME = "VirtualTopic.geoserver";
 
     public static final String DURABLE_KEY = "durable";
 
@@ -38,5 +36,4 @@ final public class TopicConfiguration implements JMSConfigurationExt {
         return config.override(TOPIC_NAME_KEY, DEFAULT_TOPIC_NAME)
                 || config.override(DURABLE_KEY, DEFAULT_DURABLE_NAME);
     }
-
 }

@@ -13,9 +13,7 @@ import java.awt.image.SampleModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.media.jai.ImageLayout;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.importer.ImportContext;
@@ -56,7 +54,7 @@ public class GdalTransformTest extends ImporterTestSupport {
         assertEquals(ImportTask.State.COMPLETE, task.getState());
 
         runChecks("EmissiveCampania");
-        
+
         // check we did the gdal_transform on the file
         GeoTiffReader reader = null;
         try {
@@ -67,13 +65,12 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(3, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
-            assertEquals(0, reader.getNumOverviews());
+            assertEquals(0, reader.getDatasetLayout().getNumInternalOverviews());
         } finally {
             if (reader != null) {
                 reader.dispose();
             }
         }
-        
     }
 
     @Test
@@ -113,16 +110,13 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(16, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_USHORT, sm.getDataType());
-            assertEquals(3, reader.getNumOverviews());
+            assertEquals(3, reader.getDatasetLayout().getNumInternalOverviews());
         } finally {
             if (reader != null) {
                 reader.dispose();
             }
         }
-
     }
-
-
 
     @Test
     public void testTranslateAddo() throws Exception {
@@ -164,13 +158,12 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(3, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
-            assertEquals(3, reader.getNumOverviews());
+            assertEquals(3, reader.getDatasetLayout().getNumInternalOverviews());
         } finally {
             if (reader != null) {
                 reader.dispose();
             }
         }
-
     }
 
     @Test
@@ -190,7 +183,7 @@ public class GdalTransformTest extends ImporterTestSupport {
         task.getTransform().add(warp);
 
         assertEquals("box_gcp_fixed", task.getLayer().getResource().getName());
-        
+
         CoverageStoreInfo store = (CoverageStoreInfo) task.getStore();
         assertEquals("GeoTIFF", store.getFormat().getName());
 
@@ -213,8 +206,9 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(1, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
-            assertEquals(0, reader.getNumOverviews());
-            assertEquals(Integer.valueOf(4326),
+            assertEquals(0, reader.getDatasetLayout().getNumInternalOverviews());
+            assertEquals(
+                    Integer.valueOf(4326),
                     CRS.lookupEpsgCode(reader.getCoordinateReferenceSystem(), false));
         } finally {
             if (reader != null) {
@@ -222,7 +216,6 @@ public class GdalTransformTest extends ImporterTestSupport {
             }
         }
     }
-
 
     private GdalTranslateTransform buildGdalTranslate() {
         List<String> options = new ArrayList<>();
@@ -257,5 +250,4 @@ public class GdalTransformTest extends ImporterTestSupport {
         GdalWarpTransform warp = new GdalWarpTransform(options);
         return warp;
     }
-
 }

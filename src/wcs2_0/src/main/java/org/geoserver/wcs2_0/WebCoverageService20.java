@@ -16,46 +16,36 @@ import org.opengis.coverage.grid.GridCoverage;
 
 /**
  * Web Coverage Services interface.
- * <p>
- * Each of the methods on this class corresponds to an operation as defined
- * by the Web Coverage Specification. See {@link "http://www.opengeospatial.org/standards/wcs"}
- * for more details.
- * </p>
- * 
- * @author Emanuele Tajariol (etj) - GeoSolutions
  *
+ * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage
+ * Specification. See {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
+ *
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public interface WebCoverageService20 {
-    
-    /**
-     * A key that can be be used to identify the originating CoverageInfo attached to the output GridCoverage,
-     * which can be used to retrieve extra metadata about the coverage
-     */
-    public static final String ORIGINATING_COVERAGE_INFO = "org.geoserver.wcs.originatingCoverageInfo";
 
     /**
-     * WCS service info.
+     * A key that can be be used to identify the originating CoverageInfo attached to the output
+     * GridCoverage, which can be used to retrieve extra metadata about the coverage
      */
+    public static final String ORIGINATING_COVERAGE_INFO =
+            "org.geoserver.wcs.originatingCoverageInfo";
+
+    /** WCS service info. */
     WCSInfo getServiceInfo();
-    
-    /**
-    * GetCapabilities operation.
-    */
+
+    /** GetCapabilities operation. */
     TransformerBase getCapabilities(GetCapabilitiesType request);
 
-    /**
-     * DescribeCoverage operation.
-     */
+    /** DescribeCoverage operation. */
     WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request);
-    
+
     /**
-     * The WCS EO desscribe coverage set operation (available only if the wcs-eo plugin is installed)
+     * The WCS EO desscribe coverage set operation (available only if the wcs-eo plugin is
+     * installed)
      */
     TransformerBase describeEOCoverageSet(DescribeEOCoverageSetType request);
 
-
-    /**
-     * GetCoverage operation.
-     */
+    /** GetCoverage operation. */
     GridCoverage getCoverage(GetCoverageType request);
 }

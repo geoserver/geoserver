@@ -6,7 +6,6 @@
 package org.geoserver.wms.georss;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -14,9 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TimeZone;
-
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
@@ -27,43 +24,32 @@ import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**
- * The AtomUtils class provides some static methods useful in producing atom metadata related to 
+ * The AtomUtils class provides some static methods useful in producing atom metadata related to
  * GeoServer features.
  *
  * @author David Winslow
  */
 public final class AtomUtils {
 
-    /**
-     * A date formatting object that does most of the formatting work for RFC3339.  Note that since 
-     * Java's SimpleDateFormat does not provide all the facilities needed for RFC3339 there is still
-     * some custom code to finish the job.
-     */
-    private static DateFormat rfc3339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-    /**
-     * A number formatting object to format the the timezone offset info in RFC3339 output.
-     */
+    /** A number formatting object to format the the timezone offset info in RFC3339 output. */
     private static NumberFormat doubleDigit = new DecimalFormat("00");
 
-    /**
-     * A FeatureTemplate used for formatting feature info.
-     * @TODO: Are these things threadsafe?
-     */
+    /** A FeatureTemplate used for formatting feature info. @TODO: Are these things threadsafe? */
     private static FeatureTemplate featureTemplate = new FeatureTemplate();
 
-    /**
-     * This is a utility class so don't allow instantiation.
-     */
-    private AtomUtils(){ /* Nothing to do */ }
+    /** This is a utility class so don't allow instantiation. */
+    private AtomUtils() {
+        /* Nothing to do */
+    }
 
     /**
      * Format dates as specified in rfc3339 (required for Atom dates)
+     *
      * @param d the Date to be formatted
      * @return the formatted date
      */
-    public static String dateToRFC3339(Date d){
-        StringBuilder result = new StringBuilder(rfc3339.format(d));
+    public static String dateToRFC3339(Date d) {
+        StringBuilder result = new StringBuilder(formatRFC3339(d));
         Calendar cal = new GregorianCalendar();
         cal.setTime(d);
         cal.setTimeZone(TimeZone.getDefault());
@@ -74,70 +60,77 @@ public final class AtomUtils {
         if (offset_millis == 0) {
             result.append("Z");
         } else {
-            result
-                .append((offset_millis > 0) ? "+" : "-")
-                .append(doubleDigit.format(offset_hours))
-                .append(":")
-                .append(doubleDigit.format(offset_minutes));
+            result.append((offset_millis > 0) ? "+" : "-")
+                    .append(doubleDigit.format(offset_hours))
+                    .append(":")
+                    .append(doubleDigit.format(offset_minutes));
         }
 
         return result.toString();
     }
 
-    //TODO: use an html based output format
-    public static String getEntryURL(WMS wms, SimpleFeature feature, WMSMapContent context){
+    /**
+     * A date formatting object that does most of the formatting work for RFC3339. Note that since
+     * Java's SimpleDateFormat does not provide all the facilities needed for RFC3339 there is still
+     * some custom code to finish the job.
+     */
+    private static String formatRFC3339(Date d) {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(d);
+    }
+
+    // TODO: use an html based output format
+    public static String getEntryURL(WMS wms, SimpleFeature feature, WMSMapContent context) {
         try {
             return featureTemplate.link(feature);
-        } catch (IOException ioe){
+        } catch (IOException ioe) {
             String nsUri = feature.getType().getName().getNamespaceURI();
             String nsPrefix = wms.getNameSpacePrefix(nsUri);
 
-            HashMap<String,String> params = new HashMap<String,String>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("format", "application/atom+xml");
-            params.put("layers",  nsPrefix + ":" + feature.getType().getTypeName());
+            params.put("layers", nsPrefix + ":" + feature.getType().getTypeName());
             params.put("featureid", feature.getID());
-         
-            return ResponseUtils.buildURL(context.getRequest().getBaseUrl(),
-                    "wms/reflect",
-                    params,
-                    URLType.SERVICE);
+
+            return ResponseUtils.buildURL(
+                    context.getRequest().getBaseUrl(), "wms/reflect", params, URLType.SERVICE);
         }
     }
 
-    public static String getEntryURI(WMS wms, SimpleFeature feature, WMSMapContent context){
+    public static String getEntryURI(WMS wms, SimpleFeature feature, WMSMapContent context) {
         return getEntryURL(wms, feature, context);
     }
 
-    public static String getFeatureTitle(SimpleFeature feature){
-        try{
+    public static String getFeatureTitle(SimpleFeature feature) {
+        try {
             return featureTemplate.title(feature);
-        } catch (IOException ioe){
+        } catch (IOException ioe) {
             return feature.getID();
         }
     }
 
-    public static String getFeatureDescription(SimpleFeature feature){
-        try{
+    public static String getFeatureDescription(SimpleFeature feature) {
+        try {
             return featureTemplate.description(feature);
         } catch (IOException ioe) {
             return feature.getID();
         }
     }
 
-    public static String getFeedURL(WMSMapContent context){
-        return WMSRequests.getGetMapUrl(context.getRequest(), null, 0, null, null).replace(' ', '+');
+    public static String getFeedURL(WMSMapContent context) {
+        return WMSRequests.getGetMapUrl(context.getRequest(), null, 0, null, null)
+                .replace(' ', '+');
     }
 
-    public static String getFeedURI(WMSMapContent context){
+    public static String getFeedURI(WMSMapContent context) {
         return getFeedURL(context);
     }
 
-    public static String getFeedTitle(WMSMapContent context){
+    public static String getFeedTitle(WMSMapContent context) {
         StringBuffer title = new StringBuffer();
-        for( Layer layer : context.layers() ){
+        for (Layer layer : context.layers()) {
             title.append(layer.getTitle()).append(",");
         }
-        title.setLength(title.length()-1);
+        title.setLength(title.length() - 1);
         return title.toString();
     }
 
@@ -152,16 +145,5 @@ public final class AtomUtils {
             description.setLength(description.length() - 1);
             return description.toString();
         }
-    }
-
-
-    private static String commaSeparatedLayers(WMSMapContent con){
-        StringBuilder layers = new StringBuilder();
-        List<Layer> mapLayers = con.layers();
-        for (int i = 0; i < mapLayers.size(); i++){
-            layers.append(mapLayers.get(i).getTitle());
-            if (i < mapLayers.size() - 1) layers.append(",");
-        }
-        return layers.toString();
     }
 }

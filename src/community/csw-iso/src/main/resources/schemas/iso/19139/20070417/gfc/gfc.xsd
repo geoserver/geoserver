@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:gfc="http://www.isotc211.org/2005/gfc" targetNamespace="http://www.isotc211.org/2005/gfc" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmx="http://www.isotc211.org/2005/gmx" version="0.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>This file was generated from ISO TC/211 UML class diagrams == 03-09-2009 14:09:36 ====== </xs:documentation>
+		<xs:documentation>Corrected to fit ISO 19110 requirements (Annex E - Organization of the gfc namespace) == 24-06-2011 ====== </xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd"/>
+    <xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd/referenceSystem.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gmx" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd"/>	
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="FC_ListedValue_Type">
+		<xs:annotation>
+			<xs:documentation>Value for an enumerated feature attribute domain, including its codes and interpretation.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="label" type="gco:CharacterString_PropertyType"/>
+					<xs:element name="code" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="definition" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="definitionReference" type="gfc:FC_DefinitionReference_PropertyType" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_ListedValue" type="gfc:FC_ListedValue_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_ListedValue_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_ListedValue" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_FeatureAssociation_Type">
+		<xs:annotation>
+			<xs:documentation>Relationship that links instances of this feature type with instances of the same or of a different feature type.  - The memberOf-linkBetween association in the General Feature Model is not directly implemented here since it can be easily derived from combining the Role and MemberOf associations.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:FC_FeatureType_Type">
+				<xs:sequence>
+					<xs:element name="roleName" type="gfc:FC_AssociationRole_PropertyType" minOccurs="2" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_FeatureAssociation" type="gfc:FC_FeatureAssociation_Type" substitutionGroup="gfc:FC_FeatureType"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_FeatureAssociation_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_FeatureAssociation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_FeatureCatalogue_Type">
+		<xs:annotation>
+			<xs:documentation>A feature catalogue contains the definition of some number feature types with other information necessary for their definitions.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmx:AbstractCT_Catalogue_Type">
+				<xs:sequence>
+					<xs:element name="producer" type="gmd:CI_ResponsibleParty_PropertyType"/>
+					<xs:element name="functionalLanguage" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="featureType" type="gfc:FC_FeatureType_PropertyType" minOccurs="1" maxOccurs="unbounded"/>
+					<xs:element name="definitionSource" type="gfc:FC_DefinitionSource_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="globalProperty" type="gfc:FC_PropertyType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="inheritanceRelation" type="gfc:FC_InheritanceRelation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_FeatureCatalogue" type="gfc:FC_FeatureCatalogue_Type" substitutionGroup="gmx:AbstractCT_Catalogue"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_FeatureCatalogue_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_FeatureCatalogue" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_FeatureAttribute_Type">
+		<xs:annotation>
+			<xs:documentation>Characteristic of a feature type.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:AbstractFC_PropertyType_Type">
+				<xs:sequence>
+					<xs:element name="code" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="valueMeasurementUnit" type="gco:UnitOfMeasure_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="valueType" type="gco:TypeName_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="listedValue" type="gfc:FC_ListedValue_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_FeatureAttribute" type="gfc:FC_FeatureAttribute_Type" substitutionGroup="gfc:AbstractFC_PropertyType"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_FeatureAttribute_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_FeatureAttribute" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_AssociationRole_Type">
+		<xs:annotation>
+			<xs:documentation>A role of the association FC_AssociationRole::relation.  - [ocl] - roleName = FC_Member::memberName; - FC_PropertyType::cardinality realizes GF_AssociationRole::cardinality - [/ocl]</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:AbstractFC_PropertyType_Type">
+				<xs:sequence>
+					<xs:element name="type" type="gfc:FC_RoleType_PropertyType"/>
+					<xs:element name="isOrdered" type="gco:Boolean_PropertyType"/>
+					<xs:element name="isNavigable" type="gco:Boolean_PropertyType"/>
+					<xs:element name="relation" type="gfc:FC_FeatureAssociation_PropertyType"/>
+					<xs:element name="rolePlayer" type="gfc:FC_FeatureType_PropertyType" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_AssociationRole" type="gfc:FC_AssociationRole_Type" substitutionGroup="gfc:AbstractFC_PropertyType"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_AssociationRole_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_AssociationRole" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_FeatureType_Type">
+		<xs:annotation>
+			<xs:documentation>Class of real world phenomena with common properties -  - [ocl] - typeName realizes GF_FeatureType::typeName; - isAbstract realizes GF_FeatureType::isAbstract; - constrainedBy realizes GF_FeatureType::constrainedBy - [/ocl]</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="typeName" type="gco:LocalName_PropertyType"/>
+					<xs:element name="definition" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="code" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="isAbstract" type="gco:Boolean_PropertyType"/>
+					<xs:element name="aliases" type="gco:LocalName_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="inheritsFrom" type="gfc:FC_InheritanceRelation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="inheritsTo" type="gfc:FC_InheritanceRelation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="featureCatalogue" type="gfc:FC_FeatureCatalogue_PropertyType" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="constrainedBy" type="gfc:FC_Constraint_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="definitionReference" type="gfc:FC_DefinitionReference_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="carrierOfCharacteristics" type="gfc:FC_CarrierOfCharacteristics_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_FeatureType" type="gfc:FC_FeatureType_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_FeatureType_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_FeatureType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_InheritanceRelation_Type">
+		<xs:annotation>
+			<xs:documentation>FC_InheritanceRelation realizes GF_InheritanceRelation.  - [ocl] - FC_InheritanceRelation always assumes that its GF_InheritanceRelation::uniqueInstance is TRUE. - [/ocl]</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="name" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="description" type="gco:CharacterString_PropertyType"/>
+					<xs:element name="uniqueInstance" type="gco:Boolean_PropertyType"/>
+					<xs:element name="subtype" type="gfc:FC_FeatureType_PropertyType" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="supertype" type="gfc:FC_FeatureType_PropertyType" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_InheritanceRelation" type="gfc:FC_InheritanceRelation_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_InheritanceRelation_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_InheritanceRelation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_FeatureOperation_Type">
+		<xs:annotation>
+			<xs:documentation>Operation that every instance of an associated feature type must implement. - [ocl] - triggeredByValuesOf realizes GF_Operation::triggeredByValuesOf; - observesValuesOf realizes GF_Operation::observesValuesOf; - affectsValuesOf realizes GF_Operation::affectsValuesOf - [/ocl]</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:AbstractFC_PropertyType_Type">
+				<xs:sequence>
+					<xs:element name="signature" type="gco:CharacterString_PropertyType"/>
+					<xs:element name="formalDefinition" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="triggeredByValuesOf" type="gfc:FC_CarrierOfCharacteristics_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="affectsValuesOf" type="gfc:FC_CarrierOfCharacteristics_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="observesValuesOf" type="gfc:FC_CarrierOfCharacteristics_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_FeatureOperation" type="gfc:FC_FeatureOperation_Type" substitutionGroup="gfc:AbstractFC_PropertyType"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_FeatureOperation_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_FeatureOperation" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="AbstractFC_PropertyType_Type" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Abstract class for local and global feature properties.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:AbstractFC_CarrierOfCharacteristics_Type">
+				<xs:sequence>
+					<xs:element name="memberName" type="gco:LocalName_PropertyType"/>
+					<xs:element name="definition" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="cardinality" type="gco:Multiplicity_PropertyType"/>
+					<xs:element name="definitionReference" type="gfc:FC_DefinitionReference_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="featureCatalogue" type="gfc:FC_FeatureCatalogue_PropertyType" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="AbstractFC_PropertyType" type="gfc:AbstractFC_PropertyType_Type" abstract="true" substitutionGroup="gfc:AbstractFC_CarrierOfCharacteristics"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_PropertyType_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:AbstractFC_PropertyType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_Constraint_Type">
+		<xs:annotation>
+			<xs:documentation>A class for defining constraints for types.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="description" type="gco:CharacterString_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_Constraint" type="gfc:FC_Constraint_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_Constraint_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_Constraint" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_Binding_Type">
+		<xs:annotation>
+			<xs:documentation>Class that is used to describe the specifics of how a property type is bound to a particular feature type. Used as an association class for the association MemberOf between feature type and property type.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:AbstractFC_CarrierOfCharacteristics_Type">
+				<xs:sequence>
+					<xs:element name="description" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="globalProperty" type="gfc:FC_PropertyType_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_Binding" type="gfc:FC_Binding_Type" substitutionGroup="gfc:AbstractFC_CarrierOfCharacteristics"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_Binding_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_Binding" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_DefinitionSource_Type">
+		<xs:annotation>
+			<xs:documentation>Class that specifies the source of a definition.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="source" type="gmd:CI_Citation_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_DefinitionSource" type="gfc:FC_DefinitionSource_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_DefinitionSource_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_DefinitionSource" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_DefinitionReference_Type">
+		<xs:annotation>
+			<xs:documentation>Class that links a data instance to the source of its definition.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="sourceIdentifier" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="definitionSource" type="gfc:FC_DefinitionSource_PropertyType" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_DefinitionReference" type="gfc:FC_DefinitionReference_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_DefinitionReference_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_DefinitionReference" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_BoundFeatureAttribute_Type">
+		<xs:annotation>
+			<xs:documentation>Class that is used to describe the specifics of how a global feature attribute is bound to a particular feature type.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:FC_Binding_Type">
+				<xs:sequence>
+					<xs:element name="valueType" type="gco:TypeName_PropertyType" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_BoundFeatureAttribute" type="gfc:FC_BoundFeatureAttribute_Type" substitutionGroup="gfc:FC_Binding"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_BoundFeatureAttribute_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_BoundFeatureAttribute" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="AbstractFC_CarrierOfCharacteristics_Type" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Abstract class for local feature properties and bound global properties of a feature type</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="featureType" type="gfc:FC_FeatureType_PropertyType" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="constrainedBy" type="gfc:FC_Constraint_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="AbstractFC_CarrierOfCharacteristics" type="gfc:AbstractFC_CarrierOfCharacteristics_Type" abstract="true"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_CarrierOfCharacteristics_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:AbstractFC_CarrierOfCharacteristics" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="FC_BoundAssociationRole_Type">
+		<xs:annotation>
+			<xs:documentation>Class that is used to describe the specifics of how a global association role is bound to a particular feature type.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gfc:FC_Binding_Type">
+				<xs:sequence>
+					<xs:element name="rolePlayer" type="gfc:FC_FeatureType_PropertyType" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="FC_BoundAssociationRole" type="gfc:FC_BoundAssociationRole_Type" substitutionGroup="gfc:FC_Binding"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_BoundAssociationRole_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_BoundAssociationRole" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="FC_RoleType" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="FC_RoleType_PropertyType">
+		<xs:sequence>
+			<xs:element ref="gfc:FC_RoleType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

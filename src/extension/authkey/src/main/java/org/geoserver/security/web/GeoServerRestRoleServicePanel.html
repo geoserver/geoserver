@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul class="leftwise">
+      <li>
+        <fieldset>
+        
+          <legend>
+            <span><wicket:message key="restRoleSettings"></wicket:message></span>
+          </legend>
+          
+          <ul>
+            <li>
+              <label for="baseUrl"><wicket:message key="baseUrl"></wicket:message></label>
+              <input id="baseUrl" wicket:id="baseUrl" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="rolesRESTEndpoint"><wicket:message key="rolesRESTEndpoint"></wicket:message></label>
+              <input id="rolesRESTEndpoint" wicket:id="rolesRESTEndpoint" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="adminRoleRESTEndpoint"><wicket:message key="adminRoleRESTEndpoint"></wicket:message></label>
+              <input id="adminRoleRESTEndpoint" wicket:id="adminRoleRESTEndpoint" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="usersRESTEndpoint"><wicket:message key="usersRESTEndpoint"></wicket:message></label>
+              <input id="usersRESTEndpoint" wicket:id="usersRESTEndpoint" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="rolesJSONPath"><wicket:message key="rolesJSONPath"></wicket:message></label>
+              <input id="rolesJSONPath" wicket:id="rolesJSONPath" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="adminRoleJSONPath"><wicket:message key="adminRoleJSONPath"></wicket:message></label>
+              <input id="adminRoleJSONPath" wicket:id="adminRoleJSONPath" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="usersJSONPath"><wicket:message key="usersJSONPath"></wicket:message></label>
+              <input id="usersJSONPath" wicket:id="usersJSONPath" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="cacheConcurrencyLevel"><wicket:message key="cacheConcurrencyLevel"></wicket:message></label>
+              <input id="cacheConcurrencyLevel" wicket:id="cacheConcurrencyLevel" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="cacheMaximumSize"><wicket:message key="cacheMaximumSize"></wicket:message></label>
+              <input id="cacheMaximumSize" wicket:id="cacheMaximumSize" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="cacheExpirationTime"><wicket:message key="cacheExpirationTime"></wicket:message></label>
+              <input id="cacheExpirationTime" wicket:id="cacheExpirationTime" type="text" class="text"></input>
+            </li>
+
+            <li>
+              <label for="authApiKey"><wicket:message key="authApiKey"></wicket:message></label>
+              <input id="authApiKey" wicket:id="authApiKey" type="text" class="text"></input>
+            </li>
+
+          </ul>
+        </fieldset>
+      </li>
+    </ul>
+</wicket:extend>
+</body>
+</html>

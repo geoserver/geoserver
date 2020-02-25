@@ -6,11 +6,16 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Throwables.propagate;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,7 +25,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.apache.commons.beanutils.PropertyUtils;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
@@ -29,27 +34,19 @@ import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.io.Closeables;
-
 /**
  * Extracts a property from a {@link Info} object.
- * <p>
- * The property can be nested (p1.p2.p3), indexed (p1[3]), collection (colProp), or a combination
+ *
+ * <p>The property can be nested (p1.p2.p3), indexed (p1[3]), collection (colProp), or a combination
  * (colProp1.nonColProp.colProp2[1]).
- * <p>
- * In the later case, indicates {@code colProp1} is a collection property and a list of all the id
- * values from all the objects in the p1 property shall be returned.
+ *
+ * <p>In the later case, indicates {@code colProp1} is a collection property and a list of all the
+ * id values from all the objects in the p1 property shall be returned.
  */
 public class CatalogPropertyAccessor implements PropertyAccessor {
 
     private static final Logger LOGGER = Logging.getLogger(CatalogPropertyAccessor.class);
-    
+
     @Override
     public boolean canHandle(Object object, String xpath, Class<?> target) {
         return object instanceof Info;
@@ -79,7 +76,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
      * @param input the object to extract the (possibly nested,indexed, or collection) property from
      * @param propertyName the property to extract from {@code input}
      * @return the evaluated value of the given property, or {@code null} if a prior nested property
-     *         in the path is null;
+     *     in the path is null;
      * @throws IllegalArgumentException if no such property exists for the given object
      */
     public Object getProperty(final Object input, final String propertyName)
@@ -92,10 +89,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         return getProperty(input, propertyNames, 0);
     }
 
-    /**
-     * @param input
-     *
-     */
+    /** @param input */
     @SuppressWarnings("unchecked")
     private List<String> getAnyText(final Info input) {
 
@@ -116,8 +110,8 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             throws IllegalArgumentException {
 
         if (offset < 0 || offset > propertyNames.length) {
-            throw new ArrayIndexOutOfBoundsException("offset: " + offset + ", properties: "
-                    + propertyNames.length);
+            throw new ArrayIndexOutOfBoundsException(
+                    "offset: " + offset + ", properties: " + propertyNames.length);
         }
 
         if (offset == propertyNames.length) {
@@ -127,8 +121,9 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         final String propName = propertyNames[offset];
 
         if (null == input) {
-            throw new IllegalArgumentException("Property not found: "
-                    + Joiner.on('.').join(Arrays.copyOf(propertyNames, offset + 1)));
+            throw new IllegalArgumentException(
+                    "Property not found: "
+                            + Joiner.on('.').join(Arrays.copyOf(propertyNames, offset + 1)));
         }
 
         // indexed property?
@@ -140,7 +135,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             Collection<Object> col = (Collection<Object>) input;
             List<Object> result = new ArrayList<Object>(col.size());
             for (Object o : col) {
-                if(o == null) {
+                if (o == null) {
                     continue;
                 }
                 // if one of the nested properties is not found just ignore and move
@@ -149,7 +144,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
                     Object value = getProperty(o, propName);
                     Object nested = getProperty(value, propertyNames, offset + 1);
                     result.add(nested);
-                } catch(Exception e) {
+                } catch (Exception e) {
                     LOGGER.log(Level.FINE, "Skipping nested property not found", e);
                 }
             }
@@ -159,13 +154,15 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         Object value;
         if (input instanceof Map) {
             if (!((Map<?, ?>) input).containsKey(propName)) {
-                throw new IllegalArgumentException("Property " + propName
-                        + " does not exist in Map property "
-                        + (offset > 0 ? propertyNames[offset - 1] : ""));
+                throw new IllegalArgumentException(
+                        "Property "
+                                + propName
+                                + " does not exist in Map property "
+                                + (offset > 0 ? propertyNames[offset - 1] : ""));
             }
             value = ((Map<?, ?>) input).get(propName);
         } else {
-            //special case for ResourceInfo bounding box, used the derived property
+            // special case for ResourceInfo bounding box, used the derived property
             if ("boundingBox".equalsIgnoreCase(propName) && input instanceof ResourceInfo) {
                 try {
                     value = ((ResourceInfo) input).boundingBox();
@@ -187,7 +184,8 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         return getProperty(value, propertyNames, offset + 1);
     }
 
-    private Object getIndexedProperty(Object input, final String[] propertyNames, final int offset) {
+    private Object getIndexedProperty(
+            Object input, final String[] propertyNames, final int offset) {
 
         final String indexedPropName = propertyNames[offset];
 
@@ -199,29 +197,43 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             final int endIndex = indexedPropName.length() - 1;
             final String indexStr = indexedPropName.substring(beginIndex, endIndex);
             index = Integer.parseInt(indexStr);
-            Preconditions.checkArgument(index > 0, "Illegal indexed property, index shall be > 0: "
-                    + indexedPropName);
+            Preconditions.checkArgument(
+                    index > 0, "Illegal indexed property, index shall be > 0: " + indexedPropName);
         }
 
         Collection<Object> col = getCollectionProperty(input, colPropName);
+        Object indexedValue;
         if (col == null) {
-            return false;
+            try {
+                indexedValue = PropertyUtils.getIndexedProperty(input, colPropName, index - 1);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                indexedValue = null;
+            }
+        } else {
+            if (!(col instanceof List)) {
+                throw new RuntimeException(
+                        "Indexed property access is not valid for property " + colPropName);
+            }
+            List<Object> list = (List<Object>) col;
+            if (index > list.size()) {
+                return null;
+            }
+            indexedValue = list.get(index - 1);
         }
-        if (!(col instanceof List)) {
-            throw new RuntimeException("Indexed property access is not valid for property "
-                    + colPropName);
-        }
-        List<Object> list = (List<Object>) col;
-        if (index > list.size()) {
-            return null;
-        }
-        Object indexedValue = list.get(index - 1);
-        return getProperty(indexedValue, propertyNames, offset + 1);
+        return indexedValue == null ? false : getProperty(indexedValue, propertyNames, offset + 1);
     }
 
     private Collection<Object> getCollectionProperty(Object input, String colPropName) {
-
-        Object colProp = OwsUtils.get(input, colPropName);
+        Object colProp;
+        if (input instanceof Map) {
+            colProp = ((Map<?, ?>) input).get(colPropName);
+        } else {
+            try {
+                colProp = OwsUtils.get(input, colPropName);
+            } catch (Exception e) {
+                return null;
+            }
+        }
         if (null == colProp) {
             return null;
         }
@@ -234,8 +246,11 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             colProp = array;
         }
         if (!(colProp instanceof Collection)) {
-            throw new IllegalArgumentException("Specified property " + colPropName
-                    + " is not a collection or array: " + colProp);
+            throw new IllegalArgumentException(
+                    "Specified property "
+                            + colPropName
+                            + " is not a collection or array: "
+                            + colProp);
         }
         @SuppressWarnings("unchecked")
         Collection<Object> col = (Collection<Object>) colProp;
@@ -249,8 +264,8 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         if (obj != null) {
             Class<?> clazz = ModificationProxy.unwrap(obj).getClass();
             ClassMappings classMappings = ClassMappings.fromImpl(clazz);
-            checkState(classMappings != null,
-                    "No class mappings found for class " + clazz.getName());
+            checkState(
+                    classMappings != null, "No class mappings found for class " + clazz.getName());
             Class<?> interf = classMappings.getInterface();
             props = fullTextProperties(interf);
         }
@@ -268,27 +283,17 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         return props;
     }
 
-    /**
-     * 
-     */
+    /** */
     private static synchronized void loadFullTextProperties() {
         if (!FULL_TEXT_PROPERTIES.isEmpty()) {
             return;
         }
         final String resource = "CatalogPropertyAccessor_FullTextProperties.properties";
         Properties properties = new Properties();
-        InputStream stream = CatalogPropertyAccessor.class.getResourceAsStream(resource);
-        try {
+        try (InputStream stream = CatalogPropertyAccessor.class.getResourceAsStream(resource)) {
             properties.load(stream);
         } catch (IOException e) {
-            throw Throwables.propagate(e);
-        } finally {
-            try {
-                Closeables.close(stream, false);
-            } catch (IOException e) {
-                LOGGER.log(Level.FINE, "Ignoring exception thrown while closing " + resource
-                        + " in CatalogPropertyAccessor", e);
-            }
+            throw new RuntimeException(e);
         }
         Map<String, String> map = Maps.fromProperties(properties);
         for (Map.Entry<String, String> e : map.entrySet()) {
@@ -296,7 +301,7 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             try {
                 key = Class.forName(e.getKey());
             } catch (ClassNotFoundException e1) {
-                throw propagate(e1);
+                throw new RuntimeException(e1);
             }
             String[] split = e.getValue().split(",");
             Set<String> set = Sets.newHashSet();

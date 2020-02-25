@@ -26,7 +26,7 @@
         <property name="mappings">
           <props>
             <prop key="/wcs">dispatcher</prop>
-            <prop key="/wcs/**">dispatcher</prop>
+            <prop key="/wcs/*">dispatcher</prop>
           </props>
         </property>
 	</bean>
@@ -45,9 +45,6 @@
     <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate">
 		<constructor-arg ref="geoServer"/>
 	</bean>
-    <bean id="GTopo30CoverageResponseDelegate" class="org.geoserver.wcs.responses.GTopo30CoverageResponseDelegate">
-		<constructor-arg ref="geoServer"/>
-	</bean>
     <bean id="imgCoverageResponseDelegate" class="org.geoserver.wcs.responses.IMGCoverageResponseDelegate">
 		<constructor-arg ref="geoServer"/>
 	</bean>
@@ -57,4 +54,6 @@
     
     <!-- disposes of all coverages created during GetCoverage calls -->
     <bean id="coverageCleaner" class="org.geoserver.wcs.CoverageCleanerCallback"/>
+    
+    <bean id="wcsResourceVoter" class="org.geoserver.wcs.WCSResourceVoter"/>
 </beans>

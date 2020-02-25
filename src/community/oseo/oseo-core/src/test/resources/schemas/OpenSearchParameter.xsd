@@ -1,0 +1,27 @@
+<!-- Mind this is not an official schema, but still useful for testing -->
+<!-- thanks to http://weblogs.asp.net/wkriebel/archive/2008/02/04/opensearch-xsd.aspx -->
+<xs:schema targetNamespace="http://a9.com/-/spec/opensearch/extensions/parameters/1.0/"
+  elementFormDefault="qualified" xmlns="http://a9.com/-/spec/opensearch/extensions/parameters/1.0/"
+  xmlns:parameters="http://a9.com/-/spec/opensearch/extensions/parameters/1.0/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <xs:element name="Parameter">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any minOccurs="0" maxOccurs="unbounded"  processContents="lax"/>
+      </xs:sequence>
+      <xs:attribute name="name" />
+      <xs:attribute name="value" />
+      <xs:attribute name="minimum" use="optional" type="xs:int" />
+      <xs:attribute name="maximum" use="optional" type="xs:int" />
+      <xs:attribute name="pattern" use="optional" />
+      <xs:attribute name="title" use="optional" />
+      <xs:attribute name="minInclusive" use="optional" type="xs:decimal" />
+      <xs:attribute name="maxInclusive" use="optional" type="xs:decimal" />
+      <xs:attribute name="minExclusive" use="optional" type="xs:decimal" />
+      <xs:attribute name="maxExclusive" use="optional" type="xs:decimal" />
+      <xs:attribute name="step" use="optional" type="xs:decimal" />
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

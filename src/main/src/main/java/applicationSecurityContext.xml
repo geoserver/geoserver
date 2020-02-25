@@ -98,7 +98,7 @@
   
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject">
-        <ref local="roleFilter"/>
+        <ref bean="roleFilter"/>
     </property>
     <property name="targetMethod">
         <value>initializeFromConfig</value>
@@ -160,4 +160,13 @@
     class="org.geoserver.security.OperationSecurityCallback">
     <constructor-arg ref="serviceRulesDao"/>
   </bean>
+  
+  <bean id="bruteForceListener" class="org.geoserver.security.BruteForceListener">
+    <constructor-arg ref="geoServerSecurityManager"/>
+  </bean>
+  <!-- catalog listner that syncs data security rules with workspace/layer name changes-->
+  <bean id="securedResourceNameChangeListener" class="org.geoserver.security.SecuredResourceNameChangeListener">
+    <constructor-arg ref="rawCatalog"/>
+    <constructor-arg ref="accessRulesDao"/>
+  </bean>  
 </beans>

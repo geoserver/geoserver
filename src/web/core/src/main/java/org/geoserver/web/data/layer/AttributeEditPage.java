@@ -22,8 +22,7 @@ import org.apache.wicket.validation.ValidationError;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 @SuppressWarnings("serial")
 public class AttributeEditPage extends GeoServerSecuredPage {
@@ -46,46 +45,52 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
     private CRSPanel crsField;
 
-    public AttributeEditPage(final AttributeDescription attribute,
-            final NewFeatureTypePage previousPage) {
+    public AttributeEditPage(
+            final AttributeDescription attribute, final NewFeatureTypePage previousPage) {
         this(attribute, previousPage, false);
     }
 
-    AttributeEditPage(final AttributeDescription attribute, final NewFeatureTypePage previousPage,
+    AttributeEditPage(
+            final AttributeDescription attribute,
+            final NewFeatureTypePage previousPage,
             final boolean newAttribute) {
         this.previousPage = previousPage;
         this.newAttribute = newAttribute;
         this.attribute = attribute;
         this.size = String.valueOf(attribute.getSize());
 
-        final Form<AttributeDescription> form = new Form<>("form", new CompoundPropertyModel<>(attribute));
+        final Form<AttributeDescription> form =
+                new Form<>("form", new CompoundPropertyModel<>(attribute));
         form.setOutputMarkupId(true);
         add(form);
 
         form.add(nameField = new TextField<>("name"));
-        DropDownChoice<Class<?>> binding = new DropDownChoice<>("binding", AttributeDescription.BINDINGS,
-                new BindingChoiceRenderer());
-        binding.add(new AjaxFormSubmitBehavior("change") {
+        DropDownChoice<Class<?>> binding =
+                new DropDownChoice<>(
+                        "binding", AttributeDescription.BINDINGS, new BindingChoiceRenderer());
+        binding.add(
+                new AjaxFormSubmitBehavior("change") {
 
-            @Override
-            protected void onError(AjaxRequestTarget target) {
-                updateVisibility(target);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target) {
+                        updateVisibility(target);
+                    }
 
-            private void updateVisibility(AjaxRequestTarget target) {
-                sizeContainer.setVisible(String.class.equals(attribute.getBinding()));
-                crsContainer.setVisible(attribute.getBinding() != null
-                        && Geometry.class.isAssignableFrom(attribute.getBinding()));
+                    private void updateVisibility(AjaxRequestTarget target) {
+                        sizeContainer.setVisible(String.class.equals(attribute.getBinding()));
+                        crsContainer.setVisible(
+                                attribute.getBinding() != null
+                                        && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-                target.add(getFeedbackPanel());
-                target.add(form);
-            }
+                        addFeedbackPanels(target);
+                        target.add(form);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target) {
-                updateVisibility(target);
-            }
-        });
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        updateVisibility(target);
+                    }
+                });
         form.add(binding);
         form.add(new CheckBox("nullable"));
 
@@ -99,31 +104,32 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         crsContainer.setOutputMarkupId(true);
         form.add(crsContainer);
         crsContainer.add(crsField = new CRSPanel("crs"));
-        crsContainer.setVisible(attribute.getBinding() != null
-                && Geometry.class.isAssignableFrom(attribute.getBinding()));
+        crsContainer.setVisible(
+                attribute.getBinding() != null
+                        && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-        SubmitLink submit = new SubmitLink("save") {
-            @Override
-            public void onSubmit() {
-                if (validate()) {
-                    if (newAttribute) {
-                        previousPage.attributesProvider.addNewAttribute(attribute);
+        SubmitLink submit =
+                new SubmitLink("save") {
+                    @Override
+                    public void onSubmit() {
+                        if (validate()) {
+                            if (newAttribute) {
+                                previousPage.attributesProvider.addNewAttribute(attribute);
+                            }
+                            setResponsePage(previousPage);
+                        }
                     }
-                    setResponsePage(previousPage);
-                }
-            }
-
-        };
+                };
         form.setDefaultButton(submit);
         form.add(submit);
-        form.add(new Link<Void>("cancel") {
+        form.add(
+                new Link<Void>("cancel") {
 
-            @Override
-            public void onClick() {
-                setResponsePage(previousPage);
-            }
-        });
-
+                    @Override
+                    public void onClick() {
+                        setResponsePage(previousPage);
+                    }
+                });
     }
 
     /**
@@ -147,7 +153,6 @@ public class AttributeEditPage extends GeoServerSecuredPage {
                 sizeField.error(new ParamResourceModel("notInteger", this, size));
                 valid = false;
             }
-
         }
         if (Geometry.class.isAssignableFrom(attribute.getBinding()) && attribute.getCrs() == null) {
             crsField.error((IValidationError) new ValidationError().addKey("Required"));
@@ -166,6 +171,5 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         public String getIdValue(Class<?> object, int index) {
             return object.getName();
         }
-
     }
 }

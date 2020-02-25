@@ -5,44 +5,45 @@
 package org.geogig.geoserver.security;
 
 import static java.lang.String.format;
+import static org.locationtech.geogig.remotes.RefDiff.Type.ADDED_REF;
+import static org.locationtech.geogig.remotes.RefDiff.Type.CHANGED_REF;
+import static org.locationtech.geogig.remotes.RefDiff.Type.REMOVED_REF;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.annotation.Nullable;
-
 import org.geogig.geoserver.config.LogStore;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
-import org.locationtech.geogig.porcelain.CloneOp;
-import org.locationtech.geogig.porcelain.FetchOp;
-import org.locationtech.geogig.porcelain.PullOp;
-import org.locationtech.geogig.porcelain.PullResult;
-import org.locationtech.geogig.porcelain.PushOp;
-import org.locationtech.geogig.porcelain.RemoteAddOp;
-import org.locationtech.geogig.porcelain.RemoteRemoveOp;
-import org.locationtech.geogig.porcelain.TransferSummary;
-import org.locationtech.geogig.porcelain.TransferSummary.ChangedRef;
-import org.locationtech.geogig.porcelain.TransferSummary.ChangedRef.ChangeTypes;
+import org.locationtech.geogig.remotes.CloneOp;
+import org.locationtech.geogig.remotes.FetchOp;
+import org.locationtech.geogig.remotes.PullOp;
+import org.locationtech.geogig.remotes.PullResult;
+import org.locationtech.geogig.remotes.PushOp;
+import org.locationtech.geogig.remotes.RefDiff;
+import org.locationtech.geogig.remotes.RemoteAddOp;
+import org.locationtech.geogig.remotes.RemoteRemoveOp;
+import org.locationtech.geogig.remotes.TransferSummary;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Repository;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-
 public class SecurityLogger implements InitializingBean {
 
-    private static final Map<Class<? extends AbstractGeoGigOp<?>>, MessageBuilder<?>> WATCHED_COMMANDS;
+    private static final Map<Class<? extends AbstractGeoGigOp<?>>, MessageBuilder<?>>
+            WATCHED_COMMANDS;
+
     static {
-        Builder<Class<? extends AbstractGeoGigOp<?>>, MessageBuilder<?>> builder = ImmutableMap
-                .builder();
+        Builder<Class<? extends AbstractGeoGigOp<?>>, MessageBuilder<?>> builder =
+                ImmutableMap.builder();
 
         builder.put(RemoteAddOp.class, new RemoteAddMessageBuilder());
         builder.put(RemoteRemoveOp.class, new RemoteRemoveMessageBuilder());
@@ -73,16 +74,18 @@ public class SecurityLogger implements InitializingBean {
 
     public static void logPre(AbstractGeoGigOp<?> command) {
         if (INSTANCE == null) {
-            return;// not yet initialized
+            return; // not yet initialized
         }
         INSTANCE.pre(command);
     }
 
-    public static void logPost(AbstractGeoGigOp<?> command, @Nullable Object retVal,
+    public static void logPost(
+            AbstractGeoGigOp<?> command,
+            @Nullable Object retVal,
             @Nullable RuntimeException exception) {
 
         if (INSTANCE == null) {
-            return;// not yet initialized
+            return; // not yet initialized
         }
         if (exception == null) {
             INSTANCE.post(command, retVal);
@@ -91,21 +94,21 @@ public class SecurityLogger implements InitializingBean {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void error(AbstractGeoGigOp<?> command, RuntimeException exception) {
         MessageBuilder builder = builderFor(command);
         String repoUrl = repoUrl(command);
         logStore.error(repoUrl, builder.buildError(command, exception), exception);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void post(AbstractGeoGigOp<?> command, Object commandResult) {
         MessageBuilder builder = builderFor(command);
         String repoUrl = repoUrl(command);
         logStore.info(repoUrl, builder.buildPost(command, commandResult));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void pre(AbstractGeoGigOp<?> command) {
         MessageBuilder builder = builderFor(command);
         String repoUrl = repoUrl(command);
@@ -147,7 +150,7 @@ public class SecurityLogger implements InitializingBean {
         return uri;
     }
 
-    private static abstract class MessageBuilder<T extends AbstractGeoGigOp<?>> {
+    private abstract static class MessageBuilder<T extends AbstractGeoGigOp<?>> {
 
         CharSequence buildPost(T command, Object commandResult) {
             return format("%s success. Parameters: %s", friendlyName(), params(command));
@@ -158,8 +161,9 @@ public class SecurityLogger implements InitializingBean {
         }
 
         CharSequence buildError(T command, RuntimeException exception) {
-            return format("%s failed. Parameters: %s. Error message: %s", friendlyName(),
-                    params(command), exception.getMessage());
+            return format(
+                    "%s failed. Parameters: %s. Error message: %s",
+                    friendlyName(), params(command), exception.getMessage());
         }
 
         abstract String friendlyName();
@@ -202,14 +206,18 @@ public class SecurityLogger implements InitializingBean {
             PullResult pr = (PullResult) commandResult;
             TransferSummary fr = pr.getFetchResult();
             StringBuilder sb = formatFetchResult(fr);
-            return format("%s success. Parameters: %s. Changes: %s", friendlyName(),
-                    params(command), sb);
+            return format(
+                    "%s success. Parameters: %s. Changes: %s", friendlyName(), params(command), sb);
         }
 
         @Override
         String params(PullOp c) {
-            return format("remote=%s, refSpecs=%s, depth=%s, author=%s, author email=%s",
-                    c.getRemoteName(), c.getRefSpecs(), c.getDepth(), c.getAuthor(),
+            return format(
+                    "remote=%s, refSpecs=%s, depth=%s, author=%s, author email=%s",
+                    c.getRemoteName(),
+                    c.getRefSpecs(),
+                    c.getDepth(),
+                    c.getAuthor(),
                     c.getAuthorEmail());
         }
     }
@@ -236,13 +244,14 @@ public class SecurityLogger implements InitializingBean {
         CharSequence buildPost(FetchOp command, Object commandResult) {
             TransferSummary fr = (TransferSummary) commandResult;
             StringBuilder sb = formatFetchResult(fr);
-            return format("%s success. Parameters: %s. Changes: %s", friendlyName(),
-                    params(command), sb);
+            return format(
+                    "%s success. Parameters: %s. Changes: %s", friendlyName(), params(command), sb);
         }
 
         @Override
         String params(FetchOp c) {
-            return format("remotes=%s, all=%s, full depth=%s, depth=%s, prune=%s",
+            return format(
+                    "remotes=%s, all=%s, full depth=%s, depth=%s, prune=%s",
                     c.getRemoteNames(), c.isAll(), c.isFullDepth(), c.getDepth(), c.isPrune());
         }
     }
@@ -255,23 +264,24 @@ public class SecurityLogger implements InitializingBean {
 
         @Override
         String params(CloneOp c) {
-            return format("url=%s, branch=%s, depth=%s", c.getRepositoryURL().orNull(),
-                    c.getBranch().orNull(), c.getDepth().orNull());
+            return format(
+                    "url=%s, branch=%s, depth=%s",
+                    c.getRemoteURI(), c.getBranch().orNull(), c.getDepth().orNull());
         }
     }
 
     private static final StringBuilder formatFetchResult(TransferSummary fr) {
-        Map<String, Collection<ChangedRef>> refs = fr.getChangedRefs();
+        Map<String, Collection<RefDiff>> refs = fr.getRefDiffs();
 
         StringBuilder sb = new StringBuilder();
         if (refs.isEmpty()) {
             sb.append("already up to date");
         } else {
-            for (Iterator<Entry<String, Collection<ChangedRef>>> it = refs.entrySet().iterator(); it
-                    .hasNext();) {
-                Entry<String, Collection<ChangedRef>> entry = it.next();
+            for (Iterator<Entry<String, Collection<RefDiff>>> it = refs.entrySet().iterator();
+                    it.hasNext(); ) {
+                Entry<String, Collection<RefDiff>> entry = it.next();
                 String remoteUrl = entry.getKey();
-                Collection<ChangedRef> changedRefs = entry.getValue();
+                Collection<RefDiff> changedRefs = entry.getValue();
                 sb.append(" From ").append(remoteUrl).append(": [");
                 print(changedRefs, sb);
                 sb.append("]");
@@ -284,21 +294,25 @@ public class SecurityLogger implements InitializingBean {
         return objectId.toString().substring(0, 8);
     }
 
-    private static void print(Collection<ChangedRef> changedRefs, StringBuilder sb) {
-        for (Iterator<ChangedRef> it = changedRefs.iterator(); it.hasNext();) {
-            ChangedRef ref = it.next();
+    private static void print(Collection<RefDiff> changedRefs, StringBuilder sb) {
+        for (Iterator<RefDiff> it = changedRefs.iterator(); it.hasNext(); ) {
+            RefDiff ref = it.next();
             Ref oldRef = ref.getOldRef();
             Ref newRef = ref.getNewRef();
-            if (ref.getType() == ChangeTypes.CHANGED_REF) {
+            if (ref.getType() == CHANGED_REF) {
                 sb.append(oldRef.getName()).append(" ");
                 sb.append(toString(oldRef.getObjectId()));
                 sb.append(" -> ");
                 sb.append(toString(newRef.getObjectId()));
-            } else if (ref.getType() == ChangeTypes.ADDED_REF) {
+            } else if (ref.getType() == ADDED_REF) {
                 String reftype = (newRef.getName().startsWith(Ref.TAGS_PREFIX)) ? "tag" : "branch";
-                sb.append("* [new ").append(reftype).append("] ").append(newRef.getName())
-                        .append(" -> ").append(toString(newRef.getObjectId()));
-            } else if (ref.getType() == ChangeTypes.REMOVED_REF) {
+                sb.append("* [new ")
+                        .append(reftype)
+                        .append("] ")
+                        .append(newRef.getName())
+                        .append(" -> ")
+                        .append(toString(newRef.getObjectId()));
+            } else if (ref.getType() == REMOVED_REF) {
                 sb.append("x [deleted] ").append(oldRef.getName());
             } else {
                 sb.append("[deepened]" + newRef.getName());

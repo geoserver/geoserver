@@ -25,6 +25,10 @@ Point symbology
       * url, symbol
       * The image or well-known shape to render for points
       * yes
+    - * ``mark-composite``
+      * string 
+      * The composite mode to be used and the optional opacity separated with a comma. See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
+      * no
     - * ``mark-mime``
       * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
       * The type of the image referenced by a url()
@@ -46,10 +50,21 @@ Point symbology
       * integer
       * Controls the z ordering of output
       * no
-    - * ``-gt-mark-label-obstacle``
+    - * ``mark-label-obstacle``
       * boolean
       * If true the point symbol will be consider an obstable for labels, no label will overlap it
       * no
+    - * ``mark-anchor``
+      * expression 
+      * The part of the mark to place over the point or middle of the polygon.
+        This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge.
+        y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label.
+      * yes
+    - * ``mark-offset``
+      * expression 
+      * This is for fine-tuning mark-anchor. x and y values specify pixel offsets to adjust the mark position.
+      * yes
+
 
 .. _css_properties_line:
 
@@ -68,6 +83,10 @@ Line symbology
       * color, url, symbol
       * The color, graphic, or well-known shape to use to stroke lines or outlines
       * yes
+    - * ``stroke-composite``
+      * string 
+      * The composite mode to be used and the optional opacity separated with a comma. See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
+      * no
     - * ``stroke-geometry``
       * expression
       * An expression to use for the geometry when rendering features. 
@@ -126,7 +145,7 @@ Line symbology
       * integer
       * Controls the z ordering of output
       * no
-    - * ``-gt-stroke-label-obstacle``
+    - * ``stroke-label-obstacle``
       * boolean
       * If true the line will be consider an obstable for labels, no label will overlap it
       * no
@@ -148,6 +167,10 @@ Polygon symbology
       * color, url, symbol 
       * The color, graphic, or well-known shape to use to stroke lines or outlines 
       * yes
+    - * ``fill-composite``
+      * string 
+      * The composite mode to be used and the optional opacity separated with a comma. See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
+      * no
     - * ``fill-geometry``
       * expression 
       * An expression to use for the geometry when rendering features. 
@@ -172,31 +195,31 @@ Polygon symbology
       * integer
       * Controls the z ordering of output
       * no
-    - * ``-gt-fill-label-obstacle``
+    - * ``fill-label-obstacle``
       * boolean
       * If true the polygon will be consider an obstable for labels, no label will overlap it
       * no
-    - * ``-gt-graphic-margin``
+    - * ``graphic-margin``
       * List of lengths
       * A list of 1 to 4 values, specifying the space between repeated graphics in a texture paint. One value is uniform spacing in all directions, two values are considered top/bottom and right/left, three values are considered top, right/left, bottom, four values are read as top,right,bottom,left.
       * no
-    - * ``-gt-random``
+    - * ``random``
       * none,grid,free
       * Activates random distribution of symbols in a texture fill tile. See :ref:`randomized` for details. Defaults to "none"
       * no
-    - * ``-gt-random-seed``
+    - * ``random-seed``
       * integer number
       * The seed for the random generator. Defaults to 0
       * no
-    - * ``-gt-random-rotation``
+    - * ``random-rotation``
       * none/free
       * When set to "free" activates random rotation of the symbol in addition to random distribution. Defaults to "none"
       * no
-    - * ``-gt-random-symbol-count``
+    - * ``random-symbol-count``
       * positive integer number
       * Number of suymbols to be placed in the texture fill tile. May not be respected due to location conflicts (no two symbols are allowed to overlap). Defaults to 16.
       * no
-    - * ``-gt-random-tile-size``
+    - * ``random-tile-size``
       * positive integer number
       * Size of the texture paint tile that will be filled with the random symbols. Defaults to 256.
       * no
@@ -248,6 +271,29 @@ Text symbology (labeling) - part 1
       * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
       * The type of the image referenced by a url()
       * No, defaults to 'image/jpeg'
+    - * ``shield-placement``
+      * one of ``label``, ``indipendent``, defaults to ``label``
+      * Placement of the shield relative to the label. The default is ``label``, meaning the shield
+        will move along with the label and be centered with it (classic road shield). ``independent``
+        places the shield independently instead, using its own anchor and offset properties. The latter
+        is useful to build "point and label" compositions (e.g., city labels) so that the point won't
+        show up if the label does not (as an alternative to a mark and label setup, where the mark
+        will always show up).
+      * no
+    - * ``shield-anchor``
+      * expression 
+      * The part of the shield to place over the point or middle of the polygon.
+        This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge.
+        y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label.
+        This property activates only if the ``shield-placement`` one is set to ``independent``, otherwise
+        the shield will be centered with the label.
+      * yes
+    - * ``shield-offset``
+      * expression 
+      * This is for fine-tuning shield-anchor. x and y values specify pixels to adjust the shield position.
+        This property activates only if the ``shield-placement`` one is set to ``independent``, otherwise
+        the shield will be centered with the label.
+      * yes
     - * ``font-family``
       * string
       * The name of the font or font family to use for labels
@@ -268,6 +314,10 @@ Text symbology (labeling) - part 1
       * length
       * The size for the font to display. 
       * yes
+    - * ``font-opacity``
+      * percentage
+      * The opacity of the text, from 0 (fully transparent) to 1.0 (fully opaque).
+      * yes
     - * ``halo-radius``
       * length
       * The size of a halo to display around the lettering (to enhance
@@ -281,19 +331,19 @@ Text symbology (labeling) - part 1
       * percentage
       * The opacity of the halo, from 0 (fully transparent) to 1.0 (fully opaque). 
       * yes
-    - * ``-gt-label-padding``
+    - * ``label-padding``
       * length
       * The amount of 'padding' space to provide around labels.  Labels will
         not be rendered closer together than this threshold.  This is
         equivalent to the :ref:`spaceAround<labeling_space_around>` vendor parameter.
       * no
-    - * ``-gt-label-group``
+    - * ``label-group``
       * one of: ``true`` or ``false``
       * If true, the render will treat features with the same label text as a
         single feature for the purpose of labeling.  This is equivalent to the 
         :ref:`group<labeling_group>` vendor parameter.
       * no
-    - * ``-gt-label-max-displacement``
+    - * ``label-max-displacement``
       * length
       * If set, this is the maximum displacement that the renderer will apply
         to a label.  Labels that need larger displacements to avoid collisions
@@ -314,53 +364,53 @@ Text symbology (labeling) - part 2
       * Type
       * Meaning
       * Accepts Expression?
-    - * ``-gt-label-min-group-distance``
+    - * ``label-min-group-distance``
       * length
       * This is equivalent to the minGroupDistance vendor parameter in SLD.
       * no
-    - * ``-gt-label-repeat``
+    - * ``label-repeat``
       * length
       * If set, the renderer will repeat labels at this interval along a line.
         This is equivalent to the :ref:`repeat<labeling_repeat>` vendor parameter.
       * no
-    - * ``-gt-label-all-group``
+    - * ``label-all-group``
       * one of ``true`` or ``false``
       * when using grouping, whether to label only the longest line that could
         be built by merging the lines forming the group, or also the other
         ones.  This is equivalent to the :ref:`allGroup<labeling_all_group>`
         vendor parameter.
       * no
-    - * ``-gt-label-remove-overlaps``
+    - * ``label-remove-overlaps``
       * one of ``true`` or ``false``
       * If enabled, the renderer will remove overlapping lines within a group
         to avoid duplicate labels.  This is equivalent to the
         removeOverlaps vendor parameter.
       * no
-    - * ``-gt-label-allow-overruns``
+    - * ``label-allow-overruns``
       * one of ``true`` or ``false``
       * Determines whether the renderer will show labels that are longer than
         the lines being labelled.  This is equivalent to the allowOverrun
         vendor parameter.
       * no
-    - * ``-gt-label-follow-line``
+    - * ``label-follow-line``
       * one of ``true`` or ``false``
       * If enabled, the render will curve labels to follow the lines being
         labelled.  This is equivalent to the
         :ref:`followLine<labeling_follow_line>` vendor parameter.
       * no
-    - * ``-gt-label-max-angle-delta``
+    - * ``label-max-angle-delta``
       * one of ``true`` or ``false``
       * The maximum amount of curve allowed between two characters of a label;
-        only applies when '-gt-follow-line: true' is set.  This is equivalent
+        only applies when 'follow-line: true' is set.  This is equivalent
         to the :ref:`maxAngleDelta<labeling_max_angle_delta>` vendor parameter.
       * no
-    - * ``-gt-label-auto-wrap``
+    - * ``label-auto-wrap``
       * length
       * Labels will be wrapped to multiple lines if they exceed this length in
         pixels.  This is equivalent to the :ref:`autoWrap<labeling_autowrap>`
         vendor parameter.
       * no
-    - * ``-gt-label-force-ltr``
+    - * ``label-force-ltr``
       * one of ``true`` or ``false``
       * By default, the renderer will flip labels whose normal orientation
         would cause them to be upside-down. Set this parameter to false if you
@@ -368,21 +418,21 @@ Text symbology (labeling) - part 2
         direction.  This is equivalent to the
         :ref:`forceLeftToRight<labeling_force_left_to_right>` vendor parameter.
       * no
-    - * ``-gt-label-conflict-resolution``
+    - * ``label-conflict-resolution``
       * one of ``true`` or ``false``
       * Set this to false to disable label conflict resolution, allowing
         overlapping labels to be rendered.  This is equivalent to the
         :ref:`conflictResolution<labeling_conflict_resolution>` vendor
         parameter.
       * no
-    - * ``-gt-label-fit-goodness``
+    - * ``label-fit-goodness``
       * scale
       * The renderer will omit labels that fall below this "match quality"
         score.  The scoring rules differ for each geometry type.  This is
         equivalent to the :ref:`goodnessOfFit<labeling_goodness_of_fit>` vendor
         parameter.
       * no
-    - * ``-gt-label-priority``
+    - * ``label-priority``
       * expression
       * Specifies an expression to use in determining which
         features to prefer if there are labeling conflicts.  This is equivalent
@@ -402,7 +452,7 @@ Text symbology (labeling) - part 3
       * Type
       * Meaning
       * Accepts Expression?
-    - * ``-gt-shield-resize``
+    - * ``shield-resize``
       * string, one of ``none``, ``stretch``, or ``proportional``
       * Specifies a mode for resizing label graphics (such as
         highway shields) to fit the text of the label.  The default mode,
@@ -412,14 +462,25 @@ Text symbology (labeling) - part 3
         GeoServer will expand the image to be large enough to surround the text
         while preserving its original aspect ratio.
       * none
-    - * ``-gt-shield-margin``
+    - * ``shield-margin``
       * list of lengths, one to four elements long.
-      * Specifies an extra margin (in pixels) to be applied to the label text when calculating label dimensions for use with the ``-gt-shield-resize`` option.  Similar to the ``margin`` shorthand property in CSS for HTML, its interpretation varies depending on how many margin values are provided: 1 = use that margin length on all sides of the label 2 = use the first for top & bottom margins and the second for left & right margins. 3 = use the first for the top margin, second for left & right margins, third for the bottom margin. 4 = use the first for the top margin, second for the right margin, third for the bottom margin, and fourth for the left margin.
+      * Specifies an extra margin (in pixels) to be applied to the label text when calculating label dimensions for use with the ``shield-resize`` option.  Similar to the ``margin`` shorthand property in CSS for HTML, its interpretation varies depending on how many margin values are provided: 1 = use that margin length on all sides of the label 2 = use the first for top & bottom margins and the second for left & right margins. 3 = use the first for the top margin, second for left & right margins, third for the bottom margin. 4 = use the first for the top margin, second for the right margin, third for the bottom margin, and fourth for the left margin.
       * none
-    - * ``-gt-label-underline-text``
+    - * ``label-underline-text``
       * one of ``true`` or ``false``
-      * If enabled, the render will underline labels. This is equivalent to the
-        :ref:`followLine<underlineText>` vendor parameter.
+      * If enabled, the renderer will underline labels. This is equivalent to the :ref:`underlineText <labeling_underline_text>` vendor parameter.
+      * no
+    - * ``label-strikethrough-text``
+      * one of ``true`` or ``false``
+      * If enabled, the renderer will strikethrough labels. This is equivalent to the :ref:`strikethroughText <labeling_strikethrough_text>` vendor parameter.
+      * no
+    - * ``label-char-spacing``
+      * an amount of pixels, can be negative
+      * If present, expands or shrinks the space between subsequent characters in a label according to the value specified
+      * no
+    - * ``label-word-spacing``
+      * an amount of pixels, must be zero or positive
+      * If present, expands the space between subsequent words in a label according to the value specified
       * no
 
 .. _css_properties_raster:
@@ -438,6 +499,10 @@ Raster symbology
     - * ``raster-channels``
       * string
       * The list of raster channels to be used in the output. It can be "auto" to make the renderer choose the best course of action, or a list of band numbers, a single one will generate a gray image, three will generate an RGB one, four will generate a RGBA one. E.g., "1 3 7" to choose the first, third and seventh band of the input raster to make a RGB image
+      * no
+    - * ``raster-composite``
+      * string 
+      * The composite mode to be used and the optional opacity separated with a comma. See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
       * no
     - * ``raster-geometry``
       * expression
@@ -461,7 +526,7 @@ Raster symbology
       * no
     - * ``raster-color-map``
       * string
-      * Applies a color map to single banded input. The contents is a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1), or ``color-map-entry(color, value, opacity)``. The values must be provided in increasing order.
+      * Applies a color map to single banded input. The contents is a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1 and label will have a null value), or ``color-map-entry(color, value, opacity, label)``. The values must be provided in increasing order.
       * no
     - * ``raster-color-map-type``
       * string
@@ -481,6 +546,14 @@ Shared
       * Type
       * Meaning
       * Accepts Expression?
+    - * ``composite``
+      * string 
+      * The composite mode to be used and the optional opacity separated with a comma. See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
+      * no
+    - * ``composite-base``
+      * one of ``true`` or ``false`` 
+      * This will tell the rendering engine to use that FeatureTypeStyle as the destination, and will compose all subsequent FeatureTypeStyle/Layers on top of it, until another base is found.
+      * no
     - * ``geometry``
       * expression 
       * An expression to use for the geometry when rendering features. This
@@ -493,17 +566,17 @@ Shared
         and ``A`` or ``D`` are an optional direction specification, 
         ``A`` is ascending, ``D`` is descending.
         Determines the loading, and thus painting, order of the features 
-      * false
+      * no
     - * ``sort-by-group``
       * string
       * Rules with the different z-index but same sort-by-group id have  their features sorted
         as a single group. Useful to z-order across layers or across different feature groups, like
         roads and rails, especially when using z-index to support casing 
-      * false
+      * no
     - * ``transform``
       * function
       * Applies a rendering transformationon the current level. The function syntax is ``txName(key1:value1,key1:value2)``. Values can be single ones, or space separated lists. 
-      * false
+      * no
     
 .. _css_properties_symbol:
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+   <wicket:link>
+
+   </wicket:link>
+</wicket:head>
+<body>
+	<wicket:extend>
+        <div wicket:id="progress"></div>
+        <div wicket:id="dialog"></div>
+        <form wicket:id="form">
+            <fieldset>
+                <ul>
+                    <li>
+                        <label for="name"><wicket:message key="name"/></label>
+                        <input id="name" wicket:id="name" type="text" class="text" />
+
+                        <label for="description"><wicket:message key="descriptionField"/></label>
+                        <input id="description" wicket:id="description" type="text" class="text" />
+                    </li>
+                    <li>
+                        <div wicket:id="metadataTabs" class="tabpanel" style="margin-top:2em"></div>
+                    </li>
+                    <li>
+                        <div class="button-group selfclear">
+                            <a href="#" wicket:id="save"><wicket:message key="save"/></a>
+                            <a href="#" wicket:id="cancel"><wicket:message key="cancel"/></a>
+                        </div>
+                    </li>
+                </ul>
+            </fieldset>
+        </form>
+    </wicket:extend>
+</body>
+</html>

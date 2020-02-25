@@ -22,7 +22,7 @@ Using ECQL, the identical filter would be defined as follows:
 
 ::
 
-   cql_filter=INTERSECT(the_geom,%20POINT%20(-74.817265%2040.5296504))
+   cql_filter=INTERSECTS(the_geom,%20POINT%20(-74.817265%2040.5296504))
 
 
 Format options

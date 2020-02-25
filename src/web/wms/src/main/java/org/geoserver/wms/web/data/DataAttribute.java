@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Contents of the css page data attribute table
- *  
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class DataAttribute implements Serializable {
@@ -17,13 +17,13 @@ class DataAttribute implements Serializable {
     private static final long serialVersionUID = -6470442390382618241L;
 
     String name;
-    
+
     String type;
-    
+
     String sample;
-    
+
     String min;
-    
+
     String max;
 
     public DataAttribute(String name, String type, String sample) {
@@ -72,6 +72,4 @@ class DataAttribute implements Serializable {
     public void setMax(String max) {
         this.max = max;
     }
-    
-    
 }

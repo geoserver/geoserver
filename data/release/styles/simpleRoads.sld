@@ -6,7 +6,7 @@
     <Name>Simple Roads</Name>
     <UserStyle>
 
-      <Title>Default Styler for simple road segments</Title>
+      <Title>Red Line</Title>
       <Abstract>Light red line, 2px wide</Abstract>
       <FeatureTypeStyle>
         <Rule>

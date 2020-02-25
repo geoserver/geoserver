@@ -8,14 +8,13 @@ package org.geoserver.wps.ppio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
 
 /**
  * Parses and encodes an OGC filter using ECQL
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CQLFilterPPIO extends CDataPPIO {
@@ -37,12 +36,11 @@ public class CQLFilterPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        return decode(IOUtils.toString(input));
+        return decode(IOUtils.toString(input, "UTF-8"));
     }
 
     @Override
     public String getFileExtension() {
         return "txt";
     }
-
 }

@@ -16,14 +16,12 @@ Communication channels:
 * http://blog.geoserver.org/
 * `geoserver-devel <http://lists.sourceforge.net/mailman/listinfo/geoserver-devel>`_ email list
 * `geoserver-users <http://lists.sourceforge.net/mailman/listinfo/geoserver-users>`_ email list
-* irc://irc.freenode.net/#geoserver
+* https://gitter.im/geoserver/geoserver
 
 We have a number of build servers employed to assist with day to day activities:
 
-* http://ares.boundlessgeo.com/jenkins/view/geoserver/ (main build server)
+* https://build.geoserver.org/view/geoserver/ (main build server)
 * http://office.geo-solutions.it/jenkins/ (windows build server)
-* http://aaime.no-ip.org/jenkins/ (JDK 7)
-* http://aaime.no-ip.org/sonar/ (Sonar)
 
 Notification email lists:
 
@@ -38,10 +36,10 @@ Question and answer:
 License
 -------
 
-For complete license information review :download:`LICENSE.txt </../../../../src/LICENSE.txt>`.
+For complete license information review :download:`LICENSE.txt </../../../../LICENSE.txt>`.
 
 * GeoServer is free software and is licensed under the :download:`GNU General Public License </../../../../src/release/GPL.txt>`::
-
+  
     GeoServer, open geospatial information server
     Copyright (C) 2014 - Open Source Geospatial Foundation
     Copyright (C) 2001 - 2014 OpenPlans

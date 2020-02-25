@@ -35,7 +35,6 @@ public class WMTSXStreamLoader extends XStreamServiceLoader<WMTSInfo> {
     @Override
     protected WMTSInfo initialize(WMTSInfo service) {
         service = super.initialize(service);
-        service.setEnabled(true);
         if (service.getMaintainer() == null) {
             service.setMaintainer("http://geoserver.org/com");
         }

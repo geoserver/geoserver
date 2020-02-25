@@ -7,13 +7,12 @@ package org.geoserver.web.wicket;
 
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.web.StringValidatable;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.google.common.io.Files;
 
 public class FileExistsValidatorTest {
 
@@ -26,7 +25,7 @@ public class FileExistsValidatorTest {
         root.delete();
         root.mkdirs();
 
-        File wcs = new File(root, "wcs"); 
+        File wcs = new File(root, "wcs");
         wcs.mkdir();
 
         Files.touch(new File(wcs, "BlueMarble.tiff"));
@@ -39,7 +38,7 @@ public class FileExistsValidatorTest {
     public void testAbsoluteRaw() throws Exception {
         File tazbm = new File(root, "wcs/BlueMarble.tiff");
         StringValidatable validatable = new StringValidatable(tazbm.getAbsolutePath());
-        
+
         validator.validate(validatable);
         assertTrue(validatable.isValid());
     }
@@ -48,7 +47,7 @@ public class FileExistsValidatorTest {
     public void testAbsoluteURI() throws Exception {
         File tazbm = new File(root, "wcs/BlueMarble.tiff");
         StringValidatable validatable = new StringValidatable(tazbm.toURI().toString());
-        
+
         validator.validate(validatable);
         assertTrue(validatable.isValid());
     }
@@ -56,10 +55,8 @@ public class FileExistsValidatorTest {
     @Test
     public void testRelative() throws Exception {
         StringValidatable validatable = new StringValidatable("file:wcs/BlueMarble.tiff");
-        
+
         validator.validate(validatable);
         assertTrue(validatable.isValid());
     }
-    
-
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿
 <!-- 
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
@@ -91,6 +91,7 @@
     
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
+      <constructor-arg ref="resourceLoader"/>
     </bean>
 
 	<!-- GetFeatureInfo JSONP -->
@@ -266,11 +267,13 @@
  		<constructor-arg value="buffer"/>
  	</bean>
  	<bean id="paletteKvpParser" class="org.geoserver.wms.kvp.PaletteKvpParser"/>
-  <bean id="timeKvpParser" class="org.geoserver.ows.kvp.TimeKvpParser">
+  <bean id="timeKvpParser" class="org.geoserver.wms.kvp.TimeKvpParser">
       <constructor-arg value="time"/>
+      <constructor-arg ref="wms"/>
   </bean>
- 	<bean id="elevationKvpParser" class="org.geoserver.ows.kvp.ElevationKvpParser">
+ 	<bean id="elevationKvpParser" class="org.geoserver.wms.kvp.ElevationKvpParser">
 		<constructor-arg value="elevation"/>
+    <constructor-arg ref="wms"/>
  	</bean>
  	<bean id="validateSldKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
  		<constructor-arg value="validateschema"/>
@@ -280,6 +283,7 @@
     </bean>
  	<bean id="startIndexKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
  	    <constructor-arg value="startIndex"/>
+ 	    <property name="service" value="WMS"/>
  	</bean>
  	<bean id="angleKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
 		<constructor-arg value="angle"/>
@@ -395,7 +399,13 @@
 	</bean>
 	
 	<bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
-	
+
+	<!-- icon service -->
+	<bean id="kmlIconService"
+		class="org.geoserver.wms.icons.IconService">
+		<constructor-arg ref="catalog" />
+	</bean>
+  
 	<!-- http url mapping -->
 	<bean id="wmsURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
@@ -403,6 +413,7 @@
 		<property name="alwaysUseFullPath" value="true"/>
 		<property name="mappings">
 			<props>
+			    <prop key="/kml/icon/**/*">kmlIconService</prop>
 				<prop key="/wms">dispatcher</prop>
 				<prop key="/wms/*">dispatcher</prop>
 			</props>
@@ -422,12 +433,19 @@
 	</bean>
     <bean id="wmsJPEGLegendGraphicResponse" 
         class="org.geoserver.wms.legendgraphic.JPEGLegendGraphicResponse">
+        <constructor-arg index="0" ref="wms"/>
     </bean>
 	<bean id="wmsPNGLegendOutputFormat" 
 		class="org.geoserver.wms.legendgraphic.PNGLegendOutputFormat">
 	</bean>
     <bean id="wmsPNGLegendGraphicResponse" 
         class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
+    </bean>
+    <bean id="wmsJSONLegendOutputFormat" 
+		class="org.geoserver.wms.legendgraphic.JSONLegendOutputFormat">
+	</bean>
+    <bean id="wmsJSONLegendGraphicResponse" 
+        class="org.geoserver.wms.legendgraphic.JSONLegendGraphicResponse">
     </bean>
 	
 	<!--  
@@ -593,6 +611,24 @@
       <!-- The extension is actually dynamically determined -->
       <property name="extension" value="jpg-png"/>
     </bean>
+
+    <bean id="JpegPng8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+            <value>image/vnd.jpeg-png8</value>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="transparencySupported">
+            <description>JPEG-PNG8 does support transparency</description>
+            <value>true</value>
+        </property>
+        <property name="paletteSupported">
+            <description>JPEG-PNG8 does support 8-bit indexed color maps</description>
+            <value>true</value>
+        </property>
+        <!-- The extension is actually dynamically determined -->
+        <property name="extension" value="jpg-png8"/>
+    </bean>
     
     <bean id="JpegPngMapResponse" class="org.geoserver.wms.map.JpegPngMapResponse">
         <constructor-arg index="0" ref="wms"/>
@@ -606,14 +642,20 @@
       <constructor-arg ref="wms" />
     </bean>
 
-    <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
+    <bean id="OpenLayers2MapProducer" class="org.geoserver.wms.map.OpenLayers2MapOutputFormat">
+        <constructor-arg index="0" ref="wms" />
+    </bean>
+    <bean id="OpenLayers3MapProducer" class="org.geoserver.wms.map.OpenLayers3MapOutputFormat">
       <constructor-arg index="0" ref="wms" />
+    </bean>
+    <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
+      <constructor-arg index="0" ref="OpenLayers2MapProducer" />
+      <constructor-arg index="1" ref="OpenLayers3MapProducer" />
     </bean>
     <bean id="OpenLayersMapResponse" class="org.geoserver.wms.map.RawMapResponse">
     </bean>
-    
 
-	<bean id="AtomGeoRSSMapProducer"
+  <bean id="AtomGeoRSSMapProducer"
 		scope="prototype"
 		class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>
@@ -734,6 +776,7 @@
   </bean>
   <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier">
       <constructor-arg ref="entityResolverProvider" />
+      <constructor-arg ref="wms" />
   </bean>
     
     
@@ -799,4 +842,6 @@
     <constructor-arg ref="wms"/>
   </bean>
   
+  <bean id="clipWMSGetMapCallBack" class="org.geoserver.wms.clip.ClipWMSGetMapCallBack"/>
+
 </beans>

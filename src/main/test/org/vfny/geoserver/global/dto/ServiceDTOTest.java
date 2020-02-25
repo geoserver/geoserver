@@ -23,7 +23,6 @@ public class ServiceDTOTest extends TestCase {
     /**
      * Constructor for ServiceDTOTest.
      *
-     * @param name
      */
     public ServiceDTOTest(String name) {
         super(name);

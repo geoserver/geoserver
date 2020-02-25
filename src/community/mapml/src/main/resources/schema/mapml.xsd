@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="mapml">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="head"/>
+        <xs:element ref="body"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="head" type="headContent"/>
+  <xs:simpleType name="linkRelType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="stylesheet"/>
+      <xs:enumeration value="license"/>
+      <xs:enumeration value="alternate"/>
+      <xs:enumeration value="style"/>
+      <xs:enumeration value="self"/>
+      <xs:enumeration value="self style"/>
+      <xs:enumeration value="style self"/>
+      <xs:enumeration value="legend"/>
+      <xs:enumeration value="next"/>
+      <xs:enumeration value="zoomin"/>
+      <xs:enumeration value="zoomout"/>
+      <xs:enumeration value="image"/>
+      <xs:enumeration value="tile"/>
+      <xs:enumeration value="query"/>
+      <xs:enumeration value="features"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="projType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="OSMTILE"/>
+      <xs:enumeration value="CBMTILE"/>
+      <xs:enumeration value="APSTILE"/>
+      <xs:enumeration value="WGS84"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="mimeType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="text/css"/>
+      <xs:enumeration value="text/mapml"/>
+      <xs:enumeration value="image/png"/>
+      <xs:enumeration value="image/jpeg"/>
+      <xs:enumeration value="text/html"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="link">
+    <xs:complexType>
+      <xs:attribute name="href" type="xs:anyURI"/>
+      <xs:attribute name="tref"/>
+      <xs:attribute name="rel" use="required" type="linkRelType"/>
+      <xs:attribute name="projection" type="projType"/>
+      <xs:attribute name="title"/>
+      <xs:attribute name="type" type="mimeType"/>
+      <xs:attribute name="hreflang"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="links">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="link"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:complexType name="headContent">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="base"/>
+      <xs:element ref="meta"/>
+      <xs:element ref="title"/>
+      <xs:group ref="links"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="base">
+    <xs:complexType>
+      <xs:attribute name="href" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta">
+    <xs:complexType>
+      <xs:attribute name="name"/>
+      <xs:attribute name="charset"/>
+      <xs:attribute name="content"/>
+      <xs:attribute name="http-equiv"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="body" type="bodyContent"/>
+  <xs:complexType name="bodyContent">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="extent"/>
+      <xs:group ref="links"/>
+      <xs:choice>
+        <xs:element ref="feature"/>
+        <xs:element ref="tile"/>
+        <xs:element ref="image"/>
+      </xs:choice>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="extent">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="input"/>
+        <xs:element ref="datalist"/>
+        <xs:group ref="links"/>
+        <xs:element ref="select"/>
+        <xs:element ref="label"/>
+      </xs:choice>
+      <xs:attribute name="units" type="projType"/>
+      <xs:attribute name="action" type="xs:anyURI"/>
+      <xs:attribute name="method">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="get"/>
+            <xs:enumeration value="GET"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="enctype">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="application/x-www-form-urlencoded"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="inputType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="zoom"/>
+      <xs:enumeration value="hidden"/>
+      <xs:enumeration value="location"/>
+      <xs:enumeration value="datetime"/>
+      <xs:enumeration value="width"/>
+      <xs:enumeration value="height"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="inputRelType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="map"/>
+      <xs:enumeration value="tile"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="positionType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="top-left"/>
+      <xs:enumeration value="top-right"/>
+      <xs:enumeration value="bottom-left"/>
+      <xs:enumeration value="bottom-right"/>
+      <xs:enumeration value="center-left"/>
+      <xs:enumeration value="center-right"/>
+      <xs:enumeration value="top-center"/>
+      <xs:enumeration value="bottom-center"/>
+      <xs:enumeration value="center"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="axisType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="latitude"/>
+      <xs:enumeration value="longitude"/>
+      <xs:enumeration value="easting"/>
+      <xs:enumeration value="northing"/>
+      <xs:enumeration value="x"/>
+      <xs:enumeration value="y"/>
+      <xs:enumeration value="row"/>
+      <xs:enumeration value="column"/>
+      <xs:enumeration value="i"/>
+      <xs:enumeration value="j"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="unitType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="tilematrix"/>
+      <xs:enumeration value="pcrs"/>
+      <xs:enumeration value="tcrs"/>
+      <xs:enumeration value="map"/>
+      <xs:enumeration value="gcrs"/>
+      <xs:enumeration value="tile"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="input">
+    <xs:complexType>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="type" use="required" type="inputType"/>
+      <xs:attribute name="value"/>
+      <xs:attribute name="rel" type="inputRelType"/>
+      <xs:attribute name="shard"/>
+      <xs:attribute name="list"/>
+      <xs:attribute name="position" type="positionType"/>
+      <xs:attribute name="axis" type="axisType"/>
+      <xs:attribute name="units" type="unitType"/>
+      <xs:attribute name="required" type="xs:boolean"/>
+      <xs:attribute name="min" type="xs:decimal"/>
+      <xs:attribute name="max" type="xs:decimal"/>
+      <xs:attribute name="step"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="datalist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="option"/>
+      </xs:sequence>
+      <xs:attribute name="id"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="label">
+    <xs:complexType mixed="true">
+      <xs:attribute name="for" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="select">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="option"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required"/>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="option">
+    <xs:complexType mixed="true">
+      <xs:attribute name="value"/>
+      <xs:attribute name="label"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="feature">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="bbox"/>
+        <xs:choice>
+          <xs:element ref="image"/>
+          <xs:element ref="geometry"/>
+        </xs:choice>
+        <xs:element ref="properties"/>
+      </xs:choice>
+      <xs:attribute name="id"/>
+      <xs:attribute name="class"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tile">
+    <xs:complexType>
+      <xs:attribute name="col" use="required" type="xs:integer"/>
+      <xs:attribute name="row" use="required" type="xs:integer"/>
+      <xs:attributeGroup ref="ImageResourceMetadataAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bbox" type="twoCoordinatePairs"/>
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:attributeGroup ref="ImageModel"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="geometry" type="GeometryContent"/>
+  <xs:element name="properties" type="PropertyContent"/>
+  <xs:attributeGroup name="ImageResourceMetadataAttributes">
+    <xs:attribute name="src" use="required"/>
+    <xs:attribute name="x" type="xs:double"/>
+    <xs:attribute name="y" type="xs:double"/>
+    <xs:attribute name="width" type="xs:integer"/>
+    <xs:attribute name="height" type="xs:integer"/>
+    <xs:attribute name="angle" type="xs:double"/>
+    <xs:attribute name="type"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="ImageModel">
+    <xs:attributeGroup ref="ImageResourceMetadataAttributes"/>
+  </xs:attributeGroup>
+  <!-- allow any property/value via simple elements with allowed text content -->
+  <xs:complexType name="PropertyContent">
+    <xs:complexContent>
+      <xs:extension base="any_content">
+        <xs:attributeGroup ref="any_attribute"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="any_content">
+    <xs:group minOccurs="0" maxOccurs="unbounded" ref="any_element"/>
+  </xs:complexType>
+  <xs:group name="any_element">
+    <xs:sequence>
+      <xs:any processContents="skip"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:attributeGroup name="any_attribute">
+    <xs:anyAttribute processContents="skip"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="imageLocation">
+    <xs:attribute name="x" use="required" type="xs:double"/>
+    <xs:attribute name="y" use="required" type="xs:double"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="imageSize">
+    <xs:attribute name="width" use="required" type="xs:integer"/>
+    <xs:attribute name="height" use="required" type="xs:integer"/>
+  </xs:attributeGroup>
+  <xs:element name="GeometryContent" abstract="true"/>
+  <xs:complexType name="GeometryContent">
+    <xs:sequence>
+      <xs:element ref="GeometryContent"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="point" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:group ref="coordinatePair"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="linestring" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:group ref="twoOrMoreCoordinatePairs"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="polygon" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="threeOrMoreCoordinatePairs"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="multipoint" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:group ref="twoOrMoreCoordinatePairs"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="multilinestring" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="twoOrMoreCoordinatePairs"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="multipolygon" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="polygon"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="geometrycollection" substitutionGroup="GeometryContent">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="point"/>
+        <xs:element ref="linestring"/>
+        <xs:element ref="polygon"/>
+        <xs:element ref="multipoint"/>
+        <xs:element ref="multilinestring"/>
+        <xs:element ref="multipolygon"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="coordinatePair">
+    <xs:sequence>
+      <xs:element name="coordinates">
+        <xs:simpleType>
+          <xs:restriction>
+            <xs:simpleType>
+              <xs:list>
+                <xs:simpleType>
+                  <xs:union memberTypes="xs:double xs:double"/>
+                </xs:simpleType>
+              </xs:list>
+            </xs:simpleType>
+            <xs:length value="2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="twoOrMoreCoordinatePairs">
+    <xs:sequence>
+      <xs:element name="coordinates">
+        <xs:simpleType>
+          <xs:restriction>
+            <xs:simpleType>
+              <xs:list>
+                <xs:simpleType>
+                  <xs:union memberTypes="xs:double xs:double"/>
+                </xs:simpleType>
+              </xs:list>
+            </xs:simpleType>
+            <xs:minLength value="2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="threeOrMoreCoordinatePairs">
+    <xs:sequence>
+      <xs:element name="coordinates">
+        <xs:simpleType>
+          <xs:restriction>
+            <xs:simpleType>
+              <xs:list>
+                <xs:simpleType>
+                  <xs:union>
+                    <xs:simpleType>
+                      <xs:union memberTypes="xs:double xs:double"/>
+                    </xs:simpleType>
+                    <xs:simpleType>
+                      <xs:union memberTypes="xs:double xs:double"/>
+                    </xs:simpleType>
+                    <xs:simpleType>
+                      <xs:union memberTypes="xs:double xs:double"/>
+                    </xs:simpleType>
+                  </xs:union>
+                </xs:simpleType>
+              </xs:list>
+            </xs:simpleType>
+            <xs:minLength value="6"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <!-- for bbox content, omits coordinates element -->
+  <xs:simpleType name="twoCoordinatePairs">
+    <xs:restriction>
+      <xs:simpleType>
+        <xs:list>
+          <xs:simpleType>
+            <xs:union memberTypes="xs:double xs:double xs:double xs:double"/>
+          </xs:simpleType>
+        </xs:list>
+      </xs:simpleType>
+      <xs:length value="4"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

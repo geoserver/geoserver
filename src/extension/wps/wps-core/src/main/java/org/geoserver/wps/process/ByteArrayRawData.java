@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 /**
  * Raw data backed by a simple java byte array
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ByteArrayRawData extends AbstractRawData {
@@ -20,6 +20,11 @@ public class ByteArrayRawData extends AbstractRawData {
 
     public ByteArrayRawData(byte[] data, String mimeType) {
         super(mimeType);
+        this.data = data;
+    }
+
+    public ByteArrayRawData(byte[] data, String mimeType, String extension) {
+        super(mimeType, extension);
         this.data = data;
     }
 
@@ -36,5 +41,4 @@ public class ByteArrayRawData extends AbstractRawData {
     public byte[] getData() {
         return data;
     }
-
 }

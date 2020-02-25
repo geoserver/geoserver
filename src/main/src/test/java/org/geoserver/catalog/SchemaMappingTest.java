@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.junit.Before;
@@ -22,10 +22,10 @@ public class SchemaMappingTest extends GeoServerSystemTestSupport {
     public SchemaMappingTest() {
         super();
     }
-    
+
     @Before
     public void removeMappings() throws IOException {
-        File resourceDir = getDataDirectory().findResourceDir(getDividedRoutes());
+        File resourceDir = Resources.directory(getDataDirectory().get(getDividedRoutes()));
         new File(resourceDir, "schema.xsd").delete();
         new File(resourceDir, "schema.xml").delete();
     }
@@ -33,34 +33,35 @@ public class SchemaMappingTest extends GeoServerSystemTestSupport {
     @Test
     public void testNoMapping() throws Exception {
         reloadCatalogAndConfiguration();
-        FeatureTypeInfo ft = 
-            getCatalog().getFeatureTypeByName( "DividedRoutes");
-        assertEquals( 4, ft.attributes().size() );
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
+        assertEquals(4, ft.attributes().size());
     }
 
     @Test
     public void testXsdMapping() throws Exception {
-        getDataDirectory().copyToResourceDir(
-            getDividedRoutes(), getClass().getResourceAsStream( "schema.xsd"), "schema.xsd");
+        Resources.copy(
+                getClass().getResourceAsStream("schema.xsd"),
+                getDataDirectory().get(getDividedRoutes()),
+                "schema.xsd");
 
         reloadCatalogAndConfiguration();
-        FeatureTypeInfo ft = 
-            getCatalog().getFeatureTypeByName( "DividedRoutes");
-        assertEquals( 3, ft.attributes().size() );
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
+        assertEquals(3, ft.attributes().size());
     }
-    
+
     @Test
     public void testXmlMapping() throws Exception {
-        getDataDirectory().copyToResourceDir(
-                getDividedRoutes(), getClass().getResourceAsStream( "schema.xml"), "schema.xml");
+        Resources.copy(
+                getClass().getResourceAsStream("schema.xml"),
+                getDataDirectory().get(getDividedRoutes()),
+                "schema.xml");
 
         reloadCatalogAndConfiguration();
-        FeatureTypeInfo ft = 
-            getCatalog().getFeatureTypeByName( "DividedRoutes");
-        assertEquals( 2, ft.attributes().size() );
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
+        assertEquals(2, ft.attributes().size());
     }
 
     FeatureTypeInfo getDividedRoutes() {
-        return getCatalog().getFeatureTypeByName( "DividedRoutes");
+        return getCatalog().getFeatureTypeByName("DividedRoutes");
     }
 }

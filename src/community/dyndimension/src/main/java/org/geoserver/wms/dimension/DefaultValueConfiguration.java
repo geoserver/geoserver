@@ -9,24 +9,18 @@ import java.io.Serializable;
 
 /**
  * Configures the dynamic dimension values for a specific dimension
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public final class DefaultValueConfiguration implements Serializable, Cloneable {
     private static final long serialVersionUID = -4294430917350930217L;
 
     public enum DefaultValuePolicy {
-        /**
-         * Use the WMS standard default value, no dynamic computation
-         */
+        /** Use the WMS standard default value, no dynamic computation */
         STANDARD,
-        /**
-         * Apply the WMS standard policy against a restricted domain
-         */
+        /** Apply the WMS standard policy against a restricted domain */
         LIMIT_DOMAIN,
-        /**
-         * Compute the default value as a ECQL expression of the other dimensions
-         */
+        /** Compute the default value as a ECQL expression of the other dimensions */
         EXPRESSION
     }
 
@@ -36,11 +30,7 @@ public final class DefaultValueConfiguration implements Serializable, Cloneable 
 
     String defaultValueExpression;
 
-    /**
-     * 
-     * @param dimension
-     * @param policy
-     */
+    /** */
     public DefaultValueConfiguration(String dimension, DefaultValuePolicy policy) {
         this.dimension = dimension;
         this.policy = policy;
@@ -83,8 +73,12 @@ public final class DefaultValueConfiguration implements Serializable, Cloneable 
 
     @Override
     public String toString() {
-        return "DefaultValueConfiguration [dimension=" + dimension + ", policy=" + policy
-                + ", defaultValueExpression=" + defaultValueExpression + "]";
+        return "DefaultValueConfiguration [dimension="
+                + dimension
+                + ", policy="
+                + policy
+                + ", defaultValueExpression="
+                + defaultValueExpression
+                + "]";
     }
-
 }

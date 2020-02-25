@@ -1,0 +1,21 @@
+<assembly>
+  <id>importer-jdbc-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>	
+        <include>gs-importer-jdbc-*.jar</include>
+        <!-- to include H2 -->
+        <include>gt-jdbc-h2-*.jar</include>
+        <include>h2-*.jar</include>
+        <include>geodb-*.jar</include>
+        <include>hatbox-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

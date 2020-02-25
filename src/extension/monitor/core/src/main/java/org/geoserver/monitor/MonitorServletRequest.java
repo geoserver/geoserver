@@ -1,4 +1,3 @@
-
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
@@ -10,18 +9,15 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 public class MonitorServletRequest extends HttpServletRequestWrapper {
 
-    /**
-     * Don't restrict the maximum length of a request body.
-     */
+    /** Don't restrict the maximum length of a request body. */
     public static final long BODY_SIZE_UNBOUNDED = -1;
-    
+
     MonitorInputStream input;
 
     long maxSize;
@@ -32,12 +28,14 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
     }
 
     public byte[] getBodyContent() throws IOException {
+        @SuppressWarnings("PMD.CloseResource") // wraps the servlet one
         MonitorInputStream stream = getInputStream();
         return stream.getData();
     }
 
-    public long getBytesRead(){
+    public long getBytesRead() {
         try {
+            @SuppressWarnings("PMD.CloseResource") // wraps the servlet one
             MonitorInputStream stream = getInputStream();
             return stream.getBytesRead();
         } catch (IOException ex) {
@@ -48,12 +46,13 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
     @Override
     public MonitorInputStream getInputStream() throws IOException {
         if (input == null) {
+            @SuppressWarnings("PMD.CloseResource") // managed by servlet container
             ServletInputStream delegateTo = super.getInputStream();
             input = new MonitorInputStream(delegateTo, maxSize);
         }
         return input;
     }
-    
+
     @Override
     public BufferedReader getReader() throws IOException {
         String encoding = getCharacterEncoding();
@@ -114,8 +113,7 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
                 buffer.write((byte) b);
             }
 
-            
-            if(b>=0) nbytes += 1; // Increment byte count unless EoF marker
+            if (b >= 0) nbytes += 1; // Increment byte count unless EoF marker
             return b;
         }
 
@@ -147,8 +145,7 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         }
 
         void fill(byte[] b, int off, int len) {
-            if (len < 0)
-                return;
+            if (len < 0) return;
             if (!bufferIsFull()) {
                 if (maxSize > 0) {
                     long residual = maxSize - buffer.size();
@@ -175,5 +172,4 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
             delegate = null;
         }
     }
-
 }

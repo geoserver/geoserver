@@ -7,17 +7,12 @@ package org.geoserver.wcs2_0.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geotools.xml.transform.TransformerBase;
 
-/**
- * Runs the transformer and outputs the describe coverage response.
-
- */
+/** Runs the transformer and outputs the describe coverage response. */
 public class WCS20DescribeCoverageResponse extends Response {
     /** MIME_TYPE */
     private static final String MIME_TYPE = "application/xml";
@@ -30,8 +25,7 @@ public class WCS20DescribeCoverageResponse extends Response {
         return MIME_TYPE;
     }
 
-    public void write(Object value, OutputStream output, Operation operation)
-        throws IOException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 
         try {

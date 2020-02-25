@@ -13,7 +13,7 @@ import org.junit.Test;
 public class JDBCNewRolePageTest extends NewRolePageTest {
 
     @Test
-    public void testFill() throws Exception{
+    public void testFill() throws Exception {
         doTestFill();
     }
 
@@ -21,7 +21,7 @@ public class JDBCNewRolePageTest extends NewRolePageTest {
     protected void doInitialize() throws Exception {
         initializeForJDBC();
     }
-    
+
     void initializeForJDBC() throws Exception {
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }

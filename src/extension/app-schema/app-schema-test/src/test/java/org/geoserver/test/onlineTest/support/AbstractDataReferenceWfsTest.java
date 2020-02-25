@@ -5,14 +5,11 @@
  */
 package org.geoserver.test.onlineTest.support;
 
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.sql.DataSource;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.junit.Assume;
@@ -20,9 +17,8 @@ import org.junit.Assume;
 /**
  * Base class that provides the Wfs test support framework and perform checks on the fixture and the
  * availabilities of the fixture required
- * 
+ *
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
- * 
  */
 public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTestSupport {
     protected AbstractReferenceDataSetup setup = null;
@@ -35,19 +31,16 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
         setup = this.getReferenceDataSetup();
         available = this.checkAvailable();
         Assume.assumeTrue(available);
-        if (available)
-            initialiseTest();
+        if (available) initialiseTest();
     }
-    
+
     /**
      * The key in the test fixture property file used to set the behaviour of the online test if
      * {@link #connect()} fails.
      */
     public static final String SKIP_ON_FAILURE_KEY = "skip.on.failure";
 
-    /**
-     * The default value used for {@link #SKIP_ON_FAILURE_KEY} if it is not present.
-     */
+    /** The default value used for {@link #SKIP_ON_FAILURE_KEY} if it is not present. */
     public static final String SKIP_ON_FAILURE_DEFAULT = "true";
 
     protected boolean skipOnFailure = true;
@@ -57,14 +50,14 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
      * looking up the file and reporting it not found to the user.
      */
     protected static Map<String, Boolean> found = new HashMap<String, Boolean>();
-    
+
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         setup.setUp();
-        
+
         super.setUpTestData(testData);
     }
-    
+
     public abstract AbstractReferenceDataSetup getReferenceDataSetup() throws Exception;
 
     public void connect() throws Exception {
@@ -74,14 +67,13 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
 
     /**
      * Loads the test fixture for the test case.
-     * <p>
-     * The fixture id is obtained via {@link #getFixtureId()}.
-     * </p>
+     *
+     * <p>The fixture id is obtained via {@link #getFixtureId()}.
      */
-
     protected final void initialiseTest() throws Exception {
-        skipOnFailure = Boolean.parseBoolean(fixture.getProperty(SKIP_ON_FAILURE_KEY,
-                SKIP_ON_FAILURE_DEFAULT));
+        skipOnFailure =
+                Boolean.parseBoolean(
+                        fixture.getProperty(SKIP_ON_FAILURE_KEY, SKIP_ON_FAILURE_DEFAULT));
         // call the setUp template method
         try {
             connect();
@@ -101,9 +93,8 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
     /**
      * Check whether the fixture is available. This method also loads the configuration if present,
      * and tests the connection using {@link #isOnline()}.
-     * 
+     *
      * @return true if fixture is available for use
-     * @throws FileNotFoundException
      */
     protected boolean checkAvailable() throws Exception {
 
@@ -122,8 +113,11 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
                 try {
                     available = isOnline();
                 } catch (Throwable t) {
-                    System.out.println("Skipping " + fixtureId
-                            + " tests, resources not available: " + t.getMessage());
+                    System.out.println(
+                            "Skipping "
+                                    + fixtureId
+                                    + " tests, resources not available: "
+                                    + t.getMessage());
                     t.printStackTrace();
                     available = Boolean.FALSE;
                 }
@@ -147,5 +141,4 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
     protected String getFixtureId() {
         return setup.getDatabaseID();
     }
-
 }

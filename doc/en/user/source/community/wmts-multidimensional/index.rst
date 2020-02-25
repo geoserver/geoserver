@@ -21,7 +21,7 @@ This is a community module, which means that it will not be available in the Geo
 
 This module can be installed following these steps:
 
-1. Download this module package from the `nightly builds <http://ares.boundlessgeo.com/geoserver/>`_, the module version should match the desired GeoServer version.
+1. Download this module package from the `nightly builds <https://build.geoserver.org/geoserver/>`_, the module version should match the desired GeoServer version.
 
 2. Extract the contents of the package into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
@@ -120,6 +120,8 @@ This module adds three new operations to the WMTS service that are described in 
      - Description
    * - DescribeDomains
      - Describes all the dimension domains in a compact document, along with the restricted bounding box of the two dimensional space intercepted by the request.
+   * - GetDomainValues
+     - Allows to page through domain values (supplements DescribeDomains in case the domain has too many values, and the client still wants to get all of them, one page at a time)
    * - GetHistogram
      - Given a scattered domain description and an interval, this operation divides the interval in regular buckets, and provides an item count for each bucket.
    * - GetFeature
@@ -154,14 +156,30 @@ This operation is useful to understand which domains are available in our layer 
    * - TileMatrixSet
      - Yes
      - Tile matrix set identifier
-   * - BBOX=minx,miny,maxx,maxy
+   * - bbox=minx,miny,maxx,maxy
      - No
      - Bounding box corners (lower left, upper right) in CRS units
    * - DimensionIdentifier
      - No
      - At most one per dimension, a range described as min/max, restricting the domain of this dimension
+   * - Domains
+     - No
+     - A comma separated list of domain names to be returned, in case only a subset is required. The space domain is identified by "bbox".
+   * - ExpandLimit
+     - No
+     - A numerical value, greater or equal to zero. If the number of unique domain values is below ``ExpandLimit`` then the domain with be represented in full, as 
+       a comma separated list of values, otherwise in compact form, as ``start--end``. The server assumes a built-in limit of 200 in case not specified,
+       and allows client to specify a value up to 10000, values can be tuned via the user interface, in the WMTS panel (server defaults) and on a layer
+       by layer basis.
 
-The ``BBOX`` parameter allows the client to restrict the ``DescribeDomains`` operation to a certain spatial area, by default the layer extent will be used.
+.. figure:: images/expandLimitConfig.png
+   :align: center
+
+   *Configuration domain expansion limits.*
+
+
+
+The ``bbox`` parameter allows the client to restrict the ``DescribeDomains`` operation to a certain spatial area, by default the layer extent will be used.
 
 The ``DimensionIdentifier`` parameter can be used to restrict the domain values of a certain dimension, this is useful to answer questions like which elevations values are available in a specific day.
 
@@ -233,6 +251,174 @@ the result will be similar to this:
 
 So for time 2016-02-23T03:00:00.000Z there is only values measured at 200.0 meters.
 
+In case only the space domain is of interest, the following request will do:
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=DescribeDomains&Version=1.0.0&Layer=some_layer&TileMatrixSet=EPSG:4326&elevation=0/500&time=2016-02-23T03:00:00.000Z&domains=bbox
+
+and the result will be similar to this:
+
+.. code-block:: xml
+
+  <Domains xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <SpaceDomain>
+      <BoundingBox CRS="EPSG:4326" 
+       maxx="179.875" maxy="89.9375" minx="-180.125" miny="-90.125"/>
+    </SpaceDomain>
+  </Domains>
+
+GetDomainValues
+^^^^^^^^^^^^^^^
+
+This operation is useful to page through the values of a given domain, in case the "multidimensional" area of interest
+is too large for DescribeDomain to return them in a single shot.
+
+.. list-table::
+   :widths: 20 10 70
+   :header-rows: 1
+
+   * - Name
+     - Mandatory
+     - Description
+   * - Service=WMTS
+     - Yes
+     - Service type identifier
+   * - Request=GetDomainValues
+     - Yes
+     - Operation name
+   * - Version=1.0.0
+     - Yes
+     - Standard and schema version for this operation
+   * - Layer
+     - Yes
+     - Layer identifier
+   * - bbox=minx,miny,maxx,maxy
+     - No
+     - Bounding box corners (lower left, upper right) in CRS units
+   * - DimensionIdentifier
+     - No
+     - At most one per dimension, a range described as min/max, restricting the domain of this dimension
+   * - Domain
+     - Yes
+     - Name of the domain whose values will be returned (one cannot use "bbox", only single value dimensions can be enumerated by GetDomainValues, e.g., time, elevation).
+   * - FromValue
+     - No
+     - Sets the beginning of domain enumeration, for paging purposes. It's not included in the result
+   * - Sort
+     - No
+     - Can be "asc" or "desc", determines if the enumeration is from low to high, or from high to low
+   * - Limit
+     - No
+     - Maximum number of values returned by this call. The server assumes a built-in limit of 1000 in case not specified,
+       and allows client to specify a value up to 10000.
+
+For example, let's say a "elevation" domain has values 1,2,3 and 5, and that we are paging through
+it by pages of 2 elements. The client will start without providing a "fromValue", and will then continue
+using the last value of the previous page as a reference:
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2
+
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <Domain>1.0,2.0</Domain>
+      <Size>2</Size>
+    </DomainValues>
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=2
+          
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <FromValue>2.0</FromValue>
+      <Domain>3.0,5.0</Domain>
+      <Size>2</Size>
+    </DomainValues>
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=5
+          
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <FromValue>5.0</FromValue>
+      <Domain></Domain>
+      <Size>0</Size>
+    </DomainValues>
+
+For elevations it might not be uncommon to iterate backwards, from the top-most elevation down to the lowest value. The interaction
+between client and server migth then look as follows:
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&sort=desc
+
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <Domain>5.0,3.0</Domain>
+      <Size>2</Size>
+    </DomainValues>
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=3&sort=desc
+          
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <FromValue>3.0</FromValue>
+      <Domain>2.0,1.0</Domain>
+      <Size>2</Size>
+    </DomainValues>
+
+.. code-block:: guess
+
+  http://localhost:8080/geoserver/gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer=sampleLayer&domain=elevation&limit=2&fromValue=1&sort=desc
+          
+.. code-block:: xml
+
+    <DomainValues xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+      <ows:Identifier>elevation</ows:Identifier>
+      <Limit>2</Limit>
+      <Sort>asc</Sort>
+      <FromValue>1.0</FromValue>
+      <Domain></Domain>
+      <Size>0</Size>
+    </DomainValues>
+
+The paging approach might seem odd for those used to using "limit" and "offset". The main reason it's done
+this way it's performance, paging through unique values via limit and offset means that the data source
+has to compute and collect the unique values that are not needed (the ones in previous pages) in order to
+find the ones in the current page. With large domains (typical of time series) this quickly becomes too
+slow for interactive usage, as one moves forward in the domain.
+
+By giving a starting point, the unneeded data points can be skipped via index and the distinct value
+computation can be performed only on the current page data, stopping it as soon as the desired number
+of results has been computed. With an index on the dimension being queries, this results in nearly
+constant response times, regardless of the page being requested.
+
 GetHistogram
 ^^^^^^^^^^^^
 
@@ -297,6 +483,30 @@ and the result will be similar to this:
   </Histogram>
 
 Looking at the result we can conclude that measurements between 500.0 and 1000.0 meters are typically done during the night. 
+
+The bucket matching is setup so that each one contains its first value, but not its last value (which is contained in the next bucket instead).
+This is important to understand the results. Say we have a dataset with regular elevations, from 0 to 100 with a step of 10, and the
+request calls for elevations between 0 and 20. Then the results will look something like follows:
+
+.. code-block:: xml
+
+  <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <ows:Identifier>elevation</ows:Identifier>
+    <Domain>0/30/10</Domain>
+    <Values>5,3,8</Values>
+  </Histogram>
+
+That is, there values catch the intervals [0,10[, [10, 20[, and [20, 30[ (to have a bucket for the images/features
+having elevation exactly matching 20). This will happen only if an extreme value if found, the same request
+filtering on elevations between 0 and 15 will return this instead:
+
+.. code-block:: xml
+
+  <Histogram xmlns="http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd" xmlns:ows="http://www.opengis.net/ows/1.1">
+    <ows:Identifier>elevation</ows:Identifier>
+    <Domain>0/20/10</Domain>
+    <Values>5,3</Values>
+  </Histogram>
 
 GetFeature
 ^^^^^^^^^^

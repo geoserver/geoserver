@@ -10,8 +10,8 @@
         <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>title</sld:Title>
-          <sld:Abstract>Abstract</sld:Abstract>
+          <sld:Title>White Polygon</sld:Title>
+          <sld:Abstract>White  polygon with an outline with default stroke color and width of 2 pixels</sld:Abstract>
           <sld:PolygonSymbolizer>
             <sld:Fill>
               <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>

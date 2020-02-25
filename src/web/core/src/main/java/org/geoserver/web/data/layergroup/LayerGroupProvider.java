@@ -8,35 +8,47 @@ package org.geoserver.web.data.layergroup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
-/**
- * Provides a table model for listing layer groups
- */
+/** Provides a table model for listing layer groups */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     private static final long serialVersionUID = 4806818198949114395L;
 
-    public static Property<LayerGroupInfo> NAME = 
-        new BeanProperty<LayerGroupInfo>( "name", "name" );
+    public static Property<LayerGroupInfo> NAME = new BeanProperty<LayerGroupInfo>("name", "name");
 
-    public static Property<LayerGroupInfo> WORKSPACE = 
-            new BeanProperty<LayerGroupInfo>( "workspace", "workspace.name" );
+    public static Property<LayerGroupInfo> WORKSPACE =
+            new BeanProperty<LayerGroupInfo>("workspace", "workspace.name");
 
-    static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
-    
+    static final Property<LayerGroupInfo> MODIFIED_TIMESTAMP =
+            new BeanProperty<>("datemodfied", "dateModified");
+
+    static final Property<LayerGroupInfo> CREATED_TIMESTAMP =
+            new BeanProperty<>("datecreated", "dateCreated");
+
+    public static Property<LayerGroupInfo> ENABLED =
+            new AbstractProperty<LayerGroupInfo>("Enabled") {
+
+                public Boolean getPropertyValue(LayerGroupInfo item) {
+                    return Boolean.valueOf(item.isEnabled());
+                }
+            };
+
+    static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE, ENABLED);
+
     protected LayerGroupProviderFilter groupFilter = null;
-    
-    public LayerGroupProvider() {
-    }
-    
+
+    public LayerGroupProvider() {}
+
     public LayerGroupProvider(LayerGroupProviderFilter groupFilter) {
         this.groupFilter = groupFilter;
     }
-    
+
     @Override
     protected List<LayerGroupInfo> getItems() {
         List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
@@ -54,11 +66,23 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     @Override
     protected List<Property<LayerGroupInfo>> getProperties() {
-        return PROPERTIES;
+        List<Property<LayerGroupInfo>> modifiedPropertiesList =
+                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+        // check geoserver properties
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowCreatedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (GeoServerApplication.get()
+                .getGeoServer()
+                .getSettings()
+                .isShowModifiedTimeColumnsInAdminList())
+            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        return modifiedPropertiesList;
     }
 
     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
-        return new LayerGroupDetachableModel( (LayerGroupInfo) object );
+        return new LayerGroupDetachableModel((LayerGroupInfo) object);
     }
-
 }

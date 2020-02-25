@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wps</artifactId>
-        <version>2.11-SNAPSHOT</version>
+        <version>2.17-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.extension</groupId>
@@ -101,6 +101,10 @@
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+        </dependency>
         
         <!-- test dependencies -->
         <dependency>
@@ -109,9 +113,9 @@
           <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.easymock</groupId>
-          <artifactId>easymockclassextension</artifactId>
-          <scope>test</scope>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.springframework</groupId>
@@ -131,11 +135,23 @@
            <scope>test</scope>
         </dependency>
         <dependency>
+           <groupId>org.geoserver</groupId>
+           <artifactId>gs-platform</artifactId>
+           <version>${gs.version}</version>
+           <classifier>tests</classifier>
+           <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-wcs2_0</artifactId>
             <version>${gs.version}</version>
            <classifier>tests</classifier>
            <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.geotools</groupId>
+        	<artifactId>gt-csv</artifactId>
+        	<version>${gt.version}</version>
         </dependency>
     </dependencies>
 

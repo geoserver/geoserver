@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -17,19 +17,19 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.process.vector.UnionFeatureCollection;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class UnionFeatureCollectionTest extends WPSTestSupport {
 
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+    GeometryFactory gf = new GeometryFactory();
 
     @Test
     public void testExecute() throws Exception {
@@ -42,8 +42,8 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b
-                .getFeatureType());
+        DefaultFeatureCollection secondFeatures =
+                new DefaultFeatureCollection(null, b.getFeatureType());
         Geometry[] firstArrayGeometry = new Geometry[5];
         Geometry[] secondArrayGeometry = new Geometry[5];
         for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
@@ -52,12 +52,11 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
                 firstArray[j] = new Coordinate(j + numFeatures, j + numFeatures);
             }
             firstArray[4] = new Coordinate(0 + numFeatures, 0 + numFeatures);
-            LinearRing shell = new LinearRing(firstArray, new PrecisionModel(), 0);
+            LinearRing shell = gf.createLinearRing(new CoordinateArraySequence(firstArray));
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             firstArrayGeometry[numFeatures] = gf.createPolygon(shell, null);
             features.add(b.buildFeature(numFeatures + ""));
-
         }
         for (int numFeatures = 0; numFeatures < 5; numFeatures++) {
             Coordinate array[] = new Coordinate[5];
@@ -65,12 +64,11 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
                 array[j] = new Coordinate(j + numFeatures + 50, j + numFeatures + 50);
             }
             array[4] = new Coordinate(0 + numFeatures + 50, 0 + numFeatures + 50);
-            LinearRing shell = new LinearRing(array, new PrecisionModel(), 0);
+            LinearRing shell = gf.createLinearRing(new CoordinateArraySequence(array));
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             secondArrayGeometry[numFeatures] = gf.createPolygon(shell, null);
             secondFeatures.add(b.buildFeature(numFeatures + ""));
-
         }
         UnionFeatureCollection process = new UnionFeatureCollection();
         SimpleFeatureCollection output = process.execute(features, secondFeatures);

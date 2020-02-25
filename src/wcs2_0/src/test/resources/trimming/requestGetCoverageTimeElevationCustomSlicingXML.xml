@@ -3,9 +3,7 @@
   xmlns:wcsgeotiff="http://www.opengis.net/wcs/geotiff/1.0" xmlns:crs="http://www.opengis.net/wcs/crs/1.0"
   xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/wcs/2.0 
-                  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd 
-                  http://www.opengis.net/wcs/geotiff/1.0 
-                  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd"
+                  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd"
   service="WCS" version="2.0.1">
   <wcs:CoverageId>${coverageId}</wcs:CoverageId>
   <wcs:DimensionSlice>

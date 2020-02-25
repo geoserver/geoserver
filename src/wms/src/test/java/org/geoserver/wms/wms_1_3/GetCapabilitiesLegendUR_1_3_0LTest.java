@@ -6,7 +6,6 @@
 package org.geoserver.wms.wms_1_3;
 
 import java.util.HashSet;
-
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesLegendURLTest;
@@ -16,7 +15,9 @@ public class GetCapabilitiesLegendUR_1_3_0LTest extends GetCapabilitiesLegendURL
 
     @Override
     protected TransformerBase createTransformer() {
-        return new Capabilities_1_3_0_Transformer(wmsConfig, baseUrl,
+        return new Capabilities_1_3_0_Transformer(
+                wmsConfig,
+                baseUrl,
                 wmsConfig.getAllowedMapFormats(),
                 new HashSet<ExtendedCapabilitiesProvider>());
     }
@@ -25,7 +26,7 @@ public class GetCapabilitiesLegendUR_1_3_0LTest extends GetCapabilitiesLegendURL
     protected String getRootElement() {
         return "WMS_Capabilities";
     }
-    
+
     @Override
     protected String getElementPrefix() {
         return "wms:";

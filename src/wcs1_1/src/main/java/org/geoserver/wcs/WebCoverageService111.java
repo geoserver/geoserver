@@ -8,42 +8,29 @@ package org.geoserver.wcs;
 import net.opengis.wcs11.DescribeCoverageType;
 import net.opengis.wcs11.GetCapabilitiesType;
 import net.opengis.wcs11.GetCoverageType;
-
 import org.geoserver.wcs.response.DescribeCoverageTransformer;
 import org.geoserver.wcs.response.WCSCapsTransformer;
 import org.opengis.coverage.grid.GridCoverage;
 
-
-
 /**
  * Web Coverage Services interface.
- * <p>
- * Each of the methods on this class corresponds to an operation as defined
- * by the Web Coverage Specification. See {@link "http://www.opengeospatial.org/standards/wcs"}
- * for more details.
- * </p>
- * @author Andrea Aime, TOPP
  *
+ * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage
+ * Specification. See {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
+ *
+ * @author Andrea Aime, TOPP
  */
 public interface WebCoverageService111 {
-    
-    /**
-     * WCS service info.
-     */
+
+    /** WCS service info. */
     WCSInfo getServiceInfo();
-    
-    /**
-    * GetCapabilities operation.
-    */
+
+    /** GetCapabilities operation. */
     WCSCapsTransformer getCapabilities(GetCapabilitiesType request);
 
-    /**
-     * DescribeCoverage oeration.
-     */
+    /** DescribeCoverage oeration. */
     DescribeCoverageTransformer describeCoverage(DescribeCoverageType request);
 
-    /**
-     * GetCoverage operation.
-     */
+    /** GetCoverage operation. */
     GridCoverage[] getCoverage(GetCoverageType request);
 }

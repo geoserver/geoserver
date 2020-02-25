@@ -9,11 +9,8 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.ows.AbstractDispatcherCallback;
-import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
@@ -21,20 +18,17 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 
 /**
- * Adds proper caching headers to capabilites response clients paying attention to HTTP headers do 
- * not they are cacheable, yet allowing these same clients to perform conditional requests and avoid
- * the caps document computation if nothing has changed, via ETag support.
- * 
- * The callback can be turned off by setting "CAPABILITIES_CACHE_CONTROL_ENABLED" to "false", either
- * as a system, environment or servlet context variable.
- *  
+ * Adds proper caching headers to capabilites response clients paying attention to HTTP headers do
+ * not think they are cacheable
+ *
+ * <p>The callback can be turned off by setting "CAPABILITIES_CACHE_CONTROL_ENABLED" to "false",
+ * either as a system, environment or servlet context variable.
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
-        implements GeoServerLifecycleHandler {
+public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback {
 
     static final Logger LOGGER = Logging.getLogger(CapabilitiesCacheHeadersCallback.class);
 
@@ -42,114 +36,63 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
 
     GeoServer gs;
 
-    private long lastLoaded;
-
     public CapabilitiesCacheHeadersCallback(GeoServer gs) {
         this.gs = gs;
-        this.lastLoaded = System.currentTimeMillis();
-        
+
         // initialize headers processing by grabbing the default from a property
         final String value = GeoServerExtensions.getProperty("CAPABILITIES_CACHE_CONTROL_ENABLED");
-        if(value != null) {
+        if (value != null) {
             capabilitiesCacheHeadersEnabled = Boolean.parseBoolean(value);
         } else {
             capabilitiesCacheHeadersEnabled = true;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Cache control for capabilities requests and 304 support is enabled: "
-                    + capabilitiesCacheHeadersEnabled);
+            LOGGER.fine(
+                    "Cache control for capabilities requests and 304 support is enabled: "
+                            + capabilitiesCacheHeadersEnabled);
         }
     }
 
     @Override
-    public Operation operationDispatched(Request request, Operation operation) {
-        // check conditional requests on GetCapabilities
+    public Response responseDispatched(
+            Request request, Operation operation, Object result, Response response) {
         if (handleCachingHeaders(request)) {
-            String clientTag = request.getHttpRequest().getHeader(HttpHeaders.IF_NONE_MATCH);
-            String currentTag = computeTag();
-            if (clientTag != null && currentTag.equals(clientTag)) {
-                throw new HttpErrorCodeException(HttpStatus.NOT_MODIFIED.value());
-            }
-        }
-
-        return operation;
-    }
-
-    @Override
-    public Response responseDispatched(Request request, Operation operation, Object result,
-            Response response) {
-        if (handleCachingHeaders(request)) {
-            return new RevalidateTagResponse(response, computeTag());
+            return new RevalidateTagResponse(response);
         }
 
         return response;
     }
-    
-    /**
-     * Returns true if the caching headers are enabled and the request is a GetCapabilities one
-     * @param request
-     * @return
-     */
+
+    /** Returns true if the caching headers are enabled and the request is a GetCapabilities one */
     private boolean handleCachingHeaders(Request request) {
-        return capabilitiesCacheHeadersEnabled && "GetCapabilities".equalsIgnoreCase(request.getRequest());
+        return capabilitiesCacheHeadersEnabled
+                && "GetCapabilities".equalsIgnoreCase(request.getRequest());
     }
 
-
-    private String computeTag() {
-        return lastLoaded + "-" + gs.getGlobal().getUpdateSequence();
-    }
-
-    @Override
-    public void onReset() {
-        // nothing to do
-    }
-
-    @Override
-    public void onDispose() {
-        // nothing to do
-    }
-
-    @Override
-    public void beforeReload() {
-        // nothing to do
-    }
-
-    @Override
-    public void onReload() {
-        this.lastLoaded = System.currentTimeMillis();
-    }
-    
     /**
      * Returns true if the callback will handle cache headers in GetCapabilities requests/responses
-     * @return
      */
     public boolean isCapabilitiesCacheHeadersEnabled() {
         return capabilitiesCacheHeadersEnabled;
     }
 
-    /**
-     * Enables/disables the caching headers processing for this callback
-     * 
-     * @param capabilitiesCacheHeadersEnabled
-     */
+    /** Enables/disables the caching headers processing for this callback */
     public void setCapabilitiesCacheHeadersEnabled(boolean capabilitiesCacheHeadersEnabled) {
         this.capabilitiesCacheHeadersEnabled = capabilitiesCacheHeadersEnabled;
     }
 
     /**
      * A Response wrapper adding caching headers on demand
+     *
      * @author aaime
      */
     private class RevalidateTagResponse extends Response {
 
         Response delegate;
 
-        String tag;
-
-        public RevalidateTagResponse(Response delegate, String tag) {
+        public RevalidateTagResponse(Response delegate) {
             super(delegate.getBinding());
             this.delegate = delegate;
-            this.tag = tag;
         }
 
         public boolean canHandle(Operation operation) {
@@ -161,19 +104,18 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
         }
 
         /**
-         * See if we have to add cache control headers. Won't alter them if the response already set them.
+         * See if we have to add cache control headers. Won't alter them if the response already set
+         * them.
          */
         public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
             String[][] headers = delegate.getHeaders(value, operation);
             if (headers == null) {
                 // if no headers at all, add and exit
-                return new String[][] { { HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate" },
-                        { HttpHeaders.ETAG, tag } };
+                return new String[][] {{HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate"}};
             } else {
                 // will add only if not already there
-                Map<String, String> map = ArrayUtils.toMap(headers);
+                Map<String, String> map = (Map) ArrayUtils.toMap(headers);
                 map.putIfAbsent(HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate");
-                map.putIfAbsent(HttpHeaders.ETAG, tag);
                 headers = new String[map.size()][2];
                 int i = 0;
                 for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -182,7 +124,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
                     i++;
                 }
             }
-            
+
             return headers;
         }
 
@@ -202,7 +144,5 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
         public String getCharset(Operation operation) {
             return delegate.getCharset(operation);
         }
-
     }
-
 }

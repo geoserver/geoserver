@@ -1,0 +1,66 @@
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:gml="http://www.opengis.net/gml"
+           xmlns:st="http://www.stations.org/1.0"
+           targetNamespace="http://www.stations.org/1.0"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="http://www.opengis.net/gml"
+             schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+
+  <xs:complexType name="ContactType">
+    <xs:sequence>
+      <xs:element name="mail" minOccurs="0" maxOccurs="1" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MeasurementPropertyType">
+    <xs:sequence minOccurs="0">
+      <xs:element ref="st:Measurement"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+
+  <xs:complexType name="MeasurementType" abstract="true">
+    <xs:sequence>
+      <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
+      <xs:element name="unit" minOccurs="1" maxOccurs="1" type="xs:string"/>
+      <xs:element name="values" minOccurs="1" maxOccurs="unbounded" type="st:ValuePropertyType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ValuePropertyType">
+    <xs:sequence minOccurs="0">
+      <xs:element ref="st:Value"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+
+  <xs:complexType name="ValueType">
+    <xs:sequence>
+      <xs:element name="timestamp" minOccurs="1" maxOccurs="1" type="xs:long"/>
+      <xs:element name="value" minOccurs="1" maxOccurs="1" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StationFeatureType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="id" minOccurs="1" maxOccurs="1" type="xs:string"/>
+          <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
+          <xs:element name="inferredAttribute" minOccurs="0" maxOccurs="1" type="xs:string"/>
+          <xs:element name="inferredAttribute2" minOccurs="0" maxOccurs="1" type="xs:string"/>
+          <xs:element name="contact" minOccurs="0" maxOccurs="1" type="st:ContactType"/>
+          <xs:element name="measurement" minOccurs="0" maxOccurs="unbounded" type="st:MeasurementPropertyType"/>
+          <xs:element name="geometry" type="gml:GeometryPropertyType" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="nullableField" minOccurs="0" maxOccurs="1" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="StationFeature" type="st:StationFeatureType"  substitutionGroup="gml:_Feature"/>
+  <xs:element name="Measurement" type="st:MeasurementType"  substitutionGroup="gml:_Feature"/>
+  <xs:element name="Value" type="st:ValueType"  substitutionGroup="gml:_Feature"/>
+
+</xs:schema>

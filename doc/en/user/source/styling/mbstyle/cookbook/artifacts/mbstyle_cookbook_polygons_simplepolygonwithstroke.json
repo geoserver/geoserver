@@ -1,0 +1,14 @@
+{
+  "version": 8,
+  "name": "simple-polygon-outline",
+  "layers": [
+    {
+      "id": "polygon-outline",
+      "type": "fill",
+      "paint": {
+        "fill-outline-color": "#FFFFFF",
+        "fill-color": "#000080"
+      }
+    }
+  ]
+}

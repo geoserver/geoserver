@@ -23,7 +23,6 @@ Extensions are available at the `GeoServer download page <http://geoserver.org/d
 .. toctree::
    :maxdepth: 1
 
-   arcsde
    db2
    mysql
    oracle

@@ -10,8 +10,8 @@
         <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>title</sld:Title>
-          <sld:Abstract>Abstract</sld:Abstract>
+          <sld:Title>Default Line Color</sld:Title>
+          <sld:Abstract>Line with default color and 5 pixel wide stroke</sld:Abstract>
           <sld:LineSymbolizer>
             <sld:Stroke>
               <sld:CssParameter name="stroke-width">5</sld:CssParameter>

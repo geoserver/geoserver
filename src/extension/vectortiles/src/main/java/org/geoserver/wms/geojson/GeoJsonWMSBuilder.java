@@ -6,16 +6,14 @@ package org.geoserver.wms.geojson;
 
 import static org.geoserver.wms.geojson.GeoJsonBuilderFactory.MIME_TYPE;
 
+import com.google.common.base.Charsets;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
-
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
-
+import javax.measure.Unit;
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
@@ -23,12 +21,11 @@ import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.precision.CoordinatePrecisionReducerFilter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.google.common.base.Charsets;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
+import si.uom.SI;
 
 public class GeoJsonWMSBuilder implements VectorTileBuilder {
 
@@ -46,7 +43,7 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
         out = new DeferredFileOutputStream(memotyBufferThreshold, "geojson", ".geojson", null);
         writer = new OutputStreamWriter(out, Charsets.UTF_8);
         jsonWriter = new org.geoserver.wfs.json.GeoJSONBuilder(writer);
-        jsonWriter.object();// start root object
+        jsonWriter.object(); // start root object
         jsonWriter.key("type").value("FeatureCollection");
         jsonWriter.key("totalFeatures").value("unknown");
         jsonWriter.key("features");
@@ -56,13 +53,13 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
         jsonWriter.setAxisOrder(CRS.getAxisOrder(mapCrs));
 
         Unit<?> unit = mapCrs.getCoordinateSystem().getAxis(0).getUnit();
-        Unit<?> standardUnit = unit.getStandardUnit();
+        Unit<?> standardUnit = unit.getSystemUnit();
 
         PrecisionModel pm = null;
         if (SI.RADIAN.equals(standardUnit)) {
-            pm = new PrecisionModel(1e6);// truncate coords at 6 decimals
+            pm = new PrecisionModel(1e6); // truncate coords at 6 decimals
         } else if (SI.METRE.equals(standardUnit)) {
-            pm = new PrecisionModel(100);// truncate coords at 2 decimals
+            pm = new PrecisionModel(100); // truncate coords at 2 decimals
         }
         if (pm != null) {
             precisionReducerFilter = new CoordinatePrecisionReducerFilter(pm);
@@ -70,7 +67,11 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public void addFeature(String layerName, String featureId, String geometryName, Geometry aGeom,
+    public void addFeature(
+            String layerName,
+            String featureId,
+            String geometryName,
+            Geometry aGeom,
             Map<String, Object> properties) {
 
         if (precisionReducerFilter != null) {
@@ -105,13 +106,12 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
 
         jsonWriter.endObject(); // end the properties
         jsonWriter.endObject(); // end the feature
-
     }
 
     @Override
     public RawMap build(WMSMapContent mapContent) throws IOException {
         jsonWriter.endArray(); // end features
-        jsonWriter.endObject();// end root object
+        jsonWriter.endObject(); // end root object
         writer.flush();
         writer.close();
         out.close();

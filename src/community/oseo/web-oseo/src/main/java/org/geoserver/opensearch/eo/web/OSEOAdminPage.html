@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+   <body>
+      <wicket:extend>
+        <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="metadataSource">metadataSource</wicket:message>
+               </span>
+            </legend>
+            <ul>
+               <li>
+                  <label>
+                     <wicket:message key="openSearchAccessId">openSearchAccessId</wicket:message>
+                  </label>
+                  <select wicket:id="openSearchAccessId"/>
+               </li>
+            </ul>
+         </fieldset>
+         <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="paging">paging</wicket:message>
+               </span>
+            </legend>
+            <ul>
+               <li>
+                  <label><wicket:message key="recordsPerPage">recordsPerPage</wicket:message></label>
+                  <input type="text" wicket:id="recordsPerPage" class="field text"/>
+               </li>
+               <li>
+                  <label><wicket:message key="maximumRecordsPerPage">maxRecordsPerPage</wicket:message></label>
+                  <input type="text" wicket:id="maximumRecordsPerPage" class="field text"/>
+               </li>
+            </ul>
+         </fieldset>
+          <fieldset>
+              <legend>
+               <span>
+                  <wicket:message key="productClasses">productClasses</wicket:message>
+               </span>
+                <a href="#" wicket:id="productClassesHelp" class="help-link"></a>
+              </legend>
+              <ul>
+                  <li>
+                  <li><a class="add-link" wicket:id="addClass"><wicket:message key="addClass">Add class</wicket:message></a></li>
+                  </li>
+                  <li>
+                      <div wicket:id="productClasses"></div>
+                  </li>
+              </ul>
+          </fieldset>
+          <wicket:fragment wicket:id="text">
+              <input type="text" wicket:id="text"  />
+          </wicket:fragment>
+          <wicket:fragment wicket:id="longtext">
+              <input type="text" wicket:id="text" class="text"/>
+          </wicket:fragment>
+          <wicket:fragment wicket:id="imageLink">
+              <a wicket:id="link"><img wicket:id="image"/></a>
+          </wicket:fragment>
+      </wicket:extend>
+   </body>
+</html>
+

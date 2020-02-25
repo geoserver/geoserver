@@ -1,0 +1,19 @@
+<assembly>
+  <id>importer-fgdb-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-importer-fgdb-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*-sources.jar</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

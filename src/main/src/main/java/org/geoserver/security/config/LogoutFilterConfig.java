@@ -9,23 +9,22 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 
 /**
  * {@link GeoServerLogoutFilter} configuration object.
- * 
+ *
  * @author mcr
  */
 public class LogoutFilterConfig extends SecurityFilterConfig {
 
     private static final long serialVersionUID = 1L;
-    
+
     /**
-     * Optional, redirect URL after a successful logout
-     * If empty, the client will receive an HTTP 200 response.
-     *  
-     * This URL can be an absolute URL or relative to 
-     * the GeoServer root context like the default 
+     * Optional, redirect URL after a successful logout If empty, the client will receive an HTTP
+     * 200 response.
+     *
+     * <p>This URL can be an absolute URL or relative to the GeoServer root context like the default
      * {@link GeoServerLogoutFilter#URL_AFTER_LOGOUT}
      */
     private String redirectURL;
-    
+
     private String formLogoutChain = "/j_spring_security_logout,/j_spring_security_logout/,/logout";
 
     public String getRedirectURL() {
@@ -36,18 +35,13 @@ public class LogoutFilterConfig extends SecurityFilterConfig {
         this.redirectURL = redirectURL;
     }
 
-    /**
-     * @return the formLogoutChain
-     */
+    /** @return the formLogoutChain */
     public String getFormLogoutChain() {
         return formLogoutChain;
     }
 
-    /**
-     * @param formLogoutChain the formLogoutChain to set
-     */
+    /** @param formLogoutChain the formLogoutChain to set */
     public void setFormLogoutChain(String formLogoutChain) {
         this.formLogoutChain = formLogoutChain;
     }
-
 }

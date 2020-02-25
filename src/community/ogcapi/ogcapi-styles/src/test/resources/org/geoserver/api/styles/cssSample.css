@@ -1,0 +1,6 @@
+@styleTitle 'A CSS style';
+@styleAbstract 'A simple polygon fill in CSS';
+
+* {
+  fill: red;
+}

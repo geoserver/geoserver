@@ -10,6 +10,13 @@ public class EchoParameterBuilder {
     private String parameter;
     private Boolean activated;
 
+    public EchoParameterBuilder copy(EchoParameter other) {
+        this.id = other.getId();
+        this.parameter = other.getParameter();
+        this.activated = other.getActivated();
+        return this;
+    }
+
     public EchoParameterBuilder withId(String id) {
         this.id = id;
         return this;

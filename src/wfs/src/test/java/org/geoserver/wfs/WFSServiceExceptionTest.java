@@ -8,35 +8,51 @@ package org.geoserver.wfs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WFSServiceExceptionTest extends WFSTestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-    	WFSInfo wfs = getWFS();
+        WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
     }
 
     @Test
     public void testJsonpException() throws Exception {
+        testJsonpException("1.1.0");
+    }
 
-        String path = "wfs/?service=wfs" + "&version=1.1.0" + "&request=DescribeFeatureType"
-                + "&typeName=foobar" + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY
-                + ":myMethod";
+    @Test
+    public void testJsonException() throws Exception {
+        testJsonException("1.1.0");
+    }
 
-        // JSONP
+    @Test
+    public void testJsonpException20() throws Exception {
+        testJsonpException("2.0.0");
+    }
+
+    @Test
+    public void testJsonException20() throws Exception {
+        testJsonException("2.0.0");
+    }
+
+    private void testJsonpException(String wfsVersion)
+            throws UnsupportedEncodingException, Exception {
+
+        String path = getPath(wfsVersion);
         JSONType.setJsonpEnabled(true);
-        MockHttpServletResponse response = getAsServletResponse(path + "&EXCEPTIONS="
-                + JSONType.jsonp);
+        MockHttpServletResponse response =
+                getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.jsonp);
         JSONType.setJsonpEnabled(false);
 
         // MimeType
@@ -44,18 +60,35 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
 
         // Content
         String content = response.getContentAsString();
-        testJson(testJsonP(content));
+        testJson(testJsonP(content), wfsVersion);
+    }
 
-        // JSON
-        response = getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
+    private void testJsonException(String wfsVersion)
+            throws UnsupportedEncodingException, Exception {
+
+        String path = getPath(wfsVersion);
+        MockHttpServletResponse response =
+                getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
 
         // MimeType
         assertEquals(JSONType.json, response.getContentType());
 
         // Content
-        content = response.getContentAsString();
-        testJson(content);
+        String content = response.getContentAsString();
+        testJson(content, wfsVersion);
+    }
 
+    private String getPath(String wfsVersion) {
+        String path =
+                "wfs/?service=wfs"
+                        + "&version="
+                        + wfsVersion
+                        + "&request=DescribeFeatureType"
+                        + "&typeName=foobar"
+                        + "&format_options="
+                        + JSONType.CALLBACK_FUNCTION_KEY
+                        + ":myMethod";
+        return path;
     }
 
     /**
@@ -70,14 +103,11 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         return content;
     }
 
-    /**
-     * @param path
-     * 
-     */
-    private static void testJson(String content) {
+    /** @param path */
+    private static void testJson(String content, String expectedVersion) {
 
         JSONObject jsonException = JSONObject.fromObject(content);
-        assertEquals(jsonException.getString("version"), "1.1.0");
+        assertEquals(jsonException.getString("version"), expectedVersion);
         JSONArray exceptions = jsonException.getJSONArray("exceptions");
         JSONObject exception = exceptions.getJSONObject(0);
         assertNotNull(exception);
@@ -86,8 +116,5 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         String exceptionText = exception.getString("text");
         assertNotNull(exceptionText);
         assertEquals(exceptionText, "Could not find type: {http://geoserver.org}foobar");
-
     }
-
-
 }

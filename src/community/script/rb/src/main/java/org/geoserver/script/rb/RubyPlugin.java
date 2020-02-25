@@ -5,9 +5,8 @@
  */
 package org.geoserver.script.rb;
 
-import org.geoserver.script.ScriptPlugin;
-
 import com.sun.script.jruby.JRubyScriptEngineFactory;
+import org.geoserver.script.ScriptPlugin;
 
 public class RubyPlugin extends ScriptPlugin {
 
@@ -19,10 +18,9 @@ public class RubyPlugin extends ScriptPlugin {
     public String getId() {
         return "ruby";
     }
-    
+
     @Override
     public String getDisplayName() {
         return "Ruby";
     }
-
 }

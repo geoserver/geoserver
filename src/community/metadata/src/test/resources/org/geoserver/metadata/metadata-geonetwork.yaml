@@ -1,0 +1,3 @@
+geonetworks:
+  - name: geonetwork-extra
+    url: https://geonetwork-opensource.org/test/xml_iso19139_save?uuid=${UUID}

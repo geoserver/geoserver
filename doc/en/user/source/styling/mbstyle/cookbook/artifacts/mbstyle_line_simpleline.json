@@ -1,0 +1,14 @@
+{
+  "version": 8,
+  "name": "simple-line",
+  "layers": [
+    {
+      "id": "simple-line",
+      "type": "line",
+      "paint": {
+        "line-color": "#000000",
+        "line-width": 3
+      }
+    }
+  ]
+}

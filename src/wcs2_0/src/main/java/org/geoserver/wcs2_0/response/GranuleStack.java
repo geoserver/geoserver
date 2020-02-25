@@ -6,14 +6,13 @@
 package org.geoserver.wcs2_0.response;
 
 import java.util.List;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 
 /**
- * A stack of GridCoverage2D instances (granules). 
- * This class may be used to deal with multidimensional outputs.
- * 
+ * A stack of GridCoverage2D instances (granules). This class may be used to deal with
+ * multidimensional outputs.
+ *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public interface GranuleStack extends GridCoverage {
@@ -23,5 +22,4 @@ public interface GranuleStack extends GridCoverage {
 
     // the list of granules composing this stack
     public List<GridCoverage2D> getGranules();
-
 }

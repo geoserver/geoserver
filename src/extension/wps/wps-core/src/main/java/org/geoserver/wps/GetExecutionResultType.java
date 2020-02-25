@@ -7,7 +7,7 @@ package org.geoserver.wps;
 
 /**
  * The execution status request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class GetExecutionResultType {
@@ -74,9 +74,19 @@ public class GetExecutionResultType {
 
     @Override
     public String toString() {
-        return "GetExecutionResult [service=" + service + ", version=" + version + ", executionId="
-                + executionId + ", baseUrl=" + baseUrl + ", outputId=" + outputId + ", mimeType="
-                + mimeType + "]";
+        return "GetExecutionResult [service="
+                + service
+                + ", version="
+                + version
+                + ", executionId="
+                + executionId
+                + ", baseUrl="
+                + baseUrl
+                + ", outputId="
+                + outputId
+                + ", mimeType="
+                + mimeType
+                + "]";
     }
 
     @Override
@@ -94,44 +104,28 @@ public class GetExecutionResultType {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         GetExecutionResultType other = (GetExecutionResultType) obj;
         if (baseUrl == null) {
-            if (other.baseUrl != null)
-                return false;
-        } else if (!baseUrl.equals(other.baseUrl))
-            return false;
+            if (other.baseUrl != null) return false;
+        } else if (!baseUrl.equals(other.baseUrl)) return false;
         if (executionId == null) {
-            if (other.executionId != null)
-                return false;
-        } else if (!executionId.equals(other.executionId))
-            return false;
+            if (other.executionId != null) return false;
+        } else if (!executionId.equals(other.executionId)) return false;
         if (mimeType == null) {
-            if (other.mimeType != null)
-                return false;
-        } else if (!mimeType.equals(other.mimeType))
-            return false;
+            if (other.mimeType != null) return false;
+        } else if (!mimeType.equals(other.mimeType)) return false;
         if (outputId == null) {
-            if (other.outputId != null)
-                return false;
-        } else if (!outputId.equals(other.outputId))
-            return false;
+            if (other.outputId != null) return false;
+        } else if (!outputId.equals(other.outputId)) return false;
         if (service == null) {
-            if (other.service != null)
-                return false;
-        } else if (!service.equals(other.service))
-            return false;
+            if (other.service != null) return false;
+        } else if (!service.equals(other.service)) return false;
         if (version == null) {
-            if (other.version != null)
-                return false;
-        } else if (!version.equals(other.version))
-            return false;
+            if (other.version != null) return false;
+        } else if (!version.equals(other.version)) return false;
         return true;
     }
-
 }

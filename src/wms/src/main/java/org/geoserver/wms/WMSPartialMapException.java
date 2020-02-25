@@ -7,9 +7,9 @@ package org.geoserver.wms;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Extension of ServiceException for returning a WebMap with the exception.
- * Used with WMS option EXCEPTIONS=PARTIALMAP to return a partial image if there is an 
- * exception (such as a timeout) thrown when rendering a WMS request.
+ * Extension of ServiceException for returning a WebMap with the exception. Used with WMS option
+ * EXCEPTIONS=PARTIALMAP to return a partial image if there is an exception (such as a timeout)
+ * thrown when rendering a WMS request.
  */
 public class WMSPartialMapException extends ServiceException {
     WebMap map;
@@ -23,7 +23,7 @@ public class WMSPartialMapException extends ServiceException {
         super(message);
         this.map = map;
     }
-    
+
     /**
      * Constructs the exception from a message and causing exception.
      *
@@ -35,7 +35,7 @@ public class WMSPartialMapException extends ServiceException {
         super(message, cause);
         this.map = map;
     }
-    
+
     /**
      * Constructs the exception from a message, causing exception, and code.
      *
@@ -48,10 +48,9 @@ public class WMSPartialMapException extends ServiceException {
         super(message, cause, code);
         this.map = map;
     }
-    
+
     /**
-     * Constructs the exception from a message, causing exception, code, and
-     * locator.
+     * Constructs the exception from a message, causing exception, code, and locator.
      *
      * @param message The message describing the exception.
      * @param cause The case of the exception.
@@ -59,11 +58,12 @@ public class WMSPartialMapException extends ServiceException {
      * @param locator The application specific locator for the exception.
      * @param map WebMap associated with the WMS request that threw the exception
      */
-    public WMSPartialMapException(String message, Throwable cause, String code, String locator, WebMap map) {
+    public WMSPartialMapException(
+            String message, Throwable cause, String code, String locator, WebMap map) {
         super(message, cause, code, locator);
         this.map = map;
     }
-    
+
     /**
      * Constructs the exception from a message, and code.
      *
@@ -75,10 +75,9 @@ public class WMSPartialMapException extends ServiceException {
         super(message, code);
         this.map = map;
     }
-    
+
     /**
-     * Constructs the exception from a message,code, and
-     * locator.
+     * Constructs the exception from a message,code, and locator.
      *
      * @param message The message describing the exception.
      * @param code The application specific exception code for the exception.
@@ -89,7 +88,7 @@ public class WMSPartialMapException extends ServiceException {
         super(message, code, locator);
         this.map = map;
     }
-    
+
     /**
      * Constructs the exception from a causing exception.
      *
@@ -100,7 +99,7 @@ public class WMSPartialMapException extends ServiceException {
         super(cause);
         this.map = map;
     }
-    
+
     /**
      * Constructs the exception from causing exception, and code.
      *
@@ -112,7 +111,7 @@ public class WMSPartialMapException extends ServiceException {
         super(cause, code);
         this.map = map;
     }
-    
+
     /**
      * Constructs the exception from a causing exception, code, and locator.
      *
@@ -125,9 +124,8 @@ public class WMSPartialMapException extends ServiceException {
         super(cause, code, locator);
         this.map = map;
     }
-    
+
     public WebMap getMap() {
         return map;
     }
-
 }

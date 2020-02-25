@@ -6,7 +6,6 @@
 package org.geoserver.wcs2_0.eo.web;
 
 import java.io.IOException;
-
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -18,9 +17,7 @@ import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 
-/**
- * A configuration panel for CoverageInfo properties that related to WCS publication
- */
+/** A configuration panel for CoverageInfo properties that related to WCS publication */
 public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     private static final long serialVersionUID = 5069332181659419455L;
@@ -32,8 +29,10 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         setVisible(isStructuredCoverage(model));
 
         // add the checkbox to enable exposing a layer as a dataset
-        MapModel datasetModel = new MapModel(new PropertyModel<MetadataMap>(model,
-                "resource.metadata"), WCSEOMetadata.DATASET.key);
+        MapModel datasetModel =
+                new MapModel(
+                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
+                        WCSEOMetadata.DATASET.key);
         CheckBox dataset = new CheckBox("dataset", datasetModel);
         add(dataset);
     }
@@ -41,11 +40,12 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     private boolean isStructuredCoverage(IModel<LayerInfo> model) {
         try {
             CoverageInfo ci = (CoverageInfo) model.getObject().getResource();
-            boolean result = ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
+            boolean result =
+                    ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
             return result;
-        } catch(IOException e) {
-            throw new RuntimeException("Faied to load reader to determine if it's WCS EO Dataset worthy", e);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Faied to load reader to determine if it's WCS EO Dataset worthy", e);
         }
     }
-
 }

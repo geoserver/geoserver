@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.geoserver</groupId>
+      <artifactId>community</artifactId>
+      <version>2.17-SNAPSHOT</version>
+   </parent>
+
+   <groupId>org.geoserver.community</groupId>
+   <artifactId>gs-arcsde</artifactId>
+   <packaging>jar</packaging>
+   <name>ArcSDE DataStore Plugin</name>
+
+   <dependencies>
+       <dependency>
+         <groupId>org.geotools</groupId>
+         <artifactId>gt-arcsde-common</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.geotools</groupId>
+         <artifactId>gt-arcsde</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.ibm.icu</groupId>
+         <artifactId>icu4j</artifactId>
+      </dependency>
+     <dependency>
+         <groupId>org.geoserver.web</groupId>
+         <artifactId>gs-web-core</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.geoserver.web</groupId>
+         <artifactId>gs-web-core</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.geoserver</groupId>
+         <artifactId>gs-main</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+      </dependency>
+       <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <scope>test</scope>
+     </dependency>
+   </dependencies>
+
+   <profiles>
+      <profile>
+         <id>autoSDEDummyJars</id>
+         <activation>
+            <activeByDefault>true</activeByDefault>
+         </activation>
+         <dependencies>
+            <dependency>
+               <groupId>org.geotools</groupId>
+               <artifactId>gt-sde-dummy</artifactId>
+               <version>${gt.version}</version>
+               <scope>provided</scope>
+            </dependency>
+         </dependencies>
+      </profile>
+
+      <profile>
+         <id>sdeLibs</id>
+         <dependencies>
+            <dependency>
+               <groupId>com.esri</groupId>
+               <artifactId>jsde_sdk</artifactId>
+               <version>${sde.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>com.esri</groupId>
+               <artifactId>jpe_sdk</artifactId>
+               <version>${sde.version}</version>
+            </dependency>
+         </dependencies>
+      </profile>
+   </profiles>
+
+   <properties>
+      <sde.version>9.2</sde.version>
+   </properties>
+
+</project>

@@ -9,14 +9,11 @@ import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 
 /**
  * {@link GeoServerJ2eeAuthenticationFilter} configuration object.
- * 
- * @author christian
  *
+ * @author christian
  */
-public class J2eeAuthenticationFilterConfig extends J2eeAuthenticationBaseFilterConfig 
-    implements SecurityAuthFilterConfig {
+public class J2eeAuthenticationFilterConfig extends J2eeAuthenticationBaseFilterConfig
+        implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
-
-    
 }

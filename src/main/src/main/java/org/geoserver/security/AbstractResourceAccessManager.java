@@ -18,17 +18,15 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Abstract base class for {@link ResourceAccessManager} implementations.
- * <p>
- * This base class returns null from every method meaning no limits.
- * </p>
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>This base class returns null from every method meaning no limits.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class AbstractResourceAccessManager implements ResourceAccessManager {
 
     @Override
-    public WorkspaceAccessLimits getAccessLimits(Authentication user,
-            WorkspaceInfo workspace) {
+    public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         return null;
     }
 
@@ -51,7 +49,7 @@ public class AbstractResourceAccessManager implements ResourceAccessManager {
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
         return null;
     }
-    
+
     protected Catalog getCatalog() {
         return (Catalog) GeoServerExtensions.bean("catalog");
     }
@@ -59,11 +57,10 @@ public class AbstractResourceAccessManager implements ResourceAccessManager {
     protected SecureCatalogImpl getSecurityWrapper() {
         return GeoServerExtensions.bean(SecureCatalogImpl.class);
     }
-    
+
     @Override
-    public Filter getSecurityFilter(final Authentication user,
-            final Class<? extends CatalogInfo> clazz) {
+    public Filter getSecurityFilter(
+            final Authentication user, final Class<? extends CatalogInfo> clazz) {
         return InMemorySecurityFilter.buildUserAccessFilter(this, user);
     }
-
 }

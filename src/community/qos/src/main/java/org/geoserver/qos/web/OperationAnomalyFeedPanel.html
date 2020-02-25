@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div style="margin: 1em">
+        <!-- <h1>Operating Info:</h1>  -->
+        <div wicket:id="anomalyDiv" class="inputForm">
+        
+        	<table>
+        		<tr>
+        			<td>
+			        <table>
+				        <tr>
+				        	<td>
+					        	<label for="href">URL</label>
+				        		<input wicket:id="href" />
+			        		</td>
+			        		<td>
+				        		<label for="title">Description</label>
+				        		<input wicket:id="abstract" />
+			        		</td>
+				        </tr>
+				        <tr>
+				        	<td>
+					        	<label for="href">Format</label>
+				        		<input wicket:id="format" size="50" />
+			        		</td>
+		        		</tr>
+			        </table>
+		       		</td>
+		       		<td>
+ 		        		<a href="#" wicket:id="deleteLink" class="remove-link">
+ 		        			Delete </a>
+	       			</td>
+	       		</tr>
+	       </table> 
+        </div>
+    </div>
+    
+</wicket:panel>

@@ -5,15 +5,12 @@
 package org.geoserver.wms.ncwms;
 
 import java.util.List;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-/**
- * GeoSever initialization hook to register the non-standard ncWMS methods in the WMS Service
- */
+/** GeoSever initialization hook to register the non-standard ncWMS methods in the WMS Service */
 public class NcWmsInitializer implements ApplicationListener<ContextRefreshedEvent> {
     public static final String GET_TIME_SERIES_OP_NAME = "GetTimeSeries";
 
@@ -28,5 +25,4 @@ public class NcWmsInitializer implements ApplicationListener<ContextRefreshedEve
             }
         }
     }
-
 }

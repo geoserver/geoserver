@@ -1,0 +1,61 @@
+{
+  "version": 8,
+  "name": "citeGroup",
+  "center": [0,0],
+  "zoom": 7,
+  "sources": {
+    "cite": {
+      "type": "vector",
+      "tiles": [
+        "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=citeGroup&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector&TILECOL={x}&TILEROW={y}"
+      ],
+      "minZoom": 0,
+      "maxZoom": 14
+    }
+  },
+  "layers": [
+    {
+      "type": "background",
+      "id": "background",
+      "paint": {
+        "background-color": "#E3E3E9"
+      }
+    },
+    {
+      "type": "fill",
+      "id": "fill",
+      "source": "cite",
+      "source-layer": "Lakes",
+      "paint": {
+        "fill-color": "#C3C3C3",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "type": "line",
+      "id": "line",
+      "source": "cite",
+      "source-layer": "BasicPolygons",
+      "paint": {
+        "line-color": "#777777",
+        "line-width": 1,
+        "line-dasharray": [4, 4]
+      }
+    },
+    {
+      "type": "symbol",
+      "id": "names",
+      "source": "cite",
+      "source-layer": "NamedPlaces",
+      "layout": {
+        "text-field": "{Name}",
+        "text-size": 14,
+        "text-font": ["Open Sans"],
+        "text-max-width": 100
+      },
+      "paint": {
+        "text-color": "#333333"
+      }
+    }
+  ]
+}

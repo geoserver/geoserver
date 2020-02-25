@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   targetNamespace="http://www.opengis.net/wfs/2.0"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   elementFormDefault="qualified" version="2.0.2">
+   <xsd:annotation>
+      <xsd:documentation>This XML Schema Document includes and imports, 
+      directly or indirectly, all the XML Schemas defined by the 
+      Web Feature Service (WFS) Implementation Specification.
+
+      WFS is an OGC Standard.
+      Copyright (c) 2010, 2014 Open Geospatial Consortium.
+      To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .     
+      </xsd:documentation>
+   </xsd:annotation>
+   <!-- ==============================================================
+        Includes and Imports
+        ============================================================== -->
+   <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
+      schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+   <xsd:import namespace="http://www.w3.org/1999/xlink"
+      schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/ows/1.1"
+      schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/fes/2.0"
+      schemaLocation="http://schemas.opengis.net/filter/2.0/filterAll.xsd"/>
+   <!-- ================================================================== -->
+   <!-- =   BASE REQUEST TYPE                                            = -->
+   <!-- ================================================================== -->
+   <xsd:complexType name="BaseRequestType" abstract="true">
+      <xsd:attribute name="service"
+                     type="xsd:string" use="required" fixed="WFS"/>
+      <xsd:attribute name="version" type="wfs:VersionStringType"
+         use="required"/>
+      <xsd:attribute name="handle" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:simpleType name="VersionStringType">
+      <xsd:restriction base="xsd:string">
+         <xsd:pattern value="2\.0\.\d+"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <!-- ================================================================== -->
+   <!-- =   STANDARD QUERY PARAMETERS                                    = -->
+   <!-- ================================================================== -->
+   <xsd:attributeGroup name="StandardPresentationParameters">
+      <xsd:attribute name="startIndex"
+                     type="xsd:nonNegativeInteger" default="0"/>
+      <xsd:attribute name="count" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="resultType" type="wfs:ResultTypeType"
+         default="results"/>
+      <xsd:attribute name="outputFormat" type="xsd:string"
+         default="application/gml+xml; version=3.2"/>
+   </xsd:attributeGroup>
+   <xsd:simpleType name="ResultTypeType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="results"/>
+         <xsd:enumeration value="hits"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <!-- ================================================================== -->
+   <!-- =   RESOLVE PARAMETERS                                           = -->
+   <!-- ================================================================== -->
+   <xsd:attributeGroup name="StandardResolveParameters">
+      <xsd:attribute name="resolve" type="wfs:ResolveValueType" default="none"/>
+      <xsd:attribute name="resolveDepth" type="wfs:positiveIntegerWithStar"
+         default="*"/>
+      <xsd:attribute name="resolveTimeout" type="xsd:positiveInteger"
+         default="300"/>
+   </xsd:attributeGroup>
+   <xsd:simpleType name="ResolveValueType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="local"/>
+         <xsd:enumeration value="remote"/>
+         <xsd:enumeration value="all"/>
+         <xsd:enumeration value="none"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="positiveIntegerWithStar">
+      <xsd:union memberTypes="xsd:positiveInteger wfs:StarStringType"/>
+   </xsd:simpleType>
+   <xsd:simpleType name="StarStringType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="*"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <!-- ================================================================== -->
+   <!-- =   STANDARD FEATURE INPUT PARAMETERS                            = -->
+   <!-- ================================================================== -->
+   <xsd:attributeGroup name="StandardInputParameters">
+      <xsd:attribute name="inputFormat" type="xsd:string"
+         default="application/gml+xml; version=3.2"/>
+      <xsd:attribute name="srsName" type="xsd:anyURI"/>
+   </xsd:attributeGroup>
+   <!-- ================================================================== -->
+   <!-- =   RESPONSE METADATA                                            = -->
+   <!-- ================================================================== -->
+   <xsd:attributeGroup name="StandardResponseParameters">
+      <xsd:attribute name="timeStamp" type="xsd:dateTime" use="required"/>
+      <xsd:attribute name="numberMatched" type="wfs:nonNegativeIntegerOrUnknown"
+         use="required"/>
+      <xsd:attribute name="numberReturned" type="xsd:nonNegativeInteger"
+         use="required"/>
+      <xsd:attribute name="next" type="xsd:anyURI"/>
+      <xsd:attribute name="previous" type="xsd:anyURI"/>
+   </xsd:attributeGroup>
+   <xsd:simpleType name="nonNegativeIntegerOrUnknown">
+      <xsd:union>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="unknown"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:nonNegativeInteger"/>
+         </xsd:simpleType>
+      </xsd:union>
+   </xsd:simpleType>
+   <!-- ================================================================== -->
+   <!-- =   COMMON FEATURE METADATA ELEMENTS                             = -->
+   <!-- ================================================================== -->
+   <xsd:element name="Title">
+      <xsd:complexType>
+         <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+               <xsd:attribute ref="xml:lang" default="en"/>
+            </xsd:extension>
+         </xsd:simpleContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="Abstract">
+      <xsd:complexType>
+         <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+               <xsd:attribute ref="xml:lang" default="en"/>
+            </xsd:extension>
+         </xsd:simpleContent>
+      </xsd:complexType>
+   </xsd:element>
+   <!-- ================================================================== -->
+   <!-- =   QUERY ELEMENTS                                               = -->
+   <!-- ================================================================== -->
+   <!-- === ADHOC QUERY ================================================== -->
+   <xsd:element name="Query" type="wfs:QueryType"
+      substitutionGroup="fes:AbstractAdhocQueryExpression"/>
+   <xsd:complexType name="QueryType">
+      <xsd:complexContent>
+         <xsd:extension base="fes:AbstractAdhocQueryExpressionType">
+            <xsd:attribute name="srsName" type="xsd:anyURI"/>
+            <xsd:attribute name="featureVersion" type="xsd:string"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- === STORED QUERY ================================================= -->
+   <xsd:element name="StoredQuery" type="wfs:StoredQueryType"
+      substitutionGroup="fes:AbstractQueryExpression"/>
+   <xsd:complexType name="StoredQueryType">
+      <xsd:complexContent>
+         <xsd:extension base="fes:AbstractQueryExpressionType">
+            <xsd:sequence>
+               <xsd:element name="Parameter" type="wfs:ParameterType"
+                  minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="ParameterType" mixed="true">
+      <xsd:sequence>
+         <xsd:any namespace="##other" processContents="lax" minOccurs="0"
+            maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+   </xsd:complexType>
+   <!-- ================================================================== -->
+   <!-- =   GETCAPABILITIES Request and Response                         = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="GetCapabilities" type="wfs:GetCapabilitiesType"/>
+   <xsd:complexType name="GetCapabilitiesType">
+      <xsd:complexContent>
+         <xsd:extension base="ows:GetCapabilitiesType">
+            <xsd:attribute name="service" type="ows:ServiceType" use="required"
+               fixed="WFS"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <xsd:element name="WFS_Capabilities" type="wfs:WFS_CapabilitiesType"/>
+   <xsd:complexType name="WFS_CapabilitiesType">
+      <xsd:complexContent>
+         <xsd:extension base="ows:CapabilitiesBaseType">
+            <xsd:sequence>
+               <xsd:element name="WSDL" minOccurs="0">
+                  <xsd:complexType>
+                     <xsd:complexContent>
+                        <xsd:restriction base="xsd:anyType">
+                           <xsd:attributeGroup ref="xlink:simpleAttrs"/>
+                        </xsd:restriction>
+                     </xsd:complexContent>
+                  </xsd:complexType>
+               </xsd:element>
+               <xsd:element ref="wfs:FeatureTypeList" minOccurs="0"/>
+               <xsd:element ref="fes:Filter_Capabilities" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType"/>
+   <xsd:complexType name="FeatureTypeListType">
+      <xsd:sequence>
+         <xsd:element name="FeatureType" type="wfs:FeatureTypeType"
+            maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FeatureTypeType">
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:QName"/>
+         <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="wfs:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:choice>
+            <xsd:sequence>
+               <xsd:element name="DefaultCRS" type="xsd:anyURI"/>
+               <xsd:element name="OtherCRS" type="xsd:anyURI" minOccurs="0"
+                  maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:element name="NoCRS">
+               <xsd:complexType/>
+            </xsd:element>
+         </xsd:choice>
+         <xsd:element name="OutputFormats" type="wfs:OutputFormatListType"
+            minOccurs="0"/>
+         <xsd:element ref="ows:WGS84BoundingBox" minOccurs="0"
+            maxOccurs="unbounded"/>
+         <xsd:element name="MetadataURL" type="wfs:MetadataURLType"
+            minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="ExtendedDescription"
+            type="wfs:ExtendedDescriptionType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="OutputFormatListType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element name="Format" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="MetadataURLType">
+      <xsd:attributeGroup ref="xlink:simpleAttrs"/>
+      <xsd:attribute name="about" type="xsd:anyURI"/>
+   </xsd:complexType>
+   <xsd:complexType name="ExtendedDescriptionType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:Element" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Element" type="wfs:ElementType"/>
+   <xsd:complexType name="ElementType">
+      <xsd:sequence>
+         <xsd:element ref="ows:Metadata"/>
+         <xsd:element ref="wfs:ValueList"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="type" type="xsd:QName" use="required"/>
+   </xsd:complexType>
+   <xsd:element name="ValueList" type="wfs:ValueListType"/>
+   <xsd:complexType name="ValueListType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element ref="wfs:Value"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Value" type="xsd:anyType"/>
+   <!-- ================================================================== -->
+   <!-- =   DESCRIBEFEATURETYPE Request and Response                     = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="DescribeFeatureType" type="wfs:DescribeFeatureTypeType"/>
+   <xsd:complexType name="DescribeFeatureTypeType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element name="TypeName" type="xsd:QName" minOccurs="0"
+                  maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="outputFormat" type="xsd:string"
+               default="application/gml+xml; version=3.2"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <!-- ================================================================== -->
+   <!-- For the outputFormat value of 'application/gml+xml; version=3.2'   -->
+   <!-- a WFS shall generate a valid XML-Schema/GML3 application schema    -->
+   <!-- that describes that requested feature type(s).                     -->
+   <!-- ================================================================== -->
+   <!-- ================================================================== -->
+   <!-- =   GETPROPERTYVALUE Request and Response                        = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="GetPropertyValue" type="wfs:GetPropertyValueType"/>
+   <xsd:complexType name="GetPropertyValueType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="fes:AbstractQueryExpression"/>
+            </xsd:sequence>
+            <xsd:attribute name="valueReference" type="xsd:string"
+               use="required"/>
+            <xsd:attribute name="resolvePath" type="xsd:string"/>
+            <xsd:attributeGroup ref="wfs:StandardPresentationParameters"/>
+            <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <xsd:element name="ValueCollection" type="wfs:ValueCollectionType"/>
+   <xsd:complexType name="ValueCollectionType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:member" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="wfs:additionalValues" minOccurs="0"/>
+         <xsd:element ref="wfs:truncatedResponse" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="wfs:StandardResponseParameters"/>
+   </xsd:complexType>
+   <xsd:element name="member" type="wfs:MemberPropertyType"/>
+   <xsd:complexType name="MemberPropertyType" mixed="true">
+      <xsd:choice minOccurs="0">
+         <xsd:any processContents="lax" namespace="##other"/>
+         <xsd:element ref="wfs:Tuple"/>
+         <xsd:element ref="wfs:SimpleFeatureCollection"/>
+      </xsd:choice>
+      <xsd:attribute name="state" type="wfs:StateValueType"/>
+      <xsd:attributeGroup ref="xlink:simpleAttrs"/>
+   </xsd:complexType>
+   <xsd:element name="Tuple" type="wfs:TupleType"/>
+   <xsd:complexType name="TupleType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:member" minOccurs="2" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="additionalValues">
+      <xsd:complexType>
+         <xsd:choice>
+            <xsd:element ref="wfs:ValueCollection"/>
+            <xsd:element ref="wfs:SimpleFeatureCollection"/>
+         </xsd:choice>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="truncatedResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="ows:ExceptionReport"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:simpleType name="StateValueType">
+      <xsd:union>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="valid"/>
+               <xsd:enumeration value="superseded"/>
+               <xsd:enumeration value="retired"/>
+               <xsd:enumeration value="future"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+               <xsd:pattern value="other:\w{2,}"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+      </xsd:union>
+   </xsd:simpleType>
+   <!-- ================================================================== -->
+   <!-- =   GETFEATURE Request & Response                                = -->
+   <!-- ================================================================== -->
+   <xsd:element name="GetFeature" type="wfs:GetFeatureType"/>
+   <xsd:complexType name="GetFeatureType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="fes:AbstractQueryExpression"
+                  maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="wfs:StandardPresentationParameters"/>
+            <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- === GETFEATUREWITHLOCK REQUEST =================================== -->
+   <xsd:element name="GetFeatureWithLock" type="wfs:GetFeatureWithLockType"/>
+   <xsd:complexType name="GetFeatureWithLockType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:GetFeatureType">
+            <xsd:attribute name="expiry" type="xsd:positiveInteger"
+               default="300"/>
+            <xsd:attribute name="lockAction" type="wfs:AllSomeType"
+               default="ALL"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- === PROPERTYNAME (Projection clause) ============================= -->
+   <xsd:element name="PropertyName"
+      substitutionGroup="fes:AbstractProjectionClause">
+      <xsd:complexType>
+         <xsd:simpleContent>
+            <xsd:extension base="xsd:QName">
+               <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+               <xsd:attribute name="resolvePath" type="xsd:string"/>
+            </xsd:extension>
+         </xsd:simpleContent>
+      </xsd:complexType>
+   </xsd:element>
+   <!-- === GETFEATURE & GETFEATUREWITHLOCK RESPONSE ===================== -->
+   <xsd:element name="FeatureCollection" type="wfs:FeatureCollectionType"
+      substitutionGroup="wfs:SimpleFeatureCollection"/>
+   <xsd:complexType name="FeatureCollectionType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:SimpleFeatureCollectionType">
+            <xsd:sequence>
+               <xsd:element ref="wfs:additionalObjects" minOccurs="0"/>
+               <xsd:element ref="wfs:truncatedResponse" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="wfs:StandardResponseParameters"/>
+            <xsd:attribute name="lockId" type="xsd:string"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="additionalObjects">
+      <xsd:complexType>
+         <xsd:choice>
+            <xsd:element ref="wfs:ValueCollection"/>
+            <xsd:element ref="wfs:SimpleFeatureCollection"/>
+         </xsd:choice>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="SimpleFeatureCollection"
+                type="wfs:SimpleFeatureCollectionType"/>
+   <xsd:complexType name="SimpleFeatureCollectionType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:boundedBy" minOccurs="0"/>
+         <xsd:element ref="wfs:member" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="boundedBy" type="wfs:EnvelopePropertyType"/>
+   <xsd:complexType name="EnvelopePropertyType">
+      <xsd:sequence>
+         <xsd:any namespace="##other"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <!-- ================================================================== -->
+   <!-- =   LIST STORED QUERIES                                          = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="ListStoredQueries" type="wfs:ListStoredQueriesType"/>
+   <xsd:complexType name="ListStoredQueriesType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType"/>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <xsd:element name="ListStoredQueriesResponse"
+      type="wfs:ListStoredQueriesResponseType"/>
+   <xsd:complexType name="ListStoredQueriesResponseType">
+      <xsd:sequence>
+         <xsd:element name="StoredQuery" type="wfs:StoredQueryListItemType"
+            minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="StoredQueryListItemType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="ReturnFeatureType" type="xsd:QName"
+            minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+   </xsd:complexType>
+   <!-- ================================================================== -->
+   <!-- =   DESCRIBE STORED QUERIES                                      = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="DescribeStoredQueries"
+      type="wfs:DescribeStoredQueriesType"/>
+   <xsd:complexType name="DescribeStoredQueriesType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element name="StoredQueryId" type="xsd:anyURI" minOccurs="0"
+                  maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <xsd:element name="DescribeStoredQueriesResponse"
+      type="wfs:DescribeStoredQueriesResponseType"/>
+   <xsd:complexType name="DescribeStoredQueriesResponseType">
+      <xsd:sequence>
+         <xsd:element name="StoredQueryDescription"
+                      type="wfs:StoredQueryDescriptionType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="StoredQueryDescriptionType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="wfs:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="Parameter"
+                      type="wfs:ParameterExpressionType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="QueryExpressionText"
+                      type="wfs:QueryExpressionTextType"
+                      minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+   </xsd:complexType>
+   <!-- ================================================================== -->
+   <!-- =   CREATE STORED QUERIES                                        = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="CreateStoredQuery" type="wfs:CreateStoredQueryType"/>
+   <xsd:complexType name="CreateStoredQueryType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element name="StoredQueryDefinition"
+                  type="wfs:StoredQueryDescriptionType" minOccurs="0"
+                  maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="ParameterExpressionType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:Title" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="wfs:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="type" type="xsd:QName" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="QueryExpressionTextType" mixed="true">
+      <xsd:choice>
+         <xsd:any namespace="##other" processContents="skip"
+                  minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:any namespace="##targetNamespace" processContents="skip"
+                  minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="returnFeatureTypes"
+                     type="wfs:ReturnFeatureTypesListType" use="required"/>
+      <xsd:attribute name="language" type="xsd:anyURI" use="required"/>
+      <xsd:attribute name="isPrivate" type="xsd:boolean" default="false"/>
+   </xsd:complexType>
+   <xsd:simpleType name="ReturnFeatureTypesListType">
+      <xsd:list itemType="xsd:QName"/>
+   </xsd:simpleType>
+   <!-- RESPONSE -->
+   <xsd:element name="CreateStoredQueryResponse"
+      type="wfs:CreateStoredQueryResponseType"/>
+   <xsd:complexType name="ExecutionStatusType">
+      <xsd:attribute name="status" type="xsd:string" fixed="OK"/>
+   </xsd:complexType>
+   <xsd:complexType name="CreateStoredQueryResponseType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:ExecutionStatusType"/>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- ================================================================== -->
+   <!-- =   DROP STORED QUERIES                                          = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="DropStoredQuery">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="wfs:BaseRequestType">
+               <xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <!-- RESPONSE -->
+   <xsd:element name="DropStoredQueryResponse" type="wfs:ExecutionStatusType"/>
+   <!-- ================================================================== -->
+   <!-- =   LOCKFEATURE Request and Response                             = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="LockFeature" type="wfs:LockFeatureType"/>
+   <xsd:complexType name="LockFeatureType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="fes:AbstractQueryExpression"
+                  minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="lockId" type="xsd:string"/>
+            <xsd:attribute name="expiry" type="xsd:positiveInteger"
+               default="300"/>
+            <xsd:attribute name="lockAction" type="wfs:AllSomeType"
+               default="ALL"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:simpleType name="AllSomeType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="ALL"/>
+         <xsd:enumeration value="SOME"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <!-- RESPONSE -->
+   <xsd:element name="LockFeatureResponse" type="wfs:LockFeatureResponseType"/>
+   <xsd:complexType name="LockFeatureResponseType">
+      <xsd:sequence>
+         <xsd:element name="FeaturesLocked" type="wfs:FeaturesLockedType"
+            minOccurs="0"/>
+         <xsd:element name="FeaturesNotLocked" type="wfs:FeaturesNotLockedType"
+            minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="lockId" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="FeaturesLockedType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element ref="fes:ResourceId"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FeaturesNotLockedType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element ref="fes:ResourceId"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <!-- ================================================================== -->
+   <!-- =   TRANSACTION Request and Response                             = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="Transaction" type="wfs:TransactionType"/>
+   <xsd:complexType name="TransactionType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                  <xsd:element ref="wfs:AbstractTransactionAction"/>
+               </xsd:sequence>
+            </xsd:sequence>
+            <xsd:attribute name="lockId" type="xsd:string"/>
+            <xsd:attribute name="releaseAction" type="wfs:AllSomeType"
+               default="ALL"/>
+            <xsd:attribute name="srsName" type="xsd:anyURI"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="AbstractTransactionAction"
+      type="wfs:AbstractTransactionActionType" abstract="true"/>
+   <xsd:complexType name="AbstractTransactionActionType" abstract="true">
+      <xsd:attribute name="handle" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="Insert" type="wfs:InsertType"
+      substitutionGroup="wfs:AbstractTransactionAction"/>
+   <xsd:complexType name="InsertType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:any namespace="##other" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="wfs:StandardInputParameters"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="Update" type="wfs:UpdateType"
+      substitutionGroup="wfs:AbstractTransactionAction"/>
+   <xsd:complexType name="UpdateType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:element ref="wfs:Property" maxOccurs="unbounded"/>
+               <xsd:element ref="fes:Filter" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+            <xsd:attributeGroup ref="wfs:StandardInputParameters"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="Property" type="wfs:PropertyType"/>
+   <xsd:complexType name="PropertyType">
+      <xsd:sequence>
+         <xsd:element name="ValueReference">
+            <xsd:complexType>
+               <xsd:simpleContent>
+                  <xsd:extension base="xsd:string">
+                     <xsd:attribute name="action" type="wfs:UpdateActionType"
+                        default="replace"/>
+                  </xsd:extension>
+               </xsd:simpleContent>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="Value" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="UpdateActionType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="replace"/>
+         <xsd:enumeration value="insertBefore"/>
+         <xsd:enumeration value="insertAfter"/>
+         <xsd:enumeration value="remove"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="Replace" type="wfs:ReplaceType"
+      substitutionGroup="wfs:AbstractTransactionAction"/>
+   <xsd:complexType name="ReplaceType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:any namespace="##other"/>
+               <xsd:element ref="fes:Filter"/>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="wfs:StandardInputParameters"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="Delete" type="wfs:DeleteType"
+      substitutionGroup="wfs:AbstractTransactionAction"/>
+   <xsd:complexType name="DeleteType">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:element ref="fes:Filter"/>
+            </xsd:sequence>
+            <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="Native" type="wfs:NativeType"
+      substitutionGroup="wfs:AbstractTransactionAction"/>
+   <xsd:complexType name="NativeType" mixed="true">
+      <xsd:complexContent>
+         <xsd:extension base="wfs:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:any processContents="lax" namespace="##other" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="vendorId" type="xsd:string" use="required"/>
+            <xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- REPONSE -->
+   <xsd:element name="TransactionResponse" type="wfs:TransactionResponseType"/>
+   <xsd:complexType name="TransactionResponseType">
+      <xsd:sequence>
+         <xsd:element name="TransactionSummary"
+            type="wfs:TransactionSummaryType"/>
+         <xsd:element name="InsertResults" type="wfs:ActionResultsType"
+            minOccurs="0"/>
+         <xsd:element name="UpdateResults" type="wfs:ActionResultsType"
+            minOccurs="0"/>
+         <xsd:element name="ReplaceResults" type="wfs:ActionResultsType"
+            minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="wfs:VersionStringType"
+         use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="TransactionSummaryType">
+      <xsd:sequence>
+         <xsd:element name="totalInserted" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+         <xsd:element name="totalUpdated" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+         <xsd:element name="totalReplaced" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+         <xsd:element name="totalDeleted" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ActionResultsType">
+      <xsd:sequence>
+         <xsd:element name="Feature" type="wfs:CreatedOrModifiedFeatureType"
+            maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CreatedOrModifiedFeatureType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element ref="fes:ResourceId"/>
+      </xsd:sequence>
+      <xsd:attribute name="handle" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="EmptyType"/>
+</xsd:schema>

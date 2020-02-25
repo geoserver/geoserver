@@ -1,0 +1,121 @@
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+start = mapml 
+mapml = element mapml { head?,body }
+head = element head { headContent }
+link = element link { 
+        attribute href { xsd:anyURI }?,
+        # can have a tref or an href, but not both
+        attribute tref { text }?,
+        # @rel=alternate + @projection=tcrs-name is proposed as a way of negotiating the tcrs of the service: https://github.com/Maps4HTML/MapML/issues/11
+        attribute rel {  "stylesheet" | "license" | "alternate" | "style" | "self" | "self style" | "style self" | "legend" | "next" | "zoomin" | "zoomout" | "image" | "tile" | "query" | "features" },
+        attribute projection { "OSMTILE" | "CBMTILE" | "APSTILE" | "WGS84" }?,
+        attribute title { text }?,
+        attribute type { "text/css" | "text/mapml" | "image/png" | "image/jpeg" | "text/html" }?,
+        attribute hreflang { text }?
+    }
+links = link*
+headContent =  
+    element base { 
+        attribute href {text}
+    }? &
+    element meta {
+        attribute name {text}?,
+        attribute charset {text}?,
+        attribute content {text}?,
+        attribute http-equiv {text}?
+    }* &
+    element style { text }? &
+    element title { text }? &
+    links
+
+body = element body { bodyContent }
+bodyContent =  extent? & links & (feature | tile | image)*  
+extent = element extent {
+  attribute units  { "OSMTILE" | "CBMTILE" | "APSTILE" | "WGS84" }?,
+  attribute action { xsd:anyURI }?, 
+  attribute method { "get" | "GET" }?,
+  attribute enctype { "application/x-www-form-urlencoded" }?,
+  (inputs* & datalist* & links* & select* & label*)?
+}
+inputs = (element input {
+  attribute name { text },
+  # xmin, ymin, xmax, ymax and projection are deprecated. If you need to transmit a projection, use a hidden input/variable
+  # for xmin etc, use a input@type=location with appropriate position, units, axis values.
+  attribute type { "zoom" | "hidden" | "location" | "datetime" | "width" | "height" },
+  attribute value { text }?,
+  attribute rel { "map" | "tile" }?,
+  attribute shard { text }?,
+  attribute list { text }?,
+  # position tokens are based on /composed from the set of keywords used for CSS object-position, but they are obviously unique tokesn and not combinable otherwise
+  # https://developer.mozilla.org/en-US/docs/Web/CSS/object-position 
+  attribute position { "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center-left" | "center-right" | "top-center" | "bottom-center" | "center" }?,
+  attribute axis { "latitude" | "longitude" | "easting" | "northing" | "x" | "y" | "row" | "column" | "i" | "j" }?,
+  attribute units {"tilematrix" | "pcrs" | "tcrs" | "map" | "gcrs" | "tile" }?,
+  attribute required { xsd:boolean }?,
+  attribute min { xsd:decimal }?,
+  attribute max { xsd:decimal }?,
+  attribute step { text }?
+})
+datalist = element datalist {
+  attribute id { text }?,
+  option+
+}
+label = element label {
+  attribute for { text },
+  text
+}
+select = element select {
+  attribute id { text },
+  attribute name { text },
+  option+
+}
+option = element option {
+  attribute value { text }?,
+  attribute label { text }?,
+  text
+}
+feature = element feature {
+    attribute id { text }?,
+    attribute class { text }?,
+    (bbox? & ( image? | geometry? ) & properties?)
+}
+tile = element tile {
+    attribute col { xsd:integer },
+    attribute row { xsd:integer },
+    ImageResourceMetadataAttributes
+}
+bbox = element bbox { twoCoordinatePairs }
+image =    element image { ImageModel }
+geometry = element geometry { GeometryContent }
+properties = element properties { PropertyContent }
+
+ImageResourceMetadataAttributes =  
+    attribute src { text },
+    imageLocation?,
+    imageSize?,
+    attribute angle { xsd:double }?,
+    attribute type { text }?
+ImageModel =  ImageResourceMetadataAttributes
+# allow any property/value via simple elements with allowed text content
+PropertyContent = any_attribute*, any_content 
+any_content = any_element*
+any_element = element * { any_attribute*, text }
+any_attribute = attribute * { text }
+imageLocation = attribute x { xsd:double }, attribute y { xsd:double }
+imageSize = attribute width { xsd:integer },attribute height { xsd:integer }
+
+GeometryContent = point | linestring | polygon | multipoint | multilinestring | multipolygon | geometrycollection   
+point = element point { coordinatePair }
+linestring = element linestring { twoOrMoreCoordinatePairs }
+polygon = element polygon { threeOrMoreCoordinatePairs+ }
+multipoint = element multipoint { twoOrMoreCoordinatePairs }
+multilinestring = element multilinestring { twoOrMoreCoordinatePairs+ }
+multipolygon = element multipolygon { polygon+ }
+geometrycollection = element geometrycollection {
+    (point* & linestring* & polygon* & multipoint* & multilinestring* & multipolygon*)
+}
+coordinatePair = element coordinates  { list  { (xsd:double, xsd:double) } }
+twoOrMoreCoordinatePairs = element coordinates { list { (xsd:double, xsd:double)+ } }
+threeOrMoreCoordinatePairs = element coordinates { list { (xsd:double, xsd:double), (xsd:double, xsd:double), (xsd:double, xsd:double)+ } }
+# for bbox content, omits coordinates element
+twoCoordinatePairs =  list  { (xsd:double, xsd:double, xsd:double, xsd:double) } 

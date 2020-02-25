@@ -24,14 +24,13 @@ Current PSC
 
 * Alessio Fabiani
 * Andrea Aime
-* Ben Caradoc-Davies
-* Brad Hards
-* Christian Mueller
 * Ian Turton
 * Jody Garnett
 * Jukka Rahkonen
 * Kevin Smith
+* Nuno Oliveira
 * Simone Giannecchini
+* Torben Barsballe
 
 We would like to thank prior PSC members:
 
@@ -41,6 +40,9 @@ We would like to thank prior PSC members:
 * Brent Owens
 * Gabriel Roldan
 * Phil Scadden
+* Christian Mueller
+* Ben Caradoc-Davies
+* Brad Hards
 
 PSC Membership
 --------------

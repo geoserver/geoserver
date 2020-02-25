@@ -4,6 +4,9 @@
  */
 package org.geoserver.gwc.web.wmts;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.web.GeoServerHomePage;
@@ -36,11 +39,20 @@ public class WMTSAdminPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testFormSubmit() throws Exception {
+        // get WMTS service information
+        WMTSInfo wmtsInfo = getGeoServerApplication().getGeoServer().getService(WMTSInfo.class);
+        // start WMTS administration page
         tester.startPage(WMTSAdminPage.class);
         // let's submit the form
         FormTester formTester = tester.newFormTester("form");
+        // change cite compliance value
+        boolean citeCompliant = wmtsInfo.isCiteCompliant();
+        formTester.setValue("citeCompliant", !citeCompliant);
+        // submit form
         formTester.submit("submit");
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(GeoServerHomePage.class);
+        // check the service info object was correctly updated
+        assertThat(wmtsInfo.isCiteCompliant(), is(!citeCompliant));
     }
 }

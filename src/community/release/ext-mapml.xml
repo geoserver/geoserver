@@ -1,0 +1,18 @@
+<assembly>
+  <id>mapml-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-mapml*.jar</include>
+        <include>spring-oxm*.jar</include>
+        <include>org.eclipse.persistence*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

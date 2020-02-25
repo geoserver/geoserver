@@ -9,6 +9,6 @@ public class HelloWorld2 extends HelloWorld {
 
     @Override
     public Message hello(Message message) {
-        return new Message(message.message + ":V2"); 
+        return new Message(message.message + ":V2");
     }
 }

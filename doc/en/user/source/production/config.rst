@@ -66,6 +66,8 @@ Cache your data
 
 Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on :ref:`gwc` for more details.)  Another option is `TileCache <http://tilecache.org>`_.  You can also use a more generic caching system, such as `OSCache <http://www.opensymphony.com/oscache/>`_ (an embedded cache service) or `Squid <http://www.squid-cache.org>`_ (a web cache proxy).
 
+Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don't have a quick way to determine feature counts (i.e. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property ``org.geoserver.wfs.getfeature.cachelimit`` to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent them from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.
+
 Disable the GeoServer web administration interface
 --------------------------------------------------
 
@@ -74,3 +76,27 @@ In some circumstances, you might want to completely disable the web administrati
 * Set the Java system property GEOSERVER_CONSOLE_DISABLED to true by adding -DGEOSERVER_CONSOLE_DISABLED=true to your container's JVM options
 * Remove all of the gs-web*-.jar files from WEB-INF/lib
 
+X-Frame-Options Policy
+----------------------
+
+In order to prevent clickjacking attacks GeoServer defaults to setting the X-Frame-Options HTTP 
+header to SAMEORIGIN. This prevents GeoServer from being embedded into an iFrame, which prevents certain
+kinds of security vulnerabilities. See the `OWASP Clickjacking entry <https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet>`_ for details.
+
+If you wish to change this behavior you can do so through the following properties:
+
+* geoserver.xframe.shouldSetPolicy: controls whether the X-Frame-Options filter should be set at all. Default is true.
+* geoserver.xframe.policy: controls what the set the X-Frame-Options header to. Default is SAMEORIGIN valid options are DENY, SAMEORIGIN and ALLOW-FROM [uri]
+
+These properties can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+
+
+OWS ServiceException XML mimeType
+--------------------------------------------------
+
+By default, OWS Service Exception XML responses have content-type set to application/xml.
+In case you want it set to text/xml instead, you need to setup the Java System properties:
+
+* -Dows10.exception.xml.responsetype=text/xml for OWS 1.0.0 version
+* -Dows11.exception.xml.responsetype=text/xml for OWS 1.1.0 version

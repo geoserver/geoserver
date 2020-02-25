@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="3.2.1">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:geometryBasic0d1d:3.2.1">geometryBasic0d1d.xsd</appinfo>
 		<documentation>See ISO/DIS 19136 Clause 10.
 Any geometry element that inherits the semantics of AbstractGeometryType may be viewed as a set of direct positions. 
 All of the classes derived from AbstractGeometryType inherit an optional association to a coordinate reference system. All direct positions shall directly or indirectly be associated with a coordinate reference system. When geometry elements are aggregated in another geometry element (such as a MultiGeometry or GeometricComplex), which already has a coordinate reference system specified, then these elements are assumed to be in that same coordinate reference system unless otherwise specified.
 The geometry model distinguishes geometric primitives, aggregates and complexes. 
-Geometric primitives, i.e. instances of a subtype of AbstractGeometricPrimitiveType, will be open, that is, they will not contain their boundary points; curves will not contain their end points, surfaces will not contain their boundary curves, and solids will not contain their bounding surfaces.</documentation>
+Geometric primitives, i.e. instances of a subtype of AbstractGeometricPrimitiveType, will be open, that is, they will not contain their boundary points; curves will not contain their end points, surfaces will not contain their boundary curves, and solids will not contain their bounding surfaces.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
+	<include schemaLocation="gml.xsd"/>
 	<include schemaLocation="measures.xsd"/>
 	<complexType name="AbstractGeometryType" abstract="true">
 		<annotation>

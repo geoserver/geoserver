@@ -3,7 +3,7 @@
 BlobStores
 ==========
 
-BlobStores allow us to configure how and where GeoWebCache will store its cashed data on a per-layer basis. This page allows us to define the different BlobStores present in the system. BlobStores can be created, modified and removed from here. 
+BlobStores allow us to configure how and where GeoWebCache will store its cached data on a per-layer basis. This page allows us to define the different BlobStores present in the system. BlobStores can be created, modified and removed from here. 
 
 .. figure:: img/blobstores.png
 
@@ -20,7 +20,7 @@ There can be different BlobStore types to use different ways of storage. There i
 
 Enabled
 ~~~~~~~
-Disabled BlobStores will not be loaded. Disabling a BlobStore will disable cashing for all layers and layergroups assigned to that BlobStore.
+Disabled BlobStores will not be loaded. Disabling a BlobStore will disable caching for all layers and layergroups assigned to that BlobStore.
 
 Default
 ~~~~~~~
@@ -32,9 +32,18 @@ These store data on a disk in a specified directory.
 
 .. figure:: img/fileblobstore.png
 
+It is also possible to choose the tile file layout:
+
+*  GeoWebCache default uses a path structure reducing the number of items in each directory, by splitting long lists in groups. In  particular, the layout is ``z/xc_yc/x_y.ext`` where ``xc=x/(2^(z/2))``, ``yc=y/(2^(z/2))``. In other words, the tiles are split into square areas, the number of square areas growing with the zoom level, and each square being assigned to a intermediate directory. The Y coordinates are numbered from the south northwards.
+*  TMS uses a TMS layout, that is, ``z/y/x.ext`` where the Y coordinates are numbered from the south northwards.
+*  XYZ uses a "slippy map", or "Google Maps like" layout, that is, ``z/y/x.ext`` where the Y coordinates originate top left and grow southwards (opposite of TMS and GWC default order).
+
+.. note:: When switching file layout type, the tile directories won't be deleted, it's up to the admin to clean up the tiles on the file system, GeoServer/GWC won't do it automatically.
+
+
 Base Directory
 ~~~~~~~~~~~~~~
-The directory where the cashed data is stored.
+The directory where the cached data is stored.
 
 Disk block size
 ~~~~~~~~~~~~~~~

@@ -18,5 +18,4 @@ public class StyleChoiceRenderer extends ChoiceRenderer<StyleInfo> {
     public String getIdValue(StyleInfo object, int index) {
         return object.getId();
     }
-
 }

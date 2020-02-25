@@ -19,7 +19,8 @@ public class UrlTransform {
         this.requestUri = requestUri;
         for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
             normalizedNames.put(entry.getKey().toLowerCase(), entry.getKey());
-            this.parameters.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
+            this.parameters.put(
+                    entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
         }
     }
 
@@ -38,8 +39,11 @@ public class UrlTransform {
     public String getQueryString() {
         StringBuilder queryStringBuilder = new StringBuilder();
         for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
-            queryStringBuilder.append(parameter.getKey())
-                    .append("=").append(URLEncoder.encode(parameter.getValue()[0])).append("&");
+            queryStringBuilder
+                    .append(parameter.getKey())
+                    .append("=")
+                    .append(URLEncoder.encode(parameter.getValue()[0]))
+                    .append("&");
         }
         if (queryStringBuilder.length() == 0) {
             return "";
@@ -48,15 +52,27 @@ public class UrlTransform {
         return queryStringBuilder.toString();
     }
 
-    public void addParameter(String name, String value, Optional<String> combine) {
+    public void addParameter(String name, String value, String combine, Boolean repeat) {
         String rawName = getRawName(name);
+        String layersRawName = getRawName("layers");
         String[] existingValues = parameters.get(rawName);
-        if (existingValues != null && combine.isPresent()) {
-            String combinedValue = combine.get().replace("$1", existingValues[0]);
-            combinedValue = combinedValue.replace("$2", value);
-            existingValues[0] = combinedValue;
+        if ((existingValues != null || repeat) && combine != null) {
+            int num = 1;
+            if (repeat
+                    && parameters.containsKey(layersRawName)
+                    && parameters.get(layersRawName) != null) {
+                num = parameters.get(layersRawName)[0].split(",").length;
+            }
+            String existingValue = existingValues == null ? null : existingValues[0];
+            for (int count = 0; count < num; count++) {
+                String combinedValue =
+                        existingValue == null ? "$2" : combine.replace("$1", existingValue);
+                combinedValue = combinedValue.replace("$2", value);
+                existingValue = combinedValue;
+            }
+            parameters.put(rawName, new String[] {existingValue});
         } else {
-            parameters.put(rawName, new String[]{value});
+            parameters.put(rawName, new String[] {value});
         }
     }
 

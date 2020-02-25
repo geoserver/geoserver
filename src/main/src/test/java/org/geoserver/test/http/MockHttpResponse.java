@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.test.http;
 
 import java.io.ByteArrayInputStream;
@@ -7,13 +11,12 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.ows.HTTPResponse;
 
 /**
  * Helper class to mock HTTP responses
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class MockHttpResponse implements HTTPResponse {
@@ -23,14 +26,15 @@ public class MockHttpResponse implements HTTPResponse {
     Map<String, String> headers;
 
     byte[] response;
-    
+
     String responseCharset;
 
     public MockHttpResponse(String response, String contentType, String... headers) {
         this(response.getBytes(), contentType, headers);
     }
-    
-    public MockHttpResponse(URL response, String contentType, String... headers) throws IOException {
+
+    public MockHttpResponse(URL response, String contentType, String... headers)
+            throws IOException {
         this(IOUtils.toByteArray(response.openStream()), contentType, headers);
     }
 
@@ -54,22 +58,18 @@ public class MockHttpResponse implements HTTPResponse {
         }
     }
 
-    
     public void dispose() {
         // nothing to do
     }
 
-    
     public String getContentType() {
         return this.contentType;
     }
 
-    
     public String getResponseHeader(String headerName) {
         return headers.get(headerName);
     }
 
-    
     public InputStream getResponseStream() throws IOException {
         return new ByteArrayInputStream(response);
     }
@@ -82,11 +82,11 @@ public class MockHttpResponse implements HTTPResponse {
     public String getResponseCharset() {
         return responseCharset;
     }
-    
+
     @Override
     public String toString() {
         String contents = null;
-        if(responseCharset != null) {
+        if (responseCharset != null) {
             contents = new String(response, Charset.forName(responseCharset));
         } else {
             contents = new String(response);
@@ -97,6 +97,4 @@ public class MockHttpResponse implements HTTPResponse {
     public void setResponseCharset(String responseCharset) {
         this.responseCharset = responseCharset;
     }
-    
-
 }

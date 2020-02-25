@@ -1,0 +1,721 @@
+openapi: 3.0.0
+# This is just a summary version from https://app.swaggerhub.com/apis/UAB-CREAF/ogc-api-map-tiles-opf-xmp-full/1.0.0#/
+# with the parts we intent to implement now. It will have to be revised later once things settle down
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/UAB-CREAF/ogc-api-map-tiles-opf-xmp-full/1.0.0
+info:
+  title: |-
+    OGC API Maps and Tiles OpenAPI document example
+  description: |-
+    This is a draft of an example of a service following the OGC API maps and tiles produced in the Testbed-15 Open Portrayal Framework in collaboration with the WMS.SWG. The Map Tile API is a Web API for fetching and managing maps and tiles.
+
+    The extensions are the following.
+    * There are
+    * The collection metadata (path `/collections/{collectionId}`) has been extended by the set of applicable styles (member `styles`, same
+    value as in `/styles` in the Style API) and a default style
+    (member `defaultStyle`, the style id).
+    * The PATCH operation on the feature collection metadata
+    (path `/collections/{collectionId}`) has been added. Only `styles` and
+    `defaultStyle` may be updated.
+
+    For more background information see [the Vector Tiles Pilot Extension Engineering
+    Report](https://github.com/opengeospatial/OGC-API-Map-Tiles/tree/master/standard/openapi).
+
+  version: "1.0.0"
+  contact:
+    name: Joan Maso
+    email: joan.maso@uab.cat
+  license:
+    name: OGC License
+    url: 'https://raw.githubusercontent.com/opengeospatial/OGC-API-Map-Tiles/master/LICENSE'
+tags:
+  - name: OGC API Common
+    description: |-
+      Common characteristics of this API
+  - name: TileMatrixSet
+    description: |-
+      TileMatrixSet used in this API
+  - name: Tiled data from one collection
+    description: |-
+      Data partitioned into a hierarchy of tiles of a collection
+  - name: Tiled map from one collection
+    description: |-
+      map (renderizations or vector tiles) partitioned into a hierarchy of tiles  of a collection
+  - name: MultiTiles
+    description: |-
+      access to information about retriving multiple tiles in a single request.
+paths:
+  '/':
+    get:
+      tags:
+        - OGC API Common
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition, the conformance statements and to the feature collections in this dataset.
+      operationId: getLandingPage
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          description: |-
+            Links to the API capabilities and the TileMatrixSets shared by this API.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/landingPage'
+              example:
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-this'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-alternate'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-service-json'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-service-html'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-conformance'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-collections-json'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-landingPage-collections-html'
+                - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-landingPage-tms-json'
+            text/html:
+              schema:
+                type: string
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/conformance':
+    get:
+      description: |-
+        A list of all requirements classes specified in a standard that the
+        server conforms to.
+      operationId: getConformanceClasses
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      tags:
+        - OGC API Common
+      responses:
+        '200':
+          description: |-
+            the URIs of all requirements classes supported by this API
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/confClasses'
+              example:
+                conformsTo:
+                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/core'
+                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/oas30'
+                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/html'
+                  - 'http://www.opengis.net/spec/ogcapi-features-1/1.0/req/geojson'
+                  - 'http://www.opengis.net/spec/ogcapi-maps-1/1.0/req/core'
+                  - 'http://www.opengis.net/spec/ogcapi-maps-1/1.0/req/info'
+                  - 'http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/core'
+                  - 'http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/multitile'
+                  - 'http://www.opengis.net/spec/ogcapi-tiles-1/1.0/req/info'
+        '400':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/InvalidParam'
+        '406':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnsupportedFormat'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections':
+    get:
+      tags:
+        - OGC API Common
+      summary: the collections in the dataset
+      operationId: describeCollections
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Collections'
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collectionInfo'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}':
+    get:
+      tags:
+        - OGC API Common
+      summary: describe a collection
+      operationId: describeCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          description: |-
+            Metadata about the collection including style information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+    patch:
+      tags:
+        - OGC API Common
+      summary: |-
+        update parts of the style metadata
+      description: |-
+        IMPORTANT: This operation is defined by Clemens P. in the Testbed 15. It is included here for INFORMATION ONLY But is OUT OF SCOPE for Maps and Tiles.
+
+        Update selected elements of the metadata for
+        the collection with the id `collectionId`.
+
+        The only members that may be updated at this
+        time are `styles` and `defaultStyle`.
+
+        The PATCH semantics in this operation are defined by
+        RFC 7396 (JSON Merge Patch). From the specification:
+
+        _"A JSON merge patch document describes changes to be
+        made to a target JSON document using a syntax that
+        closely mimics the document being modified. Recipients
+        of a merge patch document determine the exact set of
+        changes being requested by comparing the content of
+        the provided patch against the current content of the
+        target document. If the provided merge patch contains
+        members that do not appear within the target, those
+        members are added. If the target does contain the
+        member, the value is replaced. Null values in the
+        merge patch are given special meaning to indicate
+        the removal of existing values in the target."_
+
+        Some examples:
+
+        To add or update the default style, just send
+
+        ```
+        {
+          "defaultStyle": "night"
+        }
+        ```
+
+        To remove the default style, send
+
+        ```
+        {
+          "defaultStyle": null
+        }
+        ```
+
+        For arrays the complete array needs to be sent. I.e., to
+        update the list of styles, send the complete new array value.
+
+        To remove all styles, send
+
+        ```
+        {
+          "styles": null
+        }
+        ```
+
+        This operation is only available to registered
+        users.
+      operationId: patchCollectionMetadata
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      requestBody:
+        description: |-
+          The updated style information for the collection.
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/schemas/collection-patch'
+      responses:
+        '204':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/Updated'
+        '400':
+          description: |-
+            Malformed patch document.
+        '401':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/UnauthorizedAccess'
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '415':
+          description: |-
+            Unsupported patch document.
+          headers:
+            Accept-Patch:
+              description: |-
+                supported patch document media types
+              schema:
+                type: string
+        '422':
+          description: |-
+            Unprocessable request. The patch document appears
+            to be valid, but the server is incapable of processing
+            the request.
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/tileMatrixSets':
+    get:
+      tags:
+        - TileMatrixSet
+      summary: fetch all available tile matrix sets (tiling schemes)
+      operationId: getTileMatrixSets
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json'
+      responses:
+        '200':
+          description: |-
+            An array of tile matrix sets (tiling schemes).
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileMatrixSets'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/tileMatrixSets/{tileMatrixSetId}':
+    get:
+      tags:
+        - TileMatrixSet
+      summary: fetch a tile matrix sets (tiling scheme) by id
+      operationId: getTileMatrixSetDescription
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json'
+      responses:
+        '200':
+          description: tile matrix sets (a tiling scheme).
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileMatrixSet'
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}/queryables':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        lists the queryable attributes for the feature collection with id `collectionId`
+      operationId: getQueryables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}':
+    get:
+      tags:
+        - Tiled data from one collection
+      summary: fetch a tile from a collection
+      description: |-
+        Retrieves the tile in the requested tileMatrixSet, on the requested tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow, tileCol). The tile has a single collection (formerly refered as layer) with all selected features in the bounding box of the tile. The feature properties to include in the tile representation can be limited using a query parameter.
+      operationId: getTileOfCollectionId
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrix'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f-vector'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+      responses:
+        '200':
+          description: A tile of the collection.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/mvt:
+              schema:
+                type: string
+            application/geo+json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/schemas/featureCollectionGeoJSON'
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}':
+    get:
+      tags:
+        - Tiled map from one collection
+      summary: fetch a tile from a collection
+      description: |-
+        Retrieves the tile in the requested tileMatrixSet, on the requested tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow, tileCol). The tile has a single collection (formerly refered as layer) with all selected features in the bounding box of the tile. The feature properties to include in the tile representation can be limited using a query parameter.
+      operationId: getMapTileOfCollectionId
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-styles/1.0.0#/components/parameters/styleId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrix'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f-png-jpeg'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/filter-lang'
+      responses:
+        '200':
+          description: A tile of the collection.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/mvt:
+              schema:
+                type: string
+            application/geo+json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/schemas/featureCollectionGeoJSON'
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info':
+    get:
+      tags:
+        - Tiled map from one collection
+      summary: fetch information about a point on a tile from a collection
+      description: |-
+        Retrieves inforamtion on a point of a tile in the requested tileMatrixSet, on the requested tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow, tileCol). The tile has a single collection (formerly refered as layer) with all selected features in the bounding box of the tile. The feature properties to include in the tile representation can be limited using a query parameter.
+      operationId: getFeatureInfoMapTileOfCollectionId
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-styles/1.0.0#/components/parameters/styleId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrix'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileRow'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileCol'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-tiles/1.0.0#/components/parameters/coord_i'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-tiles/1.0.0#/components/parameters/coord_j'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-tiles/1.0.0#/components/parameters/infoTemplate'
+        - $ref: '#/components/parameters/f-tile'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/datetime'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/f-json-html'
+      responses:
+        '200':
+          description: A getFeatureInfo of a tile of the collection.
+          content:
+            application/geo+json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/schemas/featureCollectionGeoJSON'
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'         
+  '/collections/{collectionId}/tiles/{tileMatrixSetId}':
+    get:
+      tags:
+        - MultiTiles
+      summary: |-
+        fetch tiles of a collection.
+      operationId: getTilesCollectionId
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/scaleDenominator'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/bbox'
+        - $ref: '#/components/parameters/f-tile'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/multiTileType'
+        - $ref: '#/components/parameters/f-json-zip'
+      responses:
+        '200':
+          description: |-
+            A tiling scheme used to partition the collection into tiles.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileSet'
+            application/x-zip-compressed:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+  '/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}':
+    get:
+      tags:
+        - MultiTiles
+      summary: |-
+        fetch tiles of a collection.
+      operationId: getMapTilesCollectionId
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-map-styles/1.0.0#/components/parameters/styleId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/tileMatrixSetId'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/scaleDenominator'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/parameters/bbox'
+        - $ref: '#/components/parameters/f-tile'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/parameters/multiTileType'
+        - $ref: '#/components/parameters/f-json-zip'
+      responses:
+        '200':
+          description: |-
+            A tiling scheme used to partition the collection into tiles.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/tileSet'
+            application/x-zip-compressed:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/NotFound'
+        '500':
+          $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/responses/ServerError'
+
+components:
+  schemas:
+    collection:
+      allOf:
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/collection'
+        - $ref: '#/components/schemas/collection-link'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/schemas/collection'
+        - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/schemas/collection'
+    collection-link:
+      #This element is a duplicate of the one in OGC API common but it is enriched with more examples for maps and other resource types.
+      type: object
+      required:
+        - links
+      properties:
+        links:
+          type: array
+          items:
+            $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/schemas/link'
+          example:
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-this'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-common/1.0.0#/components/examples/link-collection-describedBy'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-features/1.0.0#/components/examples/link-collection-items'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-coverages/1.0.0#/components/examples/link-collection-rangeType'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-coverages/1.0.0#/components/examples/link-collection-domainSet'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/examples/link-collection-map'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-maps/1.0.0#/components/examples/link-collection-info'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-collection-tiles'
+            - $ref: 'https://api.swaggerhub.com/domains/UAB-CREAF/ogc-api-tiles/1.0.0#/components/examples/link-collection-info'
+    queryables:
+      type: object
+      required:
+        - queryables
+      properties:
+        queryables:
+          description: list of queryable properties
+          type: array
+          items:
+            $ref: "#/components/schemas/queryable"
+    queryable:
+      type:  object
+      required:
+        - name
+        - type
+      properties:
+        id:
+          description: identifier of the attribute that can be used in CQL filters
+          type: string
+          example: address
+        type:
+          description: the property type
+          type: string
+          enum:
+            - string
+            - uri
+            - number
+            - integer
+            - date
+            - dateTime
+            - boolean
+            - geometry
+  parameters:
+    collectionId:
+      name: collectionId
+      in: path
+      required: true
+      description: Identifier (name) of a specific collection
+      schema:
+        type: string
+    f-json-zip:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http
+        rules apply, i.e., the accept header is used to determine the format.
+
+        The only pre-defined value is "json". The response to other values is
+        determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - json
+          - zip
+      example: json
+    f-png-jpeg:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+
+        Pre-defined values are jpeg, png or gif for image based tiles. The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - png
+          - jpeg
+          - gif
+          - mvt
+          - json
+      example: png
+    f-vector:
+        name: f
+        in: query
+        description: |-
+          The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+
+          Pre-defined values are "mvt" for a Mapbox Vector Tile, "json" for a GeoJSON tiled feature collection. The response to other values is determined by the server.
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+            - png
+            - jpeg
+            - gif
+            - mvt
+            - json
+        example: png
+    f-map:
+      name: f-map
+      in: query
+      description: |-
+        Internal format of the maps referenced by a getFeatureInfo.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - png
+          - jpeg
+          - gif
+      example: png
+    f-tile:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+
+        Pre-defined values are "mvt" for a Mapbox Vector Tile, "json" for a GeoJSON tiled feature collection and jpeg, png or gif for image based tiles
+        The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - image/png
+          - image/jpeg
+          - image/gif
+          - mvt
+          - application/json
+      example: image/png
+    f-geotiff:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http
+        rules apply, i.e., the accept header is used to determine the format.
+
+        The only pre-defined value is "geotiff". The response to other values is
+        determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - image/geotiff
+      example: image/geotiff
+    f-png-jpeg:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header is used to determine the format.
+
+        Pre-defined values jpeg, png or gif for image based tiles
+        The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - image/png
+          - image/jpeg
+          - image/gif
+      example: image/png
+    filter:
+      name: filter
+      in: query
+      description: Defines a filter that will be applied on items, only items matching the filter will be returned
+      schema:
+        type: string
+    filter-lang:
+      name: filter-lang
+      in: query
+      description: Filter encoding used in the filter parameter
+      schema:
+        type: string
+        enum:
+          - cql-text
+        default: cql-text
+    otherParameters:
+      style: form
+      in: query
+      name: otherParameters
+      description: Allows unrecognized parameters to be added in the query string without getting a 400 back (e.g., cache busters)
+      schema:
+        type: object
+        additionalProperties: true
+  responses:
+    Queryables:
+      description: |-
+        Information about the feature collection queryable properties
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/queryables'

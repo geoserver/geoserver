@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	    	http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/aop     http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+	default-autowire="byName">
+
+	<bean id="securityCategory" class="org.geoserver.web.Category">
+        <property name="nameKey" value="category.security" />
+        <property name="order" value="200" />
+    </bean>
+
+    <!-- Override the service URL -->
+    <!-- Tests need a specific set of rules, so we're pointing to a geofence test instance that contains them -->
+    <bean id="testOverrider" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+        <property name="localOverride" value="True"/>
+        <property name="order" value="200"/>
+        <property name="properties">
+          <props>
+             <prop key="geofenceConfigurationManager.configuration.servicesUrl">http://localhost:9191/geofence/remoting/RuleReader</prop>
+             <prop key="remoteReaderService.serviceUrl">http://localhost:9191/geofence/remoting/RuleReader</prop>
+          </props>
+        </property> 
+    </bean>
+    
+</beans>

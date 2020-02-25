@@ -13,7 +13,7 @@ import org.geoserver.platform.ServiceException;
 
 /**
  * Runs the GetRepositoryItem request
- * 
+ *
  * @author Alessio Fabiani - GeoSolutions
  */
 public class GetRepositoryItem {
@@ -27,18 +27,14 @@ public class GetRepositoryItem {
         this.store = store;
     }
 
-    /**
-     * Returns the requested RepositoryItem
-     * 
-     * @param request
-     *
-     */
-    public RepositoryItem run(GetRepositoryItemType request)  {
+    /** Returns the requested RepositoryItem */
+    public RepositoryItem run(GetRepositoryItemType request) {
         try {
             RepositoryItem item = store.getRepositoryItem(request.getId());
-            if(item == null) {
+            if (item == null) {
                 // by spec we have to return a 404
-                throw new HttpErrorCodeException(404, "No repository item found for id " + request.getId());
+                throw new HttpErrorCodeException(
+                        404, "No repository item found for id " + request.getId());
             }
             return item;
         } catch (IOException e) {

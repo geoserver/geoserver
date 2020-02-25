@@ -7,7 +7,6 @@ package org.geoserver.wps;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.process.ProcessFactory;
@@ -20,12 +19,21 @@ import org.geotools.util.SimpleInternationalString;
 @DescribeProcess(title = "Raw", description = "Process used to test raw inputs and outputs")
 public class RawProcess {
 
-    @DescribeResult(name = "result", description = "Output raster", meta = {
-            "mimeTypes=application/json,text/xml", "chosenMimeType=outputMimeType" })
+    @DescribeResult(
+        name = "result",
+        description = "Output raster",
+        meta = {"mimeTypes=application/json,text/xml", "chosenMimeType=outputMimeType"}
+    )
     public RawData execute(
-            @DescribeParameter(name = "data", description = "Input features", meta = { "mimeTypes=application/json,text/xml" }) final RawData input,
+            @DescribeParameter(
+                        name = "data",
+                        description = "Input features",
+                        meta = {"mimeTypes=application/json,text/xml"}
+                    )
+                    final RawData input,
             @DescribeParameter(name = "outputMimeType", min = 0) final String outputMimeType,
-            @DescribeParameter(name = "returnNull", min = 0, defaultValue = "false") final boolean returnNull) {
+            @DescribeParameter(name = "returnNull", min = 0, defaultValue = "false")
+                    final boolean returnNull) {
         if (returnNull) {
             return null;
         }
@@ -49,8 +57,7 @@ public class RawProcess {
     }
 
     static final ProcessFactory getFactory() {
-        return new AnnotatedBeanProcessFactory(new SimpleInternationalString("Raw data process"),
-                "gs", RawProcess.class);
+        return new AnnotatedBeanProcessFactory(
+                new SimpleInternationalString("Raw data process"), "gs", RawProcess.class);
     }
-
 }

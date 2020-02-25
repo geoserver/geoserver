@@ -6,11 +6,8 @@
 package org.geoserver.csw.response;
 
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import net.opengis.cat.csw20.RequestBaseType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.records.CSWRecordDescriptor;
@@ -18,8 +15,8 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
 
 /**
- * Encodes responses with CSW Dublin Core records 
- * 
+ * Encodes responses with CSW Dublin Core records
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWRecordsResponse extends AbstractRecordsResponse {
@@ -28,10 +25,10 @@ public class CSWRecordsResponse extends AbstractRecordsResponse {
         super(CSWRecordDescriptor.RECORD_TYPE, CSW.NAMESPACE, gs);
     }
 
-    protected void transformResponse(OutputStream output, CSWRecordsResult result,
-            RequestBaseType request, CSWInfo csw) {
-        CSWRecordTransformer transformer = new CSWRecordTransformer(request,
-                csw.isCanonicalSchemaLocation());
+    protected void transformResponse(
+            OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
+        CSWRecordTransformer transformer =
+                new CSWRecordTransformer(request, csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);
         try {
             transformer.transform(result, output);
@@ -39,5 +36,4 @@ public class CSWRecordsResponse extends AbstractRecordsResponse {
             throw new ServiceException(e);
         }
     }
-
 }

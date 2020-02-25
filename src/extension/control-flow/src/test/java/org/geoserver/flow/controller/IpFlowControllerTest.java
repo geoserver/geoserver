@@ -19,8 +19,8 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         IpFlowController controller = new IpFlowController(1);
         String ipAddress = "127.0.0.1";
         Request firstRequest = buildIpRequest(ipAddress, "");
-        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest,
-                0, 0, controller);
+        FlowControllerTestingThread tSample =
+                new FlowControllerTestingThread(firstRequest, 0, 0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -28,12 +28,15 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
-        // make three testing threads that will "process" forever, and will use the ip to identify themselves
+        // make three testing threads that will "process" forever, and will use the ip to identify
+        // themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildIpRequest(
-                ip, ""), 0, Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildIpRequest(
-                ip, ""), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t1 =
+                new FlowControllerTestingThread(
+                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 =
+                new FlowControllerTestingThread(
+                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -55,14 +58,13 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
             t2.interrupt();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
         }
-
     }
-    
+
     @Test
     public void testUserAndIPAddressFlowControl() {
         // an ip based flow controller that will allow just one request at a time
@@ -70,8 +72,8 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         UserConcurrentFlowController userController = new UserConcurrentFlowController(1);
         String ipAddress = "127.0.0.1";
         Request firstRequest = buildIpRequest(ipAddress, "");
-        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest,
-                0, 0, userController, ipController);
+        FlowControllerTestingThread tSample =
+                new FlowControllerTestingThread(firstRequest, 0, 0, userController, ipController);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -79,12 +81,15 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
-        // make three testing threads that will "process" forever, and will use the ip to identify themselves
+        // make three testing threads that will "process" forever, and will use the ip to identify
+        // themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildIpRequest(
-                ip, ""), 0, Long.MAX_VALUE, ipController);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildIpRequest(
-                ip, ""), 0, Long.MAX_VALUE, ipController);
+        FlowControllerTestingThread t1 =
+                new FlowControllerTestingThread(
+                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, ipController);
+        FlowControllerTestingThread t2 =
+                new FlowControllerTestingThread(
+                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, ipController);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -108,16 +113,15 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t2, MAX_WAIT);
             assertEquals(ThreadState.COMPLETE, t2.state);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
         }
-
     }
 
-
-    // Test 2 remote addresses that are reported as the same, but have gone through a proxy. These two should not queue up
+    // Test 2 remote addresses that are reported as the same, but have gone through a proxy. These
+    // two should not queue up
     @Test
     public void testConcurrentProxiedIPAddresses() {
         IpFlowController controller = new IpFlowController(1);
@@ -127,10 +131,12 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildIpRequest(
-                ip, "192.168.1.2"), 0, Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildIpRequest(
-                ip, "192.168.1.3"), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t1 =
+                new FlowControllerTestingThread(
+                        buildIpRequest(ip, "192.168.1.2"), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 =
+                new FlowControllerTestingThread(
+                        buildIpRequest(ip, "192.168.1.3"), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -153,14 +159,10 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
             t2.interrupt();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
         }
-
     }
-
-
-
 }

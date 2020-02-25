@@ -5,33 +5,24 @@
  */
 package org.geoserver.cluster.impl.handlers.catalog;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.cluster.JMSEventHandlerSPI;
 import org.geoserver.cluster.events.ToggleSwitch;
 
-import com.thoughtworks.xstream.XStream;
+/** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
+public abstract class JMSCatalogEventHandlerSPI extends JMSEventHandlerSPI<String, CatalogEvent> {
 
-/**
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- *
- */
-public abstract class JMSCatalogEventHandlerSPI extends
-		JMSEventHandlerSPI<String, CatalogEvent> {
+    protected final Catalog catalog;
+    protected final XStream xstream;
+    protected final ToggleSwitch producer;
 
-	protected final Catalog catalog;
-	protected final XStream xstream;
-	protected final ToggleSwitch producer;
-	
-	public JMSCatalogEventHandlerSPI(int priority, Catalog catalog,
-			XStream xstream, ToggleSwitch producer) {
-		super(priority);
-		this.catalog = catalog;
-		this.xstream = xstream;
-		this.producer = producer;
-	}
-
-
-
+    public JMSCatalogEventHandlerSPI(
+            int priority, Catalog catalog, XStream xstream, ToggleSwitch producer) {
+        super(priority);
+        this.catalog = catalog;
+        this.xstream = xstream;
+        this.producer = producer;
+    }
 }

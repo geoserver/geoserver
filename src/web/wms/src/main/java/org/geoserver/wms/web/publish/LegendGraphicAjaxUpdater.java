@@ -6,18 +6,18 @@
 package org.geoserver.wms.web.publish;
 
 import java.io.Serializable;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.StyleInfo;
+import org.opengis.feature.type.Name;
 
 /**
- * Helper class for a wicket ajax behavior that updates the {@code src} attribute of an
- * {@link Image} component to point to a WMS GetLegendGraphic request.
- * 
+ * Helper class for a wicket ajax behavior that updates the {@code src} attribute of an {@link
+ * Image} component to point to a WMS GetLegendGraphic request.
+ *
  * @author Gabriel Roldan
  * @sicne 2.1
  */
@@ -32,28 +32,36 @@ class LegendGraphicAjaxUpdater implements Serializable {
 
     private String wmsURL;
 
-    public LegendGraphicAjaxUpdater(final String wmsURL, final Image image,
-            final IModel<StyleInfo> styleInfoModel) {
+    public LegendGraphicAjaxUpdater(
+            final String wmsURL,
+            final Image image,
+            final IModel<StyleInfo> styleInfoModel,
+            Name layerName) {
         this.wmsURL = wmsURL;
         this.image = image;
         this.styleInfoModel = styleInfoModel;
         this.urlModel = new Model<String>(wmsURL);
         this.image.add(new AttributeModifier("src", urlModel));
-        updateStyleImage(null);
+        updateStyleImage(null, layerName);
     }
 
-    public void updateStyleImage(AjaxRequestTarget target) {
-        String url = wmsURL
-                + "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=";
+    public void updateStyleImage(AjaxRequestTarget target, Name layerName) {
+        String url =
+                wmsURL
+                        + "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=";
         StyleInfo styleInfo = (StyleInfo) styleInfoModel.getObject();
         if (styleInfo != null) {
             String style = styleInfo.prefixedName();
             url += style;
+            url +=
+                    "&layer="
+                            + layerName.getNamespaceURI()
+                            + layerName.getSeparator()
+                            + layerName.getLocalPart();
             urlModel.setObject(url);
             if (target != null) {
                 target.add(image);
             }
         }
     }
-
 }

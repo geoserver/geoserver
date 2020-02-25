@@ -9,20 +9,18 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.web.ComponentInfo;
 
 /**
- * Extension point for plugins to contribute additional panels to the various 
- * service admin pages.
- * 
- * @author Justin Deoliveira, OpenGeo
+ * Extension point for plugins to contribute additional panels to the various service admin pages.
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class AdminPagePanelInfo extends ComponentInfo<AdminPagePanel> {
 
     protected Class<? extends ServiceInfo> serviceClass;
-    
+
     public Class<? extends ServiceInfo> getServiceClass() {
         return serviceClass;
     }
-    
+
     public void setServiceClass(Class<? extends ServiceInfo> serviceClass) {
         this.serviceClass = serviceClass;
     }

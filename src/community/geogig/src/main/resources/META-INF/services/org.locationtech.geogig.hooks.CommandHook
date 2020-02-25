@@ -3,4 +3,4 @@
 # application directory.
 org.geogig.geoserver.gwc.TruncateTilesOnUpdateRefHook
 org.geogig.geoserver.security.NetworkSecurityHook
-org.geogig.geoserver.security.SecurityLogHook
+# org.geogig.geoserver.security.SecurityLogHook

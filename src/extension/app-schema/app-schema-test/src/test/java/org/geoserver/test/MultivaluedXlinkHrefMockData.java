@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 /**
  * Mock data for a multivalued xlink:href ClientProperty mapping without feature chaining.
- * 
+ *
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
 public class MultivaluedXlinkHrefMockData extends AbstractAppSchemaMockData {
@@ -18,8 +18,10 @@ public class MultivaluedXlinkHrefMockData extends AbstractAppSchemaMockData {
 
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "GeologicUnit", "MultivaluedXlinkHref.xml",
+        addFeatureType(
+                GSML_PREFIX,
+                "GeologicUnit",
+                "MultivaluedXlinkHref.xml",
                 "MultivaluedXlinkHref.properties");
     }
-
 }

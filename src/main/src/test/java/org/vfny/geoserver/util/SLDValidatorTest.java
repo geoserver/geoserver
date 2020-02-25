@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-
 import org.junit.Test;
 
 public class SLDValidatorTest {
@@ -18,22 +17,30 @@ public class SLDValidatorTest {
     public void testValid() throws Exception {
         SLDValidator validator = new SLDValidator();
         List errors = validator.validateSLD(getClass().getResourceAsStream("valid.sld"));
-        
-        //showErrors(errors);
+
+        // showErrors(errors);
         assertTrue(errors.isEmpty());
     }
-    
+
     @Test
     public void testInvalid() throws Exception {
         SLDValidator validator = new SLDValidator();
         List errors = validator.validateSLD(getClass().getResourceAsStream("invalid.sld"));
-        
-        //showErrors(errors);
+
+        // showErrors(errors);
         assertFalse(errors.isEmpty());
     }
-    
+
+    /** Tests validation for Localized tag. See GEOS-9132. */
+    @Test
+    public void testi18nValid() throws Exception {
+        SLDValidator validator = new SLDValidator();
+        List errors = validator.validateSLD(getClass().getResourceAsStream("validi18n.sld"));
+        assertTrue(errors.isEmpty());
+    }
+
     void showErrors(List errors) {
-        for (Exception err : (List<Exception>)errors) {
+        for (Exception err : (List<Exception>) errors) {
             System.out.println(err.getMessage());
         }
     }

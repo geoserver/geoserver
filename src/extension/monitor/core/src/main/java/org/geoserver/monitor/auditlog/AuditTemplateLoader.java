@@ -5,34 +5,27 @@
  */
 package org.geoserver.monitor.auditlog;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.template.GeoServerTemplateLoader;
-
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.template.GeoServerTemplateLoader;
 
 /**
  * Similar to the {@link GeoServerTemplateLoader}, but does not work relative to the resource
  * directories
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class AuditTemplateLoader implements TemplateLoader {
 
-    /**
-     * Delegate file based template loader
-     */
+    /** Delegate file based template loader */
     FileTemplateLoader fileTemplateLoader;
 
-    /**
-     * Delegate class based template loader, may be null depending on how
-     */
+    /** Delegate class based template loader, may be null depending on how */
     ClassTemplateLoader classTemplateLoader;
 
     public AuditTemplateLoader(GeoServerResourceLoader rl) throws IOException {
@@ -100,22 +93,16 @@ public class AuditTemplateLoader implements TemplateLoader {
 
     /**
      * Template source for use when a template is loaded from a class.
-     * <p>
-     * Used to store the intial path so the template can be copied to the data directory.
-     * </p>
-     * 
+     *
+     * <p>Used to store the intial path so the template can be copied to the data directory.
+     *
      * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
-     * 
      */
     static class ClassTemplateSource {
-        /**
-         * The path used to load the template.
-         */
+        /** The path used to load the template. */
         String path;
 
-        /**
-         * The raw source from the class template loader
-         */
+        /** The raw source from the class template loader */
         Object source;
 
         public ClassTemplateSource(String path, Object source) {
@@ -123,5 +110,4 @@ public class AuditTemplateLoader implements TemplateLoader {
             this.source = source;
         }
     }
-
 }

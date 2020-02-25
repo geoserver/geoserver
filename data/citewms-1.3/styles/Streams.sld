@@ -4,14 +4,14 @@
     <sld:Name>Default Styler</sld:Name>
     <sld:UserStyle>
       <sld:Name>Default Styler</sld:Name>
-      <sld:Title>Default Styler</sld:Title>
+      <sld:Title>Blue Polygon</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Name>name</sld:Name>
         <sld:FeatureTypeName>Streams</sld:FeatureTypeName>
         <sld:Rule>
           <sld:Name>name</sld:Name>
-          <sld:Title>title</sld:Title>
-          <sld:Abstract>Abstract</sld:Abstract>
+          <sld:Title>Blue Polygon</sld:Title>
+          <sld:Abstract>Polygon with blue fill and 2 pixel wide stroke</sld:Abstract>
           <sld:LineSymbolizer>
             <sld:Stroke>
               <sld:CssParameter name="stroke">#4040C0</sld:CssParameter>

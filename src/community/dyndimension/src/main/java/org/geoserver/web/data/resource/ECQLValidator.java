@@ -13,7 +13,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -25,7 +24,7 @@ import org.opengis.filter.expression.Expression;
 /**
  * Validates that a ECQL expression is syntactically valid, and if a set of valid attribute is
  * provided, that the expression only uses those attributes
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ECQLValidator implements IValidator<String> {
@@ -108,5 +107,4 @@ public class ECQLValidator implements IValidator<String> {
             }
         }
     }
-
 }

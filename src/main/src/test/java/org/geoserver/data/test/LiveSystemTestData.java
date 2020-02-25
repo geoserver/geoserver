@@ -7,7 +7,6 @@ package org.geoserver.data.test;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.util.IOUtils;
 
 public class LiveSystemTestData extends SystemTestData {
@@ -26,9 +25,8 @@ public class LiveSystemTestData extends SystemTestData {
     }
 
     public void tearDown() throws Exception {
-        if(data != null) {
+        if (data != null) {
             IOUtils.delete(data);
         }
     }
-
 }

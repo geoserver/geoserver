@@ -9,12 +9,10 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geotools.util.Utilities;
 
 /**
- * Realization of {@link LayerIdentifierInfo}; being a "data type" there's no
- * {@code createAuthorityURL()} method in {@code CatalogFactory}, instead directly instantiate this
- * class.
- * 
+ * Realization of {@link LayerIdentifierInfo}; being a "data type" there's no {@code
+ * createAuthorityURL()} method in {@code CatalogFactory}, instead directly instantiate this class.
+ *
  * @author groldan
- * 
  */
 public class LayerIdentifier implements LayerIdentifierInfo {
 
@@ -61,8 +59,12 @@ public class LayerIdentifier implements LayerIdentifierInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append("[ authority: '")
-                .append(authority).append("', identifier: '").append(identifier).append("']")
+        return new StringBuilder(getClass().getSimpleName())
+                .append("[ authority: '")
+                .append(authority)
+                .append("', identifier: '")
+                .append(identifier)
+                .append("']")
                 .toString();
     }
 }

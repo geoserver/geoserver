@@ -10,14 +10,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.event.RoleLoadedListener;
 import org.geoserver.security.impl.GeoServerRole;
 
 /**
  * Role service wrapper that filters contents from the underlying role service.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public abstract class AuthorizingRoleService implements GeoServerRoleStore {
@@ -33,8 +32,7 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     }
 
     @Override
-    public void initializeFromConfig(SecurityNamedServiceConfig config)
-            throws IOException {
+    public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         delegate.initializeFromConfig(config);
     }
 
@@ -47,10 +45,11 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     public GeoServerRoleStore createStore() throws IOException {
         try {
             return getClass()
-                .getConstructor(GeoServerRoleService.class).newInstance(delegate.createStore());
+                    .getConstructor(GeoServerRoleService.class)
+                    .newInstance(delegate.createStore());
         } catch (Exception e) {
             throw new IOException(e);
-        } 
+        }
     }
 
     @Override
@@ -77,7 +76,7 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         delegate.registerRoleLoadedListener(listener);
     }
-    
+
     @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         delegate.unregisterRoleLoadedListener(listener);
@@ -89,26 +88,22 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     }
 
     @Override
-    public SortedSet<String> getGroupNamesForRole(GeoServerRole role)
-            throws IOException {
+    public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
         return filterGroups(role, new TreeSet(delegate.getGroupNamesForRole(role)));
     }
-    
+
     @Override
-    public SortedSet<String> getUserNamesForRole(GeoServerRole role)
-            throws IOException {
+    public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
         return filterUsers(role, new TreeSet(delegate.getUserNamesForRole(role)));
     }
 
     @Override
-    public SortedSet<GeoServerRole> getRolesForUser(String username)
-            throws IOException {
+    public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
         return filterUserRoles(username, new TreeSet(delegate.getRolesForUser(username)));
     }
 
     @Override
-    public SortedSet<GeoServerRole> getRolesForGroup(String groupname)
-            throws IOException {
+    public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
         return filterGroupRoles(groupname, new TreeSet(delegate.getRolesForGroup(groupname)));
     }
 
@@ -121,43 +116,44 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     public Map<String, String> getParentMappings() throws IOException {
         return filterParentMappings(delegate.getParentMappings());
     }
-    
+
     @Override
     public GeoServerRole createRoleObject(String role) throws IOException {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     @Override
     public GeoServerRole getParentRole(GeoServerRole role) throws IOException {
         return filterRole(delegate.getParentRole(role));
     }
-    
+
     @Override
     public GeoServerRole getRoleByName(String role) throws IOException {
         return filterRole(delegate.getRoleByName(role));
     }
 
     @Override
-    public Properties personalizeRoleParams(String roleName, Properties roleParams,
-            String userName, Properties userProps) throws IOException {
+    public Properties personalizeRoleParams(
+            String roleName, Properties roleParams, String userName, Properties userProps)
+            throws IOException {
         return delegate.personalizeRoleParams(roleName, roleParams, userName, userProps);
     }
-    
+
     @Override
     public GeoServerRole getAdminRole() {
         return filterRole(delegate.getAdminRole());
     }
-    
+
     @Override
     public GeoServerRole getGroupAdminRole() {
         return filterRole(delegate.getGroupAdminRole());
     }
-    
+
     @Override
     public int getRoleCount() throws IOException {
-        //can't optimize since we might be filtering out roles, 
-        //TODO: give the subclass the choice
+        // can't optimize since we might be filtering out roles,
+        // TODO: give the subclass the choice
         return getRoles().size();
     }
 
@@ -166,14 +162,12 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     //
 
     protected GeoServerRoleStore delegateAsStore() {
-        return (GeoServerRoleStore)delegate;
+        return (GeoServerRoleStore) delegate;
     }
 
     @Override
-    public void initializeFromService(GeoServerRoleService service)
-            throws IOException {
-        delegateAsStore().initializeFromService(
-            ((AuthorizingRoleService)service).getDelegate());
+    public void initializeFromService(GeoServerRoleService service) throws IOException {
+        delegateAsStore().initializeFromService(((AuthorizingRoleService) service).getDelegate());
     }
 
     @Override
@@ -214,60 +208,55 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
     }
 
     @Override
-    public void associateRoleToGroup(GeoServerRole role, String groupname)
-            throws IOException {
-        if (filterRole(role) != null && !filterGroup(groupname))  {
+    public void associateRoleToGroup(GeoServerRole role, String groupname) throws IOException {
+        if (filterRole(role) != null && !filterGroup(groupname)) {
             delegateAsStore().associateRoleToGroup(role, groupname);
         }
     }
 
     @Override
-    public void disAssociateRoleFromGroup(GeoServerRole role, String groupname)
-            throws IOException {
-        if (filterRole(role) != null && !filterGroup(groupname))  {
+    public void disAssociateRoleFromGroup(GeoServerRole role, String groupname) throws IOException {
+        if (filterRole(role) != null && !filterGroup(groupname)) {
             delegateAsStore().disAssociateRoleFromGroup(role, groupname);
         }
     }
 
     @Override
-    public void associateRoleToUser(GeoServerRole role, String username)
-            throws IOException {
+    public void associateRoleToUser(GeoServerRole role, String username) throws IOException {
         if (filterRole(role) != null && !filterUser(username)) {
             delegateAsStore().associateRoleToUser(role, username);
         }
     }
 
     @Override
-    public void disAssociateRoleFromUser(GeoServerRole role, String username)
-            throws IOException {
+    public void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException {
         if (filterRole(role) != null && !filterUser(username)) {
             delegateAsStore().disAssociateRoleFromUser(role, username);
         }
     }
 
     @Override
-    public void setParentRole(GeoServerRole role, GeoServerRole parentRole)
-            throws IOException {
+    public void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException {
         if (filterRole(role) != null && filterRole(parentRole) != null) {
             delegateAsStore().setParentRole(role, parentRole);
         }
     }
 
-    protected abstract SortedSet<String> filterGroups(GeoServerRole role, 
-            SortedSet<String> groupNamesForRole);
+    protected abstract SortedSet<String> filterGroups(
+            GeoServerRole role, SortedSet<String> groupNamesForRole);
 
     protected abstract boolean filterGroup(String groupname);
 
-    protected abstract SortedSet<String> filterUsers(GeoServerRole role,
-            SortedSet<String> userNamesForRole);
+    protected abstract SortedSet<String> filterUsers(
+            GeoServerRole role, SortedSet<String> userNamesForRole);
 
     protected abstract boolean filterUser(String username);
 
-    protected abstract SortedSet<GeoServerRole> filterUserRoles(String username,
-            SortedSet<GeoServerRole> rolesForUser);
-    
-    protected abstract SortedSet<GeoServerRole> filterGroupRoles(String groupname,
-            SortedSet<GeoServerRole> rolesForGroup);
+    protected abstract SortedSet<GeoServerRole> filterUserRoles(
+            String username, SortedSet<GeoServerRole> rolesForUser);
+
+    protected abstract SortedSet<GeoServerRole> filterGroupRoles(
+            String groupname, SortedSet<GeoServerRole> rolesForGroup);
 
     protected abstract SortedSet<GeoServerRole> filterRoles(SortedSet<GeoServerRole> roles);
 

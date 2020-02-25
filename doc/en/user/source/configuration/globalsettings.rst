@@ -33,6 +33,10 @@ Enable Global Services
 
 When enabled, allows access to both global services and :ref:`virtual services <virtual_services>`. When disabled, clients will only be able to access virtual services. Disabling is useful if GeoServer is hosting a large amount of layers and you want to ensure that client always request limited layer lists. Disabling is also useful for security reasons.
 
+Allow Per-Workspace Stored Queries
+----------------------------------
+
+When enabled, allows to persist Stored queries per workspace, making queries created inside a workspace  available in the workspace virtual service only.
 
 Handle data and configuration problems
 --------------------------------------
@@ -46,6 +50,7 @@ There are two options:
 **OGC_EXCEPTION_REPORT**: This is the default behavior. Any layer errors will show up as Service Exceptions in the capabilities document, making it invalid.
 
 **SKIP_MISCONFIGURED_LAYERS**: With this setting, GeoServer will elect simply to not describe the problem layer at all, removing it from the capabilities document, and preserving the integrity of the rest of the document. Note that having a layer "disappear" may cause other errors in client functionality.
+    This is the default setting starting with GeoServer 2.11 and allows for faster startups, as the stores connectivity does not need to be checked in advance.
 
 Number of Decimals
 ------------------
@@ -60,7 +65,30 @@ Specifies the global character encoding that will be used in XML responses. Defa
 Proxy Base URL
 --------------
 
-GeoServer can have the capabilities documents report a proxy properly. The Proxy Base URL field is the base URL seen beyond a reverse proxy.
+GeoServer can have the capabilities documents report a proxy properly. "The Proxy Base URL" field is the base URL seen beyond a reverse proxy.
+
+Use headers for Proxy URL
+-------------------------
+
+Checking this box allows a by-request modification of the proxy URL using templates (templates based on HTTP proxy headers).
+
+The supported proxy headers are:
+
+#. **X-Forwarded-Proto** The protocol used by the request
+#. **X-Forwarded-Host** The hostname and port of the proxy URL
+#. **X-Forwarded-For** The client IP address
+#. **X-Forwarded-Path** The path of the proxy URL (this is not an official HTTP header, although it is supported by some web-servers)
+#. **Forwarded** Header that supersedes the "X-Forwarded-\*" headers above. It has these components: "by", "for", "host", "proto", "path" (this component is not official, but added for consistency with ``X-Forwarded-Path``)
+#. **Host** Same as ``X-Forwarded``
+
+For instance, to allow different protocols (``http`` and ``https``) and different hostnames, the proxy base URL field may be changed to: ``${X-Forwarded-Proto}://${X-Forwarded-Host}/geoserver``
+The use of the ``Forwarded`` header is a tad more complex, as its components have to be referenced in templates with the dot-notation, as in: ``{Forwarded.proto}://${Forwarded.host}/geoserver``.
+
+Multiple templates can be put into the "Proxy Base URL". These templates provide fall-backs, since only the first one that is fully matched is used. 
+For instance, a Proxy Base URL of ``http://${X-Forwarded-Host}/geoserver http://www.foo.org/geoserver`` (Templates are space-separated.) can result in either: ``http://www.example.com/geoserver`` (if ``X-Forwarded-Host`` is set to ``www.example.com``.)  or ``http://www.foo.org/geoserver``  (if ``X-Forwarded-Host`` is not set.)
+
+Both header names and the appended path (e.g. ``/geoserver``) in templates are case-insensitive.
+
 
 Logging Profile
 ---------------
@@ -133,6 +161,7 @@ There are three options:
 
 Note that a restart of GeoServer is necessary for a change in the setting to have effect.
 
+.. figure:: img/others.png
 
 REST Disable Resource not found Logging
 ----------------------------------------
@@ -144,4 +173,16 @@ REST PathMapper Root directory path
 This parameter is used by the RESTful API as the `Root Directory` for the newly uploaded files, following the structure::
 
 	${rootDirectory}/workspace/store[/<file>]
+
+Display creation timestamps on administration lists
+----------------------------------------------------------
+
+These check boxes can be used to toggle Date of Creation on Workspaces,Stores,Layers,Layer Groups and Styles administration list pages
+Time of can be seen by hovering mouse over the dates
+
+Display modification timestamps on administration lists
+----------------------------------------------------------
+
+These check boxes can be used to toggle Date of Modification on Workspaces,Stores,Layers,Layer Groups and Styles administration list pages
+Time of can be seen by hovering mouse over the dates
  

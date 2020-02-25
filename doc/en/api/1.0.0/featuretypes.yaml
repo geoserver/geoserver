@@ -1,0 +1,1369 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Feature Types
+  description: A feature type is a vector based spatial resource or data set that originates from a data store. In some cases, such as with a shapefile, a feature type has a one-to-one relationship with its data store. In other cases, such as PostGIS, the relationship of feature type to data store is many-to-one, feature types corresponding to a table in the database.
+host: localhost:8080
+basePath: /geoserver/rest
+schemes:
+  - http
+  - https
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+security:
+  - basicAuth: []  
+
+paths:
+  /workspaces/{workspaceName}/datastores/{storeName}/featuretypes:
+    get:           
+      operationId: getFeatureTypes
+      description: |
+        Get a list of feature types for the workspace and datastore. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: storeName
+          in: path
+          description: The name of the datastore
+          required: true
+          type: string
+        - name: list
+          description: |
+            The list parameter is used to control the category of feature types that are returned. Must be one of "configured", "available", "available_with_geom", "all"
+          in: query
+          required: false
+          type: string
+          enum:
+          - configured
+          - available
+          - available_with_geom
+          - all
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+            description: Successful response containing featuretype list.
+            schema:
+              type: object
+              properties:
+                featureTypes:
+                  type: object
+                  properties:
+                    featureType:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: The Name
+                          link:
+                            type: string
+                            description: The URL
+            examples:
+              application/json: |
+                {"featureTypes": {
+                    "featureType": [
+                      {
+                        "name": "PrimitiveGeoFeature",
+                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json"
+                      },
+                      {
+                        "name": "archsites",
+                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.json"
+                      }
+                    ]
+                  }
+                }
+              application/xml: |
+                <featureTypes>
+                    <featureType>
+                        <name>PrimitiveGeoFeature</name>
+                        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml" type="application/atom+xml"/>
+                    </featureType>
+                    <featureType>
+                        <name>archsites</name>
+                        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.xml" type="application/atom+xml"/>
+                    </featureType>
+                </featureTypes>
+              application/xml (list=available): |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <list>
+                  <featureTypeName>pdsa</featureTypeName>
+                  <featureTypeName>pdsb</featureTypeName>
+                </list>
+              application/json (list=available): |
+                {"list": { 
+                 "string": [
+                      "pdsa",
+                      "pdsb"
+                    ]
+                  }
+                }
+
+    post:
+      operationId: postFeatureTypes
+      description: |
+        Create a new feature type. Note -  when creating a new feature type via POST, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: storeName
+          in: path
+          description: The name of the datastore
+          required: true
+          type: string
+        - name: featureType
+          in: body
+          description: The body of the feature type to POST
+          required: true
+          schema:
+            $ref: "#/definitions/FeatureTypeInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: The feature type was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created feature type.
+              type: string        
+    put:
+      operationId: putFeatureTypes
+      description: Invalid. Use POST for adding a new feature type, or PUT on an individual feature type to edit that type.  
+      responses:
+        405:
+          description: Method not allowed.
+    delete:
+      operationId: deleteFeatureTypes
+      description: Invalid.
+      responses:
+        405:
+          description: Method not allowed.
+  /workspaces/{workspaceName}/featuretypes:
+    get:           
+      operationId: getFeatureTypes
+      description: |
+        Get a list of all feature types for all datastors in the workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: list
+          description: |
+            The list parameter is used to control the category of feature types that are returned. Must be one of "configured", "available", "available_with_geom", "all"
+          in: query
+          required: false
+          type: string
+          enum:
+          - configured
+          - available
+          - available_with_geom
+          - all
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+            description: Successful response containing featuretype list.
+            schema:
+              type: object
+              properties:
+                featureTypes:
+                  type: object
+                  properties:
+                    featureType:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: The Name
+                          link:
+                            type: string
+                            description: The URL
+            examples:
+              application/json: |
+                {"featureTypes": {
+                    "featureType": [
+                      {
+                        "name": "PrimitiveGeoFeature",
+                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json"
+                      },
+                      {
+                        "name": "archsites",
+                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.json"
+                      }
+                    ]
+                  }
+                }
+              application/xml: |
+                <featureTypes>
+                    <featureType>
+                        <name>PrimitiveGeoFeature</name>
+                        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml" type="application/atom+xml"/>
+                    </featureType>
+                    <featureType>
+                        <name>archsites</name>
+                        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.xml" type="application/atom+xml"/>
+                    </featureType>
+                </featureTypes>
+              application/xml (list=available): |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <list>
+                  <featureTypeName>pdsa</featureTypeName>
+                  <featureTypeName>pdsb</featureTypeName>
+                </list>
+              application/json (list=available): |
+                {"list": { 
+                 "string": [
+                      "pdsa",
+                      "pdsb"
+                    ]
+                  }
+                }
+
+    post:
+      operationId: postFeatureTypes
+      description: |
+        Create a new feature type, the feature type definition needs to reference a store. Note -  when creating a new feature type via POST, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: featureType
+          in: body
+          description: The body of the feature type to POST
+          required: true
+          schema:
+            $ref: "#/definitions/FeatureTypeInfo"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: The feature type was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created feature type.
+              type: string        
+    put:
+      operationId: putFeatureTypes
+      description: Invalid. Use POST for adding a new feature type, or PUT on an individual feature type to edit that type.  
+      responses:
+        405:
+          description: Method not allowed.
+    delete:
+      operationId: deleteFeatureTypes
+      description: Invalid.
+      responses:
+        405:
+          description: Method not allowed.
+  /workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}:
+    get:    
+      operationId: getFeatureType
+      description:  Get an individual feature type
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: storeName
+          in: path
+          description: The name of the datastore
+          required: true
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string    
+        - name: quietOnNotFound
+          in: query
+          description: Prevents logging an Exception when the feature type is not present. Note that 404 status code will be returned anyway. Defaults to "false".
+          type: boolean
+          required: false
+          default: false
+      responses:
+        200:
+          description: Successful response containing feature type.
+          schema:
+            type: object
+            properties:
+              featureType:              
+                $ref: "#/definitions/FeatureTypeInfo"
+          examples:
+            application/json: |
+              {  "name": "poi",
+                  "nativeName": "poi",
+                  "namespace": {
+                    "name": "tiger",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
+                  },
+                  "title": "Manhattan (NY) points of interest",
+                  "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+                  "keywords": {
+                    "string": [
+                      "poi",
+                      "Manhattan",
+                      "DS_poi",
+                      "points_of_interest",
+                      "sampleKeyword\\@language=ab\\;",
+                      "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
+                      "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
+                    ]
+                  },
+                  "metadataLinks": {
+                    "metadataLink": [
+                      {
+                        "type": "text/plain",
+                        "metadataType": "FGDC",
+                        "content": "www.google.com"
+                      }
+                    ]
+                  },
+                  "dataLinks": {
+                    "org.geoserver.catalog.impl.DataLinkInfoImpl": [
+                      {
+                        "type": "text/plain",
+                        "content": "http://www.google.com"
+                      }
+                    ]
+                  },                  
+                  "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+                  "srs": "EPSG:4326",
+                  "nativeBoundingBox": {
+                    "minx": -74.0118315772888,
+                    "maxx": -74.00153046439813,
+                    "miny": 40.70754683896324,
+                    "maxy": 40.719885123828675,
+                    "crs": "EPSG:4326"
+                  },
+                  "latLonBoundingBox": {
+                    "minx": -74.0118315772888,
+                    "maxx": -74.00857344353275,
+                    "miny": 40.70754683896324,
+                    "maxy": 40.711945649065406,
+                    "crs": "EPSG:4326"
+                  },
+                  "projectionPolicy": "REPROJECT_TO_DECLARED",
+                  "enabled": true,
+                  "metadata": {
+                    "entry": [
+                      {
+                        "@key": "kml.regionateStrategy",
+                        "$": "external-sorting"
+                      },
+                      {
+                        "@key": "kml.regionateFeatureLimit",
+                        "$": "15"
+                      },
+                      {
+                        "@key": "cacheAgeMax",
+                        "$": "3000"
+                      },
+                      {
+                        "@key": "cachingEnabled",
+                        "$": "true"
+                      },
+                      {
+                        "@key": "kml.regionateAttribute",
+                        "$": "NAME"
+                      },
+                      {
+                        "@key": "indexingEnabled",
+                        "$": "false"
+                      },
+                      {
+                        "@key": "dirName",
+                        "$": "DS_poi_poi"
+                      }
+                    ]
+                  },
+                  "store": {
+                    "@class": "dataStore",
+                    "name": "tiger:nyc",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
+                  },
+                  "cqlFilter": "INCLUDE",
+                  "maxFeatures": 100,
+                  "numDecimals": 6,
+                  "responseSRS": {
+                    "string": [
+                      4326
+                    ]
+                  },
+                  "overridingServiceSRS": true,
+                  "skipNumberMatched": true,
+                  "circularArcPresent": true,
+                  "linearizationTolerance": 10,
+                  "attributes": {
+                    "attribute": [
+                      {
+                        "name": "the_geom",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "org.locationtech.jts.geom.Point"
+                      },
+                      {
+                        "name": "NAME",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 6
+                      },
+                      {
+                        "name": "THUMBNAIL",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 20
+                      },
+                      {
+                        "name": "MAINPAGE",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 19
+                      }
+                    ]
+                  }              
+              }
+            application/xml: |
+              <featureType>
+                    <name>poi</name>
+                    <nativeName>poi</nativeName>
+                    <namespace>
+                            <name>tiger</name>
+                            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
+                    </namespace>
+                    <title>Manhattan (NY) points of interest</title>
+                    <abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
+                    <keywords>
+                            <string>poi</string>
+                            <string>Manhattan</string>
+                            <string>DS_poi</string>
+                            <string>points_of_interest</string>
+                            <string>fred\@language=ab\;</string>
+                            <string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
+                            <string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
+                    </keywords>
+                    <metadataLinks>
+                            <metadataLink>
+                                  <type>text/plain</type>
+                                  <metadataType>FGDC</metadataType>
+                                  <content>http://www.google.com</content>
+                            </metadataLink>
+                    </metadataLinks>
+                    <dataLinks>
+                            <org.geoserver.catalog.impl.DataLinkInfoImpl>
+                                  <type>text/plain</type>
+                                  <content>http://www.google.com</content>
+                            </org.geoserver.catalog.impl.DataLinkInfoImpl>
+                    </dataLinks>
+                    <nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
+                    <srs>EPSG:4326</srs>
+                    <nativeBoundingBox>
+                            <minx>-74.0118315772888</minx>
+                            <maxx>-74.00153046439813</maxx>
+                            <miny>40.70754683896324</miny>
+                            <maxy>40.719885123828675</maxy>
+                            <crs>EPSG:4326</crs>
+                    </nativeBoundingBox>
+                    <latLonBoundingBox>
+                            <minx>-74.0118315772888</minx>
+                            <maxx>-74.00857344353275</maxx>
+                            <miny>40.70754683896324</miny>
+                            <maxy>40.711945649065406</maxy>
+                            <crs>EPSG:4326</crs>
+                    </latLonBoundingBox>
+                    <projectionPolicy>NONE</projectionPolicy>
+                    <enabled>true</enabled>
+                    <metadata>
+                            <entry key="kml.regionateStrategy">external-sorting</entry>
+                            <entry key="elevation">
+                                  <dimensionInfo>
+                                          <enabled>false</enabled>
+                                  </dimensionInfo>
+                            </entry>
+                            <entry key="kml.regionateFeatureLimit">15</entry>
+                            <entry key="cacheAgeMax">3000</entry>
+                            <entry key="time">
+                                  <dimensionInfo>
+                                          <enabled>false</enabled>
+                                          <defaultValue/>
+                                  </dimensionInfo>
+                            </entry>
+                            <entry key="cachingEnabled">true</entry>
+                            <entry key="kml.regionateAttribute">NAME</entry>
+                            <entry key="indexingEnabled">false</entry>
+                            <entry key="dirName">DS_poi_poi</entry>
+                    </metadata>
+                    <store class="dataStore">
+                            <name>tiger:nyc</name>
+                            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.xml" type="application/xml"/>
+                    </store>
+                    <cqlFilter>INCLUDE</cqlFilter>
+                    <maxFeatures>100</maxFeatures>
+                    <numDecimals>6</numDecimals>
+                    <responseSRS>
+                            <string>4326</string>
+                    </responseSRS>
+                    <overridingServiceSRS>true</overridingServiceSRS>
+                    <skipNumberMatched>true</skipNumberMatched>
+                    <circularArcPresent>true</circularArcPresent>
+                    <linearizationTolerance>10</linearizationTolerance>
+                    <attributes>
+                            <attribute>
+                                  <name>the_geom</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>org.locationtech.jts.geom.Point</binding>
+                            </attribute>
+                            <attribute>
+                                  <name>NAME</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>6</length>
+                            </attribute>
+                            <attribute>
+                                  <name>THUMBNAIL</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>20</length>
+                            </attribute>
+                            <attribute>
+                                  <name>MAINPAGE</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>19</length>
+                            </attribute>
+                    </attributes>
+              </featureType>
+    
+    post:
+      operationId: postFeatureType
+      description: Invalid. Use POST on the /featuretypes endpoint to add a new feature type, or PUT on an individual feature type to edit that type.
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: putFeatureType
+      description: Update an individual feature type
+      consumes:        
+        - application/xml
+        - text/xml
+        - application/json
+        - text/json
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: storeName
+          in: path
+          description: The name of the datastore
+          required: true
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+        - name: recalculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          required: false
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
+        - name: featureType
+          in: body
+          description: The body of the feature type to POST
+          required: true
+          schema:
+            $ref: "#/definitions/FeatureTypeInfo"
+      responses:
+        200:
+          description: The feature type was successfully updated.
+    delete:
+      operationId: deleteFeatureType
+      description: Delete a feature type (optionally recursively deleting layers).
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: storeName
+          in: path
+          description: The name of the datastore
+          required: true
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified featuretype. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layers reference the featuretype.
+          required: false
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: The feature type was successfully deleted.
+
+  /workspaces/{workspaceName}/featuretypes/{featureTypeName}:
+    get:    
+      operationId: getFeatureType
+      description:  Get an individual feature type in the default data store for the workspace
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string    
+        - name: quietOnNotFound
+          in: query
+          description: Prevents logging an Exception when the feature type is not present. Note that 404 status code will be returned anyway. Defaults to "false".
+          type: boolean
+          required: false
+          default: false
+      responses:
+        200:
+          description: Successful response containing feature type.
+          schema:
+            type: object
+            properties:
+              featureType:              
+                $ref: "#/definitions/FeatureTypeInfo"
+          examples:
+            application/json: |
+              {  "name": "poi",
+                  "nativeName": "poi",
+                  "namespace": {
+                    "name": "tiger",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
+                  },
+                  "title": "Manhattan (NY) points of interest",
+                  "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+                  "keywords": {
+                    "string": [
+                      "poi",
+                      "Manhattan",
+                      "DS_poi",
+                      "points_of_interest",
+                      "sampleKeyword\\@language=ab\\;",
+                      "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
+                      "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
+                    ]
+                  },
+                  "metadataLinks": {
+                    "metadataLink": [
+                      {
+                        "type": "text/plain",
+                        "metadataType": "FGDC",
+                        "content": "www.google.com"
+                      }
+                    ]
+                  },
+                  "dataLinks": {
+                    "org.geoserver.catalog.impl.DataLinkInfoImpl": [
+                      {
+                        "type": "text/plain",
+                        "content": "http://www.google.com"
+                      }
+                    ]
+                  },                  
+                  "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+                  "srs": "EPSG:4326",
+                  "nativeBoundingBox": {
+                    "minx": -74.0118315772888,
+                    "maxx": -74.00153046439813,
+                    "miny": 40.70754683896324,
+                    "maxy": 40.719885123828675,
+                    "crs": "EPSG:4326"
+                  },
+                  "latLonBoundingBox": {
+                    "minx": -74.0118315772888,
+                    "maxx": -74.00857344353275,
+                    "miny": 40.70754683896324,
+                    "maxy": 40.711945649065406,
+                    "crs": "EPSG:4326"
+                  },
+                  "projectionPolicy": "REPROJECT_TO_DECLARED",
+                  "enabled": true,
+                  "metadata": {
+                    "entry": [
+                      {
+                        "@key": "kml.regionateStrategy",
+                        "$": "external-sorting"
+                      },
+                      {
+                        "@key": "kml.regionateFeatureLimit",
+                        "$": "15"
+                      },
+                      {
+                        "@key": "cacheAgeMax",
+                        "$": "3000"
+                      },
+                      {
+                        "@key": "cachingEnabled",
+                        "$": "true"
+                      },
+                      {
+                        "@key": "kml.regionateAttribute",
+                        "$": "NAME"
+                      },
+                      {
+                        "@key": "indexingEnabled",
+                        "$": "false"
+                      },
+                      {
+                        "@key": "dirName",
+                        "$": "DS_poi_poi"
+                      }
+                    ]
+                  },
+                  "store": {
+                    "@class": "dataStore",
+                    "name": "tiger:nyc",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
+                  },
+                  "cqlFilter": "INCLUDE",
+                  "maxFeatures": 100,
+                  "numDecimals": 6,
+                  "responseSRS": {
+                    "string": [
+                      4326
+                    ]
+                  },
+                  "overridingServiceSRS": true,
+                  "skipNumberMatched": true,
+                  "circularArcPresent": true,
+                  "linearizationTolerance": 10,
+                  "attributes": {
+                    "attribute": [
+                      {
+                        "name": "the_geom",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "org.locationtech.jts.geom.Point"
+                      },
+                      {
+                        "name": "NAME",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 6
+                      },
+                      {
+                        "name": "THUMBNAIL",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 20
+                      },
+                      {
+                        "name": "MAINPAGE",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 19
+                      }
+                    ]
+                  }              
+              }
+            application/xml: |
+              <featureType>
+                    <name>poi</name>
+                    <nativeName>poi</nativeName>
+                    <namespace>
+                            <name>tiger</name>
+                            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
+                    </namespace>
+                    <title>Manhattan (NY) points of interest</title>
+                    <abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
+                    <keywords>
+                            <string>poi</string>
+                            <string>Manhattan</string>
+                            <string>DS_poi</string>
+                            <string>points_of_interest</string>
+                            <string>fred\@language=ab\;</string>
+                            <string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
+                            <string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
+                    </keywords>
+                    <metadataLinks>
+                            <metadataLink>
+                                  <type>text/plain</type>
+                                  <metadataType>FGDC</metadataType>
+                                  <content>http://www.google.com</content>
+                            </metadataLink>
+                    </metadataLinks>
+                    <dataLinks>
+                            <org.geoserver.catalog.impl.DataLinkInfoImpl>
+                                  <type>text/plain</type>
+                                  <content>http://www.google.com</content>
+                            </org.geoserver.catalog.impl.DataLinkInfoImpl>
+                    </dataLinks>
+                    <nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
+                    <srs>EPSG:4326</srs>
+                    <nativeBoundingBox>
+                            <minx>-74.0118315772888</minx>
+                            <maxx>-74.00153046439813</maxx>
+                            <miny>40.70754683896324</miny>
+                            <maxy>40.719885123828675</maxy>
+                            <crs>EPSG:4326</crs>
+                    </nativeBoundingBox>
+                    <latLonBoundingBox>
+                            <minx>-74.0118315772888</minx>
+                            <maxx>-74.00857344353275</maxx>
+                            <miny>40.70754683896324</miny>
+                            <maxy>40.711945649065406</maxy>
+                            <crs>EPSG:4326</crs>
+                    </latLonBoundingBox>
+                    <projectionPolicy>NONE</projectionPolicy>
+                    <enabled>true</enabled>
+                    <metadata>
+                            <entry key="kml.regionateStrategy">external-sorting</entry>
+                            <entry key="elevation">
+                                  <dimensionInfo>
+                                          <enabled>false</enabled>
+                                  </dimensionInfo>
+                            </entry>
+                            <entry key="kml.regionateFeatureLimit">15</entry>
+                            <entry key="cacheAgeMax">3000</entry>
+                            <entry key="time">
+                                  <dimensionInfo>
+                                          <enabled>false</enabled>
+                                          <defaultValue/>
+                                  </dimensionInfo>
+                            </entry>
+                            <entry key="cachingEnabled">true</entry>
+                            <entry key="kml.regionateAttribute">NAME</entry>
+                            <entry key="indexingEnabled">false</entry>
+                            <entry key="dirName">DS_poi_poi</entry>
+                    </metadata>
+                    <store class="dataStore">
+                            <name>tiger:nyc</name>
+                            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.xml" type="application/xml"/>
+                    </store>
+                    <cqlFilter>INCLUDE</cqlFilter>
+                    <maxFeatures>100</maxFeatures>
+                    <numDecimals>6</numDecimals>
+                    <responseSRS>
+                            <string>4326</string>
+                    </responseSRS>
+                    <overridingServiceSRS>true</overridingServiceSRS>
+                    <skipNumberMatched>true</skipNumberMatched>
+                    <circularArcPresent>true</circularArcPresent>
+                    <linearizationTolerance>10</linearizationTolerance>
+                    <attributes>
+                            <attribute>
+                                  <name>the_geom</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>org.locationtech.jts.geom.Point</binding>
+                            </attribute>
+                            <attribute>
+                                  <name>NAME</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>6</length>
+                            </attribute>
+                            <attribute>
+                                  <name>THUMBNAIL</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>20</length>
+                            </attribute>
+                            <attribute>
+                                  <name>MAINPAGE</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>19</length>
+                            </attribute>
+                    </attributes>
+              </featureType>
+    
+    post:
+      operationId: postFeatureType
+      description: Invalid. Use POST on the /featuretypes endpoint to add a new feature type, or PUT on an individual feature type to edit that type.
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: putFeatureType
+      description: Update an individual feature type in the default data store for the workspace
+      consumes:        
+        - application/xml
+        - text/xml
+        - application/json
+        - text/json
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+        - name: recalculate
+          in: query
+          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          required: false
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
+        - name: featureType
+          in: body
+          description: The body of the feature type to POST
+          required: true
+          schema:
+            $ref: "#/definitions/FeatureTypeInfo"
+      responses:
+        200:
+          description: The feature type was successfully updated.
+    delete:
+      operationId: deleteFeatureType
+      description: Delete a feature type in the default data store for the workspace (optionally recursively deleting layers).
+      parameters:
+        - name: workspaceName
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: featureTypeName
+          in: path
+          description: The name of the feature type
+          required: true
+          type: string
+        - name: recurse
+          in: query
+          description: Recursively deletes all layers referenced by the specified featuretype. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layers reference the featuretype.
+          required: false
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: The feature type was successfully deleted.
+
+definitions:
+  FeatureTypeInfo:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the resource. This name corresponds to the "published" name of the resource.
+      nativeName:
+        type: string
+        description: The native name of the resource. This name corresponds to the physical resource that feature type is derived from -- a shapefile name, a database table, etc...
+      namespace:
+        type: object
+        description: The namespace URI of the resource. Example would be an application schema namespace URI.
+        properties:
+          name:
+            type: string
+            description: The name of the namespace.
+          href:
+            type: string
+            readOnly: true
+            description: URL to the namespace.
+      title:
+        type: string
+        description: The title of the resource. This is usually something that is meant to be displayed in a user interface.
+      abstract:
+        type: string
+        description: A description of the resource. This is usually something that is meant to be displayed in a user interface.
+      keywords:
+        type: object
+        description: A collection of keywords associated with the resource.
+        properties:
+          string:
+            type: array
+            description: List of keyword values with internationalization and vocabulary
+            items:
+              type: string 
+              description: A single keyword value
+      metadatalinks:
+        type: object
+        description: Wraps a collection of metadata links for the resource.
+        properties:
+          metadataLink:
+            type: array
+            description: A collection of metadata links for the resource.
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The MIME type 
+                metadataType:
+                  type: string
+                  description: The type of metadata, e.g. "FGDC"
+                content:
+                  type: string
+                  description: The link URL
+      dataLinks:
+        type: object
+        description: Wraps a collection of data links for the resource.
+        properties:
+          metadataLink:
+            type: array
+            description: A collection of data links for the resource.
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The MIME type 
+                content:
+                  type: string
+                  description: The link URL                  
+      nativeCRS:
+        type: string
+        description: The native coordinate reference system object of the resource.
+      srs:
+        type: string
+        description: Returns the identifier of coordinate reference system of the resource.
+      nativeBoundingBox:
+        type: object
+        description: Returns the bounds of the resource in its declared CRS.
+        properties:
+          minx:
+            type: number
+            description: The min x coordinate
+          maxx:
+            type: number
+            description: The max x coordinate
+          miny:
+            type: number
+            description: The min y coordinate
+          maxy:
+            type: number
+            description: The max y coordinate
+          crs:
+            type: string
+            description: The coordinate reference system object of the bounding box.
+      latLonBoundingBox:
+        type: object
+        description: The bounds of the resource in lat / lon. This value represents a "fixed value" and is not calculated on the underlying dataset.
+        properties:
+          minx:
+            type: number
+            description: The min x coordinate
+          maxx:
+            type: number
+            description: The max x coordinate
+          miny:
+            type: number
+            description: The min y coordinate
+          maxy:
+            type: number
+            description: The max y coordinate
+          crs:
+            type: string
+            description: The coordinate reference system object of the bounding box.                
+      metadata:
+        type: array
+        description:  A list of key/value metadata pairs.
+        items:
+          $ref: "#/definitions/MetadataEntry"
+      store:
+        type: object
+        description: The store the resource is a part of.
+        properties:
+          '@class':
+            type: string
+            description: The class of the store
+          name:
+            type: string
+            description: The name of the store
+          href:
+            type: string
+            description: URL to the data store
+      cqlFilter:
+        type: string
+        description: The ECQL string used as default feature type filter
+      maxFeatures:
+        type: integer
+        description: A cap on the number of features that a query against this type can return.
+      numDecimals:
+        type: number
+        description: The number of decimal places to use when encoding floating point numbers from data of this feature type.
+      responseSRS:
+        type: object
+        description: The srs's that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
+        properties:
+          string:
+            type: string
+            description: The value of the srs
+      overridingServiceSRS:
+        type: boolean
+        description: True if this feature type info is overriding the WFS global SRS list
+      skipNumberMatched:
+        type: boolean
+        description: True if this feature type info is overriding the counting of numberMatched.
+      circularArcPresent:
+        type: boolean
+      linearizationTolerance:
+        type: number
+        description: Tolerance used to linearize this feature type, as an absolute value expressed in the geometries own CRS
+      attributes:
+        type: object
+        description: Wrapper for the derived set of attributes for the feature type.
+        properties:
+          attribute:
+            type: array
+            description: The derived set of attributes for the feature type.
+            items:
+              type: object
+              description: A single attribute
+              properties:
+                name:
+                  type: string
+                  description: "Name of the attribute."
+                minOccurs:
+                  type: integer
+                  description: "Minimum number of occurrences of the attribute."
+                maxOccurs:
+                  type: integer
+                  description: "Maximum number of occurrences of the attribute."
+                nillable:
+                  type: boolean
+                  description: "Flag indicating if null is an acceptable value for the attribute."
+                binding:
+                  type: string
+                  description: "The java class that values of this attribute are bound to."
+                length:
+                  type: integer
+                  description: Returns the length of this attribute. It's usually non null only for string and numeric types"
+      
+    example: {  "name": "poi",
+                "nativeName": "poi",
+                "namespace": {
+                  "name": "tiger",
+                  "href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
+                },
+                "title": "Manhattan (NY) points of interest",
+                "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+                "keywords": {
+                  "string": [
+                    "poi",
+                    "Manhattan",
+                    "DS_poi",
+                    "points_of_interest",
+                    "sampleKeyword\\@language=ab\\;",
+                    "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
+                    "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
+                  ]
+                },
+                "metadataLinks": {
+                  "metadataLink": [
+                    {
+                      "type": "text/plain",
+                      "metadataType": "FGDC",
+                      "content": "www.google.com"
+                    }
+                  ]
+                },
+                "dataLinks": {
+                  "org.geoserver.catalog.impl.DataLinkInfoImpl": [
+                    {
+                      "type": "text/plain",
+                      "content": "http://www.google.com"
+                    }
+                  ]
+                },                  
+                "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+                "srs": "EPSG:4326",
+                "nativeBoundingBox": {
+                  "minx": -74.0118315772888,
+                  "maxx": -74.00153046439813,
+                  "miny": 40.70754683896324,
+                  "maxy": 40.719885123828675,
+                  "crs": "EPSG:4326"
+                },
+                "latLonBoundingBox": {
+                  "minx": -74.0118315772888,
+                  "maxx": -74.00857344353275,
+                  "miny": 40.70754683896324,
+                  "maxy": 40.711945649065406,
+                  "crs": "EPSG:4326"
+                },
+                "projectionPolicy": "REPROJECT_TO_DECLARED",
+                "enabled": true,
+                "metadata": {
+                  "entry": [
+                    {
+                      "@key": "kml.regionateStrategy",
+                      "$": "external-sorting"
+                    },
+                    {
+                      "@key": "kml.regionateFeatureLimit",
+                      "$": "15"
+                    },
+                    {
+                      "@key": "cacheAgeMax",
+                      "$": "3000"
+                    },
+                    {
+                      "@key": "cachingEnabled",
+                      "$": "true"
+                    },
+                    {
+                      "@key": "kml.regionateAttribute",
+                      "$": "NAME"
+                    },
+                    {
+                      "@key": "indexingEnabled",
+                      "$": "false"
+                    },
+                    {
+                      "@key": "dirName",
+                      "$": "DS_poi_poi"
+                    }
+                  ]
+                },
+                "store": {
+                  "@class": "dataStore",
+                  "name": "tiger:nyc",
+                  "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
+                },
+                "cqlFilter": "INCLUDE",
+                "maxFeatures": 100,
+                "numDecimals": 6,
+                "responseSRS": {
+                  "string": [
+                    4326
+                  ]
+                },
+                "overridingServiceSRS": true,
+                "skipNumberMatched": true,
+                "circularArcPresent": true,
+                "linearizationTolerance": 10,
+                "attributes": {
+                  "attribute": [
+                    {
+                      "name": "the_geom",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "org.locationtech.jts.geom.Point"
+                    },
+                    {
+                      "name": "NAME",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "java.lang.String",
+                      "length": 6
+                    },
+                    {
+                      "name": "THUMBNAIL",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "java.lang.String",
+                      "length": 20
+                    },
+                    {
+                      "name": "MAINPAGE",
+                      "minOccurs": 0,
+                      "maxOccurs": 1,
+                      "nillable": true,
+                      "binding": "java.lang.String",
+                      "length": 19
+                    }
+                  ]
+                }              
+            }
+  
+  MetadataEntry:
+    type: object
+    title: entry
+    properties:
+      '@key':
+        title: key
+        type: string
+        enum:
+        - regionateStrategy
+        - regionateFeatureLimit
+        - cacheAgeMax
+        - cachingEnabled
+        - regionateAttribute
+        - indexingEnabled
+        - dirName
+        description: Key used for metadata entry, additional keys are added over time
+      '$':
+        title: text
+        type: string
+        description: Text value for provided key Valid text depends on key used. Example  {'@key'='cachingEnabled','$'='true'}.

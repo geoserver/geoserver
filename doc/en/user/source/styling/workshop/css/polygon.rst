@@ -21,7 +21,7 @@ Review of polygon symbology:
 
 * SLD uses a **PolygonSymbolizer** to describe how the shape of a polygon is drawn. The primary characteristic documented is the **Fill** used to shade the polygon interior. The use of a **Stroke** to describe the polygon boundary is optional.
 
-* Labeling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor-option to allow labels to line wrap to remain within the polygon boundaries.
+* Labeling of a polygon is anchored to the centroid of the polygon. GeoServer provides a vendor option to allow labels to line wrap to remain within the polygon boundaries.
 
 For our Polygon exercises we will try and limit our CSS documents to a single rule, in order to showcase the properties used for rendering.
 
@@ -46,7 +46,7 @@ This exercise makes use of the ``ne:states_provinces_shp`` layer.
       * - Workspace:
         - :kbd:`No workspace`
       * - Format:
-        - :kbd:`YSLD`
+        - :kbd:`CSS`
      
    .. image:: ../style/img/polygon_02_create.png
 
@@ -469,9 +469,9 @@ When working with labels a map can become busy very quickly, and difficult to re
 
 #. Two common properties for controlling labeling are:
    
-   **-gt-label-max-displacement** indicates the maximum distance GeoServer should displace a label during conflict resolution.
+   **label-max-displacement** indicates the maximum distance GeoServer should displace a label during conflict resolution.
    
-   **-gt-label-auto-wrap** allows any labels extending past the provided width will be wrapped into multiple lines.
+   **label-auto-wrap** allows any labels extending past the provided width will be wrapped into multiple lines.
 
 #. Using these together we can make a small improvement in our example:
 
@@ -484,8 +484,8 @@ When working with labels a map can become busy very quickly, and difficult to re
            font-fill: black;
            label-anchor: 0.5 0.5;
         
-           -gt-label-max-displacement: 40;
-           -gt-label-auto-wrap: 70;
+           label-max-displacement: 40;
+           label-auto-wrap: 70;
          }
 
 #. As shown in the following preview.
@@ -510,21 +510,21 @@ When working with labels a map can become busy very quickly, and difficult to re
            halo-color: #7EB5D3;
            halo-opacity:0.8;
         
-           -gt-label-max-displacement: 40;
-           -gt-label-auto-wrap: 70;
+           label-max-displacement: 40;
+           label-auto-wrap: 70;
          }
 
 #. By making use of **halo-opacity** we we still allow stroke information to show through, but prevent the stroke information from making the text hard to read.
 
    .. image:: ../style/img/polygon_label_5.png
 
-#. And advanced technique for manually taking control of conflict resolution is the use of the  **-gt-label-priority**.
+#. And advanced technique for manually taking control of conflict resolution is the use of the  **label-priority**.
 
    This property takes an expression which is used in the event of a conflict. The label with the highest priority "wins."
    
 #. The Natural Earth dataset we are using includes a **labelrank** intended to control what labels are displayed based on zoom level.
    
-   The values for **labelrank** go from 0 (for zoomed out) to 20 (for zoomed in). To use this value for **-gt-label-priority** we need to swap the values around so a **scalerank** of 1 is given the highest priority.
+   The values for **labelrank** go from 0 (for zoomed out) to 20 (for zoomed in). To use this value for **label-priority** we need to swap the values around so a **scalerank** of 1 is given the highest priority.
    
    .. code-block:: css
       :emphasize-lines: 14
@@ -540,9 +540,9 @@ When working with labels a map can become busy very quickly, and difficult to re
            halo-color: #7EB5D3;
            halo-opacity:0.8;
         
-           -gt-label-max-displacement: 40;
-           -gt-label-auto-wrap: 70;
-           -gt-label-priority: [20-labelrank];
+           label-max-displacement: 40;
+           label-auto-wrap: 70;
+           label-priority: [20-labelrank];
          }
    
 #. In the following map ``East Flanders`` will take priority over ``Zeeland`` when the two labels overlap.
@@ -589,7 +589,7 @@ A thematic map (rather than focusing on representing the shape of the world) use
    | #bebada | #fdb462 | #d9d9d9 |
    +---------+---------+---------+
 
-   If you are unfamiliar with theming you may wish to visit http://colorbrewer2.org/js/ to learn more. The **i** icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.
+   If you are unfamiliar with theming you may wish to visit http://colorbrewer2.org to learn more. The **i** icons provide an adequate background on theming approaches for qualitative, sequential and diverging datasets.
   
 #. The first approach we will take is to directly select content based on **colormap**, providing a color based on the **9-class Set3** palette above:
 
@@ -816,12 +816,12 @@ Challenge Goodness of Fit
 
 #. In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up::
 
-      -gt-label-fit-goodness: 0.3;
-      -gt-label-max-displacement: 130;
+      label-fit-goodness: 0.3;
+      label-max-displacement: 130;
 
 #. You can also experiment with turning off this facility completely::
 
-      -gt-label-conflict-resolution: false;
+      label-conflict-resolution: false;
    
 #. **Challenge:** Construct your own example using max displacement and fit-goodness.
 

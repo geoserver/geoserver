@@ -9,31 +9,32 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.ComponentTag;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.web.GeoServerApplication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-/**
- * @author afabiani
- *
- */
+/** @author afabiani */
 public class BackupRestoreWebUtils {
 
     static Backup backupFacade() {
-        return GeoServerApplication.get().getBeanOfType(Backup.class);
+        Backup backupFacade = GeoServerApplication.get().getBeanOfType(Backup.class);
+        backupFacade.setAuth(SecurityContextHolder.getContext().getAuthentication());
+        return backupFacade;
     }
 
     static boolean isDevMode() {
-        return RuntimeConfigurationType.DEVELOPMENT == GeoServerApplication.get().getConfigurationType();
+        return RuntimeConfigurationType.DEVELOPMENT
+                == GeoServerApplication.get().getConfigurationType();
     }
 
     static void disableLink(ComponentTag tag) {
         tag.setName("a");
         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
     }
-    
+
     static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
-        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 }

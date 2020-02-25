@@ -1,0 +1,263 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Data
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The data endpoint controls uploading layer data to specific import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
+
+paths:
+  /imports/{importId}/data:
+    get:
+      operationId: getData
+      summary: Retrieve the database connection parameters for an import with id {importId}. Only applies to database imports.
+      description: Get import data
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"     
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Database"
+  /imports/{importId}/tasks/{taskId}/data:
+    get:
+      operationId: getTaskData
+      summary: Retrieve the table description for a task with id {taskId} within import with id {importId}. Only applies to database imports.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/TaskId"           
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Table"
+  /imports/{importId}/data/files:
+    get:
+      operationId: getDataFiles
+      summary: Retrieve the list of files for an import with id {importId}. Only applies to file/directory imports.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"         
+        - $ref: "#/parameters/ExpandParameter"
+      responses: 
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Directory"
+  /imports/{importId}/data/files/{filename}:
+    get:
+      operationId: getDataFile
+      summary: Retrieve information about the file with id {fileId} from the data of an import with id {importId}. Only applies to file/directory imports.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/Filename"  
+        - $ref: "#/parameters/ExpandParameter"
+      responses: 
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/File"
+    delete:
+      operationId: deleteImportDataFile
+      summary: Remove a specific file with id {filename} from the import with id {importId}. Only applies to file/directory imports.
+      responses: 
+        204: 
+          description: No Content
+  /imports/{importId}/tasks/{taskId}/data/files:
+    get:
+      operationId: getTaskDataFiles
+      summary: Retrieve the list of files for a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"         
+        - $ref: "#/parameters/ExpandParameter"
+      responses: 
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Directory"
+  /imports/{importId}/tasks/{taskId}/data/files/{filename}:
+    get:
+      operationId: getTaskDataFile
+      summary: Retrieve information about the file with id {fileId} from the data of a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/Filename"        
+        - $ref: "#/parameters/ExpandParameter"
+      responses: 
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/File"
+    delete:
+      operationId: deleteTaskDataFile
+      summary: Remove a specific file with id {filename} from the task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
+      responses: 
+        204: 
+          description: No Content
+
+parameters:
+  ExpandParameter:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: self
+    required: false
+  ImportId:
+    name: importId
+    in: path
+    description: The ID of the import
+    required: true
+    type: string
+  TaskId:
+    name: taskId
+    in: path
+    description: The ID of the task
+    required: true
+    type: string  
+  Filename:
+    name: filename
+    in: path
+    description: The filename
+    required: true
+    type: string    
+
+definitions:
+  Files:
+    title: files
+    type: array
+    description: List of file descriptors
+    items:
+      $ref: "#/definitions/FileContents"
+  File:
+    title: file
+    type: object
+    description: An import data object representing a spatial file or granule
+    properties:
+      type:
+        type: string
+        description: '"file"'
+      format:
+        type: string
+        description: Format of the file
+      href: 
+        type: string
+        description: URL to the file endpoint
+      location:
+        type: string
+        description: Absolute system path to the file
+      charset:
+        type: string
+        description: The charset encoding of the data
+      file:
+        type: string
+        description: Name of the file
+      prj:
+        type: string
+        description: Name of the .prj file, if applicable
+      other:
+        type: array
+        description: List of other files that comprise this spatial file.
+        items:
+          type: string
+          description: Name of the file
+      message:
+        $ref: "#/definitions/Message"
+  FileContents:
+    title: filecontents
+    type: object
+    description: Description of a spatial file or granule
+    properties:
+      file:
+        type: string
+        description: Name of the file
+      href:
+        type: string
+        description: URL to the file endpoint
+      prj:
+        type: string
+        description: Name of the .prj file, if applicable
+      other:
+        type: array
+        description: List of other files that comprise this spatial file.
+        items:
+          type: string
+          description: Name of the file
+  Directory:
+    title: directory
+    type: object
+    description: An import data object representing a directory of spatial files or an image mosaic
+    properties:
+      type:
+        type: string
+        description: '"directory" or "mosaic"'
+      location: 
+        type: string
+        description: Absolute system path to the directory
+      href:
+        type: string
+        description: URL to the directory endpoint
+      charset:
+        type: string
+        description: Charset encoding of the data
+      files:
+        $ref: "#/definitions/Files"
+  Message:
+    title: message
+    type: string
+    description: A message about the import data.        
+  Database:
+    title: database
+    type: object
+    description: An import data object representing a database
+    properties:
+      type:
+        type: string
+        description: '"database"'
+      format:
+        type: string
+      href:
+        type: string
+        description: URL to the database endpoint
+      properties:
+        type: object
+        description: Database connection parameters. Actual paramaters vary depending on the type of database.
+      tables:
+        type: array
+        items:
+          $ref: "#/definitions/Table"
+  Table:
+    title: table
+    type: object
+    description: An import data object representing a a database table
+    properties:
+      type:
+        type: string
+        description: '"table"'
+      name:
+        type: string
+      format:
+        type: string
+      href:
+        type: string
+        description: URL to the table endpoint     

@@ -10,7 +10,7 @@
     <Name>default_line</Name>
     <UserStyle>
     <!-- Styles can have names, titles and abstracts -->
-      <Title>Default Line</Title>
+      <Title>Blue Line</Title>
       <Abstract>A sample style that draws a line</Abstract>
       <!-- FeatureTypeStyles describe how to render different features -->
       <!-- A FeatureTypeStyle for rendering lines -->

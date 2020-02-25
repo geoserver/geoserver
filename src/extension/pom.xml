@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.17-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -73,13 +73,6 @@
       <id>app-schema</id>
       <modules>
         <module>app-schema</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>arcsde</id>
-      <modules>
-        <module>arcsde</module>
       </modules>
     </profile>
 
@@ -313,12 +306,54 @@
         <module>netcdf-out</module>
       </modules>
     </profile>
-
- <profile>
+    <profile>
       <id>vectortiles</id>
+      <modules>
+        <module>vectortiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ysld</id>
+      <modules>
+        <module>ysld</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>mongodb</id>
+      <modules>
+        <module>mongodb</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>sldService</id>
+      <modules> 
+        <module>sldService</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geofence</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
         <modules>
-          <module>vectortiles</module>
+          <module>geofence</module>
         </modules>
+    </profile>
+    <profile>
+      <id>geofence-server</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+          <module>geofence-server</module>
+        </modules>
+    </profile>
+    <profile>      
+      <id>authkey</id>
+      <modules>
+        <module>authkey</module>
+      </modules>
     </profile>
 
     <!-- allExtensions profile, includes all modules -->
@@ -326,7 +361,6 @@
       <id>allExtensions</id>
       <modules>
         <module>app-schema</module>
-        <module>arcsde</module>
         <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
@@ -358,7 +392,13 @@
         <module>grib</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
-	<module>vectortiles</module>
+        <module>vectortiles</module>
+        <module>ysld</module>
+        <module>mongodb</module>
+        <module>sldService</module>
+        <module>geofence</module>
+        <module>geofence-server</module>
+        <module>authkey</module>
       </modules>
     </profile>
 
@@ -367,7 +407,6 @@
       <id>release</id>
       <modules>
         <module>app-schema</module>
-        <module>arcsde</module>
         <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
@@ -400,9 +439,13 @@
         <module>netcdf</module>
         <module>netcdf-out</module>
         <module>vectortiles</module>
+        <module>ysld</module>
+        <module>mongodb</module>
+        <module>sldService</module>
+        <module>geofence</module>
+        <module>geofence-server</module>
+        <module>authkey</module>
       </modules>
     </profile>
-
   </profiles>
-
 </project>

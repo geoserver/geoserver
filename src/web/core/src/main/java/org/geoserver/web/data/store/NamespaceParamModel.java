@@ -13,7 +13,6 @@ import org.geoserver.web.util.MapModel;
 /**
  * Model to wrap and unwrap a {@link NamespaceInfo} to and from a String for the Datastore's
  * "namespace" parameter
- * 
  */
 public class NamespaceParamModel extends MapModel {
     public NamespaceParamModel(IModel model, String expression) {
@@ -23,8 +22,8 @@ public class NamespaceParamModel extends MapModel {
     @Override
     public Object getObject() {
         String nsUri = (String) super.getObject();
-        NamespaceInfo namespaceInfo = GeoServerApplication.get().getCatalog()
-                .getNamespaceByURI(nsUri);
+        NamespaceInfo namespaceInfo =
+                GeoServerApplication.get().getCatalog().getNamespaceByURI(nsUri);
         return namespaceInfo;
     }
 

@@ -8,9 +8,7 @@ package org.geoserver.wms.map;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Set;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -19,7 +17,7 @@ import org.springframework.util.Assert;
 
 /**
  * An OWS {@link Response} handler that knows how to encode a {@link XMLTransformerMap}
- * 
+ *
  * @author Gabriel Roldan
  * @see XMLTransformerMap
  */
@@ -31,17 +29,14 @@ public class XMLTransformerMapResponse extends AbstractMapResponse {
 
     /**
      * Encodes the {@link XMLTransformerMap} down to the given destination output stream.
-     * 
-     * @param value
-     *            an {@link XMLTransformerMap}
-     * @param output
-     *            xml stream destination
-     * @param operation
-     *            operation descriptor for which the map was produced; not used at all.
+     *
+     * @param value an {@link XMLTransformerMap}
+     * @param output xml stream destination
+     * @param operation operation descriptor for which the map was produced; not used at all.
      */
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         write(value, output);
     }
 
@@ -65,5 +60,4 @@ public class XMLTransformerMapResponse extends AbstractMapResponse {
             map.dispose();
         }
     }
-
 }

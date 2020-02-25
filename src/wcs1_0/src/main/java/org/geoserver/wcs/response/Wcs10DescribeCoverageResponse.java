@@ -7,18 +7,16 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geotools.xml.transform.TransformerBase;
 
 /**
  * Runs the transformer and outputs the describe coverage response
- * 
+ *
  * @author Andrea Aime, TOPP TODO: This is a blatant copy of WFS GetCapabilities response. Find a
- *         way to share code.
+ *     way to share code.
  */
 public class Wcs10DescribeCoverageResponse extends Response {
     public Wcs10DescribeCoverageResponse() {

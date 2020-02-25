@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Runs the GetStatus pseudo WPS request (GeoServer uses it to implement the status url)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class GetStatus {
@@ -26,8 +26,8 @@ public class GetStatus {
 
     private ApplicationContext ctx;
 
-    public GetStatus(ProcessStatusTracker tracker, WPSResourceManager resources,
-            ApplicationContext ctx) {
+    public GetStatus(
+            ProcessStatusTracker tracker, WPSResourceManager resources, ApplicationContext ctx) {
         this.tracker = tracker;
         this.resources = resources;
         this.ctx = ctx;
@@ -37,16 +37,18 @@ public class GetStatus {
         // see if the process is still in-flight
         String executionId = request.getExecutionId();
         ExecutionStatus status = tracker.getStatus(executionId);
-        if(status == null) {
+        if (status == null) {
             throw new UnknownExecutionIdException(executionId);
         }
-        
+
         // are we done?
-        if(status.getPhase().isExecutionCompleted()) {
+        if (status.getPhase().isExecutionCompleted()) {
             Resource storedResponse = resources.getStoredResponse(executionId);
             if (storedResponse == null || storedResponse.getType() == Type.UNDEFINED) {
-                throw new WPSException("The execution is completed with status " + status.getPhase() 
-                        + " and yet the response cannot be located on disk, this is an internal failure");
+                throw new WPSException(
+                        "The execution is completed with status "
+                                + status.getPhase()
+                                + " and yet the response cannot be located on disk, this is an internal failure");
             } else {
                 return storedResponse;
             }
@@ -56,9 +58,5 @@ public class GetStatus {
         } else {
             return new StatusResponseBuilder(resources, ctx).buildStatusResponse(status);
         }
-        
-        
     }
-
-
 }

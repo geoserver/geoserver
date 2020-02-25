@@ -7,16 +7,14 @@ package org.geoserver.wps.executor;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.geoserver.wps.ProcessDismissedException;
 import org.opengis.util.ProgressListener;
 
 /**
  * Wrapper class for output streams that will throw an exception when a process got cancelled during
  * the production of the outputs
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 class CancellingOutputStream extends FilterOutputStream {
 
@@ -50,5 +48,4 @@ class CancellingOutputStream extends FilterOutputStream {
         checkCancelled();
         out.write(b);
     }
-
 }

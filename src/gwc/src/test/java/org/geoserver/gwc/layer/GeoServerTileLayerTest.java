@@ -5,22 +5,24 @@
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.same;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -40,19 +42,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
-
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -66,8 +68,8 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
-import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.WMS;
@@ -78,17 +80,19 @@ import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.Style;
 import org.geowebcache.GeoWebCacheException;
+import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
-import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.MetadataURL;
 import org.geowebcache.locks.MemoryLockProvider;
@@ -96,13 +100,11 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -124,13 +126,16 @@ public class GeoServerTileLayerTest {
 
     private GWC mockGWC;
 
+    private FeatureTypeInfoImpl resource;
+
     @After
     public void tearDown() throws Exception {
         GWC.set(null);
+        Dispatcher.REQUEST.remove();
     }
 
     @Before
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
         MemoryLockProvider lockProvider = new MemoryLockProvider();
@@ -151,7 +156,7 @@ public class GeoServerTileLayerTest {
         storeInfo.setEnabled(true);
         storeInfo.setWorkspace(workspaceInfo);
 
-        FeatureTypeInfoImpl resource = new FeatureTypeInfoImpl((Catalog) null);
+        resource = new FeatureTypeInfoImpl((Catalog) null);
         resource.setStore(storeInfo);
         resource.setId("mock-resource-info");
         resource.setName("MockLayerInfoName");
@@ -160,10 +165,10 @@ public class GeoServerTileLayerTest {
         resource.setAbstract("Test resource abstract");
         resource.setEnabled(true);
         resource.setDescription("Test resource description");
-        resource.setLatLonBoundingBox(new ReferencedEnvelope(-180, -90, 0, 0,
-                DefaultGeographicCRS.WGS84));
-        resource.setNativeBoundingBox(new ReferencedEnvelope(-180, -90, 0, 0,
-                DefaultGeographicCRS.WGS84));
+        resource.setLatLonBoundingBox(
+                new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setNativeBoundingBox(
+                new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
         resource.setSRS("EPSG:4326");
         resource.setKeywords((List) Arrays.asList(new Keyword("kwd1"), new Keyword("kwd2")));
 
@@ -176,28 +181,36 @@ public class GeoServerTileLayerTest {
         metadataLinkInfo.setType("metadata-format");
         resource.setMetadataLinks(Collections.singletonList(metadataLinkInfo));
 
+        ResourcePool resourcePool = mock(ResourcePool.class);
+        Style style = mock(Style.class);
+        when(style.featureTypeStyles()).thenReturn(Collections.emptyList());
+        when(resourcePool.getStyle(any(StyleInfo.class))).thenReturn(style);
+        catalog = mock(Catalog.class);
+        when(catalog.getResourcePool()).thenReturn(resourcePool);
+
         layerInfo = new LayerInfoImpl();
         layerInfo.setId(layerInfoId);
         layerInfo.setResource(resource);
         layerInfo.setEnabled(true);
         layerInfo.setName("MockLayerInfoName");
         layerInfo.setType(PublishedType.VECTOR);
-        StyleInfo defaultStyle = new StyleInfoImpl(null);
+        StyleInfo defaultStyle = new StyleInfoImpl(catalog);
         defaultStyle.setName("default_style");
 
         layerInfo.setDefaultStyle(defaultStyle);
 
-        StyleInfo alternateStyle1 = new StyleInfoImpl(null);
+        StyleInfo alternateStyle1 = new StyleInfoImpl(catalog);
         alternateStyle1.setName("alternateStyle-1");
-        StyleInfo alternateStyle2 = new StyleInfoImpl(null);
+        StyleInfo alternateStyle2 = new StyleInfoImpl(catalog);
         alternateStyle2.setName("alternateStyle-2");
-        Set<StyleInfo> alternateStyles = new HashSet<StyleInfo>(Arrays.asList(alternateStyle1,
-                alternateStyle2));
+        Set<StyleInfo> alternateStyles =
+                new HashSet<StyleInfo>(Arrays.asList(alternateStyle1, alternateStyle2));
         LegendInfo legendInfo = new LegendInfoImpl();
         legendInfo.setWidth(150);
         legendInfo.setHeight(200);
         legendInfo.setFormat("image/png");
-        legendInfo.setOnlineResource("some-url                                                                                         ");
+        legendInfo.setOnlineResource(
+                "some-url                                                                                         ");
         alternateStyle2.setLegend(legendInfo);
         layerInfo.setStyles(alternateStyles);
 
@@ -211,13 +224,11 @@ public class GeoServerTileLayerTest {
 
         defaults = GWCConfig.getOldDefaults();
 
-        catalog = mock(Catalog.class);
         when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
         when(catalog.getLayerGroup(eq(layerGroupId))).thenReturn(layerGroup);
 
-        gridSetBroker = new GridSetBroker(true, true);
-        gridSetBroker.put(gridSetBroker.WORLD_EPSG4326);
-        gridSetBroker.put(gridSetBroker.WORLD_EPSG3857);
+        gridSetBroker =
+                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
     }
 
     @Test
@@ -290,7 +301,6 @@ public class GeoServerTileLayerTest {
 
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
         assertEquals(GWC.tileLayerName(layerGroup), layerGroupInfoTileLayer.getName());
-
     }
 
     @Test
@@ -304,8 +314,10 @@ public class GeoServerTileLayerTest {
         StyleParameterFilter styleFilter = (StyleParameterFilter) parameterFilters.get(0);
         assertEquals("STYLES", styleFilter.getKey());
         assertEquals("default_style", styleFilter.getDefaultValue());
-        assertEquals(new HashSet<String>(Arrays.asList("alternateStyle-1", "alternateStyle-2")),
-                new HashSet<String>(styleFilter.getLegalValues()));
+        assertEquals(
+                new HashSet<>(
+                        Arrays.asList("default_style", "alternateStyle-1", "alternateStyle-2")),
+                new HashSet<>(styleFilter.getLegalValues()));
 
         // layerInfoTileLayer.getInfo().getCachedStyles().add("alternateStyle-2");
     }
@@ -385,7 +397,7 @@ public class GeoServerTileLayerTest {
         // these properties are missing from LayerGroupInfo interface
         assertEquals("Group title", title);
         assertEquals("Group abstract", description);
-        
+
         assertEquals(0, keywords.size());
     }
 
@@ -431,6 +443,62 @@ public class GeoServerTileLayerTest {
     }
 
     @Test
+    public void testGetGridSubsetsDynamic() throws Exception {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+
+        GridSubset subset = layerInfoTileLayer.getGridSubset("EPSG:4326");
+
+        assertThat(subset, instanceOf(DynamicGridSubset.class));
+
+        assertThat(
+                subset,
+                hasProperty("originalExtent", hasProperty("minX", closeTo(-180.0, 0.0000001))));
+
+        layerInfoTileLayer.removeGridSubset("EPSG:4326");
+        layerInfoTileLayer.addGridSubset(subset);
+
+        resource.setLatLonBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setNativeBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+
+        GridSubset subset2 = layerInfoTileLayer.getGridSubset("EPSG:4326");
+
+        // the extent should be that of resource
+        assertThat(
+                subset2,
+                hasProperty("originalExtent", hasProperty("minX", closeTo(-90.0, 0.0000001))));
+    }
+
+    @Test
+    public void testGetGridSubsetsStatic() throws Exception {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+
+        GridSubset subset = layerInfoTileLayer.getGridSubset("EPSG:4326");
+
+        assertThat(subset, instanceOf(DynamicGridSubset.class));
+
+        assertThat(
+                subset,
+                hasProperty("originalExtent", hasProperty("minX", closeTo(-180.0, 0.0000001))));
+
+        layerInfoTileLayer.removeGridSubset("EPSG:4326");
+        layerInfoTileLayer.addGridSubset(new GridSubset(subset)); // Makes the dynamic extent static
+
+        resource.setLatLonBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setNativeBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+
+        GridSubset subset2 = layerInfoTileLayer.getGridSubset("EPSG:4326");
+
+        // the extent should not change with that of resource
+        assertThat(
+                subset2,
+                hasProperty("originalExtent", hasProperty("minX", closeTo(-180.0, 0.0000001))));
+    }
+
+    @Test
     public void testGridSubsetBoundsClippedToTargetCrsAreaOfValidity() throws Exception {
 
         CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
@@ -443,19 +511,20 @@ public class GeoServerTileLayerTest {
         // force building and setting the bounds to the saved representation
         layerGroupInfoTileLayer.getGridSubsets();
 
-        XMLGridSubset savedSubset = layerGroupInfoTileLayer.getInfo().getGridSubsets().iterator()
-                .next();
+        XMLGridSubset savedSubset =
+                layerGroupInfoTileLayer.getInfo().getGridSubsets().iterator().next();
 
         BoundingBox gridSubsetExtent = savedSubset.getExtent();
-        BoundingBox expected = gridSetBroker.WORLD_EPSG3857.getOriginalExtent();
+        BoundingBox expected = gridSetBroker.getWorldEpsg3857().getOriginalExtent();
         // don't use equals(), it uses an equality threshold we want to avoid here
         double threshold = 1E-16;
-        assertTrue("Expected " + expected + ", got " + gridSubsetExtent,
+        assertTrue(
+                "Expected " + expected + ", got " + gridSubsetExtent,
                 expected.equals(gridSubsetExtent, threshold));
     }
 
     @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void testGetFeatureInfo() throws Exception {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -469,7 +538,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) anyObject()))
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) any()))
                 .thenReturn(mockResult);
 
         Resource result = layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
@@ -493,10 +562,10 @@ public class GeoServerTileLayerTest {
         assertEquals("50", capturedParams.get("X"));
         assertEquals("50", capturedParams.get("Y"));
 
-        verify(mockGWC, times(1)).dispatchOwsRequest((Map) anyObject(), (Cookie[]) anyObject());
+        verify(mockGWC, times(1)).dispatchOwsRequest((Map) any(), (Cookie[]) any());
 
-        when(mockGWC.dispatchOwsRequest((Map) anyObject(), (Cookie[]) anyObject())).thenThrow(
-                new RuntimeException("mock exception"));
+        when(mockGWC.dispatchOwsRequest((Map) any(), (Cookie[]) any()))
+                .thenThrow(new RuntimeException("mock exception"));
         try {
             layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
             fail("Expected GeoWebCacheException");
@@ -515,8 +584,9 @@ public class GeoServerTileLayerTest {
         MockHttpServletRequest servletReq = new MockHttpServletRequest();
         HttpServletResponse servletResp = new MockHttpServletResponse();
 
-        ConveyorTile tile = new ConveyorTile(storageBroker, layerInfoTileLayer.getName(),
-                servletReq, servletResp);
+        ConveyorTile tile =
+                new ConveyorTile(
+                        storageBroker, layerInfoTileLayer.getName(), servletReq, servletResp);
         tile.setMimeType(MimeType.createFromFormat("image/gif"));
         try {
             layerInfoTileLayer.getTile(tile);
@@ -534,12 +604,20 @@ public class GeoServerTileLayerTest {
             assertTrue(e.getMessage().contains("gridset not found"));
         }
         // layer bounds (in WGS84) is -180, -90, 0, 0
-        long[][] outsideTiles = { { 0, 1, 1 }, { 1, 1, 1 }, { 1, 0, 1 } };
+        long[][] outsideTiles = {{0, 1, 1}, {1, 1, 1}, {1, 0, 1}};
 
         for (long[] tileIndex : outsideTiles) {
             MimeType mimeType = MimeType.createFromFormat("image/png");
-            tile = new ConveyorTile(storageBroker, layerInfoTileLayer.getName(), "EPSG:900913",
-                    tileIndex, mimeType, null, servletReq, servletResp);
+            tile =
+                    new ConveyorTile(
+                            storageBroker,
+                            layerInfoTileLayer.getName(),
+                            "EPSG:900913",
+                            tileIndex,
+                            mimeType,
+                            null,
+                            servletReq,
+                            servletResp);
             try {
                 layerInfoTileLayer.getTile(tile);
                 fail("Expected outside coverage exception");
@@ -550,34 +628,42 @@ public class GeoServerTileLayerTest {
     }
 
     @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void testGetTile() throws Exception {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) anyObject()))
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), (Cookie[]) any()))
                 .thenReturn(mockResult);
 
         BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
-        RenderedImageMap fakeDispatchedMap = new RenderedImageMap(new WMSMapContent(), image,
-                "image/png");
+        RenderedImageMap fakeDispatchedMap =
+                new RenderedImageMap(new WMSMapContent(), image, "image/png");
 
         RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);
         MimeType mimeType = MimeType.createFromFormat("image/png");
-        when(mockGWC.getResponseEncoder(eq(mimeType), (RenderedImageMap) anyObject())).thenReturn(
-                fakeResponseEncoder);
+        when(mockGWC.getResponseEncoder(eq(mimeType), (RenderedImageMap) any()))
+                .thenReturn(fakeResponseEncoder);
 
         StorageBroker storageBroker = mock(StorageBroker.class);
-        when(storageBroker.get((TileObject) anyObject())).thenReturn(false);
+        when(storageBroker.get((TileObject) any())).thenReturn(false);
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
 
         MockHttpServletRequest servletReq = new MockHttpServletRequest();
         HttpServletResponse servletResp = new MockHttpServletResponse();
-        long[] tileIndex = { 0, 0, 0 };
+        long[] tileIndex = {0, 0, 0};
 
-        ConveyorTile tile = new ConveyorTile(storageBroker, layerInfoTileLayer.getName(),
-                "EPSG:4326", tileIndex, mimeType, null, servletReq, servletResp);
+        ConveyorTile tile =
+                new ConveyorTile(
+                        storageBroker,
+                        layerInfoTileLayer.getName(),
+                        "EPSG:4326",
+                        tileIndex,
+                        mimeType,
+                        null,
+                        servletReq,
+                        servletResp);
 
         GeoServerTileLayer.WEB_MAP.set(fakeDispatchedMap);
         ConveyorTile returned = layerInfoTileLayer.getTile(tile);
@@ -586,7 +672,7 @@ public class GeoServerTileLayerTest {
         assertEquals(CacheResult.MISS, returned.getCacheResult());
         assertEquals(200, returned.getStatus());
 
-        verify(storageBroker, atLeastOnce()).get((TileObject) anyObject());
+        verify(storageBroker, atLeastOnce()).get((TileObject) any());
         verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
     }
 
@@ -604,26 +690,25 @@ public class GeoServerTileLayerTest {
         assertEquals(1, mimeTypes.size());
         assertEquals(MimeType.createFromFormat("image/gif"), mimeTypes.get(0));
     }
-    
+
     @Test
     public void testTileExpirationList() {
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
-        
+
         List<ExpirationRule> list = new ArrayList<ExpirationRule>();
         list.add(new ExpirationRule(0, 10));
-        list.add(new ExpirationRule(10,20));
-        
+        list.add(new ExpirationRule(10, 20));
+
         layerInfoTileLayer.getInfo().setExpireCacheList(list);
-        
-     
+
         assertEquals(10, layerInfoTileLayer.getExpireCache(0));
         assertEquals(10, layerInfoTileLayer.getExpireCache(9));
         assertEquals(20, layerInfoTileLayer.getExpireCache(10));
         assertEquals(20, layerInfoTileLayer.getExpireCache(15));
-        
+
         assertEquals(0, layerInfoTileLayer.getExpireCache(-1));
     }
-    
+
     @Test
     public void testCacheExpiration() {
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -651,16 +736,15 @@ public class GeoServerTileLayerTest {
         // Checking that the getLayerInfo and getLayerGroupInfo methods
         // returns a not null object
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
-        assertNotNull(layerInfoTileLayer.getLayerInfo());
-        assertNull(layerInfoTileLayer.getLayerGroupInfo());
-        
+        assertThat(layerInfoTileLayer.getPublishedInfo(), instanceOf(LayerInfo.class));
+
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
-        assertNull(layerGroupInfoTileLayer.getLayerInfo());
-        assertNotNull(layerGroupInfoTileLayer.getLayerGroupInfo());
+        assertThat(layerGroupInfoTileLayer.getPublishedInfo(), instanceOf(LayerGroupInfo.class));
     }
 
     @Test
-    public void testGetLayerNameForGetCapabilitiesRequest() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetLayerNameForGetCapabilitiesRequest()
+            throws NoSuchFieldException, IllegalAccessException {
         // workspace namespace
         NamespaceInfo nameSpaceA = new NamespaceInfoImpl();
         nameSpaceA.setPrefix("workspace-a");
@@ -689,7 +773,8 @@ public class GeoServerTileLayerTest {
         when(catalog.getLayerGroup("layer-group-a")).thenReturn(layerGroupA);
         // creating the tiled layers
         GeoServerTileLayer tileLayerA = new GeoServerTileLayer(layerA, defaults, gridSetBroker);
-        GeoServerTileLayer tileLayerB = new GeoServerTileLayer(layerGroupA, defaults, gridSetBroker);
+        GeoServerTileLayer tileLayerB =
+                new GeoServerTileLayer(layerGroupA, defaults, gridSetBroker);
         // setting the catalog in both tile layers using reflection
         Field catalogField = GeoServerTileLayer.class.getDeclaredField("catalog");
         catalogField.setAccessible(true);
@@ -744,7 +829,9 @@ public class GeoServerTileLayerTest {
         assertThat(metadata.size(), is(1));
         assertThat(metadata.get(0).getType(), is("metadata-type"));
         assertThat(metadata.get(0).getFormat(), is("metadata-format"));
-        assertThat(metadata.get(0).getUrl(), is(new URL("http://localhost:8080/geoserver/metadata-content")));
+        assertThat(
+                metadata.get(0).getUrl(),
+                is(new URL("http://localhost:8080/geoserver/metadata-content")));
     }
 
     @Test
@@ -756,42 +843,54 @@ public class GeoServerTileLayerTest {
         assertThat(metadata.size(), is(1));
         assertThat(metadata.get(0).getType(), is("metadata-type"));
         assertThat(metadata.get(0).getFormat(), is("metadata-format"));
-        assertThat(metadata.get(0).getUrl(), is(new URL("http://localhost:8080/geoserver/metadata-content")));
+        assertThat(
+                metadata.get(0).getUrl(),
+                is(new URL("http://localhost:8080/geoserver/metadata-content")));
     }
 
     @Test
     public void testGetLegendsLayer() throws Exception {
         setupUrlContext();
         LegendSample legendSample = mock(LegendSample.class);
-        when(legendSample.getLegendURLSize(any(StyleInfo.class))).thenReturn(new Dimension(120, 150));
+        when(legendSample.getLegendURLSize(any(StyleInfo.class)))
+                .thenReturn(new Dimension(120, 150));
         WMS wms = mock(WMS.class);
         GetLegendGraphicOutputFormat outputFormat = mock(GetLegendGraphicOutputFormat.class);
         when(wms.getLegendGraphicOutputFormat("image/png")).thenReturn(outputFormat);
         GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         tileLayer.setLegendSample(legendSample);
         tileLayer.setWms(wms);
-        Map<String, TileLayer.LegendInfo> legendsInfo = tileLayer.getLegendsInfo();
+        Map<String, org.geowebcache.config.legends.LegendInfo> legendsInfo =
+                tileLayer.getLayerLegendsInfo();
         assertThat(legendsInfo.size(), is(3));
         // default_style
         assertThat(legendsInfo.get("default_style"), notNullValue());
-        assertThat(legendsInfo.get("default_style").width, is(120));
-        assertThat(legendsInfo.get("default_style").height, is(150));
-        assertThat(legendsInfo.get("default_style").format, is("image/png"));
-        assertThat(legendsInfo.get("default_style").legendUrl, is("http://localhost:8080/geoserver/ows?service=" +
-                "WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName"));
+        assertThat(legendsInfo.get("default_style").getWidth(), is(120));
+        assertThat(legendsInfo.get("default_style").getHeight(), is(150));
+        assertThat(legendsInfo.get("default_style").getFormat(), is("image/png"));
+        assertThat(
+                legendsInfo.get("default_style").getLegendUrl(),
+                is(
+                        "http://localhost:8080/geoserver/ows?service="
+                                + "WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName"));
         // alternateStyle-1
         assertThat(legendsInfo.get("alternateStyle-1"), notNullValue());
-        assertThat(legendsInfo.get("alternateStyle-1").width, is(120));
-        assertThat(legendsInfo.get("alternateStyle-1").height, is(150));
-        assertThat(legendsInfo.get("alternateStyle-1").format, is("image/png"));
-        assertThat(legendsInfo.get("alternateStyle-1").legendUrl, is("http://localhost:8080/geoserver/ows?service" +
-                "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
+        assertThat(legendsInfo.get("alternateStyle-1").getWidth(), is(120));
+        assertThat(legendsInfo.get("alternateStyle-1").getHeight(), is(150));
+        assertThat(legendsInfo.get("alternateStyle-1").getFormat(), is("image/png"));
+        assertThat(
+                legendsInfo.get("alternateStyle-1").getLegendUrl(),
+                is(
+                        "http://localhost:8080/geoserver/ows?service"
+                                + "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
         // alternateStyle-2
         assertThat(legendsInfo.get("alternateStyle-2"), notNullValue());
-        assertThat(legendsInfo.get("alternateStyle-2").width, is(150));
-        assertThat(legendsInfo.get("alternateStyle-2").height, is(200));
-        assertThat(legendsInfo.get("alternateStyle-2").format, is("image/png"));
-        assertThat(legendsInfo.get("alternateStyle-2").legendUrl.trim(), is("http://localhost:8080/geoserver/some-url"));
+        assertThat(legendsInfo.get("alternateStyle-2").getWidth(), is(150));
+        assertThat(legendsInfo.get("alternateStyle-2").getHeight(), is(200));
+        assertThat(legendsInfo.get("alternateStyle-2").getFormat(), is("image/png"));
+        assertThat(
+                legendsInfo.get("alternateStyle-2").getLegendUrl().trim(),
+                is("http://localhost:8080/geoserver/some-url"));
     }
 
     private void setupUrlContext() {

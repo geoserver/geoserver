@@ -33,7 +33,10 @@ public class RemoteEditPanel extends Panel {
 
     PasswordTextField password;
 
-    RemoteEditPanel(String id, IModel<RemoteInfo> model, final ModalWindow parentWindow,
+    RemoteEditPanel(
+            String id,
+            IModel<RemoteInfo> model,
+            final ModalWindow parentWindow,
             final RemotesListPanel table) {
         super(id, model);
 
@@ -44,26 +47,40 @@ public class RemoteEditPanel extends Panel {
         feedback.setOutputMarkupId(true);
         form.add(feedback);
 
-        final boolean isNew = model.getObject().getId() == null;
+        boolean isNew = true;
+        for (RemoteInfo config : table.getRemotes()) {
+            if (config.equals(model.getObject())) {
+                isNew = false;
+                break;
+            }
+        }
+        final boolean isInTable = !isNew;
         name = new TextField<>("name", new PropertyModel<>(model, "name"));
         name.setRequired(true);
         name.add(new PatternValidator("[^\\s]+"));
-        name.add(new IValidator<String>() {
-            private static final long serialVersionUID = 2927770353770055054L;
+        name.add(
+                new IValidator<String>() {
+                    private static final long serialVersionUID = 2927770353770055054L;
 
-            final String previousName = isNew ? null : form.getModelObject().getName();
+                    final String previousName = isInTable ? form.getModelObject().getName() : null;
 
-            @Override
-            public void validate(IValidatable<String> validatable) {
-                String name = validatable.getValue();
-                for (RemoteInfo ri : table.getRemotes()) {
-                    String newName = ri.getName();
-                    if (newName != null && !newName.equals(previousName) && newName.equals(name)) {
-                        form.error(String.format("A remote named %s already exists", name));
+                    @Override
+                    public void validate(IValidatable<String> validatable) {
+                        String name = validatable.getValue();
+                        for (RemoteInfo ri : table.getRemotes()) {
+                            if (!ri.equals(model.getObject())) {
+                                String newName = ri.getName();
+                                if (newName != null
+                                        && !newName.equals(previousName)
+                                        && newName.equals(name)) {
+                                    form.error(
+                                            String.format(
+                                                    "A remote named %s already exists", name));
+                                }
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
 
         url = new TextField<>("url", new PropertyModel<>(model, "URL"));
         url.setRequired(true);
@@ -79,35 +96,35 @@ public class RemoteEditPanel extends Panel {
         form.add(user);
         form.add(password);
 
-        form.add(new AjaxSubmitLink("submit", form) {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxSubmitLink("submit", form) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedback);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        target.add(feedback);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                RemoteInfo newRemote = (RemoteInfo) form.getModelObject();
-                boolean isNew = newRemote.getId() == null;
-                if (isNew) {
-                    table.add(newRemote);
-                }
-                parentWindow.close(target);
-                target.add(table);
-            }
-        });
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        RemoteInfo newRemote = (RemoteInfo) form.getModelObject();
+                        if (!isInTable) {
+                            table.add(newRemote);
+                        }
+                        parentWindow.close(target);
+                        target.add(table);
+                    }
+                });
 
-        form.add(new AjaxLink<Void>("cancel") {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                parentWindow.close(target);
-                target.add(table);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        parentWindow.close(target);
+                        target.add(table);
+                    }
+                });
     }
-
 }

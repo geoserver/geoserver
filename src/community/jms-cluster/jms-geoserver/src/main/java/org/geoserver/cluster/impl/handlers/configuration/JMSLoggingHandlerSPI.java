@@ -5,13 +5,12 @@
  */
 package org.geoserver.cluster.impl.handlers.configuration;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.LoggingInfo;
-
-import com.thoughtworks.xstream.XStream;
 
 public class JMSLoggingHandlerSPI extends JMSEventHandlerSPI<String, LoggingInfo> {
 
@@ -21,7 +20,10 @@ public class JMSLoggingHandlerSPI extends JMSEventHandlerSPI<String, LoggingInfo
 
     final ToggleSwitch producer;
 
-    public JMSLoggingHandlerSPI(final int priority, final GeoServer geo, final XStream xstream,
+    public JMSLoggingHandlerSPI(
+            final int priority,
+            final GeoServer geo,
+            final XStream xstream,
             final ToggleSwitch producer) {
         super(priority);
         this.geoserver = geo;
@@ -31,15 +33,12 @@ public class JMSLoggingHandlerSPI extends JMSEventHandlerSPI<String, LoggingInfo
 
     @Override
     public boolean canHandle(final Object event) {
-        if (event instanceof LoggingInfo)
-            return true;
-        else
-            return false;
+        if (event instanceof LoggingInfo) return true;
+        else return false;
     }
 
     @Override
     public JMSEventHandler<String, LoggingInfo> createHandler() {
         return new JMSLoggingHandler(geoserver, xstream, this.getClass(), producer);
     }
-
 }

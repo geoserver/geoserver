@@ -103,6 +103,7 @@ It displays the US States layer, with a labelled red box surrounding the Pacific
 
    <sld:StyledLayerDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+      xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:ogc="http://www.opengis.net/ogc"
       xmlns:sld="http://www.opengis.net/sld" version="1.0.0">
       <sld:NamedLayer>
          <sld:Name>usa:states</sld:Name>

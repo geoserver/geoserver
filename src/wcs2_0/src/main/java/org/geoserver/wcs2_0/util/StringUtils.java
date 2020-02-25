@@ -8,10 +8,7 @@ package org.geoserver.wcs2_0.util;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- *
- * @author Emanuele Tajariol (etj at geo-solutions.it)
- */
+/** @author Emanuele Tajariol (etj at geo-solutions.it) */
 public class StringUtils {
 
     public static String merge(List<String> list) {
@@ -20,10 +17,10 @@ public class StringUtils {
 
     public static String merge(List<String> list, String separator) {
         StringBuilder sb = new StringBuilder();
-        for (Iterator<String> it = list.iterator(); it.hasNext();) {
+        for (Iterator<String> it = list.iterator(); it.hasNext(); ) {
             String string = it.next();
             sb.append(string);
-            if(it.hasNext()) {
+            if (it.hasNext()) {
                 sb.append(separator);
             }
         }

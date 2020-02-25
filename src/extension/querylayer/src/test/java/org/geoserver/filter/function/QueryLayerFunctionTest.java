@@ -8,7 +8,6 @@ package org.geoserver.filter.function;
 import static org.junit.Assert.*;
 
 import java.util.Collection;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
@@ -22,47 +21,53 @@ public class QueryLayerFunctionTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testQuerySingle() {
-        Function function = ff.function("querySingle", // 
-                ff.literal(getLayerId(MockData.BUILDINGS)), // 
-                ff.literal("ADDRESS"), //
-                ff.literal("FID = '113'"));
-        
+        Function function =
+                ff.function(
+                        "querySingle", //
+                        ff.literal(getLayerId(MockData.BUILDINGS)), //
+                        ff.literal("ADDRESS"), //
+                        ff.literal("FID = '113'"));
+
         assertTrue(function instanceof QueryFunction);
         String result = (String) function.evaluate(null);
         assertEquals("123 Main Street", result);
     }
-    
+
     @Test
     public void testQueryCollection() {
-        Function function = ff.function("queryCollection", // 
-                ff.literal(getLayerId(MockData.BUILDINGS)), // 
-                ff.literal("ADDRESS"), //
-                ff.literal("INCLUDE"));
-        
+        Function function =
+                ff.function(
+                        "queryCollection", //
+                        ff.literal(getLayerId(MockData.BUILDINGS)), //
+                        ff.literal("ADDRESS"), //
+                        ff.literal("INCLUDE"));
+
         assertTrue(function instanceof QueryFunction);
         Collection result = (Collection) function.evaluate(null);
         assertEquals(2, result.size());
         assertTrue(result.contains("123 Main Street"));
         assertTrue(result.contains("215 Main Street"));
     }
-    
+
     @Test
     public void testQueryTooMany() throws Exception {
         try {
             // force the reload, otherwise the changed properties won't be noticed
             System.setProperty("QUERY_LAYER_MAX_FEATURES", "3");
             getGeoServer().reload();
-            
-            Function function = ff.function("queryCollection", // 
-                    ff.literal(getLayerId(MockData.ROAD_SEGMENTS)), // 
-                    ff.literal("the_geom"), //
-                    ff.literal("INCLUDE"));
-            
+
+            Function function =
+                    ff.function(
+                            "queryCollection", //
+                            ff.literal(getLayerId(MockData.ROAD_SEGMENTS)), //
+                            ff.literal("the_geom"), //
+                            ff.literal("INCLUDE"));
+
             assertTrue(function instanceof QueryFunction);
             try {
                 function.evaluate(null);
                 fail("Should have failed with an exception");
-            } catch(IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 // fine
             }
         } finally {

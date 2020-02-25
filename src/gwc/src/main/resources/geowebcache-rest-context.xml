@@ -1,118 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-  <description>
-    Bean configuration file for the gwc-rest module
-  </description>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
-  <!-- Restlets -->
-  <bean id="gwcSeedRestlet" class="org.geowebcache.rest.seed.SeedRestlet">
-    <property name="xmlConfig" ref="gwcXmlConfig"/>
-    <property name="tileBreeder" ref="gwcTileBreeder"/>
-  </bean>
-  <bean id="gwcMassTruncateRestlet" class="org.geowebcache.rest.seed.MassTruncateRestlet">
-    <property name="xmlConfig" ref="gwcXmlConfig"/>
-    <property name="storageBroker" ref="gwcStorageBroker"/>
-  </bean>
-  
-  <bean id="gwcSeedFormRestlet" class="org.geowebcache.rest.seed.SeedFormRestlet">
-    <property name="tileBreeder" ref="gwcTileBreeder"/>
-  </bean>
-  <bean id="gwcReloadRestlet" class="org.geowebcache.rest.reload.ReloadRestlet">
-    <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
-  </bean>
-  <bean id="gwcTileLayerRestlet" class="org.geowebcache.rest.layers.TileLayerRestlet">
-    <property name="XMLConfiguration" ref="gwcXmlConfig"/>
-    <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
-    <property name="urlMangler" ref="gwcURLMangler"/>
-    <property name="controller" ref="geowebcacheDispatcher"/>
-    <property name="storageBroker" ref="gwcStorageBroker"/>
-  </bean>
-  <bean id="gwcBoundsRestlet" class="org.geowebcache.rest.bounds.BoundsRestlet">
-    <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
-  </bean>
-  <bean id="gwcFilterUpdateRestlet" class="org.geowebcache.rest.filter.FilterUpdateRestlet">
-    <constructor-arg  ref="gwcTLDispatcher"/>
-  </bean>
-  <bean id="gwcByteStreamerRestlet" class="org.geowebcache.rest.webresources.ByteStreamerRestlet" />
-
-  <!-- REST Dispatcher. Differs from the standalone version in that the entries have the /rest prefix -->
-   <bean id="gwcRestMappings" class="org.geowebcache.rest.RESTMapping">
-    <property name="routes">
-      <map>
-      	<entry>
-          <key><value>/rest/masstruncate</value></key>
-          <ref bean="gwcMassTruncateRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/seed/{layer}.{extension}</value></key>
-          <ref bean="gwcSeedRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/seed.json</value></key>
-          <ref bean="gwcSeedRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/seed/{layer}</value></key>
-          <ref bean="gwcSeedFormRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/seed</value></key>
-          <ref bean="gwcSeedFormRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/reload</value></key>
-          <ref bean="gwcReloadRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/layers/{layer}.{extension}</value></key>
-          <ref bean="gwcTileLayerRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/layers.{extension}</value></key>
-          <ref bean="gwcTileLayerRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/layers</value></key>
-          <ref bean="gwcTileLayerRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/bounds/{layer}/{srs}/{type}</value></key>
-          <ref bean="gwcBoundsRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/filter/{filterName}/update/{updateType}</value></key>
-          <ref bean="gwcFilterUpdateRestlet" />
-        </entry>
-        <entry>
-          <key><value>/rest/web/{filename}</value></key>
-          <ref bean="gwcByteStreamerRestlet" />
-        </entry>
-        <entry>
-          <key><value>/statistics.{extension}</value></key>
-          <ref bean="gwcMemoryStatsResourceFinder" />
-        </entry>
-      </map>
-    </property>
+  <!-- Used by org.geoserver.rest.RestConfiguration when setting up converters -->
+  <bean id="gwcConverter" class="org.geowebcache.rest.converter.GWCConverter">
+    <constructor-arg ref="gwcAppCtx" />
   </bean>
 
-  <bean id="gwcRestDispatcher" class="org.geowebcache.rest.RESTDispatcher"/>
-
-  <!--
-    This mappings are different from the standalone gwc ones in that they prepend the /gwc prefix to the context so it
-    ends up being, for example, /geoserver/gwc/*
-  -->
-  <bean id="gwcRESTUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="alwaysUseFullPath" value="true"/>
-    <property name="mappings">
-      <props> 
-        <prop key="/gwc/rest/**">gwcRestDispatcher</prop>        
-      </props>
-    </property>
-  </bean>
-  
-      <bean id="gwcMemoryStatsResourceFinder" class="org.geowebcache.rest.statistics.MemoryCacheStatsFinder">
-    <constructor-arg ref="gwcStorageBroker" />
-  </bean>
+  <context:component-scan base-package="org.geowebcache.rest, org.geowebcache.diskquota.rest.controller, org.geowebcache.service.wmts" />
 
 </beans>

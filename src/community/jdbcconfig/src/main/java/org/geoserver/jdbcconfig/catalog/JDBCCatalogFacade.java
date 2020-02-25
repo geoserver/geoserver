@@ -11,21 +11,23 @@ import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.isNull;
 
+import com.google.common.base.Preconditions;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LockingCatalogFacade;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -35,22 +37,21 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ClassMappings;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.Utilities;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Preconditions;
-
-/**
- * @author groldan
- * 
- */
+/** @author groldan */
 @ParametersAreNonnullByDefault
 public class JDBCCatalogFacade implements CatalogFacade {
+
+    public static final Logger LOGGER = Logging.getLogger(JDBCCatalogFacade.class);
 
     private final ConfigDatabase db;
 
@@ -62,66 +63,50 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getCatalog()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getCatalog() */
     @Override
     public Catalog getCatalog() {
         return this.db.getCatalog();
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#setCatalog(org.geoserver.catalog.Catalog)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#setCatalog(org.geoserver.catalog.Catalog) */
     @Override
     public void setCatalog(final Catalog catalog) {
         Preconditions.checkArgument(catalog instanceof CatalogImpl);
         this.db.setCatalog((CatalogImpl) catalog);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.StoreInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.StoreInfo) */
     @Override
     public StoreInfo add(StoreInfo store) {
         return addInternal(store);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.StoreInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.StoreInfo) */
     @Override
     public void remove(StoreInfo store) {
         db.remove(store);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.StoreInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.StoreInfo) */
     @Override
     public void save(StoreInfo store) {
         saveInternal(store, StoreInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.StoreInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.StoreInfo) */
     @Override
     public <T extends StoreInfo> T detach(T store) {
         return store;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.ResourceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.ResourceInfo) */
     @Override
     public <T extends ResourceInfo> T detach(T resource) {
         return resource;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getStore(java.lang.String, java.lang.Class)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getStore(java.lang.String, java.lang.Class) */
     @Override
     public <T extends StoreInfo> T getStore(String id, Class<T> clazz) {
         return db.getById(id, clazz);
@@ -129,34 +114,26 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     /**
      * @see org.geoserver.catalog.CatalogFacade#getStoreByName(org.geoserver.catalog.WorkspaceInfo,
-     *      java.lang.String, java.lang.Class)
+     *     java.lang.String, java.lang.Class)
      */
     @Override
-    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name,
-            Class<T> clazz) {
-
-        Filter filter = equal("name", name);
-        if (null != workspace && ANY_WORKSPACE != workspace) {
-            Filter wsFilter = equal("workspace.id", workspace.getId());
-            filter = and(filter, wsFilter);
+    public <T extends StoreInfo> T getStoreByName(
+            WorkspaceInfo workspace, String name, Class<T> clazz) {
+        if (workspace == null || workspace == ANY_WORKSPACE) {
+            return db.getByIdentity(clazz, "name", name);
+        } else {
+            return db.getByIdentity(clazz, "workspace.id", workspace.getId(), "name", name);
         }
-
-        T store;
-        try {
-            store = findUnique(clazz, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-        return store;
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getStoresByWorkspace(org.geoserver.catalog.WorkspaceInfo,
-     *      java.lang.Class)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#getStoresByWorkspace(org.geoserver.catalog.WorkspaceInfo,
+     *     java.lang.Class)
      */
     @Override
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace,
-            Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(
+            WorkspaceInfo workspace, Class<T> clazz) {
 
         Filter filter = acceptAll();
         if (null != workspace && ANY_WORKSPACE != workspace) {
@@ -168,16 +145,15 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return list;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getStores(java.lang.Class)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getStores(java.lang.Class) */
     @Override
     public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
         return db.getAll(clazz);
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getDefaultDataStore(org.geoserver.catalog.WorkspaceInfo)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#getDefaultDataStore(org.geoserver.catalog.WorkspaceInfo)
      */
     @Override
     public DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace) {
@@ -186,8 +162,9 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#setDefaultDataStore(org.geoserver.catalog.WorkspaceInfo,
-     *      org.geoserver.catalog.DataStoreInfo)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#setDefaultDataStore(org.geoserver.catalog.WorkspaceInfo,
+     *     org.geoserver.catalog.DataStoreInfo)
      */
     @Override
     public void setDefaultDataStore(WorkspaceInfo workspace, @Nullable DataStoreInfo store) {
@@ -197,86 +174,81 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         DataStoreInfo old = getDefaultDataStore(workspace);
 
-        db.setDefault(target, id);
-
-        // fire change event
+        // fire modify event before change
         if (!Utilities.equals(old, workspace)) {
             Catalog catalog = getCatalog();
-            catalog.fireModified(catalog, Arrays.asList("defaultDataStore"), Arrays.asList(old),
+            catalog.fireModified(
+                    catalog,
+                    Arrays.asList("defaultDataStore"),
+                    Arrays.asList(old),
+                    Arrays.asList(store));
+        }
+        db.setDefault(target, id);
+
+        // fire postmodify event after change
+        if (!Utilities.equals(old, workspace)) {
+            Catalog catalog = getCatalog();
+            catalog.firePostModified(
+                    catalog,
+                    Arrays.asList("defaultDataStore"),
+                    Arrays.asList(old),
                     Arrays.asList(store));
         }
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.ResourceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.ResourceInfo) */
     @Override
     public ResourceInfo add(ResourceInfo resource) {
         return addInternal(resource);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.ResourceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.ResourceInfo) */
     @Override
     public void remove(ResourceInfo resource) {
         db.remove(resource);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.ResourceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.ResourceInfo) */
     @Override
     public void save(ResourceInfo resource) {
         saveInternal(resource, ResourceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getResource(java.lang.String, java.lang.Class)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getResource(java.lang.String, java.lang.Class) */
     @Override
     public <T extends ResourceInfo> T getResource(String id, Class<T> clazz) {
         return db.getById(id, clazz);
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getResourceByName(org.geoserver.catalog.NamespaceInfo,
-     *      java.lang.String, java.lang.Class)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#getResourceByName(org.geoserver.catalog.NamespaceInfo,
+     *     java.lang.String, java.lang.Class)
      */
     @Override
-    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo namespace, String name,
-            Class<T> clazz) {
-
-        Filter filter = equal("name", name);
-        if (null != namespace && ANY_NAMESPACE != namespace) {
-            Filter wsFilter = equal("namespace.id", namespace.getId());
-            filter = and(filter, wsFilter);
+    public <T extends ResourceInfo> T getResourceByName(
+            NamespaceInfo namespace, String name, Class<T> clazz) {
+        if (namespace == null || namespace == ANY_NAMESPACE) {
+            return db.getByIdentity(clazz, "name", name);
+        } else {
+            return db.getByIdentity(clazz, "namespace.id", namespace.getId(), "name", name);
         }
-
-        T resource;
-        try {
-            resource = findUnique(clazz, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-        return resource;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getResources(java.lang.Class)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getResources(java.lang.Class) */
     @Override
     public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
         return db.getAll(clazz);
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getResourcesByNamespace(org.geoserver.catalog.NamespaceInfo,
-     *      java.lang.Class)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#getResourcesByNamespace(org.geoserver.catalog.NamespaceInfo,
+     *     java.lang.Class)
      */
     @Override
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            NamespaceInfo namespace, Class<T> clazz) {
 
         Filter filter = acceptAll();
         if (null != namespace && ANY_NAMESPACE != namespace) {
@@ -288,11 +260,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     /**
      * @see org.geoserver.catalog.CatalogFacade#getResourceByStore(org.geoserver.catalog.StoreInfo,
-     *      java.lang.String, java.lang.Class)
+     *     java.lang.String, java.lang.Class)
      */
     @Override
-    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByStore(
+            StoreInfo store, String name, Class<T> clazz) {
 
         Filter filter = equal("name", name);
         Filter storeFilter = equal("store.id", store.getId());
@@ -309,7 +281,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     /**
      * @see org.geoserver.catalog.CatalogFacade#getResourcesByStore(org.geoserver.catalog.StoreInfo,
-     *      java.lang.Class)
+     *     java.lang.Class)
      */
     @Override
     public <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz) {
@@ -319,63 +291,50 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.queryAsList(clazz, filter, null, null, null);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.LayerInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.LayerInfo) */
     @Override
     public LayerInfo add(LayerInfo layer) {
         return addInternal(layer);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.LayerInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.LayerInfo) */
     @Override
     public void remove(LayerInfo layer) {
         db.remove(layer);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.LayerInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.LayerInfo) */
     @Override
     public void save(LayerInfo layer) {
         saveInternal(layer, LayerInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.LayerInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.LayerInfo) */
     @Override
     public LayerInfo detach(LayerInfo layer) {
         return layer;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayer(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayer(java.lang.String) */
     @Override
     public LayerInfo getLayer(String id) {
         return db.getById(id, LayerInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayerByName(java.lang.String)
-     */
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayerByName(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayerByName(java.lang.String) */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayerByName(java.lang.String) */
     @Override
     public LayerInfo getLayerByName(String name) {
-        return getByName(name, LayerInfo.class);
+        String resourceId = db.getIdByIdentity(ResourceInfo.class, "name", name);
+        if (resourceId == null) {
+            return null;
+        } else {
+            return db.getByIdentity(LayerInfo.class, "resource.id", resourceId);
+        }
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.ResourceInfo)
-     */
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.ResourceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.ResourceInfo) */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.ResourceInfo) */
     @Override
     public List<LayerInfo> getLayers(ResourceInfo resource) {
 
@@ -384,9 +343,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.queryAsList(LayerInfo.class, filter, null, null, null);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.StyleInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.StyleInfo) */
     @Override
     public List<LayerInfo> getLayers(StyleInfo style) {
 
@@ -398,168 +355,129 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.queryAsList(LayerInfo.class, filter, null, null, null);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayers()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayers() */
     @Override
     public List<LayerInfo> getLayers() {
         return db.getAll(LayerInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.MapInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.MapInfo) */
     @Override
     public MapInfo add(MapInfo map) {
         return addInternal(map);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.MapInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.MapInfo) */
     @Override
     public void remove(MapInfo map) {
         db.remove(map);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.MapInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.MapInfo) */
     @Override
     public void save(MapInfo map) {
         saveInternal(map, MapInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.MapInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.MapInfo) */
     @Override
     public MapInfo detach(MapInfo map) {
         return map;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getMap(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getMap(java.lang.String) */
     @Override
     public MapInfo getMap(String id) {
         return db.getById(id, MapInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getMapByName(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getMapByName(java.lang.String) */
     @Override
     public MapInfo getMapByName(String name) {
         return getByName(name, MapInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getMaps()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getMaps() */
     @Override
     public List<MapInfo> getMaps() {
         return db.getAll(MapInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.LayerGroupInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.LayerGroupInfo) */
     @Override
     public LayerGroupInfo add(LayerGroupInfo layerGroup) {
         return addInternal(layerGroup);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.LayerGroupInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.LayerGroupInfo) */
     @Override
     public void remove(LayerGroupInfo layerGroup) {
         db.remove(layerGroup);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.LayerGroupInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.LayerGroupInfo) */
     @Override
     public void save(LayerGroupInfo layerGroup) {
         saveInternal(layerGroup, LayerGroupInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.LayerGroupInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.LayerGroupInfo) */
     @Override
     public LayerGroupInfo detach(LayerGroupInfo layerGroup) {
         return layerGroup;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayerGroup(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayerGroup(java.lang.String) */
     @Override
     public LayerGroupInfo getLayerGroup(String id) {
         return db.getById(id, LayerGroupInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayerGroupByName(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayerGroupByName(java.lang.String) */
     @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
         return getByName(name, LayerGroupInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getLayerGroups()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getLayerGroups() */
     @Override
     public List<LayerGroupInfo> getLayerGroups() {
         return db.getAll(LayerGroupInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.NamespaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.NamespaceInfo) */
     @Override
     public NamespaceInfo add(NamespaceInfo namespace) {
         return addInternal(namespace);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.NamespaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.NamespaceInfo) */
     @Override
     public void remove(NamespaceInfo namespace) {
         db.remove(namespace);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.NamespaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.NamespaceInfo) */
     @Override
     public void save(NamespaceInfo namespace) {
         saveInternal(namespace, NamespaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.NamespaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.NamespaceInfo) */
     @Override
     public NamespaceInfo detach(NamespaceInfo namespace) {
         return namespace;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getDefaultNamespace()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getDefaultNamespace() */
     @Override
     public NamespaceInfo getDefaultNamespace() {
         return db.getDefault(NamespaceInfo.class.getSimpleName(), NamespaceInfo.class);
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#setDefaultNamespace(org.geoserver.catalog.NamespaceInfo)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#setDefaultNamespace(org.geoserver.catalog.NamespaceInfo)
      */
     @Override
     public void setDefaultNamespace(@Nullable NamespaceInfo defaultNamespace) {
@@ -568,101 +486,85 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         NamespaceInfo old = getDefaultNamespace();
 
+        if (!Utilities.equals(old, defaultNamespace)) {
+            // fire modify event before change
+            Catalog catalog = getCatalog();
+            catalog.fireModified(
+                    catalog,
+                    Arrays.asList("defaultNamespace"),
+                    Arrays.asList(old),
+                    Arrays.asList(defaultNamespace));
+        }
         db.setDefault(target, id);
 
         if (!Utilities.equals(old, defaultNamespace)) {
-            // fire change event
+            // fire postmodify event after change
             Catalog catalog = getCatalog();
-            catalog.fireModified(catalog, Arrays.asList("defaultNamespace"), Arrays.asList(old),
+            catalog.firePostModified(
+                    catalog,
+                    Arrays.asList("defaultNamespace"),
+                    Arrays.asList(old),
                     Arrays.asList(defaultNamespace));
         }
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getNamespace(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getNamespace(java.lang.String) */
     @Override
     public NamespaceInfo getNamespace(String id) {
         return db.getById(id, NamespaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getNamespaceByPrefix(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getNamespaceByPrefix(java.lang.String) */
     @Override
     public NamespaceInfo getNamespaceByPrefix(String prefix) {
-        Filter filter = equal("prefix", prefix);
-        try {
-            return findUnique(NamespaceInfo.class, filter);
-        } catch (IllegalArgumentException multipleResults) {
-            return null;
-        }
+        return db.getByIdentity(NamespaceInfo.class, "prefix", prefix);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getNamespaceByURI(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getNamespaceByURI(java.lang.String) */
     @Override
     public NamespaceInfo getNamespaceByURI(String uri) {
-
-        Filter filter = equal("URI", uri);
-        try {
-            return findUnique(NamespaceInfo.class, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return db.getByIdentity(NamespaceInfo.class, "URI", uri);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getNamespaces()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getNamespaces() */
     @Override
     public List<NamespaceInfo> getNamespaces() {
         return db.getAll(NamespaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.WorkspaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.WorkspaceInfo) */
     @Override
     public WorkspaceInfo add(WorkspaceInfo workspace) {
         return addInternal(workspace);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.WorkspaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.WorkspaceInfo) */
     @Override
     public void remove(WorkspaceInfo workspace) {
         db.remove(workspace);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.WorkspaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.WorkspaceInfo) */
     @Override
     public void save(WorkspaceInfo workspace) {
         saveInternal(workspace, WorkspaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.WorkspaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.WorkspaceInfo) */
     @Override
     public WorkspaceInfo detach(WorkspaceInfo workspace) {
         return workspace;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getDefaultWorkspace()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getDefaultWorkspace() */
     @Override
     public WorkspaceInfo getDefaultWorkspace() {
         return db.getDefault(WorkspaceInfo.class.getSimpleName(), WorkspaceInfo.class);
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#setDefaultWorkspace(org.geoserver.catalog.WorkspaceInfo)
+     * @see
+     *     org.geoserver.catalog.CatalogFacade#setDefaultWorkspace(org.geoserver.catalog.WorkspaceInfo)
      */
     @Override
     public void setDefaultWorkspace(@Nullable WorkspaceInfo workspace) {
@@ -671,109 +573,95 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         WorkspaceInfo old = getDefaultWorkspace();
 
+        if (!Utilities.equals(old, workspace)) {
+            // fire modify event before change
+            Catalog catalog = getCatalog();
+            catalog.fireModified(
+                    catalog,
+                    Arrays.asList("defaultWorkspace"),
+                    Arrays.asList(old),
+                    Arrays.asList(workspace));
+        }
         db.setDefault(type, id);
 
         if (!Utilities.equals(old, workspace)) {
-            // fire change event
+            // fire postmodify event after change
             Catalog catalog = getCatalog();
-            catalog.fireModified(catalog, Arrays.asList("defaultWorkspace"), Arrays.asList(old),
+            catalog.firePostModified(
+                    catalog,
+                    Arrays.asList("defaultWorkspace"),
+                    Arrays.asList(old),
                     Arrays.asList(workspace));
         }
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getWorkspace(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getWorkspace(java.lang.String) */
     @Override
     public WorkspaceInfo getWorkspace(String id) {
         return db.getById(id, WorkspaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getWorkspaceByName(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getWorkspaceByName(java.lang.String) */
     @Override
     public WorkspaceInfo getWorkspaceByName(String name) {
-        // if ("web".equals(name))
-        // return null;
         return getByName(name, WorkspaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getWorkspaces()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getWorkspaces() */
     @Override
     public List<WorkspaceInfo> getWorkspaces() {
         return db.getAll(WorkspaceInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.StyleInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#add(org.geoserver.catalog.StyleInfo) */
     @Override
     public StyleInfo add(StyleInfo style) {
         return addInternal(style);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.StyleInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#remove(org.geoserver.catalog.StyleInfo) */
     @Override
     public void remove(StyleInfo style) {
         db.remove(style);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.StyleInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.StyleInfo) */
     @Override
     public void save(StyleInfo style) {
         saveInternal(style, StyleInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.StyleInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#detach(org.geoserver.catalog.StyleInfo) */
     @Override
     public StyleInfo detach(StyleInfo style) {
         return style;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getStyle(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getStyle(java.lang.String) */
     @Override
     public StyleInfo getStyle(String id) {
         return db.getById(id, StyleInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getStyleByName(java.lang.String)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getStyleByName(java.lang.String) */
     @Override
     public StyleInfo getStyleByName(String name) {
         return getStyleByName(NO_WORKSPACE, name);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#getStyles()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getStyles() */
     @Override
     public List<StyleInfo> getStyles() {
         return db.getAll(StyleInfo.class);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#dispose()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#dispose() */
     @Override
     public void dispose() {
         db.dispose();
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#resolve()
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#resolve() */
     @Override
     public void resolve() {
         //
@@ -819,23 +707,17 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     @Override
     public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
-        checkNotNull(workspace,
+        checkNotNull(
+                workspace,
                 "workspace is null. Did you mean CatalogFacade.ANY_WORKSPACE or CatalogFacade.NO_WORKSPACE?");
         checkNotNull(name, "name");
 
-        Filter nameFilter = equal("name", name);
-        Filter wsFilter;
-        if (workspace == NO_WORKSPACE) {
-            wsFilter = isNull("workspace.id");
-        } else if (workspace == ANY_WORKSPACE) {
-            wsFilter = acceptAll();
+        if (workspace == ANY_WORKSPACE) {
+            return db.getByIdentity(StyleInfo.class, "name", name);
         } else {
-            wsFilter = equal("workspace.id", workspace.getId());
+            return db.getByIdentity(
+                    StyleInfo.class, "workspace.id", workspace.getId(), "name", name);
         }
-
-        Filter filter = and(nameFilter, wsFilter);
-        StyleInfo info = findUnique(StyleInfo.class, filter);
-        return info;
     }
 
     @Override
@@ -855,12 +737,10 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.queryAsList(StyleInfo.class, filter, null, null, null);
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#syncTo(org.geoserver.catalog.CatalogFacade)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#syncTo(org.geoserver.catalog.CatalogFacade) */
     @Override
     public void syncTo(CatalogFacade other) {
-
+        other = ProxyUtils.unwrap(other, LockingCatalogFacade.class);
         for (WorkspaceInfo w : getWorkspaces()) {
             other.add(w);
         }
@@ -901,14 +781,13 @@ public class JDBCCatalogFacade implements CatalogFacade {
                 other.setDefaultDataStore(ws, defaultDataStore);
             }
         }
-
     }
 
     private <T extends CatalogInfo> T findUnique(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 
         final Integer count = Integer.valueOf(2);
-        CloseableIterator<T> it = list(type, filter, null, count, (SortBy[])null);
+        CloseableIterator<T> it = list(type, filter, null, count);
         T result = null;
         try {
             if (it.hasNext()) {
@@ -926,7 +805,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     /**
      * @see org.geoserver.catalog.CatalogFacade#count(java.lang.Class,
-     *      org.geoserver.catalog.Predicate)
+     *     org.geoserver.catalog.Predicate)
      */
     @Override
     public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
@@ -939,52 +818,52 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return canSort;
     }
 
-    @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of,
-            Filter filter, Integer offset, Integer count, SortBy sortOrder) {
-        return list(of, filter, offset, count, sortOrder != null ? new SortBy[]{sortOrder}:null);
-    }
-
     /**
      * @see org.geoserver.catalog.CatalogFacade#list(java.lang.Class,
-     *      org.geoserver.catalog.Predicate, java.lang.Integer, java.lang.Integer)
+     *     org.geoserver.catalog.Predicate, java.lang.Integer, java.lang.Integer)
      */
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
-            final Filter filter, @Nullable final Integer offset, @Nullable final Integer count,
+    public <T extends CatalogInfo> CloseableIterator<T> list(
+            final Class<T> of,
+            final Filter filter,
+            @Nullable final Integer offset,
+            @Nullable final Integer count,
             @Nullable final SortBy... sortBy) {
 
-        if(sortBy!=null) {
-            for(SortBy sortOrder: sortBy){
+        if (sortBy != null) {
+            for (SortBy sortOrder : sortBy) {
                 Preconditions.checkArgument(
-                        null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
-                        "Can't sort objects of type %s by %s", of, sortOrder);
+                        null == sortOrder
+                                || canSort(of, sortOrder.getPropertyName().getPropertyName()),
+                        "Can't sort objects of type %s by %s",
+                        of,
+                        sortOrder);
             }
         }
         return db.query(of, filter, offset, count, sortBy);
-
     }
 
     public <T extends CatalogInfo> void saveInternal(T info, Class<T> type) {
         Assert.notNull(info);
         Assert.notNull(info.getId(), "Can't modify a CatalogInfo with no id");
 
-        beforeSaved(info);
-        commitProxy(info);
-        afterSaved(info);
-    }
-
-    protected void beforeSaved(CatalogInfo object) {
         // this object is a proxy
-        ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(object);
-
-        // get the real object
-        CatalogInfo real = (CatalogInfo) h.getProxyObject();
+        ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(info);
 
         // fire out what changed
         List<String> propertyNames = h.getPropertyNames();
         List<Object> newValues = h.getNewValues();
         List<Object> oldValues = h.getOldValues();
+
+        beforeSaved(info, propertyNames, oldValues, newValues);
+        commitProxy(info);
+        afterSaved(info, propertyNames, oldValues, newValues);
+    }
+
+    protected void beforeSaved(
+            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+        // get the real object
+        CatalogInfo real = ModificationProxy.unwrap(object);
 
         // TODO: protect this original object, perhaps with another proxy
         getCatalog().fireModified(real, propertyNames, oldValues, newValues);
@@ -993,31 +872,28 @@ public class JDBCCatalogFacade implements CatalogFacade {
     protected <T extends CatalogInfo> T commitProxy(T object) {
 
         // get the real object
-        T real = db.save(object);
-
-        return real;
-    }
-
-    protected void afterSaved(CatalogInfo object) {
-        CatalogInfo real = ModificationProxy.unwrap(object);
-
-        // fire the post modify event
-        getCatalog().firePostModified(real);
-    }
-
-    private <T extends CatalogInfo> T getByName(final String name, final Class<T> clazz) {
-
-        Filter filter = equal("name", name);
-
         try {
-            return findUnique(clazz, filter);
-        } catch (IllegalArgumentException multipleResults) {
+            return db.save(object);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to save object " + object.getId(), e);
             return null;
         }
     }
 
+    protected void afterSaved(
+            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+        CatalogInfo real = ModificationProxy.unwrap(object);
+
+        // fire the post modify event
+        getCatalog().firePostModified(real, propertyNames, oldValues, newValues);
+    }
+
+    private <T extends CatalogInfo> T getByName(final String name, final Class<T> clazz) {
+        return db.getByIdentity(clazz, "name", name);
+    }
+
     private <T extends CatalogInfo> T addInternal(T info) {
-        Assert.notNull(info);
+        Assert.notNull(info, "Info object cannot be null");
 
         Class<T> clazz = ClassMappings.fromImpl(info.getClass()).getInterface();
 
@@ -1050,5 +926,4 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         OwsUtils.set(info, "id", id);
     }
-
 }

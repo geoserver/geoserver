@@ -4,42 +4,30 @@
  */
 package org.geoserver.security.config;
 
-
 /**
  * {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter} configuration object.
- * 
+ *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
- *
  */
-public class CredentialsFromRequestHeaderFilterConfig extends
-        SecurityFilterConfig implements SecurityAuthFilterConfig {
+public class CredentialsFromRequestHeaderFilterConfig extends SecurityFilterConfig
+        implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The header that contains the username
-     */
+    /** The header that contains the username */
     private String userNameHeaderName = "X-Credentials";
 
-    /**
-     * The header that contains the password
-     */
+    /** The header that contains the password */
     private String passwordHeaderName = "X-Credentials";
 
-    /**
-     * The regex to parse the username in the header
-     */
+    /** The regex to parse the username in the header */
     private String userNameRegex = "private-user=([^&]*)";
 
-    /**
-     * The regex to parse the password in the header
-     */
+    /** The regex to parse the password in the header */
     private String passwordRegex = "private-pw=([^&]*)";
 
-    /**
-     * Parse the username and password as URI Components, Converting "%40" to "@" and so on
-     */
+    /** Parse the username and password as URI Components, Converting "%40" to "@" and so on */
     private boolean parseAsUriComponents = true;
 
     public boolean isParseAsUriComponents() {
@@ -90,5 +78,4 @@ public class CredentialsFromRequestHeaderFilterConfig extends
     public boolean providesAuthenticationEntryPoint() {
         return true;
     }
-
 }

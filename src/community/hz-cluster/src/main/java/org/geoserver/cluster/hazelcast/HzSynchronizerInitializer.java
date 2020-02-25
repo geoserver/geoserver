@@ -5,8 +5,8 @@
  */
 package org.geoserver.cluster.hazelcast;
 
+import com.hazelcast.core.HazelcastInstance;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.ClusterConfig;
 import org.geoserver.cluster.ClusterConfigWatcher;
@@ -18,43 +18,39 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 
-import com.hazelcast.core.HazelcastInstance;
+public class HzSynchronizerInitializer
+        implements GeoServerInitializer, ApplicationListener<ApplicationEvent> {
 
-public class HzSynchronizerInitializer implements GeoServerInitializer, ApplicationListener<ApplicationEvent>{
-    
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
-    
+
     HzCluster cluster;
 
     HzSynchronizer syncher = null;
-   
-    public HzSynchronizerInitializer() {
-    }
-    
+
+    public HzSynchronizerInitializer() {}
+
     public void setCluster(HzCluster cluster) {
         this.cluster = cluster;
     }
-    
-    
+
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
         ClusterConfigWatcher configWatcher = cluster.getConfigWatcher();
         ClusterConfig config = configWatcher.get();
-        
-        
+
         if (!config.isEnabled()) {
             LOGGER.info("Hazelcast synchronization disabled");
             return;
         }
-        
+
         @SuppressWarnings("unused")
         HazelcastInstance hz = cluster.getHz();
-        
+
         String method = config.getSyncMethod();
         if ("event".equalsIgnoreCase(method)) {
             syncher = new EventHzSynchronizer(cluster, geoServer);
         } else {
-            method = "reload"; 
+            method = "reload";
             syncher = new ReloadHzSynchronizer(cluster, geoServer);
         }
         syncher.initialize(configWatcher);
@@ -78,5 +74,4 @@ public class HzSynchronizerInitializer implements GeoServerInitializer, Applicat
             syncher.stop();
         }
     }
-
 }

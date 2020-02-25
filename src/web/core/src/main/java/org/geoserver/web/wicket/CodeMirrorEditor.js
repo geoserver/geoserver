@@ -1,12 +1,62 @@
+function completeAfterKeyup(cm, pred) {
+    if(cm.getOption("mode") && cm.getOption("mode").startsWith("text/sld")) {
+      var cur = cm.getCursor();
+      if (!pred || pred()) setTimeout(function() {
+        if (!cm.state.completionActive)
+          cm.showHint({completeSingle: false});
+      }, 100);
+    }
+    return CodeMirror.Pass;
+}
+
+function completeIfValidPos(cm) {
+    return completeAfterKeyup(cm, function() {
+      var cur = cm.getCursor();
+      var beforeCur = trimStart(cm.getRange(CodeMirror.Pos(cur.line, 0), cur));
+      var afterCur = cm.getRange(cur, CodeMirror.Pos(cur.line, null));
+
+      if (isEmpty(beforeCur) && isEmpty(afterCur)) return true;
+
+      if ((isStartOpenTag(beforeCur) || isStartCloseTag(beforeCur)) && isEndTag(afterCur)) return true;
+
+      return false
+    });
+}
+
+function trimStart(str) {
+  var startIndex = str.lastIndexOf('<');
+  if (startIndex < 0) return "";
+
+  return str.substring(startIndex);
+}
+function isStartOpenTag(str) {
+   return /^<[^>]*$/.test(str);
+}
+function isStartCloseTag(str) {
+  return /^<\/[^>\s]*$/.test(str);
+}
+function isEndTag(str) {
+  return /^\s*>?\s*$/.test(str);
+}
+function isEmpty(str) {
+  return str.trim() == "";
+}
+
 var textarea = document.getElementById('$componentId');
 var editor = CodeMirror.fromTextArea(textarea, { 
     mode: '$mode',
     theme: 'default',
     lineWrapping: true,
-    lineNumbers: true
+    lineNumbers: true,
+    extraKeys: {
+        "Ctrl-Space": "autocomplete",
+        // override built-in to clear selection too on "Esc"
+        "Esc" : function(cm) {editor.execCommand("clearSearch"); editor.execCommand("singleSelection")}
+    }
 });
 editor.getWrapperElement().style.fontSize = "12px"; 
 editor.refresh();
+
 if(!document.gsEditors) {
     document.gsEditors = {};
 }
@@ -36,6 +86,11 @@ document.getElementById('cm_font_size').onchange = function() {
     editor.getWrapperElement().style.fontSize = fontSize+"px"; 
     editor.refresh();
 }
+document.getElementById('cm_editor_heigth').onchange = function() {
+    var height = document.getElementById('cm_editor_heigth').value;
+    editor.setSize("100%", height); 
+    editor.refresh();
+}
 document.getElementById('cm_reformat').onclick = function() {
     var start, end, i;
     if (editor.getSelection()) {
@@ -49,35 +104,24 @@ document.getElementById('cm_reformat').onclick = function() {
         editor.indentLine(i);
     }
 }
-// This comes from http://thereisamoduleforthat.com/content/making-div-fullscreen-and-restoring-it-its-original-position
-// Does not work so commented out
-/*
-document.getElementById('cm_fullscreen').onclick = function() {
-	div = $('#$container');
-    if (!div.hasClass('fullscreen')) { // Going fullscreen:
-    	alert("Sigh, can't make this work at all...");
-      // Save current values.
-      editor.beforeFullscreen = {
-        parentElement: div.parent(),
-        index: div.parent().children().index(div),
-        x: $(window).scrollLeft(), y: $(window).scrollTop(),
-      };
-
-      // Set values needed to go fullscreen.
-      $('body').append(div).css('overflow', 'hidden');
-      div.addClass('fullscreen');
-      window.scroll(0,0);
-    } else { // Going back to normal:
-      // Restore saved values.
-      div.removeClass('fullscreen');
-      if (editor.beforeFullscreen.index >= editor.beforeFullscreen.parentElement.children().length) {
-    	  editor.beforeFullscreen.parentElement.append(div);
-      } else {
-    	  div.insertBefore(editor.beforeFullScreen.parentElement.children().get(editor.beforeFullscreen.index));
-      }
-      $('body').css('overflow', 'auto');
-      window.scroll(editor.beforeFullscreen.x, editor.beforeFullscreen.y);
-      editor.beforeFullScreen = null;
+document.getElementById('cm_find').onclick = function() {
+    editor.execCommand('find')
+};
+document.getElementById('cm_find_next').onclick = function() {
+    editor.execCommand('findNext')
+};
+document.getElementById('cm_replace').onclick = function() {
+    editor.execCommand('replace')
+};
+replaceSelection = function(repl) {
+	start = editor.getCursor(true).line;
+    editor.replaceSelection(repl);
+	lines = repl.split(/\r\n|\r|\n/).length;
+    for(i = start + 1; i < start + lines; i++) {
+        editor.indentLine(i);
     }
-  };
-*/
+}
+getSelection = function() {
+	start = editor.getCursor(true).line;
+    return editor.getSelection();
+}

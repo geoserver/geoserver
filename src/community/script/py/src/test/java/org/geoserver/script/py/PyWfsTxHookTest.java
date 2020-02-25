@@ -13,5 +13,4 @@ public class PyWfsTxHookTest extends WfsTxHookTest {
     public String getExtension() {
         return "py";
     }
-
 }

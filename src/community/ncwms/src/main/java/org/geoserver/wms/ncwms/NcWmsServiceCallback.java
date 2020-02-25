@@ -5,15 +5,12 @@
 package org.geoserver.wms.ncwms;
 
 import java.util.Map;
-
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
-/**
- * Hook to replace the service when the GetTimeSeries operation is requested
- */
+/** Hook to replace the service when the GetTimeSeries operation is requested */
 public class NcWmsServiceCallback extends AbstractDispatcherCallback {
     private NcWmsService service;
 
@@ -21,7 +18,7 @@ public class NcWmsServiceCallback extends AbstractDispatcherCallback {
         this.service = service;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         Object req = request.getKvp().get("REQUEST");
         if ("wms".equals(service.getId().toLowerCase())
@@ -34,10 +31,9 @@ public class NcWmsServiceCallback extends AbstractDispatcherCallback {
             String requestedFormat = (String) kvp.get("INFO_FORMAT");
             kvp.put("INFO_FORMAT", "text/plain");
             kvp.put(NcWmsService.TIME_SERIES_INFO_FORMAT_PARAM_NAME, requestedFormat);
-            return new Service(service.getId(), this.service, service.getVersion(),
-                    service.getOperations());
+            return new Service(
+                    service.getId(), this.service, service.getVersion(), service.getOperations());
         }
         return service;
     }
-
 }

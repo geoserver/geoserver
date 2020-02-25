@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Clemens Portele (interactive instruments) -->
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1" xml:lang="en">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" xml:lang="en" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:datums:3.2.1">datums.xsd</appinfo>
 		<documentation>See ISO/DIS 19136 13.5
@@ -8,8 +8,14 @@ The datums schema components can be divided into three logical parts, which defi
 -	Abstract datum
 -	Geodetic datums, including ellipsoid and prime meridian
 -	Multiple other concrete types of spatial or temporal datums
-These schema components encode the Datum packages of the UML Models of ISO 19111 Clause 10 and ISO/DIS 19136 D.3.10.</documentation>
+These schema components encode the Datum packages of the UML Models of ISO 19111 Clause 10 and ISO/DIS 19136 D.3.10.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
+	<include schemaLocation="gml.xsd"/>
 	<include schemaLocation="referenceSystems.xsd"/>
 	<include schemaLocation="measures.xsd"/>
 	<element name="AbstractDatum" type="gml:AbstractDatumType" abstract="true" substitutionGroup="gml:Definition">

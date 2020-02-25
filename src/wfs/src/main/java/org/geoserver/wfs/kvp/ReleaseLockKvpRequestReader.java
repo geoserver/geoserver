@@ -6,9 +6,7 @@
 package org.geoserver.wfs.kvp;
 
 import java.util.Map;
-
 import org.geoserver.ows.KvpRequestReader;
-
 
 public class ReleaseLockKvpRequestReader extends KvpRequestReader {
     public ReleaseLockKvpRequestReader() {
@@ -16,7 +14,7 @@ public class ReleaseLockKvpRequestReader extends KvpRequestReader {
     }
 
     public Object createRequest() throws Exception {
-        return new String();
+        return "";
     }
 
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {

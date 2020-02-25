@@ -8,10 +8,8 @@ package org.geoserver.wcs.web.demo;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.logging.Level;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -32,7 +30,7 @@ import org.geotools.xml.transform.TransformerBase;
 /**
  * Small embedded WCS client enabling users to build a wcs GetCoverage request (and as a side effect
  * also showing what capabilities and describe process would provide) using
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
@@ -54,66 +52,73 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         // the xml popup window
         final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
         add(xmlWindow);
-        xmlWindow.setPageCreator(new ModalWindow.PageCreator() {
+        xmlWindow.setPageCreator(
+                new ModalWindow.PageCreator() {
 
-            public Page createPage() {
-                return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
-
-            }
-        });
+                    public Page createPage() {
+                        return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
+                    }
+                });
 
         // the output response window
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        //responseWindow.setPageMapName("demoResponse");
+        // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
-        responseWindow.setPageCreator(new ModalWindow.PageCreator() {
+        responseWindow.setPageCreator(
+                new ModalWindow.PageCreator() {
 
-            public Page createPage() {
-                DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = GeoServerApplication.get().servletRequest();
-                String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
-                        .singletonMap("strict", "true"), URLType.SERVICE);
-                request.setRequestUrl(url);
-                request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                return new DemoRequestResponse(new Model(request));
-            }
-        });
+                    public Page createPage() {
+                        DemoRequest request = new DemoRequest(null);
+                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+                        String url =
+                                ResponseUtils.buildURL(
+                                        ResponseUtils.baseURL(http),
+                                        "ows",
+                                        Collections.singletonMap("strict", "true"),
+                                        URLType.SERVICE);
+                        request.setRequestUrl(url);
+                        request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                        return new DemoRequestResponse(new Model(request));
+                    }
+                });
 
-        form.add(new AjaxSubmitLink("execute") {
+        form.add(
+                new AjaxSubmitLink("execute") {
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
-                responseWindow.setDefaultModel(new Model(getRequestXML()));
-                responseWindow.show(target);
-            }
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                        responseWindow.setDefaultModel(new Model(getRequestXML()));
+                        responseWindow.show(target);
+                    }
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.add(builder.getFeedbackPanel());
-            }
-        });
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form form) {
+                        super.onError(target, form);
+                        target.add(builder.getFeedbackPanel());
+                    }
+                });
 
-        form.add(new AjaxSubmitLink("executeXML") {
+        form.add(
+                new AjaxSubmitLink("executeXML") {
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
-                try {
-                    getRequestXML();
-                    xmlWindow.show(target);
-                } catch (Exception e) {
-                    error(e.getMessage());
-                    target.add(getFeedbackPanel());
-                }
-            }
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                        try {
+                            getRequestXML();
+                            xmlWindow.show(target);
+                        } catch (Exception e) {
+                            error(e.getMessage());
+                            addFeedbackPanels(target);
+                        }
+                    }
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                target.add(getFeedbackPanel());
-            }
-        });
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form form) {
+                        addFeedbackPanels(target);
+                    }
+                });
     }
 
     String getRequestXML() {
@@ -123,7 +128,9 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         if (builder.getCoverage.version == Version.v1_0_0) {
             tx = new WCS10GetCoverageTransformer(getCatalog());
         } else {
-            CoverageResponseDelegateFinder responseFactory = (CoverageResponseDelegateFinder) getGeoServerApplication().getBean("coverageResponseDelegateFactory");
+            CoverageResponseDelegateFinder responseFactory =
+                    (CoverageResponseDelegateFinder)
+                            getGeoServerApplication().getBean("coverageResponseDelegateFactory");
             tx = new WCS11GetCoverageTransformer(getCatalog(), responseFactory);
         }
 
@@ -136,5 +143,4 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         }
         return out.toString();
     }
-
 }

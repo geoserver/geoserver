@@ -7,31 +7,28 @@ package org.geoserver.kml.regionate;
 
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
- * Strategy using geometry size to determine feature allocation in tiles. Bigger
- * geometries get into the bigger tiles. Does not work with simple points, use
- * attribute sorting or random strategy in that case
- * 
+ * Strategy using geometry size to determine feature allocation in tiles. Bigger geometries get into
+ * the bigger tiles. Does not work with simple points, use attribute sorting or random strategy in
+ * that case
+ *
  * @author Andrea Aime
  */
-public class GeometryRegionatingStrategy extends
-        ExternalSortRegionatingStrategy {
+public class GeometryRegionatingStrategy extends ExternalSortRegionatingStrategy {
 
     public GeometryRegionatingStrategy(GeoServer gs) {
         super(gs);
@@ -46,15 +43,18 @@ public class GeometryRegionatingStrategy extends
             attribute = MapLayerInfo.getRegionateAttribute(featureType);
         }
         if (attribute == null || ft.getDescriptor(attribute) == null) {
-            LOGGER.log(Level.FINER, "No attribute specified, falling "
-                    + "back on geometry attribute");
+            LOGGER.log(
+                    Level.FINER, "No attribute specified, falling " + "back on geometry attribute");
             attribute = ft.getGeometryDescriptor().getLocalName();
         } else {
             // Make sure the attribute is actually there
             AttributeType attributeType = ft.getType(attribute);
             if (attributeType == null) {
-                throw new ServiceException("Could not find regionating attribute "
-                        + attribute + " in layer " + featureType.getName());
+                throw new ServiceException(
+                        "Could not find regionating attribute "
+                                + attribute
+                                + " in layer "
+                                + featureType.getName());
             }
         }
 
@@ -62,13 +62,12 @@ public class GeometryRegionatingStrategy extends
         h2Type = "DOUBLE";
     }
 
-    @Override 
-    protected String checkAttribute(FeatureTypeInfo cfg){
+    @Override
+    protected String checkAttribute(FeatureTypeInfo cfg) {
         String attribute = MapLayerInfo.getRegionateAttribute(cfg);
-        try{
+        try {
             FeatureType ft = cfg.getFeatureType();
-            if ((attribute != null) && (ft.getDescriptor(attribute) != null))
-                return attribute;
+            if ((attribute != null) && (ft.getDescriptor(attribute) != null)) return attribute;
 
             return ft.getGeometryDescriptor().getLocalName();
         } catch (Exception e) {
@@ -81,12 +80,8 @@ public class GeometryRegionatingStrategy extends
     protected Double getSortAttributeValue(SimpleFeature f) {
         Geometry g = (Geometry) f.getAttribute(attribute);
 
-        if (g instanceof MultiPoint)
-            return (double) ((MultiPoint) g).getNumGeometries();
-        if (g instanceof Polygon || g instanceof MultiPolygon)
-            return g.getArea();
-        else
-            return g.getLength();
+        if (g instanceof MultiPoint) return (double) ((MultiPoint) g).getNumGeometries();
+        if (g instanceof Polygon || g instanceof MultiPolygon) return g.getArea();
+        else return g.getLength();
     }
-
 }

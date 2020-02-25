@@ -18,8 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -45,19 +44,19 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.jdbc.JDBCDataStoreFactory;
-import org.geotools.util.NullProgressListener;
+import org.geotools.util.URLs;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
 /**
  * Builder class which provides convenience methods for managing EO stores, resources, layers and
  * layer groups.
- * 
+ *
  * @author Davide Savazzi - geo-solutions.it
  */
 public class EoCatalogBuilder implements EoStyles {
@@ -66,46 +65,42 @@ public class EoCatalogBuilder implements EoStyles {
 
     private static final Logger LOGGER = Logging.getLogger(EoCatalogBuilder.class);
 
-    /**
-     * EoCatalogBuilder constructor
-     * 
-     * @param catalog
-     */
+    /** EoCatalogBuilder constructor */
     public EoCatalogBuilder(Catalog catalog) {
         this.catalog = catalog;
     }
 
     /**
      * Create an EO Geophysical Parameters layer
-     * 
+     *
      * @param ws workspace
      * @param groupName group name
      * @param parametersName Geophysical Parameters name
      * @param parametersUrl Geophysical Parameters url
      * @return created layer
      */
-    public LayerInfo createEoParametersLayer(WorkspaceInfo ws, String groupName,
-            String parametersName, String parametersUrl) {
+    public LayerInfo createEoParametersLayer(
+            WorkspaceInfo ws, String groupName, String parametersName, String parametersUrl) {
         String parametersLayerName = groupName + "_" + parametersName;
-        return createEoMosaicLayer(ws, parametersLayerName, EoLayerType.GEOPHYSICAL_PARAMETER,
-                parametersUrl, false);
+        return createEoMosaicLayer(
+                ws, parametersLayerName, EoLayerType.GEOPHYSICAL_PARAMETER, parametersUrl, false);
     }
 
     /**
      * Create an EO Bitmasks layer
-     * 
+     *
      * @param ws workspace
      * @param groupName group name
      * @param masksName bitmasks name
      * @param masksUrl bitmasks url
      * @return created layer
      */
-    public LayerInfo createEoMasksLayer(WorkspaceInfo ws, String groupName, String masksName,
-            String masksUrl) {
+    public LayerInfo createEoMasksLayer(
+            WorkspaceInfo ws, String groupName, String masksName, String masksUrl) {
         Utilities.ensureNonNull("groupName", groupName);
         String masksLayerName = groupName + "_" + masksName;
-        LayerInfo masksLayer = createEoMosaicLayer(ws, masksLayerName, EoLayerType.BITMASK,
-                masksUrl, false);
+        LayerInfo masksLayer =
+                createEoMosaicLayer(ws, masksLayerName, EoLayerType.BITMASK, masksUrl, false);
         if (masksLayer != null) {
             addEoStyles(masksLayer, DEFAULT_BITMASK_STYLE);
         }
@@ -118,21 +113,21 @@ public class EoCatalogBuilder implements EoStyles {
         return createEoMosaicLayer(ws, bandsLayerName, EoLayerType.BAND_COVERAGE, bandsUrl, true);
     }
 
-    public LayerInfo createEoBrowseImageLayer(WorkspaceInfo ws, String groupName,
-            String browseImageUrl) {
+    public LayerInfo createEoBrowseImageLayer(
+            WorkspaceInfo ws, String groupName, String browseImageUrl) {
         /*
          * Browse Image layer name must be different from EO group name (otherwise GWC will
          * complain) In GetCapabilities this name will not appear
          */
         Utilities.ensureNonNull("groupName", groupName);
         String browseLayerName = groupName + "_BROWSE";
-        return createEoMosaicLayer(ws, browseLayerName, EoLayerType.BROWSE_IMAGE, browseImageUrl,
-                false);
+        return createEoMosaicLayer(
+                ws, browseLayerName, EoLayerType.BROWSE_IMAGE, browseImageUrl, false);
     }
 
     /**
      * Create an EO layer group
-     * 
+     *
      * @param ws workspace
      * @param groupName group name
      * @param groupTitle group title
@@ -144,23 +139,34 @@ public class EoCatalogBuilder implements EoStyles {
      * @param parametersUrl Geophysical Parameters url
      * @return created group
      */
-    public LayerGroupInfo createEoLayerGroup(WorkspaceInfo ws, String groupName, String groupTitle,
-            String browseImageUrl, String bandsUrl, String masksName, String masksUrl,
-            String parametersName, String parametersUrl) {
+    public LayerGroupInfo createEoLayerGroup(
+            WorkspaceInfo ws,
+            String groupName,
+            String groupTitle,
+            String browseImageUrl,
+            String bandsUrl,
+            String masksName,
+            String masksUrl,
+            String parametersName,
+            String parametersUrl) {
 
         LayerInfo bandsLayer = createEoBandsLayer(ws, groupName, bandsUrl);
         LayerInfo browseLayer = createEoBrowseImageLayer(ws, groupName, browseImageUrl);
-        LayerInfo paramsLayer = createEoParametersLayer(ws, groupName, parametersName,
-                parametersUrl);
+        LayerInfo paramsLayer =
+                createEoParametersLayer(ws, groupName, parametersName, parametersUrl);
         LayerInfo masksLayer = createEoMasksLayer(ws, groupName, masksName, masksUrl);
 
         LayerInfo outlineLayer;
         try {
-            StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) ((CoverageInfo) bandsLayer.getResource()).getGridCoverageReader(null, null);
+            StructuredGridCoverage2DReader reader =
+                    (StructuredGridCoverage2DReader)
+                            ((CoverageInfo) bandsLayer.getResource())
+                                    .getGridCoverageReader(null, null);
             outlineLayer = createEoOutlineLayer(bandsUrl, ws, groupName, null, reader);
         } catch (Exception e) {
             throw new IllegalArgumentException(
-                    "The Outline layer could not be created. Failure message: " + e.getMessage(), e);
+                    "The Outline layer could not be created. Failure message: " + e.getMessage(),
+                    e);
         }
 
         // create layer group
@@ -191,8 +197,12 @@ public class EoCatalogBuilder implements EoStyles {
             catalog.add(layerGroup);
             return layerGroup;
         } catch (Exception e) {
-            throw new IllegalArgumentException("The layer group '" + groupName
-                    + "' could not be created. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "The layer group '"
+                            + groupName
+                            + "' could not be created. Failure message: "
+                            + e.getMessage(),
+                    e);
         }
     }
 
@@ -220,8 +230,7 @@ public class EoCatalogBuilder implements EoStyles {
 
     /**
      * Get database type from DataStoreFactorySpi
-     * 
-     * @param dataStoreFactory
+     *
      * @return database type
      */
     protected String getDbType(DataStoreFactorySpi dataStoreFactory) {
@@ -235,8 +244,11 @@ public class EoCatalogBuilder implements EoStyles {
 
         if (dbType == null) {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "dbtype parameter not found in dataStoreFactory "
-                        + dataStoreFactory + ", using default.");
+                LOGGER.log(
+                        Level.WARNING,
+                        "dbtype parameter not found in dataStoreFactory "
+                                + dataStoreFactory
+                                + ", using default.");
             }
         }
 
@@ -245,19 +257,18 @@ public class EoCatalogBuilder implements EoStyles {
 
     /**
      * Create Outline store parameters
-     * 
+     *
      * @param dir mosaic directory
-     * @param dataStoreFactory
      * @return parameters
-     * @throws IOException
      */
-    protected Map<String, Serializable> getOutlineDataStoreParameters(File dir,
-            DataStoreFactorySpi dataStoreFactory) throws IOException {
+    protected Map<String, Serializable> getOutlineDataStoreParameters(
+            File dir, DataStoreFactorySpi dataStoreFactory) throws IOException {
         File datastorePropertiesFile = new File(dir, "datastore.properties");
         if (datastorePropertiesFile.exists()) {
             Properties datastoreProperties = loadProperties(datastorePropertiesFile);
-            Map<String, Serializable> params = Utils.createDataStoreParamsFromPropertiesFile(
-                    datastoreProperties, dataStoreFactory);
+            Map<String, Serializable> params =
+                    Utils.createDataStoreParamsFromPropertiesFile(
+                            datastoreProperties, dataStoreFactory);
             String dbType = getDbType(dataStoreFactory);
             params.put("dbtype", dbType);
             if ("h2".equals(dbType)) {
@@ -276,7 +287,7 @@ public class EoCatalogBuilder implements EoStyles {
             Map<String, Serializable> params = new HashMap<String, Serializable>();
 
             // TODO is there a better way to convert a path to a URL?
-            // DataUtilities.fileToURL(file) doesn't work (GeoServer saves an empty url)
+            // URLs.fileToUrl(file) doesn't work (GeoServer saves an empty url)
             params.put(ShapefileDataStoreFactory.URLP.key, "file://" + shpFile.getAbsolutePath());
 
             params.put(ShapefileDataStoreFactory.MEMORY_MAPPED.key, true);
@@ -287,12 +298,15 @@ public class EoCatalogBuilder implements EoStyles {
         }
     }
 
-    /**
-     * Create EO Outline layer
-     */
-    public LayerInfo createEoOutlineLayer(String url, WorkspaceInfo ws, String groupName,
-            String coverageName, StructuredGridCoverage2DReader reader) throws Exception {
-        File dir = DataUtilities.urlToFile(new URL(url));
+    /** Create EO Outline layer */
+    public LayerInfo createEoOutlineLayer(
+            String url,
+            WorkspaceInfo ws,
+            String groupName,
+            String coverageName,
+            StructuredGridCoverage2DReader reader)
+            throws Exception {
+        File dir = URLs.urlToFile(new URL(url));
 
         if (ws == null) {
             ws = catalog.getDefaultWorkspace();
@@ -312,8 +326,8 @@ public class EoCatalogBuilder implements EoStyles {
 
             DataStoreFactorySpi dataStoreFactory = getOutlineDataStoreFactory(dir);
 
-            Map<String, Serializable> parameters = getOutlineDataStoreParameters(dir,
-                    dataStoreFactory);
+            Map<String, Serializable> parameters =
+                    getOutlineDataStoreParameters(dir, dataStoreFactory);
             NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
             parameters.put("namespace", ns.getURI());
 
@@ -370,12 +384,7 @@ public class EoCatalogBuilder implements EoStyles {
         }
     }
 
-    /**
-     * Add EO styles to layer
-     * 
-     * @param layer
-     * @param defaultStyleName
-     */
+    /** Add EO styles to layer */
     private void addEoStyles(LayerInfo layer, String defaultStyleName) {
         StyleInfo defaultStyle = catalog.getStyleByName(defaultStyleName);
         if (defaultStyle != null) {
@@ -400,10 +409,9 @@ public class EoCatalogBuilder implements EoStyles {
 
     /**
      * Create a new mosaic store
-     * 
+     *
      * @param ws workspace
      * @param name store name
-     * @param url
      * @return created store
      */
     protected CoverageStoreInfo createEoMosaicStore(WorkspaceInfo ws, String name, String url) {
@@ -418,8 +426,11 @@ public class EoCatalogBuilder implements EoStyles {
             catalog.add(storeInfo);
             return storeInfo;
         } catch (RuntimeException e) {
-            String msg = "The coverage store '" + name
-                    + "' could not be created. Failure message: " + e.getMessage();
+            String msg =
+                    "The coverage store '"
+                            + name
+                            + "' could not be created. Failure message: "
+                            + e.getMessage();
             if (LOGGER.isLoggable(Level.INFO)) {
                 LOGGER.log(Level.INFO, msg, e);
             }
@@ -430,7 +441,7 @@ public class EoCatalogBuilder implements EoStyles {
 
     /**
      * Create a new mosaic layer
-     * 
+     *
      * @param ws workspace
      * @param name store name and layer name
      * @param type EO layer type
@@ -438,8 +449,8 @@ public class EoCatalogBuilder implements EoStyles {
      * @param checkDimensions check time and at least another dimension is present
      * @return created layer
      */
-    public LayerInfo createEoMosaicLayer(WorkspaceInfo ws, String name, EoLayerType type,
-            String url, boolean checkDimensions) {
+    public LayerInfo createEoMosaicLayer(
+            WorkspaceInfo ws, String name, EoLayerType type, String url, boolean checkDimensions) {
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -456,8 +467,8 @@ public class EoCatalogBuilder implements EoStyles {
                 if (!dimensionsPresent) {
                     // rollback: delete store
                     catalog.remove(store);
-                    throw new IllegalArgumentException("The layer '" + name
-                            + "' could not be created: no dimensions found");
+                    throw new IllegalArgumentException(
+                            "The layer '" + name + "' could not be created: no dimensions found");
                 }
             }
 
@@ -476,8 +487,12 @@ public class EoCatalogBuilder implements EoStyles {
 
             return layer;
         } catch (Exception e) {
-            throw new IllegalArgumentException("The layer '" + name
-                    + "' could not be created. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "The layer '"
+                            + name
+                            + "' could not be created. Failure message: "
+                            + e.getMessage(),
+                    e);
         }
     }
 
@@ -493,8 +508,8 @@ public class EoCatalogBuilder implements EoStyles {
             // acquire a reader
             reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
             if (reader == null) {
-                throw new RuntimeException("Unable to acquire reader for this coverageinfo: "
-                        + ci.getName());
+                throw new RuntimeException(
+                        "Unable to acquire reader for this coverageinfo: " + ci.getName());
             }
 
             // inspect dimensions
@@ -503,8 +518,15 @@ public class EoCatalogBuilder implements EoStyles {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     boolean hasRange = ra.hasRange(domain);
                     boolean hasResolution = ra.hasResolution(domain);
-                    LOGGER.fine(ci.getName() + ": found " + domain + " dimension (hasRange: "
-                            + hasRange + ", hasResolution: " + hasResolution + ")");
+                    LOGGER.fine(
+                            ci.getName()
+                                    + ": found "
+                                    + domain
+                                    + " dimension (hasRange: "
+                                    + hasRange
+                                    + ", hasResolution: "
+                                    + hasResolution
+                                    + ")");
                 }
 
                 DimensionInfo dimension = new DimensionInfoImpl();
@@ -546,17 +568,12 @@ public class EoCatalogBuilder implements EoStyles {
             if (LOGGER.isLoggable(Level.SEVERE)) {
                 LOGGER.log(Level.SEVERE, "Failed to access coverage reader custom dimensions", e);
             }
-
         }
 
         return timeDimension && customDimension;
     }
 
-    /**
-     * Delete a layer, its resource and its store
-     * 
-     * @param layer
-     */
+    /** Delete a layer, its resource and its store */
     private void delete(LayerInfo layer) {
         ResourceInfo resource = layer.getResource();
         StoreInfo store = resource.getStore();
@@ -565,11 +582,7 @@ public class EoCatalogBuilder implements EoStyles {
         catalog.remove(store);
     }
 
-    /**
-     * Delete a layer group, all its layers and their respective stores
-     * 
-     * @param group
-     */
+    /** Delete a layer group, all its layers and their respective stores */
     public void delete(LayerGroupInfo group) {
         // load layers in group
         group = catalog.getLayerGroupByName(group.getWorkspace(), group.getName());
@@ -584,38 +597,43 @@ public class EoCatalogBuilder implements EoStyles {
                 }
             }
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("The group '" + group.getName()
-                    + "' could not be removed. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "The group '"
+                            + group.getName()
+                            + "' could not be removed. Failure message: "
+                            + e.getMessage(),
+                    e);
         }
     }
 
-    /**
-     * Check presence of TIME dimension . Enable all dimensions found.
-     * @throws IOException 
-     */
-    private boolean enableDimensions(FeatureTypeInfo fi, String coverageName, StructuredGridCoverage2DReader reader) throws IOException {
+    /** Check presence of TIME dimension . Enable all dimensions found. */
+    private boolean enableDimensions(
+            FeatureTypeInfo fi, String coverageName, StructuredGridCoverage2DReader reader)
+            throws IOException {
         Utilities.ensureNonNull("FeatureTypeInfo", fi);
         Utilities.ensureNonNull("reader", reader);
-        
-        List<DimensionDescriptor> dimensionDescriptors = reader.getDimensionDescriptors(coverageName == null ? reader.getGridCoverageNames()[0] : coverageName);
+
+        List<DimensionDescriptor> dimensionDescriptors =
+                reader.getDimensionDescriptors(
+                        coverageName == null ? reader.getGridCoverageNames()[0] : coverageName);
         boolean timeDimension = false;
         for (DimensionDescriptor dd : dimensionDescriptors) {
             DimensionInfo di = new DimensionInfoImpl();
             String key;
             String units = dd.getUnits();
             String symbol = dd.getUnitSymbol();
-            if(ResourceInfo.TIME.equalsIgnoreCase(dd.getName())) {
+            if (ResourceInfo.TIME.equalsIgnoreCase(dd.getName())) {
                 timeDimension = true;
                 key = ResourceInfo.TIME;
                 units = DimensionInfo.TIME_UNITS;
-            } else if(ResourceInfo.ELEVATION.equalsIgnoreCase(dd.getName())) {
+            } else if (ResourceInfo.ELEVATION.equalsIgnoreCase(dd.getName())) {
                 key = ResourceInfo.ELEVATION;
                 units = DimensionInfo.ELEVATION_UNITS;
                 symbol = DimensionInfo.ELEVATION_UNIT_SYMBOL;
             } else {
                 key = ResourceInfo.CUSTOM_DIMENSION_PREFIX + dd.getName();
             }
-            
+
             di.setEnabled(true);
             di.setAttribute(dd.getStartAttribute());
             di.setEndAttribute(dd.getEndAttribute());

@@ -8,19 +8,13 @@ are stored in the data directory under the ``monitoring`` directory::
 
   <data_directory>
       monitoring/
-          db.properties
           filter.properties
-          hibernate.properties
           monitor.properties
 
 
 The ``monitor.properties`` file is the main configuration file whose contents are 
-described in the following sections. Other configuration files include:
-
-* **filter.properties** - Allows for :ref:`filtering <request_filters>` out those 
-  requests from being monitored.
-* **db.properties** - Database configuration when using database persistence.
-* **hibernate.properties** - Hibernate configuration when using database persistence.
+described in the following sections. The ``filter.properties`` 
+allows for :ref:`filtering <request_filters>` out those requests from being monitored.
 
 Database persistence with hibernate is described in more detail in the :ref:`monitor_db` section.
 
@@ -33,9 +27,10 @@ How request data is persisted is configurable via the ``storage`` property defin
 ``monitor.properties`` file. The following values are supported for the ``storage`` property:
 
 * **memory** - Request data is to be persisted in memory alone.
-* **hibernate** - Request data is to be persisted in a relational database via Hibernate.
 
 The default value is ``memory``.
+
+The "monitor hibernate" community module allows to also store the requests in a relational database.
 
 Memory Storage
 ^^^^^^^^^^^^^^
@@ -43,11 +38,6 @@ Memory Storage
 With memory storage only the most recent 100 requests are stored. And by definition this 
 storage is volatile in that if the GeoServer instance is restarted, shutdown, or crashes 
 this data is lost.
-
-Hibernate Storage
-^^^^^^^^^^^^^^^^^
-
-Hibernate storage is described in detail in the :ref:`monitor_db` section.
 
 .. _monitor_mode:
 
@@ -118,6 +108,17 @@ file.
 
    When using database persistence it is important to ensure that the size of the body 
    field in the database can accommodate the ``maxBodySize`` property.
+
+Ignore Post Processors
+----------------------
+
+The monitor passes request information through post processors which enrich the request
+information with DNS lookup, Location using IP database etc. It is possible to disable
+these post processors if some enrichments are not required with ``ignorePostProcessors``
+property of the ``monitor.properties`` file.
+
+This parameter takes comma separated names of known post processors.
+The valid values are ``reverseDNS,geoIp,layerNameNormalizer``
 
 .. _request_filters:
 

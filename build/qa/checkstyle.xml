@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Check Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    This configuration file was written by the eclipse-cs plugin configuration editor
+-->
+<!--
+    Checkstyle-Configuration: gt-checks
+    Description: none
+-->
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <module name="TreeWalker">
+    <module name="JavadocMethod">
+      <property name="allowMissingParamTags" value="true"/>
+      <property name="allowMissingReturnTag" value="true"/>
+    </module>
+  </module>
+  <module name="RegexpHeader">
+    <property name="multiLines" value="2,3"/> <!-- Allows to have other copyrights, see line 2 and 3 of the regexp -->
+    <property name="header" value="^/\* (Copyright\s*)?\(c\) \d{4}(\s*-\s*\d{4})? Open Source Geospatial Foundation - all rights reserved$\n^
+\* (Copyright\s*)?\(c\).*$\n^
+\*$\n^
+\* This code is licensed under the GPL 2.0 license, available at the root$\n^
+\* application directory.$\n^
+\*"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
+</module>

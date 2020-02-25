@@ -1,0 +1,1056 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Data Stores
+  description: A data store contains vector format spatial data. It can be a file (such as a shapefile), a database (such as PostGIS), or a server (such as a remote Web Feature Service).
+
+paths:
+  /workspaces/{workspaceName}/datastores:
+    get:
+      operationId: getDatastores
+      summary: Get a list of data stores
+      description: List all data stores in workspace ws. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/dataStoreResponse"
+          examples:
+            application/xml: |
+              <dataStore>
+                <name>sf</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.xml" type="application/xml"/>
+              </dataStore>
+            
+            application/json: |
+              {"dataStores":{"dataStore":[{"name":"sf","href":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.json"}]}}
+            
+    post:
+      operationId: postDatastores
+      summary: Create a new data store
+      description: Adds a new data store to the workspace.
+
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the worskpace containing the data stores.
+        - $ref: "#/parameters/dataStorePost"
+      consumes:
+        - application/xml
+        - application/json
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created data store can be found
+              type: string
+
+    put:
+      operationId: putdatastores
+      description: Invalid. Use POST for adding a new data store, or PUT on /datastores/{datastore} to edit an existing data store.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deletedatastores
+      description: Invalid. Use /datastores/{datastore} instead.
+      responses:
+        405:
+          description: Method Not Allowed
+
+  /workspaces/{workspaceName}/datastores/{storeName}:
+    get:
+      operationId: getDataStore
+      summary: Retrieve a particular data store from a workspace
+      description: Controls a particular data store in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{datastore}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the data store to retrieve.
+          type: string
+        - name: quietOnNotFound 
+          in: query
+          required: false
+          description: The quietOnNotFound parameter avoids logging an exception when the data store is not present. Note that 404 status code will still be returned.
+          type: boolean             
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/datastore"
+          examples:
+            application/xml: |
+              <dataStore>
+                <name>sf</name>
+                <enabled>true</enabled>
+                <workspace>
+                  <name>sf</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf.xml" type="application/xml"/>
+                </workspace>
+                <connectionParameters>
+                  <entry key="url">file:data/sf</entry>
+                  <entry key="namespace">http://www.openplans.org/spearfish</entry>
+                </connectionParameters>
+                <__default>false</__default>
+                <featureTypes>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.xml" type="application/xml"/>
+                </featureTypes>
+              </dataStore>
+              
+            application/json: |
+              {"dataStore":{"name":"sf","enabled":true,"workspace":{"name":"sf","href":"http://localhost:8080/geoserver/rest/workspaces/sf.json"},"connectionParameters":{"entry":[{"@key":"url","$":"file:data/sf"},{"@key":"namespace","$":"http://www.openplans.org/spearfish"}]},"_default":false,"featureTypes":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.json"}}
+              
+    post:
+      operationId: postDatastore
+      description: Invalid. Use PUT to edit a data store definition, or POST with /datastore to add a new definition.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putDatastore
+      summary: Modify a data store.
+      description: Modify data store ds. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores/{ds}.xml" for XML).
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the data store to modify.
+          type: string
+        - $ref: "#/parameters/dataStorePut"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The data store was successfully updated.
+
+    delete:
+      operationId: deleteDatastore
+      summary: Delete data store
+      description: Deletes a data store from the server.
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the worskpace containing the data store.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the data store to delete.
+          type: string
+        - name: recurse
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all resources contained in the store are also removed. The default value is "false".
+          type: boolean
+      responses:
+        200:
+          description: OK
+
+  /workspaces/{workspaceName}/datastores/{storeName}/{method}.{format}:
+    get:
+      operationId: getDataStoreUpload
+      description:  Deprecated. Retrieve the underlying files for the data store as a zip file with MIME type application/zip
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the data store.
+          type: string
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: method
+          in: path
+          required: true
+          description: The upload method. Can be "url", "file", "external". Unused for GET
+          type: string
+        - name: format
+          in: path
+          required: true
+          description: The type of source data store (e.g., "shp"). Unused for GET
+          type: string
+      responses:
+        200:
+          description: OK
+
+    post:
+      operationId: postDataStoreUpload
+      description: Invalid, use PUT for uploads
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putDataStoreUpload
+      summary:  Uploads files to the data store, creating it if necessary
+      description: Creates or modifies a single data store by uploading spatial data or mapping configuration (in case an app-schema data store is targeted) files.
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the worskpace containing the coverage stores.
+          type: string
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: method
+          in: path
+          required: true
+          description: The upload method. Can be "url", "file", "external". 
+                       "file" uploads a file from a local source. The body of the request is the file itself.
+                       "url" uploads a file from an remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
+                       "external" uses an existing file on the server. The body of the request is the absolute path to the existing file.
+          type: string
+        - name: format
+          in: path
+          required: true
+          description: The type of source data store (e.g., "shp").
+          type: string
+        - name: configure
+          in: query
+          required: false
+          description: The configure parameter controls if a coverage/layer are configured upon file upload, in addition to creating the store. It can have a value of "none" to avoid configuring coverages.
+          type: string
+        - name: target
+          in: query
+          required: false
+          description: The type of target data store (e.g., "shp"). Same as format if not provided.
+          type: string
+        - name: update
+          in: query
+          required: false
+          description: The update mode. If "overwrite", will overwrite existing data. Otherwise, will append to existing data.
+          type: string
+        - name: charset
+          in: query
+          required: false
+          description: The character set of the data.
+          type: string
+        - name: filename
+          in: query
+          required: false
+          description: The filename parameter specifies the target file name for the file to be uploaded. This is important to avoid clashes with existing files.
+          type: string
+      responses:
+        200:
+          description: The data store was successfully updated.
+          
+    delete:
+      operationId: deleteDataStoreUpload
+      description: Invalid, only used for uploads
+      responses:
+        405:
+          description: Method Not Allowed
+  /workspaces/{workspaceName}/appschemastores/{storeName}/cleanSchemas:
+    post:
+      operationId: cleanAllMongoSchemas
+      summary: Cleans all MongoDB internal stores Schemas for an App-Schema store. 
+      description: Cleans all MongoDB internal stores Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/appschemastores/{storeName}/datastores/{internalStoreId}/cleanSchemas:
+    post:
+      operationId: cleanMongoSchema
+      summary: Cleans a MongoDB internal store Schemas for an App-Schema store. 
+      description: Cleans a MongoDB internal store Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+        - name: internalStoreId
+          in: path
+          required: true
+          description: The store ID for the internal MongoDB store as specified on App-Schema Mappings.
+          type: string
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/appschemastores/{storeName}/rebuildMongoSchemas:
+    post:
+      operationId: rebuildAllMongoSchemas
+      summary: Rebuilds all MongoDB internal stores Schemas for an App-Schema store. 
+      description: Rebuilds all MongoDB internal stores Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+        - name: ids
+          in: query
+          required: false
+          description: Comma separated MongoDB object IDs for use in new generated schema.
+          type: string
+        - name: max
+          in: query
+          required: false
+          description: Max number of objects for use in new generated schema.
+          type: integer
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/appschemastores/{storeName}/datastores/{internalStoreId}/rebuildMongoSchemas:
+    post:
+      operationId: rebuildMongoSchema
+      summary: Rebuilds a MongoDB internal store Schemas for an App-Schema store. 
+      description: Rebuilds a MongoDB internal store Schemas for an App-Schema store. 
+      produces:
+        - text/plain
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          type: string
+          description: The name of the worskpace containing the data stores.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the App-Schema store
+          type: string
+        - name: internalStoreId
+          in: path
+          required: true
+          description: The store ID for the internal MongoDB store as specified on App-Schema Mappings.
+          type: string
+        - name: ids
+          in: query
+          required: false
+          description: Comma separated MongoDB object IDs for use in new generated schema.
+          type: string
+        - name: max
+          in: query
+          required: false
+          description: Max number of objects for use in new generated schema.
+          type: integer
+        - name: schema
+          in: query
+          required: false
+          description: Name of schema to re-build.
+          type: string
+      responses:
+        200:
+          description: OK		
+parameters:
+  dataStorePost:
+    name: dataStoreBody
+    description: |
+      The data store body information to upload.
+      
+      The contents of the connection parameters will differ depending on the type of data store being added.
+
+      - GeoPackage
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <name>nyc</name>
+            <connectionParameters>
+              <database>file:///path/to/nyc.gpkg</database>
+              <dbtype>geopkg</dbtype>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "name": "nyc",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"database","$":"file:///path/to/nyc.gpkg"},
+                  {"@key":"dbtype","$":"geopkg"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | Primary key metadata table | The optional table containing primary key structure and sequence associations. Can be expressed as 'schema.name' or just 'name' | user | String | False | ` ` |
+        | Callback factory | Name of JDBCReaderCallbackFactory to enable on the data store | user | String | False | ` ` |
+        | Evictor tests per run | number of connections checked by the idle connection evictor for each of its runs (defaults to 3) | user | Integer | False | `3` |
+        | database | Database | user | File | True | ` ` |
+        | Batch insert size | Number of records inserted in the same batch (default, 1). For optimal performance, set to 100. | user | Integer | False | `1` |
+        | fetch size | number of records read with each iteraction with the dbms | user | Integer | False | `1000` |
+        | Connection timeout | number of seconds the connection pool will wait before timing out attempting to get a new connection (default, 20 seconds) | user | Integer | False | `20` |
+        | namespace | Namespace prefix | user | String | False | ` ` |
+        | max connections | maximum number of open connections | user | Integer | False | `10` |
+        | Test while idle | Periodically test the connections are still valid also while idle in the pool | user | Boolean | False | `True` |
+        | Max connection idle time | number of seconds a connection needs to stay idle for the evictor to consider closing it | user | Integer | False | `300` |
+        | Session startup SQL | SQL statement executed when the connection is grabbed from the pool | user | String | False | ` ` |
+        | validate connections | check connection is alive before using it | user | Boolean | False | `True` |
+        | dbtype | Type | program | String | True | `geopkg` |
+        | passwd | password used to login | user | String | False | ` ` |
+        | Expose primary keys | Expose primary key columns as attributes of the feature type | user | Boolean | False | `False` |
+        | min connections | minimum number of pooled connection | user | Integer | False | `1` |
+        | Evictor run periodicity | number of seconds between idle object evitor runs (default, 300 seconds) | user | Integer | False | `300` |
+        | Session close-up SQL | SQL statement executed when the connection is released to the pool | user | String | False | ` ` |
+        | user | user name to login as | user | String | False | ` ` |
+
+      - PostGIS
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <name>nyc</name>
+            <connectionParameters>
+              <host>localhost</host>
+              <port>5432</port>
+              <database>nyc</database>
+              <user>bob</user>
+              <passwd>postgres</passwd>
+              <dbtype>postgis</dbtype>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "name": "nyc",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"host","$":"localhost"},
+                  {"@key":"port","$":"5432"},
+                  {"@key":"database","$":"nyc"},
+                  {"@key":"user","$":"bob"},
+                  {"@key":"passwd","$":"postgres"},
+                  {"@key":"dbtype","$":"postgis"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | Connection timeout | number of seconds the connection pool will wait before timing out attempting to get a new connection (default, 20 seconds) | user | Integer | False | `20` |
+        | validate connections | check connection is alive before using it | user | Boolean | False | `True` |
+        | port | Port | user | Integer | True | `5432` |
+        | Primary key metadata table | The optional table containing primary key structure and sequence associations. Can be expressed as 'schema.name' or just 'name' | user | String | False | ` ` |
+        | Support on the fly geometry simplification | When enabled, operations such as map rendering will pass a hint that will enable the usage of ST_Simplify | user | Boolean | False | `True` |
+        | create database | Creates the database if it does not exist yet | advanced | Boolean | False | `False` |
+        | create database params | Extra specifications appeneded to the CREATE DATABASE command | advanced | String | False | `` |
+        | dbtype | Type | program | String | True | `postgis` |
+        | Batch insert size | Number of records inserted in the same batch (default, 1). For optimal performance, set to 100. | user | Integer | False | `1` |
+        | namespace | Namespace prefix | user | String | False | ` ` |
+        | Max connection idle time | number of seconds a connection needs to stay idle for the evictor to consider closing it | user | Integer | False | `300` |
+        | Session startup SQL | SQL statement executed when the connection is grabbed from the pool | user | String | False | ` ` |
+        | Expose primary keys | Expose primary key columns as attributes of the feature type | user | Boolean | False | `False` |
+        | min connections | minimum number of pooled connection | user | Integer | False | `1` |
+        | Max open prepared statements | Maximum number of prepared statements kept open and cached for each connection in the pool. Set to 0 to have unbounded caching, to -1 to disable caching | user | Integer | False | `50` |
+        | Callback factory | Name of JDBCReaderCallbackFactory to enable on the data store | user | String | False | ` ` |
+        | passwd | password used to login | user | String | False | ` ` |
+        | encode functions | set to true to have a set of filter functions be translated directly in SQL. Due to differences in the type systems the result might not be the same as evaluating them in memory, including the SQL failing with errors while the in memory version works fine. However this allows to push more of the filter into the database, increasing performance.the postgis table. | advanced | Boolean | False | `False` |
+        | host | Host | user | String | True | `localhost` |
+        | Evictor tests per run | number of connections checked by the idle connection evictor for each of its runs (defaults to 3) | user | Integer | False | `3` |
+        | Loose bbox | Perform only primary filter on bbox | user | Boolean | False | `True` |
+        | Evictor run periodicity | number of seconds between idle object evitor runs (default, 300 seconds) | user | Integer | False | `300` |
+        | Estimated extends | Use the spatial index information to quickly get an estimate of the data bounds | user | Boolean | False | `True` |
+        | database | Database | user | String | False | ` ` |
+        | fetch size | number of records read with each iteraction with the dbms | user | Integer | False | `1000` |
+        | Test while idle | Periodically test the connections are still valid also while idle in the pool | user | Boolean | False | `True` |
+        | max connections | maximum number of open connections | user | Integer | False | `10` |
+        | preparedStatements | Use prepared statements | user | Boolean | False | `False` |
+        | Session close-up SQL | SQL statement executed when the connection is released to the pool | user | String | False | ` ` |
+        | schema | Schema | user | String | False | `public` |
+        | user | user name to login as | user | String | True | ` ` |
+
+      - Shapefile
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <name>nyc</name>
+            <connectionParameters>
+              <url>file:/path/to/nyc.shp</database>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "name": "nyc",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"url","$":"file:/path/to/nyc.shp"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | cache and reuse memory maps | only memory map a file one, then cache and reuse the map | advanced | Boolean | False | `True` |
+        | namespace | uri to a the namespace | advanced | URI | False | ` ` |
+        | filetype | Discriminator for directory stores | program | String | False | `shapefile` |
+        | charset | character used to decode strings from the DBF file | advanced | Charset | False | `ISO-8859-1` |
+        | create spatial index | enable/disable the automatic creation of spatial index | advanced | Boolean | False | `True` |
+        | fstype | Enable using a setting of 'shape'. | advanced | String | False | `shape` |
+        | url | url to a .shp file | user | URL | True | ` ` |
+        | enable spatial index | enable/disable the use of spatial index for local shapefiles | advanced | Boolean | False | `True` |
+        | memory mapped buffer | enable/disable the use of memory-mapped io | advanced | Boolean | False | `False` |
+        | timezone | time zone used to read dates from the DBF file | advanced | TimeZone | False | `Pacific Standard Time` |
+
+      - Directory of spatial files (shapefiles)
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <name>nyc</name>
+            <connectionParameters>
+              <url>file:/path/to/directory</database>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "name": "nyc",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"url","$":"file:/path/to/directory"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | cache and reuse memory maps | only memory map a file one, then cache and reuse the map | advanced | Boolean | False | `True` |
+        | namespace | uri to a the namespace | advanced | URI | False | ` ` |
+        | filetype | Discriminator for directory stores | program | String | False | `shapefile` |
+        | charset | character used to decode strings from the DBF file | advanced | Charset | False | `ISO-8859-1` |
+        | create spatial index | enable/disable the automatic creation of spatial index | advanced | Boolean | False | `True` |
+        | fstype | Enable using a setting of 'shape'. | advanced | String | False | `shape` |
+        | url | url to a .shp file | user | URL | True | ` ` |
+        | enable spatial index | enable/disable the use of spatial index for local shapefiles | advanced | Boolean | False | `True` |
+        | memory mapped buffer | enable/disable the use of memory-mapped io | advanced | Boolean | False | `False` |
+        | timezone | time zone used to read dates from the DBF file | advanced | TimeZone | False | `Pacific Standard Time` |
+
+
+      - Web Feature Service
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <name>nyc</name>
+            <connectionParameters>
+              <GET_CAPABILITIES_URL>http://localhost:8080/geoserver/wfs?request=GetCapabilities</GET_CAPABILITIES_URL>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "name": "nyc",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"GET_CAPABILITIES_URL","$":"http://localhost:8080/geoserver/wfs?request=GetCapabilities"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | Protocol | Sets a preference for the HTTP protocol to use when requesting WFS functionality. Set this value to Boolean.TRUE for POST, Boolean.FALSE for GET or NULL for AUTO | user | Boolean | False | ` ` |
+        | WFS GetCapabilities URL | Represents a URL to the getCapabilities document or a server instance. | user | URL | False | ` ` |
+        | Buffer Size | This allows the user to specify a buffer size in features. This param has a default value of 10 features. | user | Integer | False | `10` |
+        | Filter compliance | Level of compliance to WFS specification (0-low,1-medium,2-high) | user | Integer | False | ` ` |
+        | EntityResolver | Sets the entity resolver used to expand XML entities | program | EntityResolver | False | `org.geotools.xml.PreventLocalEntityResolver@75e98519` |
+        | Time-out | This allows the user to specify a timeout in milliseconds. This param has a default value of 3000ms. | user | Integer | False | `3000` |
+        | GmlComplianceLevel | Optional OGC GML compliance level required. | user | Integer | False | `0` |
+        | Lenient | Indicates that datastore should do its best to create features from the provided data even if it does not accurately match the schema.  Errors will be logged but the parsing will continue if this is true.  Default is false | user | Boolean | False | `False` |
+        | Password | This allows the user to specify a username. This param should not be used without the USERNAME param. | user | String | False | ` ` |
+        | Use Default SRS | Use always the declared DefaultSRS for requests and reproject locally if necessary | advanced | Boolean | False | `False` |
+        | Namespace | Override the original WFS type name namespaces | advanced | String | False | ` ` |
+        | Username | This allows the user to specify a username. This param should not be used without the PASSWORD param. | user | String | False | ` ` |
+        | Axis Order Filter | Indicates axis order used by the remote WFS server for filters. It applies only to WFS 1.x.0 servers. Default is the same as AXIS_ORDER | advanced | String | False | ` ` |
+        | GmlCompatibleTypeNames | Use Gml Compatible TypeNames (replace : by _). | user | Boolean | False | `False` |
+        | Maximum features | Positive integer used as a hard limit for the amount of Features to retrieve for each FeatureType. A value of zero or not providing this parameter means no limit. | user | Integer | False | `0` |
+        | Axis Order | Indicates axis order used by the remote WFS server in result coordinates. It applies only to WFS 1.x.0 servers. Default is Compliant | advanced | String | False | `Compliant` |
+        | WFS Strategy | Override wfs stragegy with either cubwerx, ionic, mapserver, geoserver, strict, nonstrict or arcgis strategy. | user | String | False | `auto` |
+        | Try GZIP | Indicates that datastore should use gzip to transfer data if the server supports it. Default is true | user | Boolean | False | `True` |
+        | Encoding | This allows the user to specify the character encoding of the XML-Requests sent to the Server. Defaults to UTF-8 | user | String | False | `UTF-8` |
+        | Outputformat | This allows the user to specify an outputFormat, different from the default one. | advanced | String | False | ` ` |
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/datastore"
+  dataStorePut:
+    name: dataStoreBody
+    description: |
+      The updated data store definition.
+      For a PUT, only values which should be changed need to be included. The connectionParameters map counts as a single value, 
+      so if you change it all preexisting connection parameters will be overwritten.
+
+      The contents of the connection parameters will differ depending on the type of data store being added.
+
+      - GeoPackage
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <description>A data store</description>
+            <enabled>true</enabled>
+            <__default>true</__default>
+            <connectionParameters>
+              <database>file:///path/to/nyc.gpkg</database>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "description": "A data store",
+              "enabled": "true",
+              "_default": "true",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"database","$":"file:///path/to/nyc.gpkg"},
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | Primary key metadata table | The optional table containing primary key structure and sequence associations. Can be expressed as 'schema.name' or just 'name' | user | String | False | ` ` |
+        | Callback factory | Name of JDBCReaderCallbackFactory to enable on the data store | user | String | False | ` ` |
+        | Evictor tests per run | number of connections checked by the idle connection evictor for each of its runs (defaults to 3) | user | Integer | False | `3` |
+        | database | Database | user | File | True | ` ` |
+        | Batch insert size | Number of records inserted in the same batch (default, 1). For optimal performance, set to 100. | user | Integer | False | `1` |
+        | fetch size | number of records read with each iteraction with the dbms | user | Integer | False | `1000` |
+        | Connection timeout | number of seconds the connection pool will wait before timing out attempting to get a new connection (default, 20 seconds) | user | Integer | False | `20` |
+        | namespace | Namespace prefix | user | String | False | ` ` |
+        | max connections | maximum number of open connections | user | Integer | False | `10` |
+        | Test while idle | Periodically test the connections are still valid also while idle in the pool | user | Boolean | False | `True` |
+        | Max connection idle time | number of seconds a connection needs to stay idle for the evictor to consider closing it | user | Integer | False | `300` |
+        | Session startup SQL | SQL statement executed when the connection is grabbed from the pool | user | String | False | ` ` |
+        | validate connections | check connection is alive before using it | user | Boolean | False | `True` |
+        | dbtype | Type | program | String | True | `geopkg` |
+        | passwd | password used to login | user | String | False | ` ` |
+        | Expose primary keys | Expose primary key columns as attributes of the feature type | user | Boolean | False | `False` |
+        | min connections | minimum number of pooled connection | user | Integer | False | `1` |
+        | Evictor run periodicity | number of seconds between idle object evitor runs (default, 300 seconds) | user | Integer | False | `300` |
+        | Session close-up SQL | SQL statement executed when the connection is released to the pool | user | String | False | ` ` |
+        | user | user name to login as | user | String | False | ` ` |
+
+      - PostGIS
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <description>A data store</description>
+            <enabled>true</enabled>
+            <__default>true</__default>
+            <connectionParameters>
+              <host>localhost</host>
+              <port>5432</port>
+              <database>nyc</database>
+              <user>bob</user>
+              <passwd>postgres</passwd>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "description": "A data store",
+              "enabled": "true",
+              "_default": "true",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"host","$":"localhost"},
+                  {"@key":"port","$":"5432"},
+                  {"@key":"database","$":"nyc"},
+                  {"@key":"user","$":"bob"},
+                  {"@key":"passwd","$":"postgres"},
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | Connection timeout | number of seconds the connection pool will wait before timing out attempting to get a new connection (default, 20 seconds) | user | Integer | False | `20` |
+        | validate connections | check connection is alive before using it | user | Boolean | False | `True` |
+        | port | Port | user | Integer | True | `5432` |
+        | Primary key metadata table | The optional table containing primary key structure and sequence associations. Can be expressed as 'schema.name' or just 'name' | user | String | False | ` ` |
+        | Support on the fly geometry simplification | When enabled, operations such as map rendering will pass a hint that will enable the usage of ST_Simplify | user | Boolean | False | `True` |
+        | create database | Creates the database if it does not exist yet | advanced | Boolean | False | `False` |
+        | create database params | Extra specifications appeneded to the CREATE DATABASE command | advanced | String | False | `` |
+        | dbtype | Type | program | String | True | `postgis` |
+        | Batch insert size | Number of records inserted in the same batch (default, 1). For optimal performance, set to 100. | user | Integer | False | `1` |
+        | namespace | Namespace prefix | user | String | False | ` ` |
+        | Max connection idle time | number of seconds a connection needs to stay idle for the evictor to consider closing it | user | Integer | False | `300` |
+        | Session startup SQL | SQL statement executed when the connection is grabbed from the pool | user | String | False | ` ` |
+        | Expose primary keys | Expose primary key columns as attributes of the feature type | user | Boolean | False | `False` |
+        | min connections | minimum number of pooled connection | user | Integer | False | `1` |
+        | Max open prepared statements | Maximum number of prepared statements kept open and cached for each connection in the pool. Set to 0 to have unbounded caching, to -1 to disable caching | user | Integer | False | `50` |
+        | Callback factory | Name of JDBCReaderCallbackFactory to enable on the data store | user | String | False | ` ` |
+        | passwd | password used to login | user | String | False | ` ` |
+        | encode functions | set to true to have a set of filter functions be translated directly in SQL. Due to differences in the type systems the result might not be the same as evaluating them in memory, including the SQL failing with errors while the in memory version works fine. However this allows to push more of the filter into the database, increasing performance.the postgis table. | advanced | Boolean | False | `False` |
+        | host | Host | user | String | True | `localhost` |
+        | Evictor tests per run | number of connections checked by the idle connection evictor for each of its runs (defaults to 3) | user | Integer | False | `3` |
+        | Loose bbox | Perform only primary filter on bbox | user | Boolean | False | `True` |
+        | Evictor run periodicity | number of seconds between idle object evitor runs (default, 300 seconds) | user | Integer | False | `300` |
+        | Estimated extends | Use the spatial index information to quickly get an estimate of the data bounds | user | Boolean | False | `True` |
+        | database | Database | user | String | False | ` ` |
+        | fetch size | number of records read with each iteraction with the dbms | user | Integer | False | `1000` |
+        | Test while idle | Periodically test the connections are still valid also while idle in the pool | user | Boolean | False | `True` |
+        | max connections | maximum number of open connections | user | Integer | False | `10` |
+        | preparedStatements | Use prepared statements | user | Boolean | False | `False` |
+        | Session close-up SQL | SQL statement executed when the connection is released to the pool | user | String | False | ` ` |
+        | schema | Schema | user | String | False | `public` |
+        | user | user name to login as | user | String | True | ` ` |
+
+      - Shapefile
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <description>A data store</description>
+            <enabled>true</enabled>
+            <__default>true</__default>
+            <connectionParameters>
+              <url>file:/path/to/nyc.shp</database>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "description": "A data store",
+              "enabled": "true",
+              "_default": "true",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"url","$":"file:/path/to/nyc.shp"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | cache and reuse memory maps | only memory map a file one, then cache and reuse the map | advanced | Boolean | False | `True` |
+        | namespace | uri to a the namespace | advanced | URI | False | ` ` |
+        | filetype | Discriminator for directory stores | program | String | False | `shapefile` |
+        | charset | character used to decode strings from the DBF file | advanced | Charset | False | `ISO-8859-1` |
+        | create spatial index | enable/disable the automatic creation of spatial index | advanced | Boolean | False | `True` |
+        | fstype | Enable using a setting of 'shape'. | advanced | String | False | `shape` |
+        | url | url to a .shp file | user | URL | True | ` ` |
+        | enable spatial index | enable/disable the use of spatial index for local shapefiles | advanced | Boolean | False | `True` |
+        | memory mapped buffer | enable/disable the use of memory-mapped io | advanced | Boolean | False | `False` |
+        | timezone | time zone used to read dates from the DBF file | advanced | TimeZone | False | `Pacific Standard Time` |
+
+      - Directory of spatial files (shapefiles)
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <description>A data store</description>
+            <enabled>true</enabled>
+            <__default>true</__default>
+            <connectionParameters>
+              <url>file:/path/to/directory</database>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "description": "A data store",
+              "enabled": "true",
+              "_default": "true",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"url","$":"file:/path/to/directory"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | cache and reuse memory maps | only memory map a file one, then cache and reuse the map | advanced | Boolean | False | `True` |
+        | namespace | uri to a the namespace | advanced | URI | False | ` ` |
+        | filetype | Discriminator for directory stores | program | String | False | `shapefile` |
+        | charset | character used to decode strings from the DBF file | advanced | Charset | False | `ISO-8859-1` |
+        | create spatial index | enable/disable the automatic creation of spatial index | advanced | Boolean | False | `True` |
+        | fstype | Enable using a setting of 'shape'. | advanced | String | False | `shape` |
+        | url | url to a .shp file | user | URL | True | ` ` |
+        | enable spatial index | enable/disable the use of spatial index for local shapefiles | advanced | Boolean | False | `True` |
+        | memory mapped buffer | enable/disable the use of memory-mapped io | advanced | Boolean | False | `False` |
+        | timezone | time zone used to read dates from the DBF file | advanced | TimeZone | False | `Pacific Standard Time` |
+
+
+      - Web Feature Service
+
+        Examples:
+        - application/xml:
+
+          ```
+          <dataStore>
+            <description>A data store</description>
+            <enabled>true</enabled>
+            <__default>true</__default>
+            <connectionParameters>
+              <GET_CAPABILITIES_URL>http://localhost:8080/geoserver/wfs?request=GetCapabilities</GET_CAPABILITIES_URL>
+            </connectionParameters>
+          </dataStore>
+          ```
+
+        - application/json:
+
+          ```
+          {
+            "dataStore": {
+              "description": "A data store",
+              "enabled": "true",
+              "_default": "true",
+              "connectionParameters": {
+                "entry": [
+                  {"@key":"GET_CAPABILITIES_URL","$":"http://localhost:8080/geoserver/wfs?request=GetCapabilities"}
+                ]
+              }
+            }
+          }
+          ```
+
+        Connection Parameters:
+
+        | key | description | level | type | required | default |
+        | --- | ----------- | ----- | ---- | -------- | ------- |
+        | Protocol | Sets a preference for the HTTP protocol to use when requesting WFS functionality. Set this value to Boolean.TRUE for POST, Boolean.FALSE for GET or NULL for AUTO | user | Boolean | False | ` ` |
+        | WFS GetCapabilities URL | Represents a URL to the getCapabilities document or a server instance. | user | URL | False | ` ` |
+        | Buffer Size | This allows the user to specify a buffer size in features. This param has a default value of 10 features. | user | Integer | False | `10` |
+        | Filter compliance | Level of compliance to WFS specification (0-low,1-medium,2-high) | user | Integer | False | ` ` |
+        | EntityResolver | Sets the entity resolver used to expand XML entities | program | EntityResolver | False | `org.geotools.xml.PreventLocalEntityResolver@75e98519` |
+        | Time-out | This allows the user to specify a timeout in milliseconds. This param has a default value of 3000ms. | user | Integer | False | `3000` |
+        | GmlComplianceLevel | Optional OGC GML compliance level required. | user | Integer | False | `0` |
+        | Lenient | Indicates that datastore should do its best to create features from the provided data even if it does not accurately match the schema.  Errors will be logged but the parsing will continue if this is true.  Default is false | user | Boolean | False | `False` |
+        | Password | This allows the user to specify a username. This param should not be used without the USERNAME param. | user | String | False | ` ` |
+        | Use Default SRS | Use always the declared DefaultSRS for requests and reproject locally if necessary | advanced | Boolean | False | `False` |
+        | Namespace | Override the original WFS type name namespaces | advanced | String | False | ` ` |
+        | Username | This allows the user to specify a username. This param should not be used without the PASSWORD param. | user | String | False | ` ` |
+        | Axis Order Filter | Indicates axis order used by the remote WFS server for filters. It applies only to WFS 1.x.0 servers. Default is the same as AXIS_ORDER | advanced | String | False | ` ` |
+        | GmlCompatibleTypeNames | Use Gml Compatible TypeNames (replace : by _). | user | Boolean | False | `False` |
+        | Maximum features | Positive integer used as a hard limit for the amount of Features to retrieve for each FeatureType. A value of zero or not providing this parameter means no limit. | user | Integer | False | `0` |
+        | Axis Order | Indicates axis order used by the remote WFS server in result coordinates. It applies only to WFS 1.x.0 servers. Default is Compliant | advanced | String | False | `Compliant` |
+        | WFS Strategy | Override wfs stragegy with either cubwerx, ionic, mapserver, geoserver, strict, nonstrict or arcgis strategy. | user | String | False | `auto` |
+        | Try GZIP | Indicates that datastore should use gzip to transfer data if the server supports it. Default is true | user | Boolean | False | `True` |
+        | Encoding | This allows the user to specify the character encoding of the XML-Requests sent to the Server. Defaults to UTF-8 | user | String | False | `UTF-8` |
+        | Outputformat | This allows the user to specify an outputFormat, different from the default one. | advanced | String | False | ` ` |
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/datastore"
+definitions:
+
+  dataStoreResponse:
+    title: datastores
+    type: array
+    items:
+      title: datastore
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of data store
+        link:
+          type: string
+          description: URL to data store definition
+
+  datastore:
+    title: datastore
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of data store
+      description:
+        type: string
+        description: Description of data store
+      enabled:
+        type: boolean
+        description: Whether or not the data store is enabled
+      workspace:
+        title: workspace
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of workspace
+          link:
+            type: string
+            description: URL to workspace definition
+      connectionParameters:
+        type: array
+        items:
+          title: entry
+          description: connection parameter key-value pair
+          type: object
+          properties:
+            key:
+              type: string
+              description: Connection parameter key
+            value:
+              type: string
+              description: Connection parameter value
+      __default:
+        type: boolean
+        description: Whether or not the data store is the default data store
+      featureTypes:
+        type: array
+        items:
+          type: string
+          description: URL to featuretype definition
+
+  

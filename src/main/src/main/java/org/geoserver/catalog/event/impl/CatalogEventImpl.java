@@ -10,14 +10,13 @@ import org.geoserver.catalog.event.CatalogEvent;
 
 public class CatalogEventImpl implements CatalogEvent {
 
-	CatalogInfo source;
-	
-	
-	public CatalogInfo getSource() {
-		return source;
-	}
+    CatalogInfo source;
 
-	public void setSource(CatalogInfo source) {
-		this.source = source;
-	}
+    public CatalogInfo getSource() {
+        return source;
+    }
+
+    public void setSource(CatalogInfo source) {
+        this.source = source;
+    }
 }

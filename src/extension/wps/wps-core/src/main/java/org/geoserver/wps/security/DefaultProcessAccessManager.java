@@ -12,10 +12,9 @@ import org.opengis.feature.type.Name;
 import org.springframework.security.core.Authentication;
 
 /**
- * Default implementation of WPS access manager based on wps.xml configuration file. Builds
- * {@link #SecureTreeNode} to manage roles hierarchy as in {@link #DefaultDataAccessManager}
+ * Default implementation of WPS access manager based on wps.xml configuration file. Builds {@link
+ * #SecureTreeNode} to manage roles hierarchy as in {@link #DefaultDataAccessManager}
  */
-
 public class DefaultProcessAccessManager implements ProcessAccessManager {
 
     private WpsAccessRuleDAO dao;
@@ -32,17 +31,18 @@ public class DefaultProcessAccessManager implements ProcessAccessManager {
 
     @Override
     public ProcessAccessLimits getAccessLimits(Authentication user, String namespace) {
-        SecureTreeNode node = dao.getSecurityTreeRoot().getDeepestNode(new String[] { namespace });
-        return new ProcessAccessLimits(dao.getMode(), node.canAccess(user, AccessMode.READ),
-                namespace);
+        SecureTreeNode node = dao.getSecurityTreeRoot().getDeepestNode(new String[] {namespace});
+        return new ProcessAccessLimits(
+                dao.getMode(), node.canAccess(user, AccessMode.READ), namespace);
     }
 
     @Override
     public ProcessAccessLimits getAccessLimits(Authentication user, Name process) {
-        SecureTreeNode node = dao.getSecurityTreeRoot().getDeepestNode(
-                new String[] { process.getNamespaceURI(), process.getLocalPart() });
-        return new ProcessAccessLimits(dao.getMode(), node.canAccess(user, AccessMode.READ),
-                process.toString());
+        SecureTreeNode node =
+                dao.getSecurityTreeRoot()
+                        .getDeepestNode(
+                                new String[] {process.getNamespaceURI(), process.getLocalPart()});
+        return new ProcessAccessLimits(
+                dao.getMode(), node.canAccess(user, AccessMode.READ), process.toString());
     }
-
 }

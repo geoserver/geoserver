@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"                 
+                 xmlns:gml="http://www.opengis.net/gml"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd http://www.isotc211.org/2005/gmx http://www.isotc211.org/2005/gmx/gmx.xsd http://www.isotc211.org/2005/srv http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd">
+  <gmd:fileIdentifier>
+      <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">prefix/1a2c6739-3c62-432b-b2a0-aaa589a9e3a1</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language>
+      <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut"/>
+  </gmd:language>
+  <gmd:characterSet>
+      <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"
+                               codeListValue="utf8"/>
+  </gmd:characterSet>
+  <gmd:parentIdentifier>
+      <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">bedfc334-b64e-413d-8a05-c92c253a664e</gco:CharacterString>
+  </gmd:parentIdentifier>
+  <gmd:hierarchyLevel>
+      <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ScopeCode"
+                        codeListValue="dataset"/>
+  </gmd:hierarchyLevel>
+  <gmd:contact>
+      <gmd:CI_ResponsibleParty>
+         <gmd:organisationName>
+            <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Vlaamse overheid, Departement Omgeving, Vlaams Planbureau voor Omgeving (VPO)</gco:CharacterString>
+         </gmd:organisationName>
+         <gmd:contactInfo>
+            <gmd:CI_Contact>
+               <gmd:address>
+                  <gmd:CI_Address>
+                     <gmd:deliveryPoint>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Koning Albert II-laan 20 bus 8</gco:CharacterString>
+                     </gmd:deliveryPoint>
+                     <gmd:city>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Brussel</gco:CharacterString>
+                     </gmd:city>
+                     <gmd:postalCode>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">1000</gco:CharacterString>
+                     </gmd:postalCode>
+                     <gmd:country>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">België</gco:CharacterString>
+                     </gmd:country>
+                     <gmd:electronicMailAddress>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">natuurlijkerijkdommenbrussel.omgeving@vlaanderen.be</gco:CharacterString>
+                     </gmd:electronicMailAddress>
+                  </gmd:CI_Address>
+               </gmd:address>
+               <gmd:onlineResource>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.omgevingvlaanderen.be</gmd:URL>
+                     </gmd:linkage>
+                  </gmd:CI_OnlineResource>
+               </gmd:onlineResource>
+            </gmd:CI_Contact>
+         </gmd:contactInfo>
+         <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode"
+                             codeListValue="pointOfContact"/>
+         </gmd:role>
+      </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+      <gco:DateTime xmlns:gco="http://www.isotc211.org/2005/gco">2018-07-30T11:55:13</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName>
+      <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Vlaamse metadatastandaard voor geografie - GDI-Vlaanderen metadataprofiel</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+      <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">2.1.2</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <gmd:referenceSystemInfo>
+      <gmd:MD_ReferenceSystem>
+         <gmd:referenceSystemIdentifier>
+            <gmd:RS_Identifier>
+               <gmd:code>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Belge_Lambert_1972 (31370)</gco:CharacterString>
+               </gmd:code>
+               <gmd:codeSpace>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">EPSG</gco:CharacterString>
+               </gmd:codeSpace>
+            </gmd:RS_Identifier>
+         </gmd:referenceSystemIdentifier>
+      </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:referenceSystemInfo>
+      <gmd:MD_ReferenceSystem>
+         <gmd:referenceSystemIdentifier>
+            <gmd:RS_Identifier>
+               <gmd:code>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">TAW</gco:CharacterString>
+               </gmd:code>
+               <gmd:codeSpace>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">NGI</gco:CharacterString>
+               </gmd:codeSpace>
+            </gmd:RS_Identifier>
+         </gmd:referenceSystemIdentifier>
+      </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:referenceSystemInfo>
+      <gmd:MD_ReferenceSystem>
+         <gmd:referenceSystemIdentifier>
+            <gmd:RS_Identifier>
+               <gmd:code>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">http://www.opengis.net/def/crs/EPSG/0/3043</gco:CharacterString>
+               </gmd:code>
+               <gmd:codeSpace>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">EPSG</gco:CharacterString>
+               </gmd:codeSpace>
+            </gmd:RS_Identifier>
+         </gmd:referenceSystemIdentifier>
+      </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:identificationInfo>
+      <gmd:MD_DataIdentification>
+         <gmd:citation>
+            <gmd:CI_Citation>
+               <gmd:title>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+               </gmd:title>
+               <gmd:alternateTitle>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Geologisch 3D model Vlaamse Ondergrond versie2- Dikte niet-tabulair Quartair</gco:CharacterString>
+               </gmd:alternateTitle>
+               <gmd:alternateTitle>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">AndereTitel</gco:CharacterString>
+               </gmd:alternateTitle>
+               <gmd:date>
+                  <gmd:CI_Date>
+                     <gmd:date>
+                        <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2013-10-02</gco:Date>
+                     </gmd:date>
+                     <gmd:dateType>
+                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                             codeListValue="creation"/>
+                     </gmd:dateType>
+                  </gmd:CI_Date>
+               </gmd:date>
+               <gmd:date>
+                  <gmd:CI_Date>
+                     <gmd:date>
+                        <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2013-11-12</gco:Date>
+                     </gmd:date>
+                     <gmd:dateType>
+                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                             codeListValue="publication"/>
+                     </gmd:dateType>
+                  </gmd:CI_Date>
+               </gmd:date>
+               <gmd:identifier>
+                  <gmd:RS_Identifier>
+                     <gmd:code>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">0ea6fbd0-ed2a-11e2-91e2-0800200c9a66</gco:CharacterString>
+                     </gmd:code>
+                     <gmd:codeSpace>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">DOV-be</gco:CharacterString>
+                     </gmd:codeSpace>
+                  </gmd:RS_Identifier>
+               </gmd:identifier>
+               <gmd:series>
+                  <gmd:CI_Series>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">G3Dv2_hoogte- en diktelagen</gco:CharacterString>
+                     </gmd:name>
+                  </gmd:CI_Series>
+               </gmd:series>
+            </gmd:CI_Citation>
+         </gmd:citation>
+         <gmd:abstract>
+            <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Deze laag geeft de dikte van de Quartaire afzettingen van het Geologisch 3D model van Vlaanderen. De Quartaire sedimenten in Vlaanderen vormen een laag die alle oudere afzettingen bedekt. Deze laag omvat de niet-tabulaire Quartaire eenheden. De Formaties van Weelde, Malle en Merksplas werden niet mee opgenomen in de kartering van de basis van het Quartair, maar werden apart gemodelleerd. De diktekaart is opgemaakt op basis van de laag G3DV2_01_Quartair basis en G3DV2_00_DEM VLAKO. Het Geologisch 3D model is opgemaakt in het kader van de beheersovereenkomst van de Vlaamse overheid met VITO, onder de noemer VLAKO, in opdracht van het departement LNE - Afdeling Land en Bodembescherming, Ondergrond, Natuurlijke Rijkdommen.</gco:CharacterString>
+         </gmd:abstract>
+         <gmd:purpose>
+            <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Deze laag omvat de niet-tabulaire Quartaire eenheden. De Quartaire sedimenten in Vlaanderen vormen een laag die alle oudere afzettingen bedekt. De basis (mTAW) van het Quartair is dus het subcropvlak voor alle onderliggende lithostratigrafische eenheden en bijgevolg het vlak dat vastlegt hoe de afgedekte geologische kaart er uitziet. De vorm van dit vlak bepaalt of een formatie al dan niet voorkomt onder de Quartaire deklaag.</gco:CharacterString>
+         </gmd:purpose>
+         <gmd:status>
+            <gmd:MD_ProgressCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ProgressCode"
+                                 codeListValue="completed"/>
+         </gmd:status>
+         <gmd:pointOfContact>
+            <gmd:CI_ResponsibleParty>
+               <gmd:organisationName>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Vlaamse overheid, Departement Omgeving, Vlaams Planbureau voor Omgeving (VPO)</gco:CharacterString>
+               </gmd:organisationName>
+               <gmd:contactInfo>
+                  <gmd:CI_Contact>
+                     <gmd:address>
+                        <gmd:CI_Address>
+                           <gmd:deliveryPoint>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Koning Albert II-laan 20 bus 8</gco:CharacterString>
+                           </gmd:deliveryPoint>
+                           <gmd:city>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Brussel</gco:CharacterString>
+                           </gmd:city>
+                           <gmd:postalCode>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">1000</gco:CharacterString>
+                           </gmd:postalCode>
+                           <gmd:country>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">België</gco:CharacterString>
+                           </gmd:country>
+                           <gmd:electronicMailAddress>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">natuurlijkerijkdommenbrussel.omgeving@vlaanderen.be</gco:CharacterString>
+                           </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                     </gmd:address>
+                     <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                           <gmd:linkage>
+                              <gmd:URL>https://www.omgevingvlaanderen.be</gmd:URL>
+                           </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                     </gmd:onlineResource> 
+                  </gmd:CI_Contact>
+               </gmd:contactInfo>
+               <gmd:role>
+                  <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode"
+                                   codeListValue="custodian"/>
+               </gmd:role>
+            </gmd:CI_ResponsibleParty>
+         </gmd:pointOfContact>
+         <gmd:pointOfContact>
+            <gmd:CI_ResponsibleParty>
+               <gmd:organisationName>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Vlaamse Instelling voor Technologisch Onderzoek (VITO)</gco:CharacterString>
+               </gmd:organisationName>
+               <gmd:contactInfo>
+                  <gmd:CI_Contact>
+                     <gmd:address>
+                        <gmd:CI_Address>
+                           <gmd:deliveryPoint>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Boeretang 200</gco:CharacterString>
+                           </gmd:deliveryPoint>
+                           <gmd:city>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Mol</gco:CharacterString>
+                           </gmd:city>
+                           <gmd:postalCode>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">2400</gco:CharacterString>
+                           </gmd:postalCode>
+                           <gmd:country>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">België</gco:CharacterString>
+                           </gmd:country>
+                           <gmd:electronicMailAddress>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">vito@vito.be</gco:CharacterString>
+                           </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                     </gmd:address>
+                  </gmd:CI_Contact>
+               </gmd:contactInfo>
+               <gmd:role>
+                  <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode"
+                                   codeListValue="author"/>
+               </gmd:role>
+            </gmd:CI_ResponsibleParty>
+         </gmd:pointOfContact>
+         <gmd:pointOfContact>
+            <gmd:CI_ResponsibleParty>
+               <gmd:organisationName>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Databank Ondergrond Vlaanderen (DOV)</gco:CharacterString>
+               </gmd:organisationName>
+               <gmd:contactInfo>
+                  <gmd:CI_Contact>
+                     <gmd:phone>
+                        <gmd:CI_Telephone>
+                           <gmd:voice>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">+32 9 240 75 93</gco:CharacterString>
+                           </gmd:voice>
+                           <gmd:voice>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">+32 9 240 75 94</gco:CharacterString>
+                           </gmd:voice>
+                        </gmd:CI_Telephone>
+                     </gmd:phone>
+                     <gmd:address>
+                        <gmd:CI_Address>
+                           <gmd:deliveryPoint>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Technologiepark Gebouw 905</gco:CharacterString>
+                           </gmd:deliveryPoint>
+                           <gmd:city>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Zwijnaarde</gco:CharacterString>
+                           </gmd:city>
+                           <gmd:postalCode>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">9052</gco:CharacterString>
+                           </gmd:postalCode>
+                           <gmd:country>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">België</gco:CharacterString>
+                           </gmd:country>
+                           <gmd:electronicMailAddress>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">dov@vlaanderen.be</gco:CharacterString>
+                           </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                     </gmd:address>
+                     <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                           <gmd:linkage>
+                              <gmd:URL>https://www.dov.vlaanderen.be</gmd:URL>
+                           </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                     </gmd:onlineResource>
+                  </gmd:CI_Contact>
+               </gmd:contactInfo>
+               <gmd:role>
+                  <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode"
+                                   codeListValue="distributor"/>
+               </gmd:role>
+            </gmd:CI_ResponsibleParty>
+         </gmd:pointOfContact>
+         <gmd:resourceMaintenance/>
+         <gmd:graphicOverview>
+            <gmd:MD_BrowseGraphic>
+               <gmd:fileName>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">https://oefen.dov.vlaanderen.be:443/geonetwork/srv/api/records/1a2c6739-3c62-432b-b2a0-aaa589a9e3a1/attachments/01Q_d_s.png</gco:CharacterString>
+               </gmd:fileName>
+               <gmd:fileDescription>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">thumbnail</gco:CharacterString>
+               </gmd:fileDescription>
+               <gmd:fileType>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">png</gco:CharacterString>
+               </gmd:fileType>
+            </gmd:MD_BrowseGraphic>
+         </gmd:graphicOverview>
+         <gmd:descriptiveKeywords>
+            <gmd:MD_Keywords>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Geologie</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:type  xmlns:gco="http://www.isotc211.org/2005/gco"
+                         xmlns:srv="http://www.isotc211.org/2005/srv"
+                         xmlns:gmx="http://www.isotc211.org/2005/gmx"
+                         gco:nilReason="missing">
+                  <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode"
+                                          codeListValue=""/>
+               </gmd:type>
+               <gmd:thesaurusName xmlns:srv="http://www.isotc211.org/2005/srv"
+                                  xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gmd:CI_Citation>
+                     <gmd:title>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">GEMET - INSPIRE thema's, versie 1.0</gco:CharacterString>
+                     </gmd:title>
+                     <gmd:date>
+                        <gmd:CI_Date>
+                           <gmd:date>
+                              <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2008-06-01</gco:Date>
+                           </gmd:date>
+                           <gmd:dateType>
+                              <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                                   codeListValue="publication"/>
+                           </gmd:dateType>
+                        </gmd:CI_Date>
+                     </gmd:date>
+                  </gmd:CI_Citation>
+               </gmd:thesaurusName>
+            </gmd:MD_Keywords>
+         </gmd:descriptiveKeywords>
+         <gmd:descriptiveKeywords>
+            <gmd:MD_Keywords>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">DOV</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Geologie</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Grid</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Raster</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Quartair</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Lithosfeer</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Afzettingen</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">niet-tabulair</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:thesaurusName>
+                  <gmd:CI_Citation>
+                     <gmd:title>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">DOV-versie 1</gco:CharacterString>
+                     </gmd:title>
+                     <gmd:date>
+                        <gmd:CI_Date>
+                           <gmd:date>
+                              <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2011-04-11</gco:Date>
+                           </gmd:date>
+                           <gmd:dateType>
+                              <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                                   codeListValue="publication"/>
+                           </gmd:dateType>
+                        </gmd:CI_Date>
+                     </gmd:date>
+                  </gmd:CI_Citation>
+               </gmd:thesaurusName>
+            </gmd:MD_Keywords>
+         </gmd:descriptiveKeywords>
+         <gmd:descriptiveKeywords>
+            <gmd:MD_Keywords>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Toegevoegd GDI-Vl</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Herbruikbaar</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Vlaamse Open data</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Kosteloos</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Lijst M&amp;R INSPIRE</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Metadata INSPIRE-conform</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:keyword xmlns:srv="http://www.isotc211.org/2005/srv"
+                            xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Metadata GDI-Vl-conform</gco:CharacterString>
+               </gmd:keyword>
+               <gmd:thesaurusName xmlns:srv="http://www.isotc211.org/2005/srv"
+                                  xmlns:gmx="http://www.isotc211.org/2005/gmx">
+                  <gmd:CI_Citation>
+                     <gmd:title>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">GDI-Vlaanderen Trefwoorden</gco:CharacterString>
+                     </gmd:title>
+                     <gmd:date>
+                        <gmd:CI_Date>
+                           <gmd:date>
+                              <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2014-02-26</gco:Date>
+                           </gmd:date>
+                           <gmd:dateType>
+                              <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                                   codeListValue="publication"/>
+                           </gmd:dateType>
+                        </gmd:CI_Date>
+                     </gmd:date>
+                  </gmd:CI_Citation>
+               </gmd:thesaurusName>
+            </gmd:MD_Keywords>
+         </gmd:descriptiveKeywords>
+         <gmd:resourceConstraints>
+            <gmd:MD_Constraints>
+               <gmd:useLimitation>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Specificaties over het gebruik van de data staan vermeld in het bijgaand rapport Matthijs, J., Lanckacker ,T., De Koninck, R., Deckers, J., Lagrou D., en Broothaers, M., 2013. Geologisch 3D lagenmodel van Vlaanderen en het Brussels Hoofdstedelijk Gewest - versie 2. Studie uitgevoerd in opdracht van de Vlaamse overheid, Departement Leefmilieu, Natuur en Energie, Afdeling Land en Bodembescherming, Ondergrond, Natuurlijke Rijkdommen. 2013/R/ETE/43, 21p.</gco:CharacterString>
+               </gmd:useLimitation>
+            </gmd:MD_Constraints>
+         </gmd:resourceConstraints>
+         <gmd:resourceConstraints>
+            <gmd:MD_LegalConstraints>
+               <gmd:useLimitation>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Bij het gebruik van de informatie die DOV aanbiedt, dient steeds volgende standaardreferentie gebruikt te worden: Databank Ondergrond Vlaanderen - (vermelding van de beheerder en de specifieke geraadpleegde gegevens) - Geraadpleegd op dd/mm/jjjj, op https://www.dov.vlaanderen.be</gco:CharacterString>
+               </gmd:useLimitation>
+               <gmd:useLimitation>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Verplicht te gebruiken referentie luidt: "Matthijs, J., Lanckacker ,T., De Koninck, R., Deckers, J., Lagrou D., en Broothaers, M., 2013. Geologisch 3D lagenmodel van Vlaanderen en het Brussels Hoofdstedelijk Gewest - versie 2. Studie uitgevoerd in opdracht van de Vlaamse overheid, Departement Leefmilieu, Natuur en Energie, Afdeling Land en Bodembescherming, Ondergrond, Natuurlijke Rijkdommen. 2013/R/ETE/43, 21p."</gco:CharacterString>
+               </gmd:useLimitation>
+               <gmd:useLimitation>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Volgende aansprakelijkheidsbepalingen gelden: https://www.dov.vlaanderen.be/page/disclaimer</gco:CharacterString>
+               </gmd:useLimitation>
+               <gmd:accessConstraints>
+                  <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_RestrictionCode"
+                                          codeListValue="otherRestrictions"/>
+               </gmd:accessConstraints>
+               <gmd:otherConstraints>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Data beschikbaar voor hergebruik volgens de Modellicentie Gratis Hergebruik. Toelichting beschikbaar op https://www.dov.vlaanderen.be/page/gebruiksvoorwaarden-dov-services</gco:CharacterString>
+               </gmd:otherConstraints>
+            </gmd:MD_LegalConstraints>
+         </gmd:resourceConstraints>
+         <gmd:resourceConstraints xlink:type="simple">
+            <gmd:MD_SecurityConstraints>
+               <gmd:classification>
+                  <gmd:MD_ClassificationCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ClassificationCode"
+                                             codeListValue="unclassified"/>
+               </gmd:classification>
+            </gmd:MD_SecurityConstraints>
+         </gmd:resourceConstraints>
+         <gmd:aggregationInfo>
+            <gmd:MD_AggregateInformation>
+               <gmd:aggregateDataSetName>
+                  <gmd:CI_Citation>
+                     <gmd:title>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">G3Dv2_hoogte- en diktelagen</gco:CharacterString>
+                     </gmd:title>
+                     <gmd:alternateTitle>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Geologisch 3D model Vlaamse Ondergrond versie2- basis, top en diktelagen</gco:CharacterString>
+                     </gmd:alternateTitle>
+                     <gmd:date>
+                        <gmd:CI_Date>
+                           <gmd:date>
+                              <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2013-10-02</gco:Date>
+                           </gmd:date>
+                           <gmd:dateType>
+                              <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                                   codeListValue="creation"/>
+                           </gmd:dateType>
+                        </gmd:CI_Date>
+                     </gmd:date>
+                     <gmd:date>
+                        <gmd:CI_Date>
+                           <gmd:date>
+                              <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2013-11-12</gco:Date>
+                           </gmd:date>
+                           <gmd:dateType>
+                              <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                                   codeListValue="publication"/>
+                           </gmd:dateType>
+                        </gmd:CI_Date>
+                     </gmd:date>
+                  </gmd:CI_Citation>
+               </gmd:aggregateDataSetName>
+               <gmd:aggregateDataSetIdentifier>
+                  <gmd:RS_Identifier>
+                     <gmd:code>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">f4586ef0-fabf-11e2-b778-0800200c9a66</gco:CharacterString>
+                     </gmd:code>
+                     <gmd:codeSpace>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">DOV-be</gco:CharacterString>
+                     </gmd:codeSpace>
+                  </gmd:RS_Identifier>
+               </gmd:aggregateDataSetIdentifier>
+               <gmd:associationType>
+                  <gmd:DS_AssociationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#DS_AssociationTypeCode"
+                                              codeListValue="largerWorkCitation"/>
+               </gmd:associationType>
+            </gmd:MD_AggregateInformation>
+         </gmd:aggregationInfo>
+         <gmd:spatialRepresentationType>
+            <gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_SpatialRepresentationTypeCode"
+                                                  codeListValue="grid"/>
+         </gmd:spatialRepresentationType>
+         <gmd:spatialResolution>
+            <gmd:MD_Resolution>
+               <gmd:equivalentScale>
+                  <gmd:MD_RepresentativeFraction>
+                     <gmd:denominator>
+                        <gco:Integer xmlns:gco="http://www.isotc211.org/2005/gco">50000</gco:Integer>
+                     </gmd:denominator>
+                  </gmd:MD_RepresentativeFraction>
+               </gmd:equivalentScale>
+            </gmd:MD_Resolution>
+         </gmd:spatialResolution>
+         <gmd:language>
+            <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut"/>
+         </gmd:language>
+         <gmd:characterSet>
+            <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"
+                                     codeListValue="utf8"/>
+         </gmd:characterSet>
+         <gmd:topicCategory>
+            <gmd:MD_TopicCategoryCode>geoscientificInformation</gmd:MD_TopicCategoryCode>
+         </gmd:topicCategory>
+         <gmd:extent>
+            <gmd:EX_Extent>
+               <gmd:geographicElement>
+                  <gmd:EX_GeographicBoundingBox>
+                     <gmd:westBoundLongitude>
+                        <gco:Decimal xmlns:gco="http://www.isotc211.org/2005/gco">2.41580758276922</gco:Decimal>
+                     </gmd:westBoundLongitude>
+                     <gmd:eastBoundLongitude>
+                        <gco:Decimal xmlns:gco="http://www.isotc211.org/2005/gco">5.9673270770793705</gco:Decimal>
+                     </gmd:eastBoundLongitude>
+                     <gmd:southBoundLatitude>
+                        <gco:Decimal xmlns:gco="http://www.isotc211.org/2005/gco">50.68993713718051</gco:Decimal>
+                     </gmd:southBoundLatitude>
+                     <gmd:northBoundLatitude>
+                        <gco:Decimal xmlns:gco="http://www.isotc211.org/2005/gco">51.54070375866491</gco:Decimal>
+                     </gmd:northBoundLatitude>
+                  </gmd:EX_GeographicBoundingBox>
+               </gmd:geographicElement>
+               <gmd:geographicElement>
+                  <gmd:EX_GeographicDescription>
+                     <gmd:geographicIdentifier>
+                        <gmd:MD_Identifier>
+                           <gmd:code>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Vlaanderen</gco:CharacterString>
+                           </gmd:code>
+                        </gmd:MD_Identifier>
+                     </gmd:geographicIdentifier>
+                  </gmd:EX_GeographicDescription>
+               </gmd:geographicElement>
+               <gmd:temporalElement>
+                  <gmd:EX_TemporalExtent>
+                     <gmd:extent>
+                        <gml:TimePeriod gml:id="tp1">
+                           <gml:beginPosition>2004-04-01</gml:beginPosition>
+                           <gml:endPosition>2011-08-01</gml:endPosition>
+                        </gml:TimePeriod>
+                     </gmd:extent>
+                  </gmd:EX_TemporalExtent>
+               </gmd:temporalElement>
+            </gmd:EX_Extent>
+         </gmd:extent>
+         <gmd:supplementalInformation>
+            <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">DOV -Geologie - Geologisch 3D Model van Vlaanderen, versie 2 |https://www.dov.vlaanderen.be/page/geologisch-3d-model-g3d en Matthijs, J., Lanckacker ,T., De Koninck, R., Deckers, J., Lagrou D., en Broothaers, M., 2013. Geologisch 3D lagenmodel van Vlaanderen en het Brussels Hoofdstedelijk Gewest - versie 2. Studie uitgevoerd in opdracht van de Vlaamse overheid, Departement Leefmilieu, Natuur en Energie, Afdeling Land en Bodembescherming, Ondergrond, Natuurlijke Rijkdommen. 2013/R/ETE/43, 21p.</gco:CharacterString>
+         </gmd:supplementalInformation>
+      </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:distributionInfo xmlns:che="http://www.geocat.ch/2008/che">
+      <gmd:MD_Distribution>
+         <gmd:distributionFormat xlink:type="simple">
+            <gmd:MD_Format>
+               <gmd:name>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">tab-file met X,Y en Z-waarde</gco:CharacterString>
+               </gmd:name>
+               <gmd:version>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">nvt</gco:CharacterString>
+               </gmd:version>
+            </gmd:MD_Format>
+         </gmd:distributionFormat>
+         <gmd:distributionFormat xlink:type="simple">
+            <gmd:MD_Format>
+               <gmd:name>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">ESRI Arc/Info ASCII Grid</gco:CharacterString>
+               </gmd:name>
+               <gmd:version>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">nvt</gco:CharacterString>
+               </gmd:version>
+            </gmd:MD_Format>
+         </gmd:distributionFormat>
+         <gmd:distributor>
+            <gmd:MD_Distributor>
+               <gmd:distributorContact>
+                  <gmd:CI_ResponsibleParty>
+                     <gmd:organisationName>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Databank Ondergrond Vlaanderen (DOV)</gco:CharacterString>
+                     </gmd:organisationName>
+                     <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                           <gmd:phone>
+                              <gmd:CI_Telephone>
+                                 <gmd:voice>
+                                    <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">+32 9 240 75 93</gco:CharacterString>
+                                 </gmd:voice>
+                              </gmd:CI_Telephone>
+                           </gmd:phone>
+                           <gmd:address>
+                              <gmd:CI_Address>
+                                 <gmd:deliveryPoint>
+                                    <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Technologiepark Gebouw 905</gco:CharacterString>
+                                 </gmd:deliveryPoint>
+                                 <gmd:city>
+                                    <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Zwijnaarde</gco:CharacterString>
+                                 </gmd:city>
+                                 <gmd:postalCode>
+                                    <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">9052</gco:CharacterString>
+                                 </gmd:postalCode>
+                                 <gmd:country>
+                                    <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">België</gco:CharacterString>
+                                 </gmd:country>
+                                 <gmd:electronicMailAddress>
+                                    <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">dov@vlaanderen.be</gco:CharacterString>
+                                 </gmd:electronicMailAddress>
+                              </gmd:CI_Address>
+                           </gmd:address>
+                           <gmd:onlineResource>
+                              <gmd:CI_OnlineResource>
+                                 <gmd:linkage>
+                                    <gmd:URL>https://www.dov.vlaanderen.be</gmd:URL>
+                                 </gmd:linkage>
+                              </gmd:CI_OnlineResource>
+                           </gmd:onlineResource>
+                        </gmd:CI_Contact>
+                     </gmd:contactInfo>
+                     <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_RoleCode"
+                                         codeListValue="distributor"/>
+                     </gmd:role>
+                  </gmd:CI_ResponsibleParty>
+               </gmd:distributorContact>
+               <gmd:distributionOrderProcess>
+                  <gmd:MD_StandardOrderProcess>
+                     <gmd:fees>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Gratis</gco:CharacterString>
+                     </gmd:fees>
+                  </gmd:MD_StandardOrderProcess>
+               </gmd:distributionOrderProcess>
+            </gmd:MD_Distributor>
+         </gmd:distributor>
+         <gmd:transferOptions>
+            <gmd:MD_DigitalTransferOptions>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/ows?SERVICE=WMS&amp;</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WMS</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WMS-endpoint G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/ows?SERVICE=WMS&amp;version=1.3.0&amp;request=GetCapabilities</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WMS-1.3.0-http-get-capabilities</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WMS-capabilities G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/ows?SERVICE=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WMS-map G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/wfs?</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WFS</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WFS-endpoint G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/wfs?SERVICE=WFS&amp;version=1.1.0&amp;request=GetCapabilities</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WFS-1.1.0-http-get-capabilities</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WFS-capabilities G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/wfs?SERVICE=WFS&amp;version=1.1.0&amp;request=GetFeature</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WFS-1.1.0-http-get-feature</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">WFS-getfeature G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.dov.vlaanderen.be/geoserver/wms/kml?layers=g3dv2:g3dv2_01_Q_d</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">GLG:KML-2.0-http-get-map</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">g3dv2:g3dv2_01_Q_d</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">KML G3Dv2_01_Q, dikte niet-tabulair Quartair</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.milieuinfo.be/dms/d/a/workspace/SpacesStore/f2a2f4a5-e2d0-44d8-be59-8a9d6b413220/G3Dv2_rasters_asc.zip</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">download</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">link naar de gecomprimeerde asc-rasters</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">link naar de gecomprimeerde asc-rasters</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.milieuinfo.be/dms/d/a/workspace/SpacesStore/dc9a5b7e-627b-4a2b-abcf-71580dba046c/G3Dv2_rasters_xyz.zip</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">download</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">link naar de gecomprimeerde xyz-tabellen</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">link naar de gecomprimeerde xyz-tabellen</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>https://www.milieuinfo.be/dms/d/a/workspace/SpacesStore/2f737bdf-e2c9-466f-92d6-64a06c21b7bf/G3Dv2_rapporten.zip</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">download</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">link naar de gecomprimeerde rapporten</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">link naar de gecomprimeerde rapporten</gco:CharacterString>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_Density/MapServer/WMTS/</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">OGC:WCS</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:applicationProfile>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">test</gco:CharacterString>
+                     </gmd:applicationProfile>
+                     <gmd:name>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">test</gco:CharacterString>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">test</gco:CharacterString>
+                     </gmd:description>
+                     <gmd:function>
+                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode"
+                                                   codeListValue="download"/>
+                     </gmd:function>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:offLine>
+                  <gmd:MD_Medium/>
+               </gmd:offLine>
+            </gmd:MD_DigitalTransferOptions>
+         </gmd:transferOptions>
+      </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:dataQualityInfo>
+      <gmd:DQ_DataQuality>
+         <gmd:scope>
+            <gmd:DQ_Scope>
+               <gmd:level>
+                  <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ScopeCode"
+                                    codeListValue="dataset"/>
+               </gmd:level>
+            </gmd:DQ_Scope>
+         </gmd:scope>
+         <gmd:report>
+            <gmd:DQ_DomainConsistency>
+               <gmd:result>
+                  <gmd:DQ_ConformanceResult>
+                     <gmd:specification>
+                        <gmd:CI_Citation>
+                           <gmd:title>
+                              <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">VERORDENING (EU) Nr. 1089/2010 VAN DE COMMISSIE van 23 november 2010 ter uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad betreffende de interoperabiliteit van verzamelingen ruimtelijke gegevens en van diensten met betrekking tot ruimtelijke gegevens</gco:CharacterString>
+                           </gmd:title>
+                           <gmd:date>
+                              <gmd:CI_Date>
+                                 <gmd:date>
+                                    <gco:Date xmlns:gco="http://www.isotc211.org/2005/gco">2010-12-08</gco:Date>
+                                 </gmd:date>
+                                 <gmd:dateType>
+                                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
+                                                         codeListValue="publication"/>
+                                 </gmd:dateType>
+                              </gmd:CI_Date>
+                           </gmd:date>
+                        </gmd:CI_Citation>
+                     </gmd:specification>
+                     <gmd:explanation>
+                        <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">Zie vermelde specificatie</gco:CharacterString>
+                     </gmd:explanation>
+                     <gmd:pass>
+                        <gco:Boolean xmlns:gco="http://www.isotc211.org/2005/gco">true</gco:Boolean>
+                     </gmd:pass>
+                  </gmd:DQ_ConformanceResult>
+               </gmd:result>
+            </gmd:DQ_DomainConsistency>
+         </gmd:report>
+         <gmd:lineage>
+            <gmd:LI_Lineage>
+               <gmd:statement>
+                  <gco:CharacterString xmlns:gco="http://www.isotc211.org/2005/gco">zie rapport Matthijs, J., 2011. Opbouw van een geologisch 3D-lagenmodel: Quartair - exclusief de Kempen Groep en de Merksplas Formatie. Studie uitgevoerd in opdracht van de Vlaamse overheid, afdeling Land en Bodembescherming, Ondergrond, Natuurlijke Rijkdommen. 2011/SCT/R/06, 30 p.</gco:CharacterString>
+               </gmd:statement>
+            </gmd:LI_Lineage>
+         </gmd:lineage>
+      </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+</gmd:MD_Metadata>

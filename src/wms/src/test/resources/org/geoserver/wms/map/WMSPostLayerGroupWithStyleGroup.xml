@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ows:GetMap xmlns="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:se="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" service="WMS" version="1.1.1" format="image/png" crs="EPSG:4326">
+    <StyledLayerDescriptor version="1.0.0">
+        <NamedLayer>
+            <Name>BasicStyleGroup</Name>
+        </NamedLayer>
+    </StyledLayerDescriptor>
+    <BoundingBox srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+        <gml:coord>
+            <gml:X>-74.08349171875</gml:X>
+            <gml:Y>40.634971066406</gml:Y>
+        </gml:coord>
+        <gml:coord>
+            <gml:X>-73.943530351562</gml:X>
+            <gml:Y>40.837401066406</gml:Y>
+        </gml:coord>
+    </BoundingBox>
+    <Output>
+        <Format>image/png</Format>
+        <Transparent>false</Transparent>
+        <Size>
+            <Width>354</Width>
+            <Height>512</Height>
+        </Size>
+    </Output>
+    <Exceptions>XML</Exceptions>>
+</ows:GetMap>

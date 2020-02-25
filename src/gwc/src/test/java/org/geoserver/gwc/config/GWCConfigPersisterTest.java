@@ -5,16 +5,15 @@
  */
 package org.geoserver.gwc.config;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
@@ -29,9 +28,8 @@ public class GWCConfigPersisterTest {
     private GeoServerResourceLoader resourceLoader;
 
     private GWCConfigPersister persister;
-    
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
@@ -62,7 +60,8 @@ public class GWCConfigPersisterTest {
         }
 
         when(resourceLoader.get(Paths.BASE)).thenReturn(Files.asResource(baseDirectory));
-        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(Files.asResource(configFile));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE)))
+                .thenReturn(Files.asResource(configFile));
 
         GWCConfig config = GWCConfig.getOldDefaults();
         config.setCacheNonDefaultStyles(true);
@@ -76,8 +75,8 @@ public class GWCConfigPersisterTest {
         assertEquals(config, persister.getConfig());
 
         // provoque a IOException
-        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(
-                Files.asResource(tempFolder.newFile("shall_not_exist")));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE)))
+                .thenReturn(Files.asResource(tempFolder.newFile("shall_not_exist")));
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);
 
         GWCConfig expected = new GWCConfig();

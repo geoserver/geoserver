@@ -1,0 +1,22 @@
+title: 'YSLD Cook Book: Attribute-based polygon'
+feature-styles:
+- name: name
+  rules:
+  - name: SmallPop
+    title: Less Than 200,000
+    filter: ${pop < '200000'}
+    symbolizers:
+    - polygon:
+        fill-color: '#66FF66'
+  - name: MediumPop
+    title: 200,000 to 500,000
+    filter: ${pop >= '200000' AND pop < '500000'}
+    symbolizers:
+    - polygon:
+        fill-color: '#33CC33'
+  - name: LargePop
+    title: ${Greater Than 500,000}
+    filter: pop > '500000'
+    symbolizers:
+    - polygon:
+        fill-color: '#009900'

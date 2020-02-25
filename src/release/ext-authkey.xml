@@ -1,0 +1,23 @@
+<assembly>
+  <id>authkey-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-authkey*</include>
+        <include>json-lib*</include>
+        <include>json-path*</include>
+        <include>json-simple*</include>
+        <include>json-smart*</include>
+        <include>httpcore*</include>
+        <include>httpclient*</include>
+        <include>accessors-smart*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

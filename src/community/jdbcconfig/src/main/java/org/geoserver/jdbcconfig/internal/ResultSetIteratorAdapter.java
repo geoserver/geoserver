@@ -5,15 +5,13 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
+import com.google.common.base.Throwables;
 import java.sql.Connection;
 import java.sql.ResultSet;
-
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
-
-import com.google.common.base.Throwables;
 
 public class ResultSetIteratorAdapter<T extends CatalogInfo> implements CloseableIterator<T> {
 
@@ -25,8 +23,8 @@ public class ResultSetIteratorAdapter<T extends CatalogInfo> implements Closeabl
 
     private boolean hasNext;
 
-    public ResultSetIteratorAdapter(final Connection connection, final ResultSet resultSet,
-            final RowMapper<T> rowMapper) {
+    public ResultSetIteratorAdapter(
+            final Connection connection, final ResultSet resultSet, final RowMapper<T> rowMapper) {
 
         this.connection = connection;
         this.resultSet = resultSet;
@@ -34,7 +32,8 @@ public class ResultSetIteratorAdapter<T extends CatalogInfo> implements Closeabl
         try {
             this.hasNext = resultSet.next();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            Throwables.throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -50,7 +49,8 @@ public class ResultSetIteratorAdapter<T extends CatalogInfo> implements Closeabl
             next = rowMapper.mapRow(resultSet, 0);
             this.hasNext = resultSet.next();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            Throwables.throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
         return next;
     }
@@ -76,8 +76,8 @@ public class ResultSetIteratorAdapter<T extends CatalogInfo> implements Closeabl
             try {
                 close();
             } finally {
-                ConfigDatabase.LOGGER
-                        .warning("There is code not closing CloseableIterator!!! Auto closing at finalize().");
+                ConfigDatabase.LOGGER.warning(
+                        "There is code not closing CloseableIterator!!! Auto closing at finalize().");
             }
         }
     }

@@ -7,9 +7,7 @@ package org.geoserver.feature;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourceInfo;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
@@ -18,8 +16,8 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.Identifier;
 
 /**
- * Extracts feature type names from any Id filters. 
- * 
+ * Extracts feature type names from any Id filters.
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class TypeNameExtractingVisitor extends DefaultFilterVisitor {

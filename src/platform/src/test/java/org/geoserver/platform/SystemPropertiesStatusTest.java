@@ -23,5 +23,4 @@ public class SystemPropertiesStatusTest {
         assertTrue(status.getMessage().get().contains(KEY));
         assertTrue(status.getMessage().get().contains(VALUE));
     }
-
 }

@@ -4,19 +4,15 @@
  */
 package org.geoserver.security;
 
-import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.opengis.filter.Filter;
 
 /**
  * Makes sure disabled layers/resources cannot be accessed from outside regardless of the service
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class DisabledResourceFilter extends AbstractCatalogFilter {
 
@@ -30,12 +26,13 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
     public Filter getSecurityFilter(Class<? extends CatalogInfo> clazz) {
         if (shouldApplyFilter()) {
             if (LayerInfo.class.isAssignableFrom(clazz)) {
-                return Predicates.and(Predicates.equal("enabled", true),
+                return Predicates.and(
+                        Predicates.equal("enabled", true),
                         Predicates.equal("resource.enabled", true),
                         Predicates.equal("resource.store.enabled", true));
             } else if (ResourceInfo.class.isAssignableFrom(clazz)) {
-                return Predicates.and(Predicates.equal("enabled", true),
-                        Predicates.equal("store.enabled", true));
+                return Predicates.and(
+                        Predicates.equal("enabled", true), Predicates.equal("store.enabled", true));
             }
         }
         return Filter.INCLUDE;
@@ -50,11 +47,18 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
     }
 
     @Override
+    public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
+        if (shouldApplyFilter()) {
+            return !layerGroup.isEnabled();
+        }
+        return false;
+    }
+
+    @Override
     public boolean hideResource(ResourceInfo resource) {
         if (shouldApplyFilter()) {
             return !resource.enabled();
         }
         return false;
     }
-
 }

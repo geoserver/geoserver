@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Open Source Geospatial Foundation. All rights reserved. This code is licensed under 
+  the GPL 2.0 license, available at the root application directory. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+	     http://www.springframework.org/schema/beans             
+	     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd         
+	     http://www.springframework.org/schema/context
+	     http://www.springframework.org/schema/context/spring-context-3.0.xsd          
+	     http://www.springframework.org/schema/aop         
+	     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+>
+
+  <!-- service declaration -->
+  <bean id="wfsService-3.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="wfs"/>
+    <constructor-arg index="1" value="http://www.opengis.net/wfs/3.0"/>
+    <constructor-arg index="2" ref="wfsService30"/>
+    <constructor-arg index="3" value="3.0.0"/>
+    <constructor-arg index="4">
+      <list>
+        <value>landingPage</value>
+        <value>api</value>
+        <value>conformance</value>
+        <value>collections</value>
+        <value>collection</value>
+        <value>GetFeature</value> <!-- this allows to re-use the WFS 2.0 machinery for getting features -->
+        <value>tilingSchemes</value>
+        <value>describeTilingScheme</value>
+        <value>getTile</value>
+        <value>getStyles</value>
+        <value>postStyles</value>
+        <value>getStyle</value>
+        <value>putStyle</value>
+        <value>deleteStyle</value>
+      </list>
+    </constructor-arg>
+    <property name="customCapabilitiesLink" value="../wfs3/"/>
+  </bean>
+  <bean id="wfs30ServiceTarget" class="org.geoserver.wfs3.DefaultWebFeatureService30">
+    <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="wfs3DefaultGridsets" />
+    <property name="filterFactory" ref="filterFactory"/>
+  </bean>
+  <bean id="wfsService30" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.wfs3.WebFeatureService30</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>wfs3ServiceInterceptor*</value>
+        <value>wfs30ServiceTarget</value>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- KVP parsing -->
+  <bean id="wfs3TimeKvpParser" class="org.geoserver.wfs3.kvp.TimeKvpParser"/>
+  <bean id="wfs3BBOXKvpParser" class="org.geoserver.wfs3.kvp.WFS3BBoxKvpParser">
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3ResolutionKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+    <constructor-arg value="resolution"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3LevelKvpParser" class="org.geoserver.ows.kvp.LongKvpParser">
+    <constructor-arg value="level"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3ColKvpParser" class="org.geoserver.ows.kvp.LongKvpParser">
+    <constructor-arg value="col"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3RowKvpParser" class="org.geoserver.ows.kvp.LongKvpParser">
+    <constructor-arg value="row"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3TilingSchemeKvpParser" class="org.geoserver.wfs3.kvp.GridSetKVPParser">
+    <constructor-arg value="tilingScheme"/>
+    <constructor-arg ref="wfs3DefaultGridsets"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="apiKvpRequestReader" class="org.geoserver.wfs3.kvp.APIRequestKVPReader"/>
+  <bean id="contentKvpRequestReader" class="org.geoserver.wfs3.kvp.LandingPageRequestKVPReader"/>
+  <bean id="collectionKvpRequestReader" class="org.geoserver.wfs3.kvp.CollectionRequestKVPReader"/>
+  <bean id="collectionsKvpRequestReader" class="org.geoserver.wfs3.kvp.CollectionsRequestKVPReader"/>
+  <bean id="conformanceKvpRequestReader" class="org.geoserver.wfs3.kvp.ConformanceRequestKVPReader"/>
+  <bean id="getFeatureKvpRequestReader" class="org.geoserver.wfs3.kvp.GetFeatureKvpRequestReader">
+    <constructor-arg index="0" ref="geoServer"/>
+    <constructor-arg index="1" ref="filterFactory"/>
+    <property name="tileData" ref="wfs3TileDataRequest" />
+  </bean>
+  <bean id="tilingSchemesKvpRequestReader" class="org.geoserver.wfs3.kvp.TilingSchemesKVPReader"/>
+  <bean id="tilingSchemeDetailKvpRequestReader" class="org.geoserver.wfs3.kvp.TilingSchemeDetailKVPReader"/>
+  <bean id="getStylesKvpRequestReader" class="org.geoserver.wfs3.kvp.GetStylesRequestKVPReader"/>
+  <bean id="getStyleKvpRequestReader" class="org.geoserver.wfs3.kvp.GetStyleRequestKVPReader"/>
+  <bean id="putStyleKvpRequestReader" class="org.geoserver.wfs3.kvp.PutStyleRequestKVPReader"/>
+  <bean id="postStyleKvpRequestReader" class="org.geoserver.wfs3.kvp.PostStyleRequestKVPReader"/>
+  <bean id="deleteStyleKvpRequestReader" class="org.geoserver.wfs3.kvp.DeleteStyleRequestKVPReader"/>
+
+  <!-- response generation -->
+  <bean id="openAPIResponse" class="org.geoserver.wfs3.response.OpenAPIResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="openAPIHTMLResponse" class="org.geoserver.wfs3.response.OpenAPIHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="landingPageResponse" class="org.geoserver.wfs3.response.LandingPageResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="landingPageHTMLResponse" class="org.geoserver.wfs3.response.LandingPageHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="collectionsResponse" class="org.geoserver.wfs3.response.CollectionsDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="collectionsHTMLResponse" class="org.geoserver.wfs3.response.CollectionsHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="collectionResponse" class="org.geoserver.wfs3.response.CollectionDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="collectionHTMLResponse" class="org.geoserver.wfs3.response.CollectionHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="conformanceResponse" class="org.geoserver.wfs3.response.ConformanceDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="rfcGeoJsonFeaturesResponse" class="org.geoserver.wfs3.response.RFCGeoJSONFeaturesResponse">
+    <constructor-arg ref="geoServer"/>
+    <property name="tileData" ref="wfs3TileDataRequest" />
+    <property name="gridSets" ref="wfs3DefaultGridsets" />
+  </bean>
+  <bean id="featuresHTMLResponse" class="org.geoserver.wfs3.response.GetFeatureHTMLOutputFormat">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="featuresGML32WFS3Response" class="org.geoserver.wfs3.response.GML32WFS3OutputFormat">
+    <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="xmlConfiguration-1.1"/>
+  </bean>
+  <bean id="featuresMapboxResponse" class="org.geoserver.wfs3.response.GetFeatureMapboxOutputFormat">
+    <constructor-arg ref="geoServer"/>
+    <property name="tileData" ref="wfs3TileDataRequest" />
+    <property name="gridSets" ref="wfs3DefaultGridsets" />
+  </bean>
+  <bean id="tilingSchemesResponse" class="org.geoserver.wfs3.response.TilingSchemesResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="tilingSchemeDetailResponse" class="org.geoserver.wfs3.response.TilingSchemeDetailResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="stylesDocumentResponse" class="org.geoserver.wfs3.response.StylesDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="styleDocumentResponse" class="org.geoserver.wfs3.response.StyleDocumentResponse">
+      <constructor-arg ref="catalog"/>
+  </bean>
+
+  <!-- Hack to map WFS3 requests parameters to OGC KVP lookalikes -->
+  <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">
+    <constructor-arg ref="catalog"/>
+  </bean>
+  
+  <!-- Hack to allow old OWS based services to work along WFS3 -->
+  <bean id="wfs3DispatcherCallback" class="org.geoserver.wfs3.WFS3DispatcherCallback"/>
+
+  <!-- Exception handler -->
+  <bean id="wfs3ExceptionHandler" class="org.geoserver.wfs3.WFS3ExceptionHandler">
+    <constructor-arg>
+      <list>
+        <ref bean="wfsService-3.0" />
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="geoServer" />
+  </bean>
+
+  <!-- http url mapping -->
+  <bean id="wfs3URLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+    <constructor-arg ref="catalog"/>
+    <property name="alwaysUseFullPath" value="true"/>
+
+    <property name="mappings">
+      <props>
+        <prop key="/wfs3">dispatcher</prop>
+        <prop key="/wfs3/*">dispatcher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="wfsClasspathPublisherMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
+        <prop key="/wfs3css/**">classpathPublisher</prop>
+        <prop key="/swagger-ui/**">classpathPublisher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="headerLinksAppender" class="org.geoserver.wfs3.response.HttpHeaderLinksAppender"/>
+
+  <bean id="wfs3LocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+    <constructor-arg value="wfs3"/>
+  </bean>
+  
+  <bean id="wfs3DefaultGridsets" class="org.geowebcache.config.DefaultGridsets">
+    <!-- Should we used EPSG:900913 instead of EPSG:3857 ? -->
+    <constructor-arg type="boolean" value="FALSE" />
+    <!--
+      Should the default grids be named EPSG:4326 and EPSG:900913 (TRUE),
+      or (FALSE) use the new names similar to what WMTS suggests,
+      GlobalCRS84Geometric and GoogleMapsCompatible ? 
+      
+      If you say FALSE here, you have to manually
+      rename the directories and entries in the H2 database.
+     -->
+     <constructor-arg type="boolean" value="FALSE" />
+  </bean>
+  
+  <bean id="wfs3TileDataRequest" class="org.geoserver.wfs3.TileDataRequest"	scope="request">
+  	<aop:scoped-proxy/>
+  </bean>
+
+  <bean id="vectorTilesExtension" class="org.geoserver.wfs3.VectorTilesExtension"/>
+  <bean id="stylesExtension" class="org.geoserver.wfs3.StylesExtension"/>
+
+</beans>

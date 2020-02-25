@@ -14,7 +14,7 @@ In order to setup a connection pool Tomcat needs a JDBC driver and the necessary
 First off, you need to find the JDBC driver for your database. Most often it is distributed on the web site of your DBMS provider, or available in the installed version of your database.
 For example, a Oracle XE install on a Linux system provides the driver at  :file:`/usr/lib/oracle/xe/app/oracle/product/10.2.0/server/jdbc/lib/ojdbc14.jar`, and that file needs to be moved into Tomcat shared libs directory, :file:`{TOMCAT_HOME}/lib`
 
-.. note:: be careful to remove the jdbc driver from the Geoserver WEB-INF/lib folder when copied to the Tomcat shared libs, to avoid issues in JNDI DataStores usage.
+.. note:: be careful to remove the jdbc driver from the GeoServer WEB-INF/lib folder when copied to the Tomcat shared libs, to avoid issues in JNDI DataStores usage.
 
 Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/context.xml` needs to be edited in order to setup the connection pool. In the case of a local Oracle XE the setup might look like:
 
@@ -39,8 +39,8 @@ Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/conte
         poolPreparedStatements="true"
         maxOpenPreparedStatements="100"
         validationQuery="SELECT SYSDATE FROM DUAL"
-        maxAge="600000" <!-- only on Tomcat >= 7 -->
-        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        maxAge="600000"
+        rollbackOnReturn="true"
         />
    </Context>
 
@@ -122,8 +122,8 @@ Then the following code must be written in the Tomcat configuration file :file:`
         minEvictableIdleTimeMillis="60000"
         testWhileIdle="true"
         validationQuery="SELECT 1"
-        maxAge="600000" <!-- only on Tomcat >= 7 -->
-        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        maxAge="600000"
+        rollbackOnReturn="true"
       />
   </Context>
 
@@ -171,12 +171,12 @@ Then the following code must be written in the Tomcat configuration file :file:`
         poolPreparedStatements="true"
         maxOpenPreparedStatements="100"
         validationQuery="SELECT SYSDATE FROM DUAL"
-        maxAge="600000" <!-- only on Tomcat >= 7 -->
-        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        maxAge="600000"
+        rollbackOnReturn="true"
         />
   </Context>
 
-.. note:: Note that database name,username and password must be defined directly in the URL.  
+.. note:: Note that database name, username and password must be defined directly in the URL.  
   
 GeoServer setup
 ```````````````

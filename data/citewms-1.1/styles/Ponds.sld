@@ -6,14 +6,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <UserStyle>
         <Name>Default Styler</Name>
-        <Title>Default Styler</Title>
+        <Title>Cyan Polygon</Title>
         <Abstract></Abstract>
         <FeatureTypeStyle>
             <FeatureTypeName>Feature</FeatureTypeName>
             <Rule>
                 <Name>name</Name>
-                <Abstract>Abstract</Abstract>
-                <Title>title</Title>
+                <Abstract>Opaque polygon filled with Cyan color and black dashed stroke of 1 px width</Abstract>
+                <Title>Cyan Polygon</Title>
                 <PolygonSymbolizer>
                     <Fill>
                         <CssParameter name="fill">

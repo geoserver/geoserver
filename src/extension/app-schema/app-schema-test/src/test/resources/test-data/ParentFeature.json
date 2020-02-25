@@ -1,0 +1,68 @@
+{
+  "crs": null,
+  "features": [
+    {
+      "geometry": null,
+      "id": "sc.1",
+      "properties": {
+        "@featureType": "parentFeature",
+        "nestedFeature": [
+          {
+            "nestedValue": "1GRAV"
+          },
+          {
+            "nestedValue": "1TILL"
+          },
+          {
+            "nestedValue": "6ALLU"
+          }
+        ],
+        "parentValue": "string_one"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "sc.2",
+      "properties": {
+        "@featureType": "parentFeature",
+        "nestedFeature": [
+          {
+            "nestedValue": "1GRAV"
+          },
+          {
+            "nestedValue": "1TILL"
+          },
+          {
+            "nestedValue": "6ALLU"
+          }
+        ],
+        "parentValue": "string_two"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "sc.3",
+      "properties": {
+        "@featureType": "parentFeature",
+        "nestedFeature": [
+          {
+            "nestedValue": "1GRAV"
+          },
+          {
+            "nestedValue": "1TILL"
+          },
+          {
+            "nestedValue": "6ALLU"
+          }
+        ],
+        "parentValue": "string_three"
+      },
+      "type": "Feature"
+    }
+  ],
+  "totalFeatures": "unknown",
+  "numberReturned": 3,
+  "type": "FeatureCollection"
+}

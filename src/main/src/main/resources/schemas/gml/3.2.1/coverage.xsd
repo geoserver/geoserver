@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:coverage:3.2.1">coverage.xsd</appinfo>
 		<documentation>See ISO/DIS 19136 20.3.
 A coverage incorporates a mapping from a spatiotemporal domain to a range set, the latter providing the set in which the attribute values live.  The range set may be an arbitrary set including discrete lists, integer or floating point ranges, and multi-dimensional vector spaces.
 A coverage can be viewed as the graph of the coverage function f:A à B, that is as the set of ordered pairs {(x, f(x)) | where x is in A}. This view is especially applicable to the GML encoding of a coverage.  In the case of a discrete coverage, the domain set A is partitioned into a collection of subsets (typically a disjoint collection) A = UAi and the function f is constant on each Ai. For a spatial domain, the Ai are geometry elements, hence the coverage can be viewed as a collection of (geometry,value) pairs, where the value is an element of the range set.  If the spatial domain A is a topological space then the coverage can be viewed as a collection of (topology,value) pairs, where the topology element in the pair is a topological n-chain (in GML terms this is a gml:TopoPoint, gml:TopoCurve, gml:TopoSurface or gml:TopoSolid). 
 A coverage is implemented as a GML feature. We can thus speak of a "temperature distribution feature", or a "remotely sensed image feature", or a "soil distribution feature".
-As is the case for any GML object, a coverage object may also be the value of a property of a feature.  
-</documentation>
+As is the case for any GML object, a coverage object may also be the value of a property of a feature.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
+	<include schemaLocation="gml.xsd"/>
 	<include schemaLocation="feature.xsd"/>
 	<include schemaLocation="valueObjects.xsd"/>
 	<include schemaLocation="grids.xsd"/>

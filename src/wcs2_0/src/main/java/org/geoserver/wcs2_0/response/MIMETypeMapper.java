@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitorAdapter;
 import org.geoserver.catalog.CoverageInfo;
@@ -33,32 +32,29 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * Simple mapping utility to map native formats to Mime Types using ImageIO reader capabilities.
- * 
- * It does perform caching of the mappings. Tha cache should be very small, hence it uses hard
+ *
+ * <p>It does perform caching of the mappings. Tha cache should be very small, hence it uses hard
  * references.
- * 
+ *
  * @author Simone Giannechini, GeoSolutions
- * 
  */
 public class MIMETypeMapper implements ApplicationContextAware {
 
     private static final String NO_MIME_TYPE = "NoMimeType";
-    
-    public static final String DEFAULT_FORMAT = GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE;
+
+    public static final String DEFAULT_FORMAT =
+            GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE;
 
     private Logger LOGGER = Logging.getLogger(MIMETypeMapper.class);
 
-    private final SoftValueHashMap<String, String> mimeTypeCache = new SoftValueHashMap<String, String>(
-            100);
+    private final SoftValueHashMap<String, String> mimeTypeCache =
+            new SoftValueHashMap<String, String>(100);
 
     private final Set<String> outputMimeTypes = new HashSet<String>();
 
     private List<CoverageMimeTypeMapper> mappers;
 
-    /**
-     * Constructor.
-     * 
-     */
+    /** Constructor. */
     private MIMETypeMapper(CoverageResponseDelegateFinder finder, Catalog catalog) {
         // collect all of the output mime types
         for (String of : finder.getOutputFormats()) {
@@ -70,35 +66,35 @@ public class MIMETypeMapper implements ApplicationContextAware {
     }
 
     /**
-     * Returns a mime types for the provided {@link CoverageInfo} using the
-     * {@link CoverageInfo#getNativeFormat()} as its key. In case none was found,
-     * the DEFAULT_FORMAT format is returned.
-     * 
+     * Returns a mime types for the provided {@link CoverageInfo} using the {@link
+     * CoverageInfo#getNativeFormat()} as its key. In case none was found, the DEFAULT_FORMAT format
+     * is returned.
+     *
      * @param cInfo the {@link CoverageInfo} to find a mime type for
-     * @return a mime types or null for the provided {@link CoverageInfo} using the
-     *         {@link CoverageInfo#getNativeFormat()} as its key.
+     * @return a mime types or null for the provided {@link CoverageInfo} using the {@link
+     *     CoverageInfo#getNativeFormat()} as its key.
      * @throws IOException in case we don't manage to open the underlying file
      */
     public String mapNativeFormat(final CoverageInfo cInfo) throws IOException {
         // checks
         Utilities.ensureNonNull("cInfo", cInfo);
-        
+
         String mime = mimeTypeCache.get(cInfo.getId());
-        if(mime != null) {
-            if(NO_MIME_TYPE.equals(mime)) {
+        if (mime != null) {
+            if (NO_MIME_TYPE.equals(mime)) {
                 return DEFAULT_FORMAT;
             } else {
                 return mime;
             }
         }
-        
+
         for (CoverageMimeTypeMapper mapper : mappers) {
             mime = mapper.getMimeType(cInfo);
-            if(mime != null) {
+            if (mime != null) {
                 break;
             }
         }
-        
+
         // the native format must be encodable
         if (mime != null && outputMimeTypes.contains(mime)) {
             mimeTypeCache.put(cInfo.getId(), mime);
@@ -107,7 +103,7 @@ public class MIMETypeMapper implements ApplicationContextAware {
             }
             return mime;
         } else {
-            // we either don't have a clue about the mime, or we don't have an encoder, 
+            // we either don't have a clue about the mime, or we don't have an encoder,
             // save the response as null
             mimeTypeCache.put(cInfo.getId(), NO_MIME_TYPE);
             return DEFAULT_FORMAT;
@@ -118,31 +114,31 @@ public class MIMETypeMapper implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         mappers = GeoServerExtensions.extensions(CoverageMimeTypeMapper.class, applicationContext);
     }
-    
+
     /**
      * Cleans the mime type cache contents on reload
+     *
      * @author Andrea Aime - GeoSolutions
      */
-    public class MimeTypeCacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+    public class MimeTypeCacheClearingListener extends CatalogVisitorAdapter
+            implements CatalogListener {
 
-        public void handleAddEvent(CatalogAddEvent event) {
-        }
+        public void handleAddEvent(CatalogAddEvent event) {}
 
-        public void handleModifyEvent(CatalogModifyEvent event) {
-        }
+        public void handleModifyEvent(CatalogModifyEvent event) {}
 
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
-            event.getSource().accept( this );
+            event.getSource().accept(this);
         }
 
         public void handleRemoveEvent(CatalogRemoveEvent event) {
-            event.getSource().accept( this );
+            event.getSource().accept(this);
         }
 
         public void reloaded() {
             outputMimeTypes.clear();
         }
-       
+
         @Override
         public void visit(CoverageInfo coverage) {
             outputMimeTypes.remove(coverage.getId());

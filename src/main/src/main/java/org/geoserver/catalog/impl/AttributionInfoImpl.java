@@ -8,9 +8,9 @@ package org.geoserver.catalog.impl;
 import org.geoserver.catalog.AttributionInfo;
 
 /**
- *  AttributionInfoImpl is the default implementation of the AttributionInfo interface.
+ * AttributionInfoImpl is the default implementation of the AttributionInfo interface.
  *
- *  @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow <dwinslow@opengeo.org>
  */
 public class AttributionInfoImpl implements AttributionInfo {
     private String id;
@@ -104,18 +104,18 @@ public class AttributionInfoImpl implements AttributionInfo {
         }
 
         if (logoURL == null) {
-           if (attr.getLogoURL() != null) return false;
+            if (attr.getLogoURL() != null) return false;
         } else {
-           if (!logoURL.equals(attr.getLogoURL())) return false;
+            if (!logoURL.equals(attr.getLogoURL())) return false;
         }
 
         if (logoWidth != attr.getLogoWidth()) return false;
         if (logoHeight != attr.getLogoHeight()) return false;
 
         if (logoType == null) {
-           if (attr.getLogoType() != null) return false;
-        } else { 
-           if (!logoType.equals(attr.getLogoType())) return false;
+            if (attr.getLogoType() != null) return false;
+        } else {
+            if (!logoType.equals(attr.getLogoType())) return false;
         }
 
         return true;
@@ -136,10 +136,13 @@ public class AttributionInfoImpl implements AttributionInfo {
 
         return result;
     }
-    
+
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(title).append(']')
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(title)
+                .append(']')
                 .toString();
     }
 }

@@ -12,21 +12,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @SuppressWarnings("serial")
-public class GeoServerSession extends WebSession{
+public class GeoServerSession extends WebSession {
     public GeoServerSession(Request request) {
         super(request);
     }
 
     public static GeoServerSession get() {
-        return (GeoServerSession)Session.get();
+        return (GeoServerSession) Session.get();
     }
 
-    public Authentication getAuthentication(){
+    public Authentication getAuthentication() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null &&
-                auth.getAuthorities().size() == 1 &&
-                "ROLE_ANONYMOUS".equals(auth.getAuthorities().iterator().next().getAuthority())
-           ) return null;
+        if (auth != null
+                && auth.getAuthorities().size() == 1
+                && "ROLE_ANONYMOUS".equals(auth.getAuthorities().iterator().next().getAuthority()))
+            return null;
 
         return auth;
     }

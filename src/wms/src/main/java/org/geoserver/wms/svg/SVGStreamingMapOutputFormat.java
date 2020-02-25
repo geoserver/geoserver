@@ -7,7 +7,6 @@ package org.geoserver.wms.svg;
 
 import java.io.IOException;
 import java.util.Set;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -15,26 +14,28 @@ import org.geoserver.wms.WMSMapContent;
 
 /**
  * Handles a GetMap request that expects a map in SVG format.
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  * @see StreamingSVGMap
  * @see SVGStreamingMapResponse
  */
 public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
-    
-    /** 
+
+    /**
      * Default capabilities for SVG format.
-     * 
+     *
      * <p>
+     *
      * <ol>
-     *         <li>tiled = unsupported</li>
-     *         <li>multipleValues = unsupported</li>
-     *         <li>paletteSupported = unsupported</li>
-     *         <li>transparency = supported</li>
+     *   <li>tiled = unsupported
+     *   <li>multipleValues = unsupported
+     *   <li>paletteSupported = unsupported
+     *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(false, false, false, true, null);
+    private static MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(false, false, false, true, null);
 
     public SVGStreamingMapOutputFormat() {
         //
@@ -56,12 +57,9 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
         return SVG.MIME_TYPE;
     }
 
-    /**
-     * 
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
-     */
-    public StreamingSVGMap produceMap(WMSMapContent mapContent) throws ServiceException,
-            IOException {
+    /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    public StreamingSVGMap produceMap(WMSMapContent mapContent)
+            throws ServiceException, IOException {
         StreamingSVGMap svg = new StreamingSVGMap(mapContent);
         svg.setMimeType(getMimeType());
         return svg;
@@ -70,5 +68,4 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }
-
 }

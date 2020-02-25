@@ -28,11 +28,11 @@ public class DescribeFeatureResponseTest extends WFSTestSupport {
         Service service = getServiceDescriptor10();
         DescribeFeatureTypeType type = WfsFactory.eINSTANCE.createDescribeFeatureTypeType();
         type.setBaseUrl("http://localhost:8080/geoserver");
-        
-        Operation request = new Operation("wfs", service, null, new Object[] { type });
+
+        Operation request = new Operation("wfs", service, null, new Object[] {type});
         return request;
     }
-    
+
     @Test
     public void testSingle() throws Exception {
         FeatureTypeInfo meta = getFeatureTypeInfo(CiteTestData.BASIC_POLYGONS);
@@ -40,34 +40,30 @@ public class DescribeFeatureResponseTest extends WFSTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         XmlSchemaEncoder response = new XmlSchemaEncoder.V11(getGeoServer());
-        response.write(new FeatureTypeInfo[] { meta }, output, request());
+        response.write(new FeatureTypeInfo[] {meta}, output, request());
 
-        Element schema = ReaderUtils.parse(new StringReader(new String(output
-                .toByteArray())));
+        Element schema = ReaderUtils.parse(new StringReader(new String(output.toByteArray())));
         assertEquals("xsd:schema", schema.getNodeName());
 
         NodeList types = schema.getElementsByTagName("xsd:complexType");
         assertEquals(1, types.getLength());
     }
 
-	@Test
+    @Test
     public void testWithDifferntNamespaces() throws Exception {
 
         FeatureTypeInfo meta1 = getFeatureTypeInfo(CiteTestData.BASIC_POLYGONS);
         FeatureTypeInfo meta2 = getFeatureTypeInfo(CiteTestData.POLYGONS);
-        
+
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         XmlSchemaEncoder response = new XmlSchemaEncoder.V11(getGeoServer());
-        response.write(new FeatureTypeInfo[] { meta1, meta2 }, output, request());
+        response.write(new FeatureTypeInfo[] {meta1, meta2}, output, request());
 
-        Element schema = ReaderUtils.parse(new StringReader(new String(output
-                .toByteArray())));
+        Element schema = ReaderUtils.parse(new StringReader(new String(output.toByteArray())));
         assertEquals("xsd:schema", schema.getNodeName());
 
         NodeList imprts = schema.getElementsByTagName("xsd:import");
         assertEquals(2, imprts.getLength());
-
     }
-
 }

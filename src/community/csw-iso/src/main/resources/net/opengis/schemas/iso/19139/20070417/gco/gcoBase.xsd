@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" targetNamespace="http://www.isotc211.org/2005/gco" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic COmmon (GCO) extensible markup language is a component of the XML Schema Implementation of Geographic
+Information Metadata documented in ISO/TS 19139:2007. GCO includes all the definitions of http://www.isotc211.org/2005/gco namespace. The root document of this namespace is the file gco.xsd. This gcoBase.xsd schema provides:
+		1.  tools to handle specific objects like "code lists" and "record";
+		2. Some XML types representing that do not follow the general encoding rules.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+	<xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<xs:include schemaLocation="gco.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- =========================================================================== -->
+	<!-- ========================= IM_Object: abstract Root ============================= -->
+	<!--================= Type ===================-->
+	<xs:complexType name="AbstractObject_Type" abstract="true">
+		<xs:sequence/>
+		<xs:attributeGroup ref="gco:ObjectIdentification"/>
+	</xs:complexType>
+	<!--================= Element =================-->
+	<xs:element name="AbstractObject" type="gco:AbstractObject_Type" abstract="true"/>
+	<!-- ========================================================================== -->
+	<!-- ====================== Reference of a resource =============================== -->
+	<!--The following attributeGroup 'extends' the GML  gml:AssociationAttributeGroup-->
+	<xs:attributeGroup name="ObjectReference">
+		<xs:attributeGroup ref="xlink:simpleAttrs"/>
+		<xs:attribute name="uuidref" type="xs:string"/>
+	</xs:attributeGroup>
+	<!--================== NULL ====================-->
+	<xs:attribute name="nilReason" type="gml:NilReasonType"/>
+	<!--=============== PropertyType =================-->
+	<xs:complexType name="ObjectReference_PropertyType">
+		<xs:sequence/>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- ========================================================================== -->
+	<!-- ====================== Identification of a resource ============================== -->
+	<xs:attributeGroup name="ObjectIdentification">
+		<xs:attribute name="id" type="xs:ID"/>
+		<xs:attribute name="uuid" type="xs:string"/>
+	</xs:attributeGroup>
+	<!-- ========================================================================== -->
+	<!-- ====================== The CodeList prototype ================================= -->
+	<!--It is used to refer to a specific codeListValue in a register-->
+	<!--================= Type ==================-->
+	<xs:complexType name="CodeListValue_Type">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+				<xs:attribute name="codeListValue" type="xs:anyURI" use="required"/>
+				<xs:attribute name="codeSpace" type="xs:anyURI"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- ========================================================================== -->
+	<!-- ========================== The isoType attribute ============================== -->
+	<xs:attribute name="isoType" type="xs:string"/>
+	<!--==============End================-->
+</xs:schema>

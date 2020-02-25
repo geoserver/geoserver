@@ -15,18 +15,17 @@ public class ContactPanel extends Panel {
     public ContactPanel(String id, final IModel<ContactInfo> model) {
         super(id, model);
 
-        add(new TextField<String>("contactPerson" ));
+        add(new TextField<String>("contactPerson"));
         add(new TextField<String>("contactOrganization"));
         add(new TextField<String>("contactPosition"));
         // address
         add(new TextField<String>("addressType"));
-        add(new TextField<String>("address")); 
+        add(new TextField<String>("address"));
         add(new TextField<String>("addressDeliveryPoint"));
         add(new TextField<String>("addressCity"));
-        add(new TextField<String>("addressState")); 
+        add(new TextField<String>("addressState"));
         add(new TextField<String>("addressPostalCode"));
         add(new TextField<String>("addressCountry"));
-        add(new TextField<String>("addressElectronicMailAddress"));
         // phone
         add(new TextField<String>("contactVoice"));
         add(new TextField<String>("contactFacsimile"));

@@ -10,14 +10,12 @@ import org.geoserver.wps.DismissType;
 
 /**
  * KVP reader for the Dismiss request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DismissKvpRequestReader extends KvpRequestReader {
 
     public DismissKvpRequestReader() {
         super(DismissType.class);
     }
-
 }

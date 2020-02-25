@@ -1,0 +1,758 @@
+{
+  "crs": null,
+  "features": [
+    {
+      "geometry": null,
+      "id": "observation:mf1",
+      "properties": {
+        "metadata": {
+          "CGI_NumericValue": {
+            "principalValue": 651
+          }
+        },
+        "result": [
+          {
+            "name": "GUNTHORPE FORMATION",
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "positionalAccuracy": {
+              "CGI_NumericValue": {
+                "principalValue": 200
+              }
+            },
+            "samplingFrame": {},
+            "shape": {
+              "coordinates": [
+                [
+                  [
+                    52.5,
+                    -1.2
+                  ],
+                  [
+                    52.6,
+                    -1.2
+                  ],
+                  [
+                    52.6,
+                    -1.1
+                  ],
+                  [
+                    52.5,
+                    -1.1
+                  ],
+                  [
+                    52.5,
+                    -1.2
+                  ]
+                ]
+              ],
+              "type": "Polygon"
+            },
+            "specification": {
+              "GeologicUnit": {
+                "composition": [
+                  {
+                    "lithology": [
+                      {
+                        "name": [
+                          "name_cc_5",
+                          "name_cc_5"
+                        ],
+                        "vocabulary": {}
+                      }
+                    ],
+                    "proportion": {
+                      "CGI_TermValue": {
+                        "value": "nonexistent"
+                      }
+                    },
+                    "role": "fictitious component"
+                  }
+                ],
+                "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+                "exposureColor": {
+                  "CGI_TermValue": {
+                    "value": "Blue"
+                  }
+                },
+                "geologicUnitType": {},
+                "name": [
+                  "Yaugher Volcanic Group",
+                  "-Py"
+                ],
+                "observationMethod": {
+                  "CGI_TermValue": {
+                    "value": "urn:ogc:def:nil:OGC::missing"
+                  }
+                },
+                "occurrence": {},
+                "outcropCharacter": {
+                  "CGI_TermValue": {
+                    "value": "x"
+                  }
+                },
+                "purpose": "instance"
+              }
+            }
+          }
+        ],
+        "resultQuality": {
+          "GeologicUnit": {
+            "composition": [
+              {
+                "lithology": [
+                  {
+                    "name": [
+                      "name_cc_5",
+                      "name_cc_5"
+                    ],
+                    "vocabulary": {}
+                  }
+                ],
+                "proportion": {
+                  "CGI_TermValue": {
+                    "value": "nonexistent"
+                  }
+                },
+                "role": "fictitious component"
+              }
+            ],
+            "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+            "exposureColor": {
+              "CGI_TermValue": {
+                "value": "Blue"
+              }
+            },
+            "geologicUnitType": {},
+            "name": [
+              "Yaugher Volcanic Group",
+              "-Py"
+            ],
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "occurrence": {},
+            "outcropCharacter": {
+              "CGI_TermValue": {
+                "value": "x"
+              }
+            },
+            "purpose": "instance"
+          }
+        }
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "observation:mf2",
+      "properties": {
+        "metadata": {
+          "CGI_NumericValue": {
+            "principalValue": 269
+          }
+        },
+        "result": [
+          {
+            "name": "MERCIA MUDSTONE GROUP",
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "positionalAccuracy": {
+              "CGI_NumericValue": {
+                "principalValue": 100
+              }
+            },
+            "samplingFrame": {},
+            "shape": {
+              "coordinates": [
+                [
+                  [
+                    52.5,
+                    -1.3
+                  ],
+                  [
+                    52.6,
+                    -1.3
+                  ],
+                  [
+                    52.6,
+                    -1.2
+                  ],
+                  [
+                    52.5,
+                    -1.2
+                  ],
+                  [
+                    52.5,
+                    -1.3
+                  ]
+                ]
+              ],
+              "type": "Polygon"
+            },
+            "specification": {
+              "GeologicUnit": {
+                "composition": [
+                  {
+                    "lithology": [
+                      {
+                        "name": [
+                          "name_cc_3",
+                          "name_cc_3"
+                        ],
+                        "vocabulary": {}
+                      }
+                    ],
+                    "proportion": {
+                      "CGI_TermValue": {
+                        "value": "significant"
+                      }
+                    },
+                    "role": "interbedded component"
+                  },
+                  {
+                    "lithology": [
+                      {
+                        "name": [
+                          "name_cc_4",
+                          "name_cc_4"
+                        ],
+                        "vocabulary": {}
+                      }
+                    ],
+                    "proportion": {
+                      "CGI_TermValue": {
+                        "value": "minor"
+                      }
+                    },
+                    "role": "interbedded component"
+                  }
+                ],
+                "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+                "exposureColor": [
+                  {
+                    "CGI_TermValue": {
+                      "value": "Blue"
+                    }
+                  },
+                  {
+                    "CGI_TermValue": {
+                      "value": "Yellow"
+                    }
+                  }
+                ],
+                "geologicUnitType": {},
+                "name": [
+                  "Yaugher Volcanic Group 1",
+                  "Yaugher Volcanic Group 2",
+                  "-Py"
+                ],
+                "observationMethod": {
+                  "CGI_TermValue": {
+                    "value": "urn:ogc:def:nil:OGC::missing"
+                  }
+                },
+                "occurrence": [
+                  {},
+                  {}
+                ],
+                "outcropCharacter": [
+                  {
+                    "CGI_TermValue": {
+                      "value": "x"
+                    }
+                  },
+                  {
+                    "CGI_TermValue": {
+                      "value": "y"
+                    }
+                  }
+                ],
+                "purpose": "instance"
+              }
+            }
+          }
+        ],
+        "resultQuality": {
+          "GeologicUnit": {
+            "composition": [
+              {
+                "lithology": [
+                  {
+                    "name": [
+                      "name_cc_3",
+                      "name_cc_3"
+                    ],
+                    "vocabulary": {}
+                  }
+                ],
+                "proportion": {
+                  "CGI_TermValue": {
+                    "value": "significant"
+                  }
+                },
+                "role": "interbedded component"
+              },
+              {
+                "lithology": [
+                  {
+                    "name": [
+                      "name_cc_4",
+                      "name_cc_4"
+                    ],
+                    "vocabulary": {}
+                  }
+                ],
+                "proportion": {
+                  "CGI_TermValue": {
+                    "value": "minor"
+                  }
+                },
+                "role": "interbedded component"
+              }
+            ],
+            "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+            "exposureColor": [
+              {
+                "CGI_TermValue": {
+                  "value": "Blue"
+                }
+              },
+              {
+                "CGI_TermValue": {
+                  "value": "Yellow"
+                }
+              }
+            ],
+            "geologicUnitType": {},
+            "name": [
+              "Yaugher Volcanic Group 1",
+              "Yaugher Volcanic Group 2",
+              "-Py"
+            ],
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "occurrence": [
+              {},
+              {}
+            ],
+            "outcropCharacter": [
+              {
+                "CGI_TermValue": {
+                  "value": "x"
+                }
+              },
+              {
+                "CGI_TermValue": {
+                  "value": "y"
+                }
+              }
+            ],
+            "purpose": "instance"
+          }
+        }
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "observation:mf3",
+      "properties": {
+        "metadata": {
+          "CGI_NumericValue": {
+            "principalValue": 123
+          }
+        },
+        "result": [
+          {
+            "name": "CLIFTON FORMATION",
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "positionalAccuracy": {
+              "CGI_NumericValue": {
+                "principalValue": 150
+              }
+            },
+            "samplingFrame": {},
+            "shape": {
+              "coordinates": [
+                [
+                  [
+                    52.5,
+                    -1.2
+                  ],
+                  [
+                    52.6,
+                    -1.2
+                  ],
+                  [
+                    52.6,
+                    -1.1
+                  ],
+                  [
+                    52.5,
+                    -1.1
+                  ],
+                  [
+                    52.5,
+                    -1.2
+                  ]
+                ]
+              ],
+              "type": "Polygon"
+            },
+            "specification": {
+              "GeologicUnit": {
+                "composition": [
+                  {
+                    "lithology": [
+                      {
+                        "name": [
+                          "name_cc_3",
+                          "name_cc_3"
+                        ],
+                        "vocabulary": {}
+                      }
+                    ],
+                    "proportion": {
+                      "CGI_TermValue": {
+                        "value": "significant"
+                      }
+                    },
+                    "role": "interbedded component"
+                  },
+                  {
+                    "lithology": [
+                      {
+                        "name": [
+                          "name_cc_4",
+                          "name_cc_4"
+                        ],
+                        "vocabulary": {}
+                      }
+                    ],
+                    "proportion": {
+                      "CGI_TermValue": {
+                        "value": "minor"
+                      }
+                    },
+                    "role": "interbedded component"
+                  }
+                ],
+                "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+                "exposureColor": [
+                  {
+                    "CGI_TermValue": {
+                      "value": "Blue"
+                    }
+                  },
+                  {
+                    "CGI_TermValue": {
+                      "value": "Yellow"
+                    }
+                  }
+                ],
+                "geologicUnitType": {},
+                "name": [
+                  "Yaugher Volcanic Group 1",
+                  "Yaugher Volcanic Group 2",
+                  "-Py"
+                ],
+                "observationMethod": {
+                  "CGI_TermValue": {
+                    "value": "urn:ogc:def:nil:OGC::missing"
+                  }
+                },
+                "occurrence": [
+                  {},
+                  {}
+                ],
+                "outcropCharacter": [
+                  {
+                    "CGI_TermValue": {
+                      "value": "x"
+                    }
+                  },
+                  {
+                    "CGI_TermValue": {
+                      "value": "y"
+                    }
+                  }
+                ],
+                "purpose": "instance"
+              }
+            }
+          }
+        ],
+        "resultQuality": {
+          "GeologicUnit": {
+            "composition": [
+              {
+                "lithology": [
+                  {
+                    "name": [
+                      "name_cc_3",
+                      "name_cc_3"
+                    ],
+                    "vocabulary": {}
+                  }
+                ],
+                "proportion": {
+                  "CGI_TermValue": {
+                    "value": "significant"
+                  }
+                },
+                "role": "interbedded component"
+              },
+              {
+                "lithology": [
+                  {
+                    "name": [
+                      "name_cc_4",
+                      "name_cc_4"
+                    ],
+                    "vocabulary": {}
+                  }
+                ],
+                "proportion": {
+                  "CGI_TermValue": {
+                    "value": "minor"
+                  }
+                },
+                "role": "interbedded component"
+              }
+            ],
+            "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
+            "exposureColor": [
+              {
+                "CGI_TermValue": {
+                  "value": "Blue"
+                }
+              },
+              {
+                "CGI_TermValue": {
+                  "value": "Yellow"
+                }
+              }
+            ],
+            "geologicUnitType": {},
+            "name": [
+              "Yaugher Volcanic Group 1",
+              "Yaugher Volcanic Group 2",
+              "-Py"
+            ],
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "occurrence": [
+              {},
+              {}
+            ],
+            "outcropCharacter": [
+              {
+                "CGI_TermValue": {
+                  "value": "x"
+                }
+              },
+              {
+                "CGI_TermValue": {
+                  "value": "y"
+                }
+              }
+            ],
+            "purpose": "instance"
+          }
+        }
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "observation:mf4",
+      "properties": {
+        "metadata": {
+          "CGI_NumericValue": {
+            "principalValue": 456
+          }
+        },
+        "result": [
+          {
+            "name": "MURRADUC BASALT",
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "positionalAccuracy": {
+              "CGI_NumericValue": {
+                "principalValue": 120
+              }
+            },
+            "samplingFrame": {},
+            "shape": {
+              "coordinates": [
+                [
+                  [
+                    52.5,
+                    -1.3
+                  ],
+                  [
+                    52.6,
+                    -1.3
+                  ],
+                  [
+                    52.6,
+                    -1.2
+                  ],
+                  [
+                    52.5,
+                    -1.2
+                  ],
+                  [
+                    52.5,
+                    -1.3
+                  ]
+                ]
+              ],
+              "type": "Polygon"
+            },
+            "specification": {
+              "GeologicUnit": {
+                "composition": [
+                  {
+                    "lithology": [
+                      {
+                        "name": [
+                          "name_a",
+                          "name_b",
+                          "name_c",
+                          "name_a",
+                          "name_b",
+                          "name_c"
+                        ],
+                        "vocabulary": {}
+                      },
+                      {
+                        "name": [
+                          "name_2",
+                          "name_2"
+                        ],
+                        "vocabulary": {}
+                      }
+                    ],
+                    "proportion": {
+                      "CGI_TermValue": {
+                        "value": "significant"
+                      }
+                    },
+                    "role": "interbedded component"
+                  }
+                ],
+                "description": "Olivine basalt",
+                "exposureColor": {
+                  "CGI_TermValue": {
+                    "value": "Red"
+                  }
+                },
+                "geologicUnitType": {},
+                "name": [
+                  "New Group",
+                  "-Xy"
+                ],
+                "observationMethod": {
+                  "CGI_TermValue": {
+                    "value": "urn:ogc:def:nil:OGC::missing"
+                  }
+                },
+                "occurrence": {},
+                "outcropCharacter": {
+                  "CGI_TermValue": {
+                    "value": "z"
+                  }
+                },
+                "purpose": "instance"
+              }
+            }
+          }
+        ],
+        "resultQuality": {
+          "GeologicUnit": {
+            "composition": [
+              {
+                "lithology": [
+                  {
+                    "name": [
+                      "name_a",
+                      "name_b",
+                      "name_c",
+                      "name_a",
+                      "name_b",
+                      "name_c"
+                    ],
+                    "vocabulary": {}
+                  },
+                  {
+                    "name": [
+                      "name_2",
+                      "name_2"
+                    ],
+                    "vocabulary": {}
+                  }
+                ],
+                "proportion": {
+                  "CGI_TermValue": {
+                    "value": "significant"
+                  }
+                },
+                "role": "interbedded component"
+              }
+            ],
+            "description": "Olivine basalt",
+            "exposureColor": {
+              "CGI_TermValue": {
+                "value": "Red"
+              }
+            },
+            "geologicUnitType": {},
+            "name": [
+              "New Group",
+              "-Xy"
+            ],
+            "observationMethod": {
+              "CGI_TermValue": {
+                "value": "urn:ogc:def:nil:OGC::missing"
+              }
+            },
+            "occurrence": {},
+            "outcropCharacter": {
+              "CGI_TermValue": {
+                "value": "z"
+              }
+            },
+            "purpose": "instance"
+          }
+        }
+      },
+      "type": "Feature"
+    }
+  ],
+  "totalFeatures": "unknown",
+  "numberReturned": 4,
+  "type": "FeatureCollection"
+}

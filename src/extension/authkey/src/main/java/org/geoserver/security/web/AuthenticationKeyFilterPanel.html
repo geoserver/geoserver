@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:head>
+<style type="text/css">
+  ul.horizontal div {
+    display:inline;
+  }
+</style>
+</wicket:head>
+  <wicket:extend>
+  	<ul>
+<!--   	  <li>
+          <div wicket:id="feedback"></div>
+      </li>
+        	 -->
+	  <li>
+		  <fieldset>
+		  <legend>
+		  		<span><wicket:message key="authKeyParameters"></wicket:message></span>
+		  		<a href="#" wicket:id="authKeyParametersHelp" class="help-link"></a>
+		  </legend>
+			  <ul>	  
+				  <li>                    
+				     <label for="authKeyParamName"><wicket:message key="authKeyParamName"></wicket:message></label>
+				     <input id="authKeyParamName" wicket:id="authKeyParamName" type="text" class="text"></input>				         
+				  </li>
+				  <li>
+                    <label ><wicket:message key="authKeyMapperName"></wicket:message></label>
+                    <select wicket:id="authKeyMapperName"></select>
+                  </li>
+				  <li>
+                    <div wicket:id="authKeyMapperParamsContainer">
+                        <div wicket:id="authKeyMapperParamsPanel">
+                        </div>
+                    </div>
+                </li>   
+				  <li>
+                    <label ><wicket:message key="userGroupService"></wicket:message></label>
+                    <select wicket:id="userGroupServiceName"></select>
+                  </li>
+				  
+				  <li>
+	      			<div class="button-group selfclear">
+	        		<a wicket:id="synchronize"><span><wicket:message key="synchronize"></wicket:message></span></a>
+	      			</div>
+	  			</li>  	
+	  					  
+			  </ul>	  	  
+		  </fieldset>
+	  </li>
+	 </ul>    
+  </wicket:extend>
+</body>
+</html>

@@ -126,7 +126,7 @@ The ``<Mark>`` element has the sub-elements:
      - **Required?**
      - **Description**
    * - ``<WellKnownName>``
-     - Yes
+     - No
      - The name of the shape.  
        Standard SLD shapes are ``circle``, ``square``, ``triangle``, ``star``, ``cross``, or ``x``.  Default is ``square``.
    * - ``<Fill>``
@@ -185,7 +185,7 @@ The next example uses an external graphic loaded from the file system:
       </Graphic>
     </PointSymbolizer>
 
-For ``file://`` URLs, the file must be readable by the user the Geoserver process is running as. You can also use ``href://`` URLs to reference remote graphics. 
+For ``file://`` URLs, the file must be readable by the user the GeoServer process is running as. You can also use ``href://`` URLs to reference remote graphics. 
 
 Further examples can be found in the :ref:`sld_cookbook_points` section of the :ref:`sld_cookbook`.
 

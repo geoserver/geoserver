@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>community</artifactId>
+        <groupId>org.geoserver</groupId>
+        <version>2.17-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-mbstyle</artifactId>
+    <packaging>jar</packaging>
+    <version>2.17-SNAPSHOT</version>
+    <name>GeoServer Mapbox Styling</name>
+
+    <dependencies>
+        <!-- Runtime/compile-time dependencies -->
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-mbstyle</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+	      <groupId>org.geoserver</groupId>
+	      <artifactId>gs-rest</artifactId>
+	      <version>${project.version}</version>
+	      <scope>test</scope>
+	    </dependency>
+        <dependency>
+	      <groupId>org.geoserver</groupId>
+	      <artifactId>gs-restconfig</artifactId>
+	      <version>${project.version}</version>
+	      <scope>test</scope>
+	    </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>gs-web-core</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>gs-web-core</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>gs-web-wms</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

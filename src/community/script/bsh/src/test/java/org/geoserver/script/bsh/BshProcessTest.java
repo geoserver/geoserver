@@ -13,5 +13,4 @@ public class BshProcessTest extends ScriptProcessTest {
     public String getExtension() {
         return "bsh";
     }
-
 }

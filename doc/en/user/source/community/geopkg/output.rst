@@ -15,7 +15,7 @@ The following additional parameters can be passed on using :ref:`format_options`
 GeoPackage WFS Output Format
 ----------------------------    
 
-Any WFS :ref:`wfs_getfeature` request can be returned as a Geopackage by specifying ``format=geopackage``” as output format (see :ref:`wfs_output_formats`). The returned result will be a GeoPackage file with a single features layer.
+Any WFS :ref:`wfs_getfeature` request can be returned as a Geopackage by specifying ``format=geopackage`` as output format (see :ref:`wfs_output_formats`). The returned result will be a GeoPackage file with a single features layer.
 
 GeoPackage WPS Process
 ----------------------
@@ -72,7 +72,7 @@ Outline of the features layer::
 
 Each features layer has the following properties: 
   * ``featuretype`` (mandatory): the feature type
-  * ``propertynames`` (optional): list of comma-separated names of properties in feauture type to be included (default is all properties)
+  * ``propertynames`` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
   * ``filter`` (optional): any OGC filter that will be applied on features before output
 
 Outline of the tiles layer::

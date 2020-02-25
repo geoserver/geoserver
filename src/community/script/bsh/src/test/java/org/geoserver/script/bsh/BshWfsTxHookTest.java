@@ -13,5 +13,4 @@ public class BshWfsTxHookTest extends WfsTxHookTest {
     public String getExtension() {
         return "bsh";
     }
-
 }

@@ -5,19 +5,15 @@
 package org.geoserver.cluster.impl.handlers.configuration;
 
 import com.thoughtworks.xstream.XStream;
-import org.apache.commons.lang.NullArgumentException;
+import java.util.logging.Level;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.events.configuration.JMSSettingsModifyEvent;
 import org.geoserver.cluster.impl.utils.BeanUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 
-import java.util.logging.Level;
-
-/**
- */
+/** */
 public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModifyEvent> {
 
     private final GeoServer geoServer;
@@ -37,7 +33,7 @@ public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModif
     @Override
     public boolean synchronize(JMSSettingsModifyEvent event) throws Exception {
         if (event == null) {
-            throw new NullArgumentException("Incoming event is NULL.");
+            throw new NullPointerException("Incoming event is NULL.");
         }
         try {
             // disable the message producer to avoid recursion
@@ -68,21 +64,25 @@ public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModif
         // let's extract some useful information from the event
         WorkspaceInfo workspace = event.getSource().getWorkspace();
         // settings are global or specific to a certain workspace
-        SettingsInfo settingsInfo = workspace == null
-                ? geoServer.getSettings() : geoServer.getSettings(workspace);
+        SettingsInfo settingsInfo =
+                workspace == null ? geoServer.getSettings() : geoServer.getSettings(workspace);
         // if not settings were found this means that a user just deleted this workspace
         // or deleted this workspace settings on this GeoServer instance or that a previously
         // synchronization problem happened
         if (settingsInfo == null) {
-            throw new IllegalArgumentException(String.format(
-                    "No settings for workspace '%s' found on this instance.", workspace.getName()));
+            throw new IllegalArgumentException(
+                    String.format(
+                            "No settings for workspace '%s' found on this instance.",
+                            workspace.getName()));
         }
         // well let's update our settings updating only the modified properties
         try {
             BeanUtils.smartUpdate(settingsInfo, event.getPropertyNames(), event.getNewValues());
         } catch (Exception exception) {
-            String message = workspace == null ? "Error updating GeoServer global settings."
-                    : "Error updating workspace '%s' settings.";
+            String message =
+                    workspace == null
+                            ? "Error updating GeoServer global settings."
+                            : "Error updating workspace '%s' settings.";
             throw new RuntimeException(String.format(message, workspace), exception);
         }
         // save the updated settings

@@ -1,0 +1,81 @@
+{
+  "qosMainConfiguration": {
+    "activated": true,
+    "metadata": {
+      "operatingInfo": {
+        "operationalStatus": {
+          "href": "http://def.opengeospatial.org/codelist/qos/status/1.0/operationalStatus.rdf#Operational",
+          "title": "testbed14"
+        },
+        "byDaysOfWeek": {
+          "days": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "01:00:00+03:00",
+            "21:00:00+03:00"
+          ]
+        }
+      },
+      "statement": [
+        {
+          "metric": {
+            "href": "http://def.opengeospatial.org/codelist/qos/metrics/1.0/metrics.rdf#RequestCapacityPerSecond",
+            "title": "Requests per second"
+          },
+          "meassure": {
+            "value": 2200,
+            "uom": "s-1"
+          },
+          "valueType": "moreThanOrEqual"
+        },
+        {
+          "metric": {
+            "href": "http://def.opengeospatial.org/codelist/qos/metrics/1.0/metrics.rdf#RequestCapacityPerSecond",
+            "title": "Titulo de prueba"
+          },
+          "meassure": {
+            "value": 2400,
+            "uom": "s-1"
+          },
+          "valueType": "moreThanOrEqual"
+        }
+      ],
+      "operationAnomalyFeed": {
+        "href": "asdf.txt",
+        "format": "text/plain",
+        "abstract": {
+          "value": "text file qith error logs"
+        }
+      },
+      "representativeOperation": {
+        "getMapOperation": {
+          "httpMethod": "GET",
+          "requestOption": {
+            "areaConstraint": {
+              "minX": 723287.598302843,
+              "minY": 137886.22531418226,
+              "MaxX": 724754.1479223035,
+              "MaxY": 138664.3716564186
+            },
+            "layerName": "cite:Forests",
+            "crs": "EPSG:32617",
+            "imageWidth": {
+              "maximunValue": 256
+            },
+            "imageHeight": {
+              "maximunValue": 256
+            },
+            "outputFormat": [
+              "image/png",
+              "image/jpeg"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

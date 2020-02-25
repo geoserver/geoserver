@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.data.store;
 
 import static org.junit.Assert.*;
@@ -11,8 +15,17 @@ public class ParamInfoTest {
 
     @Test
     public void testTitle() {
-        Param param = new Param("abc", String.class, new SimpleInternationalString("the title"),
-                new SimpleInternationalString("the description"), true, 1, 1, null, null);
+        Param param =
+                new Param(
+                        "abc",
+                        String.class,
+                        new SimpleInternationalString("the title"),
+                        new SimpleInternationalString("the description"),
+                        true,
+                        1,
+                        1,
+                        null,
+                        null);
         ParamInfo pi = new ParamInfo(param);
         assertEquals("the title", pi.getTitle());
     }

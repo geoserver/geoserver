@@ -14,6 +14,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureIterator;
@@ -26,9 +27,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.global.GeoServerFeatureSource;
 
 /**
- * This test makes use of mock RetypeFeatureTypeCallback implementation provided in
- *
- * @author ImranR
+ * This test asserts the an implementation of RetypeFeatureTypeCallback is integrated properly with
+ * GeoServerFeatureSource wrapper. The test asserts that when a feature type is retyped through
+ * RetypeFeatureTypeCallback implementation, it does not break or override the functionality
+ * provided by GeoServerFeatureSource wrapper.
  */
 public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
@@ -41,15 +43,21 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+        // registering singleton for this test only
+        MockRetypeFeatureTypeCallback o2 = new MockRetypeFeatureTypeCallback();
+        GeoServerExtensionsHelper.singleton(
+                "retypeFeatureTypeCallbackTest", o2, RetypeFeatureTypeCallback.class);
+
         super.onSetUp(testData);
-        setupBasicLayer(testData);
+        setUpNonGeometryLayer(testData);
     }
 
-    private void setupBasicLayer(SystemTestData testData) throws IOException {
+    private void setUpNonGeometryLayer(SystemTestData testData) throws IOException {
+        // Loading a vector layer with location given as latitude and longitude and no geometry
         Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        // declaring a different CRS to test re-projection
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         props.put(LayerProperty.SRS, 3857);
-        // Loading a layer with location given as latitude and longitude and no geometry
         testData.addVectorLayer(
                 LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME,
                 props,
@@ -58,6 +66,15 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
                 getCatalog());
     }
 
+    /**
+     * The test asserts the following operations
+     *
+     * <p>1. A feature type with no geometry field is correctly re-typed by adding a Geometry field
+     * (e.g Point) when requested through ResourcePool
+     *
+     * <p>2. GeoServerFeatureSource wrapper is intact when wrapping Re-typed Feature Source a
+     * -Re-projection works b -FeatureTypeInfo level CQL filter filters records
+     */
     @Test
     public void testResourcePoolOperations() throws Exception {
         ResourcePool pool = ResourcePool.create(getCatalog());

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MockRetypeFeatureTypeCallback;
@@ -26,14 +28,9 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
-/*
- * A Mock Converter Helper class to demonstrate how to
- * Retype Feature by generating Geometries on the fly
- * Defining Geomtry attribute on the fly
- * Query handling which ensure that dynamic field is not delegated to Data Store
- *
- * **/
-public class MockRetypedFeatureConverter {
+public class RetypeHelper {
+    public static Logger LOGGER = Logger.getLogger(RetypeHelper.class.getCanonicalName());
+
     private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
     public SimpleFeature generateGeometry(
@@ -59,7 +56,7 @@ public class MockRetypedFeatureConverter {
                 }
                 simpleFeature = featureBuilder.buildFeature(simpleFeature.getID());
             } catch (Exception e) {
-
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
         return simpleFeature;

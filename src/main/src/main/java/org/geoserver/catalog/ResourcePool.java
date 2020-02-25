@@ -1111,13 +1111,12 @@ public class ResourcePool {
                 }
             }
             ft = tb.buildFeatureType();
+            // extension point for retyping the feature type
+            for (RetypeFeatureTypeCallback callback :
+                    GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
+                ft = callback.retypeFeatureType(info, ft);
+            }
         } // end special case for SimpleFeatureType
-
-        // extension point for retyping the feature type
-        for (RetypeFeatureTypeCallback callback :
-                GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
-            ft = callback.retypeFeatureType(info, ft);
-        }
 
         return ft;
     }
@@ -1388,11 +1387,11 @@ public class ResourcePool {
                 schema = typeBuilder.buildFeatureType();
             }
 
-            // applying wrappers using
-            // implementations of org.geoserver.catalog.RetypeFeatureTypeCallback
+            // applying wrappers using implementations of RetypeFeatureTypeCallback
             for (RetypeFeatureTypeCallback callback :
                     GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
-                fs = (SimpleFeatureSource) callback.wrapFeatureSource(info, fs);
+                if (SimpleFeatureSource.class.isAssignableFrom(fs.getClass()))
+                    fs = (SimpleFeatureSource) callback.wrapFeatureSource(info, fs);
             }
 
             // return a normal

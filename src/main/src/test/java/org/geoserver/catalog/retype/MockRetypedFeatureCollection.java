@@ -12,9 +12,6 @@ import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-/*
- * A Mock implementation of DecoratingSimpleFeatureCollection to handle features with geometries generated on the fly
- * */
 public class MockRetypedFeatureCollection extends DecoratingSimpleFeatureCollection {
 
     private final FeatureTypeInfo featureTypeInfo;
@@ -44,7 +41,7 @@ public class MockRetypedFeatureCollection extends DecoratingSimpleFeatureCollect
 
         private final SimpleFeatureIterator delegate;
 
-        MockRetypedFeatureConverter converter = new MockRetypedFeatureConverter();
+        RetypeHelper converter = new RetypeHelper();
 
         private GeometryGenerationCollectionIterator(SimpleFeatureIterator delegate) {
             this.delegate = delegate;

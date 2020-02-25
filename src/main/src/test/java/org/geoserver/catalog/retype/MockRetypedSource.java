@@ -13,16 +13,13 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
-/*
- * A Mock Retyped Feature Source demonstrating how to handle dynamic dynamic Geometry generations
- * */
 public class MockRetypedSource extends DecoratingSimpleFeatureSource {
 
     private final FeatureTypeInfo featureTypeInfo;
     private SimpleFeatureType cachedFeatureType;
     SimpleFeatureSource delegate;
 
-    MockRetypedFeatureConverter converter = new MockRetypedFeatureConverter();
+    RetypeHelper converter = new RetypeHelper();
 
     public MockRetypedSource(FeatureTypeInfo featureTypeInfo, SimpleFeatureSource delegate) {
         super(delegate);

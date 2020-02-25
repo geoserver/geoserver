@@ -4,6 +4,8 @@
  */
 package org.geoserver.catalog;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.retype.MockRetypedSource;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -16,11 +18,13 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * This is a mock implementation
- *
- * @author ImranR
+ * This is a mock implementation used for unit testing and demonstration on how to use this
+ * interface
  */
 public class MockRetypeFeatureTypeCallback implements RetypeFeatureTypeCallback {
+
+    public static Logger LOGGER =
+            Logger.getLogger(MockRetypeFeatureTypeCallback.class.getCanonicalName());
 
     public static final String RETYPED = "RETYPED";
     public static final String RETYPED_GEOM_COLUMN = "GENERATED_POINT";
@@ -31,9 +35,6 @@ public class MockRetypeFeatureTypeCallback implements RetypeFeatureTypeCallback 
 
     @Override
     public FeatureType retypeFeatureType(FeatureTypeInfo featureTypeInfo, FeatureType src) {
-        // only work for the test file : test/resources/org/geoserver/catalog/longlat.properties
-        if (!RetypeFeatureTypeCallbackTest.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER.equalsIgnoreCase(
-                featureTypeInfo.getName())) return src;
         try {
             CoordinateReferenceSystem crs = CRS.decode("EPSG:" + EPSG_CODE);
             SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -50,7 +51,7 @@ public class MockRetypeFeatureTypeCallback implements RetypeFeatureTypeCallback 
             return newType;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in MockRetypeFeatureTypeCallback:retypeFeatureType", e);
         }
         return src;
     }
@@ -58,11 +59,6 @@ public class MockRetypeFeatureTypeCallback implements RetypeFeatureTypeCallback 
     @Override
     public FeatureSource wrapFeatureSource(
             FeatureTypeInfo featureTypeInfo, FeatureSource featureSource) {
-        // only work for the test file : test/resources/org/geoserver/catalog/longlat.properties
-
-        if (!RetypeFeatureTypeCallbackTest.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER.equalsIgnoreCase(
-                featureTypeInfo.getName())) return featureSource;
-
         MockRetypedSource wrapped =
                 new MockRetypedSource(featureTypeInfo, (SimpleFeatureSource) featureSource);
 

@@ -12,7 +12,4 @@
   <bean id="memoryRISecurityProvider" class="org.geoserver.security.impl.MemoryReadOnlySecurityProvider"/>
 
   <bean id="propStyleHandler" class="org.geoserver.catalog.PropertyStyleHandler"/>
-  
-  <!--RetypeFeatureTypeCallback -->
-  <bean id="retypeFeatureTypeCallbackTest" class="org.geoserver.catalog.MockRetypeFeatureTypeCallback"/>
 </beans>

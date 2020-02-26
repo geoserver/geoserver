@@ -359,6 +359,7 @@
             <xsd:element ref="sld:Geometry" minOccurs="0"/>
             <xsd:element ref="sld:Stroke" minOccurs="0"/>
             <xsd:element ref="sld:PerpendicularOffset" minOccurs="0"/>
+            <xsd:element ref="sld:VendorOption" minOccurs="0" maxOccurs="unbounded" />
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>

@@ -585,7 +585,7 @@ paths:
     post:
       operationId: postLayerStyles
       summary: Add a new style
-      description: Adds a new style entry to the layer. The style named in styleBody must alread exist, and will not be altered by this request. 
+      description: Adds a new style entry to the layer. The style named in styleBody must already exist, and will not be altered by this request. 
       parameters:
         - name: layer
           in: path

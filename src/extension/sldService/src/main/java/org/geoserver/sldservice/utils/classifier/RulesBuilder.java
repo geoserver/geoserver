@@ -319,9 +319,14 @@ public class RulesBuilder {
         try {
             /* First class */
             r = SF.createRule();
-            f = FF.less(att, FF.literal(groups.getMax(0)));
+            if (groups.getMin(0).equals(groups.getMax(0))) {
+                f = FF.equals(att, FF.literal(groups.getMin(0)));
+                r.getDescription().setTitle((FF.literal(groups.getMin(0)).toString()));
+            } else {
+                f = FF.less(att, FF.literal(groups.getMax(0)));
+                r.getDescription().setTitle(" < " + FF.literal(groups.getMax(0)));
+            }
             r.setFilter(f);
-            r.getDescription().setTitle(" < " + FF.literal(groups.getMax(0)));
             list.add(r);
             for (int i = 1; i < groups.getSize() - 1; i++) {
                 r = SF.createRule();
@@ -335,7 +340,7 @@ public class RulesBuilder {
                 } else {
                     f =
                             FF.and(
-                                    FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
+                                    getNotOverlappingFilter(i, groups, att),
                                     FF.less(att, FF.literal(groups.getMax(i))));
                     if (!isDuplicatedClass(list, f)) {
                         r.getDescription()
@@ -351,7 +356,7 @@ public class RulesBuilder {
             }
             /* Last class */
             r = SF.createRule();
-            f = FF.greaterOrEqual(att, FF.literal(groups.getMin(groups.getSize() - 1)));
+            f = getNotOverlappingFilter(groups.getSize() - 1, groups, att);
             r.setFilter(f);
             r.getDescription().setTitle((" >= " + FF.literal(groups.getMin(groups.getSize() - 1))));
             list.add(r);
@@ -399,7 +404,7 @@ public class RulesBuilder {
                 } else {
                     f =
                             FF.and(
-                                    FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
+                                    getNotOverlappingFilter(i, groups, att),
                                     i == (groups.getSize() - 1)
                                             ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
                                             : FF.less(att, FF.literal(groups.getMax(i))));
@@ -469,5 +474,29 @@ public class RulesBuilder {
 
     private boolean isDuplicatedClass(List<Rule> rules, Filter f) {
         return rules.stream().anyMatch(r -> r.getFilter().equals(f));
+    }
+
+    /**
+     * Compares current min and previous min avoiding the production of overlapping Rules
+     *
+     * @param currentIdx
+     * @param groups
+     * @param att
+     * @return
+     */
+    private Filter getNotOverlappingFilter(
+            int currentIdx, RangedClassifier groups, Expression att) {
+        Filter f;
+        if (currentIdx > 0) {
+            Object currMin = groups.getMin(currentIdx);
+            Object prevMin = groups.getMin(currentIdx - 1);
+            if (!prevMin.equals(currMin))
+                f = FF.greaterOrEqual(att, FF.literal(groups.getMin(currentIdx)));
+            else f = FF.greater(att, FF.literal(groups.getMin(currentIdx)));
+        } else {
+            f = FF.greaterOrEqual(att, FF.literal(groups.getMin(currentIdx)));
+        }
+
+        return f;
     }
 }

@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.media.jai.PlanarImage;
@@ -42,6 +43,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.function.FilterFunction_parseDouble;
@@ -69,6 +71,9 @@ import org.geotools.styling.Symbolizer;
 import org.geotools.xml.styling.SLDParser;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.*;
 import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -87,6 +92,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     static final QName CLASSIFICATION_POINTS =
             new QName(SystemTestData.CITE_URI, "ClassificationPoints", SystemTestData.CITE_PREFIX);
+
+    static final QName CLASSIFICATION_POINTS2 =
+            new QName(SystemTestData.CITE_URI, "ClassificationPoints2", SystemTestData.CITE_PREFIX);
 
     static final QName CLASSIFICATION_POLYGONS =
             new QName(
@@ -140,6 +148,13 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 CLASSIFICATION_POINTS,
                 props,
                 "ClassificationPoints.properties",
+                this.getClass(),
+                catalog);
+
+        testData.addVectorLayer(
+                CLASSIFICATION_POINTS2,
+                props,
+                "ClassificationPoints2.properties",
                 this.getClass(),
                 catalog);
 
@@ -1967,11 +1982,10 @@ public class ClassifierTest extends SLDServiceBaseTest {
         String resultJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
         Rule[] rulesJenks =
                 checkSLD(resultJenks.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
-        assertTrue(rulesJenks.length == 4);
+        assertTrue(rulesJenks.length == 3);
         checkRuleLineSymbolizer(rulesJenks[0], "#FF071C");
         checkRuleLineSymbolizer(rulesJenks[1], "#CC0616");
         checkRuleLineSymbolizer(rulesJenks[2], "#82040E");
-        checkRuleLineSymbolizer(rulesJenks[3], "#68030B");
     }
 
     @Test
@@ -2004,5 +2018,137 @@ public class ClassifierTest extends SLDServiceBaseTest {
         LineSymbolizer symbolizer = (LineSymbolizer) rule.symbolizers().get(0);
         assertNotNull(symbolizer.getStroke());
         assertEquals(color, symbolizer.getStroke().getColor().toString());
+    }
+
+    @Test
+    public void testOpenIntervalFirstRuleConsistency() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=quantile&intervals=2&open=true";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 2);
+        assertTrue(rules[0].getFilter() instanceof PropertyIsEqualTo);
+        assertTrue(rules[1].getFilter() instanceof PropertyIsGreaterThan);
+        checkNotOverlappingRules(rules[0], rules[1]);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=jenks&intervals=2&open=true";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultXmlJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(
+                        resultXmlJenks
+                                .replace("<Rules>", sldPrefix)
+                                .replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 2);
+        assertTrue(rulesJenks[0].getFilter() instanceof PropertyIsEqualTo);
+        assertTrue(rulesJenks[1].getFilter() instanceof PropertyIsGreaterThan);
+        checkNotOverlappingRules(rulesJenks[0], rulesJenks[1]);
+    }
+
+    @Test
+    public void testNotOverlappingRulesClosed() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=quantile&intervals=2";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 2);
+        Rule first = rules[0];
+        Rule second = rules[1];
+        checkNotOverlappingRules(first, second);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=jenks&intervals=2&";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultXmlJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(
+                        resultXmlJenks
+                                .replace("<Rules>", sldPrefix)
+                                .replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 2);
+        Rule firstJenks = rulesJenks[0];
+        Rule secondJenks = rulesJenks[1];
+        checkNotOverlappingRules(firstJenks, secondJenks);
+    }
+
+    @Test
+    public void testNotOverlappingRulesOpen() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=quantile&intervals=3&open=true";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 3);
+        Rule first = rules[0];
+        Rule second = rules[1];
+        checkNotOverlappingRules(first, second);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=jenks&intervals=3&open=true";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultXmlJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(
+                        resultXmlJenks
+                                .replace("<Rules>", sldPrefix)
+                                .replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 2);
+        Rule firstJenks = rulesJenks[0];
+        Rule secondJenks = rulesJenks[1];
+        checkNotOverlappingRules(firstJenks, secondJenks);
+    }
+
+    private void checkNotOverlappingRules(Rule first, Rule second) throws IOException {
+        SimpleFeatureType ft =
+                (SimpleFeatureType)
+                        getCatalog().getFeatureTypeByName("ClassificationPoints2").getFeatureType();
+        SimpleFeature feature = DataUtilities.createFeature(ft, "=1|2.0|POINT(4 2.5)");
+        assertTrue(first.getFilter().evaluate(feature));
+        assertFalse(second.getFilter().evaluate(feature));
     }
 }

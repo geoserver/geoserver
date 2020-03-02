@@ -1988,4 +1988,30 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         sInfo.setLegend(null);
         catalog.save(sInfo);
     }
+
+    @Test
+    public void testLayoutLegendWithSpecifiedTargetSize() throws Exception {
+        // checking a legend decoration with a custom size bigger than the
+        // map size; expecting that the specified legend size is picked up,
+        // while resizing it accordingly to map dimension
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-with-size.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-with-size.xml"));
+        BufferedImage image =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=cite:giantPolygon"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=150"
+                                + "&legend_options=fontName:Bitstream Vera Sans"
+                                + "&srs=EPSG:4326&format_options=layout:test-layout-with-size",
+                        "image/png");
+
+        URL expectedResponse = getClass().getResource("giant_poly_big_legend.png");
+        BufferedImage expectedImage = ImageIO.read(expectedResponse);
+        ImageAssert.assertEquals(image, expectedImage, 1500);
+    }
 }

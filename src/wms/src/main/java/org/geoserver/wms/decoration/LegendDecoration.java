@@ -74,74 +74,11 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContext) {
-        double scaleDenominator = mapContext.getScaleDenominator(true);
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;
 
-        List<LayerLegend> layerLegends = new ArrayList<LayerLegend>();
-        for (Layer layer : mapContext.layers()) {
-            Rule[] applicableRules =
-                    LegendUtils.getApplicableRules(
-                            layer.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0]),
-                            scaleDenominator);
-            if ((!layers.isEmpty() && !layers.contains(layer.getTitle()))
-                    || applicableRules.length == 0) {
-                continue;
-            }
-
-            BufferedImageLegendGraphicBuilder legendGraphicBuilder =
-                    new BufferedImageLegendGraphicBuilder();
-            GetLegendGraphicRequest request = new GetLegendGraphicRequest();
-            request.setLayer(layer.getFeatureSource().getSchema());
-            request.setTransparent(true);
-            request.setScale(scaleDenominator);
-            request.setStyle(layer.getStyle());
-            request.setWms(wms);
-            final Request dispatcherRequest = Dispatcher.REQUEST.get();
-            if (dispatcherRequest != null) {
-                request.setKvp(dispatcherRequest.getKvp());
-                request.setRawKvp(dispatcherRequest.getRawKvp());
-            }
-            setLegendInfo(layer, request);
-            Map legendOptions = new CaseInsensitiveMap(options);
-            legendOptions.putAll(mapContext.getRequest().getFormatOptions());
-            if (dispatcherRequest != null
-                    && dispatcherRequest.getKvp().get("legend_options") != null) {
-                legendOptions.putAll((Map) dispatcherRequest.getKvp().get("legend_options"));
-            }
-            request.setLegendOptions(legendOptions);
-
-            LayerLegend legend = new LayerLegend();
-            legend.request = request;
-            String title = findTitle(layer, wms.getGeoServer().getCatalog());
-            if (title != null) {
-                Font newFont = LegendUtils.getLabelFont(request);
-                newFont = newFont.deriveFont(Font.BOLD);
-                newFont = newFont.deriveFont((float) newFont.getSize() + 2);
-
-                Font oldFont = g2d.getFont();
-                g2d.setFont(newFont);
-                if (LegendUtils.isFontAntiAliasing(legend.request)) {
-                    g2d.setRenderingHint(
-                            RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                } else {
-                    g2d.setRenderingHint(
-                            RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-                }
-
-                BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
-                g2d.setFont(oldFont);
-                legend.title = titleImage;
-            }
-
-            BufferedImage legendImage = legendGraphicBuilder.buildLegendGraphic(request);
-            legend.legend = legendImage;
-
-            layerLegends.add(legend);
-        }
+        List<LayerLegend> layerLegends = getLayerLegend(g2d, mapContext);
 
         legends.set(layerLegends);
 
@@ -185,8 +122,11 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContext)
             throws Exception {
-        List<LayerLegend> legends = this.legends.get();
-
+        // check if LayerLegends have been computed in the above method; if not
+        // (cause a custom legend size and findOptimalSize has not been called)
+        // they are produced here
+        List<LayerLegend> legends =
+                this.legends.get() != null ? this.legends.get() : getLayerLegend(g2d, mapContext);
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;
@@ -198,8 +138,8 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         while (imageIterator.hasNext()) {
             LayerLegend legend = imageIterator.next();
 
-            int height = legend.legend.getHeight();
-            int width = legend.legend.getWidth();
+            int height = (int) paintArea.getHeight();
+            int width = (int) paintArea.getWidth();
             if (legend.title != null) {
                 height += legend.title.getHeight();
                 if (width < legend.title.getWidth()) {
@@ -325,5 +265,74 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         public BufferedImage title;
         public BufferedImage legend;
         public GetLegendGraphicRequest request;
+    }
+
+    private List<LayerLegend> getLayerLegend(Graphics2D g2d, WMSMapContent mapContext) {
+        List<LayerLegend> legendLayers = new ArrayList<>();
+        double scaleDenominator = mapContext.getScaleDenominator(true);
+        for (Layer layer : mapContext.layers()) {
+            Rule[] applicableRules =
+                    LegendUtils.getApplicableRules(
+                            layer.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0]),
+                            scaleDenominator);
+            if ((!layers.isEmpty() && !layers.contains(layer.getTitle()))
+                    || applicableRules.length == 0) {
+                continue;
+            }
+
+            BufferedImageLegendGraphicBuilder legendGraphicBuilder =
+                    new BufferedImageLegendGraphicBuilder();
+            GetLegendGraphicRequest request = new GetLegendGraphicRequest();
+            request.setLayer(layer.getFeatureSource().getSchema());
+            request.setTransparent(true);
+            request.setScale(scaleDenominator);
+            request.setStyle(layer.getStyle());
+            request.setWms(wms);
+            final Request dispatcherRequest = Dispatcher.REQUEST.get();
+            if (dispatcherRequest != null) {
+                request.setKvp(dispatcherRequest.getKvp());
+                request.setRawKvp(dispatcherRequest.getRawKvp());
+            }
+            setLegendInfo(layer, request);
+
+            Map legendOptions = new CaseInsensitiveMap(options);
+            legendOptions.putAll(mapContext.getRequest().getFormatOptions());
+            if (dispatcherRequest != null
+                    && dispatcherRequest.getKvp().get("legend_options") != null) {
+                legendOptions.putAll((Map) dispatcherRequest.getKvp().get("legend_options"));
+            }
+            request.setLegendOptions(legendOptions);
+
+            LayerLegend legend = new LayerLegend();
+            legend.request = request;
+            String title = findTitle(layer, wms.getGeoServer().getCatalog());
+            if (title != null) {
+                Font newFont = LegendUtils.getLabelFont(request);
+                newFont = newFont.deriveFont(Font.BOLD);
+                newFont = newFont.deriveFont((float) newFont.getSize() + 2);
+
+                Font oldFont = g2d.getFont();
+                g2d.setFont(newFont);
+                if (LegendUtils.isFontAntiAliasing(legend.request)) {
+                    g2d.setRenderingHint(
+                            RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                } else {
+                    g2d.setRenderingHint(
+                            RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+                }
+
+                BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
+                g2d.setFont(oldFont);
+                legend.title = titleImage;
+            }
+
+            BufferedImage legendImage = legendGraphicBuilder.buildLegendGraphic(request);
+            legend.legend = legendImage;
+
+            legendLayers.add(legend);
+        }
+        return legendLayers;
     }
 }

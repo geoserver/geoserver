@@ -61,12 +61,12 @@ Enable the Marlin rasterizer
 
 Before Java 9, OpenJDK and Oracle used the Pisces and Ductus renderers to rasterize vector data respectively.  In Java 9 onward they use Marlin which has better overall performance in most situations than either Pisces or Ductus.
 
-In order to enable Marlin on Java 8, add the following to the JVM startup options::
+In order to enable Marlin on Java 8, or to use a newer version than that provided by your JVM, add the following to the JVM startup options::
 
      -Xbootclasspath/a:$MARLIN_JAR 
      -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine 
 
-where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory.
+where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory or downloaded from the ` Marlin project <https://github.com/bourgesl/marlin-renderer/>`_.
 
 The server status page shows which renderer is being used.
 

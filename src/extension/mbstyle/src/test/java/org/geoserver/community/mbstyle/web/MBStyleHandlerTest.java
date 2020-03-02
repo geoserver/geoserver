@@ -54,7 +54,7 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
                 Styles.handler(MBStyleHandler.FORMAT)
                         .parse(getClass().getResourceAsStream("citeGroup.json"), null, null, null);
 
-        assertEquals(4, sld.getStyledLayers().length);
+        assertEquals(3, sld.getStyledLayers().length);
 
         StyleHandler sldHandler = Styles.handler(SLDHandler.FORMAT);
         File sldFile = Files.createTempFile("citeGroup", "sld").toFile();
@@ -63,6 +63,6 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
         StyledLayerDescriptor sld2 =
                 sldHandler.parse(new FileInputStream(sldFile), SLDHandler.VERSION_10, null, null);
-        assertEquals(4, sld2.getStyledLayers().length);
+        assertEquals(3, sld2.getStyledLayers().length);
     }
 }

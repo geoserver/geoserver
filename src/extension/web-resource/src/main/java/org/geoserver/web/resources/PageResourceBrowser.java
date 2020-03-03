@@ -7,6 +7,7 @@ package org.geoserver.web.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -277,7 +278,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                         final Resource resource = treeView.getSelectedNode().getObject();
                         final String contents;
                         try (InputStream is = resource.in()) {
-                            contents = IOUtils.toString(is);
+                            contents = IOUtils.toString(is, StandardCharsets.UTF_8);
 
                             dialog.showOkCancel(
                                     target,

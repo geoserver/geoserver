@@ -15,9 +15,11 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wms.web.data.OpenLayersPreviewPanel;
 import org.geoserver.wms.web.data.StyleEditPage;
 import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.Style;
+import org.geotools.styling.TextSymbolizer2;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.style.Symbolizer;
 
 public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
 
@@ -81,18 +83,10 @@ public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("apply", "click");
         tester.assertModelValue("styleForm:context:panel:previewStyleGroup", true);
         assertNotNull(getCatalog().getStyleByName("mbstyle").getSLD());
-        PointSymbolizer ps =
-                (PointSymbolizer)
-                        getCatalog()
-                                .getStyleByName("mbstyle")
-                                .getStyle()
-                                .featureTypeStyles()
-                                .get(0)
-                                .rules()
-                                .get(0)
-                                .symbolizers()
-                                .get(0);
-        ExternalGraphic eg = (ExternalGraphic) ps.getGraphic().graphicalSymbols().get(0);
+        Style style = getCatalog().getStyleByName("mbstyle").getStyle();
+        Symbolizer sym = style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        TextSymbolizer2 label = (TextSymbolizer2) sym;
+        ExternalGraphic eg = (ExternalGraphic) label.getGraphic().graphicalSymbols().get(0);
         assertEquals(
                 eg.getURI(),
                 "http://localhost:8080/geoserver/styles/mbsprites#icon=${strURLEncode('circle')}&size=${strURLEncode(Interpolate(POP_MAX,0,0.7,40000000,3.7,'numeric'))}");

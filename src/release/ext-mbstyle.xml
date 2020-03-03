@@ -1,0 +1,34 @@
+<assembly>
+  <id>mbstyle-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-mbstyle-*.jar</include>
+        <include>gt-mbstyle-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>release/extensions/LICENSE.txt</source>
+      <outputDirectory></outputDirectory>
+      <destName>LICENSE-LGPL.txt</destName>
+    </file>
+    <file>
+      <source>../LICENSE.txt</source>
+      <outputDirectory></outputDirectory>
+      <destName>LICENSE-GeoServer.txt</destName>
+    </file>
+    <file>
+      <source>extension/mbstyle/README.md</source>
+      <outputDirectory></outputDirectory>
+      <destName>README.txt</destName>
+    </file>
+  </files>
+</assembly>

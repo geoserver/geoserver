@@ -235,6 +235,13 @@
       </modules>
     </profile>
     
+    <profile>
+      <id>mbstyle</id>
+      <modules>
+        <module>mbstyle</module>
+      </modules>
+    </profile>
+    
     <profile>      
       <id>csw</id>
       <modules>
@@ -394,6 +401,7 @@
         <module>netcdf-out</module>
         <module>vectortiles</module>
         <module>ysld</module>
+        <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
         <module>geofence</module>
@@ -440,6 +448,7 @@
         <module>netcdf-out</module>
         <module>vectortiles</module>
         <module>ysld</module>
+        <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
         <module>geofence</module>

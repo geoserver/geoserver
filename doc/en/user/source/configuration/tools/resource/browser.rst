@@ -7,7 +7,7 @@ The :guilabel:`Resource Browser` provides a tree showing configuration folders, 
 
 .. figure:: img/browser.png
    
-   Catalog Bulk Load Tool
+   Resource Browser
 
 User interface elements:
 

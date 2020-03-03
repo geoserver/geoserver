@@ -29,10 +29,10 @@ public class ClipBoard implements Serializable {
     private static final String MARK_CUT = "cut";
 
     /** The associated Resource TreeView */
-    protected TreeView<Resource> treeView;
+    protected final TreeView<Resource> treeView;
 
     /** The resource nodes on the clipboard */
-    protected Set<TreeNode<Resource>> items = new HashSet<TreeNode<Resource>>();
+    protected Set<TreeNode<Resource>> items = new HashSet<>();
 
     /** Whether resource node was cut or copied. */
     protected boolean clipBoardIsCopy;
@@ -69,9 +69,9 @@ public class ClipBoard implements Serializable {
     /**
      * Put new nodes on the clipboard, replacing anything that is currently on it (or erase it).
      *
-     * @param node the new cut/copied resource node
+     * @param nodes the new cut/copied resource node
      * @param clipBoardIsCopy the cut/copy state
-     * @param target ajaxrequesttarget to update the marks on the view
+     * @param target AjaxRequestTarget to update the marks on the view
      */
     public void setItems(
             Collection<? extends TreeNode<Resource>> nodes,
@@ -94,8 +94,8 @@ public class ClipBoard implements Serializable {
      * Put new nodes on the clipboard, replacing anything that is currently on it (or erase it). The
      * cut/copy state is left unchanged.
      *
-     * @param node the new cut/copied resource node ("null" to erase clipboard)
-     * @param target ajaxrequesttarget to update the marks on the view
+     * @param nodes the new cut/copied resource node ("null" to erase clipboard)
+     * @param target AjaxRequestTarget to update the marks on the view
      */
     public void setItems(Collection<? extends TreeNode<Resource>> nodes, AjaxRequestTarget target) {
         setItems(nodes, clipBoardIsCopy, target);
@@ -104,9 +104,8 @@ public class ClipBoard implements Serializable {
     /**
      * Add a node to the current clipboard.
      *
-     * @param node the new cut/copied resource node
-     * @param clipBoardIsCopy the cut/copy state
-     * @param target ajaxrequesttarget to update the marks on the view
+     * @param clipBoardItem the cut/copy state
+     * @param target AjaxRequestTarget to update the marks on the view
      */
     public void addItem(TreeNode<Resource> clipBoardItem, AjaxRequestTarget target) {
         target.add(treeView.getNearestView(clipBoardItem));
@@ -116,7 +115,7 @@ public class ClipBoard implements Serializable {
 
     /** Clear all non-existing resources from the clip board. */
     public void clearRemoved() {
-        Set<TreeNode<Resource>> newClipboard = new HashSet<TreeNode<Resource>>();
+        Set<TreeNode<Resource>> newClipboard = new HashSet<>();
         for (TreeNode<Resource> node : items) {
             if (Resources.exists(node.getObject())) {
                 newClipboard.add(node);

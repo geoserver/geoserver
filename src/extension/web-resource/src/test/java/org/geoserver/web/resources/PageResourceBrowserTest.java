@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -163,13 +164,13 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         Resource copiedResource = resourceBrowser.store().get("temp/dir/something.1");
         assertTrue(Resources.exists(copiedResource));
         try (InputStream is = copiedResource.in()) {
-            assertEquals(DATA, IOUtils.toString(is));
+            assertEquals(DATA, IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
         Resource copiedResource2 = resourceBrowser.store().get("temp/dir/somethingelse.1");
         assertTrue(Resources.exists(copiedResource2));
         try (InputStream is = copiedResource.in()) {
-            assertEquals(DATA, IOUtils.toString(is));
+            assertEquals(DATA, IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
         // is selected
@@ -249,7 +250,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         Resource renamedResource = resourceBrowser.store().get("temp/dir/anotherthing");
         assertTrue(Resources.exists(renamedResource));
         try (InputStream is = renamedResource.in()) {
-            assertEquals(DATA, IOUtils.toString(is));
+            assertEquals(DATA, IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
         // is selected
@@ -311,7 +312,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         Resource uploadedResource = resourceBrowser.store().get("temp/dir/anewthing");
         assertTrue(Resources.exists(uploadedResource));
         try (InputStream is = uploadedResource.in()) {
-            assertEquals(DATA2, IOUtils.toString(is));
+            assertEquals(DATA2, IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
         // is selected
@@ -349,7 +350,8 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         Resource newResource = resourceBrowser.store().get("temp/dir/anewthing");
         assertTrue(Resources.exists(newResource));
         try (InputStream is = newResource.in()) {
-            assertEquals(DATA2 + System.lineSeparator(), IOUtils.toString(is));
+            assertEquals(
+                    DATA2 + System.lineSeparator(), IOUtils.toString(is, StandardCharsets.UTF_8));
         }
 
         // is selected
@@ -381,7 +383,8 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
 
         try (InputStream is = resourceBrowser.store().get(PATH_RES).in()) {
-            assertEquals(DATA2 + System.lineSeparator(), IOUtils.toString(is));
+            assertEquals(
+                    DATA2 + System.lineSeparator(), IOUtils.toString(is, StandardCharsets.UTF_8));
         }
     }
 }

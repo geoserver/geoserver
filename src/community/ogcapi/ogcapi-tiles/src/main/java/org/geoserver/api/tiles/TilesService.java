@@ -499,7 +499,7 @@ public class TilesService {
             throw new APIException(
                     "TileOutOfRange",
                     "Column " + x + " is out of range, min: " + gridCov[0] + " max:" + gridCov[2],
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
         if (y < gridCov[1] || y > gridCov[3]) {
             long minRow = tilesHigh - gridCov[3] - 1;
@@ -508,7 +508,7 @@ public class TilesService {
             throw new APIException(
                     "TileOutOfRange",
                     "Row " + tileRow + " is out of range, min: " + minRow + " max:" + maxRow,
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
 
         return new long[] {x, y, z};

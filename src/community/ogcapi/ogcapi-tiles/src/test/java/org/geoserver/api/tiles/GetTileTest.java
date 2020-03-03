@@ -334,4 +334,16 @@ public class GetTileTest extends TilesTestSupport {
         assertNotNull(sr.getHeader("ETag"));
         assertNotNull(sr.getHeader("Last-Modified"));
     }
+
+    @Test
+    public void testTileOutOfRange() throws Exception {
+        String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "ogc/tiles/collections/"
+                                + layerId
+                                + "/tiles/EPSG:900913/EPSG:900913:10/0/0?f="
+                                + MapBoxTileBuilderFactory.MIME_TYPE);
+        assertEquals(404, sr.getStatus());
+    }
 }

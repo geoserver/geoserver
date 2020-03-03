@@ -331,11 +331,6 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-web-resource</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-taskmanager-core</artifactId>
      <version>${project.version}</version>

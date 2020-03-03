@@ -95,7 +95,6 @@
           <descriptor>release/ext-mapml.xml</descriptor>
           <!-- <descriptor>release/ext-monitor-hibernate.xml</descriptor> -->
           <descriptor>release/ext-qos.xml</descriptor>
-          <descriptor>release/ext-web-resource.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
           <descriptor>release/ext-wmts-styles.xml</descriptor>
           <descriptor>release/ext-ogr-datastore.xml</descriptor>
@@ -260,7 +259,6 @@
         <module>gwc-azure-blob</module>
         <module>backup-restore</module>
         <module>ncwms</module>
-        <module>web-resource</module>
         <module>gwc-sqlite</module>
         <module>geostyler</module>
         <module>security</module>

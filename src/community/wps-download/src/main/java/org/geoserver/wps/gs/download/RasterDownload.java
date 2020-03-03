@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -41,6 +42,8 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.data.Parameter;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -153,6 +156,8 @@ class RasterDownload {
      * @param targetSizeY the size of the target image along the Y axis
      * @param bandIndices the indices of the bands used for the final result
      * @param writeParams optional writing params
+     * @param bestRawOnMatchingCrs Given a ROI and a TargetCRS, get best raw data having nativeCrs
+     *     matching the TargetCRS when the coverage has heterogeneous CRS
      */
     public Resource execute(
             String mimeType,
@@ -166,14 +171,30 @@ class RasterDownload {
             Integer targetSizeX,
             Integer targetSizeY,
             int[] bandIndices,
-            Parameters writeParams)
+            Parameters writeParams,
+            boolean bestRawOnMatchingCrs)
             throws Exception {
 
         List<GridCoverage2D> disposableSources = new ArrayList<GridCoverage2D>();
         GridCoverage2D gridCoverage = null;
         try {
+            // get a reader for this CoverageInfo
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Getting reader for the coverage");
+            }
+            final GridCoverage2DReader reader =
+                    (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
 
-            CoordinateReferenceSystem nativeCRS = DownloadUtilities.getNativeCRS(coverageInfo);
+            CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
+            boolean useBestRawForTargetCRS =
+                    bestRawOnMatchingCrs
+                            && !CRS.equalsIgnoreMetadata(nativeCRS, targetCRS)
+                            && Utils.isSupportedCRS(reader, targetCRS);
+
+            if (useBestRawForTargetCRS) {
+                nativeCRS = targetCRS;
+            }
+
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Native CRS is " + nativeCRS.toWKT());
             }
@@ -200,12 +221,6 @@ class RasterDownload {
                 targetCRS = nativeCRS;
             }
 
-            // get a reader for this CoverageInfo
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Getting reader for the coverage");
-            }
-            final GridCoverage2DReader reader =
-                    (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
             final ParameterValueGroup readParametersDescriptor =
                     reader.getFormat().getReadParameters();
             final List<GeneralParameterDescriptor> parameterDescriptors =
@@ -223,9 +238,9 @@ class RasterDownload {
             ROIManager roiManager = null;
             if (roi != null) {
                 roiManager = new ROIManager(roi, (CoordinateReferenceSystem) roi.getUserData());
-
+                roiManager.useBestRawForTargetCRS = useBestRawForTargetCRS;
                 // set crs in roi manager
-                roiManager.useNativeCRS(reader.getCoordinateReferenceSystem());
+                roiManager.useNativeCRS(nativeCRS);
                 roiManager.useTargetCRS(targetCRS);
                 targetEnvelope =
                         new ReferencedEnvelope(
@@ -282,6 +297,16 @@ class RasterDownload {
                             "Target size has been specified. Setting up requested GridGeometry: "
                                     + requestedGridGeometry.toString());
                 }
+            }
+
+            if (useBestRawForTargetCRS) {
+                readParameters =
+                        CoverageUtils.mergeParameter(
+                                Collections.singletonList(
+                                        ImageMosaicFormat.OUTPUT_TO_ALTERNATIVE_CRS),
+                                readParameters,
+                                true,
+                                ImageMosaicFormat.OUTPUT_TO_ALTERNATIVE_CRS.getName().getCode());
             }
 
             readParameters =
@@ -401,10 +426,7 @@ class RasterDownload {
         }
     }
 
-    /**
-     * Read and reproject. It may delegate the operations to a GridCoverageRenderer in case target
-     * size has been specified.
-     */
+    /** Read and reproject. */
     private GridCoverage2D readAndReproject(
             GridCoverage2DReader reader,
             GeneralParameterValue[] readParameters,

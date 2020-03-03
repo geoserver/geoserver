@@ -55,6 +55,8 @@ final class ROIManager {
     /** Boolean indicating if the roiCRS equals the targetCRS */
     boolean roiCrsEqualsTargetCrs = true;
 
+    boolean useBestRawForTargetCRS = false;
+
     /**
      * Constructor.
      *

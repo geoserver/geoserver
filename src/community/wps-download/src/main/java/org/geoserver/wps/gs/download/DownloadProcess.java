@@ -73,7 +73,6 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      * Instantiates a new download process.
      *
      * @param geoServer the geo server
-     * @param sendMail the send mail
      * @param estimator the estimator
      * @param resourceManager the resourceManager to track resources to be cleaned up
      */
@@ -92,7 +91,6 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      *
      * @param layerName the layer name
      * @param filter the filter
-     * @param email the email
      * @param mimeType the output format
      * @param targetCRS the target crs
      * @param roiCRS the roi crs
@@ -103,6 +101,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      * @param targetSizeY the size of the target image along the Y axis
      * @param bandIndices the band indices selected for output, in case of raster input
      * @param writeParameters optional writing parameters
+     * @param bestRawOnMatchingCrs optional writing parameters
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -174,6 +173,14 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         min = 0
                     )
                     Parameters writeParameters,
+            @DescribeParameter(
+                        name = "bestRawOnMatchingCrs",
+                        description =
+                                "Given a ROI and a TargetCRS, get best raw data"
+                                        + "having nativeCrs matching the TargetCRS when the coverage has heterogeneous CRS",
+                        min = 0
+                    )
+                    Boolean bestRawOnMatchingCrs,
             final ProgressListener progressListener)
             throws ProcessException {
 
@@ -219,7 +226,14 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         (Interpolation)
                                 ImageUtilities.NN_INTERPOLATION_HINT.get(JAI.KEY_INTERPOLATION);
             }
-
+            // Default behavior is false for backward compatibility
+            if (bestRawOnMatchingCrs == null) {
+                bestRawOnMatchingCrs = false;
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(
+                            Level.FINE, "best Raw on MatchingCRS when Heterogeneous is disabled");
+                }
+            }
             //
             // do we respect limits?
             //
@@ -312,7 +326,8 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                                         targetSizeX,
                                         targetSizeY,
                                         bandIndices,
-                                        writeParameters);
+                                        writeParameters,
+                                        bestRawOnMatchingCrs);
             } else {
 
                 // wrong type

@@ -68,6 +68,7 @@ import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -104,6 +105,7 @@ public class DownloadProcessTest extends WPSTestSupport {
     private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
 
     private static QName MIXED_RES = new QName(WCS_URI, "mixedres", WCS_PREFIX);
+    private static QName HETEROGENEOUS_CRS = new QName(WCS_URI, "hcrs", WCS_PREFIX);
     private static QName SHORT = new QName(WCS_URI, "short", WCS_PREFIX);
     private static QName FLOAT = new QName(WCS_URI, "float", WCS_PREFIX);
 
@@ -208,6 +210,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         super.onSetUp(testData);
         testData.addRasterLayer(MockData.USA_WORLDIMG, "usa.zip", MockData.PNG, getCatalog());
         testData.addRasterLayer(MIXED_RES, "mixedres.zip", null, getCatalog());
+        testData.addRasterLayer(HETEROGENEOUS_CRS, "heterogeneous_crs.zip", null, getCatalog());
         testData.addRasterLayer(SHORT, "short.zip", null, getCatalog());
         testData.addRasterLayer(FLOAT, "float.zip", null, getCatalog());
     }
@@ -262,6 +265,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -333,6 +337,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -395,6 +400,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -425,6 +431,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -497,6 +504,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -566,6 +574,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -637,6 +646,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -706,6 +716,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -825,6 +836,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         parameters, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -939,6 +951,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         new int[] {0, 2}, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1032,6 +1045,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         40, // targetSizeY
                         new int[] {1}, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1113,6 +1127,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         80, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1173,6 +1188,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         // and aspect ratio of the original image
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1229,6 +1245,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         80, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1302,6 +1319,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         80, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1352,6 +1370,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         80, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1372,6 +1391,102 @@ public class DownloadProcessTest extends WPSTestSupport {
             }
             if (reader != null) {
                 reader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    /**
+     * Test download of raster data. The source is an ImageMosaic with Heterogeneous CRS. Sending a
+     * request with a TargetCRS matching one of the underlying CRS of that mosaic should result in
+     * minimal reprocessing on granules with that CRS as native.
+     */
+    @Test
+    public void testDownloadGranuleHeterogeneousCRS() throws Exception {
+        // This test uses an Heterogeneous ImageMosaic made by 3 granules on
+        // 3 different UTM zones (32631, 32632, 32633), being exposed as a 4326 Mosaic
+        DownloadEstimatorProcess limits =
+                new DownloadEstimatorProcess(
+                        new StaticDownloadServiceConfiguration(), getGeoServer());
+        final WPSResourceManager resourceManager = getResourceManager();
+        DownloadProcess downloadProcess =
+                new DownloadProcess(getGeoServer(), limits, resourceManager);
+
+        // Getting one of the original files being used by this test: green.tif
+        // a UTM 32632 granule with a green fill and a couple of white lines
+        // [1 horizontal, 1 vertical crossing the first one and 2 oblique tying the vertexes]
+        // having a pattern like this (let's call it the bow-tie :D ):
+        //   /|
+        //  / |
+        // ---+---
+        //    | /
+        //    |/
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/green.tif");
+        GeoTiffReader referenceReader = null;
+        GeoTiffReader reader = null;
+        GridCoverage2D referenceGc = null;
+        GridCoverage2D gc = null;
+        RenderedImage referenceImage = null;
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32632", true);
+        try {
+            referenceReader = new GeoTiffReader(file);
+            referenceGc = referenceReader.read(null);
+            referenceImage = referenceGc.getRenderedImage();
+            // Setting filter to get the granule with resolution
+            final PropertyName property = FF.property("location");
+            Filter filter = (Filter) FF.like(property, "green.tif");
+
+            String roiWkt =
+                    "POLYGON((160000 600000, 840000 600000, 840000 1200000, 160000 1200000, 160000 600000))";
+            Polygon bboxRoi = (Polygon) new WKTReader2().read(roiWkt);
+
+            Parameters parameters = new Parameters();
+            List<Parameter> parametersList = parameters.getParameters();
+            parametersList.add(new Parameter("writenodata", "false"));
+            File rasterZip =
+                    downloadProcess.execute(
+                            getLayerId(HETEROGENEOUS_CRS), // layerName
+                            filter, // filter
+                            "image/tiff", // outputFormat
+                            targetCRS, // targetCRS
+                            targetCRS,
+                            bboxRoi, // roi
+                            false, // cropToGeometry
+                            null, // interpolation
+                            null, // targetSizeX
+                            null, // targetSizeY
+                            null, // bandSelectIndices
+                            parameters, // Writing params
+                            true,
+                            new NullProgressListener() // progressListener
+                            );
+
+            Assert.assertNotNull(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+            Assert.assertNotNull(gc);
+
+            // Compare the downloaded raster with the original tiff.
+            // If reprojection to common CRS would have been involved,
+            // the above tie-bow pattern would have been distorted, making
+            // this comparison fail
+            ImageAssert.assertEquals(referenceImage, gc.getRenderedImage(), 5);
+
+        } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+            if (referenceGc != null) {
+                CoverageCleanerCallback.disposeCoverage(referenceGc);
+            }
+            if (referenceReader != null) {
+                referenceReader.dispose();
             }
 
             // clean up process
@@ -1416,6 +1531,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1483,6 +1599,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     new NullProgressListener() // progressListener
                     );
 
@@ -1542,6 +1659,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     new NullProgressListener() // progressListener
                     );
 
@@ -1594,6 +1712,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -1626,6 +1745,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     targetSizeY, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     new NullProgressListener() // progressListener
                     );
 
@@ -1683,6 +1803,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                             targetSizeY, // targetSizeY
                             bandIndices, // bandSelectIndices
                             null, // Writing params
+                            false,
                             new NullProgressListener() // progressListener
                             );
 
@@ -1744,6 +1865,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     60000, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     new NullProgressListener() // progressListener
                     );
 
@@ -1832,6 +1954,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     new NullProgressListener() // progressListener
                     );
 
@@ -1893,6 +2016,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     listener // progressListener
                     );
 
@@ -1952,6 +2076,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     listener // progressListener
                     );
 
@@ -2009,6 +2134,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     null, // targetSizeY
                     null, // bandSelectIndices
                     null, // Writing params
+                    false,
                     progressListener // progressListener
                     );
 
@@ -2095,6 +2221,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         128, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -2149,6 +2276,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         null, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 
@@ -2243,6 +2371,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         requestedSizeY, // targetSizeY
                         null, // bandSelectIndices
                         null, // Writing params
+                        false,
                         new NullProgressListener() // progressListener
                         );
 

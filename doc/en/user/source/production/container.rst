@@ -66,7 +66,7 @@ In order to enable Marlin on Java 8, or to use a newer version than that provide
      -Xbootclasspath/a:$MARLIN_JAR 
      -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine 
 
-where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory or downloaded from the ` Marlin project <https://github.com/bourgesl/marlin-renderer/>`_.
+where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory or downloaded from the `Marlin project <https://github.com/bourgesl/marlin-renderer/>`_.
 
 The server status page shows which renderer is being used.
 

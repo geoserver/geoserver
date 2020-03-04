@@ -15,11 +15,13 @@
     </fileSet>
   </fileSets>
   <files>
+    <!--
     <file>
       <source>release/extensions/LICENSE.txt</source>
       <outputDirectory></outputDirectory>
       <destName>LICENSE-LGPL.txt</destName>
     </file>
+    -->
     <file>
       <source>release/LICENSE.txt</source>
       <outputDirectory></outputDirectory>

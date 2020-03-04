@@ -19,19 +19,25 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import net.minidev.json.JSONArray;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
+import org.jsoup.Jsoup;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CollectionsTest extends FeaturesTestSupport {
@@ -174,6 +180,76 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
                 document.select("#" + basicPolygonsHtmlId + "_description").text());
+    }
+
+    @Test
+    public void testCollectionsHTMLWithProxyBase() throws Exception {
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        SettingsInfo settings = info.getSettings();
+        settings.setProxyBaseUrl("http://testHost/geoserver");
+        gs.save(info);
+        try {
+            org.jsoup.nodes.Document document = getAsJSoup("ogc/features/collections?f=html");
+
+            // check collection links
+            List<FeatureTypeInfo> featureTypes = getCatalog().getFeatureTypes();
+            for (FeatureTypeInfo featureType : featureTypes) {
+                String encodedName = featureType.prefixedName().replace(":", "__");
+                assertNotNull(document.select("#html_" + encodedName + "_link"));
+                assertEquals(
+                        "http://testHost/geoserver/ogc/features/collections/"
+                                + featureType.prefixedName()
+                                + "/items?f=text%2Fhtml&limit=50",
+                        document.select("#html_" + encodedName + "_link").attr("href"));
+            }
+        } finally {
+            info = gs.getGlobal();
+            settings = info.getSettings();
+            settings.setProxyBaseUrl(null);
+            gs.save(info);
+        }
+    }
+
+    @Test
+    public void testCollectionsHTMLWithProxyBaseHeader() throws Exception {
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        SettingsInfo settings = info.getSettings();
+        settings.setProxyBaseUrl("${X-Forwarded-Proto}://test-headers/geoserver/");
+        info.setUseHeadersProxyURL(true);
+        gs.save(info);
+        try {
+            MockHttpServletRequest request = createRequest("ogc/features/collections?f=html");
+            request.setMethod("GET");
+            request.setContent(new byte[] {});
+            request.addHeader("X-Forwarded-Proto", "http");
+            MockHttpServletResponse response = dispatch(request, null);
+            assertEquals(200, response.getStatus());
+            assertEquals("text/html", response.getContentType());
+            LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+
+            // parse the HTML
+            org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
+
+            // check collection links
+            List<FeatureTypeInfo> featureTypes = getCatalog().getFeatureTypes();
+            for (FeatureTypeInfo featureType : featureTypes) {
+                String encodedName = featureType.prefixedName().replace(":", "__");
+                assertNotNull(document.select("#html_" + encodedName + "_link"));
+                assertEquals(
+                        "http://test-headers/geoserver/ogc/features/collections/"
+                                + featureType.prefixedName()
+                                + "/items?f=text%2Fhtml&limit=50",
+                        document.select("#html_" + encodedName + "_link").attr("href"));
+            }
+        } finally {
+            info = gs.getGlobal();
+            settings = info.getSettings();
+            settings.setProxyBaseUrl(null);
+            info.setUseHeadersProxyURL(null);
+            gs.save(info);
+        }
     }
 
     @Test

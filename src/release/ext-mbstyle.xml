@@ -23,7 +23,7 @@
     <file>
       <source>LICENSE.txt</source>
       <outputDirectory></outputDirectory>
-      <destName>LICENSE-GeoServer.txt</destName>
+      <destName>LICENSE-GPL.txt</destName>
     </file>
     <file>
       <source>extension/mbstyle/README.md</source>

@@ -15,7 +15,7 @@
   </fileSets>
   <files>
     <file>
-      <source>release/LICENSE.txt</source>
+      <source>release/GPL.txt</source>
       <outputDirectory></outputDirectory>
       <destName>LICENSE-GPL.txt</destName>
     </file>

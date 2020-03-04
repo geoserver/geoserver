@@ -107,7 +107,10 @@ The :ref:`demos` section contains links to example WMS, WCS, and WFS requests fo
 Tools
 -----
 
-The :guilabel:`Tools` section contains administrative tools. By default, the only tool is the :guilabel:`Catalog Bulk Load Tool`, which can bulk copy test data into the catalog.
+The :ref:`tools` section contains administrative tools.
+
+* The :ref:`Web Resource <tool_resource>` tool provides management of data directory icons, fonts, and configuration files.
+* The :ref:`Catalog Bulk Load Tool <tool_bulk>` can bulk copy configuration for testing
 
 Extensions
 ----------

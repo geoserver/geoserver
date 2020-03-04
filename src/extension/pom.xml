@@ -362,6 +362,12 @@
         <module>authkey</module>
       </modules>
     </profile>
+    <profile>      
+      <id>web-resource</id>
+      <modules>
+        <module>web-resource</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -407,6 +413,7 @@
         <module>geofence</module>
         <module>geofence-server</module>
         <module>authkey</module>
+        <module>web-resource</module>
       </modules>
     </profile>
 
@@ -454,6 +461,7 @@
         <module>geofence</module>
         <module>geofence-server</module>
         <module>authkey</module>
+        <module>web-resource</module>
       </modules>
     </profile>
   </profiles>

@@ -21,7 +21,7 @@
       <destName>LICENSE-LGPL.txt</destName>
     </file>
     <file>
-      <source>../LICENSE.txt</source>
+      <source>LICENSE.txt</source>
       <outputDirectory></outputDirectory>
       <destName>LICENSE-GeoServer.txt</destName>
     </file>

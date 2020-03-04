@@ -42,17 +42,6 @@
   </dependency>
  </dependencies>
  
- <pluginRepositories>
-  <pluginRepository>
-   <id>mortbay-repo</id>
-   <name>mortbay-repo</name>
-   <url>http://www.mortbay.org/maven2/snapshot</url>
-   <snapshots>
-    <enabled>true</enabled>
-   </snapshots>
-  </pluginRepository>
- </pluginRepositories>
- 
  <modules>
   <module>config</module>
   <module>archetype</module>

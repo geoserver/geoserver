@@ -45,7 +45,7 @@ public class StyleDocumentCallback implements DocumentCallback {
             AbstractCollectionDocument collection = (AbstractCollectionDocument) document;
             Object subject = collection.getSubject();
             if (subject instanceof ResourceInfo) {
-                addStyles(collection);
+                addResourceStyles(collection);
             } else if (!collection.getStyles().isEmpty()) {
                 addLinks(collection.getStyles());
             }
@@ -54,7 +54,7 @@ public class StyleDocumentCallback implements DocumentCallback {
         }
     }
 
-    private void addStyles(AbstractCollectionDocument collection) {
+    private void addResourceStyles(AbstractCollectionDocument collection) {
         ResourceInfo ri = (ResourceInfo) collection.getSubject();
         for (LayerInfo layer : catalog.getLayers(ri)) {
             Set<StyleInfo> styles = new LinkedHashSet<>();
@@ -70,7 +70,6 @@ public class StyleDocumentCallback implements DocumentCallback {
     }
 
     private void addLinks(List<StyleDocument> styleDocuments) {
-        APIRequestInfo info = APIRequestInfo.get();
         for (StyleDocument styleDocument : styleDocuments) {
             if (styleDocument.getStyle() != null) {
                 addStyleLinks(styleDocument);

@@ -34,20 +34,31 @@ public class StylesTest extends StylesTestSupport {
         assertEquals("alternate", readSingle(json, "links[?(@.type == 'application/x-yaml')].rel"));
 
         // check all the styles are there
+        System.out.println(((List<String>) json.read("styles[*].id")));
         assertThat(
                 ((List<String>) json.read("styles[*].id")),
                 Matchers.containsInAnyOrder(
-                        "point",
-                        "line",
-                        "polygon",
-                        "raster",
-                        "generic",
+                        "BasicPolygons",
+                        "BasicStyleGroupStyle",
+                        "Bridges",
+                        "Buildings",
                         "Default",
-                        "ws:NamedPlaces",
-                        "PolygonComment",
-                        "cssSample",
+                        "DividedRoutes",
+                        "Forests",
                         "Lakes",
-                        "Buildings"));
+                        "MapNeatline",
+                        "NamedPlaces",
+                        "PolygonComment",
+                        "Ponds",
+                        "RoadSegments",
+                        "Streams",
+                        "ws:NamedPlacesWS",
+                        "cssSample",
+                        "generic",
+                        "line",
+                        "point",
+                        "polygon",
+                        "raster"));
 
         // concentrate on one and check title and links
         assertEquals("Default Styler", readSingle(json, "styles[?(@.id == 'Default')].title"));

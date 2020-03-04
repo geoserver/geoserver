@@ -33,6 +33,7 @@ import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.api.QueryablesDocument;
 import org.geoserver.api.ResourceNotFoundException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
@@ -276,6 +277,10 @@ public class TilesService {
         TileLayer tileLayer = getTileLayer(collectionId);
         if (styleId != null) {
             validateStyle(tileLayer, styleId);
+            if (isLayerGroup(tileLayer)) {
+                // only a notion of default style, remove the styleId
+                styleId = null;
+            }
         }
         MimeType requestedFormat =
                 getRequestedFormat(
@@ -420,17 +425,52 @@ public class TilesService {
         if (styleId.equalsIgnoreCase(tileLayer.getStyles())) {
             return;
         }
-        // look for the other possible values
-        Optional<ParameterFilter> styles =
-                tileLayer
-                        .getParameterFilters()
-                        .stream()
-                        .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
-                        .findFirst();
-        if (!styles.isPresent() && !styles.get().applies(styleId)) {
-            throw new InvalidParameterValueException(
-                    "Invalid style name, please check the collection description for valid style names: "
-                            + tileLayer.getStyles());
+        if (isLayerGroup(tileLayer)) {
+            String name = getLayerGroupStyleName(tileLayer);
+            if (!styleId.equals(name)) {
+                throw new InvalidParameterValueException(
+                        "Invalid style name, please check the collection description for valid style names: "
+                                + name);
+            }
+        } else {
+            // look for the other possible values
+            Optional<ParameterFilter> styles =
+                    tileLayer
+                            .getParameterFilters()
+                            .stream()
+                            .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
+                            .findFirst();
+            if (!styles.isPresent() || !styles.get().applies(styleId)) {
+                throw new InvalidParameterValueException(
+                        "Invalid style name, please check the collection description for valid style names: "
+                                + tileLayer.getStyles());
+            }
+        }
+    }
+
+    static boolean isLayerGroup(TileLayer tileLayer) {
+        if (tileLayer instanceof GeoServerTileLayer) {
+            return ((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerGroupInfo;
+        }
+
+        return false;
+    }
+
+    static boolean isStyleGroup(LayerGroupInfo lg) {
+        if (lg.getRootLayer() != null) return false;
+
+        // a simple style group uses a single top level style as its definition, and no layers
+        return lg.getStyles().size() == 1
+                && lg.getStyles().get(0) != null
+                && lg.getLayers().stream().allMatch(l -> l == null);
+    }
+
+    static String getLayerGroupStyleName(TileLayer tileLayer) {
+        LayerGroupInfo group = (LayerGroupInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo();
+        if (isStyleGroup(group)) {
+            return group.getStyles().get(0).getName();
+        } else {
+            return TiledCollectionDocument.DEFAULT_STYLE_NAME;
         }
     }
 

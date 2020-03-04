@@ -163,8 +163,8 @@ Note also that tile request are sensitive to the other rules (user based, ip bas
 A complete example
 ------------------
 
-Assuming the server we want to protect has 4 cores a sample configuration could be::
+Assuming the server we want to protect has 4 cores a sample configuration could be:
 
 .. literalinclude:: controlflow.properties
-   :language: ini
+   :language: properties
 

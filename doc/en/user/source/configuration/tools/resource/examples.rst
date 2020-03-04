@@ -49,7 +49,7 @@ To create a :file:`controlflow.properties` file:
    * :guilabel:`Content`: file contents
    
       .. literalinclude:: /extensions/controlflow/controlflow.properties
-         :language: ini
+         :language: properties
    
 #. Press :guilabel:`OK` to create the resource.
    

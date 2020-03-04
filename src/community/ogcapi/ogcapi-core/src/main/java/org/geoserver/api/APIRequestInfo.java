@@ -178,18 +178,16 @@ public class APIRequestInfo {
     }
 
     /**
-     * Returns the base URL for the current service, that is, GeoServer base url + service base. Can
-     * be called only after the service has been looked up, will otherwise throw a descriptive
-     * exception.
+     * Returns the landing page for the current service. Can be called only after the service has
+     * been looked up, will otherwise throw a descriptive exception.
      */
-    public String getServiceBaseURL() {
+    public String getServiceLandingPage() {
         return Optional.ofNullable(Dispatcher.REQUEST.get())
                 .map(r -> r.getServiceDescriptor())
                 .map(sd -> sd.getService())
                 .map(s -> s.getClass())
                 .map(c -> APIDispatcher.getApiServiceAnnotation(c))
                 .map(a -> a.landingPage())
-                .map(lp -> ResponseUtils.appendPath(baseURL, lp))
                 .orElseThrow(
                         () ->
                                 new RuntimeException(

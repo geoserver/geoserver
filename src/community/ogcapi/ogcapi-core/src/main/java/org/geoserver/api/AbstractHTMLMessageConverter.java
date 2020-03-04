@@ -103,19 +103,22 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      * functions to the model, for usage in the tempalte
      */
     protected void addLinkFunctions(String baseURL, Map<String, Object> model) {
-        APIRequestInfo.get().getServiceBaseURL();
         model.put(
                 "serviceLink",
                 (TemplateMethodModel)
-                        arguments ->
-                                ResponseUtils.buildURL(
-                                        APIRequestInfo.get().getServiceBaseURL(),
-                                        (String) arguments.get(0),
-                                        arguments.size() > 1
-                                                ? Collections.singletonMap(
-                                                        "f", arguments.get(1).toString())
-                                                : null,
-                                        URLMangler.URLType.SERVICE));
+                        arguments -> {
+                            APIRequestInfo requestInfo = APIRequestInfo.get();
+                            return ResponseUtils.buildURL(
+                                    requestInfo.getBaseURL(),
+                                    ResponseUtils.appendPath(
+                                            requestInfo.getServiceLandingPage(),
+                                            (String) arguments.get(0)),
+                                    arguments.size() > 1
+                                            ? Collections.singletonMap(
+                                                    "f", arguments.get(1).toString())
+                                            : null,
+                                    URLMangler.URLType.SERVICE);
+                        });
         model.put(
                 "resourceLink",
                 (TemplateMethodModel)

@@ -28,7 +28,12 @@ public class TileMatrixSetDocument extends AbstractDocument {
     public TileMatrixSetDocument(GridSet gridSet, boolean summary) {
         this.identifier = gridSet.getName();
         this.title = Optional.ofNullable(gridSet.getDescription()).orElse(identifier);
-        this.supportedCRS = "http://www.opengis.net/def/crs/EPSG/0/" + gridSet.getSrs().getNumber();
+        if (gridSet.getSrs().getNumber() == 4326) {
+            this.supportedCRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+        } else {
+            this.supportedCRS =
+                    "http://www.opengis.net/def/crs/EPSG/0/" + gridSet.getSrs().getNumber();
+        }
         // TODO: see if the current CRS matches a well konwn scale set or not
 
         String path = "ogc/tiles/tileMatrixSets/" + ResponseUtils.urlEncode(identifier);

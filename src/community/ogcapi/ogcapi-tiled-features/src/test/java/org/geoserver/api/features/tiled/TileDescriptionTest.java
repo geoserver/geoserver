@@ -70,7 +70,7 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
         // check basic properties
         assertThat(json.read("identifier"), equalTo("EPSG:4326"));
         assertThat(
-                json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/EPSG/0/4326"));
+                json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(json.read("title"), startsWith("A default WGS84"));
 
         // check a tile matrix definitions

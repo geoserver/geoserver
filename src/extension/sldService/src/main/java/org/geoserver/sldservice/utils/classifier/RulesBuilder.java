@@ -6,14 +6,15 @@
 package org.geoserver.sldservice.utils.classifier;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.DoubleStream;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.function.Classifier;
 import org.geotools.filter.function.ExplicitClassifier;
 import org.geotools.filter.function.RangedClassifier;
@@ -24,6 +25,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.factory.GeoTools;
+import org.opengis.feature.Feature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
@@ -54,8 +56,18 @@ public class RulesBuilder {
     private int pointSize = 15;
     private boolean includeStrokeForPoints = false;
 
+    private boolean outputPercentages = false;
+
+    private Integer percentagesScale;
+
     public RulesBuilder() {
         sb = new StyleBuilder(SF, FF);
+    }
+
+    public RulesBuilder(boolean outputPercentages, Integer percentagesScale) {
+        sb = new StyleBuilder(SF, FF);
+        this.outputPercentages = outputPercentages;
+        this.percentagesScale = percentagesScale;
     }
 
     public void setStrokeWeight(double strokeWeight) {
@@ -85,8 +97,23 @@ public class RulesBuilder {
             boolean normalize,
             String functionName) {
         try {
-            final Function classify =
-                    FF.function(functionName, FF.property(property), FF.literal(classNumber));
+            final Function classify;
+            if (functionName.equals("EqualArea")) {
+                classify =
+                        FF.function(
+                                functionName,
+                                FF.property(property),
+                                FF.literal(classNumber),
+                                FF.literal(""),
+                                FF.literal(outputPercentages));
+            } else {
+                classify =
+                        FF.function(
+                                functionName,
+                                FF.property(property),
+                                FF.literal(classNumber),
+                                FF.literal(outputPercentages));
+            }
             Classifier groups = (Classifier) classify.evaluate(features);
             if (groups instanceof RangedClassifier)
                 if (open)
@@ -315,7 +342,7 @@ public class RulesBuilder {
         Filter f;
         List<Rule> list = new ArrayList();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
-
+        PercentagesManager percMan = new PercentagesManager(groups.getPercentages());
         try {
             /* First class */
             r = SF.createRule();
@@ -328,21 +355,23 @@ public class RulesBuilder {
             }
             r.setFilter(f);
             list.add(r);
+            percMan.collectRulePercentage(0);
             for (int i = 1; i < groups.getSize() - 1; i++) {
                 r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMax(i)));
-                    if (!isDuplicatedClass(list, f)) {
+                    if (!isDuplicatedClass(list, f, percMan, i)) {
                         r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
                         r.setFilter(f);
                         list.add(r);
+                        percMan.collectRulePercentage(i);
                     }
                 } else {
                     f =
                             FF.and(
                                     getNotOverlappingFilter(i, groups, att),
                                     FF.less(att, FF.literal(groups.getMax(i))));
-                    if (!isDuplicatedClass(list, f)) {
+                    if (!isDuplicatedClass(list, f, percMan, i)) {
                         r.getDescription()
                                 .setTitle(
                                         (" >= "
@@ -351,6 +380,7 @@ public class RulesBuilder {
                                                 + FF.literal(groups.getMax(i))));
                         r.setFilter(f);
                         list.add(r);
+                        percMan.collectRulePercentage(i);
                     }
                 }
             }
@@ -360,6 +390,8 @@ public class RulesBuilder {
             r.setFilter(f);
             r.getDescription().setTitle((" >= " + FF.literal(groups.getMin(groups.getSize() - 1))));
             list.add(r);
+            percMan.collectRulePercentage(groups.getSize() - 1);
+            percMan.appendPercentagesToLabels(list);
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -389,6 +421,8 @@ public class RulesBuilder {
         Filter f;
         List<Rule> list = new ArrayList();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
+        PercentagesManager percMan = null;
+        percMan = new PercentagesManager(groups.getPercentages());
         try {
             /* First class */
             r = SF.createRule();
@@ -396,10 +430,11 @@ public class RulesBuilder {
                 r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMin(i)));
-                    if (!isDuplicatedClass(list, f)) {
+                    if (!isDuplicatedClass(list, f, percMan, i)) {
                         r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
                         r.setFilter(f);
                         list.add(r);
+                        percMan.collectRulePercentage(i);
                     }
                 } else {
                     f =
@@ -408,7 +443,7 @@ public class RulesBuilder {
                                     i == (groups.getSize() - 1)
                                             ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
                                             : FF.less(att, FF.literal(groups.getMax(i))));
-                    if (!isDuplicatedClass(list, f)) {
+                    if (!isDuplicatedClass(list, f, percMan, i)) {
                         r.getDescription()
                                 .setTitle(
                                         (" >= "
@@ -418,9 +453,11 @@ public class RulesBuilder {
                                                 + FF.literal(groups.getMax(i))));
                         r.setFilter(f);
                         list.add(r);
+                        percMan.collectRulePercentage(i);
                     }
                 }
             }
+            percMan.appendPercentagesToLabels(list);
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -443,6 +480,7 @@ public class RulesBuilder {
         String szFilter = "";
         String szTitle = "";
         Literal val;
+        PercentagesManager percMan = new PercentagesManager(groups.getPercentages());
 
         try {
             for (int i = 0; i < groups.getSize(); i++) {
@@ -462,7 +500,9 @@ public class RulesBuilder {
                 r.getDescription().setTitle(szTitle);
                 r.setFilter(f);
                 list.add(r);
+                percMan.collectRulePercentage(i);
             }
+            percMan.appendPercentagesToLabels(list);
             return list;
         } catch (CQLException e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -472,8 +512,67 @@ public class RulesBuilder {
         return null;
     }
 
-    private boolean isDuplicatedClass(List<Rule> rules, Filter f) {
-        return rules.stream().anyMatch(r -> r.getFilter().equals(f));
+    public double[] getCustomPercentages(
+            FeatureCollection features,
+            RangedClassifier classifier,
+            String attribute,
+            Class<?> propertyType,
+            boolean normalize) {
+        int size = classifier.getSize();
+        PropertyName prop = new AttributeExpressionImpl(attribute);
+        List<Filter> filters = new ArrayList<>(size);
+        Expression attr = normalizeProperty(prop, propertyType, normalize);
+        for (int i = 0; i < size; i++) {
+            Object min = classifier.getMin(i);
+            Object max = classifier.getMax(i);
+            if (min.equals(max)) {
+                filters.add(FF.equals(attr, FF.literal(min)));
+            } else if (i == size - 1) {
+                Filter f1 = FF.greaterOrEqual(attr, FF.literal(min));
+                Filter f2 = FF.lessOrEqual(attr, FF.literal(max));
+                Filter and = FF.and(f1, f2);
+                filters.add(and);
+            } else {
+                Filter f1 = FF.greaterOrEqual(attr, FF.literal(min));
+                Filter f2 = FF.less(attr, FF.literal(max));
+                Filter and = FF.and(f1, f2);
+                filters.add(and);
+            }
+        }
+        int[][] bins = new int[size][1];
+        FeatureIterator it = features.features();
+        while (it.hasNext()) {
+            Feature f = it.next();
+            int i = 0;
+            for (Filter filter : filters) {
+                if (filter.evaluate(f)) {
+                    bins[i][0]++;
+                    break;
+                }
+                i++;
+            }
+        }
+        return computeCustomPercentages(bins, features.size());
+    }
+
+    private double[] computeCustomPercentages(int[][] bins, double totalSize) {
+        double[] percentages = new double[bins.length];
+        for (int i = 0; i < bins.length; i++) {
+            percentages[i] = ((double) bins[i][0] / totalSize) * 100;
+        }
+        return percentages;
+    }
+
+    private boolean isDuplicatedClass(
+            List<Rule> rules, Filter f, PercentagesManager percMan, int currentIdx) {
+        Optional<Rule> opRule = rules.stream().filter(r -> r.getFilter().equals(f)).findFirst();
+        boolean result = opRule.isPresent();
+        if (percMan != null) {
+            if (result) {
+                percMan.collapsePercentages(rules, opRule.get(), currentIdx);
+            }
+        }
+        return result;
     }
 
     /**
@@ -498,5 +597,49 @@ public class RulesBuilder {
         }
 
         return f;
+    }
+
+    private class PercentagesManager {
+
+        private double[] percentages;
+        List<Double> collapsedPercentages;
+        boolean collapsePercentages;
+
+        public PercentagesManager(double[] percentages) {
+            this.percentages = percentages;
+            this.collapsePercentages =
+                    percentages != null && !(DoubleStream.of(percentages).sum() > 100.0);
+            this.collapsedPercentages = new ArrayList<>();
+        }
+
+        public void collapsePercentages(List<Rule> rules, Rule current, int index) {
+            if (outputPercentages && collapsePercentages) {
+                int ruleIdx = rules.indexOf(current);
+                double toSumTo = percentages[index];
+                double toBeSummed = collapsedPercentages.get(ruleIdx);
+                collapsedPercentages.set(ruleIdx, toBeSummed + toSumTo);
+            }
+        }
+
+        public void collectRulePercentage(int currentIndex) {
+            if (outputPercentages) collapsedPercentages.add(percentages[currentIndex]);
+        }
+
+        public void appendPercentagesToLabels(List<Rule> rules) {
+            if (outputPercentages) {
+                collapsedPercentages =
+                        new PercentagesRoundHandler(percentagesScale)
+                                .roundPercentages(collapsedPercentages);
+                for (int i = 0; i < rules.size(); i++) {
+                    Rule rule = rules.get(i);
+                    String percLabel =
+                            rule.getDescription().getTitle()
+                                    + " ("
+                                    + collapsedPercentages.get(i)
+                                    + "%)";
+                    rule.getDescription().setTitle(percLabel);
+                }
+            }
+        }
     }
 }

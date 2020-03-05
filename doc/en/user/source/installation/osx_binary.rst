@@ -10,11 +10,9 @@ An alternate way of installing GeoServer on OS X is to use the platform-independ
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment, and the JRE supplied by OS X is not sufficient. For more information, please see the `instructions for installing Oracle Java on OS X <http://java.com/en/download/faq/java_mac.xml>`_.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, as provided by `AdoptOpenJDK <https://adoptopenjdk.net>`__ macOS installers.
 
-   .. note:: Java 9 is not currently supported.
-
-   .. note:: For more information about Java and GeoServer, please see the section on :ref:`production_java`.
+   .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
 #. Navigate to the `GeoServer Download page <http://geoserver.org/download>`_.
 

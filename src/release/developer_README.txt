@@ -1,71 +1,76 @@
-For a comprehensive guide for developers, go the main documentation site: 
-http://docs.geoserver.org/latest/en/developer/
+This README helps you getting started with GeoServer development. It will guide you through the process of checking out the source code, compiling it, and running.
 
----------------------------
+GeoServer Development requires Java 8, maven, and git. Due to subtle changes in Java class libraries we require development on Java 8 at this time (although the result is tested on Java 11).
 
-1) Install Java Development Kit (JDK) 8 or greater.
+Further readings:
+  http://docs.geoserver.org/latest/en/developer/index.html
 
-* http://www.oracle.com/technetwork/java/javase/downloads/index.html
-* http://openjdk.java.net
+== Linux ==
 
-Create an environment variable called JAVA_HOME and point it to your Java JDK directory.
-Then modify the PATH variable and add: ;%JAVA_HOME%/bin
-Apply the changes.
+1) Install prerequisites
 
-2) Download and install Git
+Obtain OpenJDK 8, maven and git from your Linux distribution.
 
-* http://git-scm.com/
+== macOS ==
 
-3) Clone the GeoServer repository
+1) Install Java Runtime Environment
 
-Using Git Clone, get the source code:
+Download and install Java 8 runtime environment, as provided by AdoptOpenJDK macOS installers.
+https://adoptopenjdk.net
 
-git clone git://github.com/geoserver/geoserver.git geoserver
+Update your shell environment with:
+  export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+  
+The system /usr/bin/java makes use of JAVA_HOME setting above.
 
-4) Download and install Maven
+2) Download and install git
+https://git-scm.com/download/mac
 
-* http://maven.apache.org/
+3) Download and install Maven 3
+http://maven.apache.org/download.html
 
-If you are using Linux, ensure maven is included on your path:
+== Windows ==
 
-export M2_HOME=/usr/java/maven-3.0.5
-export PATH=$PATH:$M2_HOME/bin
+1) Install Java Runtime Environment
+Download and install Java 8 runtime environment, as provided by AdoptOpenJDK windows installers.
+https://adoptopenjdk.net
 
+Update windows *Environment Variables*:
 
-5) Build Source Code
+* Create an environment variable JAVA_HOME and point it to your Java SDK directory.
+* Modify the PATH variable and add: ;%JAVA_HOME%/bin
 
-Go to the command line and navigate to the root of the source tree that you just downloaded.
+2) Download and install git
+https://git-scm.com/download/windows
 
-cd geoserver/src
+3) Download and install Maven 3
+http://maven.apache.org/download.html
 
-Execute the command:
+== OS independent tasks ==
 
-mvn clean install
+1) Get the source code
+Go to the command line and run:
+  git clone https://github.com/geoserver/geoserver.git
 
-If it fails, just try again. It trys to download jars and some might not be available at that time. So just keep trying.
+2) Build the source code
+Go to the command line and navigate to the folder you just checked out. Now run:
+  cd geoserver
+  cd src
+  mvn clean install
 
-If it succeeds, run the next command:
+3) Running locally
+  cd web/app
+  mvn jetty:run
 
-mvn eclipse:eclipse
+== Troubleshooting ==
 
-6) Set up Eclipse
+The build process may fail because of several reasons:
 
-Got to: Windows -> Preferences
-In the wondow that pops up click on Java -> Build Path -> Classpath Variables
-On the Classpath Variables panel, select New
-Define a new variables called M2_REPO and set it to your local maven repository. (for windows it would be C:/Documents and Settings/username/.m2/repository)
+* Unavailable dependencies - Maven tries to download dependencies which might not be available on the server side yet.
+Solution: Try again in some minutes.
 
-7) Get the Code into Eclipse
-
-Import existing projects into the workspace, use the root of your geoserver source tree.
-Select all of the modules. Hit Finish.
-
-8) Run
-
-From the Package Explorer select the web-app module.
-
-Navigate to the org.geoserver.web package
-
-Right-click the Start class and navigate to Run as, Java Application.
-
-After running the first time you can return to the Run Configurations dialog to fine tune your launch environment (including setting a GEOSERVER_DATA_DIRECTORY).
+* Failing tests - Maven runs existing tests automatically. If some of them fail, the build fails.
+Solution: You can tell maven not to run the tests. This is discouraged.
+Bug the developers instead or fix the test and send a patch, thanks!
+If you really just want to disable the test, run maven like so:
+  mvn -DskipTests=true install

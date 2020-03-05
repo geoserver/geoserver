@@ -10,9 +10,7 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment. 
-
-   .. note:: Java 9 is not currently supported.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, available from `OpenJDK <http://openjdk.java.net>`__, `AdoptOpenJDK <https://adoptopenjdk.net>`__ for windows and macOS installers, or provided by your Linux distribution.
 
    .. note:: For more information about Java and GeoServer, please see the section on :ref:`production_java`.
 

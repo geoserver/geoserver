@@ -295,7 +295,13 @@ else
 fi
 
 
-mvn assembly:attached $MAVEN_FLAGS
+# run assembly:attached from root folder (MASSEMBLY-930)
+popd > /dev/null
+
+mvn -f src/pom.xml assembly:attached $MAVEN_FLAGS
+
+# return to src folder
+pushd src > /dev/null
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"

@@ -69,9 +69,7 @@ Oracle Java
 
 The policy files are available at   
 
-* `Java 8 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html>`_ 
-* `Java 7 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html>`_
-* `Java 6 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_
+* `Java 8 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html>`__ 
 
 The download contains two files, **local_policy.jar** and  **US_export_policy.jar**. The default
 versions of these two files are stored in JRE_HOME/lib/security. Replace these two files with the

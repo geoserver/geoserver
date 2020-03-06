@@ -16,5 +16,13 @@
         <include>asm*6.2.1.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+        <directory>release</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+            <include>GPL.md</include>
+            <include>NOTICE.md</include>
+        </includes>
+    </fileSet>
   </fileSets>
 </assembly>

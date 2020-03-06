@@ -1,5 +1,5 @@
-GEOSERVER 2.9+ DATA STORE EXTRAS README
----------------------------------------
+GEOSERVER ORACLE DATA STORE EXTRAS README
+-----------------------------------------
 
 This package contains an Oracle DataStore implementation that is 
 distributed as a separate plug-in.  
@@ -16,7 +16,7 @@ INSTALLATION
    a binary install this is [GEOSERVER_HOME]/server/geoserver/WEB-INF/lib/
    In a war install this is [container]/webapps/geoserver/WEB-INF/lib/
 
-2. Copy the Oracle JDBC driver (ojdbc6.jar or ojdbc7.jar) 
+2. Copy the Oracle JDBC driver (ojdbc8.jar) 
    into [container]/webapps/geoserver/WEB-INF/lib/.
    The driver can be either found in your local Oracle installation, or
    downloaed online from http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html

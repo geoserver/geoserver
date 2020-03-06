@@ -294,8 +294,7 @@ else
    echo "Skipping mvn clean install -P communityRelease -DskipTests"
 fi
 
-
-mvn assembly:attached $MAVEN_FLAGS
+mvn -f src/pom.xml assembly:single $MAVEN_FLAGS -N
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"

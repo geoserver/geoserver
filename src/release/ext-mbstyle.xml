@@ -13,24 +13,22 @@
         <include>gt-mbstyle-*.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>LGPL.md</include>
+         <include>GEOTOOLS_NOTICE.txt</include>
+         <include>GPL.md</include>
+         <include>NOTICE.md</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <files>
-    <!--
-    <file>
-      <source>release/extensions/LICENSE.txt</source>
-      <outputDirectory></outputDirectory>
-      <destName>LICENSE-LGPL.txt</destName>
-    </file>
-    -->
-    <file>
-      <source>release/LICENSE.txt</source>
-      <outputDirectory></outputDirectory>
-      <destName>LICENSE-GPL.txt</destName>
-    </file>
     <file>
       <source>extension/mbstyle/README.md</source>
       <outputDirectory></outputDirectory>
-      <destName>README.txt</destName>
+      <destName>mbstyle-README.txt</destName>
     </file>
   </files>
 </assembly>

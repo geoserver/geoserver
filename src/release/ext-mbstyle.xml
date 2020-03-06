@@ -26,7 +26,7 @@
   </fileSets>
   <files>
     <file>
-      <source>src/extension/mbstyle/README.md</source>
+      <source>extension/mbstyle/README.md</source>
       <outputDirectory></outputDirectory>
       <destName>mbstyle-README.txt</destName>
     </file>

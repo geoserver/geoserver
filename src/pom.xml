@@ -1531,7 +1531,7 @@
    <!-- artifact assembly -->
    <plugin>
     <artifactId>maven-assembly-plugin</artifactId>
-    <version>2.1</version>
+    <version>3.2.0</version>
     <configuration>
      <descriptors>
       <descriptor>release/war.xml</descriptor>

@@ -29,11 +29,11 @@
       </includes>
     </fileSet>
   </fileSets>
-  <!--moduleSets>
+  <moduleSets>
     <moduleSet>
       <includes>
         <include>org.geoserver.web:web-app</include>
       </includes>
     </moduleSet>
-  </moduleSets-->
+  </moduleSets>
 </assembly>

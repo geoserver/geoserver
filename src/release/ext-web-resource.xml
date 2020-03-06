@@ -23,7 +23,7 @@
   </fileSets>
   <files>
     <file>
-      <source>src/extension/web-resource/README.md</source>
+      <source>extension/web-resource/README.md</source>
       <outputDirectory></outputDirectory>
       <destName>web-resource-README.txt</destName>
     </file>

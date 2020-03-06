@@ -294,14 +294,7 @@ else
    echo "Skipping mvn clean install -P communityRelease -DskipTests"
 fi
 
-
-# run assembly:attached from root folder (MASSEMBLY-930)
-popd > /dev/null
-
-mvn -f src/pom.xml assembly:attached $MAVEN_FLAGS
-
-# return to src folder
-pushd src > /dev/null
+mvn -f src/pom.xml assembly:single $MAVEN_FLAGS -N
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"

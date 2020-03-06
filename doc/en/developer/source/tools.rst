@@ -9,7 +9,7 @@ environment can be set up.
 Java
 ----
 
-Developing with GeoServer requires a Java Development Kit (JDK), version 8, available from `OpenJDK <http://openjdk.java.net>`__, `AdoptOpenJDK <https://adoptopenjdk.net>`__ for windows and macOS installers, or provided by your Linux distribution.
+Developing with GeoServer requires a Java Development Kit (JDK), version 8, available from `OpenJDK <http://openjdk.java.net>`__, `AdoptOpenJDK <https://adoptopenjdk.net>`__ for Windows and macOS installers, or provided by your OS distribution.
 
 Due to subtle changes in Java class libraries we require development on Java 8 at this time (although the result is tested on Java 11).
 

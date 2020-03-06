@@ -1,6 +1,7 @@
 This README helps you getting started with GeoServer development. It will guide you through the process of checking out the source code, compiling it, and running.
 
-GeoServer Development requires Java 8, maven, and git. Due to subtle changes in Java class libraries we require development on Java 8 at this time (although the result is tested on Java 11).
+GeoServer Development requires Java 8, Maven, and git. Due to subtle changes in Java class libraries we require development on Java 8 at this time (although the result is tested on Java 11).
+
 
 Further readings:
   http://docs.geoserver.org/latest/en/developer/index.html
@@ -9,7 +10,8 @@ Further readings:
 
 1) Install prerequisites
 
-Obtain OpenJDK 8, maven and git from your Linux distribution.
+Obtain OpenJDK 8, Maven and git from your Linux distribution.
+
 
 == macOS ==
 
@@ -35,7 +37,8 @@ http://maven.apache.org/download.html
 Download and install Java 8 runtime environment, as provided by AdoptOpenJDK windows installers.
 https://adoptopenjdk.net
 
-Update windows *Environment Variables*:
+Update Windows *Environment Variables*:
+
 
 * Create an environment variable JAVA_HOME and point it to your Java SDK directory.
 * Modify the PATH variable and add: ;%JAVA_HOME%/bin
@@ -70,7 +73,9 @@ The build process may fail because of several reasons:
 Solution: Try again in some minutes.
 
 * Failing tests - Maven runs existing tests automatically. If some of them fail, the build fails.
-Solution: You can tell maven not to run the tests. This is discouraged.
+Solution: You can tell Maven not to run the tests. This is discouraged.
+
 Bug the developers instead or fix the test and send a patch, thanks!
-If you really just want to disable the test, run maven like so:
+If you really just want to disable the test, run Maven like so:
+
   mvn -DskipTests=true install

@@ -74,18 +74,11 @@
    <directory>release</directory>
    <outputDirectory>geoserver-2.17-SNAPSHOT</outputDirectory>
    <includes>
-    <include>GPL.txt</include>
+    <include>GPL.md</include>
+    <include>NOTICE.md</include>
     <include>RUNNING.txt</include>
     <include>README.txt</include>
     <include>RELEASE_NOTES.txt</include>
-   </includes>
-  </fileSet>
-  <fileSet>
-   <!-- license -->
-   <directory>../</directory>
-   <outputDirectory>geoserver-2.17-SNAPSHOT</outputDirectory>
-   <includes>
-    <include>LICENSE.txt</include>
    </includes>
   </fileSet>
   <fileSet>

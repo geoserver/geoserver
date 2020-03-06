@@ -17,11 +17,14 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>release/extensions</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>LICENSE.txt</include>
-      </includes>
+        <directory>release</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+            <include>LGPL.md</include>
+            <include>GEOTOOLS_NOTICE.txt</include>
+            <include>GPL.md</include>
+            <include>NOTICE.md</include>
+        </includes>
     </fileSet>
     <fileSet>
       <directory>release/extensions/excel</directory>

@@ -13,18 +13,19 @@
       </includes>
     </fileSet>
     <fileSet>
-       <directory>release/extensions</directory>
-       <outputDirectory></outputDirectory>
-       <includes>
-         <include>LICENSE.txt</include>
-       </includes>
-    </fileSet>
-    <fileSet>
        <directory>release/extensions/ogr</directory>
        <outputDirectory></outputDirectory>
        <includes>
-         <include>README.txt</include>
+         <include>ogr-README.txt</include>
        </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.md</include>
+         <include>NOTICE.md</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

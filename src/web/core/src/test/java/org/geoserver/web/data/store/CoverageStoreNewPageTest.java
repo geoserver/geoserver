@@ -16,7 +16,6 @@ import static org.junit.Assert.fail;
 import org.apache.wicket.Component;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layer.NewLayerPage;
@@ -136,7 +135,6 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
     public void testNewCoverageSave() {
         CoverageStoreNewPage page = startPage();
         FormTester ft = tester.newFormTester("rasterStoreForm");
-        GeoServerDataDirectory dd = getDataDirectory();
         ft.setValue(
                 "parametersPanel:url:fileInput:border:border_body:paramValue",
                 "BlueMarble/tazbm.tiff");
@@ -154,7 +152,6 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
     public void testNewCoverageApply() {
         CoverageStoreNewPage page = startPage();
         FormTester ft = tester.newFormTester("rasterStoreForm");
-        GeoServerDataDirectory dd = getDataDirectory();
         ft.setValue(
                 "parametersPanel:url:fileInput:border:border_body:paramValue",
                 "BlueMarble/tazbm.tiff");

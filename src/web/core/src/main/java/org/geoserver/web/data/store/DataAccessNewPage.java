@@ -72,7 +72,8 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
     @Override
-    protected final void onSaveDataStore(final DataStoreInfo info, AjaxRequestTarget target)
+    protected final void onSaveDataStore(
+            final DataStoreInfo info, AjaxRequestTarget target, boolean doReturn)
             throws IllegalArgumentException {
         if (!storeEditPanel.onSave()) {
             return;
@@ -134,6 +135,11 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
             }
             throw new IllegalArgumentException(e.getMessage(), e);
         }
-        setResponsePage(newLayerPage);
+
+        if (doReturn) {
+            setResponsePage(newLayerPage);
+        } else {
+            setResponsePage(new DataAccessEditPage(savedStore.getId()));
+        }
     }
 }

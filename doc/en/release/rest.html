@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+  <head>
+    <title>GeoServer Coverages</title>
+    <style type="text/css">
+      body {
+	font-family: Trebuchet MS, sans-serif;
+	font-size: 15px;
+	color: #444;
+	margin-right: 24px;
+}
+
+h1	{
+	font-size: 25px;
+}
+h2	{
+	font-size: 20px;
+}
+h3	{
+	font-size: 16px;
+	font-weight: bold;
+}
+hr	{
+	height: 1px;
+	border: 0;
+	color: #ddd;
+	background-color: #ddd;
+}
+
+.app-desc {
+  clear: both;
+  margin-left: 20px;
+}
+.param-name {
+  width: 100%;
+}
+.license-info {
+  margin-left: 20px;
+}
+
+.license-url {
+  margin-left: 20px;
+}
+
+.model {
+  margin: 0 0 0px 20px;
+}
+
+.method {
+  margin-left: 20px;
+}
+
+.method-notes	{
+	margin: 10px 0 20px 0;
+	font-size: 90%;
+	color: #555;
+}
+
+pre {
+  padding: 10px;
+  margin-bottom: 2px;
+}
+
+.http-method {
+ text-transform: uppercase;
+}
+
+pre.get {
+  background-color: #0f6ab4;
+}
+
+pre.post {
+  background-color: #10a54a;
+}
+
+pre.put {
+  background-color: #c5862b;
+}
+
+pre.delete {
+  background-color: #a41e22;
+}
+
+.huge	{
+	color: #fff;
+}
+
+pre.example {
+  background-color: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+code {
+  white-space: pre;
+}
+
+.nickname {
+  font-weight: bold;
+}
+
+.method-path {
+  font-size: 1.5em;
+  background-color: #0f6ab4;
+}
+
+.up {
+  float:right;
+}
+
+.parameter {
+  width: 500px;
+}
+
+.param {
+  width: 500px;
+  padding: 10px 0 0 20px;
+  font-weight: bold;
+}
+
+.param-desc {
+  width: 700px;
+  padding: 0 0 0 20px;
+  color: #777;
+}
+
+.param-type {
+  font-style: italic;
+}
+
+.param-enum-header {
+width: 700px;
+padding: 0 0 0 60px;
+color: #777;
+font-weight: bold;
+}
+
+.param-enum {
+width: 700px;
+padding: 0 0 0 80px;
+color: #777;
+font-style: italic;
+}
+
+.field-label {
+  padding: 0;
+  margin: 0;
+  clear: both;
+}
+
+.field-items	{
+	padding: 0 0 15px 0;
+	margin-bottom: 15px;
+}
+
+.return-type {
+  clear: both;
+  padding-bottom: 10px;
+}
+
+.param-header {
+  font-weight: bold;
+}
+
+.method-tags {
+  text-align: right;
+}
+
+.method-tag {
+  background: none repeat scroll 0% 0% #24A600;
+  border-radius: 3px;
+  padding: 2px 10px;
+  margin: 2px;
+  color: #FFF;
+  display: inline-block;
+  text-decoration: none;
+}
+
+    </style>
+  </head>
+  <body>
+  <h1>GeoServer REST API</h1>
+    <div class="app-desc">Version: 1.0.0</div>
+    <div class="app-desc">BasePath:/geoserver/rest</div>
+    <div class="license-info">All rights reserved</div>
+    <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
+
+  <h3>Table of Contents</h3>
+  
+  Core API:
+  <ul>
+  <li><a href="coverages/index.html">coverages</a></li>
+  <li><a href="coveragestores/index.html">coveragestores</a></li>
+  <li><a href="datastores/index.html">datastores</a></li>
+  <li><a href="featuretypes/index.html">featuretypes</a></li>
+  <li><a href="fonts/index.html">fonts</a></li>
+  <li><a href="layergroups/index.html">layergroups</a></li>
+  <li><a href="layers/index.html">layers</a></li>
+  <li><a href="manifests/index.html">manifests</a></li>
+  <li><a href="metadata/index.html">metadata</a></li>
+  <li><a href="namespaces/index.html">namespaces</a></li>
+  <li><a href="owsservices/index.html">owsservices</a></li>
+  <li><a href="reload/index.html">reload</a></li>
+  <li><a href="resource/index.html">resource</a></li>
+  <li><a href="roles/index.html">roles</a></li>
+  <li><a href="security/index.html">security</a></li>
+  <li><a href="settings/index.html">settings</a></li>
+  <li><a href="structuredcoverages/index.html">structuredcoverages</a></li>
+  <li><a href="styles/index.html">styles</a></li>
+  <li><a href="system-status/index.html">system-status</a></li>
+  <li><a href="templates/index.html">templates</a></li>
+  <li><a href="usergroup/index.html">usergroup</a></li>
+  <li><a href="wmslayers/index.html">wmslayers</a></li>
+  <li><a href="wmsstores/index.html">wmsstores</a></li>
+  <li><a href="wmtslayers/index.html">wmtslayers</a></li>
+  <li><a href="wmtsstores/index.html">wmtsstores</a></li>
+  <li><a href="workspaces/index.html">workspaces</a></li>
+  </ul>
+  
+  GeoWebCache API:
+  <ul>
+  <li><a href="gwcblobstores/index.html">gwcblobstores</a></li>
+  <li><a href="gwcbounds/index.html">gwcbounds</a></li>
+  <li><a href="gwcdiskquota/index.html">gwcdiskquota</a></li>
+  <li><a href="gwcfilterupdate/index.html">gwcfilterupdate</a></li>
+  <li><a href="gwcglobal/index.html">gwcglobal</a></li>
+  <li><a href="gwcgridsets/index.html">gwcgridsets</a></li>
+  <li><a href="gwcindex/index.html">gwcindex</a></li>
+  <li><a href="gwclayers/index.html">gwclayers</a></li>
+  <li><a href="gwcmasstruncate/index.html">gwcmasstruncate</a></li>
+  <li><a href="gwcmemorycachestatistics/index.html">gwcmemorycachestatistics</a></li>
+  <li><a href="gwcreload/index.html">gwcreload</a></li>
+  <li><a href="gwcseed/index.html">gwcseed</a></li>
+  </li>
+
+  Importer Extension:
+  <ul>  
+  <li><a href="importer/index.html">importer</a></li>
+  <li><a href="importerData/index.html">importerData</a></li>
+  <li><a href="importerTasks/index.html">importerTasks</a></li>
+  <li><a href="importerTransforms/index.html">importerTransforms</a></li>
+  </ul>
+
+  GeoServer Extensions:
+  <ul>
+  <li><a href="monitoring/index.html">monitoring</a></li>
+  <li><a href="transforms/index.html">transforms</a></li>
+  </ul>
+  
+  GeoServer Community:
+  <ul>
+  <li><a href="opensearch-eo/index.html">opensearch-eo</a></li>
+  <li><a href="params-extractor/index.html">params-extractor</a></li>
+  </ul>
+  </body>
+</html>

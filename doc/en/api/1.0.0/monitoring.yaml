@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer monitoring requests
   description: Request provides details about OWS and REST requests that GeoServer has handled 
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
 

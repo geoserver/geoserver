@@ -4,6 +4,10 @@ info:
   version: 1.0.0
   title: Users and Groups
   description: Organisation of security users and groups
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest/security
 

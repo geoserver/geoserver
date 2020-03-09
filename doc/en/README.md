@@ -11,9 +11,22 @@ To build:
 
     mvn clean install
 
+To package documentation into zip archives:
+
+    mvn assembly:single
+
+### REST API
+
 To generate the REST API documentation:
 
     mvn process-resources
+    
+To generate a specific REST API endpoint:
+
+    mvn process-resoruces:system-status
+    
+
+### Manuals
 
 To build all restructured text documentation:
 
@@ -25,14 +38,12 @@ Profiles are defined to build individual manuals:
     mvn compile -Pdeveloper
     mvn compile -Pdocguide
 
-To package documentation into zip archives:
+To generate user pdf:
 
-    mvn assembly:single
+    mvn compile -Puser-pdf
 
-## Building with ANT
+The ant ``build.xml`` can also be called directly with the ``project.version`` name:
 
-The ant ``build.xml`` can also be called directly:
-
-    ant user
-    ant developer
-    ant docguide
+    ant user -Dproject.version=2.18.0
+    ant developer -Dproject.version=2.18.0
+    ant docguide -Dproject.version=2.18.0

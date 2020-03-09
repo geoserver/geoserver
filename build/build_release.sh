@@ -275,10 +275,13 @@ if [ -z $SKIP_BUILD ]; then
 
   pushd ../doc/en > /dev/null
 
-  ant clean user -Dproject.version=$tag
-  ant user-pdf -Dproject.version=$tag
-  ant developer -Dproject.version=$tag
+  # ant clean user -Dproject.version=$tag
+  # ant user-pdf -Dproject.version=$tag
+  # ant developer -Dproject.version=$tag
 
+  mvn clean compile
+  mvn package
+  
   popd > /dev/null
 else
    echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release"

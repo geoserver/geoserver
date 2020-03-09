@@ -21,9 +21,8 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <artifactId>ojdbc7</artifactId>
-                    <groupId>com.oracle</groupId>
-                    <version>12.1.0.2</version>
+                    <groupId>com.oracle.database.jdbc</groupId>
+                    <artifactId>ojdbc8</artifactId>
                 </dependency>
             </dependencies>
         </profile>

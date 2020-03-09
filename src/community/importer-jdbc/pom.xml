@@ -11,24 +11,6 @@
         <version>2.18-SNAPSHOT</version>
     </parent>
 
-    <profiles>
-        <profile>
-            <id>oracle.jdbc-true</id>
-            <activation>
-                <property>
-                    <name>oracle</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <artifactId>ojdbc7</artifactId>
-                    <groupId>com.oracle</groupId>
-                    <version>12.1.0.2</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.geoserver.importer</groupId>

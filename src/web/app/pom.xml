@@ -462,19 +462,9 @@
           <artifactId>gs-oracle</artifactId>
           <version>${project.version}</version>
         </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oracleDriver</id>
-      <dependencies>
         <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-oracle</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc7</artifactId>
+          <groupId>com.oracle.database.jdbc</groupId>
+          <artifactId>ojdbc8</artifactId>
         </dependency>
       </dependencies>
     </profile>

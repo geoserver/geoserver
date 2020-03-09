@@ -312,26 +312,30 @@ popd > /dev/null
 
 pushd $artifacts > /dev/null
 
-# setup doc artifacts
-if [ -e user ]; then
-  unlink user
-fi
-if [ -e developer ]; then
-  unlink developer
-fi
-
-ln -sf ../../../doc/en/target/user/html user
-ln -sf ../../../doc/en/target/developer/html developer
-ln -sf ../../../doc/en/release/README.txt readme
-
 htmldoc=geoserver-$tag-htmldoc.zip
-if [ -e $htmldoc ]; then
-  rm -f $htmldoc 
+
+if [ -e ../../../doc/en/target/$htmldoc ]; then
+  # use assembly
+  cp ../../../doc/en/target/$htmldoc $htmldoc
+else;
+  # setup doc artifacts
+  if [ -e user ]; then
+    unlink user
+  fi
+  if [ -e developer ]; then
+    unlink developer
+  fi
+  ln -sf ../../../doc/en/target/user/html user
+  ln -sf ../../../doc/en/target/developer/html developer
+  ln -sf ../../../doc/en/release/README.txt readme
+  if [ -e $htmldoc ]; then
+    rm -f $htmldoc 
+  fi
+  zip -q -r $htmldoc user developer readme
+  unlink user
+  unlink developer
+  unlink readme
 fi
-zip -q -r $htmldoc user developer readme
-unlink user
-unlink developer
-unlink readme
 
 popd > /dev/null
 

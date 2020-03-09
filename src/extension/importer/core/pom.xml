@@ -90,15 +90,6 @@
  
   <profiles>
     <profile>
-      <id>oracleDriver</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc7</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>sqlserverDriver</id>
       <dependencies>
         <dependency>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
   <id>api</id>
+  <baseDirectory>geoserver-${project.version}-api</baseDirectory>
   <formats>
     <format>zip</format>
   </formats>
@@ -11,6 +12,12 @@
         <include>README*</include>
         <include>LICENSE*</include>
         <include>NOTICE*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory></directory>
+      <includes>
+        <include>LICENSE.md</include> <!-- CC -->
       </includes>
     </fileSet>
     <fileSet>

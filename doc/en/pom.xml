@@ -442,8 +442,6 @@
             <goals><goal>generate</goal></goals>
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wmtslayers.yaml</inputSpec>
-              <language>html</language>
-              <ignoreFileOverride>${project.basedir}/api/.swagger-codegen-ignore</ignoreFileOverride>
               <output>${project.build.directory}/api/wmtslayers</output>
             </configuration>
           </execution>
@@ -455,8 +453,6 @@
             </goals>
             <configuration>
               <inputSpec>${project.basedir}/api/1.0.0/wmtsstores.yaml</inputSpec>
-              <language>html</language>
-              <ignoreFileOverride>${project.basedir}/api/.swagger-codegen-ignore</ignoreFileOverride>
               <output>${project.build.directory}/api/wmtsstores</output>
             </configuration>
           </execution>
@@ -490,6 +486,26 @@
           </dependency>
         </dependencies>
         <executions>
+           <execution>
+            <id>version</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                 <copy file="release/VERSION.txt" todir="target" filtering="true">
+                  <filterset begintoken="$${" endtoken="}">
+                    <filter token="project.version" value="${project.version}"/>
+                    <filter token="build.revision" value="${build.commit.id}"/>
+                    <filter token="build.branch" value="${build.branch}"/>
+                    <filter token="build.timestamp" value="${build.timestamp}"/>
+                    <filter token="build.hudsonId" value="${build.hudsonId}"/>
+                  </filterset>
+                 </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
           <execution>
             <id>sphinx</id>
             <phase>compile</phase>
@@ -513,12 +529,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.2.0</version>
         <configuration>
-          <descriptors>
-            <descriptor>release/api.xml</descriptor>
-            <descriptor>release/user.xml</descriptor>
-            <descriptor>release/developer.xml</descriptor>
-            <descriptor>release/docguide.xml</descriptor>
-          </descriptors>
+          <finalName>geoserver-${project.version}</finalName>
         </configuration>
         <executions>
           <execution>
@@ -569,9 +580,20 @@
               <goal>single</goal>
             </goals>
           </execution>
+          <execution>
+            <id>htmldoc</id>
+            <phase>package</phase>
+            <configuration>
+              <descriptors>
+                <descriptor>release/htmldoc.xml</descriptor>
+              </descriptors>
+            </configuration>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
-      
     </plugins>
   </build>
   
@@ -590,6 +612,12 @@
       <id>user</id>
       <properties>
         <target>user</target>
+      </properties>
+    </profile>
+    <profile>
+      <id>user-pdf</id>
+      <properties>
+        <target>user-pdf</target>
       </properties>
     </profile>
     <profile>

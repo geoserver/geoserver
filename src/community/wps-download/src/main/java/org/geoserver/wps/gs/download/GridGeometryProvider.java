@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -24,11 +22,13 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -69,7 +69,11 @@ class GridGeometryProvider {
 
         private boolean isHeterogeneousCrs;
 
-        public ResolutionProvider(Map<String, DimensionDescriptor> descriptors) {
+        private CRSRequestHandler crsRequestHandler;
+
+        public ResolutionProvider(CRSRequestHandler crsRequestHandler) {
+            this.crsRequestHandler = crsRequestHandler;
+            Map<String, DimensionDescriptor> descriptors = crsRequestHandler.getDescriptors();
             resDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION);
             resXDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION_X);
             resYDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION_Y);
@@ -100,25 +104,39 @@ class GridGeometryProvider {
 
             String crsAttribute = isHeterogeneousCrs ? crsDescriptor.getStartAttribute() : null;
             SimpleFeatureType schema = features.getSchema();
-            CoordinateReferenceSystem schemaCrs =
+            CoordinateReferenceSystem schemaCRS =
                     schema.getGeometryDescriptor().getCoordinateReferenceSystem();
 
+            CoordinateReferenceSystem referenceCRS =
+                    crsRequestHandler.canUseTargetCRSAsNative()
+                            ? crsRequestHandler.getSelectedTargetCRS()
+                            : schemaCRS;
             // Iterate over the features to extract the best resolution
             BoundingBox featureBBox = null;
             GeneralEnvelope env = null;
             ReferencedEnvelope envelope = null;
+            double[] fallbackResolution =
+                    new double[] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+
+            // Look for the best resolution available from features matching the targetCRS.
+            // Keep also updating a secondary resolution from features not matching
+            // the targetCRS to be used as fallback in case that none of the available
+            // features is matching the requested CRS.
             try (SimpleFeatureIterator iterator = features.features()) {
                 double[] res = new double[2];
                 while (iterator.hasNext()) {
                     SimpleFeature feature = iterator.next();
                     extractResolution(
-                            feature, resXAttribute, resYAttribute, crsAttribute, schemaCrs, res);
+                            feature,
+                            resXAttribute,
+                            resYAttribute,
+                            crsAttribute,
+                            referenceCRS,
+                            res,
+                            fallbackResolution,
+                            bestResolution);
 
-                    // Update bestResolution x and y
-                    bestResolution[0] = res[0] < bestResolution[0] ? res[0] : bestResolution[0];
-                    bestResolution[1] = res[1] < bestResolution[1] ? res[1] : bestResolution[1];
-                    featureBBox = feature.getBounds();
-
+                    featureBBox = computeBBox(feature, crsAttribute, schemaCRS);
                     // Update the accessed envelope
                     if (env == null) {
                         env = new GeneralEnvelope(featureBBox);
@@ -130,7 +148,53 @@ class GridGeometryProvider {
             if (env != null) {
                 envelope = new ReferencedEnvelope(env);
             }
+            if (Double.isInfinite(bestResolution[0]) || Double.isInfinite(bestResolution[1])) {
+                // There might be the case that no granules have been found having native CRS
+                // matching the Target one, so no best resolution has been retrieved on that CRS.
+                // Let's use the fallback resolution
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(
+                            "No granules are matching the targetCRS. Going to use fallback resolution:"
+                                    + "\nresX="
+                                    + fallbackResolution[0]
+                                    + " resY="
+                                    + fallbackResolution[1]);
+                }
+                bestResolution[0] = fallbackResolution[0];
+                bestResolution[1] = fallbackResolution[1];
+            }
             return envelope;
+        }
+
+        /**
+         * compute the bbox of the provided feature, taking into account its native CRS if available
+         */
+        private BoundingBox computeBBox(
+                SimpleFeature feature, String crsAttribute, CoordinateReferenceSystem schemaCRS)
+                throws FactoryException, TransformException, IOException {
+            ROIManager roiManager = crsRequestHandler.getRoiManager();
+            if (roiManager != null && crsRequestHandler.canUseTargetCRSAsNative()) {
+                String granuleCrsCode = (String) feature.getAttribute(crsAttribute);
+                CoordinateReferenceSystem granuleCRS = crsRequestHandler.getCRS(granuleCrsCode);
+                CoordinateReferenceSystem targetCRS = crsRequestHandler.getSelectedTargetCRS();
+                Geometry geom = (Geometry) feature.getDefaultGeometry();
+                MathTransform transform = CRS.findMathTransform(schemaCRS, targetCRS);
+                if (CRS.equalsIgnoreMetadata(targetCRS, granuleCRS)) {
+                    // The granule has same CRS as TargetCRS
+                    // Do not reproject the boundingBox itself but let's
+                    // reproject the geometry to get the native bbox
+                    if (!transform.isIdentity()) {
+                        geom = JTS.transform(geom, transform);
+                    }
+                    return JTS.bounds(geom, targetCRS);
+                } else {
+                    // Reproject the granule geometry to the requested CRS
+                    return JTS.bounds(geom, granuleCRS).transform(targetCRS, true);
+                }
+            } else {
+                // Classic behaviour
+                return feature.getBounds();
+            }
         }
 
         /** Extract the resolution from the specified feature via the resolution attributes. */
@@ -139,19 +203,37 @@ class GridGeometryProvider {
                 String resXAttribute,
                 String resYAttribute,
                 String crsAttribute,
-                CoordinateReferenceSystem schemaCrs,
-                double[] resolution)
+                CoordinateReferenceSystem referenceCRS,
+                double[] resolution,
+                double[] fallbackResolution,
+                double[] bestResolution)
                 throws FactoryException, TransformException, IOException {
             resolution[0] = (Double) feature.getAttribute(resXAttribute);
             resolution[1] =
                     hasBothResolutions
                             ? (Double) feature.getAttribute(resYAttribute)
                             : resolution[0];
+            CoordinateReferenceSystem granuleCRS = null;
             if (isHeterogeneousCrs) {
                 String crsId = (String) feature.getAttribute(crsAttribute);
-                CoordinateReferenceSystem granuleCrs = catalog.getResourcePool().getCRS(crsId);
-                transformResolution(feature, schemaCrs, granuleCrs, resolution);
+                granuleCRS = crsRequestHandler.getCRS(crsId);
+                transformResolution(feature, referenceCRS, granuleCRS, resolution);
             }
+            boolean updateBest =
+                    !crsRequestHandler.canUseBestResolutionOnMatchingCRS()
+                            || CRS.equalsIgnoreMetadata(granuleCRS, referenceCRS);
+            updateResolution(resolution, updateBest ? bestResolution : fallbackResolution);
+        }
+
+        private void updateResolution(double[] currentResolution, double[] storedResolution) {
+            storedResolution[0] =
+                    currentResolution[0] < storedResolution[0]
+                            ? currentResolution[0]
+                            : storedResolution[0];
+            storedResolution[1] =
+                    currentResolution[1] < storedResolution[1]
+                            ? currentResolution[1]
+                            : storedResolution[1];
         }
 
         /**
@@ -160,26 +242,26 @@ class GridGeometryProvider {
          */
         private void transformResolution(
                 SimpleFeature feature,
-                CoordinateReferenceSystem schemaCrs,
-                CoordinateReferenceSystem granuleCrs,
+                CoordinateReferenceSystem schemaCRS,
+                CoordinateReferenceSystem granuleCRS,
                 double[] resolution)
                 throws FactoryException, TransformException {
-            MathTransform transform = CRS.findMathTransform(schemaCrs, granuleCrs);
+            MathTransform transform = CRS.findMathTransform(schemaCRS, granuleCRS);
 
             // Do nothing if the CRS transformation is the identity
             if (!transform.isIdentity()) {
                 BoundingBox bounds = feature.getBounds();
-                MathTransform inverse = transform.inverse();
-
                 // Get the center coordinate in the granule's CRS
                 double center[] =
                         new double[] {
                             (bounds.getMaxX() + bounds.getMinX()) / 2,
                             (bounds.getMaxY() + bounds.getMinY()) / 2
                         };
+
+                MathTransform inverse = transform.inverse();
                 transform.transform(center, 0, center, 0, 1);
 
-                // Setup 2 segments in granule's CRS
+                // Setup 2 segments in inputCrs
                 double[] coords = new double[6];
                 double[] resCoords = new double[6];
 
@@ -195,7 +277,7 @@ class GridGeometryProvider {
                 coords[4] = center[0];
                 coords[5] = center[1] + resolution[1];
 
-                // Transform the coordinates back to schemaCrs
+                // Transform the coordinates back to targetCrs
                 inverse.transform(coords, 0, resCoords, 0, 3);
 
                 double dx1 = resCoords[2] - resCoords[0];
@@ -212,24 +294,10 @@ class GridGeometryProvider {
         }
     }
 
-    /** The underlying reader */
-    private GridCoverage2DReader reader;
+    private CRSRequestHandler crsRequestHandler;
 
-    /** The ROIManager instance */
-    private ROIManager roiManager;
-
-    /** The specified filter (may be null) */
-    private Filter filter;
-
-    /** A reference to the geoserver catalog */
-    private Catalog catalog;
-
-    public GridGeometryProvider(
-            GridCoverage2DReader reader, ROIManager roiManager, Filter filter, Catalog catalog) {
-        this.reader = reader;
-        this.roiManager = roiManager;
-        this.filter = filter;
-        this.catalog = catalog;
+    public GridGeometryProvider(CRSRequestHandler crsRequestHandler) {
+        this.crsRequestHandler = crsRequestHandler;
     }
 
     /**
@@ -238,7 +306,7 @@ class GridGeometryProvider {
      */
     public GridGeometry2D getGridGeometry()
             throws TransformException, IOException, FactoryException {
-        if (!StructuredGridCoverage2DReader.class.isAssignableFrom(reader.getClass())) {
+        if (!crsRequestHandler.hasStructuredReader()) {
 
             //
             // CASE A: simple readers: return the native resolution gridGeometry
@@ -252,16 +320,10 @@ class GridGeometryProvider {
             // CASE B: StructuredGridCoverage2DReader
             //
             StructuredGridCoverage2DReader structuredReader =
-                    (StructuredGridCoverage2DReader) reader;
-            String coverageName = reader.getGridCoverageNames()[0];
+                    crsRequestHandler.getStructuredReader();
+            String coverageName = structuredReader.getGridCoverageNames()[0];
 
-            Map<String, DimensionDescriptor> descriptors =
-                    structuredReader
-                            .getDimensionDescriptors(coverageName)
-                            .stream()
-                            .collect(Collectors.toMap(dd -> dd.getName(), dd -> dd));
-
-            ResolutionProvider provider = new ResolutionProvider(descriptors);
+            ResolutionProvider provider = new ResolutionProvider(crsRequestHandler);
 
             //
             // Do we have any resolution descriptor available?
@@ -318,12 +380,15 @@ class GridGeometryProvider {
         Query query = Query.ALL;
 
         // Set bbox query if a ROI has been provided
+        ROIManager roiManager = crsRequestHandler.getRoiManager();
         if (roiManager != null) {
             CoordinateReferenceSystem targetCRS = roiManager.getTargetCRS();
             GeometryDescriptor geomDescriptor = granules.getSchema().getGeometryDescriptor();
             CoordinateReferenceSystem indexCRS = geomDescriptor.getCoordinateReferenceSystem();
             ReferencedEnvelope envelope = null;
-            if (targetCRS != null && !roiManager.isRoiCrsEqualsTargetCrs()) {
+            if (targetCRS != null
+                    && (!roiManager.isRoiCrsEqualsTargetCrs()
+                            || crsRequestHandler.canUseTargetCRSAsNative())) {
                 envelope =
                         new ReferencedEnvelope(
                                 roiManager.getSafeRoiInTargetCRS().getEnvelopeInternal(),
@@ -347,6 +412,7 @@ class GridGeometryProvider {
         }
 
         // Add the filter if specified
+        Filter filter = crsRequestHandler.getFilter();
         if (filter != null) {
             filters.add(filter);
         }
@@ -359,8 +425,9 @@ class GridGeometryProvider {
     }
 
     /** Default GridGeometry retrieval based on native resolution. */
-    private GridGeometry2D getNativeResolutionGridGeometry()
-            throws TransformException, IOException {
+    private GridGeometry2D getNativeResolutionGridGeometry() throws IOException {
+        GridCoverage2DReader reader = crsRequestHandler.getReader();
+        ROIManager roiManager = crsRequestHandler.getRoiManager();
         final ReferencedEnvelope roiEnvelope =
                 roiManager != null
                         ? new ReferencedEnvelope(

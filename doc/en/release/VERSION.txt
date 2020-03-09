@@ -1,0 +1,5 @@
+version = ${project.version}
+git revision = ${build.revision}
+git branch = ${build.branch}
+build date = ${build.timestamp}
+hudson build = ${build.hudsonId}

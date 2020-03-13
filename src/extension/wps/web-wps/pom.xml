@@ -18,7 +18,6 @@
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-web-wps</artifactId>
     <packaging>jar</packaging>
-    <version>${gs.version}</version>
     <name>Web Processing Service GUI</name>
 
     <dependencies>

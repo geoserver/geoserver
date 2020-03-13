@@ -60,13 +60,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.geoserver.extension</groupId>
-            <artifactId>gs-ogr-wfs</artifactId>
-            <version>${gs.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>

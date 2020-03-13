@@ -9,7 +9,7 @@
   <artifactId>gs-jdbcconfig</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer JDBC Catalog</name>
-  <decsription>
+  <description>
     Manage GeoServer Catalog configuration in a database.
   </description>
   <properties>

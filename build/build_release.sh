@@ -320,7 +320,7 @@ if [ -e ../../../doc/en/target/$htmldoc ]; then
   echo "Using $htmldoc assembly"
   # use assembly
   cp ../../../doc/en/target/$htmldoc $htmldoc
-else;
+else
   echo "Creating $htmldoc"
   # setup doc artifacts
   if [ -e user ]; then

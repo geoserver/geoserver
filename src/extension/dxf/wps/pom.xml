@@ -19,7 +19,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-dxf-wps</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>DXF WPS PPIO</name>
 
     <dependencies>

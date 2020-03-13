@@ -8,8 +8,9 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbcstore</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoServer JDBC Configuration Resource Store</name>
+  <description>
+    Store resources (icons, fonts, freemarker tempaltes and configuration files) in database alongside JDBC Store.
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

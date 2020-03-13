@@ -8,7 +8,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-css</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoServer CSS Styling</name>
 
   <dependencies>

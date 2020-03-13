@@ -18,7 +18,6 @@ application directory.
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-geomesa</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>  
   <name>GeoMesa Web Module</name>
 
   <description>GeoMesa GeoServer extensions</description>

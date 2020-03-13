@@ -14,7 +14,6 @@
   <artifactId>gs-ows-simulate</artifactId>
   <name>OWS Dispatcher Simulate Plugin</name>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   
   <dependencies>
     <dependency>

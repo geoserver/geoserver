@@ -10,7 +10,6 @@
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-wmts-multi-dimensional</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
     <name>WMTS Multi Dimensional</name>
     <dependencies>
         <dependency>

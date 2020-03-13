@@ -13,7 +13,6 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-gwc-azure-blob</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoWebCache Azure blob</name>
   <description>GeoWebCache Azure BLOB support plugin</description>
 

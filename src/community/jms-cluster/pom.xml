@@ -10,8 +10,6 @@
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jms-cluster-container</artifactId>
-  <!-- Use the same version as GeoServer here, at least for the moment -->
-  <version>2.18-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>GeoServer JMS based clustering modules</name>

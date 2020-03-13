@@ -10,7 +10,6 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-nsg-wfs-profile</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>NSG WFS 2.0 Profile</name>
   <dependencies>
     <!-- geoserver dependencies -->

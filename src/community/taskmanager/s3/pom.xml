@@ -13,7 +13,6 @@
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-taskmanager-s3</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
 
     <name>GeoServer Task Manager S3</name>
     <description>

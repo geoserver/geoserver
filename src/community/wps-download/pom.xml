@@ -12,7 +12,6 @@
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-wps-download</artifactId>
 	<packaging>jar</packaging>
-	<version>2.18-SNAPSHOT</version>
 	<name>DownloadProcess</name>
 
 	<dependencies>

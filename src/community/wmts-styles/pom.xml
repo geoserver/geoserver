@@ -10,7 +10,6 @@
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-wmts-styles</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
     <name>WMTS Style editing extension</name>
     <dependencies>
         <dependency>

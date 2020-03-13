@@ -18,7 +18,6 @@
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-wms</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>WMS UI Module</name>
   
   <dependencies>

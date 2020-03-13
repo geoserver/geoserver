@@ -18,7 +18,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-printing</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>Printing Module</name>
 
   <dependencies>

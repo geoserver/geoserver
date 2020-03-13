@@ -21,7 +21,6 @@
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-demo</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>Demos Module</name>
   
   <dependencies>

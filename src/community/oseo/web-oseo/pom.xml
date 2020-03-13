@@ -15,7 +15,6 @@
   <artifactId>gs-web-oseo</artifactId>
   <name>OpenSearch for EO web UI</name>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
 
   <dependencies>
     <dependency>

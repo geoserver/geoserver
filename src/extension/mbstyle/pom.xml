@@ -12,7 +12,6 @@
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-mbstyle</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
     <name>MBStyle Extension</name>
     <description>
         Support for MapBox Style definition.

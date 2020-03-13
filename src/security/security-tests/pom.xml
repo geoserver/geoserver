@@ -17,7 +17,6 @@
   <groupId>org.geoserver.security</groupId>
   <artifactId>gs-security-tests</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoServer Security Tests Module</name>
   
   <dependencies>

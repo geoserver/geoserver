@@ -18,7 +18,6 @@
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>gs-web-sec-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.18-SNAPSHOT</version>
 	<name>Security UI Core Module</name>
 
 	<dependencies>

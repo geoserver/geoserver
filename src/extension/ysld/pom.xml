@@ -12,9 +12,8 @@
   
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-ysld</artifactId>
-  <name>Ysld GeoServer Plugin</name>
+  <name>YSLD GeoServer Plugin</name>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   
   <dependencies>
     <dependency>

@@ -19,7 +19,6 @@
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-sec-oauth2-openid-connect</artifactId>
 	<packaging>jar</packaging>
-	<version>2.18-SNAPSHOT</version>
 	<name>GeoServer OAuth2 Connect Security Module - OpenId Connect</name>
 
 	<dependencies>

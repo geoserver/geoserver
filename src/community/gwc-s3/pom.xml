@@ -13,7 +13,6 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-gwc-s3</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoWebCache S3</name>
   <description>GeoWebCache S3 support plugin</description>
 

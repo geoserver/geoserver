@@ -10,7 +10,6 @@
 	</parent>
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>gs-web-rest</artifactId>
-	<version>2.18-SNAPSHOT</version>
 	<name>REST UI Module</name>
 	<url>http://maven.apache.org</url>
 	<properties>

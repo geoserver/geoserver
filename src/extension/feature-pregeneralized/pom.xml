@@ -18,7 +18,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-feature-pregeneralized</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>Feature Generalization Extension</name>
 
   <dependencies>

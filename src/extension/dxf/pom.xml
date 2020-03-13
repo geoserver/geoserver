@@ -19,7 +19,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-dxf</artifactId>
   <packaging>pom</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>DXF WFS output format and WPS PPIO</name>
   
   <modules>

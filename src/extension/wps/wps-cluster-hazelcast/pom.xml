@@ -16,7 +16,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-wps-cluster-hazelcast</artifactId>
   <packaging>jar</packaging>
-  <version>${gs.version}</version>
   <name>Web process status sharing with Hazelcast</name>
 
   <dependencies>

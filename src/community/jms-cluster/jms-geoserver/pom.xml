@@ -36,6 +36,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -272,11 +273,6 @@
       <artifactId>gs-platform</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -297,7 +297,8 @@ else
    echo "Skipping mvn clean install -P communityRelease -DskipTests"
 fi
 
-mvn -f src/pom.xml assembly:single $MAVEN_FLAGS -N
+echo "Assemble artifacts"
+mvn assembly:single $MAVEN_FLAGS -N
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"
@@ -306,6 +307,7 @@ echo "artifacts = $artifacts"
 pushd release/installer/mac > /dev/null
 zip -q -r $artifacts/geoserver-$tag-mac.zip *
 popd > /dev/null
+
 pushd release/installer/win > /dev/null
 zip -q -r $artifacts/geoserver-$tag-win.zip *
 popd > /dev/null
@@ -315,9 +317,11 @@ pushd $artifacts > /dev/null
 htmldoc=geoserver-$tag-htmldoc.zip
 
 if [ -e ../../../doc/en/target/$htmldoc ]; then
+  echo "Using $htmldoc assembly"
   # use assembly
   cp ../../../doc/en/target/$htmldoc $htmldoc
 else;
+  echo "Creating $htmldoc"
   # setup doc artifacts
   if [ -e user ]; then
     unlink user

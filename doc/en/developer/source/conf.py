@@ -49,8 +49,13 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 #
 # The short X.Y version.
 version = '2.18'
+
 # The full version, including alpha/beta/rc tags.
 release = '2.18-SNAPSHOT'
+
+# Used in build and documentation links
+branch = '2.18.x'
+
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
    release = '2.18.x'
@@ -97,7 +102,7 @@ pygments_style = 'sphinx'
 extlinks = { 
     'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',''),
     'website': ('http://geoserver.org/%s',''),
-    'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
+    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s',''),
     'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),

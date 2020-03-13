@@ -8,8 +8,10 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbcconfig</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
-  <name>GeoServer JDBC KV Catalog</name>
+  <name>GeoServer JDBC Catalog</name>
+  <decsription>
+    Manage GeoServer Catalog configuration in a database.
+  </description>
   <properties>
       <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
   </properties>

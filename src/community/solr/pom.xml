@@ -16,7 +16,6 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-solr</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>  
   <name>Solr Module</name>
 
   <dependencies>

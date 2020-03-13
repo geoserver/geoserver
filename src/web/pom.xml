@@ -16,7 +16,6 @@
   <groupId>org.geoserver</groupId>
   <artifactId>web</artifactId>
   <packaging>pom</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoServer Web Modules</name>
   
   <build>

@@ -14,8 +14,10 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-oseo-core</artifactId>
   <name>OpenSearch for EO</name>
+  <description>
+    Support OpenSearch for Earth Observation protocol.
+  </description>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
 
   <dependencies>
     <dependency>

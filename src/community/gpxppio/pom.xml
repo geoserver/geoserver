@@ -16,7 +16,6 @@
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-gpxppio</artifactId>
 	<packaging>jar</packaging>
-	<version>2.18-SNAPSHOT</version>
 	<name>GPX PPIO for WPS</name>
 	<dependencies>
 		<dependency>

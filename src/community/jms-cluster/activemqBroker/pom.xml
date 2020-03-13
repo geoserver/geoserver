@@ -12,7 +12,6 @@
 
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>activemqBroker</artifactId>
-	<version>2.18-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>ActiveMQ</name>

@@ -13,8 +13,8 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbc-metrics</artifactId>
   <name>JDBC Metrics Plugin</name>
+  <description>Collect metrics and timings on a request by request basis into a database for analysis</description>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   
   <dependencies>
     <dependency>

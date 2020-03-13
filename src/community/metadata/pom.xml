@@ -13,7 +13,6 @@
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-metadata</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
 
     <name>GeoServer Metadata Customizer</name>
     <description>

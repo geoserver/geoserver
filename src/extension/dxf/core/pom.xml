@@ -19,7 +19,6 @@
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-dxf-core</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>DXF WFS output format</name>
 
     <dependencies>

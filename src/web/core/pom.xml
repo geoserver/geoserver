@@ -18,7 +18,6 @@
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-core</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>Core UI Module</name>
   
   <dependencies>

@@ -16,7 +16,6 @@
  <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-inspire</artifactId>
  <packaging>jar</packaging>
- <version>2.18-SNAPSHOT</version>
  <name>GeoServer INSPIRE Extensions</name>
 
  <dependencies>

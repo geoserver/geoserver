@@ -9,7 +9,6 @@
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-mongodb</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
     <name>MongoDB Data Store</name>
     <dependencies>
         <dependency>

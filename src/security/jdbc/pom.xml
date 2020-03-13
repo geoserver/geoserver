@@ -17,7 +17,6 @@
   <groupId>org.geoserver.security</groupId>
   <artifactId>gs-sec-jdbc</artifactId>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
   <name>GeoServer JDBC Security Module</name>
   
   <dependencies>

@@ -15,7 +15,6 @@
   <artifactId>gs-oseo-rest</artifactId>
   <name>OpenSearch for EO REST configuration API</name>
   <packaging>jar</packaging>
-  <version>2.18-SNAPSHOT</version>
 
   <dependencies>
     <dependency>

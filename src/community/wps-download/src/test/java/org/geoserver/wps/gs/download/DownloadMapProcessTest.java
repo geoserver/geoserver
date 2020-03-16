@@ -319,4 +319,20 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
             process.setHttpClientSupplier(oldSupplier);
         }
     }
+
+    @Test
+    public void testExecuteSingleDecoratedWithLegend() throws Exception {
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = getClass().getResource("legend_decoration.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "legend_decoration.xml"));
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("mapSingleLayerWithLegendDecoration.xml"),
+                        "UTF-8");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("image/png", response.getContentType());
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "withLegend.png"), image, 1500);
+    }
 }

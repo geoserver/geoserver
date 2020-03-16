@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.kvp;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import org.geoserver.ows.KvpParser;
 
@@ -24,7 +25,11 @@ public class URLKvpParser extends KvpParser {
     }
 
     public Object parse(String value) throws Exception {
-        return new URL(fixURL(value));
+        try {
+            return new URL(value);
+        } catch (MalformedURLException e) {
+            return new URL(fixURL(value));
+        }
     }
 
     /**

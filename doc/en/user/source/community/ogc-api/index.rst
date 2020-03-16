@@ -5,7 +5,7 @@ OGC API Extension
 This plugin includes implementation of a set of OGC API service implementations 
 
 Installing the GeoServer OGC API module
-=================================================
+---------------------------------------
   
  #. Download the "ogc-api" module from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
@@ -14,13 +14,13 @@ Installing the GeoServer OGC API module
  #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 Warning
-=======
+-------
 
 The OGC API services are still in heavy development, most of the specs and extensions are still
 in draft form and their behavior is likely to change in the next months/year.
 
 Services provided
-=================
+-----------------
 
 The package contains:
 
@@ -37,13 +37,13 @@ The package contains:
   to update a image mosaic and get a list of tiles affected by the change.
 
 Configuration
-=============
+-------------
 
 Currently the modules have no extra configuration and depend on the configuration of the classic
 OGC services they aim to replace. This could change in the future.
 
 How to help
-===========
+-----------
 
 The modules are still in their infancy, there is a set of activities that could help their development:
 

@@ -411,6 +411,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             LoggingInfo newLoggingInfo)
             throws IOException, Exception, IllegalArgumentException {
 
+        final boolean purgeResources = purge || !filterIsValid();
+
         if (!skipSettings && !filterIsValid()) {
             // Restore GeoServer Global Info
             Files.delete(dd.get("global.xml").file());
@@ -428,7 +430,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // Restore Workspaces
         // - Prepare folder
         Resource workspaces = dd.get("workspaces");
-        if (purge) {
+        if (purgeResources) {
             if (!filterIsValid()) {
                 Files.delete(workspaces.dir());
             }
@@ -445,7 +447,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // - Prepare folder
         Resource styles = dd.get("styles");
 
-        if (purge) {
+        if (purgeResources) {
             if (!filterIsValid()) {
                 Files.delete(styles.dir());
                 styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
@@ -456,8 +458,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // Restore LayerGroups
         // - Prepare folder
         Resource layerGroups = dd.get("layergroups");
-        // - TODO: if purge
-        if (purge) {
+        if (purgeResources) {
             if (!filterIsValid()) {
                 Files.delete(layerGroups.dir());
                 layerGroups = BackupUtils.dir(dd.get(Paths.BASE), "layergroups");
@@ -466,7 +467,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         }
 
         // Restore Workspace Specific Settings and Services
-        if (purge && !filterIsValid()) {
+        if (purgeResources) {
             restoreLocalWorkspaceSettingsAndServices(
                     geoserver, sourceRestoreFolder, sourceWorkspacesFolder, dd);
 
@@ -501,7 +502,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         }
 
         // Restore GWC Configuration bits
-        if (!skipGWC) {
+        if (purgeResources || !skipGWC) {
             try {
                 if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
                     restoreGWCSettings(sourceRestoreFolder, dd.get(Paths.BASE));
@@ -1150,6 +1151,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
                 final DefaultTileLayerCatalog gwcRestoreCatalog =
                         new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
+                gwcRestoreCatalog.initialize();
 
                 Resource gwcCatalogPersistenceLocation =
                         targetGWCProviderRestoreDir

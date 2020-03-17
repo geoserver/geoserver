@@ -1974,7 +1974,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         StyleInfo sInfo = catalog.getLayerByName(giantPolygon.getName()).getDefaultStyle();
         LegendInfoImpl legend = new LegendInfoImpl();
-        legend.setOnlineResource("org/geoserver/wms/red_fill.png");
         legend.setFormat("image/png;charset=utf-8");
         legend.setHeight(32);
         legend.setWidth(32);
@@ -2041,6 +2040,45 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         URL expectedResponse = getClass().getResource("dem_with_legend.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
-        ImageAssert.assertEquals(image, expectedImage, 3300);
+        ImageAssert.assertEquals(image, expectedImage, 1500);
+    }
+
+    @Test
+    public void testLayoutLegendStyleWithLargeOnlineResource() throws Exception {
+        Catalog catalog = getCatalog();
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
+        File styles = getDataDirectory().findOrCreateDir("styles");
+        URL grassPng = GetMapIntegrationTest.class.getResource("../large_legend_res.png");
+        FileUtils.copyURLToFile(
+                grassPng, new File(styles, "org/geoserver/wms/large_legend_res.png"));
+        FeatureTypeInfo giantPolygon = catalog.getFeatureTypeByName("giantPolygon");
+
+        StyleInfo sInfo = catalog.getLayerByName(giantPolygon.getName()).getDefaultStyle();
+        LegendInfoImpl legend = new LegendInfoImpl();
+        legend.setOnlineResource("org/geoserver/wms/large_legend_res.png");
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setHeight(80);
+        legend.setWidth(640);
+        sInfo.setLegend(legend);
+        catalog.save(sInfo);
+        BufferedImage image =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=cite:giantPolygon"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=150"
+                                + "&legend_options=fontName:Bitstream Vera Sans"
+                                + "&srs=EPSG:4326&format_options=layout:test-layout-legend-image",
+                        "image/png");
+        URL expectedResponse = getClass().getResource("giant_poly_big_res.png");
+        BufferedImage expectedImage = ImageIO.read(expectedResponse);
+        ImageAssert.assertEquals(image, expectedImage, 1500);
+        sInfo.setLegend(null);
+        catalog.save(sInfo);
     }
 }

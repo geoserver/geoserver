@@ -499,7 +499,6 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             if ((image.getWidth() == w && image.getHeight() == h) || !forceDimensions) {
                 return image;
             }
-
             final BufferedImage rescale =
                     ImageUtils.createImage(w, h, (IndexColorModel) null, true);
 

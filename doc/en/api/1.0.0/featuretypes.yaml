@@ -9,7 +9,6 @@ info:
     email: 'geoserver-users@sourceforge.net'
     url: 'http://geoserver.org/comm/'
 host: localhost:8080
-host: localhost:8080
 basePath: /geoserver/rest
 schemes:
   - http

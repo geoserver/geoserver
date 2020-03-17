@@ -1963,8 +1963,8 @@
 
  <properties>
   <gs.version>2.18-SNAPSHOT</gs.version>
-  <gt.version>23-SNAPSHOT</gt.version>
-  <gwc.version>1.17-SNAPSHOT</gwc.version>
+  <gt.version>24-SNAPSHOT</gt.version>
+  <gwc.version>1.18-SNAPSHOT</gwc.version>
   <jts.version>1.16.1</jts.version>
   <spring.version>5.1.13.RELEASE</spring.version>
   <spring.security.version>5.1.8.RELEASE</spring.security.version>

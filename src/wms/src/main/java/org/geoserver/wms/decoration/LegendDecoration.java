@@ -252,7 +252,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                         .findFirst()
                         .orElseGet(() -> defaultStyle);
         GetLegendGraphicRequest.LegendRequest legendReq =
-                request.getLegend(info.getResource().getQualifiedName());
+                request.getLegend(layer.getFeatureSource().getSchema().getName());
         legendReq.setLayerInfo(info);
         GetLegendGraphicKvpReader reader = new GetLegendGraphicKvpReader(wms);
         LegendInfo legendInfo = reader.resolveLegendInfo(sInfo.getLegend(), request, sInfo);

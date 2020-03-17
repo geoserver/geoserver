@@ -11,7 +11,6 @@ info:
 host: localhost:8080
 schemes:
 - http
-host: localhost:8080
 basePath: /geoserver/gwc/rest
 paths:
   /global:

@@ -74,9 +74,16 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
             }
         }
 
-        Style style =
-                object instanceof StyleInfo ? ((StyleInfo) object).getStyle() : (Style) object;
-        StyledLayerDescriptor sld = Styles.sld(style);
+        StyledLayerDescriptor sld;
+        if (object instanceof StyleInfo) {
+            // get the full SLD, might be a multi-layer style (calling getStye only retrieves
+            // the first UserStyle instead)
+            sld = ((StyleInfo) object).getSLD();
+        } else {
+            Style style = (Style) object;
+            sld = Styles.sld(style);
+        }
+
         // TODO: support pretty print somehow - probably a hint
         handler.encode(sld, version, false, outputMessage.getBody());
     }

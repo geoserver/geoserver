@@ -53,6 +53,14 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
                 CssStyleControllerTest.class,
                 catalog,
                 Collections.singletonMap(StyleProperty.FORMAT, "css"));
+
+        testData.addStyle(
+                catalog.getDefaultWorkspace(),
+                "multilayer",
+                "multilayer.css",
+                CssStyleControllerTest.class,
+                catalog,
+                Collections.singletonMap(StyleProperty.FORMAT, "css"));
     }
 
     @Before
@@ -91,6 +99,32 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
                         "//sld:LineSymbolizer/sld:Stroke/sld:CssParameter",
                         namespaceContext,
                         equalTo("#ff0000")));
+    }
+
+    @Test
+    public void getGetMultiLayerAsSLD10() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/"
+                                + catalog.getDefaultWorkspace().getName()
+                                + "/styles/multilayer.sld");
+        assertEquals(200, response.getStatus());
+        assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        // css generates a single UserStyle with multiple feature type styles
+        assertThat(
+                dom,
+                hasXPath(
+                        "//sld:FeatureTypeStyle[1]/sld:FeatureTypeName",
+                        namespaceContext,
+                        equalTo("states")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "//sld:FeatureTypeStyle[2]/sld:FeatureTypeName",
+                        namespaceContext,
+                        equalTo("roads")));
     }
 
     @Test

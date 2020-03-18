@@ -3,12 +3,14 @@ package org.geoserver.api.features.tiled;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.api.APIException;
 import org.geoserver.api.APIService;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.Link;
+import org.geoserver.api.tiles.TileJSON;
 import org.geoserver.api.tiles.TileMatrixSetDocument;
 import org.geoserver.api.tiles.TileMatrixSetLink;
 import org.geoserver.api.tiles.TileMatrixSets;
@@ -101,6 +103,25 @@ public class TiledFeatureService {
             }
         }
 
+        return response;
+    }
+
+    @GetMapping(
+        path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
+    @ResponseBody
+    public TileJSON getTileJSON(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId)
+            throws FactoryException, TransformException, NoSuchAlgorithmException,
+                    GeoWebCacheException, IOException {
+        TileJSON response = delegate.getTileJSON(collectionId, tileMatrixSetId);
+        String[] uris =
+                Arrays.stream(response.getTiles())
+                        .map(uri -> uri.replace("/ogc/tiles", "/ogc/features"))
+                        .toArray(s -> new String[s]);
+        response.setTiles(uris);
         return response;
     }
 

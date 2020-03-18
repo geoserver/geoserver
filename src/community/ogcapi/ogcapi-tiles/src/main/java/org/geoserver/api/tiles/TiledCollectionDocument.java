@@ -95,6 +95,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
 
             dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
             if (dataTiles) {
+                // tiles
                 addLinksFor(
                         "ogc/tiles/collections/" + id + "/tiles",
                         TilesDocument.class,

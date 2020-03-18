@@ -31,6 +31,7 @@ public class Link {
     String type;
     String title;
     String classification;
+    Boolean templated;
 
     public Link() {}
 
@@ -94,6 +95,14 @@ public class Link {
         this.classification = classification;
     }
 
+    public Boolean isTemplated() {
+        return templated;
+    }
+
+    public void setTemplated(Boolean templated) {
+        this.templated = templated;
+    }
+
     @Override
     public String toString() {
         return "Link{"
@@ -112,6 +121,8 @@ public class Link {
                 + ", classification='"
                 + classification
                 + '\''
+                + ", templated="
+                + templated
                 + '}';
     }
 }

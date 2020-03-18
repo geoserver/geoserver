@@ -5,11 +5,21 @@
 Formats available and url templates to access tiles:
 <ul>
 <#list model.links as link>
-<#if link.rel == 'tile'>
+<#if link.rel == 'item'>
 <li>${link.type}: <code>${link.href}</code></li> 
 </#if>
 </#list>
 </ul>
+
+Tiles metadata available as:
+<ul>
+<#list model.links as link>
+<#if link.rel == 'describedBy'>
+<li>${link.type}: <code>${link.href}</code></li> 
+</#if>
+</#list>
+</ul>
+
 
 Tile matrix sets in which the above URLs are available, and grid limits:
 

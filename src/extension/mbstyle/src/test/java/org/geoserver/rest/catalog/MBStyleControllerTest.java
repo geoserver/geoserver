@@ -4,8 +4,15 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasXPath;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.xml.SimpleNamespaceContext;
+import org.w3c.dom.Document;
 
 public class MBStyleControllerTest extends GeoServerSystemTestSupport {
 
@@ -47,6 +55,14 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
                 null,
                 "teststyle",
                 "teststyle.json",
+                this.getClass(),
+                catalog,
+                Collections.singletonMap(StyleProperty.FORMAT, MBStyleHandler.FORMAT));
+
+        testData.addStyle(
+                null,
+                "multilayer",
+                "multilayer.json",
                 this.getClass(),
                 catalog,
                 Collections.singletonMap(StyleProperty.FORMAT, MBStyleHandler.FORMAT));
@@ -108,6 +124,27 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         String content = response.getContentAsString();
         assertTrue(content.contains("<sld:Name>test-layer</sld:Name>"));
+    }
+
+    @Test
+    public void getBodyAsSLDMultiLayer() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("/rest/styles/multilayer.sld");
+        assertEquals(200, response.getStatus());
+        assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        // two named layers have been generated, they both show up in output
+        assertThat(
+                dom,
+                hasXPath(
+                        "//sld:NamedLayer[1]/sld:Name",
+                        namespaceContext,
+                        equalTo("test-source-layer1")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "//sld:NamedLayer[2]/sld:Name",
+                        namespaceContext,
+                        equalTo("test-source-layer2")));
     }
 
     @Test

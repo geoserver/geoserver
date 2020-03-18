@@ -627,4 +627,46 @@ public class TilesService {
                 && (((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo()).getResource()
                         instanceof FeatureTypeInfo);
     }
+
+    @GetMapping(
+        path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
+    @ResponseBody
+    public TileJSON getTileJSON(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "styleId") String styleId,
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
+            @RequestParam(name = "tileFormat") String format)
+            throws FactoryException, TransformException, NoSuchAlgorithmException,
+                    GeoWebCacheException, IOException {
+        return getTileJSONInternal(collectionId, styleId, format, tileMatrixSetId);
+    }
+
+    @GetMapping(
+        path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
+    @ResponseBody
+    public TileJSON getTileJSON(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId)
+            throws FactoryException, TransformException, NoSuchAlgorithmException,
+                    GeoWebCacheException, IOException {
+        return getTileJSONInternal(
+                collectionId, null, "application/vnd.mapbox-vector-tile", tileMatrixSetId);
+    }
+
+    private TileJSON getTileJSONInternal(
+            String collectionId, String styleId, String tileFormat, String tileMatrixSetId)
+            throws GeoWebCacheException, IOException, NoSuchAlgorithmException, TransformException,
+                    FactoryException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        if (styleId != null) {
+            validateStyle(tileLayer, styleId);
+        }
+        return new TileJSONBuilder(collectionId, tileFormat, tileMatrixSetId, tileLayer)
+                .style(styleId)
+                .build();
+    }
 }

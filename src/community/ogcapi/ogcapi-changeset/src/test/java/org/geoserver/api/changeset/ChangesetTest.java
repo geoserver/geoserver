@@ -52,6 +52,7 @@ import org.geotools.util.URLs;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -206,6 +207,7 @@ public class ChangesetTest extends OGCApiTestSupport {
     }
 
     @Test
+    @Ignore
     public void testGetPackageSingle3857() throws Exception {
         // upload single image
         uploadImage("g2.tif", S2);

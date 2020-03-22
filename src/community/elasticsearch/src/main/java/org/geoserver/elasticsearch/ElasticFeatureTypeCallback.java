@@ -2,38 +2,37 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package mil.nga.giat.elasticsearch;
+package org.geoserver.elasticsearch;
 
-import mil.nga.giat.data.elasticsearch.ElasticDataStore;
-import mil.nga.giat.data.elasticsearch.ElasticLayerConfiguration;
-import static mil.nga.giat.data.elasticsearch.ElasticLayerConfiguration.KEY;
+import static org.geotools.data.elasticsearch.ElasticLayerConfiguration.KEY;
 
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.FeatureTypeCallback;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.DataAccess;
+import org.geotools.data.elasticsearch.ElasticDataStore;
+import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
 /**
- * 
- * Implementation of FeatureTypeInitializer extension point to initialize 
- * Elasticsearch datastore.
- * 
+ * Implementation of FeatureTypeInitializer extension point to initialize Elasticsearch datastore.
+ *
  * @see FeatureTypeCallback
- * 
  */
 class ElasticFeatureTypeCallback implements FeatureTypeCallback {
 
     @Override
-    public boolean canHandle(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public boolean canHandle(
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         return dataAccess instanceof ElasticDataStore;
     }
 
     @Override
-    public boolean initialize(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName) {
+    public boolean initialize(
+            FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            Name temporaryName) {
 
         ElasticLayerConfiguration layerConfig;
         layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
@@ -47,11 +46,16 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
     }
 
     @Override
-    public void dispose(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName) {
-        final ElasticLayerConfiguration layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
+    public void dispose(
+            FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            Name temporaryName) {
+        final ElasticLayerConfiguration layerConfig =
+                (ElasticLayerConfiguration) info.getMetadata().get(KEY);
         if (layerConfig != null) {
-            layerConfig.getAttributes().stream()
+            layerConfig
+                    .getAttributes()
+                    .stream()
                     .filter(attr -> attr.getName().equals(info.getName()))
                     .findFirst()
                     .ifPresent(attribute -> layerConfig.getAttributes().remove(attribute));
@@ -60,9 +64,8 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
     }
 
     @Override
-    public void flush(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public void flush(
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         // nothing to do
     }
-
 }

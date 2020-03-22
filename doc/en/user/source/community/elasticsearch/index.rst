@@ -1,4 +1,4 @@
-Elasticsearch GeoServer Data Store
+Elasticsearch data store
 ==================================
 
 Elasticsearch is a popular distributed search and analytics engine that enables complex search features in near real-time. Default field type mappings support string, numeric, boolean and date types and allow complex, hierarchical documents. Custom field type mappings can be defined for geospatial document fields. The ``geo_point`` type supports point geometries that can be specified through a coordinate string, geohash or coordinate array. The ``geo_shape`` type supports Point, LineString,  Polygon, MultiPoint, MultiLineString, MultiPolygon and GeometryCollection GeoJSON types as well as envelope and circle types. Custom options allow configuration of the type and precision of the spatial index.
@@ -6,48 +6,6 @@ Elasticsearch is a popular distributed search and analytics engine that enables 
 This data store allows features from an Elasticsearch index to be published through GeoServer. Both ``geo_point`` and ``geo_shape`` type mappings are supported. OGC filters are converted to Elasticsearch queries and can be combined with native Elasticsearch queries in WMS and WFS requests. 
 
 .. contents:: Contents:
-
-Compatibility
--------------
-
-* Java: 1.8
-* GeoServer: 2.16.x
-* Elasticsearch: 2.4.x, 5.x, 6.x, 7.x
-
-Downloads
----------
-
-Pre-compiled binaries can be found on the `GitHub releases page <https://github.com/ngageoint/elasticgeo/releases>`_.
-
-Installation
-------------
-
-Pre-compiled binaries
-^^^^^^^^^^^^^^^^^^^^^
-
-Unpack zipfile and copy plugin file to the ``WEB_INF/lib`` directory of your GeoServer installation and then restart GeoServer.
-
-Building
-^^^^^^^^
-
-Clone project::
-
-    $ git clone git@github.com:ngageoint/elasticgeo.git
-
-Build and install plugin (requires GeoServer restart)::
-
-    $ mvn clean install -DskipTests=true -Dskip.integration.tests=true
-    $ cp gs-web-elasticsearch/target/elasticgeo*.jar GEOSERVER_HOME/WEB_INF/lib
-
-Run default tests::
-
-    $ mvn verify -Dskip.integration.tests=true
-
-Run default and integration tests (requires `Docker <https://docs.docker.com/engine/installation/>`_)::
-
-    $ mvn verify
-
-Note running integration tests in an IDE development environment requires that a local Elasticsearch instance is running and accepting HTTP connections over port 9200 (see `Elasticsearch documentation <https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html>`_).
 
 Configuration
 -------------
@@ -69,9 +27,8 @@ Once the Elasticsearch GeoServer extension is installed, ``Elasticsearch index``
 
 The Elasticsearch data store configuration panel includes connection parameters and search settings.
 
-.. |store_config| raw:: html
-
-    <img src="images/elasticsearch_configuration.png" align="left" height="800px">
+.. |store_config| image:: images/elasticsearch_configuration.png
+   :scale: 55%
 
 +----------------+
 | |store_config| |
@@ -226,8 +183,8 @@ Configuring logging
 
 Logging is configurable through Log4j. The data store includes logging such as the query object being sent to Elasticsearch, which is logged at a lower level than may be enabled by default. To enable these logs, add the following lines to the GeoServer logging configuration file (see GeoServer Global Settings)::
 
-    log4j.category.mil.nga.giat.data.elasticsearch=DEBUG 
-    log4j.category.mil.nga.giat.process.elasticsearch=DEBUG 
+    log4j.category.org.geoserver.data.elasticsearch=DEBUG 
+    log4j.category.org.geoserver.process.elasticsearch=DEBUG 
 
 The logging configuration file will be in the ``logs`` subdirectory in the GeoServer data directory. Check GeoServer global settings for which file is being used (e.g. ``DEFAULT_LOGGING.properties``, etc.).
 
@@ -375,7 +332,7 @@ Example WMS request including Geohash grid aggregation with the above custom sty
 
 Grid Strategy
 ^^^^^^^^^^^^^
-``gridStrategy``: Parameter to identify the ``mil.nga.giat.process.elasticsearch.GeoHashGrid`` implementation that will be used to convert each geohashgrid bucket into a raster value (number).
+``gridStrategy``: Parameter to identify the ``org.geoserver.process.elasticsearch.GeoHashGrid`` implementation that will be used to convert each geohashgrid bucket into a raster value (number).
 
 .. list-table::
    :widths: 20 20 20 40
@@ -572,7 +529,7 @@ Implementing a custom Grid Strategy
 
 By default the raster values computed in the geohash grid aggregation rendering transformation correspond to the top level ``doc_count``. Adding an additional strategy for computing the raster values from bucket data currently requires source code updates to the ``gt-elasticsearch-process`` module as described below.
 
-First create a custom implementation of ``mil.nga.giat.process.elasticsearch.GeoHashGrid`` and provide an implementation of the ``computeCellValue`` method, which takes the raw bucket data and returns the raster value. For example the default basic implementation simply returns the doc_count::
+First create a custom implementation of ``org.geoserver.process.elasticsearch.GeoHashGrid`` and provide an implementation of the ``computeCellValue`` method, which takes the raw bucket data and returns the raster value. For example the default basic implementation simply returns the doc_count::
 
     public class BasicGeoHashGrid extends GeoHashGrid {
         @Override
@@ -581,7 +538,7 @@ First create a custom implementation of ``mil.nga.giat.process.elasticsearch.Geo
         }
     }
 
-Then update ``mil.nga.giat.process.elasticsearch.GeoHashGridProcess`` and add a new entry to the Strategy enum to point to the custom implementation. 
+Then update ``org.geoserver.process.elasticsearch.GeoHashGridProcess`` and add a new entry to the Strategy enum to point to the custom implementation. 
 
 After deploying the customized plugin the new geohash grid computer can be used by updating the ``gridStrategy`` parameter in the GeoServer style::
 

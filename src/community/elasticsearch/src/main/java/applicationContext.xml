@@ -6,14 +6,14 @@ This code is licensed under the GPL 2.0 license, available at the root applicati
 
 <beans>
 
-	<bean id="esXStreamInitializer" class="mil.nga.giat.elasticsearch.ElasticXStreamInitializer" />
+	<bean id="esXStreamInitializer" class="org.geoserver.elasticsearch.ElasticXStreamInitializer" />
 	
-	<bean id="esFeatureTypeCallback" class="mil.nga.giat.elasticsearch.ElasticFeatureTypeCallback" />
+	<bean id="esFeatureTypeCallback" class="org.geoserver.elasticsearch.ElasticFeatureTypeCallback" />
 
-	<bean id="esConfigPanel" class="mil.nga.giat.elasticsearch.ElasticConfigurationPanelInfo">
+	<bean id="esConfigPanel" class="org.geoserver.elasticsearch.ElasticConfigurationPanelInfo">
 		<property name="id" value="elastic" />
 		<property name="titleKey" value="data.resource.config.elasticsearch" />
-		<property name="componentClass" value="mil.nga.giat.elasticsearch.ElasticConfigurationPanel" />
+		<property name="componentClass" value="org.geoserver.elasticsearch.ElasticConfigurationPanel" />
 		<property name="supportedTypes">
 			<list>
 				<value>Elasticsearch</value>
@@ -21,6 +21,6 @@ This code is licensed under the GPL 2.0 license, available at the root applicati
 		</property>
 	</bean>
 
-	<bean id="ElasticXStreamPersisterInitializer" class="mil.nga.giat.elasticsearch.ElasticXStreamPersisterInitializer"/>
+	<bean id="ElasticXStreamPersisterInitializer" class="org.geoserver.elasticsearch.ElasticXStreamPersisterInitializer"/>
 
 </beans>

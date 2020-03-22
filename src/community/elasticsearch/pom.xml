@@ -4,56 +4,50 @@
   directory. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <artifactId>elasticgeo</artifactId>
-    <groupId>mil.nga.giat</groupId>
-    <version>2.16-SNAPSHOT</version>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.18-SNAPSHOT</version>
   </parent>
+
+  <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-elasticsearch</artifactId>
-  <version>2.16-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>GeoServer Elasticsearch Module</name>
+
   <dependencies>
     <dependency>
-      <groupId>mil.nga.giat</groupId>
+      <groupId>org.geotools</groupId>
       <artifactId>gt-elasticsearch</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>mil.nga.giat</groupId>
-      <artifactId>gt-elasticsearch-process</artifactId>
-      <version>${project.version}</version>
+      <version>${gt.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${geoserver.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${geoserver.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${geotools.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${geoserver.version}</version>
+      <version>${gs.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${geoserver.version}</version>
+      <version>${gs.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -66,7 +60,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -86,72 +79,5 @@
         </includes>
       </resource>
     </resources>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <descriptor>src/assembly/dist.xml</descriptor>
-          <appendAssemblyId>false</appendAssemblyId>
-          <finalName>elasticgeo-${project.version}</finalName>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.2</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <artifactSet>
-                <excludes>
-                  <exclude>*:pom:*</exclude>
-                  <exclude>*:maven*:*</exclude>
-                  <exclude>commons-codec</exclude>
-                  <exclude>commons-collections</exclude>
-                  <exclude>commons-httpclient</exclude>
-                  <exclude>commons-logging</exclude>
-                  <exclude>*:guava:*</exclude>
-                  <exclude>javax.media:jai*:*</exclude>
-                  <exclude>*:jts:*</exclude>
-                  <exclude>*:*:jsr305</exclude>
-                  <exclude>log4j:log4j</exclude>
-                </excludes>
-              </artifactSet>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/maven/**</exclude>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                    <exclude>META-INF/DEPENDENCIES</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
-                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                  <resource>META-INF/LICENSE</resource>
-                  <file>LICENSE</file>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
-                  <addHeader>false</addHeader>
-                </transformer>
-              </transformers>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <minimizeJar>false</minimizeJar>
-              <finalName>elasticgeo-${project.version}</finalName>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
 </project>

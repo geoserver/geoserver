@@ -3,16 +3,11 @@
  * application directory.
  */
 
-package mil.nga.giat.elasticsearch;
+package org.geoserver.elasticsearch;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
-
-import mil.nga.giat.data.elasticsearch.ElasticAttribute;
-import mil.nga.giat.data.elasticsearch.ElasticDataStore;
-import mil.nga.giat.data.elasticsearch.ElasticLayerConfiguration;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -33,16 +28,18 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.data.elasticsearch.ElasticAttribute;
+import org.geotools.data.elasticsearch.ElasticDataStore;
+import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
 
 /**
- * Resource configuration panel to show a link to open Elasticsearch attribute 
- * modal dialog <br> If the Elasticsearch attribute are not configured for 
- * current layer, the modal dialog will be open at first resource configuration 
- * window opening <br> After modal dialog is closed the resource page is 
- * reloaded and feature configuration table updated
- * 
+ * Resource configuration panel to show a link to open Elasticsearch attribute modal dialog <br>
+ * If the Elasticsearch attribute are not configured for current layer, the modal dialog will be
+ * open at first resource configuration window opening <br>
+ * After modal dialog is closed the resource page is reloaded and feature configuration table
+ * updated
  */
 @SuppressWarnings("WeakerAccess")
 public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
@@ -54,12 +51,11 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     private ElasticLayerConfiguration _layerConfig;
 
     /**
-     * Adds Elasticsearch configuration panel link, configure modal dialog and 
-     * implements modal callback.
-     * 
+     * Adds Elasticsearch configuration panel link, configure modal dialog and implements modal
+     * callback.
+     *
      * @see ElasticConfigurationPage#done
      */
-
     public ElasticConfigurationPanel(final String panelId, final IModel<?> model) {
         super(panelId, model);
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
@@ -72,41 +68,45 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
             modal.add(new OpenWindowOnLoadBehavior());
         }
 
-        modal.setContent(new ElasticConfigurationPage(panelId, model) {
-            @Override
-            void done(AjaxRequestTarget target, LayerInfo layerInfo, 
-                    ElasticLayerConfiguration layerConfig) {
-                _layerInfo = layerInfo;
-                _layerConfig = layerConfig;
+        modal.setContent(
+                new ElasticConfigurationPage(panelId, model) {
+                    @Override
+                    void done(
+                            AjaxRequestTarget target,
+                            LayerInfo layerInfo,
+                            ElasticLayerConfiguration layerConfig) {
+                        _layerInfo = layerInfo;
+                        _layerConfig = layerConfig;
 
-                try {
-                    saveLayer((FeatureTypeInfo) getResourceInfo());
-                } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    error(new ParamResourceModel("creationFailure", this, e).getString());
-                }
+                        try {
+                            saveLayer((FeatureTypeInfo) getResourceInfo());
+                        } catch (IOException e) {
+                            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                            error(new ParamResourceModel("creationFailure", this, e).getString());
+                        }
 
-                MarkupContainer parent = ElasticConfigurationPanel.this.getParent();
-                while (!(parent == null || parent instanceof ResourceConfigurationPage)) {
-                    parent = parent.getParent();
-                }
+                        MarkupContainer parent = ElasticConfigurationPanel.this.getParent();
+                        while (!(parent == null || parent instanceof ResourceConfigurationPage)) {
+                            parent = parent.getParent();
+                        }
 
-                if (parent != null) {
-                    ResourceInfo ri = ElasticConfigurationPanel.this.getResourceInfo();
-                    ((ResourceConfigurationPage) parent).updateResource(ri, target);
-                }
+                        if (parent != null) {
+                            ResourceInfo ri = ElasticConfigurationPanel.this.getResourceInfo();
+                            ((ResourceConfigurationPage) parent).updateResource(ri, target);
+                        }
 
-                modal.close(target);
-            }
-        });
+                        modal.close(target);
+                    }
+                });
         add(modal);
 
-        AjaxLink<?> findLink = new AjaxLink("edit") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                modal.show(target);
-            }
-        };
+        AjaxLink<?> findLink =
+                new AjaxLink("edit") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        modal.show(target);
+                    }
+                };
         final Fragment attributePanel = new Fragment("esPanel", "esPanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);
@@ -137,7 +137,9 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         Name qualifiedName = new NameImpl(namespace, _layerInfo.getName());
         LayerInfo layerInfo = catalog.getLayerByName(qualifiedName);
 
-        boolean isNew = ft.getId() == null || app.getCatalog().getResource(ft.getId(),ResourceInfo.class) == null;
+        boolean isNew =
+                ft.getId() == null
+                        || app.getCatalog().getResource(ft.getId(), ResourceInfo.class) == null;
 
         FeatureTypeInfo typeInfo;
         if (layerInfo == null || isNew) {
@@ -184,5 +186,4 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
             typeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, _layerConfig);
         }
     }
-
 }

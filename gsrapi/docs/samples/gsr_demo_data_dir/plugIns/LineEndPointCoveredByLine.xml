@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="pluginSchema"
-        xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
-        xs:schemaLocation="pluginSchema /data/capabilities/validate/pluginSchema.xsd">
-  <name>Line Covers Line End</name>
-  <description>Line end point is covered by another line.</description>
-  <class>org.geotools.validation.spatial.LineEndPointCoveredByLineValidation</class>
-</plugin>

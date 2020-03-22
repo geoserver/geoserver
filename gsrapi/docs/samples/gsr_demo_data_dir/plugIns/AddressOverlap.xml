@@ -1,6 +1,0 @@
-<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="pluginSchema"
-        xsi:schemaLocation="pluginSchema /data/capabilities/validate/pluginSchema.xsd">
-  <name>Address Overlap</name>
-  <description>Do the addresses overlap.</description>
-  <class>org.geotools.validation.network.AddressOverlapValidation</class>
-</plugin>

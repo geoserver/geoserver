@@ -1,6 +1,0 @@
-<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="pluginSchema"
-        xsi:schemaLocation="pluginSchema /data/capabilities/validate/pluginSchema.xsd">
-  <name>Domain</name>
-  <description>Checks for domain existance.</description>
-  <class>org.geotools.validation.attributes.DomainValidation</class>
-</plugin>

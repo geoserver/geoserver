@@ -1,6 +1,0 @@
-<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="pluginSchema"
-        xsi:schemaLocation="pluginSchema /data/capabilities/validate/pluginSchema.xsd">
-  <name>Star Node</name>
-  <description>Does this have a star node.</description>
-  <class>org.geotools.validation.network.StarNodeValidation</class>
-</plugin>

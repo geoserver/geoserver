@@ -1,1 +1,0 @@
-${STATE_NAME.value}

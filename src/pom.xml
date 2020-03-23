@@ -1583,7 +1583,7 @@
       <descriptor>release/ext-authkey.xml</descriptor>
       <descriptor>release/ext-web-resource.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-${project-version}</finalName>
+     <finalName>geoserver-${project.version}</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>

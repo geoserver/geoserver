@@ -73,7 +73,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         // copy the symbol images
         File[] icons =
-                new File("src/test/resources/org/geoserver/gsrapi/controller/feature/")
+                new File("src/test/resources/org/geoserver/gsr/controller/feature/")
                         .listFiles(f -> f.getName().endsWith(".png"));
         for (File icon : icons) {
             FileUtils.copyFile(

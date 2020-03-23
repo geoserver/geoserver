@@ -432,8 +432,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * @param json the json object representing a geometry
      * @return the geometry
      */
-    public static org.geoserver.gsr.model.geometry.Geometry jsonToGeometry(
-            net.sf.json.JSON json) {
+    public static org.geoserver.gsr.model.geometry.Geometry jsonToGeometry(net.sf.json.JSON json) {
         JSONObject obj = (JSONObject) json;
 
         SpatialReference spatialReference = null;
@@ -476,8 +475,8 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
     }
 
     /**
-     * Convert a {@link org.geoserver.gsr.model.geometry.Geometry GSR Geometry} to a {@link
-     * Geometry JTS Geometry}
+     * Convert a {@link org.geoserver.gsr.model.geometry.Geometry GSR Geometry} to a {@link Geometry
+     * JTS Geometry}
      *
      * @param geometry GSR Geometry
      * @return JTS Geometry

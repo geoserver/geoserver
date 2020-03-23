@@ -37,8 +37,8 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * Abstract layer model used by both {@link org.geoserver.gsr.model.feature.FeatureLayer} and
- * {@link LayerOrTable}
+ * Abstract layer model used by both {@link org.geoserver.gsr.model.feature.FeatureLayer} and {@link
+ * LayerOrTable}
  */
 public abstract class AbstractLayerOrTable extends AbstractGSRModel implements GSRModel {
 

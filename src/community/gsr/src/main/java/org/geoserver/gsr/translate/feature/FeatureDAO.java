@@ -55,8 +55,7 @@ public class FeatureDAO {
      * Create new features
      *
      * @see #editFeatures(FeatureTypeInfo, List, List, List, boolean, boolean)
-     * @see #createFeature(FeatureTypeInfo, FeatureStore,
-     *     org.geoserver.gsr.model.feature.Feature)
+     * @see #createFeature(FeatureTypeInfo, FeatureStore, org.geoserver.gsr.model.feature.Feature)
      */
     public static EditResults createFeatures(
             FeatureTypeInfo featureType,
@@ -72,8 +71,7 @@ public class FeatureDAO {
      * Update existing features
      *
      * @see #editFeatures(FeatureTypeInfo, List, List, List, boolean, boolean)
-     * @see #updateFeature(FeatureTypeInfo, FeatureStore,
-     *     org.geoserver.gsr.model.feature.Feature)
+     * @see #updateFeature(FeatureTypeInfo, FeatureStore, org.geoserver.gsr.model.feature.Feature)
      */
     public static EditResults updateFeatures(
             FeatureTypeInfo featureType,
@@ -237,8 +235,7 @@ public class FeatureDAO {
     /**
      * Create new features
      *
-     * @see #createFeature(FeatureTypeInfo, FeatureStore,
-     *     org.geoserver.gsr.model.feature.Feature)
+     * @see #createFeature(FeatureTypeInfo, FeatureStore, org.geoserver.gsr.model.feature.Feature)
      */
     private static List<EditResult> createFeatures(
             FeatureTypeInfo featureType,
@@ -259,8 +256,7 @@ public class FeatureDAO {
     /**
      * Update existing features
      *
-     * @see #updateFeature(FeatureTypeInfo, FeatureStore,
-     *     org.geoserver.gsr.model.feature.Feature)
+     * @see #updateFeature(FeatureTypeInfo, FeatureStore, org.geoserver.gsr.model.feature.Feature)
      */
     private static List<EditResult> updateFeatures(
             FeatureTypeInfo featureType,

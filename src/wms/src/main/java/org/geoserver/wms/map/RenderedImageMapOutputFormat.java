@@ -1505,7 +1505,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (RASTER_CHAIN_DEBUG
                 && ((rawKvp = mapContent.getRequest().getRawKvp()) != null)
                 && Boolean.valueOf(rawKvp.get("showchain"))) {
-            RenderedImageBrowser.showChain(image, true, true, "RenderedImageMapOutput", true);
+            RenderedImageBrowser.showChainAndWaitOnClose(image);
         }
         return image;
     }

@@ -19,6 +19,6 @@ The following are required only for core and extension modules (they are welcome
 - [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
 - [ ] This PR passes the [QA checks](https://docs.geoserver.org/latest/en/developer/qa-guide/index.html) (QA checks results will be reported by travis-ci after opening this PR)
 - [ ] Commits changing the UI, existing user workflows, or adding new functionality, need to include documentation updates (screenshots, text)
-- [ ] Committs changing the REST API, or any configuration object, should check it the REST API docs (Swagger YAML files and classic documentation) need to be updated.
+- [ ] Commits changing the REST API, or any configuration object, should check if the REST API docs (Swagger YAML files and classic documentation) need to be updated.
 
 Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or inapplicable.

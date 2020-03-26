@@ -421,7 +421,7 @@ public class RasterSymbolizerBuilder {
         }
         double[] percentages = null;
         if (outputPercentages) {
-            percentages = getPercentagesForCustom(image, breaks);
+            percentages = getCustomClassifierPercentages(image, breaks);
             percentages =
                     new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
         }
@@ -479,37 +479,19 @@ public class RasterSymbolizerBuilder {
         else return " (" + percentages[i] + "%)";
     }
 
-    private double[] getPercentagesForCustom(RenderedImage image, Number[] breaks) {
-        PixelAccessor accessor = new PixelAccessor(image);
-        UnpackedImageData uid =
-                accessor.getPixels(
-                        image.getData(),
-                        image.getData().getBounds(),
-                        DataBuffer.TYPE_DOUBLE,
-                        false);
+    private double[] getCustomClassifierPercentages(RenderedImage image, Number[] breaks) {
+        ImageWorker iw = new ImageWorker(image);
         int classNum = breaks.length - 1;
-        double[] doubleValues = uid.getDoubleData()[0];
-        double[][] classes = new double[classNum][2];
         double classMembers[] = new double[classNum];
         for (int i = 0; i < classNum; i++) {
-            classes[i][0] = (double) breaks[i];
-            classes[i][1] = (double) breaks[i + 1];
-        }
-        for (int i = 0; i < doubleValues.length; i++) {
-            double value = doubleValues[i];
-            for (int j = 0; j < classes.length; j++) {
-                double min = classes[j][0];
-                double max = classes[j][1];
-                if (j == classes.length - 1) {
-                    if (value >= min && value <= max) {
-                        classMembers[j]++;
-                    }
-                } else {
-                    if (value >= min && value < max) {
-                        classMembers[j]++;
-                    }
-                }
-            }
+            double[] low = new double[] {(double) breaks[i]};
+            double dHigh =
+                    i != classNum - 1
+                            ? Math.nextDown((double) breaks[i + 1])
+                            : (double) breaks[i + 1];
+            double[] high = new double[] {dHigh};
+            Histogram hist = iw.getHistogram(new int[] {1}, low, high);
+            classMembers[i] = hist.getBins(0)[0];
         }
         double total = DoubleStream.of(classMembers).sum();
         double[] percentages = new double[classNum];

@@ -540,16 +540,17 @@ public class RulesBuilder {
             }
         }
         int[][] bins = new int[size][1];
-        FeatureIterator it = features.features();
-        while (it.hasNext()) {
-            Feature f = it.next();
-            int i = 0;
-            for (Filter filter : filters) {
-                if (filter.evaluate(f)) {
-                    bins[i][0]++;
-                    break;
+        try (FeatureIterator it = features.features()) {
+            while (it.hasNext()) {
+                Feature f = it.next();
+                int i = 0;
+                for (Filter filter : filters) {
+                    if (filter.evaluate(f)) {
+                        bins[i][0]++;
+                        break;
+                    }
+                    i++;
                 }
-                i++;
             }
         }
         return computeCustomPercentages(bins, features.size());

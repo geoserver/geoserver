@@ -81,6 +81,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
     static final QName CLASSIFICATION_POINTS2 =
             new QName(SystemTestData.CITE_URI, "ClassificationPoints2", SystemTestData.CITE_PREFIX);
 
+    static final QName CLASSIFICATION_POINTS3 =
+            new QName(SystemTestData.CITE_URI, "ClassificationPoints3", SystemTestData.CITE_PREFIX);
+
     static final QName CLASSIFICATION_POLYGONS =
             new QName(
                     SystemTestData.CITE_URI, "ClassificationPolygons", SystemTestData.CITE_PREFIX);
@@ -140,6 +143,13 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 CLASSIFICATION_POINTS2,
                 props,
                 "ClassificationPoints2.properties",
+                this.getClass(),
+                catalog);
+
+        testData.addVectorLayer(
+                CLASSIFICATION_POINTS3,
+                props,
+                "ClassificationPoints3.properties",
                 this.getClass(),
                 catalog);
 
@@ -2181,6 +2191,54 @@ public class ClassifierTest extends SLDServiceBaseTest {
     }
 
     @Test
+    public void testPercentagesInRulesLabelsVectorsEqualInterval() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=equalInterval"
+                        + "&intervals=3&percentages=true";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baosArea = new ByteArrayOutputStream();
+        print(domArea, baosArea);
+        String resultArea = baosArea.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesArea =
+                checkSLD(resultArea.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        for (Rule r : rulesArea) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorsEqualIntervalWithOutlier() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints3/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=equalInterval"
+                        + "&intervals=3&percentages=true";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baosArea = new ByteArrayOutputStream();
+        print(domArea, baosArea);
+        String resultArea = baosArea.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesArea =
+                checkSLD(resultArea.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        for (Rule r : rulesArea) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
     public void testPercentagesInRulesLabelsVectorJenks() throws Exception {
         String regex = "\\d+(\\.\\d)%";
         Pattern rgx = Pattern.compile(regex);
@@ -2375,7 +2433,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         + "/sldservice/cite:srtm/"
                         + getServiceUrl()
                         + ".xml?"
-                        + "customClasses=1,10,#FF0000;10,20,#00FF00;20,30,#0000FF&fullSLD=true"
+                        + "customClasses=1,8,#FF0000;8,16,#00FF00;16,30,#0000FF&fullSLD=true"
                         + "&percentages=true";
         Document dom = getAsDOM(restPath, 200);
         RasterSymbolizer rs = getRasterSymbolizer(dom);

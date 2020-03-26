@@ -47,7 +47,8 @@ class PercentagesRoundHandler {
     }
 
     double roundDouble(double percentage) {
-        BigDecimal bd = new BigDecimal(percentage).setScale(scale, RoundingMode.HALF_EVEN);
+        BigDecimal bd =
+                new BigDecimal(String.valueOf(percentage)).setScale(scale, RoundingMode.HALF_EVEN);
         return bd.doubleValue();
     }
 }

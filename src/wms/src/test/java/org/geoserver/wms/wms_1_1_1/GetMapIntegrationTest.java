@@ -6,6 +6,7 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.*;
+import java.awt.image.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -23,6 +25,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,12 +71,7 @@ import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geoserver.wms.GetMap;
-import org.geoserver.wms.GetMapOutputFormat;
-import org.geoserver.wms.GetMapTest;
-import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.*;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.data.DataAccess;
@@ -2024,5 +2022,23 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         URL expectedResponse = getClass().getResource("giant_poly_big_legend.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
         ImageAssert.assertEquals(image, expectedImage, 1500);
+    }
+
+    @Test
+    public void testLegendDecoratorWithRaster() throws Exception {
+
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
+        BufferedImage image =
+                getAsImage(
+                        "wms/reflect?layers="
+                                + getLayerId(MockData.TASMANIA_DEM)
+                                + "&format_options=layout:test-layout-legend-image&styles=demTranslucent&SRS=EPSG:32753&format=image/png&bgcolor=#404040",
+                        "image/png");
+
+        URL expectedResponse = getClass().getResource("dem_with_legend.png");
+        BufferedImage expectedImage = ImageIO.read(expectedResponse);
+        ImageAssert.assertEquals(image, expectedImage, 3300);
     }
 }

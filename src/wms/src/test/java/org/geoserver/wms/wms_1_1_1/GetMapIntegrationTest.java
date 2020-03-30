@@ -2025,4 +2025,22 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
         ImageAssert.assertEquals(image, expectedImage, 1500);
     }
+
+    @Test
+    public void testLegendDecoratorWithRaster() throws Exception {
+
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
+        BufferedImage image =
+                getAsImage(
+                        "wms/reflect?layers="
+                                + getLayerId(MockData.TASMANIA_DEM)
+                                + "&format_options=layout:test-layout-legend-image&styles=demTranslucent&SRS=EPSG:32753&format=image/png&bgcolor=#404040",
+                        "image/png");
+
+        URL expectedResponse = getClass().getResource("dem_with_legend.png");
+        BufferedImage expectedImage = ImageIO.read(expectedResponse);
+        ImageAssert.assertEquals(image, expectedImage, 3300);
+    }
 }

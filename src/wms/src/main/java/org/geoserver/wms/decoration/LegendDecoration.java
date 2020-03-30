@@ -251,6 +251,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                         .filter(predicate)
                         .findFirst()
                         .orElseGet(() -> defaultStyle);
+
+        // using featureSource schema name because LegendRequest Name attribute
+        // has been set from it
         GetLegendGraphicRequest.LegendRequest legendReq =
                 request.getLegend(layer.getFeatureSource().getSchema().getName());
         legendReq.setLayerInfo(info);

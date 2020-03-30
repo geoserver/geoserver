@@ -24,6 +24,8 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
@@ -81,6 +83,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     static final QName CLASSIFICATION_POINTS2 =
             new QName(SystemTestData.CITE_URI, "ClassificationPoints2", SystemTestData.CITE_PREFIX);
+
+    static final QName CLASSIFICATION_POINTS3 =
+            new QName(SystemTestData.CITE_URI, "ClassificationPoints3", SystemTestData.CITE_PREFIX);
 
     static final QName CLASSIFICATION_POLYGONS =
             new QName(
@@ -141,6 +146,13 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 CLASSIFICATION_POINTS2,
                 props,
                 "ClassificationPoints2.properties",
+                this.getClass(),
+                catalog);
+
+        testData.addVectorLayer(
+                CLASSIFICATION_POINTS3,
+                props,
+                "ClassificationPoints3.properties",
                 this.getClass(),
                 catalog);
 
@@ -2040,5 +2052,402 @@ public class ClassifierTest extends SLDServiceBaseTest {
         SimpleFeature feature = DataUtilities.createFeature(ft, "=1|2.0|POINT(4 2.5)");
         assertTrue(first.getFilter().evaluate(feature));
         assertFalse(second.getFilter().evaluate(feature));
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorsQuantile() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathQuantile =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=quantile"
+                        + "&intervals=3&open=true&percentages=true";
+        Document domQuantile = getAsDOM(restPathQuantile, 200);
+        print(domQuantile);
+        ByteArrayOutputStream baosQuantile = new ByteArrayOutputStream();
+        print(domQuantile, baosQuantile);
+        String resultXml = baosQuantile.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesQuantile =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rulesQuantile.length == 3);
+        for (Rule r : rulesQuantile) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorsEqualArea() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&ramp=red&method=equalArea"
+                        + "&intervals=5&percentages=true";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baosArea = new ByteArrayOutputStream();
+        print(domArea, baosArea);
+        String resultArea = baosArea.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesArea =
+                checkSLD(resultArea.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        for (Rule r : rulesArea) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorsEqualInterval() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=equalInterval"
+                        + "&intervals=3&percentages=true";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baosArea = new ByteArrayOutputStream();
+        print(domArea, baosArea);
+        String resultArea = baosArea.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesArea =
+                checkSLD(resultArea.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        for (Rule r : rulesArea) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorsEqualIntervalWithOutlier() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints3/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=equalInterval"
+                        + "&intervals=3&percentages=true";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baosArea = new ByteArrayOutputStream();
+        print(domArea, baosArea);
+        String resultArea = baosArea.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesArea =
+                checkSLD(resultArea.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        for (Rule r : rulesArea) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorJenks() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=jenks&intervals=3&open=true"
+                        + "&percentages=true";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultXmlJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(
+                        resultXmlJenks
+                                .replace("<Rules>", sldPrefix)
+                                .replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 3);
+        for (Rule r : rulesJenks) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorUnique() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathUnique =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=uniqueInterval&intervals=8&"
+                        + "percentages=true";
+        Document domUnique = getAsDOM(restPathUnique, 200);
+        print(domUnique);
+        ByteArrayOutputStream baosUnique = new ByteArrayOutputStream();
+        print(domUnique, baosUnique);
+        String resultXmlUnique = baosUnique.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesUnique =
+                checkSLD(
+                        resultXmlUnique
+                                .replace("<Rules>", sldPrefix)
+                                .replace("</Rules>", sldPostfix));
+        assertTrue(rulesUnique.length == 8);
+        for (Rule r : rulesUnique) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRuleLabelsVectorCustom() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&customClasses=1,30,#FF0000;30,50,#00FF00;50,90,#0000FF"
+                        + "&percentages=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 3);
+        for (Rule r : rules) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterQuantile() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathQuantile =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5"
+                        + "&ramp=jet&fullSLD=true&percentages=true";
+        Document domQuantile = getAsDOM(restPathQuantile, 200);
+        RasterSymbolizer rsQuantile = getRasterSymbolizer(domQuantile);
+        ColorMap cmQuantile = rsQuantile.getColorMap();
+        ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
+        assertEquals(entriesQuantile.length, 6);
+        for (ColorMapEntry e : entriesQuantile) {
+            if (e.getLabel() != null) {
+                Matcher matcher = rgx.matcher(e.getLabel());
+                matcher.find();
+            }
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterEqual() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+
+        final String restPathEqual =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=5"
+                        + "&ramp=jet&fullSLD=true&percentages=true";
+        ;
+        Document domEqual = getAsDOM(restPathEqual, 200);
+        RasterSymbolizer rsEqual = getRasterSymbolizer(domEqual);
+        ColorMap cmEqual = rsEqual.getColorMap();
+        ColorMapEntry[] entriesEqual = cmEqual.getColorMapEntries();
+        assertEquals(entriesEqual.length, 6);
+        double percentagesSum = 0.0;
+        for (ColorMapEntry e : entriesEqual) {
+            if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
+                Matcher matcher = rgx.matcher(e.getLabel());
+                matcher.find();
+            }
+        }
+        assertTrue(100.0 == percentagesSum);
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterJenks() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=jenks&intervals=5"
+                        + "&ramp=red&fullSLD=true&percentages=true";
+        Document domjenks = getAsDOM(restPathJenks, 200);
+        RasterSymbolizer rsJenks = getRasterSymbolizer(domjenks);
+        ColorMap cmJenks = rsJenks.getColorMap();
+        ColorMapEntry[] entriesJenks = cmJenks.getColorMapEntries();
+        assertEquals(entriesJenks.length, 6);
+        for (ColorMapEntry e : entriesJenks) {
+            if (e.getLabel() != null) {
+                Matcher matcher = rgx.matcher(e.getLabel());
+                matcher.find();
+            }
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterUnique() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathUnique =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=uniqueInterval"
+                        + "&ramp=jet&fullSLD=true&percentages=true&intervals=167";
+        Document domUnique = getAsDOM(restPathUnique, 200);
+        RasterSymbolizer rsUnique = getRasterSymbolizer(domUnique);
+        ColorMap cmUnique = rsUnique.getColorMap();
+        ColorMapEntry[] entriesUnique = cmUnique.getColorMapEntries();
+        assertEquals(entriesUnique.length, 167);
+        for (ColorMapEntry e : entriesUnique) {
+            if (e.getLabel() != null) {
+                Matcher matcher = rgx.matcher(e.getLabel());
+                matcher.find();
+            }
+        }
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterCustom() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "customClasses=1,8,#FF0000;8,16,#00FF00;16,30,#0000FF&fullSLD=true"
+                        + "&percentages=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(4, entries.length);
+        double percentagesSum = 0.0;
+        for (ColorMapEntry e : entries) {
+            if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
+                Matcher matcher = rgx.matcher(e.getLabel());
+                matcher.find();
+            }
+        }
+        assertTrue(100.0 == percentagesSum);
+    }
+
+    @Test
+    public void testPercentagesCustomScale() throws Exception {
+        String regex = "\\d+(\\.\\d{1,2})%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathQuantile =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5"
+                        + "&ramp=jet&fullSLD=true&percentages=true"
+                        + "&percentagesScale=2";
+        Document domQuantile = getAsDOM(restPathQuantile, 200);
+        RasterSymbolizer rsQuantile = getRasterSymbolizer(domQuantile);
+        ColorMap cmQuantile = rsQuantile.getColorMap();
+        ColorMapEntry[] entriesQuantile = cmQuantile.getColorMapEntries();
+        assertEquals(entriesQuantile.length, 6);
+        for (ColorMapEntry e : entriesQuantile) {
+            if (e.getLabel() != null) {
+                Matcher matcher = rgx.matcher(e.getLabel());
+                matcher.find();
+            }
+        }
+    }
+
+    @Test
+    public void testPercentagesWithOverlappingRules() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=quantile&intervals=3&open=true"
+                        + "&percentages=true";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 3);
+        double percentagesSum = 0.0;
+        for (Rule r : rules) {
+            String title = r.getDescription().getTitle().toString();
+            int i = title.lastIndexOf("(");
+            int i2 = title.indexOf("%)");
+            percentagesSum += Double.valueOf(title.substring(i + 1, i2));
+            Matcher rgxMatcher = rgx.matcher(title);
+            assertTrue(rgxMatcher.find());
+        }
+        assertTrue(percentagesSum == 100.0);
+        final String restPathJenks =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints2/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=jenks&intervals=3&open=true"
+                        + "&percentages=true";
+        Document domJenks = getAsDOM(restPathJenks, 200);
+        print(domJenks);
+        ByteArrayOutputStream baosJenks = new ByteArrayOutputStream();
+        print(domJenks, baosJenks);
+        String resultXmlJenks = baosJenks.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesJenks =
+                checkSLD(
+                        resultXmlJenks
+                                .replace("<Rules>", sldPrefix)
+                                .replace("</Rules>", sldPostfix));
+        assertTrue(rulesJenks.length == 2);
+        percentagesSum = 0.0;
+        for (Rule r : rulesJenks) {
+            String title = r.getDescription().getTitle().toString();
+            int i = title.lastIndexOf("(");
+            int i2 = title.indexOf("%)");
+            percentagesSum += Double.valueOf(title.substring(i + 1, i2));
+            Matcher rgxMatcher = rgx.matcher(title);
+            assertTrue(rgxMatcher.find());
+        }
+        assertTrue(percentagesSum == 100.0);
     }
 }

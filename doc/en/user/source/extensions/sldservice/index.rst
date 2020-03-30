@@ -218,7 +218,16 @@ The parameters usable to customize the ColorMap are:
      - used only for raster layers, if set to true will generate a raster pallette that interpolates linearly between classified values 
      - true|false
      -
-    
+   * - percentages
+     - allows to obtain percentages of values in each class. For raster layers they will be included in the label of the ColorMapEntry, 
+       while for vector layer they will  be placed in the rule title; in both cases they will be placed at then end of the text between parenthesis.
+     - true|false
+     - 
+   * - percentagesScale
+     - number of digits of percentages
+     - default value is 1
+     - 
+
 Examples
 ~~~~~~~~~~
 A default (equalInterval) classification on the states layer LAND_KM attribute using 

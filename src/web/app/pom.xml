@@ -1220,6 +1220,16 @@
       </dependencies>
    </profile>
    <profile>
+      <id>elasticsearch</id>
+      <dependencies>
+         <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-web-elasticsearch</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+      </dependencies>
+   </profile>
+   <profile>
 	<id>jms-cluster</id>
 	<dependencies>
 		<dependency>

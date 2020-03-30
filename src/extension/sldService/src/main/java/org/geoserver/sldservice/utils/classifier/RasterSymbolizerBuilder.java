@@ -21,10 +21,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Optional;
-import javax.media.jai.Histogram;
-import javax.media.jai.JAI;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import javax.media.jai.*;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.image.ImageWorker;
@@ -64,6 +63,8 @@ public class RasterSymbolizerBuilder {
 
     private long maxPixels;
     private Double standardDeviations;
+    private boolean outputPercentages;
+    private Integer percentagesScale;
 
     /**
      * Builds the {@link RasterSymbolizerBuilder} with a given pixel reading threshold before
@@ -80,6 +81,12 @@ public class RasterSymbolizerBuilder {
     /** Default constructor */
     public RasterSymbolizerBuilder() {
         this.maxPixels = DEFAULT_MAX_PIXELS;
+    }
+
+    public RasterSymbolizerBuilder(boolean outputPercentages, Integer percentagesScale) {
+        this.maxPixels = DEFAULT_MAX_PIXELS;
+        this.outputPercentages = outputPercentages;
+        this.percentagesScale = percentagesScale;
     }
 
     /**
@@ -128,6 +135,7 @@ public class RasterSymbolizerBuilder {
         ColorMap colorMap = SF.createColorMap();
         colorMap.setType(ColorMap.TYPE_VALUES);
         int entries = 0;
+        PercentagesRoundHandler roundHandler = new PercentagesRoundHandler(percentagesScale);
         for (int i = 0; i < bins.length; i++) {
             if (bins[i] > 0) {
                 ColorMapEntry entry = SF.createColorMapEntry();
@@ -135,10 +143,20 @@ public class RasterSymbolizerBuilder {
                 entry.setQuantity(FF.literal(value));
                 entry.setLabel(String.valueOf(value));
                 colorMap.addColorMapEntry(entry);
+                if (outputPercentages) {
+                    double total = IntStream.of(bins).sum();
+                    double classMembers = bins[i];
+                    double percentage = roundHandler.roundDouble((classMembers / total) * 100);
+                    StringBuilder sb =
+                            new StringBuilder(entry.getLabel())
+                                    .append(" (")
+                                    .append(percentage)
+                                    .append("%)");
+                    entry.setLabel(sb.toString());
+                }
                 entries++;
             }
         }
-
         if (maxIntervals != null && entries > maxIntervals && maxIntervals > 0) {
             throw new IllegalArgumentException(
                     "Found "
@@ -147,7 +165,6 @@ public class RasterSymbolizerBuilder {
                             + maxIntervals
                             + " was requested");
         }
-
         return colorMap;
     }
 
@@ -184,15 +201,19 @@ public class RasterSymbolizerBuilder {
         final NumberRange range = getOperationRange(iw);
         double low = (int) range.getMinimum();
         double high = (int) range.getMaximum();
-
         Number[] breaks = new Number[continuous ? intervals : intervals + 1];
         double step = (high - low) / (continuous ? (intervals - 1) : intervals);
         for (int i = 0; i < breaks.length; i++) {
             double value = i * step + low;
             breaks[i] = value;
         }
-
-        return getColorMapFromBreaks(breaks, open, continuous);
+        double[] percentages = null;
+        if (outputPercentages) {
+            percentages = computePercentagesFromHistogram(iw, intervals, low, high);
+            percentages =
+                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+        }
+        return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
 
     /**
@@ -204,13 +225,17 @@ public class RasterSymbolizerBuilder {
      */
     public ColorMap quantileClassification(
             RenderedImage image, Integer intervals, boolean open, boolean continuous) {
-        Number[] breaks =
+        Classification c =
                 getClassificationBreaks(
                         image,
                         continuous ? intervals - 1 : intervals,
                         ClassificationMethod.QUANTILE,
                         NUM_HISTOGRAM_BINS);
-        return getColorMapFromBreaks(breaks, open, continuous);
+        double[] percentages = c.getPercentages();
+        if (outputPercentages)
+            percentages =
+                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+        return getColorMapFromBreaks(c.getBreaks()[0], open, continuous, percentages);
     }
 
     /**
@@ -222,25 +247,32 @@ public class RasterSymbolizerBuilder {
      */
     public ColorMap jenksClassification(
             RenderedImage image, Integer intervals, boolean open, boolean continuous) {
-        Number[] breaks =
+        Classification c =
                 getClassificationBreaks(
                         image,
                         continuous ? intervals - 1 : intervals,
                         ClassificationMethod.NATURAL_BREAKS,
                         NUM_HISTOGRAM_BINS);
-        return getColorMapFromBreaks(breaks, open, continuous);
+        Number[] breaks = c.getBreaks()[0];
+        double[] percentages = c.getPercentages();
+        if (outputPercentages)
+            percentages =
+                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+        return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
 
-    private ColorMap getColorMapFromBreaks(Number[] breaks, boolean open, boolean continuous) {
+    private ColorMap getColorMapFromBreaks(
+            Number[] breaks, boolean open, boolean continuous, double[] percentages) {
         // turn the histogram into a ColorMap (just values, no colors, those will be added later)
         DecimalFormat format = new DecimalFormat("#.######", new DecimalFormatSymbols(ENGLISH));
 
         ColorMap colorMap = SF.createColorMap();
         if (continuous) {
-            for (Number b : breaks) {
+            for (int i = 0; i < breaks.length; i++) {
+                Number b = breaks[i];
                 ColorMapEntry entry = SF.createColorMapEntry();
                 entry.setQuantity(FF.literal(b));
-                entry.setLabel(format.format(b));
+                entry.setLabel(format.format(b) + getPercentagesLabelPortion(percentages, i));
                 colorMap.addColorMapEntry(entry);
             }
         } else {
@@ -256,12 +288,22 @@ public class RasterSymbolizerBuilder {
                         entry.setQuantity(FF.literal(value));
                     }
                     if (i == 1) {
-                        entry.setLabel("< " + format.format(value));
+                        entry.setLabel(
+                                "< "
+                                        + format.format(value)
+                                        + getPercentagesLabelPortion(percentages, i - 1));
                     } else if (i == breaks.length - 1) {
-                        entry.setLabel(">= " + format.format(prev));
+                        entry.setLabel(
+                                ">= "
+                                        + format.format(prev)
+                                        + getPercentagesLabelPortion(percentages, i - 1));
                     } else {
                         entry.setLabel(
-                                ">= " + format.format(prev) + " AND < " + format.format(value));
+                                ">= "
+                                        + format.format(prev)
+                                        + " AND < "
+                                        + format.format(value)
+                                        + getPercentagesLabelPortion(percentages, i - 1));
                     }
 
                     prev = value;
@@ -288,10 +330,18 @@ public class RasterSymbolizerBuilder {
                     }
                     if (i == breaks.length - 1) {
                         entry.setLabel(
-                                ">= " + format.format(prev) + " AND <= " + format.format(value));
+                                ">= "
+                                        + format.format(prev)
+                                        + " AND <= "
+                                        + format.format(value)
+                                        + getPercentagesLabelPortion(percentages, i - 1));
                     } else {
                         entry.setLabel(
-                                ">= " + format.format(prev) + " AND < " + format.format(value));
+                                ">= "
+                                        + format.format(prev)
+                                        + " AND < "
+                                        + format.format(value)
+                                        + getPercentagesLabelPortion(percentages, i - 1));
                     }
 
                     prev = value;
@@ -302,7 +352,7 @@ public class RasterSymbolizerBuilder {
         return colorMap;
     }
 
-    private Number[] getClassificationBreaks(
+    private Classification getClassificationBreaks(
             RenderedImage image,
             Integer intervals,
             ClassificationMethod classificationMethod,
@@ -333,13 +383,13 @@ public class RasterSymbolizerBuilder {
         } else {
             pb.set(null, 2); /* extrema, no need to precompute for the methods we're using*/
         }
+        pb.set(outputPercentages, 10);
         // direct calls as there are some issues with the JAI op registration, at least in Tomcat
         RenderedImage op = new ClassBreaksRIF().create(pb, null);
-
         // actually extract the classification and its breaks
         Classification c =
                 (Classification) op.getProperty(ClassBreaksDescriptor.CLASSIFICATION_PROPERTY);
-        return c.getBreaks()[0];
+        return c;
     }
 
     /** Applies the given color ramp to the color map */
@@ -363,14 +413,19 @@ public class RasterSymbolizerBuilder {
 
     /** Builds a ColorMap based on a user specified set of values */
     public ColorMap createCustomColorMap(
-            RangedClassifier classifier, boolean open, boolean continuous) {
+            RenderedImage image, RangedClassifier classifier, boolean open, boolean continuous) {
         Number[] breaks = new Number[classifier.getSize() + (continuous ? 0 : 1)];
         breaks[0] = Converters.convert(classifier.getMin(0), Double.class);
         for (int i = 0; i < breaks.length - 1; i++) {
             breaks[i + 1] = Converters.convert(classifier.getMax(i), Double.class);
         }
-
-        return getColorMapFromBreaks(breaks, open, continuous);
+        double[] percentages = null;
+        if (outputPercentages) {
+            percentages = getCustomClassifierPercentages(image, breaks);
+            percentages =
+                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+        }
+        return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
 
     public void setStandardDeviations(Double standardDeviations) {
@@ -417,5 +472,45 @@ public class RasterSymbolizerBuilder {
                         "Stats image operation is not backed by JAIExt, please enable JAIExt");
             }
         }
+    }
+
+    private String getPercentagesLabelPortion(double[] percentages, int i) {
+        if (percentages == null) return "";
+        else return " (" + percentages[i] + "%)";
+    }
+
+    private double[] getCustomClassifierPercentages(RenderedImage image, Number[] breaks) {
+        ImageWorker iw = new ImageWorker(image);
+        int classNum = breaks.length - 1;
+        double classMembers[] = new double[classNum];
+        for (int i = 0; i < classNum; i++) {
+            double[] low = new double[] {(double) breaks[i]};
+            double dHigh =
+                    i != classNum - 1
+                            ? Math.nextDown((double) breaks[i + 1])
+                            : (double) breaks[i + 1];
+            double[] high = new double[] {dHigh};
+            Histogram hist = iw.getHistogram(new int[] {1}, low, high);
+            classMembers[i] = hist.getBins(0)[0];
+        }
+        double total = DoubleStream.of(classMembers).sum();
+        double[] percentages = new double[classNum];
+        for (int i = 0; i < classNum; i++) {
+            percentages[i] = (classMembers[i] / total) * 100;
+        }
+        return percentages;
+    }
+
+    private double[] computePercentagesFromHistogram(
+            ImageWorker iw, int intervals, double low, double high) {
+        Histogram hist =
+                iw.getHistogram(new int[] {intervals}, new double[] {low}, new double[] {high});
+        int[] bins = hist.getBins(0);
+        double[] percentages = new double[intervals];
+        int total = IntStream.of(bins).sum();
+        for (int i = 0; i < intervals; i++) {
+            percentages[i] = ((double) bins[i] / total) * 100;
+        }
+        return percentages;
     }
 }

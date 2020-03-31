@@ -1,18 +1,13 @@
 Functionality
 =====================
-
-Currently basic FeatureServer and MapServer functionality work. Each GeoServer workspace is considered
-an ArcGIS "service" for the purposes of the API. ArcGIS URLs look like this in GeoServer:
-
-http://localhost:8080/geoserver/gsr/services/topp/MapServer/
-http://localhost:8080/geoserver/gsr/services/topp/FeatureServer/
-
-Where topp is the workspace name.
  
 Formats
 ---------------------------
 
-While the Esri implementation of GeoServices supports multiple file formats, all responses from the GeoServer plugin use JSON (for example, browser-friendly HTML is not provided.)  The ``?f=json`` parameter specifying JSON is still required.
+While the ArcGis implementation of GeoServices supports multiple file formats, all responses from the GeoServer plugin use JSON (for example, browser-friendly HTML is not provided.)  The ``?f=json`` parameter specifying JSON is still required.
+
+..note::  
+  Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.
 
 Capabilities
 ------------------------------

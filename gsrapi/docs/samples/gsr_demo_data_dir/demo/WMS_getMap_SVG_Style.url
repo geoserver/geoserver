@@ -1,0 +1,1 @@
+wms?bbox=-130,24,-66,50&styles=burg&Format=image/png&request=GetMap&layers=tiger:poi&width=550&height=250&srs=EPSG:4326

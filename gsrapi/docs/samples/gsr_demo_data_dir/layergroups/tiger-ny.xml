@@ -1,0 +1,37 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--570ae188:124761b8d78:-7fad</id>
+  <name>tiger-ny</name>
+  <mode>SINGLE</mode>
+  <title>TIGER New York</title>
+  <abstractTxt>Topologically Integrated Geographic Encoding and Referencing (TIGER) dataset for New York.</abstractTxt>
+  <publishables>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fd2</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fce</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fcc</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fd0</id>
+    </published>
+  </publishables>
+  <styles>
+    <style/>
+    <style/>
+    <style/>
+    <style/>
+  </styles>
+  <bounds>
+    <minx>-74.047185</minx>
+    <maxx>-73.907005</maxx>
+    <miny>40.679648</miny>
+    <maxy>40.882078</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="rawStyleList"></entry>
+  </metadata>
+</layerGroup>

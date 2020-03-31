@@ -1,0 +1,6 @@
+<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="pluginSchema"
+        xsi:schemaLocation="pluginSchema /data/capabilities/validate/pluginSchema.xsd">
+  <name>Uniquity</name>
+  <description>Check for uniqueness.</description>
+  <class>org.geotools.validation.attributes.UniquityValidation</class>
+</plugin>

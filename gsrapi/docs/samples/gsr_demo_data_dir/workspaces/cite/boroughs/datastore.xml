@@ -1,0 +1,23 @@
+<dataStore>
+  <id>DataStoreInfoImpl-2fc5128f:1600e39bfd9:-7ffd</id>
+  <name>boroughs</name>
+  <description>boroughs</description>
+  <type>Shapefile</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ff3</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">America/Los_Angeles</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">http://www.opengeospatial.net/cite</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/boroughs/geo_export_90ca989d-43ea-4acc-b01d-37bc802d20e9.shp</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

@@ -13,7 +13,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
-import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +78,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;
 
-        List<LayerLegend> layerLegends = getLayerLegend(g2d, mapContext, null, false);
+        List<LayerLegend> layerLegends = getLayerLegend(g2d, mapContext, null);
 
         legends.set(layerLegends);
 
@@ -129,7 +128,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         List<LayerLegend> legends =
                 this.legends.get() != null
                         ? this.legends.get()
-                        : getLayerLegend(g2d, mapContext, paintArea, true);
+                        : getLayerLegend(g2d, mapContext, paintArea);
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;
@@ -288,7 +287,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     private List<LayerLegend> getLayerLegend(
-            Graphics2D g2d, WMSMapContent mapContext, Rectangle size, boolean resize) {
+            Graphics2D g2d, WMSMapContent mapContext, Rectangle size) {
         List<LayerLegend> legendLayers = new ArrayList<>();
         double scaleDenominator = mapContext.getScaleDenominator(true);
         for (Layer layer : mapContext.layers()) {
@@ -343,7 +342,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                             RenderingHints.KEY_TEXT_ANTIALIASING,
                             RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
                 }
-
                 BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
                 g2d.setFont(oldFont);
                 legend.title = titleImage;

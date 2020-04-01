@@ -10,7 +10,6 @@
       <outputDirectory></outputDirectory>
       <includes>	
         <include>gs-gsr*.jar</include>
-        <include>LICENSE.txt</include>
       </includes>
     </fileSet>
   </fileSets>

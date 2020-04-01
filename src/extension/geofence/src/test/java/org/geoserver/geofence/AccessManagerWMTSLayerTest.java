@@ -5,9 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import org.geoserver.catalog.*;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.Dispatcher;
@@ -20,12 +19,15 @@ import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.w3c.dom.Document;
 
 public class AccessManagerWMTSLayerTest extends GeofenceBaseTest {
@@ -103,12 +105,50 @@ public class AccessManagerWMTSLayerTest extends GeofenceBaseTest {
 
     @Test
     public void testWmsLimited() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         UsernamePasswordAuthenticationToken user =
                 new UsernamePasswordAuthenticationToken("wmsuser", "wmsuser");
+
+        // check layer in the sf workspace with a wfs request
+        Request request = new Request();
+        request.setService("WFS");
+        request.setRequest("GetFeature");
+        Dispatcher.REQUEST.set(request);
+
+        login("wmsuser", "wmsuser", "ROLE_ADMINISTRATOR");
+        LayerInfo wmtsLayer = catalog.getLayerByName("sf:" + LAYER_NAME);
+        assertNotNull(wmtsLayer);
+        logout();
+
+        WMTSAccessLimits limits = (WMTSAccessLimits) accessManager.getAccessLimits(user, wmtsLayer);
+        assertEquals(Filter.EXCLUDE, limits.getReadFilter());
+
+        // now fake a getmap request (using a service and request with a different case than the
+        // geofenceService)
+        request = new Request();
+        request.setService("wms");
+        Dispatcher.REQUEST.set(request);
+        limits = (WMTSAccessLimits) accessManager.getAccessLimits(user, wmtsLayer);
+        assertEquals(Filter.INCLUDE, limits.getReadFilter());
+
+        // Test resource as well
+        limits = (WMTSAccessLimits) accessManager.getAccessLimits(user, wmtsLayer.getResource());
+        assertEquals(Filter.INCLUDE, limits.getReadFilter());
+    }
+
+    @Test
+    public void testWmsUnlimited() {
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
+
+        Authentication user =
+                new UsernamePasswordAuthenticationToken(
+                        "admin",
+                        "geoserver",
+                        Arrays.asList(
+                                new GrantedAuthority[] {
+                                    new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")
+                                }));
 
         // check layer in the sf workspace with a wfs request
         Request request = new Request();
@@ -140,9 +180,7 @@ public class AccessManagerWMTSLayerTest extends GeofenceBaseTest {
 
     @Test
     public void testGetWmtsLayer() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
 
@@ -162,17 +200,24 @@ public class AccessManagerWMTSLayerTest extends GeofenceBaseTest {
 
     @Test
     public void testWmsGetCapabilites() throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
-        login("sf", "sf", "ROLE_SF_ADMIN");
-        MockHttpServletResponse response = getAsServletResponse("wms?request=GetCapabilities");
-        assertEquals(200, response.getStatus());
-        try (InputStream inputStream = new ByteArrayInputStream(response.getContentAsByteArray())) {
-            Document dom = dom(inputStream);
-            assertEquals("WMS_Capabilities", dom.getDocumentElement().getNodeName());
-            assertXpathEvaluatesTo("4", "count(//Layer[starts-with(Name, 'sf:')])", dom);
-            assertXpathEvaluatesTo("1", "count(//Name[text()='sf:" + LAYER_NAME + "'])", dom);
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
+
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+
+        Document dom = getAsDOM("wms?request=GetCapabilities");
+        print(dom);
+        assertEquals("WMS_Capabilities", dom.getDocumentElement().getNodeName());
+
+        assertXpathEvaluatesTo("30", "count(//*[local-name()='Layer'])", dom);
+        assertXpathEvaluatesTo(
+                "4",
+                "count(//*[local-name()='Layer']/*[local-name()='Name' and starts-with(text(), 'sf:')])",
+                dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//*[local-name()='Layer']/*[local-name()='Name' and text()='sf:"
+                        + LAYER_NAME
+                        + "'])",
+                dom);
     }
 }

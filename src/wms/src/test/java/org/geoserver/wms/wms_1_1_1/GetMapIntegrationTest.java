@@ -1948,7 +1948,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         URL expectedResponse = getClass().getResource("giant_poly_legend_static_res.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
-        ImageAssert.assertEquals(image, expectedImage, 1500);
+        ImageAssert.assertEquals(image, expectedImage, 2000);
         sInfo.setLegend(null);
         catalog.save(sInfo);
     }
@@ -2029,7 +2029,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         URL expectedResponse = getClass().getResource("dem_with_legend.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
-        ImageAssert.assertEquals(image, expectedImage, 1500);
+        ImageAssert.assertEquals(image, expectedImage, 3300);
     }
 
     @Test
@@ -2065,6 +2065,46 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326&format_options=layout:test-layout-legend-image",
                         "image/png");
         URL expectedResponse = getClass().getResource("giant_poly_big_res.png");
+        BufferedImage expectedImage = ImageIO.read(expectedResponse);
+        ImageAssert.assertEquals(image, expectedImage, 2300);
+        sInfo.setLegend(null);
+        catalog.save(sInfo);
+    }
+
+    @Test
+    public void testLayoutLegendStyleWithOnlineResourceAndCustomWidth() throws Exception {
+        Catalog catalog = getCatalog();
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout =
+                GetMapIntegrationTest.class.getResource("../test-layout-legend-image-size.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image-size.xml"));
+        File styles = getDataDirectory().findOrCreateDir("styles");
+        URL grassPng = GetMapIntegrationTest.class.getResource("../large_legend_res.png");
+        FileUtils.copyURLToFile(
+                grassPng, new File(styles, "org/geoserver/wms/large_legend_res.png"));
+        FeatureTypeInfo giantPolygon = catalog.getFeatureTypeByName("giantPolygon");
+
+        StyleInfo sInfo = catalog.getLayerByName(giantPolygon.getName()).getDefaultStyle();
+        LegendInfoImpl legend = new LegendInfoImpl();
+        legend.setOnlineResource("org/geoserver/wms/large_legend_res.png");
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setHeight(80);
+        legend.setWidth(640);
+        sInfo.setLegend(legend);
+        catalog.save(sInfo);
+        BufferedImage image =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=cite:giantPolygon"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=550"
+                                + "&height=150"
+                                + "&legend_options=fontName:Bitstream Vera Sans"
+                                + "&srs=EPSG:4326&format_options=layout:test-layout-legend-image-size",
+                        "image/png");
+        URL expectedResponse = getClass().getResource("giant_poly_big_res_size.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
         ImageAssert.assertEquals(image, expectedImage, 1500);
         sInfo.setLegend(null);

@@ -9,9 +9,10 @@ import static org.geoserver.data.test.MockData.WORLD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -44,6 +46,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     String bbox = "-130,24,-66,50";
     String styles = "states";
     String layers = "sf:states";
+
+    private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
+    private static final String RAIN_RT_STYLE = "filteredRain";
 
     public static final String STATES_SLD10 =
             "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.0.0\">"
@@ -184,6 +189,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "states.properties",
                 org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class,
                 catalog);
+
+        // add global rain and style
+        testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
+        testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapIntegrationTest.class, catalog);
     }
 
     @Test
@@ -748,6 +757,27 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + rasterMask900913,
                         "image/png");
 
+        ImageAssert.assertEquals(expectedImage, response, 100);
+    }
+
+    @Test
+    public void testPolarWithRenderingTransformation() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, true);
+        gs.save(wms);
+        String request =
+                "wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap"
+                        + "&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS="
+                        + getLayerId(RAIN)
+                        + "&STYLES="
+                        + RAIN_RT_STYLE
+                        + "&WIDTH=512&HEIGHT=512&CRS=EPSG%3A3995"
+                        + "&BBOX=-1128800,-1128800,10442400,10442400";
+        BufferedImage response = getAsImage(request, "image/png");
+
+        File expectedImage =
+                new File("./src/test/resources/org/geoserver/wms/wms_1_3/filteredRainPolar.png");
         ImageAssert.assertEquals(expectedImage, response, 100);
     }
 }

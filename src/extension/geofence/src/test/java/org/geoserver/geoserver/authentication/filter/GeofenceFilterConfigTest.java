@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider;
 import org.geotools.util.logging.Logging;
+import org.junit.Assume;
 import org.junit.Test;
 
 /**
@@ -33,9 +34,7 @@ public class GeofenceFilterConfigTest extends GeofenceBaseTest {
     }
 
     public void check(GeoFenceAuthFilterConfig config) throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         config.setGeofenceUrl(geofenceUrl);
         config.setGeoserverName(geoserverName);

@@ -20,6 +20,7 @@ import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.UrlResource;
@@ -90,9 +91,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     @Test
     public void testSize() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         // System.out.println(cachedRuleReader.getStats());
         assertEquals(0, cachedRuleReader.getStats().hitCount());
@@ -172,9 +171,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     @Test
     public void testExpire() throws InterruptedException {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         // System.out.println(cachedRuleReader.getStats());
         assertEquals(0, cachedRuleReader.getStats().hitCount());

@@ -402,6 +402,11 @@ paths:
           required: false
           type: string
           minimum: 0
+        - name: updateBBox
+          in: query
+          required: false
+          description: The parameter allows, when valorized as "true", to trigger the native bbox update of the layer configuration according 
+            to the image mosaic bounds, after granules have been deleted. Default value is "false".
       responses:
         200:
           description: OK
@@ -589,7 +594,12 @@ paths:
             Finally, when set to "all" both data and auxiliary files are removed.
           required: false
           type: string
-          minimum: 0         
+          minimum: 0  
+        - name: updateBBox
+          in: query
+          required: false
+          description: The parameter allows, when valorized as "true", to trigger the native bbox update of the layer configuration according 
+            to the image mosaic bounds, after the granule has been deleted. Default value is "false".       
       responses:
         200:
           description: OK

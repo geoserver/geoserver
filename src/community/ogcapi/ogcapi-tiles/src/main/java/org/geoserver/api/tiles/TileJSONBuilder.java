@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.InvalidParameterValueException;
@@ -81,8 +82,10 @@ class TileJSONBuilder {
                             + " does not support tile matrix set "
                             + tileMatrixSetId);
         }
-        tileJSON.setMinZoom(subset.getMinCachedZoom());
-        tileJSON.setMaxZoom(subset.getMaxCachedZoom());
+        tileJSON.setMinZoom(
+                Optional.ofNullable(subset.getMinCachedZoom()).orElse(subset.getZoomStart()));
+        tileJSON.setMaxZoom(
+                Optional.ofNullable(subset.getMaxCachedZoom()).orElse(subset.getZoomStop()));
         LayerMetaInformation metadata = tileLayer.getMetaInformation();
         if (metadata != null) {
             tileJSON.setDescription(metadata.getDescription());

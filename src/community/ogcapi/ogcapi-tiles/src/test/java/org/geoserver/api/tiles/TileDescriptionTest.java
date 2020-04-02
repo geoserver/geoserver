@@ -145,6 +145,8 @@ public class TileDescriptionTest extends TilesTestSupport {
                 readSingle(doc, "tiles"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/tiles/EPSG:4326/{z}/{y}/{x}?f=application%2Fvnd.mapbox-vector-tile"));
+        assertThat(doc.read("minzoom"), equalTo(0));
+        assertThat(doc.read("maxzoom"), equalTo(21));
         assertThat(doc.read("center"), equalTo(Arrays.asList(0d, 0d, 0d)));
         assertThat(doc.read("bounds"), equalTo(Arrays.asList(-0.0042, -0.0024, 0.0042, 0.0024)));
         assertThat(

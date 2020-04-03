@@ -314,5 +314,9 @@
   	<constructor-arg ref="catalog"/>
   </bean>
 
-    <bean id="nearestMatchWarningAppender" class="org.geoserver.util.NearestMatchWarningAppender"/>
+  <bean id="nearestMatchWarningAppender" class="org.geoserver.util.NearestMatchWarningAppender"/>
+
+  <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">
+    <constructor-arg ref="catalog"/>
+  </bean>
 </beans>

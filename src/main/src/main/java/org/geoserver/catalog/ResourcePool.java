@@ -1,4 +1,4 @@
-/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2020 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,8 +20,6 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -1561,7 +1560,7 @@ public class ResourcePool {
                     //
                     // /////////////////////////////////////////////////////////
                     final String urlString = expandedStore.getURL();
-                    Object readObject = getObjectToRead(urlString);
+                    Object readObject = getObjectToRead(urlString, coverageInfo, hints);
 
                     // readers might change the provided hints, pass down a defensive copy
                     reader = gridFormat.getReader(readObject, hints);
@@ -1636,39 +1635,18 @@ public class ResourcePool {
      * @param urlString the url string to parse, which may actually be a path
      * @return an object appropriate for passing to a grid coverage reader
      */
-    private Object getObjectToRead(String urlString) {
-        // Check to see if our "url" points to a file or not, otherwise we use the string
-        // itself for reading
-        Object readObject = urlString;
-        boolean isFile = true;
-        URI uri;
-        try {
-            uri = new URI(urlString);
-            if (uri.getScheme() != null && !"file".equalsIgnoreCase(uri.getScheme())) {
-                isFile = false;
+    private Object getObjectToRead(String urlString, CoverageInfo coverageInfo, Hints hints) {
+        List<CoverageReaderInputObjectConverter> converters =
+                GeoServerExtensions.extensions(CoverageReaderInputObjectConverter.class);
+
+        for (CoverageReaderInputObjectConverter converter : converters) {
+            Optional<?> convertedValue = converter.convert(urlString, coverageInfo, hints);
+            if (convertedValue.isPresent()) {
+                return convertedValue.get();
             }
-        } catch (URISyntaxException e) {
-            LOGGER.warning(
-                    "Unable to convert coverage URL to a URI, attempting to use " + "it as a path");
-            LOGGER.log(
-                    Level.FINEST,
-                    "Can't convert URL string to URI, this may be "
-                            + "fine if the URL is actually a path",
-                    e);
         }
 
-        if (isFile) {
-            GeoServerResourceLoader loader = catalog.getResourceLoader();
-            final File readerFile =
-                    Resources.find(
-                            Resources.fromURL(
-                                    Files.asResource(loader.getBaseDirectory()), urlString),
-                            true);
-            if (readerFile != null) {
-                readObject = readerFile;
-            }
-        }
-        return readObject;
+        return urlString;
     }
 
     /** Clears any cached readers for the coverage. */

@@ -61,7 +61,7 @@ PSC Chair is nominated following the same procedures as PSC members.
 Stepping Down
 ^^^^^^^^^^^^^
 
-If you find you cannot make meetings for a month or two, by all means step aside. Thank you so much for your time, if you want to groom a successor and then nominate them that is cool, but the nomination process still applies.  
+If you find you cannot make meetings for a month or two, or have been unable to vote on proposals, by all means step aside. Thank you so much for your time, if you want to groom a successor and then nominate them that is cool, but the nomination process still applies.  
 
 If we do not hear from you for six months we will assume you lost, send out a search party and nominate your replacement.  
 
@@ -84,49 +84,30 @@ Process
 
 The primary role of the PSC is to make decisions relating to project management. The following decision making process is used. It is based on the "Proposal-Vote" system.
 
- * Issues that require a decision are based on GeoServer Improvement Proposals (GSIPs). For more on making a proposal see :ref:`gsip`
- * Proposals may be made by any interested party (PSC, Non-PSC, committer,user,etc...)
- * Proposals should be addressed within one week of being submitted, votes take place at the subsequent IRC meeting.
- * Each PSC member may vote one of the following in support of the proposal:
-   
-   * +1 : For
-   * -1 : Against
-   * +0: Mildly for, but mostly indifferent
-   * -0: Mildly against, but mostly indifferent
+GeoServer Improvement Proposals
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
- * A -1 vote must be accompanied with a detailed reason of being against.
- * A vote is *successful* if there is a majority of positive votes.
- * A vote is *unanimous*, if there are either:
+A GeoServer Improvement Proposals (GSIPs) is needed for any action that:
 
-   #. No -1 votes against it, or
-   #. No +1 votes for it.
+  * Has a major effect on others in the GeoServer community; or
+  * Will break backwards compatibility; or
+  * Change core code
 
- * In the event of an *successful non unanimous* vote, the following steps are taken:
- 
-   * Each member who votes -1 _may_ supply an alternative with which the original author can use to rework the proposal in order to satisfy that PSC member.
-   * If at least one -1 voting PSC member supplies some alternative criteria, the original author must rework the proposal and resubmit, and the voting process starts again from scratch.
-   * If no -1 voters are able to supply alternative criteria, the proposal is accepted.
-   * In the event of an *unsuccessful* vote, the author may rework and submit. A proposal may not be resubmitted after being rejected three times.
-   * Note that a majority of positive votes does not need to be a majority of the full PSC, just a majority of the 'active' PSC - defined by those present at an IRC meeting or responding within 4 days on email.  PSC members need not sound in on every single motion, but are expected to be active - the section on stepping down details that if a PSC is not active for 2 months they will
+For more on making a proposal see :ref:`gsip`.
 
-When not to use the GSIP
-^^^^^^^^^^^^^^^^^^^^^^^^
+.. include:: gsip_voting.txt
 
-A GSIP is only needed for:
+Snap Decisions
+^^^^^^^^^^^^^^
 
-  * an action that has a major effect on others in the GeoServer community.
-  * If an action will break backwards compatibility, or change core code, a GSIP is recommended.
+A GSIP proposal is NOT needed for:
 
-A GSIP is NOT needed for:
+* an improvement that can go in a community module; or
+* a bug fix that doesn't rework anything substantially
 
-  * an improvement that can go in a community module; or
-  * a bug fix that doesn't rework anything substantially
+For minor decisions where feedback might be desired, the course of action to take is to consult the development list or raise it in a video meeting.  The GeoServer Project recognizes that it is run those who are actually doing the work, and thus we want to avoid high overhead for 'getting things done'.
 
-For minor decisions where feedback might be desired, the course of action to take is to consult the development list or raise it in an irc meeting.  The GeoServer Project recognizes that it is run those who are actually doing the work, and thus we want to avoid high overhead for 'getting things done'.
-
-.. note:: Snap Decisions
-
-   For all decisions that are not official GSIP proposals, those 'present' (those in the Skype meeting or who bother to respond to an email within 4 days) are given the power to vote and decide an issue.  The same voting procedures are used, but any vote that meets a -1 from any party present (even a  new user), should go to a GSIP.  
+For these *snap decisions* that are not official GSIP proposals, everyone 'available' (those in the video meeting or who respond to an email within 4 days) are given the power to vote and decide an issue.  The same voting procedure (+1,+0,-0,-1) is used, but any decision that receives a -1 from any party present (even a  new user), should go to a GSIP.
 
 Responsibilities
 ----------------
@@ -148,12 +129,23 @@ PSC members are expected to be active on both user and developer email lists, su
 *It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of email on the mailing lists.*
 
 .. note::
-
-   Biweekly Skype Meeting Attendance
-
-   PSC members are encouraged to attend one of biweekly Skype meetings. Of course this is not always possible due to various reasons. If known in advance that a member cannot attend a meeting it is polite to email the developer list in response to the meeting reminder. No reason need to be given for not attending the meeting.
    
-   Meetings are a chance to quickly discuss project activities, review difficult pull requests, and cut down on email.
+   Our community is subject to both a responsible disclosure policy and a code of conduct; this is the responsibility of all partipants and is not limited to the PSC.*
+
+**Biweekly Video Meeting Attendance**
+
+PSC members are encouraged to attend one of biweekly Skype meetings. Of course this is not always possible due to various reasons. If known in advance that a member cannot attend a meeting it is polite to email the developer list in response to the meeting reminder. No reason need to be given for not attending the meeting.
+   
+Meetings are a chance to quickly discuss project activities, review difficult pull requests, and cut down on email.
+
+**Community Commitments**
+
+As an Open Source Geospatial Foundation project we have a number of committments:
+
+* Code of Conduct
+* OSGeo Officer
+* OSGeo Annual Report
+* OSGeo Budget
 
 Planning
 ^^^^^^^^
@@ -171,7 +163,7 @@ Long term project management. Duties include:
 **Project Policies**
 
 The PSC is responsible for defining project policies and practiced. Examples include:
-
+ 
  * Development Practices
 
    * Code Reviews
@@ -185,4 +177,4 @@ The PSC is responsible for defining project policies and practiced. Examples inc
 
    * Frequency 
    * Version numbering
-   * Stable vs R&D
+   * Stable vs Maintenance vs R&D

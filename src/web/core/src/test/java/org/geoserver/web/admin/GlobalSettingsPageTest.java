@@ -55,7 +55,7 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("verbose", true);
         ft.submit("submit");
-        
+
         tester.assertRenderedPage(GeoServerHomePage.class);
         assertTrue(gs.getSettings().isVerbose());
     }

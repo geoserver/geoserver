@@ -31,7 +31,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.UrlValidator;
-import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -156,7 +155,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     }
                 };
         form.add(submit);
-        
+
         form.add(applyLink(infoModel, form));
 
         Button cancel =
@@ -181,8 +180,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         }
     }
 
-    private GeoserverAjaxSubmitLink applyLink(IModel<T> infoModel,
-            Form form) {
+    private GeoserverAjaxSubmitLink applyLink(IModel<T> infoModel, Form form) {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override

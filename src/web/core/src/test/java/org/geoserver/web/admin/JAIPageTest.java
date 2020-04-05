@@ -20,22 +20,68 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
+import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class JAIPageTest extends GeoServerWicketTestSupport {
+
+    private GeoServer geoServer;
+
+    @Before
+    public void reset() {
+        geoServer = getGeoServerApplication().getGeoServer();
+        GeoServerInfo gsInfo = geoServer.getGlobal();
+        JAIInfo jai = gsInfo.getJAI();
+        jai.setTileThreads(2);
+        geoServer.save(gsInfo);
+    }
+
     @Test
     public void testValues() {
-        JAIInfo info = (JAIInfo) getGeoServerApplication().getGeoServer().getGlobal().getJAI();
+        JAIInfo info = geoServer.getGlobal().getJAI();
 
         login();
 
         tester.startPage(JAIPage.class);
         tester.assertComponent("form:tileThreads", TextField.class);
         tester.assertModelValue("form:tileThreads", info.getTileThreads());
+    }
+
+    @Test
+    public void testSave() {
+        JAIInfo info = (JAIInfo) geoServer.getGlobal().getJAI();
+
+        login();
+
+        tester.startPage(JAIPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("tileThreads", "3");
+        ft.submit("submit");
+
+        tester.assertRenderedPage(GeoServerHomePage.class);
+        JAIInfo jai = geoServer.getGlobal().getJAI();
+        assertEquals(3, jai.getTileThreads());
+    }
+
+    @Test
+    public void testApply() {
+        JAIInfo info = (JAIInfo) geoServer.getGlobal().getJAI();
+
+        login();
+
+        tester.startPage(JAIPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("tileThreads", "3");
+        ft.submit("apply");
+
+        tester.assertRenderedPage(JAIPage.class);
+        JAIInfo jai = geoServer.getGlobal().getJAI();
+        assertEquals(3, jai.getTileThreads());
     }
 
     @Test

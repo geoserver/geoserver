@@ -9,6 +9,7 @@ import com.sun.media.imageioimpl.common.PackageUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -23,6 +24,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.PercentageTextField;
 import org.geotools.image.ImageWorker;
@@ -30,14 +32,16 @@ import org.geotools.image.ImageWorker;
 /** Edits the JAI configuration parameters */
 public class JAIPage extends ServerAdminPage {
     private static final long serialVersionUID = -1184717232184497578L;
+    private final IModel<GeoServer> geoServerModel;
+    private final IModel<JAIInfo> jaiModel;
 
     public JAIPage() {
-        final IModel<GeoServer> geoServerModel = getGeoServerModel();
+        geoServerModel = getGeoServerModel();
 
         // this invokation will trigger a clone of the JAIInfo
         // which will allow the modification proxy seeing changes on the
         // Jai page with respect to the original JAIInfo object
-        final IModel<JAIInfo> jaiModel = getJAIModel();
+        jaiModel = getJAIModel();
 
         // form and submit
         Form<JAIInfo> form =
@@ -88,14 +92,12 @@ public class JAIPage extends ServerAdminPage {
 
                     @Override
                     public void onSubmit() {
-                        GeoServer gs = (GeoServer) geoServerModel.getObject();
-                        GeoServerInfo global = gs.getGlobal();
-                        global.setJAI((JAIInfo) jaiModel.getObject());
-                        gs.save(global);
-                        doReturn();
+                        save(true);
                     }
                 };
         form.add(submit);
+
+        form.add(applyLink(form));
 
         Button cancel =
                 new Button("cancel") {
@@ -107,6 +109,35 @@ public class JAIPage extends ServerAdminPage {
                     }
                 };
         form.add(cancel);
+    }
+
+    private void save(boolean doReturn) {
+        GeoServer gs = (GeoServer) geoServerModel.getObject();
+        GeoServerInfo global = gs.getGlobal();
+        global.setJAI((JAIInfo) jaiModel.getObject());
+        gs.save(global);
+        if (doReturn) doReturn();
+    }
+
+    private GeoserverAjaxSubmitLink applyLink(Form form) {
+        return new GeoserverAjaxSubmitLink("apply", form, this) {
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                super.onError(target, form);
+                target.add(form);
+            }
+
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    save(false);
+                } catch (IllegalArgumentException e) {
+                    form.error(e.getMessage());
+                    target.add(form);
+                }
+            }
+        };
     }
 
     private void addPngEncoderEditor(Form<JAIInfo> form) {

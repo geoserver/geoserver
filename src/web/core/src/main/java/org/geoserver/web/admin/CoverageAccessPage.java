@@ -7,6 +7,7 @@ package org.geoserver.web.admin;
 
 import java.util.Arrays;
 import java.util.List;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -23,11 +24,14 @@ import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.CoverageAccessInfo.QueueType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /** Edits the Coverage configuration parameters */
 public class CoverageAccessPage extends ServerAdminPage {
     private static final long serialVersionUID = -5028265196560034398L;
+    private IModel<?> geoServerModel;
+    private IModel<CoverageAccessInfo> coverageModel;
 
     class PoolSizeValidator extends AbstractFormValidator {
 
@@ -78,12 +82,12 @@ public class CoverageAccessPage extends ServerAdminPage {
     }
 
     public CoverageAccessPage() {
-        final IModel<?> geoServerModel = getGeoServerModel();
+        geoServerModel = getGeoServerModel();
 
         // this invocation will trigger a clone of the CoverageAccessInfo,
         // which will allow the modification proxy seeing changes on the
         // CoverageAccess page with respect to the original CoverageAccessInfo object
-        final IModel<CoverageAccessInfo> coverageModel = getCoverageAccessModel();
+        coverageModel = getCoverageAccessModel();
 
         // form and submit
         Form<CoverageAccessInfo> form =
@@ -124,14 +128,12 @@ public class CoverageAccessPage extends ServerAdminPage {
 
                     @Override
                     public void onSubmit() {
-                        GeoServer gs = (GeoServer) geoServerModel.getObject();
-                        GeoServerInfo global = gs.getGlobal();
-                        global.setCoverageAccess((CoverageAccessInfo) coverageModel.getObject());
-                        gs.save(global);
-                        doReturn();
+                        save(true);
                     }
                 };
         form.add(submit);
+
+        form.add(applyLink(form));
 
         Button cancel =
                 new Button("cancel") {
@@ -143,6 +145,35 @@ public class CoverageAccessPage extends ServerAdminPage {
                     }
                 };
         form.add(cancel);
+    }
+
+    public void save(boolean doReturn) {
+        GeoServer gs = (GeoServer) geoServerModel.getObject();
+        GeoServerInfo global = gs.getGlobal();
+        global.setCoverageAccess((CoverageAccessInfo) coverageModel.getObject());
+        gs.save(global);
+        if (doReturn) doReturn();
+    }
+
+    private GeoserverAjaxSubmitLink applyLink(Form form) {
+        return new GeoserverAjaxSubmitLink("apply", form, this) {
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                super.onError(target, form);
+                target.add(form);
+            }
+
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    save(false);
+                } catch (IllegalArgumentException e) {
+                    form.error(e.getMessage());
+                    target.add(form);
+                }
+            }
+        };
     }
 
     /** Display and ID mapping adapter for QueueType. */

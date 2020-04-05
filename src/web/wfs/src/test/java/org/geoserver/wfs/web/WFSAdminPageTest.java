@@ -54,7 +54,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         assertEquals("allowGlobalQueries = false", false, wfs.getAllowGlobalQueries());
     }
-    
+
     @Test
     public void testApply() throws Exception {
         String testValue1 = "100", testValue2 = "0";

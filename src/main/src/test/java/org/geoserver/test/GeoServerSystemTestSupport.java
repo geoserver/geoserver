@@ -1830,6 +1830,31 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             Double resolution,
             String units,
             String unitSymbol) {
+        setupRasterDimension(
+                layer, dimensionName, presentation, resolution, units, unitSymbol, false, null);
+    }
+
+    /**
+     * Configures the dimension of a vector layer
+     *
+     * @param layer
+     * @param dimensionName
+     * @param presentation
+     * @param resolution
+     * @param units
+     * @param unitSymbol
+     * @param nearestMatch
+     * @param acceptableInterval
+     */
+    protected void setupRasterDimension(
+            QName layer,
+            String dimensionName,
+            DimensionPresentation presentation,
+            Double resolution,
+            String units,
+            String unitSymbol,
+            boolean nearestMatch,
+            String acceptableInterval) {
         CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -1839,6 +1864,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
+        di.setNearestMatchEnabled(nearestMatch);
+        if (acceptableInterval != null) di.setAcceptableInterval(acceptableInterval);
         info.getMetadata().put(dimensionName, di);
         getCatalog().save(info);
     }

@@ -450,6 +450,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.setValue("cachingOptionsPanel:container:configs:blobstores:innerCachingEnabled", true);
         form.submit("submit");
+        tester.assertRenderedPage(GeoServerHomePage.class);
+
         tester.startPage(new GWCSettingsPage());
 
         // check that the cache provider is guava
@@ -474,6 +476,25 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(
                 evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_ACCESS));
         assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_WRITE));
+    }
+
+    @Test
+    public void testApply() {
+        // creating a start the gwc configuration page
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+
+        // enabling the cache
+        FormTester form = tester.newFormTester("form");
+        form.setValue("cachingOptionsPanel:container:configs:blobstores:innerCachingEnabled", true);
+        form.submit("apply");
+
+        // check it did not go back to home
+        tester.assertRenderedPage(GWCSettingsPage.class);
+
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        assertTrue(config.isInnerCachingEnabled());
     }
 
     @SuppressWarnings("unchecked")

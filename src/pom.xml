@@ -52,9 +52,9 @@
 
  <repositories>
   <repository>
-   <id>geoserver-releases</id>
+   <id>osgeo-releases</id>
    <name>OSGeo Nexus Release Repository</name>
-   <url>https://repo.osgeo.org/repository/Geoserver-releases/</url>
+   <url>https://repo.osgeo.org/repository/release/</url>
    <!-- contains release (including third-party-dependences)               -->
    <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
    <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
@@ -67,9 +67,9 @@
   </repository>
 
   <repository>
-   <id>geoserver-snapshots</id>
+   <id>osgeo-snapshots</id>
    <name>OSGeo Nexus Snapshot Repository</name>
-   <url>https://repo.osgeo.org/repository/geoserver-snapshots/</url>
+   <url>https://repo.osgeo.org/repository/snapshot/</url>
    <!-- contains snapshots               -->
    <snapshots>
     <enabled>true</enabled>

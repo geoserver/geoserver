@@ -9,75 +9,52 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.CoverageInfoImpl;
+import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
-import org.geoserver.geofence.services.dto.RuleFilter;
-import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.visitor.DefaultFilterVisitor;
+import org.junit.Assume;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.opengis.filter.spatial.Intersects;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testAdmin() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        assertTrue(geofenceAdminService.getCountAll() > 0);
+        Authentication user = getUser("admin", "geoserver", "ROLE_ADMINISTRATOR");
 
-        RuleFilter ruleFilter = new RuleFilter();
-        ShortRule adminRule = geofenceAdminService.getRule(ruleFilter);
-
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken(
-                        "admin",
-                        "geoserver",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")
-                                }));
+        login("admin", "geoserver", new String[] {"ROLE_ADMINISTRATOR"});
+        WorkspaceInfo citeWS = catalog.getWorkspaceByName(MockData.CITE_PREFIX); // uses the login
 
         // check workspace access
-        WorkspaceInfo citeWS = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
         WorkspaceAccessLimits wl = accessManager.getAccessLimits(user, citeWS);
         assertTrue(wl.isReadable());
         assertTrue(wl.isWritable());
 
         // check layer access
-        LayerInfo layer = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+        LayerInfo layer =
+                catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS)); // uses the login
+
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, layer);
         assertEquals(Filter.INCLUDE, vl.getReadFilter());
         assertEquals(Filter.INCLUDE, vl.getWriteFilter());
@@ -87,19 +64,10 @@ public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteCannotWriteOnWorkspace() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         configManager.getConfiguration().setGrantWriteToWorkspacesToAuthenticatedUsers(false);
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken(
-                        "cite",
-                        "cite",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_AUTHENTICATED")
-                                }));
+        Authentication user = getUser("cite", "cite", "ROLE_AUTHENTICATED");
 
         // check workspace access
         WorkspaceInfo citeWS = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
@@ -110,19 +78,11 @@ public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteCanWriteOnWorkspace() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         configManager.getConfiguration().setGrantWriteToWorkspacesToAuthenticatedUsers(true);
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken(
-                        "cite",
-                        "cite",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_AUTHENTICATED")
-                                }));
+
+        Authentication user = getUser("cite", "cite", "ROLE_AUTHENTICATED");
 
         // check workspace access
         WorkspaceInfo citeWS = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
@@ -134,9 +94,7 @@ public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testAnonymousUser() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         // check workspace access
         // WorkspaceInfo citeWS = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
@@ -144,8 +102,11 @@ public class AccessManagerTest extends GeofenceBaseTest {
         // assertFalse(wl.isReadable());
         // assertFalse(wl.isWritable());
 
-        // check layer access
+        // setup layer
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
         LayerInfo layer = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+
+        // check layer access
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(null, layer);
         assertEquals(Filter.EXCLUDE, vl.getReadFilter());
         assertEquals(Filter.EXCLUDE, vl.getWriteFilter());
@@ -155,40 +116,38 @@ public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteWorkspaceAccess() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken("cite", "cite");
+        Authentication user = getUser("cite", "cite", "ROLE_AUTHENTICATED");
+
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
 
         // check workspace access on cite
         WorkspaceInfo citeWS = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
         WorkspaceAccessLimits wl = accessManager.getAccessLimits(user, citeWS);
         assertTrue(wl.isReadable());
-        assertTrue(wl.isWritable());
+        assertFalse(wl.isWritable());
 
         // check workspace access on any other but not cite and sf (should fail)
         WorkspaceInfo cdfWS = catalog.getWorkspaceByName(MockData.CDF_PREFIX);
         wl = accessManager.getAccessLimits(user, cdfWS);
-        assertFalse(wl.isReadable());
+        assertTrue(wl.isReadable());
         assertFalse(wl.isWritable());
 
         // check workspace access on sf (should work, we can do at least a getmap)
         WorkspaceInfo sfWS = catalog.getWorkspaceByName(MockData.SF_PREFIX);
         wl = accessManager.getAccessLimits(user, sfWS);
         assertTrue(wl.isReadable());
-        assertTrue(wl.isWritable());
+        assertFalse(wl.isWritable());
     }
 
     @Test
     public void testCiteLayerAccess() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken("cite", "cite");
+        Authentication user = getUser("cite", "cite", "ROLE_AUTHENTICATED");
+
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
 
         // check layer in the cite workspace
         LayerInfo bpolygons = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
@@ -222,12 +181,9 @@ public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testWmsLimited() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken("wmsuser", "wmsuser");
+        Authentication user = getUser("wmsuser", "wmsuser", "ROLE_AUTHENTICATED");
 
         // check layer in the sf workspace with a wfs request
         Request request = new Request();
@@ -255,12 +211,10 @@ public class AccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testAreaLimited() throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken("area", "area");
+        Authentication user = getUser("area", "area", "ROLE_AUTHENTICATED");
+        login("area", "area", "ROLE_AUTHENTICATED");
 
         // check we have the geometry filter set
         LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
@@ -280,13 +234,11 @@ public class AccessManagerTest extends GeofenceBaseTest {
      * 900913 SRS. We expect that the allowedarea is projected into the resource CRS.
      */
     @Test
-    public void testArea900913() throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+    public void testArea900913Vector() throws Exception {
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken("area", "area");
+        Authentication user = getUser("area", "area", "ROLE_AUTHENTICATED");
+        login("area", "area", "ROLE_AUTHENTICATED");
 
         LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
 
@@ -312,59 +264,68 @@ public class AccessManagerTest extends GeofenceBaseTest {
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, resource);
 
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
-        Geometry limit =
+        Geometry expectedLimit =
                 new WKTReader()
                         .read(
                                 " MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
-        Filter filter = ff.intersects(ff.property(""), ff.literal(limit));
+        Filter filter = ff.intersects(ff.property(""), ff.literal(expectedLimit));
 
-        assertEquals(filter, vl.getReadFilter());
-        assertEquals(filter, vl.getWriteFilter());
+        IntersectExtractor ier = new IntersectExtractor();
+        vl.getReadFilter().accept(ier, null);
+        assertTrue(expectedLimit.equalsExact(ier.geom, .000000001));
+
+        IntersectExtractor iew = new IntersectExtractor();
+        vl.getWriteFilter().accept(iew, null);
+        assertTrue(expectedLimit.equalsExact(iew.geom, .000000001));
     }
 
     @Test
-    public void testWmsGetMapRequestWithLayerGroupAndNormalLayerAndStyles() {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+    public void testArea900913Raster() throws Exception {
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        List<PublishedInfo> layers = new ArrayList<>();
-        layers.add(catalog.getLayerByName("Buildings"));
-        layers.add(catalog.getLayerByName("DividedRoutes"));
-        List<StyleInfo> styles = new ArrayList<>();
-        styles.add(catalog.getLayerByName("Buildings").getDefaultStyle());
-        styles.add(catalog.getLayerByName("DividedRoutes").getDefaultStyle());
-        LayerGroupInfoImpl layerGroup = new LayerGroupInfoImpl();
-        layerGroup.setName("layer_group");
-        layerGroup.setLayers(layers);
-        layerGroup.setStyles(styles);
-        catalog.add(layerGroup);
-        Map kvp = new HashMap<>();
-        kvp.put("LAYERS", "layer_group,Bridges");
-        kvp.put("layers", "layer_group,Bridges");
-        kvp.put("STYLES", ",lines");
-        Request gsRequest = new Request();
-        gsRequest.setKvp(kvp);
-        gsRequest.setRawKvp(kvp);
-        String service = "WMS";
-        String requestName = "GetMap";
-        Authentication user =
-                new UsernamePasswordAuthenticationToken(
-                        "admin",
-                        "geoserver",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")
-                                }));
-        SecurityContextHolder.getContext().setAuthentication(user);
-        List<MapLayerInfo> mapLayersInfos = new ArrayList<>();
-        mapLayersInfos.add(new MapLayerInfo(catalog.getLayerByName("Buildings")));
-        mapLayersInfos.add(new MapLayerInfo(catalog.getLayerByName("DividedRoutes")));
-        mapLayersInfos.add(new MapLayerInfo(catalog.getLayerByName("Bridges")));
-        GetMapRequest getMap = new GetMapRequest();
-        getMap.setLayers(mapLayersInfos);
-        accessManager.overrideGetMapRequest(gsRequest, service, requestName, user, getMap);
+        Authentication user = getUser("area", "area", "ROLE_AUTHENTICATED");
+        login("area", "area", "ROLE_AUTHENTICATED");
+
+        LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
+
+        // Create a layer using as much as info from the Mock instance, making sure we're declaring
+        // the 900913 SRS.
+        WorkspaceInfoImpl ws = new WorkspaceInfoImpl();
+        ws.setName(generic.getResource().getStore().getWorkspace().getName());
+
+        StoreInfo store = new CoverageStoreInfoImpl(catalog);
+        store.setWorkspace(ws);
+
+        CoverageInfoImpl resource = new CoverageInfoImpl(catalog);
+        resource.setNamespace(generic.getResource().getNamespace());
+        resource.setSRS("EPSG:900913");
+        resource.setName(generic.getResource().getName());
+        resource.setStore(store);
+
+        LayerInfoImpl layerInfo = new LayerInfoImpl();
+        layerInfo.setResource(resource);
+        layerInfo.setName(generic.getName());
+
+        // Check we have the geometry filter set
+        CoverageAccessLimits accessLimits =
+                (CoverageAccessLimits) accessManager.getAccessLimits(user, resource);
+
+        Geometry expectedLimit =
+                new WKTReader()
+                        .read(
+                                "MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
+
+        assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
+    }
+
+    static class IntersectExtractor extends DefaultFilterVisitor {
+
+        Geometry geom;
+
+        @Override
+        public Object visit(Intersects filter, Object data) {
+            geom = (Geometry) filter.getExpression2().evaluate(null);
+            return data;
+        }
     }
 }

@@ -4,6 +4,9 @@
  */
 package org.geoserver.geofence;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +18,17 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
-import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
+import org.junit.Assert;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
@@ -29,17 +36,15 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     protected static XpathEngine xp;
 
-    protected Boolean IS_GEOFENCE_AVAILABLE = false;
+    protected static Boolean IS_GEOFENCE_AVAILABLE = false;
 
-    protected GeofenceAccessManager accessManager;
+    protected static GeofenceAccessManager accessManager;
 
-    protected GeoFenceConfigurationManager configManager;
+    protected static GeoFenceConfigurationManager configManager;
 
     protected static RuleReaderService geofenceService;
 
-    protected static RuleAdminService geofenceAdminService;
-
-    GeoServerDataDirectory dd;
+    static GeoServerDataDirectory dd;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -64,13 +69,35 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
 
-        catalog = getCatalog();
-
-        testData.copyTo(
-                this.getClass().getClassLoader().getResourceAsStream("geofence-server.properties"),
-                "geofence/geofence-server.properties");
+        //        testData.copyTo(
+        //
+        // this.getClass().getClassLoader().getResourceAsStream("geofence-server.properties"),
+        //                "geofence/geofence-server.properties");
 
         testData.setUp();
+
+        addUser(
+                "area",
+                "area",
+                Collections.singletonList("USERS"),
+                Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser(
+                "cite",
+                "cite",
+                Collections.singletonList("USERS"),
+                Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser(
+                "wms_user",
+                "wms_user",
+                Collections.singletonList("USERS"),
+                Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser(
+                "sf",
+                "sf",
+                Collections.singletonList("USERS"),
+                Arrays.asList("ROLE_AUTHENTICATED", "ROLE_SF_ADMIN"));
+
+        catalog = getCatalog();
 
         // add test geofence properties file to the temporary data dir. For testing purposes only
         dd = new GeoServerDataDirectory(testData.getDataDirectoryRoot());
@@ -78,11 +105,15 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
         // get the beans we use for testing
         accessManager =
-                (GeofenceAccessManager) applicationContext.getBean("geofenceRuleAccessManager");
+                applicationContext.getBean(
+                        "geofenceRuleAccessManager", GeofenceAccessManager.class);
 
         configManager =
-                (GeoFenceConfigurationManager)
-                        applicationContext.getBean("geofenceConfigurationManager");
+                applicationContext.getBean(
+                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+
+        Assert.assertNotNull(accessManager);
+        Assert.assertNotNull(configManager);
 
         if (isGeoFenceAvailable()) {
             IS_GEOFENCE_AVAILABLE = true;
@@ -93,7 +124,6 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
                             + getClass().getSimpleName()
                             + " as GeoFence service is down: "
                             + "in order to run this test you need the services to be running on port 9191");
-            // TODO: use Assume when using junit >=3
         }
     }
 
@@ -102,17 +132,16 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     @After
     public void after() {
-        getCatalog().dispose();
+        // used by catalog
+        logout();
+
+        // used by getAsDOM etc
+        this.username = null;
+        this.password = null;
     }
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
-        /** Dispose Services */
-        this.accessManager = null;
-        this.configManager = null;
-        this.geofenceService = null;
-        this.testData = new SystemTestData();
-
         try {
             if (System.getProperty("IS_GEOFENCE_AVAILABLE") != null) {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");
@@ -144,6 +173,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             ruleFilter.setService("WMS");
             final List<ShortRule> matchingRules = geofenceService.getMatchingRules(ruleFilter);
             if (geofenceService != null && matchingRules != null && matchingRules.size() > 0) {
+                LOGGER.log(Level.WARNING, "GeoFence is active");
                 return true;
             }
         } catch (Exception e) {
@@ -151,6 +181,17 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             geofenceService = null;
         }
 
+        LOGGER.log(Level.WARNING, "Not connecting to GeoFence");
         return false;
+    }
+
+    protected Authentication getUser(String username, String password, String... roles) {
+
+        List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
+        for (String role : roles) {
+            l.add(new SimpleGrantedAuthority(role));
+        }
+
+        return new UsernamePasswordAuthenticationToken(username, password, l);
     }
 }

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -35,9 +36,10 @@ public class ServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testAdmin() throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
+
+        this.username = "admin";
+        this.password = "geoserver";
 
         // check from the caps he can access everything
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=WMS");
@@ -50,15 +52,15 @@ public class ServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteCapabilities() throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        loginAsCite();
+        //        loginAsCite();
+        this.username = "cite";
+        this.password = "cite";
 
         // check from the caps he can access cite and sf, but not others
-        Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=wms");
-        // print(dom);
+        Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=WMS");
+        print(dom);
 
         assertXpathEvaluatesTo("11", "count(//Layer[starts-with(Name, 'cite:')])", dom);
         assertXpathEvaluatesTo("3", "count(//Layer[starts-with(Name, 'sf:')])", dom);
@@ -67,25 +69,12 @@ public class ServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteLayers() throws Exception {
-        if (!IS_GEOFENCE_AVAILABLE) {
-            return;
-        }
+        Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
         loginAsCite();
 
-        // try a getmap/reflector on a sf layer, should work
-        MockHttpServletResponse response =
-                getAsServletResponse("wms/reflect?layers=" + getLayerId(MockData.BASIC_POLYGONS));
-        assertEquals(200, response.getStatus());
-        assertEquals("image/png", response.getContentType());
-
-        // try a getmap/reflector on a sf layer, should work
-        response = getAsServletResponse("wms/reflect?layers=" + getLayerId(MockData.GENERICENTITY));
-        assertEquals(200, response.getStatus());
-        assertEquals("image/png", response.getContentType());
-
         // try a getfeature on a sf layer
-        response =
+        MockHttpServletResponse response =
                 getAsServletResponse(
                         "wfs?service=wfs&version=1.0.0&request=getfeature&typeName="
                                 + getLayerId(MockData.GENERICENTITY));
@@ -93,7 +82,7 @@ public class ServicesTest extends GeofenceBaseTest {
         assertEquals("text/xml", response.getContentType());
         String content = response.getContentAsString();
         LOGGER.info("Content: " + content);
-        // assertTrue(content.contains("Unknown namespace [sf]"));
+        //        assertTrue(content.contains("Unknown namespace [sf]"));
         assertTrue(content.contains("Feature type sf:GenericEntity unknown"));
     }
 }

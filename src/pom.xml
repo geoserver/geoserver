@@ -52,9 +52,9 @@
 
  <repositories>
   <repository>
-   <id>boundless</id>
-   <name>Boundless Maven Repository</name>
-   <url>https://repo.boundlessgeo.com/main/</url>
+   <id>nexus</id>
+   <name>OSGeo Nexus Maven Repository</name>
+   <url>https://repo.osgeo.org/repository/Geoserver-releases/</url>
    <!-- contains snapshot and release (including third-party-dependences)               -->
    <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
    <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
@@ -1924,16 +1924,16 @@
 
  <distributionManagement>
     <repository>
-      <id>boundless</id>
-      <name>Boundless Release Repository</name>
-      <url>https://repo.boundlessgeo.com/release/</url>
+      <id>nexus</id>
+      <name>OSGeo Release Repository</name>
+      <url>https://repo.osgeo.org/repository/Geoserver-releases/</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
     <snapshotRepository>
-      <id>boundless</id>
+      <id>nexus</id>
       <uniqueVersion>false</uniqueVersion>
-      <name>Boundless Snapshot Repository</name>
-      <url>https://repo.boundlessgeo.com/snapshot/</url>
+      <name>OSGeo Snapshot Repository</name>
+      <url>https://repo.osgeo.org/repository/geoserver-snapshots/</url>
     </snapshotRepository>
  </distributionManagement>
 

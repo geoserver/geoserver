@@ -135,9 +135,9 @@
     
     <repositories>
       <repository>
-       <id>boundless</id>
-       <name>Boundless Maven Repository</name>
-       <url>https://repo.boundlessgeo.com/main/</url>
+      <id>nexus</id>
+      <name>OSGeo Nexus Maven Repository</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
        <snapshots>
          <enabled>true</enabled>
        </snapshots>

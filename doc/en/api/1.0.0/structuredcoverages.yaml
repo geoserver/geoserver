@@ -405,8 +405,7 @@ paths:
         - name: updateBBox
           in: query
           required: false
-          description: The parameter allows, when valorized as "true", to trigger the native bbox update of the layer configuration according 
-            to the image mosaic bounds, after granules have been deleted. Default value is "false".
+          description: When set to "true", triggers re-calculation of the layer native bbox. Defaults to "false".
       responses:
         200:
           description: OK
@@ -598,8 +597,7 @@ paths:
         - name: updateBBox
           in: query
           required: false
-          description: The parameter allows, when valorized as "true", to trigger the native bbox update of the layer configuration according 
-            to the image mosaic bounds, after the granule has been deleted. Default value is "false".       
+          description: When set to "true", triggers re-calculation of the layer native bbox. Defaults to "false".       
       responses:
         200:
           description: OK

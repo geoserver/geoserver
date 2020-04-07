@@ -16,8 +16,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
 /**
- * This class aims to provide methods to update mosaic native bounding box at the coverage info
- * level according to the bounds present in the index
+ * This class provides methods to update a mosaic native bounding box at the coverage info level
+ * according to the bounds present in the index
  */
 class MosaicInfoBBoxHandler {
 

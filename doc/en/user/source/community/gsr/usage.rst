@@ -2,15 +2,16 @@ GSR Usage
 =====================
 
 Currently basic FeatureServer and MapServer functionality work. Each GeoServer workspace is considered
-an ArcGIS "service" for the purposes of the API. ArcGIS URLs look like this in GeoServer:
+an ArcGIS® "service" for the purposes of the API. ArcGIS® URLs look like this in GeoServer:
 
 http://localhost:8080/geoserver/gsr/services/topp/MapServer/
 http://localhost:8080/geoserver/gsr/services/topp/FeatureServer/
 
 Where topp is the workspace name.
 
-..note::  
-  Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.
+.. note::
+
+     Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.
 
 
 CORS
@@ -28,7 +29,7 @@ your server manually to the list of CORS enabled servers:
 CORS support also needs to be enabled on the server. Without these settings, it
 will attempt to use JSONP, which may not be as well supported.
 
-For information on enabling CORS in GeoServer, see [here](http://suite.opengeo.org/docs/latest/sysadmin/cors/index.html).
+For information on enabling CORS in GeoServer, see `here <http://suite.opengeo.org/docs/latest/sysadmin/cors/index.html>`_.
 
 Web Mercator Spatial Reference
 ------------------------------
@@ -44,12 +45,3 @@ AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4055"]],UNIT["metre",1,AUTHORITY["EP
 PROJECTION["Mercator_1SP"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],
 PARAMETER["false_easting",0],PARAMETER["false_northing",0],AUTHORITY["EPSG","3785"],
 AXIS["X",EAST],AXIS["Y",NORTH]]``
-
-Not supported
-------------------------------
-
-Notable features currently unsupported:
-
-- Non-geospatial filters
-- Dynamic layer definitions
-- Requests to feature layers in non-native spatial reference systems.

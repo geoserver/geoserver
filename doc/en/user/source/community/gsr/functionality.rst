@@ -4,11 +4,13 @@ Functionality
 Formats
 ---------------------------
 
-While the ArcGis implementation of GeoServices supports multiple file formats, all responses from the GeoServer plugin use JSON (for example, browser-friendly HTML is not provided.)  The ``?f=json`` parameter specifying JSON is still required.
+While the ArcGIS® implementation of GeoServices supports multiple file formats, all responses from the GeoServer plugin use JSON (for example, browser-friendly HTML is not provided.)  The ``?f=json`` parameter specifying JSON is still required.
 
-..note::  
-  Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.
+.. note::
 
+     Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.
+
+     
 Capabilities
 ------------------------------
 
@@ -64,6 +66,10 @@ Capabilities
   * Map service job. Not supported.
   
   * Map service result. Not supported.
+
+  * Non-geospatial filters. Not supported
+
+  * Requests to feature layers in non-native spatial reference systems. Not supported.
   
   * Query (Dynamic layer.) Not supported.
   

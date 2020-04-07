@@ -1,4 +1,4 @@
-.. _community_gsrapi:
+.. _community_gsr:
 
 GSR Extension
 =================

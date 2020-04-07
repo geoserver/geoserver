@@ -46,6 +46,8 @@ import org.opengis.filter.Filter;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class AbstractBackupRestoreController extends RestBaseController {
 
@@ -74,7 +76,11 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
     /** @return the backupFacade */
     public Backup getBackupFacade() {
-        backupFacade.authenticate();
+        if (backupFacade.getAuth() == null) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            backupFacade.setAuth(auth);
+            backupFacade.authenticate();
+        }
         return backupFacade;
     }
 

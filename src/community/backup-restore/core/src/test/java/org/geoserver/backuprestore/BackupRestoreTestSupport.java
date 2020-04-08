@@ -61,7 +61,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
     static File root;
 
-    GeoServerDataDirectory createDataDirectoryMock() {
+    protected GeoServerDataDirectory createDataDirectoryMock() {
         GeoServerDataDirectory dd = createNiceMock(GeoServerDataDirectory.class);
         expect(dd.root()).andReturn(root).anyTimes();
         return dd;

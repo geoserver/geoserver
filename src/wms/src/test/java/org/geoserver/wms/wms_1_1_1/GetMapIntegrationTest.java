@@ -2041,6 +2041,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         URL expectedResponse = getClass().getResource("dem_with_legend.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
-        ImageAssert.assertEquals(image, expectedImage, 3300);
+        ImageAssert.assertEquals(image, expectedImage, 3400);
     }
 }

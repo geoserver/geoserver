@@ -31,7 +31,7 @@ public class OpenIdConnectLoginButtonTest extends GeoServerWicketTestSupport {
 
         GeoServerSecurityManager manager = getSecurityManager();
         OpenIdConnectFilterConfig filterConfig = new OpenIdConnectFilterConfig();
-        filterConfig.setName("openIdConnect");
+        filterConfig.setName("openidconnect");
         filterConfig.setClassName(OpenIdConnectAuthenticationFilter.class.getName());
         filterConfig.setCliendId("foo");
         filterConfig.setClientSecret("bar");
@@ -43,7 +43,7 @@ public class OpenIdConnectLoginButtonTest extends GeoServerWicketTestSupport {
         SecurityManagerConfig config = manager.getSecurityConfig();
         GeoServerSecurityFilterChain chain = config.getFilterChain();
         RequestFilterChain www = chain.getRequestChainByName("web");
-        www.setFilterNames("openIdConnect", "anonymous");
+        www.setFilterNames("openidconnect", "anonymous");
         manager.saveSecurityConfig(config);
     }
 

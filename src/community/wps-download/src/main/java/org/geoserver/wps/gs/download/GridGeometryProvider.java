@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Predicates;
+import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -22,23 +23,24 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.metadata.spatial.PixelOrientation;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 
 /**
@@ -49,6 +51,7 @@ class GridGeometryProvider {
 
     private static final Logger LOGGER = Logging.getLogger(GridGeometryProvider.class);
 
+    private static final int PADDING = 50;
     /**
      * Class delegate to extract the resolution from a features collection based on the available
      * resolution related descriptors.
@@ -136,7 +139,7 @@ class GridGeometryProvider {
                             fallbackResolution,
                             bestResolution);
 
-                    featureBBox = computeBBox(feature, crsAttribute, schemaCRS);
+                    featureBBox = crsRequestHandler.computeBBox(feature, schemaCRS);
                     // Update the accessed envelope
                     if (env == null) {
                         env = new GeneralEnvelope(featureBBox);
@@ -164,37 +167,6 @@ class GridGeometryProvider {
                 bestResolution[1] = fallbackResolution[1];
             }
             return envelope;
-        }
-
-        /**
-         * compute the bbox of the provided feature, taking into account its native CRS if available
-         */
-        private BoundingBox computeBBox(
-                SimpleFeature feature, String crsAttribute, CoordinateReferenceSystem schemaCRS)
-                throws FactoryException, TransformException, IOException {
-            ROIManager roiManager = crsRequestHandler.getRoiManager();
-            if (roiManager != null && crsRequestHandler.canUseTargetCRSAsNative()) {
-                String granuleCrsCode = (String) feature.getAttribute(crsAttribute);
-                CoordinateReferenceSystem granuleCRS = crsRequestHandler.getCRS(granuleCrsCode);
-                CoordinateReferenceSystem targetCRS = crsRequestHandler.getSelectedTargetCRS();
-                Geometry geom = (Geometry) feature.getDefaultGeometry();
-                MathTransform transform = CRS.findMathTransform(schemaCRS, targetCRS);
-                if (CRS.equalsIgnoreMetadata(targetCRS, granuleCRS)) {
-                    // The granule has same CRS as TargetCRS
-                    // Do not reproject the boundingBox itself but let's
-                    // reproject the geometry to get the native bbox
-                    if (!transform.isIdentity()) {
-                        geom = JTS.transform(geom, transform);
-                    }
-                    return JTS.bounds(geom, targetCRS);
-                } else {
-                    // Reproject the granule geometry to the requested CRS
-                    return JTS.bounds(geom, granuleCRS).transform(targetCRS, true);
-                }
-            } else {
-                // Classic behaviour
-                return feature.getBounds();
-            }
         }
 
         /** Extract the resolution from the specified feature via the resolution attributes. */
@@ -363,10 +335,75 @@ class GridGeometryProvider {
                             envelope.getMinX(),
                             envelope.getMaxY());
             MathTransform tx = ProjectiveTransform.create(at);
-
-            return new GridGeometry2D(
-                    PixelInCell.CELL_CORNER, tx, envelope, GeoTools.getDefaultHints());
+            return computeGridGeometry2D(tx, envelope, resolution);
         }
+    }
+
+    private GridGeometry2D computeGridGeometry2D(
+            MathTransform tx, ReferencedEnvelope envelope, double[] resolution)
+            throws FactoryException, IOException, TransformException {
+        GridGeometry2D gg2d =
+                new GridGeometry2D(
+                        PixelInCell.CELL_CORNER, tx, envelope, GeoTools.getDefaultHints());
+        AffineTransform tx2 = (AffineTransform) gg2d.getGridToCRS();
+        double scaleX = XAffineTransform.getScaleX0(tx2);
+        double scaleY = XAffineTransform.getScaleY0(tx2);
+        // There might be the case that granules that will be reprojected are affecting the
+        // requested gridGeometry such that the resulting scale doesn't perfectly match the
+        // requested resolution
+        if (Math.abs(scaleX - resolution[0]) > 1E-6 || (Math.abs(scaleY - resolution[1]) > 1E-6)) {
+            if (crsRequestHandler != null
+                    && crsRequestHandler.getReferenceFeatureForAlignment() != null) {
+                SimpleFeature referenceFeature =
+                        crsRequestHandler.getReferenceFeatureForAlignment();
+                // Tweak the requested envelope for better alignment so that the resolution get
+                // matched
+                BoundingBox refEnvelope =
+                        crsRequestHandler.computeBBox(
+                                referenceFeature,
+                                referenceFeature.getFeatureType().getCoordinateReferenceSystem());
+                double minX =
+                        snapCoordinate(
+                                refEnvelope.getMinX(), envelope.getMinX(), resolution[0], true);
+                double minY =
+                        snapCoordinate(
+                                refEnvelope.getMinY(), envelope.getMinY(), resolution[1], true);
+                double maxX =
+                        snapCoordinate(
+                                refEnvelope.getMaxX(), envelope.getMaxX(), resolution[0], false);
+                double maxY =
+                        snapCoordinate(
+                                refEnvelope.getMaxY(), envelope.getMaxY(), resolution[1], false);
+                envelope =
+                        new ReferencedEnvelope(
+                                minX, maxX, minY, maxY, envelope.getCoordinateReferenceSystem());
+                gg2d =
+                        new GridGeometry2D(
+                                PixelInCell.CELL_CORNER, tx, envelope, GeoTools.getDefaultHints());
+            }
+        }
+        if (crsRequestHandler.needsReprojection()) {
+            // Apply padding to read extra pixels.
+            MathTransform2D worldToScreen = gg2d.getCRSToGrid2D(PixelOrientation.UPPER_LEFT);
+            GridEnvelope2D gridRange = gg2d.getGridRange2D();
+            gridRange.setBounds(
+                    gridRange.x - PADDING,
+                    gridRange.y - PADDING,
+                    gridRange.width + PADDING * 2,
+                    gridRange.height + PADDING * 2);
+            try {
+                gg2d =
+                        new GridGeometry2D(
+                                gridRange,
+                                PixelInCell.CELL_CORNER,
+                                worldToScreen.inverse(),
+                                gg2d.getCoordinateReferenceSystem2D(),
+                                null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return gg2d;
     }
 
     /**
@@ -436,5 +473,22 @@ class GridGeometryProvider {
                         : null;
         ScaleToTarget scaling = new ScaleToTarget(reader, roiEnvelope);
         return scaling.getGridGeometry();
+    }
+
+    private double snapCoordinate(
+            double referenceCoordinate,
+            double inputCoordinate,
+            double resolution,
+            boolean isLowerValue) {
+        // Check how many pixels at the given resolution exist between the 2 coordinate
+        double numPixels = Math.abs(referenceCoordinate - inputCoordinate) / resolution;
+        int numIntegerPixels = (int) Math.ceil(numPixels);
+        if (numIntegerPixels - numPixels > resolution * 1E-6) {
+            // number of Pixels is not an integer value so let's snap the coordinate to the
+            // resolution.
+            return referenceCoordinate
+                    + (numIntegerPixels * (isLowerValue ? -resolution : resolution));
+        }
+        return inputCoordinate;
     }
 }

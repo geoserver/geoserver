@@ -42,7 +42,7 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
 
         GeoJSONGetFeatureResponse format =
                 new GeoJSONGetFeatureResponse(wms.getGeoServer(), getContentType());
-        format.write(features, out, null);G
+        format.write(features, out, null);
     }
 
     @Override

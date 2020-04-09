@@ -263,10 +263,23 @@ public class NcWmsService {
         // We have already checked before invoking this method that the list isn't null nor empty
         final boolean nearestMatch = timeDimension.isNearestMatchEnabled();
 
-        // if nearestMatch is enabled and there are multiple items, pass through the values and
-        // delegate the search to the getFeatureInfo call.
-        DateFinder finder = nearestMatch ? DateFinder.NEAREST : DateFinder.QUERY;
-        return finder.findDates(wms, coverage, times);
+        final boolean simpleRange = times.size() == 1 && times.get(0) instanceof DateRange;
+        List<DateRange> results;
+        if (nearestMatch && simpleRange) {
+            results = handleSimpleInterval(coverage, times);
+        } else {
+            DateFinder finder = nearestMatch ? DateFinder.NEAREST : DateFinder.QUERY;
+            results = finder.findDates(wms, coverage, times);
+        }
+        return results;
+    }
+
+    private List<DateRange> handleSimpleInterval(CoverageInfo coverage, List<Object> times)
+            throws IOException {
+        DateFinder finder = DateFinder.QUERY;
+        List<DateRange> results = finder.findDates(wms, coverage, times);
+        if (results.size() == 0) results = DateFinder.NEAREST.findDates(wms, coverage, times);
+        return results;
     }
 
     public String buildTypeDescription(MapLayerInfo layer) {

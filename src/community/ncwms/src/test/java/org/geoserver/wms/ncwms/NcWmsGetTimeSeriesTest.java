@@ -38,6 +38,8 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     static final String TIME_RANGE_COMPLETE =
             "&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z";
 
+    static final String TIME_RANGE_NO_VALUES = "&TIME=2005/2006";
+
     static final String TIME_RANGE_EXTRA =
             "&TIME=2008-10-01T00:00:00.000Z/2008-11-01T00:00:00.000Z";
 
@@ -389,5 +391,56 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         assertPixel(image, 679, 50, new Color(255, 85, 85));
         assertPixel(image, 75, 536, new Color(255, 85, 85));
         assertPixel(image, 317, 373, Color.WHITE);
+    }
+
+    /**
+     * Ensures we get all values in interval when nearest match is enabled and querying with a
+     * simple interval without period
+     */
+    @Test
+    public void testTimeRangesNearestWithSimpleRange() throws Exception {
+        setupRasterDimension(
+                WATTEMP,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                "degrees",
+                true,
+                null);
+        String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_COMPLETE;
+        String rawCsv = getAsString(url);
+        String[] csvLines = rawCsv.split("\\r?\\n");
+        Assert.assertEquals("CSV Number of results", 5, csvLines.length);
+        assertCsvLine(
+                "value 2008-10-31",
+                csvLines[3],
+                "2008-10-31T00:00:00.000Z",
+                16.88799985218793,
+                0.000000000001);
+        assertCsvLine(
+                "value 2008-11-01",
+                csvLines[4],
+                "2008-11-01T00:00:00.000Z",
+                17.120999863254838,
+                0.000000000001);
+    }
+
+    /** Ensures that with no values found a csv with no dates listed is produced */
+    @Test
+    public void testTimeRangesNearestWithNoValuesFound() throws Exception {
+        setupRasterDimension(
+                WATTEMP,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                "degrees",
+                true,
+                "PT101M/PT0H");
+        String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_NO_VALUES;
+        String rawCsv = getAsString(url);
+        String[] csvLines = rawCsv.split("\\r?\\n");
+        Assert.assertEquals("CSV Number of results", 3, csvLines.length);
     }
 }

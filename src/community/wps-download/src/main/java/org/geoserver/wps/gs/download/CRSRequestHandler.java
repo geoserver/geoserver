@@ -21,15 +21,19 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.gce.imagemosaic.Utils;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -86,6 +90,15 @@ class CRSRequestHandler {
     /** The computed targetEnvelope after initialization */
     private ReferencedEnvelope targetEnvelope;
 
+    /**
+     * When minimizing the reprojections, there might be the case that the requested area covers
+     * granules in different CRSs. Take note of a reference feature from the requested CRS for
+     * better gridGeometry alignment.
+     */
+    private SimpleFeature referenceFeatureForAlignment;
+
+    private String crsAttribute;
+
     public CRSRequestHandler(
             GridCoverage2DReader reader,
             Catalog catalog,
@@ -120,6 +133,10 @@ class CRSRequestHandler {
 
     public void setUseBestResolutionOnMatchingCRS(boolean bestResolutionOnMatchingCrs) {
         this.useBestResolutionOnMatchingCRS = bestResolutionOnMatchingCrs;
+    }
+
+    public SimpleFeature getReferenceFeatureForAlignment() {
+        return referenceFeatureForAlignment;
     }
 
     public Map<String, DimensionDescriptor> getDescriptors() {
@@ -173,6 +190,8 @@ class CRSRequestHandler {
                             .getDimensionDescriptors(coverageName)
                             .stream()
                             .collect(Collectors.toMap(dd -> dd.getName(), dd -> dd));
+            DimensionDescriptor crsDescriptor = descriptors.get(DimensionDescriptor.CRS);
+            crsAttribute = crsDescriptor != null ? crsDescriptor.getStartAttribute() : null;
         } else {
             descriptors = Collections.emptyMap();
         }
@@ -184,9 +203,12 @@ class CRSRequestHandler {
                         && roi != null
                         && originalTargetCRS != null
                         && descriptors.containsKey(DimensionDescriptor.CRS)
+                        && (referenceFeatureForAlignment =
+                                        haveGranulesMatchingTargetCRS(
+                                                reader, originalTargetCRS, roi, filter))
+                                != null
                         && !CRS.equalsIgnoreMetadata(originalNativeCRS, originalTargetCRS)
-                        && Utils.isSupportedCRS(reader, originalTargetCRS)
-                        && haveGranulesMatchingTargetCRS(reader, originalTargetCRS, roi, filter);
+                        && Utils.isSupportedCRS(reader, originalTargetCRS);
 
         MathTransform reprojectionTransform = null;
         CoordinateReferenceSystem nativeCRS = getSelectedNativeCRS();
@@ -231,8 +253,13 @@ class CRSRequestHandler {
         initialized = true;
     }
 
-    /** Checking if at least a granule in the ROI has the same CRS as targetCRS */
-    private boolean haveGranulesMatchingTargetCRS(
+    /**
+     * Checking if at least a granule in the ROI has the same CRS as targetCRS and return the
+     * related feature (returning null if no granules are found)
+     *
+     * @return
+     */
+    private SimpleFeature haveGranulesMatchingTargetCRS(
             GridCoverage2DReader reader,
             CoordinateReferenceSystem targetCRS,
             Geometry roi,
@@ -241,11 +268,11 @@ class CRSRequestHandler {
         if (structuredReader == null) {
             // only StructuredGridCoverage2DReader can support requests in targetCRS,
             // since they can expose a crs attribute
-            return false;
+            return null;
         }
         Integer crsCode = CRS.lookupEpsgCode(targetCRS, false);
         if (crsCode == null) {
-            return false;
+            return null;
         }
         String coverageName = reader.getGridCoverageNames()[0];
         GranuleSource granules = structuredReader.getGranules(coverageName, true);
@@ -271,14 +298,43 @@ class CRSRequestHandler {
         query = new Query();
         query.setFilter(Predicates.and(filters));
         SimpleFeatureCollection features = granules.getGranules(query);
-
-        if (features == null || features.isEmpty()) {
-            return false;
+        if (features != null && !features.isEmpty()) {
+            try (SimpleFeatureIterator iterator = features.features()) {
+                return iterator.next();
+            }
         }
-        return true;
+        return null;
     }
 
     public CoordinateReferenceSystem getCRS(String granuleCrsCode) throws IOException {
         return catalog.getResourcePool().getCRS(granuleCrsCode);
+    }
+
+    /** Compute the bbox of the provided feature, taking into account its native CRS if available */
+    public BoundingBox computeBBox(SimpleFeature feature, CoordinateReferenceSystem schemaCRS)
+            throws FactoryException, TransformException, IOException {
+        ROIManager roiManager = getRoiManager();
+        if (roiManager != null && canUseTargetCRSAsNative()) {
+            String granuleCrsCode = (String) feature.getAttribute(crsAttribute);
+            CoordinateReferenceSystem granuleCRS = getCRS(granuleCrsCode);
+            CoordinateReferenceSystem targetCRS = getSelectedTargetCRS();
+            Geometry geom = (Geometry) feature.getDefaultGeometry();
+            MathTransform transform = CRS.findMathTransform(schemaCRS, targetCRS);
+            if (CRS.equalsIgnoreMetadata(targetCRS, granuleCRS)) {
+                // The granule has same CRS as TargetCRS
+                // Do not reproject the boundingBox itself but let's
+                // reproject the geometry to get the native bbox
+                if (!transform.isIdentity()) {
+                    geom = JTS.transform(geom, transform);
+                }
+                return JTS.bounds(geom, targetCRS);
+            } else {
+                // Reproject the granule geometry to the requested CRS
+                return JTS.bounds(geom, schemaCRS).transform(targetCRS, true);
+            }
+        } else {
+            // Classic behaviour
+            return feature.getBounds();
+        }
     }
 }

@@ -187,12 +187,10 @@ public class ImportController extends ImportBaseController {
                 if (targetWorkspace != null) {
                     // resolve to the 'real' workspace
                     WorkspaceInfo ws =
-                            importer.getCatalog()
-                                    .getWorkspaceByName(newContext.getTargetWorkspace().getName());
+                            importer.getCatalog().getWorkspaceByName(targetWorkspace.getName());
                     if (ws == null) {
                         throw new RestException(
-                                "Target workspace does not exist : "
-                                        + newContext.getTargetStore().getName(),
+                                "Target workspace does not exist : " + targetWorkspace.getName(),
                                 HttpStatus.BAD_REQUEST);
                     }
                     context.setTargetWorkspace(ws);
@@ -200,12 +198,10 @@ public class ImportController extends ImportBaseController {
                 if (targetStore != null) {
                     StoreInfo ts =
                             importer.getCatalog()
-                                    .getStoreByName(
-                                            newContext.getTargetStore().getName(), StoreInfo.class);
+                                    .getStoreByName(targetStore.getName(), StoreInfo.class);
                     if (ts == null) {
                         throw new RestException(
-                                "Target store does not exist : "
-                                        + newContext.getTargetStore().getName(),
+                                "Target store does not exist : " + targetStore.getName(),
                                 HttpStatus.BAD_REQUEST);
                     }
                     context.setTargetStore(ts);

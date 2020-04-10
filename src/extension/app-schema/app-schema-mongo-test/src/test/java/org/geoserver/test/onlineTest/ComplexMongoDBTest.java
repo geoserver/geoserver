@@ -51,7 +51,7 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                3,
+                4,
                 "/wfs:FeatureCollection/gml:featureMembers/st:StationFeature");
     }
 

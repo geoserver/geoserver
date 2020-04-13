@@ -24,8 +24,18 @@
       <directory>release</directory>
       <outputDirectory></outputDirectory>
       <includes>
-         <include>GPL.md</include>
          <include>NOTICE.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory>license</outputDirectory>
+      <includes>
+         <include>GPL.md</include>
+         <include>LGPL.md</include>
+         <include>apache-1.1.txt</include>
+         <include>apache-2.0.txt</include>
+         <include>epl-1.0.txt</include>
       </includes>
     </fileSet>
   </fileSets>

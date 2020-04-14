@@ -62,7 +62,6 @@
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
-          <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
@@ -327,9 +326,9 @@
           <version>3.2.0</version>
           <configuration>
             <descriptors>
-              <descriptor>release/ext-groovy.xml</descriptor>
+              <!--descriptor>release/ext-groovy.xml</descriptor-->
               <descriptor>release/ext-javascript.xml</descriptor>
-              <descriptor>release/ext-python.xml</descriptor>
+              <!--descriptor>release/ext-python.xml</descriptor-->
             </descriptors>
           </configuration>
          </plugin>

@@ -7,7 +7,7 @@
   <fileSets>
     <fileSet>
       <directory>target/site/apidocs</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <includes>
          <include>**/*</include>
       </includes>
@@ -16,8 +16,15 @@
       <directory>release</directory>
       <outputDirectory></outputDirectory>
       <includes>
-         <include>GPL.md</include>
          <include>NOTICE.md</include>
+         <include>README.txt</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory>license</outputDirectory>
+      <includes>
+         <include>GPL.md</include>
       </includes>
     </fileSet>
   </fileSets>

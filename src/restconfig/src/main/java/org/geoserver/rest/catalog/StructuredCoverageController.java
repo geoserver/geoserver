@@ -150,10 +150,14 @@ public class StructuredCoverageController extends AbstractCatalogController {
             @PathVariable String storeName,
             @PathVariable String coverageName,
             @RequestParam(name = "filter", required = false) String filter,
-            @RequestParam(name = "purge", required = false, defaultValue = "none") String purge)
+            @RequestParam(name = "purge", required = false, defaultValue = "none") String purge,
+            @RequestParam(name = "updateBBox", required = false) Boolean updateBBox)
             throws IOException {
+
+        if (updateBBox == null) updateBBox = false;
         Query q = toQuery(filter, 0, 1);
-        granulesDeleteInternal(workspaceName, storeName, coverageName, purge, q.getFilter());
+        granulesDeleteInternal(
+                workspaceName, storeName, coverageName, purge, q.getFilter(), updateBBox);
     }
 
     /*
@@ -219,13 +223,15 @@ public class StructuredCoverageController extends AbstractCatalogController {
             @PathVariable String storeName,
             @PathVariable String coverageName,
             @PathVariable String granuleId,
-            @RequestParam(name = "purge", required = false, defaultValue = "none") String purge)
+            @RequestParam(name = "purge", required = false, defaultValue = "none") String purge,
+            @RequestParam(name = "updateBBox", required = false) Boolean updateBBox)
             throws IOException {
 
+        if (updateBBox == null) updateBBox = false;
         // gsConfig allows for weird calls, like granules/granule.id/.json
         Filter filter = getGranuleIdFilter(granuleId);
 
-        granulesDeleteInternal(workspaceName, storeName, coverageName, purge, filter);
+        granulesDeleteInternal(workspaceName, storeName, coverageName, purge, filter, updateBBox);
     }
 
     private void granulesDeleteInternal(
@@ -233,7 +239,8 @@ public class StructuredCoverageController extends AbstractCatalogController {
             String storeName,
             String coverageName,
             String purge,
-            Filter filter)
+            Filter filter,
+            boolean updateBBox)
             throws IOException {
         GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
         if (purge != null) {
@@ -242,6 +249,12 @@ public class StructuredCoverageController extends AbstractCatalogController {
             store.removeGranules(filter, hints);
         } else {
             store.removeGranules(filter);
+        }
+        if (updateBBox) {
+            // before updating checks that the delete request
+            // has not been performed over all granules
+            if (filter == null || (!filter.equals(Filter.INCLUDE)))
+                new MosaicInfoBBoxHandler(catalog).updateNativeBBox(workspaceName, storeName, null);
         }
     }
 

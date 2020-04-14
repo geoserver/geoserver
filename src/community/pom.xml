@@ -36,9 +36,6 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-arcsde.xml</descriptor>
-          <!-- <descriptor>release/ext-groovy.xml</descriptor> -->
-          <!-- <descriptor>release/ext-javascript.xml</descriptor> -->
-          <!-- <descriptor>release/ext-spatialite.xml</descriptor> -->
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
@@ -49,8 +46,6 @@
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
           <descriptor>release/ext-flatgeobuf.xml</descriptor>
-          <!-- If you are re-enabling this, remember to re-add the documentation -->
-          <!-- <descriptor>release/ext-rest-ext.xml</descriptor> -->
           <descriptor>release/ext-kmlppio.xml</descriptor>
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
@@ -59,8 +54,6 @@
           <descriptor>release/ext-activeMQ.xml</descriptor>
           <descriptor>release/ext-solr.xml</descriptor>
           <descriptor>release/ext-elasticsearch.xml</descriptor>
-          <!-- If you are re-enabling this, remember to re-add the documentation -->
-          <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>
           <descriptor>release/ext-gwc-s3.xml</descriptor>
           <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
@@ -69,11 +62,9 @@
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
-          <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
-          <!--descriptor>release/ext-geogig.xml</descriptor>-->
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
@@ -93,7 +84,6 @@
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
           <descriptor>release/ext-mapml.xml</descriptor>
-          <!-- <descriptor>release/ext-monitor-hibernate.xml</descriptor> -->
           <descriptor>release/ext-qos.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
           <descriptor>release/ext-wmts-styles.xml</descriptor>
@@ -229,7 +219,6 @@
       <modules>
         <module>arcsde</module>
         <module>dds</module>
-        <!-- <module>spatialite</module> -->
         <module>jdbcconfig</module>
         <module>script</module>
         <module>wms-eo</module>
@@ -239,7 +228,6 @@
         <module>pgraster</module>
         <module>dyndimension</module>
         <module>flatgeobuf</module>
-        <!-- <module>rest-ext</module> -->
         <module>gpxppio</module>
         <module>kmlppio</module>
         <module>wps-download</module>
@@ -247,12 +235,10 @@
         <module>hz-cluster</module>
         <module>solr</module>
         <module>elasticsearch</module>
-        <!-- <module>rest-upload</module> -->
         <module>params-extractor</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
-        <!--<module>geogig</module>-->
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
@@ -283,7 +269,6 @@
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
         <module>wfs3</module>
-        <!-- <module>monitor-hibernate</module> -->
         <module>qos</module>
         <module>mapml</module>
         <module>web-ogr</module>
@@ -299,6 +284,19 @@
       <modules>
         <module>spatialite</module>
       </modules>
+      <build>
+       <plugins>
+         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <descriptors>
+              <descriptor>release/ext-spatialite.xml</descriptor>
+            </descriptors>
+          </configuration>
+         </plugin>
+       </plugins>
+      </build>
     </profile>
     <profile>
       <id>sextante</id>
@@ -321,6 +319,21 @@
       <modules>
         <module>script</module>
       </modules>
+      <build>
+       <plugins>
+         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <descriptors>
+              <!--descriptor>release/ext-groovy.xml</descriptor-->
+              <descriptor>release/ext-javascript.xml</descriptor>
+              <!--descriptor>release/ext-python.xml</descriptor-->
+            </descriptors>
+          </configuration>
+         </plugin>
+       </plugins>
+      </build>
     </profile>
     <profile>
       <id>pgraster</id>
@@ -388,6 +401,20 @@
       <modules>
         <module>rest-ext</module>
       </modules>
+      <build>
+       <plugins>
+         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <descriptors>
+              <!-- If you are re-enabling this, remember to re-add the documentation -->
+              <descriptor>release/ext-rest-ext.xml</descriptor>
+            </descriptors>
+          </configuration>
+         </plugin>
+       </plugins>
+      </build>
     </profile>
     <profile>      
       <id>kmlppio</id>
@@ -413,12 +440,28 @@
         <module>elasticsearch</module>
       </modules>
     </profile>
+    
     <profile>
       <id>rest-upload</id>
       <modules>
         <module>rest-upload</module>
       </modules>
+      <build>
+       <plugins>
+         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <descriptors>
+              <!-- If you are re-enabling this, remember to re-add the documentation -->
+              <descriptor>release/ext-rest-upload.xml</descriptor>
+            </descriptors>
+          </configuration>
+         </plugin>
+       </plugins>
+      </build>
     </profile>
+    
     <profile>
       <id>jms-cluster</id>
       <modules>
@@ -528,6 +571,19 @@
       <modules>
         <module>geogig</module>
       </modules>
+      <build>
+       <plugins>
+         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <descriptors>
+              <descriptor>release/ext-geogig.xml</descriptor>
+            </descriptors>
+          </configuration>
+         </plugin>
+       </plugins>
+      </build>
     </profile>
     <profile>
       <id>oauth2-google</id>
@@ -646,6 +702,19 @@
       <modules>
         <module>monitor-hibernate</module>
       </modules>
+      <build>
+       <plugins>
+         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <descriptors>
+              <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+            </descriptors>
+          </configuration>
+         </plugin>
+       </plugins>
+      </build>
     </profile>
     <profile>
       <id>mapml</id>

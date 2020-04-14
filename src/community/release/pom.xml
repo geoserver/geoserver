@@ -33,24 +33,6 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>
-
-   <dependency>
-     <groupId>org.geoserver.script</groupId>
-     <artifactId>gs-script-py</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <!--
-   <dependency>
-     <groupId>org.geoserver.script</groupId>
-     <artifactId>gs-script-js</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.script</groupId>
-     <artifactId>gs-script-groovy</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>
@@ -96,11 +78,6 @@
      <artifactId>gs-flatgeobuf</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!-- <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-rest-ext</artifactId>
-     <version>${project.version}</version>
-   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-pgraster</artifactId>
@@ -186,13 +163,6 @@
      <artifactId>gs-gwc-sqlite</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!--
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-geogig</artifactId>
-     <version>${project.version}</version>
-   </dependency>
--->
    <dependency>
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-core</artifactId>
@@ -318,13 +288,6 @@
      <artifactId>gs-mapml</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!--
-   <dependency>
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-monitor-hibernate</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   -->
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-s3-geotiff</artifactId>
@@ -440,4 +403,87 @@
    </plugin>
   </plugins>
  </build>
+ 
+ <!-- profiles for individual modules -->
+ <profiles>
+   <profile>
+     <id>rest-ext</id>
+     <activation>
+       <property><name>rest-ext</name></property>
+     </activation>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-rest-ext</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+   <profile>
+     <id>script</id>
+     <activation>
+       <property><name>script</name></property>
+     </activation>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.script</groupId>
+         <artifactId>gs-script-py</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.geoserver.script</groupId>
+         <artifactId>gs-script-js</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.geoserver.script</groupId>
+         <artifactId>gs-script-groovy</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+   <profile>
+     <id>monitor-hibernate</id>
+     <dependencies>
+       <dependency>
+        <groupId>org.geoserver.community</groupId>
+        <artifactId>gs-monitor-hibernate</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+   <profile>
+     <id>geogig</id>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-geogig</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+    </dependencies>
+   </profile>
+   <profile>
+     <id>rest-upload</id>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-rest-upload</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+    <profile>
+      <id>spatialite</id>
+      <modules>
+        <module>spatialite</module>
+      </modules>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-spatialite</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+    </profile>
+ </profiles>
 </project>

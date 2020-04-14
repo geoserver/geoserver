@@ -13,6 +13,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>release</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>README.txt</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>target</directory>
       <includes>
         <include>VERSION*</include>

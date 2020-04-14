@@ -28,8 +28,6 @@
       <includes>
          <include>LGPL.md</include>
          <include>GEOTOOLS_NOTICE.txt</include>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
       </includes>
     </fileSet>
   </fileSets>

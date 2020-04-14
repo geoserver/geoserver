@@ -7,16 +7,15 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.rest.catalog.CoverageStoreFileUploadTest.testBBoxLayerConfiguration;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,11 +44,13 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.util.IOUtils;
 import org.geotools.util.URLs;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -58,6 +59,8 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     private static final String WATER_VIEW = "waterView";
     protected static QName WATTEMP =
             new QName(MockData.WCS_PREFIX, "watertemp", MockData.WCS_PREFIX);
+    protected static QName BBOXTEST =
+            new QName(MockData.WCS_PREFIX, "bboxtest", MockData.WCS_PREFIX);
     protected static QName S2_OVR = new QName(MockData.WCS_PREFIX, "s2_ovr", MockData.WCS_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
     private static final String RGB_IR_VIEW = "RgbIrView";
@@ -780,7 +783,6 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                         RestBaseController.ROOT_PATH
                                 + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
         assertEquals(200, response.getStatus());
-
         // try to get it, it should provide a 404 now
         response =
                 getAsServletResponse(
@@ -866,5 +868,92 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         List<String> files =
                 mosaicContents.list().stream().map(r -> r.name()).collect(Collectors.toList());
         return files;
+    }
+
+    @Test
+    public void testDefaultBehaviourUpdateBBoxSingleGranuleDelete() throws Exception {
+        CoverageStoreInfo storeInfo = setUpBBoxTest();
+
+        MockHttpServletResponse responseDel =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/bboxtest/coverages/bboxtest/index/granules/bboxtest.2.xml");
+        assertEquals(200, responseDel.getStatus());
+        // no updatebbox param, native bbox will not be updated, thus asserting for no equality
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
+    }
+
+    @Test
+    public void testUpdateBBoxTrueParameterSingleGranuleDelete() throws Exception {
+        CoverageStoreInfo storeInfo = setUpBBoxTest();
+
+        MockHttpServletResponse responseDel =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/bboxtest/coverages/bboxtest/index/granules/bboxtest.2.xml?updateBBox=true");
+        assertEquals(200, responseDel.getStatus());
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertEquals(current, old), catalog);
+    }
+
+    @Test
+    public void testUpdateBBoxWithDeleteByFilterDefaultBeahaviour() throws Exception {
+        CoverageStoreInfo storeInfo = setUpBBoxTest();
+        MockHttpServletResponse response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/bboxtest/coverages"
+                                + "/bboxtest/index/granules?filter=location = 'test_bbox_raster2.tiff'");
+        assertEquals(200, response.getStatus());
+        // no updatebbox param, native bbox will not be updated, thus asserting for no equality
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
+    }
+
+    @Test
+    public void testUpdateBBoxWithDeleteByFilter() throws Exception {
+        CoverageStoreInfo storeInfo = setUpBBoxTest();
+        MockHttpServletResponse response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/bboxtest/coverages"
+                                + "/bboxtest/index/granules?filter=location = 'test_bbox_raster2.tiff'&updateBBox=true");
+        assertEquals(200, response.getStatus());
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertEquals(current, old), catalog);
+    }
+
+    private CoverageStoreInfo setUpBBoxTest() throws Exception {
+        final Catalog cat = getCatalog();
+        getGeoServer().reset();
+        // remove the old files
+        File dir = new File(getTestData().getDataDirectoryRoot(), "bboxtest");
+        FileUtils.deleteQuietly(dir);
+        getTestData()
+                .addRasterLayer(
+                        BBOXTEST,
+                        "test_bbox_raster1.zip",
+                        null,
+                        null,
+                        StructuredCoverageStoresTest.class,
+                        cat);
+        byte[] bytes = null;
+        URL zipHarvest = getClass().getResource("test_bbox_granules.zip");
+        try (InputStream is = zipHarvest.openStream()) {
+            bytes = IOUtils.toByteArray(is);
+        }
+        // Create the POST request
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/bboxtest/file.imagemosaic");
+        request.setMethod("POST");
+        request.setContentType("application/zip");
+        request.setParameter("updateBBox", "true");
+        request.setContent(bytes);
+        request.addHeader("Content-type", "application/zip");
+        dispatch(request);
+        return cat.getCoverageStoreByName("bboxtest");
     }
 }

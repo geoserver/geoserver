@@ -14,13 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CatalogRepository;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.SingleGridCoverage2DReader;
+import org.geoserver.catalog.*;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Paths;
@@ -32,9 +26,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.wrapper.RestWrapper;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.coverage.grid.io.*;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -85,9 +77,11 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             @PathVariable UploadMethod method,
             @PathVariable String format,
             @RequestParam(required = false) String filename,
+            @RequestParam(name = "updateBBox", required = false) Boolean updateBBox,
             HttpServletRequest request)
             throws IOException {
 
+        if (updateBBox == null) updateBBox = false;
         // check the coverage store exists
         CoverageStoreInfo info = catalog.getCoverageStoreByName(workspaceName, storeName);
         if (info == null) {
@@ -118,6 +112,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
         // File Harvesting
         sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
+        if (updateBBox) new MosaicInfoBBoxHandler(catalog).updateNativeBBox(info, sr);
     }
 
     @PutMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})

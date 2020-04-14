@@ -5,9 +5,7 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,15 +14,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Files;
@@ -39,6 +34,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.GeoTools;
 import org.junit.Before;
@@ -575,5 +571,109 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         // add the store
         getCatalog().add(cinfo);
+    }
+
+    @Test
+    public void testDefaultBehaviourUpdateBBoxPOST() throws Exception {
+        setUpBBoxTest("bboxtest");
+        byte[] bytes = null;
+        CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("bboxtest");
+        assertNotNull(storeInfo);
+        CoverageInfo ci = getCatalog().getCoverageByName("bboxtest");
+        assertNotNull(ci);
+        assertEquals(storeInfo, ci.getStore());
+        // Harvesting
+        URL zipHarvest = getClass().getResource("test_bbox_granules.zip");
+        try (InputStream is = zipHarvest.openStream()) {
+            bytes = IOUtils.toByteArray(is);
+        }
+        // Create the POST request
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/bboxtest/file.imagemosaic");
+        request.setMethod("POST");
+        request.setContentType("application/zip");
+        request.setContent(bytes);
+        request.addHeader("Content-type", "application/zip");
+        dispatch(request);
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
+        CoverageInfo coverage = getCatalog().getResourceByName("bboxtest", CoverageInfo.class);
+        if (coverage != null) {
+            removeStore(
+                    coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
+        }
+    }
+
+    @Test
+    public void testUpdateBBoxTrueParameterPOST() throws Exception {
+
+        setUpBBoxTest("bboxtest2");
+        byte[] bytes = null;
+        // check the coverage is actually there
+        CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("bboxtest2");
+        assertNotNull(storeInfo);
+        CoverageInfo ci = getCatalog().getCoverageByName("bboxtest2");
+        assertNotNull(ci);
+        assertEquals(storeInfo, ci.getStore());
+
+        // Harvesting
+        URL zipHarvest = getClass().getResource("test_bbox_granules.zip");
+
+        try (InputStream is = zipHarvest.openStream()) {
+            bytes = IOUtils.toByteArray(is);
+        }
+        // Create the POST request
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/bboxtest2/file.imagemosaic");
+        request.setMethod("POST");
+        request.setParameter("updateBBox", "true");
+        request.setContentType("application/zip");
+        request.setContent(bytes);
+        request.addHeader("Content-type", "application/zip");
+        dispatch(request);
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertEquals(current, old), catalog);
+        CoverageInfo coverage = getCatalog().getResourceByName("bboxtest2", CoverageInfo.class);
+        if (coverage != null) {
+            removeStore(
+                    coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
+        }
+    }
+
+    private void setUpBBoxTest(String storeName) throws Exception {
+        // Upload of the Mosaic via REST
+        URL zip = getClass().getResource("test_bbox_raster1.zip");
+        byte[] bytes = getBytes(zip);
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/"
+                                + storeName
+                                + "/file.imagemosaic",
+                        bytes,
+                        "application/zip");
+        assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
+    }
+
+    static void testBBoxLayerConfiguration(
+            CoverageStoreInfo storeInfo,
+            BiConsumer<ReferencedEnvelope, ReferencedEnvelope> assertConsumer,
+            Catalog catalog)
+            throws IOException {
+        StructuredGridCoverage2DReader sr =
+                (StructuredGridCoverage2DReader) storeInfo.getGridCoverageReader(null, null);
+        String[] coveragesNames = sr.getGridCoverageNames();
+        for (String name : coveragesNames) {
+            ReferencedEnvelope current = new ReferencedEnvelope(sr.getOriginalEnvelope(name));
+            ReferencedEnvelope old =
+                    catalog.getCoverageByCoverageStore(storeInfo, name).getNativeBoundingBox();
+            assertConsumer.accept(current, old);
+        }
     }
 }

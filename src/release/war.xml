@@ -15,7 +15,6 @@
     </fileSet>
     <fileSet>
       <directory>target</directory>
-      <outputDirectory></outputDirectory>
       <includes>
         <include>VERSION.txt</include>
       </includes>
@@ -25,6 +24,7 @@
       <outputDirectory></outputDirectory>
       <includes>
          <include>NOTICE.md</include>
+         <include>README.txt</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -39,11 +39,4 @@
       </includes>
     </fileSet>
   </fileSets>
-  <moduleSets>
-    <moduleSet>
-      <includes>
-        <include>org.geoserver.web:web-app</include>
-      </includes>
-    </moduleSet>
-  </moduleSets>
 </assembly>

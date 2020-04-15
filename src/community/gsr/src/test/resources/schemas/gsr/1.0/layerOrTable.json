@@ -1,0 +1,327 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "title":"layer/table resource",
+   "type":"object",
+   "properties":{
+      "id":{
+         "title":"layer or table identifier",
+         "type":"integer",
+         "required":true
+      },
+      "name":{
+         "title":"layer or table name",
+         "type":[
+            "null",
+            "string"
+         ]
+      },
+      "type":{
+         "title":"type ('Feature Layer' or 'Table')",
+         "type":"string",
+         "required":true
+      },
+      "description":{
+         "title":"layer or table description",
+         "type":[
+            "null",
+            "string"
+         ]
+      },
+      "copyrightText":{
+         "title":"copyright text",
+         "type":[
+            "null",
+            "string"
+         ]
+      },
+      "relationships":{
+         "title":"relationships",
+         "type":"array",
+         "items":{
+            "title":"relationship",
+            "type":"object",
+            "properties":{
+               "id":{
+                  "title":"relationship id",
+                  "type":"integer",
+                  "required":true
+               },
+               "name":{
+                  "title":"relationship name",
+                  "type":"string"
+               },
+               "relatedTableId":{
+                  "title":"related layer/table id",
+                  "type":"integer",
+                  "required":true
+               }
+            }
+         }
+      },
+      "geometryType":{
+         "title":"geometry type",
+         "description":"applicable for feature layers only",
+         "type":[
+            "null",
+            "string"
+         ]
+      },
+      "minScale":{
+         "title":"minimum scale denominator",
+         "description":"applicable for feature layers only",
+         "type":[
+            "null",
+            "number"
+         ]
+      },
+      "maxScale":{
+         "title":"maximum scale denominator",
+         "description":"applicable for feature layers only",
+         "type":[
+            "null",
+            "number"
+         ]
+      },
+      "extent":{
+         "title":"envelope",
+         "description":"applicable for feature layers only",
+         "$ref":"envelope.json"
+      },
+      "drawingInfo":{
+         "title":"envelope",
+         "description":"applicable for feature layers only",
+         "type":"object",
+         "properties":{
+            "renderer":{
+               "title":"renderer",
+               "$ref":"renderer.json",
+               "required":true
+            },
+            "transparency":{
+               "title":"transparency",
+               "description":"0: not transparent",
+               "type":"number"
+            },
+            "labelingInfo":{
+               "title":"labeling information",
+               "type":[
+                  "object",
+                  "null"
+               ]
+            }
+         }
+      },
+      "timeInfo":{
+         "title":"temporal information",
+         "description":"applicable only in conformance class 'time'",
+         "type":"object",
+         "properties":{
+            "startTimeField":{
+               "title":"start time (field name)",
+               "type":[
+                  "null",
+                  "string"
+               ]
+            },
+            "endTimeField":{
+               "title":"end time (field name)",
+               "type":[
+                  "null",
+                  "string"
+               ]
+            },
+            "trackIdField":{
+               "title":"track id (field name)",
+               "type":[
+                  "null",
+                  "string"
+               ]
+            },
+            "timeExtent":{
+               "title":"temporal extent",
+               "type":"array",
+               "items":{
+                  "title":"start/end time",
+                  "type":"number",
+                  "minItems":2,
+                  "maxItems":2
+               }
+            },
+            "timeReference":{
+               "title":"time reference",
+               "type":[
+                  "null",
+                  "object"
+               ],
+               "properties":{
+                  "timeZone":{
+                     "title":"time zone",
+                     "type":"string"
+                  },
+                  "respectsDaylightSaving":{
+                     "title":"respects daylight saving",
+                     "type":"boolean"
+                  }
+               }
+            },
+            "timeInterval":{
+               "title":"time interval",
+               "type":"number"
+            },
+            "timeIntervalUnits":{
+               "title":"time interval units",
+               "type":"string"
+            }
+         }
+      },
+      "hasAttachments":{
+         "title":"attachments",
+         "description":"true, if the layer / table has attachments",
+         "type":"boolean"
+      },
+      "htmlPopupType":{
+         "title":"HTML popups",
+         "description":"Indicates whether the layer / table has htmlPopups and the type of the popups: 'ServerHTMLPopupTypeNone' = no popup, 'ServerHTMLPopupTypeAsURL' = URL, 'ServerHTMLPopupTypeAsHTMLText' = HTML text",
+         "type":"string"
+      },
+      "objectIdField":{
+         "title":"object identifier field name",
+         "type":"string"
+      },
+      "globalIdField":{
+         "title":"global identifier field name",
+         "type":"string"
+      },
+      "displayField":{
+         "title":"display field name",
+         "type":"string"
+      },
+      "typeIdField":{
+         "title":"type identifier field name",
+         "type":[
+            "null",
+            "string"
+         ]
+      },
+      "fields":{
+         "title":"fields",
+         "type":"array",
+         "items":{
+            "title":"field",
+            "type":"object",
+            "properties":{
+               "name":{
+                  "title":"field name",
+                  "type":"string",
+                  "required":true
+               },
+               "type":{
+                  "title":"field type",
+                  "type":"string",
+                  "required":true
+               },
+               "length":{
+                  "title":"field length",
+                  "type":"integer"
+               },
+               "editable":{
+                  "title":"editability",
+                  "type":"boolean"
+               },
+               "domain":{
+                  "title":"domain of values",
+                  "type":[
+                     "null",
+                     "object"
+                  ],
+                  "properties":{
+                     "type":{
+                        "title":"type",
+                        "type":"string",
+                        "required":true
+                     },
+                     "name":{
+                        "title":"domain name",
+                        "type":"string",
+                        "required":true
+                     },
+                     "codedValues":{
+                        "title":"values",
+                        "type":"array",
+                        "items":{
+                           "title":"value",
+                           "type":"object",
+                           "properties":{
+                              "name":{
+                                 "title":"name",
+                                 "type":"string",
+                                 "required":true
+                              },
+                              "code":{
+                                 "title":"code",
+                                 "type":"integer",
+                                 "required":true
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "types":{
+         "title":"sub-types",
+         "type":[
+            "null",
+            "array"
+         ],
+         "items":{
+            "title":"sub-type",
+            "type":"object",
+            "properties":{
+               "id":{
+                  "title":"sub-type id",
+                  "type":"string",
+                  "required":true
+               },
+               "name":{
+                  "title":"sub-type name",
+                  "type":"string",
+                  "required":true
+               },
+               "domains":{
+                  "title":"value domains",
+                  "type":"object",
+                  "patternProperties":{
+                     "\\w*":{
+                        "$ref":"domain.json"
+                     }
+                  }
+               },
+               "templates":{
+                  "title":"templates",
+                  "type":"array",
+                  "items":{
+                     "title":"template",
+                     "$ref":"template.json"
+                  }
+               }
+            }
+         }
+      },
+      "templates":{
+         "title":"templates",
+         "type":"array",
+         "items":{
+            "title":"template",
+            "$ref":"template.json"
+         }
+      },
+      "capabilities":{
+         "title":"capabilities",
+         "description":"comma separated list of supported capabilities, e.g. 'Query,Editing'",
+         "type":"string"
+      }
+   }
+}

@@ -94,6 +94,7 @@
           <descriptor>release/ext-importer-jdbc.xml</descriptor>
           <descriptor>release/ext-json-ld.xml</descriptor>
           <descriptor>release/ext-metadata.xml</descriptor>
+          <descriptor>release/ext-gsr.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -277,6 +278,7 @@
         <module>csw-iso</module>
         <module>importer-jdbc</module>
         <module>json-ld</module>
+        <module>gsr</module>
       </modules>
     </profile>
     <profile>
@@ -750,6 +752,12 @@
       <id>json-ld</id>
       <modules>
         <module>json-ld</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gsr</id>
+      <modules>
+        <module>gsr</module>
       </modules>
     </profile>
   </profiles>  

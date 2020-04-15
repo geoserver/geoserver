@@ -1806,5 +1806,15 @@
       </dependency>
     </dependencies>
   </profile>
+    <profile>
+      <id>gsr</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gsr</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
 </profiles>
 </project>

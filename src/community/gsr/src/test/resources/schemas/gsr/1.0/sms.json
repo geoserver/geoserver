@@ -1,0 +1,58 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+    "title":"simple marker symbol",
+    "type":"object",
+    "extends":{
+        "$ref":"marker.json"
+    },
+    "properties":{
+        "type":{
+            "title":"marker type",
+            "type":"string",
+            "required":true,
+            "enum":["esriSMS"]
+        },
+        "style":{
+            "title":"marker style",
+            "description":"value SHOULD be SMSCircle, SMSCross, SMSDiamond, SMSSquare, SMSX",
+            "type":"string",
+            "required":true
+        },
+        "color":{
+            "$ref":"color.json",
+            "required":true
+        },
+        "size":{
+            "title":"size",
+            "type":"number",
+            "required":true
+        },
+        "angle":{
+            "title":"angle",
+            "type":"number"
+        },
+        "xoffset":{
+            "title":"angle",
+            "type":"number"
+        },
+        "yoffset":{
+            "title":"angle",
+            "type":"number"
+        },
+        "outline":{
+            "title":"coded values",
+            "type":"object",
+            "properties":{
+                "color":{
+                    "$ref":"color.json",
+                    "required":true
+                },
+                "width":{
+                    "type":"number",
+                    "required":true
+                }
+            }
+        }
+    }
+}

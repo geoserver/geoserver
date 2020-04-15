@@ -1,0 +1,69 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>FeatureLayer - 4.5</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.5/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.5/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        require([
+                "esri/Map",
+                "esri/views/MapView",
+                "esri/layers/FeatureLayer",
+                "dojo/domReady!layers-featurelayer"
+            ],
+            function (Map, MapView,
+                      FeatureLayer) {
+
+                var map = new Map({});
+
+                var view = new MapView({
+                    container: "viewDiv",
+                    map: map,
+                    extent: { // autocasts as new Extent()
+                        xmin: -74.255591362951,
+                        ymin: 40.4961153956091,
+                        xmax: -73.7000090634675,
+                        ymax: 40.915532775817,
+                        spatialReference: 4326
+                    }
+                });
+
+                /********************
+                 * Add feature layer
+                 ********************/
+                var featureLayer2 = new FeatureLayer({
+                    url: "http://localhost:8080/geoserver/gsr/services/cite/FeatureServer/0",
+                    outFields: ["*"]
+                });
+
+                map.add(featureLayer2);
+
+            });
+
+        require(["esri/config"], function (esriConfig) {
+            esriConfig.request.corsEnabledServers.push("localhost:8080");
+        });
+    </script>
+</head>
+
+<body>
+<div id="viewDiv"></div>
+</body>
+
+</html>
+
+<!-- Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.-->

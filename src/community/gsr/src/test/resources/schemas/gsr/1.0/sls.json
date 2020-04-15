@@ -1,0 +1,32 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+    "title":"simple marker symbol",
+    "type":"object",
+    "extends":{
+        "$ref":"marker.json"
+    },
+    "properties":{
+        "type":{
+            "title":"marker type",
+            "type":"string",
+            "required":true,
+            "enum":["esriSLS"]
+        },
+        "style":{
+            "title":"marker style",
+            "description":"value SHOULD be SLSDash, SLSDashDotDot, SLSDot, SLSNull, SLSSolid",
+            "type":"string",
+            "required":true
+        },
+        "color":{
+            "$ref":"color.json",
+            "required":true
+        },
+        "width":{
+            "title":"width",
+            "type":"number",
+            "required":true
+        }
+    }
+}

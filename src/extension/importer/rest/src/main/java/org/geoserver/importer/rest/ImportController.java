@@ -7,6 +7,8 @@ package org.geoserver.importer.rest;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -16,6 +18,7 @@ import org.geoserver.importer.Importer;
 import org.geoserver.importer.ValidationException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,6 +44,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 )
 public class ImportController extends ImportBaseController {
 
+    private static final Logger LOGGER = Logging.getLogger(ImportController.class);
+
     @Autowired
     public ImportController(Importer importer) {
         super(importer);
@@ -65,7 +70,7 @@ public class ImportController extends ImportBaseController {
                     throw new RestException(t.getMessage(), HttpStatus.BAD_REQUEST, t);
                 } else {
                     throw new RestException(
-                            "Error occured executing import", HttpStatus.INTERNAL_SERVER_ERROR, t);
+                            "Error occurred executing import", HttpStatus.INTERNAL_SERVER_ERROR, t);
                 }
             }
             return new ResponseEntity<>("", new HttpHeaders(), HttpStatus.NO_CONTENT);
@@ -75,7 +80,7 @@ public class ImportController extends ImportBaseController {
             importer.changed(context);
         } else {
             throw new RestException(
-                    "Error occured executing import", HttpStatus.INTERNAL_SERVER_ERROR);
+                    "Error occurred executing import", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
         HttpHeaders headers = new HttpHeaders();
@@ -141,6 +146,13 @@ public class ImportController extends ImportBaseController {
             try {
                 importer.delete(ctx);
             } catch (IOException ioe) {
+                LOGGER.log(
+                        Level.SEVERE,
+                        "Error deleting context "
+                                + ctx.getId()
+                                + ", message is: "
+                                + ioe.getMessage(),
+                        ioe);
                 throw new RestException(
                         "Error deleting context " + ctx.getId(),
                         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -233,6 +245,7 @@ public class ImportController extends ImportBaseController {
                 importer.run(context);
             }
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Unable to create import, message is: " + e.getMessage(), e);
             throw new RestException("Unable to create import", HttpStatus.INTERNAL_SERVER_ERROR, e);
         } catch (IllegalArgumentException iae) {
             throw new RestException(iae.getMessage(), HttpStatus.BAD_REQUEST, iae);

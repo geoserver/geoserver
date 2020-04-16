@@ -29,7 +29,7 @@ public class MBTilesMimeTypeTest extends GeoServerWicketTestSupport {
         // Getting the wms outputformats available
         Component component =
                 tester.getComponentFromLastRenderedPage(
-                        "table:listContainer:items:1:itemProperties:4:component:menu:wmsFormats");
+                        "table:listContainer:items:1:itemProperties:4:component:menu:wms:wmsFormats");
         assertNotNull(component);
         assertTrue(component instanceof RepeatingView);
         // Get the list of all the format

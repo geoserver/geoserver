@@ -252,6 +252,7 @@ old_ver=`get_pom_version src/pom.xml`
 echo "updating version numbers from $old_ver to $tag"
 find src -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
+find doc -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 
 pushd src/release > /dev/null
 shopt -s extglob

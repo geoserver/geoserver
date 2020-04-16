@@ -98,6 +98,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         formatToDataStoreFactory.put(
                 "appschema", "org.geotools.data.complex.AppSchemaDataAccessFactory");
         formatToDataStoreFactory.put("gpkg", "org.geotools.geopkg.GeoPkgDataStoreFactory");
+        formatToDataStoreFactory.put("mbtiles", "org.geotools.mbtiles.MBTilesDataStoreFactory");
     }
 
     protected static final HashMap<String, Map> dataStoreFactoryToDefaultParams = new HashMap();

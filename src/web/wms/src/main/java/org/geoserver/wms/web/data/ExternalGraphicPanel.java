@@ -8,6 +8,8 @@ package org.geoserver.wms.web.data;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,17 +19,22 @@ import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.io.IOUtils;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -41,8 +48,11 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.ParamResourceModel;
 
 /** Allows setting the data for using an ExternalImage */
 @SuppressWarnings("serial")
@@ -64,7 +74,10 @@ public class ExternalGraphicPanel extends Panel {
     private Model<String> showhideStyleModel = new Model<String>("");
 
     public ExternalGraphicPanel(
-            String id, final CompoundPropertyModel<StyleInfo> styleModel, final Form<?> styleForm) {
+            String id,
+            final CompoundPropertyModel<StyleInfo> styleModel,
+            final Form<?> styleForm,
+            AbstractStylePage stylePage) {
         super(id, styleModel);
 
         // container for ajax updates
@@ -140,6 +153,101 @@ public class ExternalGraphicPanel extends Panel {
                 });
         onlineResource.setOutputMarkupId(true);
         table.add(onlineResource);
+
+        GeoServerAjaxFormLink chooseImage =
+                new GeoServerAjaxFormLink("chooseImage", styleForm) {
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                        stylePage
+                                .getDialog()
+                                .setTitle(new ParamResourceModel("chooseImage", stylePage));
+                        stylePage.getDialog().setInitialWidth(385);
+                        stylePage.getDialog().setInitialHeight(175);
+
+                        stylePage
+                                .getDialog()
+                                .showOkCancel(
+                                        target,
+                                        new GeoServerDialog.DialogDelegate() {
+
+                                            private ChooseImagePanel imagePanel;
+
+                                            @Override
+                                            protected Component getContents(String id) {
+                                                return imagePanel =
+                                                        new ChooseImagePanel(
+                                                                id,
+                                                                styleModel
+                                                                        .getObject()
+                                                                        .getWorkspace(),
+                                                                stylePage);
+                                            }
+
+                                            @Override
+                                            protected boolean onSubmit(
+                                                    AjaxRequestTarget target, Component contents) {
+                                                String imageFileName = imagePanel.getChoice();
+                                                if (Strings.isEmpty(imageFileName)) {
+                                                    FileUpload fu = imagePanel.getFileUpload();
+                                                    imageFileName = fu.getClientFileName();
+                                                    int teller = 0;
+                                                    GeoServerDataDirectory dd =
+                                                            GeoServerApplication.get()
+                                                                    .getBeanOfType(
+                                                                            GeoServerDataDirectory
+                                                                                    .class);
+                                                    Resource res =
+                                                            dd.getStyles(
+                                                                    styleModel
+                                                                            .getObject()
+                                                                            .getWorkspace(),
+                                                                    imageFileName);
+                                                    while (Resources.exists(res)) {
+                                                        imageFileName =
+                                                                FilenameUtils.getBaseName(
+                                                                                fu
+                                                                                        .getClientFileName())
+                                                                        + "."
+                                                                        + (++teller)
+                                                                        + "."
+                                                                        + FilenameUtils
+                                                                                .getExtension(
+                                                                                        fu
+                                                                                                .getClientFileName());
+                                                        res =
+                                                                dd.getStyles(
+                                                                        styleModel
+                                                                                .getObject()
+                                                                                .getWorkspace(),
+                                                                        imageFileName);
+                                                    }
+                                                    try (InputStream is = fu.getInputStream()) {
+                                                        try (OutputStream os = res.out()) {
+                                                            IOUtils.copy(is, os);
+                                                        }
+                                                    } catch (IOException e) {
+                                                        error(e.getMessage());
+                                                        target.add(imagePanel.getFeedback());
+                                                        return false;
+                                                    }
+                                                }
+
+                                                onlineResource.setModelObject(imageFileName);
+                                                target.add(onlineResource);
+
+                                                return true;
+                                            }
+
+                                            @Override
+                                            public void onError(
+                                                    AjaxRequestTarget target, Form<?> form) {
+                                                target.add(imagePanel.getFeedback());
+                                            }
+                                        });
+                    }
+                };
+        table.add(chooseImage);
 
         // add the autofill button
         autoFill =

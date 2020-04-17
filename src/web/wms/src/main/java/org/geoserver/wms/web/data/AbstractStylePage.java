@@ -16,17 +16,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
@@ -38,16 +34,10 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -56,10 +46,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.util.io.IOUtils;
-import org.apache.wicket.util.resource.AbstractResourceStream;
-import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
@@ -156,129 +143,6 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         }
     }
 
-    class ChooseImagePanel extends Panel {
-        private WorkspaceInfo ws;
-
-        public ChooseImagePanel(String id, WorkspaceInfo ws) {
-            super(id);
-            this.ws = ws;
-        }
-
-        @Override
-        protected void onInitialize() {
-            super.onInitialize();
-
-            add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-
-            SortedSet<String> imageSet = new TreeSet<String>();
-            GeoServerDataDirectory dd =
-                    GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
-            for (Resource r : dd.getStyles(ws).list()) {
-                if (ArrayUtils.contains(
-                        styleHandler().imageExtensions(),
-                        FilenameUtils.getExtension(r.name()).toLowerCase())) {
-                    imageSet.add(r.name());
-                }
-            }
-
-            FileUploadField upload =
-                    new FileUploadField("upload", new Model<ArrayList<FileUpload>>());
-
-            Model<String> imageModel = new Model<String>();
-            DropDownChoice<String> image =
-                    new DropDownChoice<String>(
-                            "image", imageModel, new ArrayList<String>(imageSet));
-
-            Image display =
-                    new Image(
-                            "display",
-                            new ResourceStreamResource(
-                                    new AbstractResourceStream() {
-                                        InputStream is;
-
-                                        @Override
-                                        public InputStream getInputStream()
-                                                throws ResourceStreamNotFoundException {
-                                            GeoServerDataDirectory dd =
-                                                    GeoServerApplication.get()
-                                                            .getBeanOfType(
-                                                                    GeoServerDataDirectory.class);
-                                            is = dd.getStyles(ws).get(imageModel.getObject()).in();
-                                            return is;
-                                        }
-
-                                        @Override
-                                        public void close() throws IOException {
-                                            if (is != null) {
-                                                is.close();
-                                            }
-                                        }
-                                    }));
-            display.setOutputMarkupPlaceholderTag(true).setVisible(false);
-
-            image.setNullValid(true)
-                    .setOutputMarkupId(true)
-                    .add(
-                            new OnChangeAjaxBehavior() {
-                                @Override
-                                protected void onUpdate(AjaxRequestTarget target) {
-                                    upload.setModelObject(null);
-                                    display.setVisible(image.getModelObject() != null);
-                                    target.add(upload);
-                                    target.add(display);
-                                }
-                            });
-
-            upload.setOutputMarkupId(true)
-                    .add(
-                            new OnChangeAjaxBehavior() {
-                                @Override
-                                protected void onUpdate(AjaxRequestTarget target) {
-                                    image.setModelObject(null);
-                                    display.setVisible(false);
-                                    target.add(image);
-                                    target.add(display);
-                                }
-                            });
-
-            add(image);
-            add(display);
-            add(upload);
-
-            findParent(Form.class)
-                    .add(
-                            new AbstractFormValidator() {
-                                @Override
-                                public FormComponent<?>[] getDependentFormComponents() {
-                                    return new FormComponent<?>[] {image, upload};
-                                }
-
-                                @Override
-                                public void validate(Form<?> form) {
-                                    if (image.getConvertedInput() == null
-                                            && (upload.getConvertedInput() == null
-                                                    || upload.getConvertedInput().isEmpty())) {
-                                        form.error(
-                                                new ParamResourceModel("missingImage", getPage())
-                                                        .getString());
-                                    }
-                                }
-                            });
-        }
-
-        public String getChoice() {
-            return get("image").getDefaultModelObjectAsString();
-        }
-
-        public FileUpload getFileUpload() {
-            return ((FileUploadField) get("upload")).getFileUpload();
-        }
-
-        public FeedbackPanel getFeedback() {
-            return (FeedbackPanel) get("feedback");
-        }
-    }
-
     protected Form<StyleInfo> styleForm;
 
     protected AjaxTabbedPanel<ITab> tabbedPanel;
@@ -286,6 +150,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     protected CodeMirrorEditor editor;
 
     protected ModalWindow popup;
+
+    protected GeoServerDialog dialog;
 
     protected CompoundPropertyModel<StyleInfo> styleModel;
     protected IModel<LayerInfo> layerModel;
@@ -545,7 +411,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(editor);
 
         // insert picture button
-        GeoServerDialog dialog = new GeoServerDialog("dialog");
+        dialog = new GeoServerDialog("dialog");
         dialog.setOutputMarkupId(true);
         add(dialog);
         editor.addCustomButton(
@@ -567,7 +433,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                 protected Component getContents(String id) {
                                     return imagePanel =
                                             new ChooseImagePanel(
-                                                    id, styleModel.getObject().getWorkspace());
+                                                    id,
+                                                    styleModel.getObject().getWorkspace(),
+                                                    AbstractStylePage.this);
                                 }
 
                                 @Override
@@ -595,7 +463,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                                             + "."
                                                             + FilenameUtils.getExtension(
                                                                     fu.getClientFileName());
-                                            res = dd.getStyles(style.getWorkspace(), imageFileName);
+                                            res =
+                                                    dd.getStyles(
+                                                            styleModel.getObject().getWorkspace(),
+                                                            imageFileName);
                                         }
                                         try (InputStream is = fu.getInputStream()) {
                                             try (OutputStream os = res.out()) {
@@ -924,6 +795,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     protected ModalWindow getPopup() {
         return popup;
+    }
+
+    protected GeoServerDialog getDialog() {
+        return dialog;
     }
 
     protected IModel<LayerInfo> getLayerModel() {

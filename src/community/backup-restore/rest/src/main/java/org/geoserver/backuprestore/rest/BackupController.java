@@ -19,6 +19,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
+import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -71,7 +73,7 @@ public class BackupController extends AbstractBackupRestoreController {
             MediaType.APPLICATION_XML_VALUE
         }
     )
-    public Object backupGet(@RequestParam(name = "format", required = false) String format) {
+    public RestWrapper backupGet(@RequestParam(name = "format", required = false) String format) {
 
         Object lookup = lookupBackupExecutionsContext(null, true, false);
 
@@ -96,7 +98,7 @@ public class BackupController extends AbstractBackupRestoreController {
             MediaType.ALL_VALUE
         }
     )
-    public Object backupGet(
+    public RestWrapper backupGet(
             @RequestParam(name = "format", required = false) String format,
             @PathVariable String backupId,
             HttpServletResponse response) {
@@ -138,7 +140,7 @@ public class BackupController extends AbstractBackupRestoreController {
             MediaType.APPLICATION_XML_VALUE
         }
     )
-    public Object backupDelete(
+    public RestWrapper backupDelete(
             @RequestParam(name = "format", required = false) String format,
             @PathVariable String backupId)
             throws IOException {
@@ -171,10 +173,11 @@ public class BackupController extends AbstractBackupRestoreController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE
         },
-        produces = MediaType.TEXT_PLAIN_VALUE
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
-    public Object backupPost(
+    @ResponseBody
+    public RestWrapper backupPost(
             @RequestBody(required = true) BackupExecutionAdapter backup,
             @RequestHeader("Content-Type") String contentType,
             UriComponentsBuilder builder)

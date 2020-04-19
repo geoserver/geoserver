@@ -22,6 +22,8 @@
         <includes>
             <include>GPL.md</include>
             <include>NOTICE.md</include>
+            <include>LGPL.txt</include>
+            <include>GEOTOOLS_NOTICE.txt</include>
         </includes>
     </fileSet>
   </fileSets>

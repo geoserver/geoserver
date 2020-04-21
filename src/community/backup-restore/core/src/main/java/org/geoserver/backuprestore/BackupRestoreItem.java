@@ -533,32 +533,34 @@ public abstract class BackupRestoreItem<T> {
         // DataStores
         for (StoreInfo store : srcCatalog.getFacade().getStores(DataStoreInfo.class)) {
             DataStoreInfo targetDataStore = catalog.getDataStoreByName(store.getName());
-            if (targetDataStore == null) {
+            if (store != null && targetDataStore == null) {
                 WorkspaceInfo targetWorkspace =
-                        catalog.getWorkspaceByName(store.getWorkspace().getName());
-                if (targetWorkspace != null) {
-                    targetDataStore =
-                            (DataStoreInfo)
-                                    clone(
-                                            (DataStoreInfo) unwrap(unwrapSecured(store)),
-                                            targetWorkspace,
-                                            DataStoreInfo.class);
-                    if (targetDataStore != null) {
-                        catalog.add(targetDataStore);
-                        catalog.save(catalog.getDataStore(targetDataStore.getId()));
-                    }
+                        store.getWorkspace() != null
+                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                                : null;
+                targetDataStore =
+                        (DataStoreInfo)
+                                clone(
+                                        (DataStoreInfo) unwrap(unwrapSecured(store)),
+                                        targetWorkspace,
+                                        DataStoreInfo.class);
+                if (targetDataStore != null) {
+                    catalog.add(targetDataStore);
+                    catalog.save(catalog.getDataStore(targetDataStore.getId()));
                 }
             }
         }
         for (ResourceInfo resource : srcCatalog.getFacade().getResources(FeatureTypeInfo.class)) {
             FeatureTypeInfo targetResource =
                     catalog.getResourceByName(resource.getName(), FeatureTypeInfo.class);
-            if (targetResource == null) {
+            if (resource != null && targetResource == null) {
                 DataStoreInfo targetDataStore =
                         catalog.getDataStoreByName(resource.getStore().getName());
                 NamespaceInfo targetNamespace =
-                        catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix());
-                if (targetDataStore != null && targetNamespace != null) {
+                        resource.getNamespace() != null
+                                ? catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix())
+                                : null;
+                if (targetDataStore != null) {
                     targetResource =
                             clone(
                                     (FeatureTypeInfo) unwrap(unwrapSecured(resource)),
@@ -574,31 +576,33 @@ public abstract class BackupRestoreItem<T> {
         // CoverageStores
         for (StoreInfo store : srcCatalog.getFacade().getStores(CoverageStoreInfo.class)) {
             CoverageStoreInfo targetCoverageStore = catalog.getCoverageStoreByName(store.getName());
-            if (targetCoverageStore == null) {
+            if (store != null && targetCoverageStore == null) {
                 WorkspaceInfo targetWorkspace =
-                        catalog.getWorkspaceByName(store.getWorkspace().getName());
-                if (targetWorkspace != null) {
-                    targetCoverageStore =
-                            (CoverageStoreInfo)
-                                    clone(
-                                            (CoverageStoreInfo) unwrap(unwrapSecured(store)),
-                                            targetWorkspace,
-                                            CoverageStoreInfo.class);
-                    if (targetCoverageStore != null) {
-                        catalog.add(targetCoverageStore);
-                        catalog.save(catalog.getCoverageStore(targetCoverageStore.getId()));
-                    }
+                        store.getWorkspace() != null
+                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                                : null;
+                targetCoverageStore =
+                        (CoverageStoreInfo)
+                                clone(
+                                        (CoverageStoreInfo) unwrap(unwrapSecured(store)),
+                                        targetWorkspace,
+                                        CoverageStoreInfo.class);
+                if (targetCoverageStore != null) {
+                    catalog.add(targetCoverageStore);
+                    catalog.save(catalog.getCoverageStore(targetCoverageStore.getId()));
                 }
             }
         }
         for (ResourceInfo resource : srcCatalog.getFacade().getResources(CoverageInfo.class)) {
             CoverageInfo targetResource =
                     catalog.getResourceByName(resource.getName(), CoverageInfo.class);
-            if (targetResource == null) {
+            if (resource != null && targetResource == null) {
                 CoverageStoreInfo targetCoverageStore =
                         catalog.getCoverageStoreByName(resource.getStore().getName());
                 NamespaceInfo targetNamespace =
-                        catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix());
+                        resource.getNamespace() != null
+                                ? catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix())
+                                : null;
                 if (targetCoverageStore != null) {
                     targetResource =
                             clone(
@@ -614,14 +618,14 @@ public abstract class BackupRestoreItem<T> {
         // Styles
         for (StyleInfo s : srcCatalog.getFacade().getStyles()) {
             StyleInfo targetStyle = catalog.getStyleByName(s.getName());
-            if (targetStyle == null) {
+            if (s != null && targetStyle == null) {
                 WorkspaceInfo targetWorkspace =
-                        catalog.getWorkspaceByName(s.getWorkspace().getName());
-                if (targetWorkspace != null) {
-                    targetStyle = clone((StyleInfo) unwrap(s), targetWorkspace);
-                    catalog.add(targetStyle);
-                    catalog.save(catalog.getStyle(targetStyle.getId()));
-                }
+                        s.getWorkspace() != null
+                                ? catalog.getWorkspaceByName(s.getWorkspace().getName())
+                                : null;
+                targetStyle = clone((StyleInfo) unwrap(s), targetWorkspace);
+                catalog.add(targetStyle);
+                catalog.save(catalog.getStyle(targetStyle.getId()));
             }
         }
 

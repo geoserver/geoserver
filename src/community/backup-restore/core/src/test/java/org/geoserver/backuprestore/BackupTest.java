@@ -219,11 +219,11 @@ public class BackupTest extends BackupRestoreTestSupport {
             assertEquals(
                     restoreCatalog.getWorkspaces().size(), restoreCatalog.getNamespaces().size());
             assertEquals(9, restoreCatalog.getDataStores().size(), 9);
-            assertEquals(14, restoreCatalog.getResources(FeatureTypeInfo.class).size());
+            assertEquals(43, restoreCatalog.getResources(FeatureTypeInfo.class).size());
             assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
-            assertEquals(23, restoreCatalog.getStyles().size());
-            assertEquals(4, restoreCatalog.getLayers().size());
-            assertEquals(1, restoreCatalog.getLayerGroups().size());
+            assertEquals(35, restoreCatalog.getStyles().size());
+            assertEquals(33, restoreCatalog.getLayers().size());
+            assertEquals(3, restoreCatalog.getLayerGroups().size());
         }
 
         checkExtraPropertiesExists();
@@ -300,9 +300,9 @@ public class BackupTest extends BackupRestoreTestSupport {
             assertEquals(9, restoreCatalog.getDataStores().size());
             assertEquals(47, restoreCatalog.getResources(FeatureTypeInfo.class).size());
             assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
-            assertEquals(23, restoreCatalog.getStyles().size());
-            assertEquals(4, restoreCatalog.getLayers().size());
-            assertEquals(1, restoreCatalog.getLayerGroups().size());
+            assertEquals(35, restoreCatalog.getStyles().size());
+            assertEquals(33, restoreCatalog.getLayers().size());
+            assertEquals(3, restoreCatalog.getLayerGroups().size());
         }
 
         checkExtraPropertiesExists();
@@ -367,7 +367,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         assertEquals(restoreExecution.getStatus(), BatchStatus.COMPLETED);
         if (restoreCatalog.getWorkspaces().size() > 0) {
             assertEquals(9, restoreCatalog.getDataStores().size());
-            assertEquals(23, restoreCatalog.getStyles().size());
+            assertEquals(35, restoreCatalog.getStyles().size());
         }
 
         checkExtraPropertiesExists();

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
@@ -48,6 +49,8 @@ public class ImportControllerTest extends ImporterTestSupport {
         dir = unpack("shape/archsites_no_crs.zip");
         this.thirdId =
                 importer.createContext(new SpatialFile(new File(dir, "archsites.shp"))).getId();
+        if (getCatalog().getStoreByName("gs", "skunkworks", DataStoreInfo.class) != null)
+            removeStore("gs", "skunkworks");
     }
 
     @After
@@ -481,6 +484,5 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertEquals("skunkworks", ctx.getTargetStore().getName());
         resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports/" + id, "");
         assertEquals(204, resp.getStatus());
-        removeStore("gs", "skunkworks");
     }
 }

@@ -187,8 +187,7 @@ public class ImportController extends ImportBaseController {
                 Catalog cat = importer.getCatalog();
                 if (targetWorkspace != null) {
                     // resolve to the 'real' workspace
-                    WorkspaceInfo ws =
-                            cat.getWorkspaceByName(targetWorkspace.getName());
+                    WorkspaceInfo ws = cat.getWorkspaceByName(targetWorkspace.getName());
                     if (ws == null) {
                         throw new RestException(
                                 "Target workspace does not exist : " + targetWorkspace.getName(),
@@ -198,15 +197,10 @@ public class ImportController extends ImportBaseController {
                 }
                 if (targetStore != null) {
                     WorkspaceInfo ws = context.getTargetWorkspace();
+                    String storeName = targetStore.getName();
                     StoreInfo ts;
-                    if (ws != null)
-                        ts =
-                                cat.getStoreByName(
-                                        ws, newContext.getTargetStore().getName(), StoreInfo.class);
-                    else
-                        ts =
-                                cat.getStoreByName(
-                                        newContext.getTargetStore().getName(), StoreInfo.class);
+                    if (ws != null) ts = cat.getStoreByName(ws, storeName, StoreInfo.class);
+                    else ts = cat.getStoreByName(storeName, StoreInfo.class);
                     if (ts == null) {
                         throw new RestException(
                                 "Target store does not exist : " + targetStore.getName(),

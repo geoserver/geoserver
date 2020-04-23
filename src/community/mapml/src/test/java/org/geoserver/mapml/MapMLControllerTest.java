@@ -22,6 +22,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Extent;
 import org.geoserver.mapml.xml.Input;
@@ -30,6 +31,7 @@ import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.mapml.xml.UnitType;
 import org.geoserver.wms.WMSTestSupport;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -61,7 +63,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         cb.setupBounds(catalog.getLayerByName(lines).getResource());
         cb.setupBounds(catalog.getLayerByName(polygons).getResource());
         assertNotNull(cb.getNativeBounds(catalog.getLayerByName(polygons).getResource()));
-        assertNotNull(catalog.getLayerByName(polygons).getResource().boundingBox());
+        assertNotNull(catalog.getLayerByName(polygons).getResource().getLatLonBoundingBox());
 
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName("layerGroup");
@@ -230,6 +232,25 @@ public class MapMLControllerTest extends WMSTestSupport {
                                 || input.getType() == InputType.LOCATION
                                 || input.getType() == InputType.WIDTH
                                 || input.getType() == InputType.HEIGHT);
+                if (input.getType() == InputType.LOCATION
+                        && input.getUnits() == UnitType.PCRS
+                        && input.getAxis() == AxisType.EASTING) {
+                    assertTrue(
+                            "input[type=location/@min must equal -2.0037508342789244E7",
+                            input.getMin().equalsIgnoreCase("-2.0037508342789244E7"));
+                    assertTrue(
+                            "input[type=location/@max must equal 2.0037508342789244E7",
+                            input.getMax().equalsIgnoreCase("2.0037508342789244E7"));
+                } else if (input.getType() == InputType.LOCATION
+                        && input.getUnits() == UnitType.PCRS
+                        && input.getAxis() == AxisType.NORTHING) {
+                    assertTrue(
+                            "input[type=location/@min must equal -2.0037508342780735E7",
+                            input.getMin().equalsIgnoreCase("-2.0037508342780735E7"));
+                    assertTrue(
+                            "input[type=location/@max must equal 2.0037508342789244E7",
+                            input.getMax().equalsIgnoreCase("2.0037508342789244E7"));
+                }
             } else {
                 fail("Unrecognized test object type:" + o.getClass().getTypeName());
             }

@@ -34,6 +34,7 @@ public class ServiceTest extends GeoServerSystemTestSupport {
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(
+                        "FeatureServerGetLayers",
                         "FeatureServerAddFeatures",
                         "FeatureServerApplyEdits",
                         "FeatureServerDeleteFeatures",

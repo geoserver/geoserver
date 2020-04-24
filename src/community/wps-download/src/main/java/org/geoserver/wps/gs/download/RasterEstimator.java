@@ -57,14 +57,14 @@ class RasterEstimator {
     /**
      * Check the download limits for raster data.
      *
-     * @param coverage the {@link CoverageInfo} to estimate the download limits
+     * @param coverageInfo the {@link CoverageInfo} to estimate the download limits
      * @param roi the {@link Geometry} for the clip/intersection
      * @param targetCRS the reproject {@link CoordinateReferenceSystem} (useless for the moment)
      * @param clip whether or not to clip the resulting data (useless for the moment)
      * @param filter the {@link Filter} to load the data
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
-     * @param selectedBands the band indices selected for output, in case of raster input
+     * @param bandIndices the band indices selected for output, in case of raster input
      */
     public boolean execute(
             final ProgressListener progressListener,
@@ -98,23 +98,13 @@ class RasterEstimator {
         //
         // STEP 0 - Push ROI back to native CRS (if ROI is provided)
         //
-        ROIManager roiManager = null;
-        if (roi != null) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Pushing ROI to native CRS");
-            }
-            CoordinateReferenceSystem roiCRS = (CoordinateReferenceSystem) roi.getUserData();
-            roiManager = new ROIManager(roi, roiCRS);
-            // set use nativeCRS
-            roiManager.useNativeCRS(nativeCRS);
-            if (targetCRS != null) {
-                roiManager.useTargetCRS(targetCRS);
-            }
-        }
-
         // get a reader for this CoverageInfo
         final GridCoverage2DReader reader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+        CRSRequestHandler crsRequestHandler =
+                new CRSRequestHandler(reader, catalog, targetCRS, roi);
+        crsRequestHandler.setFilter(filter);
+        crsRequestHandler.init();
 
         // Area to read in pixel
         final long areaRead;
@@ -125,7 +115,8 @@ class RasterEstimator {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Reprojecting ROI");
             }
-            final Geometry safeRoiInNativeCRS = roiManager.getSafeRoiInNativeCRS();
+            final Geometry safeRoiInNativeCRS =
+                    crsRequestHandler.getRoiManager().getSafeRoiInNativeCRS();
             Geometry roiInNativeCRS_ =
                     safeRoiInNativeCRS.intersection(
                             FeatureUtilities.getPolygon(
@@ -160,8 +151,7 @@ class RasterEstimator {
 
         if (targetSizeX == null && targetSizeY == null) {
             // Ask to the GridGeometryProvider
-            GridGeometryProvider provider =
-                    new GridGeometryProvider(reader, roiManager, filter, catalog);
+            GridGeometryProvider provider = new GridGeometryProvider(crsRequestHandler);
             gg = provider.getGridGeometry();
         } else {
             gg = scaling.getGridGeometry();

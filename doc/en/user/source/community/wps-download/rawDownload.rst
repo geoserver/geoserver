@@ -35,6 +35,8 @@ The parameters to set are
  * ``targetSizeY`` : size Y in pixels of the output (optional, applies for raster input only)
  * ``selectedBands`` : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)
  * ``writeParameters`` : a set of writing parameters (optional, applies for raster input only). See :ref:`writing_params` below section for more details on writing parameters defintion.
+ * ``minimizeReprojections`` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See :ref:`heterogeneous_imagemosaic` below section for more details on this param.
+ * ``bestResolutionOnMatchingCRS`` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See :ref:`heterogeneous_imagemosaic` below section for more details on this param.
 
 The ``targetCRS`` and ``RoiCRS`` parameters are using EPSG code terminology, so, valid parameters are literals like ``EPSG:4326`` (if we are referring to a the  Geogaphic WGS84 CRS), ``EPSG:3857`` (for WGS84 Web Mercator CRS), etc.
 
@@ -426,3 +428,40 @@ The supported writing parameters are:
 
  * ``quality`` : Compression quality for lossy compression (JPEG). Value is in the range [0 : 1] where 0 is for worst quality/higher compression and 1 is for best quality/lower compression
  * ``writenodata`` : Supported value is one of true/false. Note that, by default, a `nodata TAG <https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html>`_ is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
+ 
+
+.. _heterogeneous_imagemosaic:
+
+RasterDownload of Heterogeneous CRS ImageMosaic
++++++++++++++++++++++++++++++++++++++++++++++++
+
+An ImageMosaic made of granules in different coordinate reference systems (i.e. several DEM files in different UTM zones) is defined as ImageMosaic with Heterogeneous CRS. The ImageMosaic layer will expose a common CRS as the native one (i.e. 4326).
+
+By default, mosaicking granules with different CRSs will result into a reprojection from the original CRS of the granules to that common CRS.
+
+Since 2.17, a new parameter has been defined: ``minimizeReprojections`` 
+
+It will be used on Raster Download with a defined ROI and a TargetCRS being specified. When set to true, any Granule in the ROI having a nativeCRS matching the TargetCRS will not be affected by reprojection. 
+
+Since 2.17, a new parameter has been defined: ``bestResolutionOnMatchingCRS``
+
+It will be used when ``minimizeReprojections`` is enabled too, on Raster Download with a defined ROI and a TargetCRS, without target size being specified. 
+When set to true, the download will aim to preserve the native properties of the underlying granules matching the targetCRS, as much as possible.
+
+Back to the example, a RasterDownload specifying UTM32N as TargetCRS and a ROI covering an area containing UTM32N granules will result into getting those UTM32N granules without applying any intermediate reprojection, also providing back best raw resolution available for that CRS. So, if the ImageMosaic is a mix of UTM32N DEMs at 10 km resolution and UTM33N at 100 m resolution, the underlying reading request will use 10 km resolution, being the best resolution available in the targetCRS. When no granules are matching the targetCRS, the best resolution is taken from all the granules.
+
+Make sure to configure the ImageMosaic's index to contain both crs and resolution attributes, in order to preserve as much as possible the native properties of the granules.
+
+A typical :file:`indexer.properties` of such ImageMosaic will look like this::
+
+
+    GranuleAcceptors=org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory
+    GranuleHandler=org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory
+    HeterogeneousCRS=true
+    MosaicCRS=EPSG\:XXXX
+    Schema=*the_geom:Polygon,location:String,crs:String,resX:double,resY:double
+    ResolutionXAttribute=resX
+    ResolutionYAttribute=resY
+    CrsAttribute=crs
+    PropertyCollectors=CRSExtractorSPI(crs),ResolutionXExtractorSPI(resX),ResolutionYExtractorSPI(resY)
+

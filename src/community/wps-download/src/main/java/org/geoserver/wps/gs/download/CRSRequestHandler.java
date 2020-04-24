@@ -26,6 +26,7 @@ import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
@@ -204,7 +205,7 @@ class CRSRequestHandler {
                         && originalTargetCRS != null
                         && descriptors.containsKey(DimensionDescriptor.CRS)
                         && (referenceFeatureForAlignment =
-                                        haveGranulesMatchingTargetCRS(
+                                        getFirstGranuleMatchingCRS(
                                                 reader, originalTargetCRS, roi, filter))
                                 != null
                         && !CRS.equalsIgnoreMetadata(originalNativeCRS, originalTargetCRS)
@@ -259,7 +260,7 @@ class CRSRequestHandler {
      *
      * @return
      */
-    private SimpleFeature haveGranulesMatchingTargetCRS(
+    private SimpleFeature getFirstGranuleMatchingCRS(
             GridCoverage2DReader reader,
             CoordinateReferenceSystem targetCRS,
             Geometry roi,
@@ -297,6 +298,7 @@ class CRSRequestHandler {
         // Set the query filter
         query = new Query();
         query.setFilter(Predicates.and(filters));
+        query.setHints(new Hints(GranuleSource.NATIVE_BOUNDS, true));
         SimpleFeatureCollection features = granules.getGranules(query);
         if (features != null && !features.isEmpty()) {
             try (SimpleFeatureIterator iterator = features.features()) {
@@ -315,26 +317,38 @@ class CRSRequestHandler {
             throws FactoryException, TransformException, IOException {
         ROIManager roiManager = getRoiManager();
         if (roiManager != null && canUseTargetCRSAsNative()) {
-            String granuleCrsCode = (String) feature.getAttribute(crsAttribute);
-            CoordinateReferenceSystem granuleCRS = getCRS(granuleCrsCode);
-            CoordinateReferenceSystem targetCRS = getSelectedTargetCRS();
-            Geometry geom = (Geometry) feature.getDefaultGeometry();
-            MathTransform transform = CRS.findMathTransform(schemaCRS, targetCRS);
-            if (CRS.equalsIgnoreMetadata(targetCRS, granuleCRS)) {
-                // The granule has same CRS as TargetCRS
-                // Do not reproject the boundingBox itself but let's
-                // reproject the geometry to get the native bbox
-                if (!transform.isIdentity()) {
-                    geom = JTS.transform(geom, transform);
-                }
-                return JTS.bounds(geom, targetCRS);
+            Object nativeBoundsTest = feature.getUserData().get(GranuleSource.NATIVE_BOUNDS_KEY);
+            if (nativeBoundsTest instanceof ReferencedEnvelope) {
+                ReferencedEnvelope re = (ReferencedEnvelope) nativeBoundsTest;
+                return re.transform(getSelectedTargetCRS(), true);
             } else {
-                // Reproject the granule geometry to the requested CRS
-                return JTS.bounds(geom, schemaCRS).transform(targetCRS, true);
+                return computeBBoxReproject(feature, schemaCRS);
             }
         } else {
             // Classic behaviour
             return feature.getBounds();
+        }
+    }
+
+    public BoundingBox computeBBoxReproject(
+            SimpleFeature feature, CoordinateReferenceSystem schemaCRS)
+            throws IOException, FactoryException, TransformException {
+        String granuleCrsCode = (String) feature.getAttribute(crsAttribute);
+        CoordinateReferenceSystem granuleCRS = getCRS(granuleCrsCode);
+        CoordinateReferenceSystem targetCRS = getSelectedTargetCRS();
+        Geometry geom = (Geometry) feature.getDefaultGeometry();
+        MathTransform transform = CRS.findMathTransform(schemaCRS, targetCRS);
+        if (CRS.equalsIgnoreMetadata(targetCRS, granuleCRS)) {
+            // The granule has same CRS as TargetCRS
+            // Do not reproject the boundingBox itself but let's
+            // reproject the geometry to get the native bbox
+            if (!transform.isIdentity()) {
+                geom = JTS.transform(geom, transform);
+            }
+            return JTS.bounds(geom, targetCRS);
+        } else {
+            // Reproject the granule geometry to the requested CRS
+            return JTS.bounds(geom, schemaCRS).transform(targetCRS, true);
         }
     }
 }

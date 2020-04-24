@@ -68,6 +68,7 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.image.test.ImageAssert;
@@ -75,9 +76,11 @@ import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
+import org.geotools.referencing.operation.projection.MapProjection;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,6 +96,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
 import org.springframework.util.MimeType;
@@ -1540,7 +1544,115 @@ public class DownloadProcessTest extends WPSTestSupport {
             // this comparison fail
             ImageAssert.assertEquals(referenceImage, gc.getRenderedImage(), 5);
 
+            // also make sure the referencing is the same
+            assertEquals(referenceGc.getEnvelope2D(), gc.getEnvelope2D());
         } finally {
+            if (gc != null) {
+                CoverageCleanerCallback.disposeCoverage(gc);
+            }
+            if (reader != null) {
+                reader.dispose();
+            }
+            if (referenceGc != null) {
+                CoverageCleanerCallback.disposeCoverage(referenceGc);
+            }
+            if (referenceReader != null) {
+                referenceReader.dispose();
+            }
+
+            // clean up process
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    /**
+     * Test download of raster data. The source is an ImageMosaic with Heterogeneous CRS. Sending a
+     * request with a TargetCRS matching the west-most granule CRS, and asking for the best
+     * available resolution from matching CRS will result in minimal processing and a bbox matching
+     * the native resolution of the data
+     */
+    @Test
+    public void testDownloadGranuleHeterogeneousCRSBestResolutionWestMost() throws Exception {
+        // This test uses an Heterogeneous ImageMosaic made by 3 granules on
+        // 3 different UTM zones (32631, 32632, 32633), being exposed as a 4326 Mosaic
+        // The request hits all and we request data in 32631, the west-most of the granules,
+        // making sure the native location and CRS is preserved
+
+        final WPSResourceManager resourceManager = getResourceManager();
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+
+        // Getting one of the original files being used by this test: green.tif
+        // a UTM 32631 granule with a red fill and a white line in the middle
+        // xxxxxxx
+        // xxxxxxx
+        // -------
+        // xxxxxxx
+        // xxxxxxx
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "hcrs/red.tif");
+        GeoTiffReader referenceReader = null;
+        GeoTiffReader reader = null;
+        GridCoverage2D referenceGc = null;
+        GridCoverage2D gc = null;
+        RenderedImage referenceImage = null;
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32631", true);
+        try {
+            // tests go out of the stricly sane area for one of the UTMs, could cause 0.006 meters
+            // of error and that makes the assertions fail..-
+            MapProjection.SKIP_SANITY_CHECKS = true;
+
+            referenceReader = new GeoTiffReader(file);
+            referenceGc = referenceReader.read(null);
+            referenceImage = referenceGc.getRenderedImage();
+
+            String roiWkt =
+                    "POLYGON((150000 550000, 2300000 550000, 2300000 1300000, 160000 1300000, 150000 550000))";
+            Polygon bboxRoi = (Polygon) new WKTReader2().read(roiWkt);
+
+            Parameters parameters = new Parameters();
+            List<Parameter> parametersList = parameters.getParameters();
+            parametersList.add(new Parameter("writenodata", "false"));
+            File rasterZip =
+                    downloadProcess.execute(
+                            getLayerId(HETEROGENEOUS_CRS), // layerName
+                            null, // filter
+                            "image/tiff", // outputFormat
+                            targetCRS, // targetCRS
+                            targetCRS,
+                            bboxRoi, // roi
+                            false, // cropToGeometry
+                            null, // interpolation
+                            null, // targetSizeX
+                            null, // targetSizeY
+                            null, // bandSelectIndices
+                            parameters, // Writing params
+                            true,
+                            true,
+                            new NullProgressListener() // progressListener
+                            );
+
+            Assert.assertNotNull(rasterZip);
+            final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");
+            reader = new GeoTiffReader(tiffFiles[0]);
+            gc = reader.read(null);
+            Assert.assertNotNull(gc);
+
+            // check we get the expected referencing and resolution out
+            MathTransform2D mt = gc.getGridGeometry().getGridToCRS2D();
+            assertThat(mt, CoreMatchers.instanceOf(AffineTransform2D.class));
+            AffineTransform2D at = (AffineTransform2D) mt;
+            assertEquals(1000, at.getScaleX(), 0);
+            assertEquals(-1000, at.getScaleY(), 0);
+
+            // the red  one defines left-most location, but the green one lower corner reprojected
+            // is just a smidge below 600000, bringing the alignment of output down to 599000
+            Envelope2D gcEnvelope = gc.getEnvelope2D();
+            assertEquals(160000, gcEnvelope.getMinimum(0), 0);
+            assertEquals(599000, gcEnvelope.getMinimum(1), 0);
+        } finally {
+            // re-enable checks
+            MapProjection.SKIP_SANITY_CHECKS = false;
+
             if (gc != null) {
                 CoverageCleanerCallback.disposeCoverage(gc);
             }

@@ -28,6 +28,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -457,6 +458,7 @@ class GridGeometryProvider {
         // Set the query filter
         query = new Query();
         query.setFilter(Predicates.and(filters));
+        query.setHints(new Hints(GranuleSource.NATIVE_BOUNDS, true));
 
         return query;
     }

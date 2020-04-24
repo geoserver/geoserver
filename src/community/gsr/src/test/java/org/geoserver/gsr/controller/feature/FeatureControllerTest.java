@@ -15,6 +15,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureControllerTest extends ControllerTest {
     private String query(String service, String layer, String feature, String params) {
@@ -25,6 +26,19 @@ public class FeatureControllerTest extends ControllerTest {
     public void testBasicQuery() throws Exception {
         String q = query("cite", "1", "1107531599613", "?f=json");
         JSON result = getAsJSON(q);
+        checkResult(result);
+    }
+
+    @Test
+    public void testBasicQueryPJson() throws Exception {
+        String q = query("cite", "1", "1107531599613", "?f=pjson");
+        MockHttpServletResponse response = getAsServletResponse(q);
+        assertEquals(response.getContentType(), "application/json");
+        JSON result = json(response);
+        checkResult(result);
+    }
+
+    private void checkResult(JSON result) {
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
         // result should have a field named 'feature' containing an object with 'geometry' and
         // 'attributes' fields.

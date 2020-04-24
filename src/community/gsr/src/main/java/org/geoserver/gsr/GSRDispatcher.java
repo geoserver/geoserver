@@ -77,7 +77,7 @@ public class GSRDispatcher extends APIDispatcher {
 
             public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) {
                 String f = webRequest.getParameter("f");
-                if ("json".equals(f)) {
+                if ("json".equals(f) || "pjson".equals(f)) {
                     return Collections.singletonList(MediaType.APPLICATION_JSON);
                 } else if ("geojson".equals(f)) {
                     return Collections.singletonList(

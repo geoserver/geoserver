@@ -37,22 +37,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
@@ -104,6 +92,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     public static QName LARGE_POLYGON =
             new QName(MockData.CITE_URI, "slightlyLessGiantPolygon", MockData.CITE_PREFIX);
+
+    private static final QName MOSAIC_TAZDEM =
+            new QName(MockData.SF_URI, "mosaicTazDem", MockData.SF_PREFIX);
 
     String bbox = "-130,24,-66,50";
 
@@ -218,6 +209,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addStyle(
                 "demTranslucent", "demTranslucent.sld", GetMapIntegrationTest.class, catalog);
 
+        testData.addStyle("transparencyFill", "transparencyFillStyle.sld", getClass(), catalog);
+
         Map properties = new HashMap();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
@@ -250,6 +243,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "slightlyLessGiantPolygon.properties",
                 GetMapTest.class,
                 getCatalog());
+
+        testData.addRasterLayer(
+                MOSAIC_TAZDEM,
+                "tazdemMosaic.zip",
+                null,
+                properties,
+                GetMapIntegrationTest.class,
+                catalog);
 
         addCoverageViewLayer();
 
@@ -2120,5 +2121,50 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         ImageAssert.assertEquals(image, expectedImage, 1500);
         sInfo.setLegend(null);
         catalog.save(sInfo);
+    }
+
+    @Test
+    public void testTransparencyFillFloatingMosaic() throws Exception {
+        Catalog catalog = getCatalog();
+
+        String bbox = "1.6141326165E7,-5311583.7534,1.62161191178E7,-5012341.6638";
+        BufferedImage image =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=sf:mosaicTazDem"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=330"
+                                + "&height=768"
+                                + "&srs=EPSG:3857",
+                        "image/png");
+
+        // check we have a transparent stripe between tiles in the result
+        // without using TransparencyFill process in the style
+        for (int i = 178; i < 326; i++) {
+            assertPixel(image, i, 638, Color.WHITE);
+        }
+        LayerInfo mosaicDem = catalog.getLayerByName(MOSAIC_TAZDEM.getLocalPart());
+        // add the style with the transparencyFill transformation to the layer
+        mosaicDem.setDefaultStyle(catalog.getStyleByName("transparencyFill"));
+        catalog.save(mosaicDem);
+        BufferedImage imageFill =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=sf:mosaicTazDem"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=330"
+                                + "&height=768"
+                                + "&srs=EPSG:3857",
+                        "image/png");
+
+        // check we don't have a transparent stripe between tiles in the result
+        // when using TransparencyFill process in the style
+        for (int i = 178; i < 326; i++) {
+            assertPixel(imageFill, i, 638, Color.RED);
+        }
     }
 }

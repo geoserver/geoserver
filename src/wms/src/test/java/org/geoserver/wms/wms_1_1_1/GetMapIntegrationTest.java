@@ -96,6 +96,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     private static final QName MOSAIC_TAZDEM =
             new QName(MockData.SF_URI, "mosaicTazDem", MockData.SF_PREFIX);
 
+    private static final QName MOSAIC_TAZDEM_WIDTH =
+            new QName(MockData.SF_URI, "mosaicTazDemWidth", MockData.SF_PREFIX);
+
     String bbox = "-130,24,-66,50";
 
     String styles = "states";
@@ -211,6 +214,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         testData.addStyle("transparencyFill", "transparencyFillStyle.sld", getClass(), catalog);
 
+        testData.addStyle(
+                "transparencyFillWidth", "transparencyFillStyleWidth.sld", getClass(), catalog);
+
         Map properties = new HashMap();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
@@ -247,6 +253,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addRasterLayer(
                 MOSAIC_TAZDEM,
                 "tazdemMosaic.zip",
+                null,
+                properties,
+                GetMapIntegrationTest.class,
+                catalog);
+
+        testData.addRasterLayer(
+                MOSAIC_TAZDEM_WIDTH,
+                "tazdemMosaicWidth.zip",
                 null,
                 properties,
                 GetMapIntegrationTest.class,
@@ -2165,6 +2179,55 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // when using TransparencyFill process in the style
         for (int i = 178; i < 326; i++) {
             assertPixel(imageFill, i, 638, Color.RED);
+        }
+    }
+
+    @Test
+    public void testTransparencyFillMosaicWithWidth() throws Exception {
+        Catalog catalog = getCatalog();
+        String bbox = "144.9999999997784,-43.00035408499792,145.67539538802535,-40.999999999677854";
+        BufferedImage image =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=sf:mosaicTazDemWidth"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=330"
+                                + "&height=768"
+                                + "&srs=EPSG:4210",
+                        "image/png");
+
+        // check we have a multiline transparent stripe between tiles in the result
+        // without using TransparencyFill process in the style
+        for (int i = 178; i < 326; i++) {
+            assertPixel(image, i, 637, Color.WHITE);
+            assertPixel(image, i, 638, Color.WHITE);
+            assertPixel(image, i, 639, Color.WHITE);
+        }
+        LayerInfo mosaicDem = catalog.getLayerByName(MOSAIC_TAZDEM_WIDTH.getLocalPart());
+        // add the style with the transparencyFill transformation to the layer
+        mosaicDem.setDefaultStyle(catalog.getStyleByName("transparencyFillWidth"));
+        catalog.save(mosaicDem);
+        BufferedImage imageFill =
+                getAsImage(
+                        "wms?bbox="
+                                + bbox
+                                + "&layers=sf:mosaicTazDemWidth"
+                                + "&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=330"
+                                + "&height=768"
+                                + "&srs=EPSG:4210",
+                        "image/png");
+
+        // check we don't have a multiline transparent stripe between tiles in the result
+        // when using TransparencyFill process in the style
+
+        for (int i = 178; i < 326; i++) {
+            assertPixel(imageFill, i, 637, Color.RED);
+            assertPixel(imageFill, i, 638, Color.RED);
+            assertPixel(imageFill, i, 639, Color.RED);
         }
     }
 }

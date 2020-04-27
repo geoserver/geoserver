@@ -714,7 +714,11 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     if (localService != null) {
                         localService.setWorkspace(ws);
                         if (!isDryRun()) {
-                            geoserver.add(localService);
+                            if (geoserver.getServiceByName(
+                                            ws, serviceResource.name(), ServiceInfo.class)
+                                    == null) {
+                                geoserver.add(localService);
+                            }
                         }
                         doWrite(localService, dd.get(Paths.path("workspaces", ws.getName())), "");
                     }

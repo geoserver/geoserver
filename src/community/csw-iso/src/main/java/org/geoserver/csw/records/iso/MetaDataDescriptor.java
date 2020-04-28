@@ -88,8 +88,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         try {
             index =
                     reader.parse(
-                            new URL(
-                                    "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd"));
+                            new URL("http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd"));
             indexGMX =
                     reader.parse(
                             new URL("http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd"));

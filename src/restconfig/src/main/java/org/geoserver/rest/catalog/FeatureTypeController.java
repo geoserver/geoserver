@@ -37,7 +37,6 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
-import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -246,7 +245,7 @@ public class FeatureTypeController extends AbstractCatalogController {
         // attempt to fill in metadata from underlying feature source
         try {
             FeatureSource featureSource =
-                    dataAccess.getFeatureSource(new NameImpl(ftInfo.getNativeName()));
+                    dataAccess.getFeatureSource(ftInfo.getQualifiedNativeName());
             if (featureSource != null) {
                 cb.setupMetadata(ftInfo, featureSource);
             }

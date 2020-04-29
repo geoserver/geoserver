@@ -116,6 +116,8 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      *     resolutions. i.e. by specifying a value of 5.0, if the percentage difference between
      *     native and reprojected data is below 5%, assuming that also the other two conditions are
      *     respected, the native resolutions will be preserved. Default values is 0.
+     * @param targetVerticalCRS the target VerticalCRS when downloading elevation/height related
+     *     data
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -216,6 +218,12 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         min = 0
                     )
                     Double resolutionsDifferenceTolerance,
+            @DescribeParameter(
+                        name = "targetVerticalCRS",
+                        description = "Optional Target VerticalCRS ",
+                        min = 0
+                    )
+                    CoordinateReferenceSystem targetVerticalCRS,
             final ProgressListener progressListener)
             throws ProcessException {
 
@@ -261,6 +269,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         (Interpolation)
                                 ImageUtilities.NN_INTERPOLATION_HINT.get(JAI.KEY_INTERPOLATION);
             }
+
             // Default behavior is false for backward compatibility
             if (bestResolutionOnMatchingCRS == null) {
                 bestResolutionOnMatchingCRS = false;
@@ -376,7 +385,8 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                                         writeParameters,
                                         minimizeReprojections,
                                         bestResolutionOnMatchingCRS,
-                                        resolutionsDifferenceTolerance);
+                                        resolutionsDifferenceTolerance,
+                                        targetVerticalCRS);
             } else {
 
                 // wrong type

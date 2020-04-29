@@ -84,6 +84,31 @@ public class FeatureCatalogueTest extends MDTestSupport {
     }
 
     @Test
+    public void testGetRecordsPaged() throws Exception {
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&maxRecords=20&startPosition=21";
+
+        Document d = getAsDOM(request);
+        // print(d);
+
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
+
+        assertXpathEvaluatesTo("full", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("30", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);
+
+        assertXpathEvaluatesTo("9", "count(//csw:SearchResults/gmd:MD_Metadata)", d);
+
+        assertXpathEvaluatesTo("1", "count(//csw:SearchResults/gfc:FC_FeatureCatalogue)", d);
+
+        assertFeatureCatalogue(d);
+    }
+
+    @Test
     public void testGetRecordById() throws Exception {
         String request =
                 "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=gmd:MD_Metadata"

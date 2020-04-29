@@ -854,8 +854,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Tests the ability for the ResourcePool to convert input objects for getting a specific GridCoverageReader
-     * using the CoverageReaderInputObjectConverter extension point.
+     * Tests the ability for the ResourcePool to convert input objects for getting a specific
+     * GridCoverageReader using the CoverageReaderInputObjectConverter extension point.
      *
      * @throws IOException
      */

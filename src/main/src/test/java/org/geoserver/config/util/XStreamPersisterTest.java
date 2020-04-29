@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -662,6 +663,8 @@ public class XStreamPersisterTest {
         ft.setSRS("EPSG:4326");
         ft.setNativeCRS(CRS.decode("EPSG:4326"));
         ft.setLinearizationTolerance(new Measure(10, SI.METRE));
+        Date date = new Date();
+        ft.getMetadata().put("date", date);
 
         ByteArrayOutputStream out = out();
         persister.save(ft, out);
@@ -676,6 +679,7 @@ public class XStreamPersisterTest {
         assertEquals("EPSG:4326", ft.getSRS());
         assertEquals(new Measure(10, SI.METRE), ft.getLinearizationTolerance());
         assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), ft.getNativeCRS()));
+        assertEquals(date, ft.getMetadata().get("date"));
     }
 
     @Test

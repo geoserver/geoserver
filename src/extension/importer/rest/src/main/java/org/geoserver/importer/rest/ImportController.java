@@ -7,6 +7,7 @@ package org.geoserver.importer.rest;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportContext;
@@ -183,11 +184,10 @@ public class ImportController extends ImportBaseController {
             if (newContext != null) {
                 WorkspaceInfo targetWorkspace = newContext.getTargetWorkspace();
                 StoreInfo targetStore = newContext.getTargetStore();
-
+                Catalog cat = importer.getCatalog();
                 if (targetWorkspace != null) {
                     // resolve to the 'real' workspace
-                    WorkspaceInfo ws =
-                            importer.getCatalog().getWorkspaceByName(targetWorkspace.getName());
+                    WorkspaceInfo ws = cat.getWorkspaceByName(targetWorkspace.getName());
                     if (ws == null) {
                         throw new RestException(
                                 "Target workspace does not exist : " + targetWorkspace.getName(),
@@ -196,9 +196,11 @@ public class ImportController extends ImportBaseController {
                     context.setTargetWorkspace(ws);
                 }
                 if (targetStore != null) {
-                    StoreInfo ts =
-                            importer.getCatalog()
-                                    .getStoreByName(targetStore.getName(), StoreInfo.class);
+                    WorkspaceInfo ws = context.getTargetWorkspace();
+                    String storeName = targetStore.getName();
+                    StoreInfo ts;
+                    if (ws != null) ts = cat.getStoreByName(ws, storeName, StoreInfo.class);
+                    else ts = cat.getStoreByName(storeName, StoreInfo.class);
                     if (ts == null) {
                         throw new RestException(
                                 "Target store does not exist : " + targetStore.getName(),

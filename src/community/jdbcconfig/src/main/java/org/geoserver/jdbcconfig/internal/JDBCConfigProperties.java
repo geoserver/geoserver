@@ -16,4 +16,11 @@ public class JDBCConfigProperties extends JDBCLoaderProperties {
 
     // jdbcconfig specific properties  may go here.
 
+    public boolean isRepopulate() {
+        return Boolean.parseBoolean(getProperty("repopulate", "false"));
+    }
+
+    public void setRepopulate(boolean initdb) {
+        setProperty("repopulate", String.valueOf(initdb));
+    }
 }

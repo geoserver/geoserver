@@ -512,21 +512,25 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testPutNameChangeForbidden() throws Exception {
-        getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, getCatalog());
-        String xml = "<dataStore>" + "<name>newName</name>" + "</dataStore>";
+    public void testPutNameChange() throws Exception {
+        assertNotNull(catalog.getDataStoreByName("sf", "sf"));
+        String xml = "<dataStore>" + "<name>sff</name>" + "</dataStore>";
         assertEquals(
-                403,
+                200,
                 putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml")
                         .getStatus());
+        assertNotNull(catalog.getDataStoreByName("sf", "sff"));
+        removeStore("sf", "sff");
     }
 
     @Test
-    public void testPutWorkspaceChangeForbidden() throws Exception {
+    public void testPutWorkspaceChange() throws Exception {
         String xml = "<dataStore>" + "<workspace>gs</workspace>" + "</dataStore>";
         assertEquals(
-                403,
+                200,
                 putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml")
                         .getStatus());
+        assertNotNull(catalog.getDataStoreByName("gs", "sf"));
+        removeStore("gs", "sf");
     }
 }

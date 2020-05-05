@@ -11,8 +11,6 @@ import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Kevin Smith, Boundless
@@ -27,8 +25,6 @@ public class PostgresJDBCResourceTheoryTest extends AbstractJDBCResourceTheoryTe
     protected JDBCResourceStore getStore() {
         return store;
     }
-
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {

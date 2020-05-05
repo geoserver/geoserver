@@ -8,9 +8,11 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.geoserver.platform.resource.ResourceMatchers.directory;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
@@ -18,14 +20,18 @@ import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceTheoryTest;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Kevin Smith, Boundless
  * @author Niels Charlier
  */
 public abstract class AbstractJDBCResourceTheoryTest extends ResourceTheoryTest {
+
+    @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     DatabaseTestSupport support;
 
@@ -49,6 +55,7 @@ public abstract class AbstractJDBCResourceTheoryTest extends ResourceTheoryTest 
         expect(config.isInitDb()).andStubReturn(init);
         expect(config.isEnabled()).andStubReturn(enabled);
         expect(config.isImport()).andStubReturn(init);
+        expect(config.getCachedDirs()).andStubReturn(new String[] {"DirCached"});
 
         support.stubConfig(config);
 
@@ -129,5 +136,18 @@ public abstract class AbstractJDBCResourceTheoryTest extends ResourceTheoryTest 
         out.close();
 
         assertTrue(res.lastmodified() > lastmod);
+    }
+
+    @Theory
+    public void theoryCachedDir() throws Exception {
+
+        Resource res = getResource("DirCached/test/file");
+        try (OutputStream out = res.out()) {
+            out.write(1234);
+        }
+
+        File file = new File(folder.getRoot(), "DirCached/test/file");
+        assertTrue(file.exists());
+        assertEquals(res.getContents().length, file.length());
     }
 }

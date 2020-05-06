@@ -5,8 +5,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
@@ -31,7 +30,10 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
             final WMS wms, GeoServerResourceLoader resourceLoader, final String outputFormat) {
         super(outputFormat);
         this.wms = wms;
-        this.templateManager = new FreeMarkerTemplateManager(outputFormat, wms, resourceLoader);
+        if (outputFormat.equals("application/json"))
+            this.templateManager =
+                    new FreeMarkerTemplateManager(
+                            FreeMarkerTemplateManager.OutputFormat.JSON, wms, resourceLoader);
     }
 
     /** @throws Exception if outputFormat is not a valid json mime type */
@@ -54,11 +56,11 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
 
         if (templateManager != null)
             // check before if there are free marker templates to customize response
-            usedTemplates = templateManager.writeWithNullCheck(features, fInfoReq, out);
+            usedTemplates = templateManager.write(features, fInfoReq, out);
 
+        GeoJSONGetFeatureResponse format =
+                new GeoJSONGetFeatureResponse(wms.getGeoServer(), getContentType());
         if (!usedTemplates) {
-            GeoJSONGetFeatureResponse format =
-                    new GeoJSONGetFeatureResponse(wms.getGeoServer(), getContentType());
             format.write(features, out, null);
         }
     }

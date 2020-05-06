@@ -32,7 +32,9 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     public HTMLFeatureInfoOutputFormat(final WMS wms, GeoServerResourceLoader resourceLoader) {
         super(FORMAT);
         this.wms = wms;
-        this.templateManager = new FreeMarkerTemplateManager(FORMAT, wms, resourceLoader);
+        this.templateManager =
+                new FreeMarkerTemplateManager(
+                        FreeMarkerTemplateManager.OutputFormat.HTML, wms, resourceLoader);
     }
 
     /**

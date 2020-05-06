@@ -426,11 +426,172 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         JSONObject featureInfo = (JSONObject) featuresInfo.get(0);
         // got content ftl
         assertEquals(featureInfo.get("content"), "this is the content");
-        assertNotNull(featureInfo.get("id"));
-        assertNotNull(featureInfo.get("altitude"));
-        assertNotNull(featureInfo.get("pointProperty"));
-        assertNotNull(featureInfo.get("dateTimeProperty"));
-        assertNotNull(featureInfo.get("dateProperty"));
+        assertEquals(featureInfo.get("type"), "Feature");
+        assertEquals(featureInfo.get("id"), "Points.0");
+        assertNotNull(featureInfo.get("geometry"));
+        JSONObject props = featureInfo.getJSONObject("properties");
+        assertEquals(props.get("id"), "t0000");
+        assertEquals(props.get("altitude"), "500");
+        assertNotNull(props.get("dateTimeProperty"));
+        assertNotNull(props.get("dateProperty"));
+        // got footer ftl
+        assertEquals(response.get("footer"), "this is the footer");
+        fileHeader.delete();
+        fileContent.delete();
+        fileFooter.delete();
+    }
+
+    /** Test json output with two layers having both template * */
+    @Test
+    public void testJSONFreeMarkerTemplateLayerGroup() throws Exception {
+        URL contentUrl = getClass().getResource("../content_json.ftl");
+        URL headerUrl = getClass().getResource("../header_json.ftl");
+        URL footerUrl = getClass().getResource("../footer_json.ftl");
+        GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+        Resource templates = loader.get(Paths.path("templates"));
+        Resource resForest =
+                loader.get(
+                        Paths.path(
+                                "workspaces",
+                                MockData.FORESTS.getPrefix(),
+                                "cite",
+                                MockData.FORESTS.getLocalPart()));
+        Resource resLake =
+                loader.get(
+                        Paths.path(
+                                "workspaces",
+                                MockData.LAKES.getPrefix(),
+                                "cite",
+                                MockData.LAKES.getLocalPart()));
+        File fileHeader = new File(templates.dir(), "header_json.ftl");
+        File fileFooter = new File(templates.dir(), "footer_json.ftl");
+        File fileContentForest = new File(resForest.dir(), "content_json.ftl");
+        File fileContentLake = new File(resLake.dir(), "content_json.ftl");
+        FileUtils.copyURLToFile(headerUrl, fileHeader);
+        FileUtils.copyURLToFile(contentUrl, fileContentForest);
+        FileUtils.copyURLToFile(contentUrl, fileContentLake);
+        FileUtils.copyURLToFile(footerUrl, fileFooter);
+        GeoJSONFeatureInfoResponse geoJsonResp =
+                new GeoJSONFeatureInfoResponse(
+                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
+        LayerGroupInfo lgInfo = getCatalog().getLayerGroupByName("nature");
+        List<LayerInfo> layers = new ArrayList<>();
+        for (PublishedInfo info : lgInfo.getLayers()) {
+            layers.add((LayerInfo) info);
+            queryLayers.add(new MapLayerInfo((LayerInfo) info));
+        }
+        GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
+        getFeatureInfoRequest.setQueryLayers(queryLayers);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("LAYER", lgInfo.getName());
+        Request request = new Request();
+        request.setKvp(parameters);
+        Dispatcher.REQUEST.set(request);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        for (LayerInfo l : layers) {
+            FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(l.getName());
+            fct.getFeature().add(fti.getFeatureSource(null, null).getFeatures());
+        }
+        geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        JSONObject response = JSONObject.fromObject(result);
+        // got header ftl
+        assertEquals(response.get("header"), "this is the header");
+        JSONArray featuresInfo = response.getJSONArray("features");
+        JSONObject fiLake = (JSONObject) featuresInfo.get(0);
+        assertEquals(fiLake.get("type"), "Feature");
+        assertEquals(fiLake.get("id"), "Lakes.1107531835962");
+        assertNotNull(fiLake.get("geometry"));
+        JSONObject lakeProps = fiLake.getJSONObject("properties");
+        assertEquals(lakeProps.get("NAME"), "Blue Lake");
+        assertEquals(lakeProps.get("FID"), "101");
+        JSONObject fiForest = (JSONObject) featuresInfo.get(1);
+        // got content ftl
+        assertEquals(fiForest.get("content"), "this is the content");
+        assertEquals(fiForest.get("type"), "Feature");
+        assertEquals(fiForest.get("id"), "Forests.1107531798144");
+        assertNotNull(fiForest.get("geometry"));
+        JSONObject forestProps = fiForest.getJSONObject("properties");
+        assertEquals(forestProps.get("NAME"), "Green Forest");
+        assertEquals(forestProps.get("FID"), "109");
+        // got footer ftl
+        assertEquals(response.get("footer"), "this is the footer");
+        fileHeader.delete();
+        fileContentForest.delete();
+        fileContentLake.delete();
+        fileFooter.delete();
+    }
+
+    /** Test Json output with two layers, one without template * */
+    @Test
+    public void testJSONFreeMarkerTemplateLayerGroupMixed() throws Exception {
+        URL contentUrl = getClass().getResource("../content_json.ftl");
+        URL headerUrl = getClass().getResource("../header_json.ftl");
+        URL footerUrl = getClass().getResource("../footer_json.ftl");
+        GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+        Resource templates = loader.get(Paths.path("templates"));
+        Resource resource =
+                loader.get(
+                        Paths.path(
+                                "workspaces",
+                                MockData.FORESTS.getPrefix(),
+                                "cite",
+                                MockData.FORESTS.getLocalPart()));
+        File fileHeader = new File(templates.dir(), "header_json.ftl");
+        File fileFooter = new File(templates.dir(), "footer_json.ftl");
+        File fileContent = new File(resource.dir(), "content_json.ftl");
+        FileUtils.copyURLToFile(headerUrl, fileHeader);
+        FileUtils.copyURLToFile(contentUrl, fileContent);
+        FileUtils.copyURLToFile(footerUrl, fileFooter);
+        GeoJSONFeatureInfoResponse geoJsonResp =
+                new GeoJSONFeatureInfoResponse(
+                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
+        LayerGroupInfo lgInfo = getCatalog().getLayerGroupByName("nature");
+        List<LayerInfo> layers = new ArrayList<>();
+        for (PublishedInfo info : lgInfo.getLayers()) {
+            layers.add((LayerInfo) info);
+            queryLayers.add(new MapLayerInfo((LayerInfo) info));
+        }
+        GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
+        getFeatureInfoRequest.setQueryLayers(queryLayers);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("LAYER", lgInfo.getName());
+        Request request = new Request();
+        request.setKvp(parameters);
+        Dispatcher.REQUEST.set(request);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        for (LayerInfo l : layers) {
+            FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(l.getName());
+            fct.getFeature().add(fti.getFeatureSource(null, null).getFeatures());
+        }
+        geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        JSONObject response = JSONObject.fromObject(result);
+        // got header ftl
+        assertEquals(response.get("header"), "this is the header");
+        JSONArray featuresInfo = response.getJSONArray("features");
+        JSONObject fiLake = (JSONObject) featuresInfo.get(0);
+        assertEquals(fiLake.get("type"), "Feature");
+        assertEquals(fiLake.get("id"), "Lakes.1107531835962");
+        assertNotNull(fiLake.get("geometry"));
+        JSONObject lakeProps = fiLake.getJSONObject("properties");
+        assertEquals(lakeProps.get("NAME"), "Blue Lake");
+        assertEquals(lakeProps.get("FID"), "101");
+        JSONObject fiForest = (JSONObject) featuresInfo.get(1);
+        // got content ftl
+        assertEquals(fiForest.get("content"), "this is the content");
+        assertEquals(fiForest.get("type"), "Feature");
+        assertEquals(fiForest.get("id"), "Forests.1107531798144");
+        assertNotNull(fiForest.get("geometry"));
+        JSONObject forestProps = fiForest.getJSONObject("properties");
+        assertEquals(forestProps.get("NAME"), "Green Forest");
+        assertEquals(forestProps.get("FID"), "109");
         // got footer ftl
         assertEquals(response.get("footer"), "this is the footer");
         fileHeader.delete();

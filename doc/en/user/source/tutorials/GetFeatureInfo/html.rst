@@ -1,3 +1,5 @@
+.. _tutorials_getfeatureinfo_html:
+
 HTML output format
 ===================
 

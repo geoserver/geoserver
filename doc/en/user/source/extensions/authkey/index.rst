@@ -297,8 +297,7 @@ to implement
        public GeoServerSecurityManager getSecurityManager();
        public void setSecurityManager(GeoServerSecurityManager securityManager);
        
-   
-}
+    }
    
         
 The mapper would have to be registered in the Spring application context in a ``applicationContext.xml``

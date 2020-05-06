@@ -328,8 +328,12 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             RenderedImage image;
             if (layer.getCapabilities() == null) {
                 GetMapRequest request = produceGetMapRequest(layer, template);
-                if (singleDecorated)
+                if (singleDecorated) {
                     request.setFormatOptions(Collections.singletonMap("layout", decorationName));
+                    if (time != null) { // allow text decoration timestamping
+                        request.getEnv().put("time", time);
+                    }
+                }
                 // render
                 GetMap mapBuilder = new GetMap(wms);
                 RenderedImageMap map = (RenderedImageMap) mapBuilder.run(request);

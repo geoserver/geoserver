@@ -108,7 +108,8 @@
 	<bean id="geoJSONFeatureInfoResponse"
 		class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
 		<constructor-arg ref="wms" />
-		<constructor-arg value="application/json" />
+        <constructor-arg ref="resourceLoader"/>
+        <constructor-arg value="application/json" />
 	</bean>
         
 	<!-- wms service + descriptor -->

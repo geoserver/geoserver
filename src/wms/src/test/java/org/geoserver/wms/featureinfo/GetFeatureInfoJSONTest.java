@@ -5,21 +5,32 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.util.Collections;
-import java.util.TimeZone;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
 import javax.xml.namespace.QName;
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.FeatureTypeInfo;
+import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wfs.json.JSONType;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.junit.Test;
@@ -360,5 +371,131 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             Hints.scanSystemProperties();
             TimeZone.setDefault(defaultTimeZone);
         }
+    }
+
+    /** Tests json output mediated by a free marker template */
+    @Test
+    public void testJSONFreeMarkerTemplate() throws Exception {
+        URL contentUrl = getClass().getResource("../content_json.ftl");
+        URL headerUrl = getClass().getResource("../header_json.ftl");
+        URL footerUrl = getClass().getResource("../footer_json.ftl");
+        GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+        Resource resource =
+                loader.get(
+                        Paths.path(
+                                "workspaces",
+                                TEMPORAL_DATA.getPrefix(),
+                                "cite",
+                                TEMPORAL_DATA.getLocalPart()));
+        Resource workspace = loader.get(Paths.path("workspaces", TEMPORAL_DATA.getPrefix()));
+        File fileHeader = new File(workspace.dir(), "header_json.ftl");
+        File fileFooter = new File(workspace.dir(), "footer_json.ftl");
+        File fileContent = new File(resource.dir(), "content_json.ftl");
+        FileUtils.copyURLToFile(headerUrl, fileHeader);
+        FileUtils.copyURLToFile(contentUrl, fileContent);
+        FileUtils.copyURLToFile(footerUrl, fileFooter);
+        GeoJSONFeatureInfoResponse geoJsonResp =
+                new GeoJSONFeatureInfoResponse(
+                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+        FeatureTypeInfo ft =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
+
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
+        LayerInfo layerInfo = getCatalog().getLayerByName(TEMPORAL_DATA.getLocalPart());
+        MapLayerInfo mapLayerInfo = new MapLayerInfo(layerInfo);
+        queryLayers.add(mapLayerInfo);
+        GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
+        getFeatureInfoRequest.setQueryLayers(queryLayers);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("LAYER", mapLayerInfo.getName());
+        Request request = new Request();
+        request.setKvp(parameters);
+        Dispatcher.REQUEST.set(request);
+        FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fct.getFeature().add(fc);
+        geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        JSONObject response = JSONObject.fromObject(result);
+        // got header ftl
+        assertEquals(response.get("header"), "this is the header");
+        JSONArray featuresInfo = response.getJSONArray("features");
+        JSONObject featureInfo = (JSONObject) featuresInfo.get(0);
+        // got content ftl
+        assertEquals(featureInfo.get("content"), "this is the content");
+        assertNotNull(featureInfo.get("id"));
+        assertNotNull(featureInfo.get("altitude"));
+        assertNotNull(featureInfo.get("pointProperty"));
+        assertNotNull(featureInfo.get("dateTimeProperty"));
+        assertNotNull(featureInfo.get("dateProperty"));
+        // got footer ftl
+        assertEquals(response.get("footer"), "this is the footer");
+        fileHeader.delete();
+        fileContent.delete();
+        fileFooter.delete();
+    }
+
+    /** Tests json output when not all ftl templates are present */
+    @Test
+    public void testJSONWithFreeMarkerWithMissingTemplate() throws Exception {
+        URL contentUrl = getClass().getResource("../content_json.ftl");
+        URL footerUrl = getClass().getResource("../footer_json.ftl");
+        GeoJSONFeatureInfoResponse geoJsonResp =
+                new GeoJSONFeatureInfoResponse(
+                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+        FeatureTypeInfo ft =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
+
+        GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+        Resource resource =
+                loader.get(
+                        Paths.path(
+                                "workspaces",
+                                TEMPORAL_DATA.getPrefix(),
+                                "cite",
+                                TEMPORAL_DATA.getLocalPart()));
+        Resource workspace = loader.get(Paths.path("workspaces", TEMPORAL_DATA.getPrefix()));
+        File fileFooter = new File(workspace.dir(), "footer_json.ftl");
+        File fileContent = new File(resource.dir(), "content_json.ftl");
+        FileUtils.copyURLToFile(contentUrl, fileContent);
+        FileUtils.copyURLToFile(footerUrl, fileFooter);
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
+        LayerInfo layerInfo = getCatalog().getLayerByName(TEMPORAL_DATA.getLocalPart());
+        MapLayerInfo mapLayerInfo = new MapLayerInfo(layerInfo);
+        queryLayers.add(mapLayerInfo);
+        GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
+        getFeatureInfoRequest.setQueryLayers(queryLayers);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("LAYER", mapLayerInfo.getName());
+        Request request = new Request();
+        request.setKvp(parameters);
+        Dispatcher.REQUEST.set(request);
+        FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fct.getFeature().add(fc);
+        geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        JSONObject response = JSONObject.fromObject(result);
+        // didn't get the header
+        assertNull(response.get("header"));
+        JSONArray featuresInfo = response.getJSONArray("features");
+        JSONObject featureInfo = (JSONObject) featuresInfo.get(0);
+        // didn't get the content
+        assertNull(featureInfo.get("content"));
+        assertNotNull(featureInfo.get("id"));
+        JSONObject properties = (JSONObject) featureInfo.get("properties");
+        assertNotNull(properties.get("altitude"));
+        assertNotNull(properties.get("dateTimeProperty"));
+        assertNotNull(properties.get("dateProperty"));
+        // didn't get the footer
+        assertNull(response.get("footer"));
+        fileFooter.delete();
+        fileContent.delete();
     }
 }

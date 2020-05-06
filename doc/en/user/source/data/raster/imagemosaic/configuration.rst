@@ -260,6 +260,10 @@ In addition to the required envelope and location attributes, the schema for the
    * - MosaicCRS
      - N
      - The "native" CRS of the mosaic, that is, the one in which footprints are collected. Useful when dealing with granules in multiple CRSs (see tutorial)
+   * - AdditionalDomainAttributes
+     - N
+     - Comma separate list of custom dimensions to be exposed. Each custom dimension declaration can be a simple attribute name from the
+       schema, e.g., ``runtime``, a mapping from dimension name to attribute name, e.g. ``time2(runtime)``, or a mapping from a range dimension name to two attributes, e.g., ``timerange(timeStart,timeEnd)`` 
 
 Here is a sample :file:`indexer.properties` file::
 

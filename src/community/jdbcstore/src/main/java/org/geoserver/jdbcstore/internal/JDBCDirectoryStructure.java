@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.jdbcstore.internal.JDBCDirectoryStructure.Entry;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.ResourceListener;
@@ -248,6 +249,10 @@ public class JDBCDirectoryStructure {
             }
 
             entryCache.put(path, md);
+        }
+
+        public boolean isPermantentlyCached() {
+            return ArrayUtils.contains(config.getCachedDirs(), getPath().get(0));
         }
 
         public void createDirectory() {

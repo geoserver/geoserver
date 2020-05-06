@@ -63,6 +63,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         expect(config.isEnabled()).andStubReturn(enabled);
         expect(config.isImport()).andStubReturn(init);
         expect(config.getIgnoreDirs()).andStubReturn(new String[] {"DirIgnore"});
+        expect(config.getCachedDirs()).andStubReturn(new String[] {});
         config.setInitDb(false);
         expectLastCall();
         try {

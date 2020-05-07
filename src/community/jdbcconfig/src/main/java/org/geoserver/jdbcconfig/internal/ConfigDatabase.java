@@ -117,7 +117,9 @@ import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -889,6 +891,34 @@ public class ConfigDatabase {
         final Integer objectId = template.queryForObject(oidQuery, params, Integer.class);
         Preconditions.checkState(objectId != null, "Object not found: " + id);
         return objectId;
+    }
+
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        rollbackFor = Exception.class
+    )
+    public void repopulateQueryableProperties() {
+        InfoRowMapper<Info> mapper = new InfoRowMapper<Info>(Info.class, binding, 2);
+        template.query(
+                "select oid, blob from object",
+                new ResultSetExtractor<Void>() {
+
+                    @Override
+                    public Void extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        while (rs.next()) {
+                            Integer oid = rs.getInt(1);
+                            Info info = mapper.mapRow(rs, rs.getRow());
+                            if (info instanceof CatalogInfo) {
+                                info = resolveCatalog((CatalogInfo) info);
+                            } else if (info instanceof ServiceInfo) {
+                                resolveTransient((ServiceInfo) info);
+                            }
+                            updateQueryableProperties(info, oid, dbMappings.allProperties(info));
+                        }
+                        return null;
+                    }
+                });
     }
 
     private void updateQueryableProperties(

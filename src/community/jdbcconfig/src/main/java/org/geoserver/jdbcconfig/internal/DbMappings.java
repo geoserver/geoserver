@@ -660,6 +660,14 @@ public class DbMappings {
         return changedProps;
     }
 
+    public Iterable<Property> allProperties(Info object) {
+        checkArgument(!(object instanceof Proxy));
+        final ClassMappings classMappings = ClassMappings.fromImpl(object.getClass());
+        checkNotNull(classMappings);
+
+        return properties(object, classMappings);
+    }
+
     private ImmutableSet<Property> properties(Info object, final ClassMappings classMappings) {
         final Class<? extends Info> type = classMappings.getInterface();
         final Integer typeId = getTypeId(type);

@@ -465,8 +465,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
                                 MockData.LAKES.getLocalPart()));
         File fileHeader = new File(templates.dir(), "header_json.ftl");
         File fileFooter = new File(templates.dir(), "footer_json.ftl");
+        // configure content template for both layers
         File fileContentForest = new File(resForest.dir(), "content_json.ftl");
         File fileContentLake = new File(resLake.dir(), "content_json.ftl");
+
         FileUtils.copyURLToFile(headerUrl, fileHeader);
         FileUtils.copyURLToFile(contentUrl, fileContentForest);
         FileUtils.copyURLToFile(contentUrl, fileContentLake);
@@ -501,19 +503,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // got header ftl
         assertEquals(response.get("header"), "this is the header");
         JSONArray featuresInfo = response.getJSONArray("features");
+        // check the first layer
         JSONObject fiLake = (JSONObject) featuresInfo.get(0);
+        assertEquals(fiLake.get("content"), "this is the content");
         assertEquals(fiLake.get("type"), "Feature");
         assertEquals(fiLake.get("id"), "Lakes.1107531835962");
-        assertNotNull(fiLake.get("geometry"));
+        JSONObject geomLake = fiLake.getJSONObject("geometry");
+        // check the geometry attribute
+        assertEquals(geomLake.get("type"), "MultiPolygon");
+        assertNotNull(geomLake.getJSONArray("coordinates"));
         JSONObject lakeProps = fiLake.getJSONObject("properties");
         assertEquals(lakeProps.get("NAME"), "Blue Lake");
         assertEquals(lakeProps.get("FID"), "101");
+
+        // check the second layer
         JSONObject fiForest = (JSONObject) featuresInfo.get(1);
         // got content ftl
         assertEquals(fiForest.get("content"), "this is the content");
         assertEquals(fiForest.get("type"), "Feature");
         assertEquals(fiForest.get("id"), "Forests.1107531798144");
-        assertNotNull(fiForest.get("geometry"));
+        JSONObject geomForest = fiForest.getJSONObject("geometry");
+        assertEquals(geomForest.get("type"), "MultiPolygon");
+        assertNotNull(geomForest.getJSONArray("coordinates"));
         JSONObject forestProps = fiForest.getJSONObject("properties");
         assertEquals(forestProps.get("NAME"), "Green Forest");
         assertEquals(forestProps.get("FID"), "109");
@@ -576,19 +587,31 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // got header ftl
         assertEquals(response.get("header"), "this is the header");
         JSONArray featuresInfo = response.getJSONArray("features");
+
+        // check the first feature normally encoded
         JSONObject fiLake = (JSONObject) featuresInfo.get(0);
+        // didn't get the content template
+        assertNull(fiLake.get("content"));
         assertEquals(fiLake.get("type"), "Feature");
         assertEquals(fiLake.get("id"), "Lakes.1107531835962");
-        assertNotNull(fiLake.get("geometry"));
+        // check the geometry
+        JSONObject geomLake = fiLake.getJSONObject("geometry");
+        assertEquals(geomLake.get("type"), "MultiPolygon");
+        assertNotNull(geomLake.getJSONArray("coordinates"));
         JSONObject lakeProps = fiLake.getJSONObject("properties");
         assertEquals(lakeProps.get("NAME"), "Blue Lake");
         assertEquals(lakeProps.get("FID"), "101");
+
+        // second feature used template
         JSONObject fiForest = (JSONObject) featuresInfo.get(1);
         // got content ftl
         assertEquals(fiForest.get("content"), "this is the content");
         assertEquals(fiForest.get("type"), "Feature");
         assertEquals(fiForest.get("id"), "Forests.1107531798144");
-        assertNotNull(fiForest.get("geometry"));
+        // check the geometry
+        JSONObject geomForest = fiForest.getJSONObject("geometry");
+        assertEquals(geomForest.get("type"), "MultiPolygon");
+        assertNotNull(geomForest.getJSONArray("coordinates"));
         JSONObject forestProps = fiForest.getJSONObject("properties");
         assertEquals(forestProps.get("NAME"), "Green Forest");
         assertEquals(forestProps.get("FID"), "109");

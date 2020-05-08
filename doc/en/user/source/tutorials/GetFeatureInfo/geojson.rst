@@ -13,7 +13,7 @@ GeoServer will lookup for json templates following the same rules defined for th
 Moreover, unlike the html case, all three template files must be provided.
 In case of a multi-layer request GeoServer will act in the following way:
 
-* content template will be searched up following the usual rules;
+* content template will be searched following the usual rules;
 * since there are no default templates for GeoJSON, header and footer will be looked up in the ``templates`` directory;
 * features with no content template will be encoded with the normal GeoJSON encoding, along with the customized ones.
 
@@ -37,34 +37,40 @@ The *footer json template*::
 
 The *content json template*::
 
- <#list features as feature>
-  {
-   "content" : "this is the content",
-   "type": "Feature",
-   "id" : "${feature.fid}",
-   "properties": {
-   <#list feature.attributes as attribute>
-   <#if !attribute.isGeometry>
-   "${attribute.name}": "${attribute.value}"
-   </#if>
-   <#if attribute_has_next && !attribute.isGeometry>
-   ,
-   </#if>
-   </#list>
-   }
- }
-  <#if feature_has_next>
+  <#list features as feature>
+ {
+  "content" : "this is the content",
+  "type": "Feature",
+  "id" : "${feature.fid}",
+  <#list feature.attributes as attribute>
+  <#if attribute.isGeometry>
+  "geometry": ${geoJSON.geomToGeoJSON(attribute.rawValue)},
+  </#if>
+  </#list>
+  "properties": {
+  <#list feature.attributes as attribute2>
+  <#if !attribute2.isGeometry>
+  "${attribute2.name}": "${attribute2.value}"
+  </#if>
+  <#if attribute2_has_next && !attribute2.isGeometry>
   ,
   </#if>
+  </#list>
+  }
+ }
+ <#if feature_has_next>
+ ,
+ </#if>
  </#list>
  
 
+As it is possible to see from the content template, a new static model ``geoJSON``, which has the ``geomToGeoJSON`` method   has been provided. It can be used to encode a valid geoJSON geometry by passing to it the raw value of the geometry attribute in the following way:  ``${geoJSON.geomToGeoJSON(attribute.rawValue)}``.
 
 Placing the above templates in the directory of layer tiger_roads and issuing this request, ::
 
   http://localhost:8080/geoserver/tiger/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=application/json&TRANSPARENT=true&QUERY_LAYERS=tiger:tiger_roads&LAYERS=tiger:tiger_roads&exceptions=application/vnd.ogc.se_inimage&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&STYLES=&WIDTH=101&HEIGHT=101&BBOX=-73.96894311918004,40.78191518783569,-73.96460866941197,40.78624963760376
 
-the output will be:
+will produce the output:
 
 .. code-block:: json
 
@@ -77,6 +83,25 @@ the output will be:
          "content":"this is the content",
          "type":"Feature",
          "id":"tiger_roads.7752",
+         "geometry":{
+            "type":"MultiLineString",
+            "coordinates":[
+               [
+                  [
+                     -73.9674,
+                     40.7844
+                  ],
+                  [
+                     -73.9642,
+                     40.7832
+                  ],
+                  [
+                     -73.9628,
+                     40.7813
+                  ]
+               ]
+            ]
+         },
          "properties":{
             "CFCC":"A41",
             "NAME":"85th St Transverse"
@@ -92,7 +117,7 @@ While taking care of moving header_json.ftl and footer_json.ftl into the templat
   http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=application/json&TRANSPARENT=true&QUERY_LAYERS=tiger-ny&LAYERS=tiger-ny&exceptions=application/vnd.ogc.se_inimage&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&STYLES=&WIDTH=101&HEIGHT=101&BBOX=-74.01161170018896,40.70833468424098,-74.00944447530493,40.710501909125014
 
 
-the output will be:
+will return the following result:
 
 .. code-block:: json
 
@@ -170,6 +195,21 @@ the output will be:
          "content":"this is the content",
          "type":"Feature",
          "id":"tiger_roads.7672",
+         "geometry":{
+            "type":"MultiLineString",
+            "coordinates":[
+               [
+                  [
+                     -74.0108,
+                     40.7093
+                  ],
+                  [
+                     -74.0105,
+                     40.7096
+                  ]
+               ]
+            ]
+         },
          "properties":{
             "CFCC":"A41",
             "NAME":"Broadway"
@@ -202,5 +242,6 @@ the output will be:
    ],
    "footer":"this is the footer"
  }
+
 
 As it is possible to see the json output comprise a mix of the output mediated by a content_json.ftl for the tiger_roads feature, and the normal output for the other features, while header and footer have been kept respectively at the top and at the bottom.

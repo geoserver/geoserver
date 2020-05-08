@@ -5,13 +5,17 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import freemarker.template.Template;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
+import org.geotools.feature.FeatureCollection;
 
 /**
  * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the
@@ -33,7 +37,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         super(FORMAT);
         this.wms = wms;
         this.templateManager =
-                new FreeMarkerTemplateManager(
+                new HTMLTemplateManager(
                         FreeMarkerTemplateManager.OutputFormat.HTML, wms, resourceLoader);
     }
 
@@ -59,5 +63,40 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
     public FreeMarkerTemplateManager getTemplateManager() {
         return templateManager;
+    }
+
+    /** */
+    private final class HTMLTemplateManager extends FreeMarkerTemplateManager {
+
+        public HTMLTemplateManager(
+                OutputFormat format, WMS wms, GeoServerResourceLoader resourceLoader) {
+            super(format, wms, resourceLoader);
+        }
+
+        @Override
+        protected boolean templatesExist(
+                Template header, Template footer, List<FeatureCollection> collections)
+                throws IOException {
+            return true;
+        }
+
+        @Override
+        protected void handleContent(
+                List<FeatureCollection> collections,
+                OutputStreamWriter osw,
+                GetFeatureInfoRequest request)
+                throws IOException {
+            for (int i = 0; i < collections.size(); i++) {
+                FeatureCollection fc = collections.get(i);
+                Template content = getContentTemplate(fc, wms.getCharSet());
+                String typeName = request.getQueryLayers().get(i).getName();
+                processTemplate(typeName, fc, content, osw);
+            }
+        }
+
+        @Override
+        protected String getTemplateFileName(String filename) {
+            return filename + ".ftl";
+        }
     }
 }

@@ -7,7 +7,6 @@ package org.geoserver.wms.featureinfo;
 import freemarker.template.*;
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
@@ -18,18 +17,16 @@ import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
-import org.geoserver.wfs.json.GeoJSONBuilder;
-import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
- * Class to manage free marker templates used to customize getFeatureInfo output format. It takes
- * care to load templates according to the output format and writing the result.
+ * Abstract class to manage free marker templates used to customize getFeatureInfo output format. It
+ * provides methods to retrieve templates and write the output processing them.
  */
-public class FreeMarkerTemplateManager {
+public abstract class FreeMarkerTemplateManager {
 
     enum OutputFormat {
         JSON("application/json"),
@@ -65,6 +62,10 @@ public class FreeMarkerTemplateManager {
                             map.put("request", Dispatcher.REQUEST.get().getKvp());
                             map.put("environment", new EnvironmentVariablesTemplateModel());
                             map.put("Math", getStaticModel("java.lang.Math"));
+                            map.put(
+                                    "geoJSON",
+                                    getStaticModel(
+                                            "org.geoserver.wms.featureinfo.GeoJSONTemplateManager"));
                             return map;
                         }
                         return super.wrap(object);
@@ -79,7 +80,7 @@ public class FreeMarkerTemplateManager {
 
     private GeoServerResourceLoader resourceLoader;
 
-    private WMS wms;
+    protected WMS wms;
 
     private GeoServerTemplateLoader templateLoader;
 
@@ -124,15 +125,7 @@ public class FreeMarkerTemplateManager {
 
             processTemplate("header", null, header, osw);
 
-            // process content template for all feature collections found
-            switch (format) {
-                case JSON:
-                    handleJSONContent(collections, osw, request);
-                    break;
-                default:
-                    handleHTMLContent(collections, osw, request);
-                    break;
-            }
+            handleContent(collections, osw, request);
 
             // if a template footer was loaded (ie, there were only one feature
             // collection), process it
@@ -147,7 +140,7 @@ public class FreeMarkerTemplateManager {
         }
     }
 
-    private void processTemplate(
+    protected void processTemplate(
             String name, FeatureCollection fc, Template template, OutputStreamWriter osw)
             throws IOException {
         try {
@@ -167,7 +160,8 @@ public class FreeMarkerTemplateManager {
         }
     }
 
-    private Template getContentTemplate(FeatureCollection fc, Charset charset) throws IOException {
+    protected Template getContentTemplate(FeatureCollection fc, Charset charset)
+            throws IOException {
         Template content = null;
         if (fc != null && fc.size() > 0) {
             ResourceInfo ri = wms.getResourceInfo(FeatureCollectionDecorator.getName(fc));
@@ -215,98 +209,20 @@ public class FreeMarkerTemplateManager {
      * Get the expected template file name by appending to the requested one a string matching the
      * output format
      */
-    private String getTemplateFileName(String filename) {
-        switch (format) {
-            case JSON:
-                filename += "_json.ftl";
-                break;
-            default:
-                filename += ".ftl";
-                break;
-        }
-        return filename;
-    }
+    protected abstract String getTemplateFileName(String filename);
 
-    /** Check the needed files according to the output format */
-    private boolean templatesExist(
+    /** Check the needed files exists according to the output format */
+    protected abstract boolean templatesExist(
             Template header, Template footer, List<FeatureCollection> collections)
-            throws IOException {
-        switch (format) {
-            case JSON:
-                return allTemplatesExist(header, footer, collections);
-            default:
-                return true;
-        }
-    }
+            throws IOException;
 
-    /**
-     * Checking if header, content and footer exists for at least one FeatureType among those at
-     * stake.
-     */
-    private boolean allTemplatesExist(
-            Template header, Template footer, List<FeatureCollection> collections)
-            throws IOException {
-        int collSize = collections.size();
-        if (header == null || footer == null) return false;
-        else {
-            for (int i = 0; i < collSize; i++) {
-                FeatureCollection fc = collections.get(i);
-                Template content = getContentTemplate(fc, wms.getCharSet());
-                if (content != null) return true;
-            }
-        }
-        return false;
-    }
+    protected abstract void handleContent(
+            List<FeatureCollection> collections,
+            OutputStreamWriter osw,
+            GetFeatureInfoRequest request)
+            throws IOException;
 
     public void setTemplateLoader(GeoServerTemplateLoader templateLoader) {
         this.templateLoader = templateLoader;
-    }
-
-    private void handleHTMLContent(
-            List<FeatureCollection> collections,
-            OutputStreamWriter osw,
-            GetFeatureInfoRequest request)
-            throws IOException {
-        for (int i = 0; i < collections.size(); i++) {
-            FeatureCollection fc = collections.get(i);
-            Template content = getContentTemplate(fc, wms.getCharSet());
-            String typeName = request.getQueryLayers().get(i).getName();
-            processTemplate(typeName, fc, content, osw);
-        }
-    }
-
-    private void handleJSONContent(
-            List<FeatureCollection> collections,
-            OutputStreamWriter osw,
-            GetFeatureInfoRequest request)
-            throws IOException {
-
-        for (int i = 0; i < collections.size(); i++) {
-            FeatureCollection fc = collections.get(i);
-            Template content = getContentTemplate(fc, wms.getCharSet());
-            if (i > 0) {
-                // appending a comma between json object representation
-                // of a feature
-                osw.write(',');
-            }
-            if (content == null) {
-                handleJSONWithoutTemplate(fc, osw);
-            } else {
-                String typeName = request.getQueryLayers().get(i).getName();
-                processTemplate(typeName, fc, content, osw);
-            }
-        }
-    }
-
-    /** Write a FeatureCollection using normal GeoJSON encoding */
-    private void handleJSONWithoutTemplate(FeatureCollection collection, OutputStreamWriter osw)
-            throws IOException {
-        GeoJSONGetFeatureResponse format =
-                new GeoJSONGetFeatureResponse(wms.getGeoServer(), OutputFormat.JSON.getFormat());
-        boolean isComplex = collection.getSchema() instanceof SimpleFeatureType;
-        Writer outWriter = new BufferedWriter(osw);
-        final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
-        format.writeFeatures(Arrays.asList(collection), null, isComplex, jsonWriter);
-        outWriter.flush();
     }
 }

@@ -17,7 +17,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -65,7 +67,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
         List featureCollections = results.getFeature();
 
         // round up the info objects for each feature collection
-        MultiValueMap ns2metas = new MultiValueMap();
+        MultiValuedMap ns2metas = new HashSetValuedHashMap();
 
         for (Iterator fc = featureCollections.iterator(); fc.hasNext(); ) {
             SimpleFeatureCollection features = (SimpleFeatureCollection) fc.next();
@@ -112,13 +114,10 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
         // declare application schema namespaces
         Map<String, String> params =
                 params("service", "WFS", "version", "1.0.0", "request", "DescribeFeatureType");
-        for (Iterator i = ns2metas.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) i.next();
-
-            NamespaceInfo ns = (NamespaceInfo) entry.getKey();
+        for (MapIterator i = ns2metas.mapIterator(); i.hasNext(); ) {
+            NamespaceInfo ns = (NamespaceInfo) i.next();
             String namespaceURI = ns.getURI();
-
-            Collection metas = (Collection) entry.getValue();
+            Collection metas = (Collection) i.getValue();
 
             StringBuffer typeNames = new StringBuffer();
 

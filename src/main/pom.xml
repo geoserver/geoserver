@@ -245,6 +245,10 @@
     <artifactId>bcprov-jdk15on</artifactId>    
   </dependency>
   <dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-collections4</artifactId>
+  </dependency>
+  <dependency>
     <groupId>org.geotools.jdbc</groupId>
     <artifactId>gt-jdbc-h2</artifactId>
     <version>${gt.version}</version>

@@ -56,7 +56,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.codehaus.jettison.util.FastStack;
@@ -1804,12 +1805,12 @@ public class XStreamPersister {
     /** Converter for multi hash maps containing coverage stores and data stores. */
     static class StoreMultiValueMapConverter implements Converter {
         public boolean canConvert(Class type) {
-            return MultiValueMap.class.equals(type);
+            return MultiValuedMap.class.equals(type);
         }
 
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            MultiValueMap map = (MultiValueMap) source;
+            MultiValuedMap map = (MultiValuedMap) source;
             for (Object v : map.values()) {
                 if (v instanceof DataStoreInfo) {
                     writer.startNode("dataStore");
@@ -1825,7 +1826,7 @@ public class XStreamPersister {
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            MultiValueMap map = new MultiValueMap();
+            MultiValuedMap map = new HashSetValuedHashMap();
 
             while (reader.hasMoreChildren()) {
                 reader.moveDown();

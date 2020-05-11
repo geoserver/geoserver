@@ -185,4 +185,50 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         assertEquals(fooContent, getAsString(fooTemplate).trim());
         assertEquals(barContent, getAsString(barTemplate).trim());
     }
+
+    @Test
+    public void testAllPathsSequentiallyForJson() throws Exception {
+        Random random = new Random();
+        for (String path : getAllJsonTemplatePaths()) {
+            testGetPutGetDeleteGet(path, "{key: a json template} " + random.nextInt(1000));
+        }
+    }
+
+    private List<String> getAllJsonTemplatePaths() {
+        List<String> paths = new ArrayList<>();
+
+        paths.add(ROOT_PATH + "/templates/aTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/templates/anotherTemplate_json.ftl");
+
+        paths.add(ROOT_PATH + "/workspaces/topp/templates/aTemplate_json.ftl");
+        paths.add(ROOT_PATH + "/workspaces/topp/templates/anotherTemplate_json.ftl");
+
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/templates/aTemplate_json.ftl");
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/templates/anotherTemplate_json.ftl");
+
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/aTemplate_json.ftl");
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/topp/datastores/states_shapefile/featuretypes/states/templates/anotherTemplate_json.ftl");
+
+        paths.add(ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/templates/aTemplate_json.ftl");
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/DEM/templates/anotherTemplate_json.ftl");
+
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/aTemplate_json.ftl");
+        paths.add(
+                ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.tiff/templates/anotherTemplate_json.ftl");
+
+        return paths;
+    }
 }

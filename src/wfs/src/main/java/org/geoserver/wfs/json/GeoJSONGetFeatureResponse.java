@@ -5,15 +5,9 @@
  */
 package org.geoserver.wfs.json;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
@@ -178,7 +172,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     }
 
     /** Writes the feature to the output */
-    protected FeaturesInfo writeFeatures(
+    public FeaturesInfo writeFeatures(
             List<FeatureCollection> resultsList,
             Operation operation,
             boolean isComplex,

@@ -58,7 +58,12 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-process</artifactId>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geojson</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
     <!-- end of SVG rendering markers support -->
     <dependency>
       <groupId>com.lowagie</groupId>

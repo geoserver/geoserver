@@ -394,10 +394,10 @@ The supported formats are:
      - Works for both Simple and Complex Features (see :ref:`app-schema.complex-features`)
    * - HTML
      - ``info_format=text/html``
-     - Uses HTML templates that are defined on the server. See :ref:`tutorials_getfeatureinfo` for information on how to template HTML output. 
+     - Uses HTML templates that are defined on the server. See :ref:`tutorials_getfeatureinfo_html` for information on how to template HTML output. 
    * - JSON
      - ``info_format=application/json``
-     - Simple Json representation.
+     - Simple Json representation. See :ref:`tutorials_getfeatureinfo_geojson` for information on how to template Json output.
    * - JSONP
      - ``info_format=text/javascript``
      - Returns a JsonP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).

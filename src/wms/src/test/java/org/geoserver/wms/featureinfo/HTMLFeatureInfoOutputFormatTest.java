@@ -104,7 +104,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                         }
                     }
                 };
-        outputFormat.templateLoader = templateLoader;
+        outputFormat.getTemplateManager().setTemplateLoader(templateLoader);
 
         // test request with some parameters to use in templates
         Request request = new Request();
@@ -287,28 +287,29 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         final HTMLFeatureInfoOutputFormat format =
                 new HTMLFeatureInfoOutputFormat(
                         getWMS(), GeoServerExtensions.bean(GeoServerResourceLoader.class));
-        format.templateLoader =
-                new GeoServerTemplateLoader(getClass(), getDataDirectory()) {
-                    @Override
-                    public Object findTemplateSource(String path) throws IOException {
-                        String templatePath = "empty.ftl";
-                        if (path.toLowerCase().contains("content")
-                                && (this.resource != null)
-                                && this.resource
-                                        .prefixedName()
-                                        .equals(featureType2.prefixedName())) {
-                            templatePath = "test_content.ftl";
-                        }
-                        try {
-                            return new File(
-                                    this.getClass()
-                                            .getResource(templateFolder + templatePath)
-                                            .toURI());
-                        } catch (URISyntaxException e) {
-                            return null;
-                        }
-                    }
-                };
+        format.getTemplateManager()
+                .setTemplateLoader(
+                        new GeoServerTemplateLoader(getClass(), getDataDirectory()) {
+                            @Override
+                            public Object findTemplateSource(String path) throws IOException {
+                                String templatePath = "empty.ftl";
+                                if (path.toLowerCase().contains("content")
+                                        && (this.resource != null)
+                                        && this.resource
+                                                .prefixedName()
+                                                .equals(featureType2.prefixedName())) {
+                                    templatePath = "test_content.ftl";
+                                }
+                                try {
+                                    return new File(
+                                            this.getClass()
+                                                    .getResource(templateFolder + templatePath)
+                                                    .toURI());
+                                } catch (URISyntaxException e) {
+                                    return null;
+                                }
+                            }
+                        });
         int numRequests = 50;
         List<Callable<String>> tasks = new ArrayList<>(numRequests);
         for (int i = 0; i < numRequests; i++) {

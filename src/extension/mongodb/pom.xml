@@ -10,6 +10,32 @@
     <artifactId>gs-mongodb</artifactId>
     <packaging>jar</packaging>
     <name>MongoDB Data Store</name>
+    
+    <developers>
+        <developer>
+            <id>nunooliveira</id>
+            <name>Nuno Oliveira</name>
+            <email>nuno.oliveira@geo-solutions.it</email>
+            <organization>GeoSolutions S.A.S.</organization>
+            <organizationUrl>http://www.geo-solutions.it</organizationUrl>
+            <roles>
+                <role>Module Maintainer</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>fernandomino</id>
+            <name>Fernando Mino</name>
+            <email>fernando.mino@geo-solutions.it</email>
+            <organization>GeoSolutions S.A.S.</organization>
+            <organizationUrl>http://www.geo-solutions.it</organizationUrl>
+            <roles>
+                <role>Module Maintainer</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
     <dependencies>
         <dependency>
             <groupId>org.geotools</groupId>

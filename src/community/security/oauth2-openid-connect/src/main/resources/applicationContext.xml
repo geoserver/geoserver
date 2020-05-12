@@ -53,6 +53,7 @@
  		<property name="componentClass" value="org.geoserver.web.security.oauth2.OpenIdConnectAuthProviderPanel" />
  		<property name="name" value="openidconnect" />
  		<property name="icon" value="openid.png" />
+ 		<property name="filterClass" value="org.geoserver.security.oauth2.OpenIdConnectAuthenticationFilter" />
  		<property name="loginPath" value="web/j_spring_oauth2_openid_connect_login" />
  	</bean>
 

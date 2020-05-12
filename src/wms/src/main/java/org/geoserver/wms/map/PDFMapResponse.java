@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.map;
 
+import static java.util.Objects.requireNonNull;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.FontFactory;
@@ -25,21 +27,26 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
+import org.apache.commons.collections.CollectionUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
+import org.geoserver.wms.SymbolizersPreProcessorsProvider;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.map.PDFMapOutputFormat.PDFMap;
 import org.geotools.geometry.jts.Decimator;
 import org.geotools.geometry.jts.LiteShape2;
+import org.geotools.map.MapContent;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.renderer.SymbolizersPreProcessor;
 import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.ParallelLinesFiller;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -79,10 +86,14 @@ public class PDFMapResponse extends AbstractMapResponse {
     private static final int KB = 1024;
 
     private WMS wms;
+    /** Symbolizers pre-processors extensions instances provider */
+    private final SymbolizersPreProcessorsProvider symbolizersPreProcessorsProvider;
 
-    public PDFMapResponse(WMS wms) {
+    public PDFMapResponse(
+            WMS wms, SymbolizersPreProcessorsProvider symbolizersPreProcessorsProvider) {
         super(PDFMap.class, PDFMapOutputFormat.MIME_TYPE);
         this.wms = wms;
+        this.symbolizersPreProcessorsProvider = requireNonNull(symbolizersPreProcessorsProvider);
     }
 
     /**
@@ -165,13 +176,7 @@ public class PDFMapResponse extends AbstractMapResponse {
 
             Rectangle paintArea = new Rectangle(width, height);
 
-            StreamingRenderer renderer;
-            if (ENCODE_TILING_PATTERNS) {
-                renderer = new PDFStreamingRenderer();
-            } else {
-                renderer = new StreamingRenderer();
-            }
-            renderer.setMapContent(mapContent);
+            StreamingRenderer renderer = buildRenderer(mapContent);
             // TODO: expose the generalization distance as a param
             // ((StreamingRenderer) renderer).setGeneralizationDistance(0);
 
@@ -263,6 +268,24 @@ public class PDFMapResponse extends AbstractMapResponse {
         } catch (DocumentException t) {
             throw new ServiceException("Error setting up the PDF", t, "internalError");
         }
+    }
+
+    private StreamingRenderer buildRenderer(MapContent mapContent) {
+        StreamingRenderer renderer;
+        if (ENCODE_TILING_PATTERNS) {
+            renderer = new PDFStreamingRenderer();
+        } else {
+            renderer = new StreamingRenderer();
+        }
+        // add the symbolizers pre-processors to renderer
+        Collection<SymbolizersPreProcessor> symbolizerPreProcessors =
+                this.symbolizersPreProcessorsProvider.getSymbolizerPreProcessors(
+                        mapContent.layers());
+        if (CollectionUtils.isNotEmpty(symbolizerPreProcessors)) {
+            renderer.addSymbolizersPreProcessors(symbolizerPreProcessors);
+        }
+        renderer.setMapContent(mapContent);
+        return renderer;
     }
 
     private static class PDFStreamingRenderer extends StreamingRenderer {

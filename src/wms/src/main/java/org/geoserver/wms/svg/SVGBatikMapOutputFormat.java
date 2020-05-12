@@ -5,10 +5,13 @@
  */
 package org.geoserver.wms.svg;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,15 +21,18 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.commons.collections.CollectionUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.SymbolizersPreProcessorsProvider;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.MaxErrorEnforcer;
 import org.geoserver.wms.map.RenderExceptionStrategy;
 import org.geotools.map.MapContent;
+import org.geotools.renderer.SymbolizersPreProcessor;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.w3c.dom.Document;
 
@@ -54,9 +60,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             new MapProducerCapabilities(false, false, false, true, null);
 
     private final WMS wms;
+    /** Symbolizers pre-processors extensions instances provider */
+    private final SymbolizersPreProcessorsProvider symbolizersPreProcessorsProvider;
 
-    public SVGBatikMapOutputFormat(WMS wms) {
+    public SVGBatikMapOutputFormat(
+            WMS wms, SymbolizersPreProcessorsProvider symbolizersPreProcessorsProvider) {
         this.wms = wms;
+        this.symbolizersPreProcessorsProvider = requireNonNull(symbolizersPreProcessorsProvider);
     }
 
     /**
@@ -95,6 +105,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
     private StreamingRenderer setUpRenderer(WMSMapContent mapContent) {
         StreamingRenderer renderer;
         renderer = new StreamingRenderer();
+        // add the symbolizers pre-processors to renderer
+        Collection<SymbolizersPreProcessor> symbolizerPreProcessors =
+                this.symbolizersPreProcessorsProvider.getSymbolizerPreProcessors(
+                        mapContent.layers());
+        if (CollectionUtils.isNotEmpty(symbolizerPreProcessors)) {
+            renderer.addSymbolizersPreProcessors(symbolizerPreProcessors);
+        }
 
         // optimized data loading was not here, but yet it seems sensible to
         // have it...

@@ -50,6 +50,7 @@ import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.SymbolizersPreProcessorsProvider;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -73,6 +74,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ColorUtilities;
 import org.geotools.map.Layer;
+import org.geotools.map.MapContent;
 import org.geotools.map.StyleLayer;
 import org.geotools.parameter.Parameter;
 import org.geotools.process.Processors;
@@ -80,6 +82,7 @@ import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.renderer.SymbolizersPreProcessor;
 import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.RenderingTransformationHelper;
@@ -214,6 +217,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private final Map<String, MapProducerCapabilities> capabilities =
             new HashMap<String, MapProducerCapabilities>();
 
+    /** Source of {@link SymbolizersPreProcessor} registered extensions */
+    private SymbolizersPreProcessorsProvider symbolizersPreProcessorsProvider;
+
     /** */
     public RenderedImageMapOutputFormat(WMS wms) {
         this(DEFAULT_MAP_FORMAT, wms);
@@ -260,6 +266,17 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /** Sets the extension used for the file name in the content disposition header */
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    /** Returns the source of {@link SymbolizersPreProcessor} registered extensions. */
+    public SymbolizersPreProcessorsProvider getSymbolizersPreProcessorsProvider() {
+        return symbolizersPreProcessorsProvider;
+    }
+
+    /** Sets the source of {@link SymbolizersPreProcessor} registered extensions. */
+    public void setSymbolizersPreProcessorsProvider(
+            SymbolizersPreProcessorsProvider symbolizersPreProcessorsProvider) {
+        this.symbolizersPreProcessorsProvider = symbolizersPreProcessorsProvider;
     }
 
     public MapProducerCapabilities getCapabilities(String format) {
@@ -321,6 +338,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // multiple featureTypeStyles against the same layer
         StreamingRenderer testRenderer = buildRenderer();
         testRenderer.setMapContent(mapContent);
+        setupSymbolizersPreProcesors(testRenderer, mapContent);
         memory += testRenderer.getMaxBackBufferMemory(paintArea.width, paintArea.height);
         if (maxMemory > 0 && memory > maxMemory) {
             long kbUsed = memory / KB;
@@ -434,6 +452,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         RenderingHints hints = new RenderingHints(hintsMap);
         StreamingRenderer renderer = buildRenderer();
+        renderer.setMapContent(mapContent);
+        setupSymbolizersPreProcesors(renderer, mapContent);
         renderer.setThreadPool(DefaultWebMapService.getRenderingPool());
         renderer.setMapContent(mapContent);
         renderer.setJava2DHints(hints);
@@ -674,7 +694,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * subclasses of {@link StreamingRenderer}
      */
     protected StreamingRenderer buildRenderer() {
-        return new StreamingRenderer();
+        StreamingRenderer renderer = new StreamingRenderer();
+        return renderer;
+    }
+
+    protected void setupSymbolizersPreProcesors(StreamingRenderer renderer, MapContent mapContent) {
+        if (this.symbolizersPreProcessorsProvider != null) {
+            renderer.addSymbolizersPreProcessors(
+                    this.symbolizersPreProcessorsProvider.getSymbolizerPreProcessors(
+                            mapContent.layers()));
+        }
     }
 
     private boolean getFormatOptionAsBoolean(

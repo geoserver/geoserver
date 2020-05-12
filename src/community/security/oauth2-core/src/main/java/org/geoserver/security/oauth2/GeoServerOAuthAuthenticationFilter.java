@@ -107,6 +107,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
         if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
             restTemplate.getOAuth2ClientContext().setAccessToken(null);
+            token = restTemplate.getOAuth2ClientContext().getAccessToken();
         }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -151,6 +152,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         }
 
         if ((authentication == null && accessToken != null)
+                || (accessToken != null && token == null)
                 || authentication == null
                 || (authentication != null
                         && authorities.size() == 1
@@ -158,7 +160,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
 
-            Authentication postAuthentication = authentication;
+            Authentication postAuthentication =
+                    SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
                     getSecurityManager()

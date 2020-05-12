@@ -105,7 +105,7 @@ A GSIP proposal is NOT needed for:
 * an improvement that can go in a community module; or
 * a bug fix that doesn't rework anything substantially
 
-For minor decisions where feedback might be desired, the course of action to take is to consult the development list or raise it in a video meeting.  The GeoServer Project recognizes that it is run those who are actually doing the work, and thus we want to avoid high overhead for 'getting things done'.
+For minor decisions where feedback might be desired, consult the development list, or raise it in a video meeting (anyone not attending can follow up on the meeting minutes email).  The GeoServer Project recognizes that it is run those doing the work, and wish to avoid high overhead for 'getting things done'.
 
 For these *snap decisions* that are not official GSIP proposals, everyone 'available' (those in the video meeting or who respond to an email within 4 days) are given the power to vote and decide an issue.  The same voting procedure (+1,+0,-0,-1) is used, but any decision that receives a -1 from any party present (even a  new user), should go to a GSIP.
 

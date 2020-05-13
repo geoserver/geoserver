@@ -37,6 +37,7 @@ The parameters to set are
  * ``writeParameters`` : a set of writing parameters (optional, applies for raster input only). See :ref:`writing_params` below section for more details on writing parameters defintion.
  * ``minimizeReprojections`` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See :ref:`heterogeneous_imagemosaic` below section for more details on this param.
  * ``bestResolutionOnMatchingCRS`` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See :ref:`heterogeneous_imagemosaic` below section for more details on this param.
+ * ``resolutionsDifferenceTolerance`` : When a reprojection with a TargetCRS and no target size is being requested, the parameter allows to specifies a tolerance value to control the use of native resolution of the data: if the percentage difference between original and reprojected coverages resolutions is below the specified value, the reprojected coverage will be forced to use native resolutions. Default value is 0.
 
 The ``targetCRS`` and ``RoiCRS`` parameters are using EPSG code terminology, so, valid parameters are literals like ``EPSG:4326`` (if we are referring to a the  Geogaphic WGS84 CRS), ``EPSG:3857`` (for WGS84 Web Mercator CRS), etc.
 

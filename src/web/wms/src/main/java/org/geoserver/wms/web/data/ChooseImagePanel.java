@@ -36,12 +36,12 @@ class ChooseImagePanel extends Panel {
     private static final long serialVersionUID = 7564545298131010218L;
 
     private WorkspaceInfo ws;
-    private AbstractStylePage stylePage;
+    private String[] extensions;
 
-    public ChooseImagePanel(String id, WorkspaceInfo ws, AbstractStylePage stylePage) {
+    public ChooseImagePanel(String id, WorkspaceInfo ws, String[] extensions) {
         super(id);
         this.ws = ws;
-        this.stylePage = stylePage;
+        this.extensions = extensions;
     }
 
     @Override
@@ -55,8 +55,7 @@ class ChooseImagePanel extends Panel {
                 GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         for (Resource r : dd.getStyles(ws).list()) {
             if (ArrayUtils.contains(
-                    stylePage.styleHandler().imageExtensions(),
-                    FilenameUtils.getExtension(r.name()).toLowerCase())) {
+                    extensions, FilenameUtils.getExtension(r.name()).toLowerCase())) {
                 imageSet.add(r.name());
             }
         }

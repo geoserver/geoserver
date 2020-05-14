@@ -435,7 +435,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                             new ChooseImagePanel(
                                                     id,
                                                     styleModel.getObject().getWorkspace(),
-                                                    AbstractStylePage.this);
+                                                    styleHandler().imageExtensions());
                                 }
 
                                 @Override

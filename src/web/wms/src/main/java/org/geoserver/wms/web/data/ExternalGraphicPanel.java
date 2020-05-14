@@ -16,7 +16,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.List;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
@@ -59,6 +58,8 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class ExternalGraphicPanel extends Panel {
     private static final long serialVersionUID = 5098470683723890874L;
 
+    private static final String[] EXTENSIONS = new String[] {"png", "gif", "jpeg", "jpg"};
+
     private TextField<String> onlineResource;
     private TextField<String> format;
     private TextField<Integer> width;
@@ -92,15 +93,14 @@ public class ExternalGraphicPanel extends Panel {
         onlineResource = new TextField<String>("onlineResource", bind);
         onlineResource.add(
                 new IValidator<String>() {
-                    final List<String> EXTENSIONS =
-                            Arrays.asList(new String[] {"png", "gif", "jpeg", "jpg"});
 
                     @Override
                     public void validate(IValidatable<String> input) {
                         String value = input.getValue();
                         int last = value == null ? -1 : value.lastIndexOf('.');
                         if (last == -1
-                                || !EXTENSIONS.contains(value.substring(last + 1).toLowerCase())) {
+                                || !Arrays.asList(EXTENSIONS)
+                                        .contains(value.substring(last + 1).toLowerCase())) {
                             ValidationError error = new ValidationError();
                             error.setMessage("Not an image");
                             error.addKey("nonImage");
@@ -181,7 +181,7 @@ public class ExternalGraphicPanel extends Panel {
                                                                 styleModel
                                                                         .getObject()
                                                                         .getWorkspace(),
-                                                                stylePage);
+                                                                EXTENSIONS);
                                             }
 
                                             @Override

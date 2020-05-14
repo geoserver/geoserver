@@ -571,10 +571,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                                 tester.getComponentFromLastRenderedPage(
                                         "dialog:dialog:content:form:userPanel:image"))
                         .getChoices();
-        assertEquals(4, choices.size());
+        assertEquals(3, choices.size());
         assertEquals("otherpicture.jpg", choices.get(1));
         assertEquals("somepicture.png", choices.get(2));
-        assertEquals("vector.svg", choices.get(3));
 
         FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
         formTester.select("userPanel:image", 2);

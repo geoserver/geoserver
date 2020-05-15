@@ -5,6 +5,11 @@ Container Considerations
 
 Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <http://www.mortbay.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance.
 
+Use a supported Java version
+----------------------------
+
+GeoServer is built and tested with Java 8, `supported up to 2026 <https://adoptopenjdk.net/support.html#roadmap>`_, and Java 11, `supported up to 2024 <https://adoptopenjdk.net/support.html#roadmap>`_. More recent releases of Java are supported for only six months and contain experimental features, they are not tested with GeoServer, thus not recommended for production: the application might not start or misbehave, and the recommended JVM flags might no longer be applicable.
+
 Optimize your JVM
 -----------------
 

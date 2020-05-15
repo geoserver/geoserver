@@ -514,6 +514,10 @@ class RasterDownload {
                                         null,
                                         interpolation,
                                         backgroundValues);
+                // check for native resolution to be applied only if tolerance is not 0
+                if (resolutionsDifferenceTolerance == 0d) {
+                    return testCoverage;
+                }
                 GridGeometryProvider gridGeometryProvider =
                         new GridGeometryProvider(crsRequestHandler);
                 GridGeometry2D gg2D =

@@ -269,7 +269,7 @@ class GridGeometryProvider {
 
         /** Gets granules' resolution if it is equal for all the granules, otherwise returns null */
         public double[] getGranulesNativeResolutionIfSame(GranuleSource granuleSource)
-                throws IOException {
+                throws IOException, TransformException, FactoryException {
             Map<String, DimensionDescriptor> descriptors = crsRequestHandler.getDescriptors();
             DimensionDescriptor resDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION);
             DimensionDescriptor resXDescriptor = descriptors.get(DimensionDescriptor.RESOLUTION_X);
@@ -283,7 +283,8 @@ class GridGeometryProvider {
                             ? resYDescriptor.getStartAttribute()
                             : resDescriptor.getStartAttribute();
 
-            SimpleFeatureCollection granules = granuleSource.getGranules(Query.ALL);
+            Query query = initQuery(granuleSource);
+            SimpleFeatureCollection granules = granuleSource.getGranules(query);
             SimpleFeatureIterator iterator = granules.features();
             TreeSet<Double> resolutionsX = new TreeSet<>();
             TreeSet<Double> resolutionsY = new TreeSet<>();

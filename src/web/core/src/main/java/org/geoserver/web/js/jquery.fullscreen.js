@@ -14,7 +14,9 @@ $( document ).ready(function() {
         var previewHeight = previewDefault;
 
         if (isFullscreen) {
-            document.getElementById('cm_editor_heigth').disabled=true;
+            if (document.getElementById('cm_editor_heigth')) {
+                document.getElementById('cm_editor_heigth').disabled=true;
+            }
             if (document.gsEditors) {
                 //update the default to the old value
                 editorDefault = document.gsEditors["editor"].getWrapperElement().offsetHeight;
@@ -25,7 +27,9 @@ $( document ).ready(function() {
             previewHeight = Math.max(300, windowHeight - previewMargin);
 
         } else {
-            document.getElementById('cm_editor_heigth').disabled=false;
+            if (document.getElementById('cm_editor_heigth')) {
+                document.getElementById('cm_editor_heigth').disabled=false;
+            }
         }
 
         if (document.gsEditors) {

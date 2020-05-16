@@ -68,6 +68,8 @@
                 <prop key="geofenceConfigurationManager.configuration.servicesUrl">internal:/</prop>
                 <!--  db inside data directory -->
                 <prop key="geofenceDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/geofence/geofence_db/geofence</prop>
+                <!-- "update" is not a good option in production -->
+                <prop key="geofenceEntityManagerFactory.jpaPropertyMap[hibernate.hbm2ddl.auto]">update</prop>
             </props>
         </property>
     </bean>

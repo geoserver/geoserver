@@ -92,7 +92,6 @@
   <modules>
     <module>core</module>
     <module>rest</module>
-    <module>bdb</module>
     <module>web</module>
   </modules>
 

@@ -94,8 +94,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 "properties", "org.geotools.data.property.PropertyDataStoreFactory");
         formatToDataStoreFactory.put("h2", "org.geotools.data.h2.H2DataStoreFactory");
         formatToDataStoreFactory.put(
-                "spatialite", "org.geotools.data.spatialite.SpatiaLiteDataStoreFactory");
-        formatToDataStoreFactory.put(
                 "appschema", "org.geotools.data.complex.AppSchemaDataAccessFactory");
         formatToDataStoreFactory.put("gpkg", "org.geotools.geopkg.GeoPkgDataStoreFactory");
         formatToDataStoreFactory.put("mbtiles", "org.geotools.mbtiles.MBTilesDataStoreFactory");
@@ -109,13 +107,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         map.put("dbtype", "h2");
 
         dataStoreFactoryToDefaultParams.put("org.geotools.data.h2.H2DataStoreFactory", map);
-
-        map = new HashMap();
-        map.put("database", "@DATA_DIR@/@NAME@");
-        map.put("dbtype", "spatialite");
-
-        dataStoreFactoryToDefaultParams.put(
-                "org.geotools.data.spatialite.SpatiaLiteDataStoreFactory", map);
     }
 
     public static DataAccessFactory lookupDataStoreFactory(String format) {

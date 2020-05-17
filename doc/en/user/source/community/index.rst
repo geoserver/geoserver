@@ -20,7 +20,6 @@ officially part of the GeoServer releases. They are however built along with the
    keycloak/index
    dds/index
    scripting/index
-   spatialite/index
    colormap/index
    jdbcconfig/index
    mbtiles/index

@@ -193,8 +193,6 @@ The ``extension`` parameter specifies the type of data being uploaded. The follo
      - Property file
    * - h2
      - H2 Database
-   * - spatialite
-     - SpatiaLite Database
    * - appschema
      - App-schema mapping configuration
 

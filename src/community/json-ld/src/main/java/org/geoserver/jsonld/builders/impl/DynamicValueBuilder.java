@@ -4,20 +4,15 @@
  */
 package org.geoserver.jsonld.builders.impl;
 
-import static org.geoserver.jsonld.expressions.ExpressionsUtils.*;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
+import org.geoserver.jsonld.expressions.JsonLdCqlManager;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.FunctionExpression;
-import org.geotools.filter.MathExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
@@ -38,61 +33,34 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     private static final Logger LOGGER = Logging.getLogger(DynamicValueBuilder.class);
 
     public DynamicValueBuilder(String key, String expression, NamespaceSupport namespaces) {
-        super(key);
+        super(key, namespaces);
         this.namespaces = namespaces;
+        JsonLdCqlManager cqlManager = new JsonLdCqlManager(expression, namespaces);
         if (expression.startsWith("$${")) {
-            strCqlToExpression(expression);
+            this.cql = cqlManager.getExpressionFromString();
+            // strCqlToExpression(expression);
         } else if (expression.startsWith("${")) {
-            strXpathToPropertyName(expression);
+            this.xpath = cqlManager.getAttributeExpressionFromString();
+            // strXpathToPropertyName(expression);
         }
-    }
-
-    /**
-     * Takes a str cql as $${cql} and makes all the necessary operation to convert it to a valid
-     * Expression
-     *
-     * @param cql
-     */
-    private void strCqlToExpression(String cql) {
-        // takes xpath fun from cql
-        String strXpathFun = extractXpathFromCQL(cql);
-        if (strXpathFun.indexOf(XPATH_FUN_START) != -1)
-            this.contextPos = determineContextPos(strXpathFun);
-        // takes the literal argument of xpathFun
-        String literalXpath = getLiteralXpath(strXpathFun);
-
-        // clean the function to obtain a cql expression without xpath() syntax
-        this.cql = extractCqlExpressions(cleanCQLExpression(cql, strXpathFun, literalXpath));
-        // replace the xpath literal inside the expression with a PropertyName
-        literalXpathToPropertyName(this.cql, removeBackDots(literalXpath));
-    }
-
-    /**
-     * Takes a str xpath as ${xpath} and makes all the necessary operation to produce a valid
-     * PropertyName
-     *
-     * @param xpath
-     */
-    private void strXpathToPropertyName(String xpath) {
-        String strXpath = extractXpath(xpath);
-        this.contextPos = determineContextPos(strXpath);
-        strXpath = removeBackDots(strXpath);
-        this.xpath = new AttributeExpressionImpl(strXpath, namespaces);
+        this.contextPos = cqlManager.getContextPos();
     }
 
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
         Object o = null;
-        if (xpath != null) {
+        if (evaluateFilter(context)) {
+            if (xpath != null) {
 
-            o = evaluateXPath(context);
+                o = evaluateXPath(context);
 
-        } else if (cql != null) {
-            o = evaluateExpressions(context);
-        }
-        if (canWriteValue(o)) {
-            writeKey(writer);
-            writer.writeResult(o);
+            } else if (cql != null) {
+                o = evaluateExpressions(context);
+            }
+            if (canWriteValue(o)) {
+                writeKey(writer);
+                writer.writeResult(o);
+            }
         }
     }
 
@@ -100,7 +68,7 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return cql;
     }
 
-    public Expression getXpath() {
+    public AttributeExpressionImpl getXpath() {
         return xpath;
     }
 
@@ -137,59 +105,6 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
         return result;
     }
 
-    /**
-     * Searches for one or more literal xpath inside the expression. If found, substitutes it/them
-     * with a ${@link PropertyName}
-     *
-     * @param expr
-     * @param literalXpath
-     */
-    private void literalXpathToPropertyName(Expression expr, String literalXpath) {
-        List<Expression> params = null;
-        if (expr instanceof Function) {
-            params = ((Function) expr).getParameters();
-        } else if (expr instanceof BinaryExpression) {
-            params =
-                    Arrays.asList(
-                            ((BinaryExpression) expr).getExpression1(),
-                            ((BinaryExpression) expr).getExpression2());
-        }
-        if (params != null) {
-            int size = params.size();
-            List<Expression> newParams = new ArrayList<>(size);
-            if (size > 0) {
-                for (int i = 0; i < size; i++) {
-                    Expression e = params.get(i);
-                    if (e instanceof Literal) {
-                        e = xpathLiteralToPropertyName((Literal) e, literalXpath);
-                        newParams.add(i, e);
-                    } else if (e instanceof Function) {
-                        newParams.add(e);
-                        literalXpathToPropertyName(e, literalXpath);
-                    }
-                }
-            }
-            setParamsToExpression(expr, newParams);
-        }
-    }
-
-    private Expression xpathLiteralToPropertyName(Literal literal, String literalXpath) {
-        String unquoted = literalXpath.replaceAll("'", "");
-        if (String.valueOf(literal.getValue()).equals(unquoted)) {
-            return new AttributeExpressionImpl(unquoted, namespaces);
-        } else {
-            return literal;
-        }
-    }
-
-    private void setParamsToExpression(Expression expr, List<Expression> params) {
-        if (expr instanceof FunctionExpression) {
-            ((FunctionExpression) expr).setParameters(params);
-        } else if (expr instanceof MathExpressionImpl) {
-            ((MathExpressionImpl) expr).setExpression1(params.get(0));
-            ((MathExpressionImpl) expr).setExpression2(params.get(1));
-        }
-    }
 
     /**
      * A value can only be wrote if it is non NULL and not an empty list. This method supports *

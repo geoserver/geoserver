@@ -24,7 +24,6 @@ public class RootBuilder implements JsonBuilder {
     private JsonNode contextHeader;
 
     public RootBuilder() {
-        super();
         this.children = new ArrayList<JsonBuilder>(2);
     }
 

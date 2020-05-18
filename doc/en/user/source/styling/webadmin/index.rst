@@ -156,7 +156,6 @@ The style editor supports line numbering, automatic indentation, and real-time s
    * - .. image:: img/styles_editor_height.png
      - Change height of style editor (disabled in full screen mode)
 
-
 During editing and especially after editing is complete, you will want to check validation of the syntax. This can be done by clicking the :guilabel:`Validate` button at the bottom.
 
 If no errors are found, you will see this message:
@@ -241,11 +240,16 @@ The :guilabel:`Legend` area allows you to add, modify, or delete a custom style,
      - Will remove the settings for the custom legend graphic and will instead use the default generated legend.
    * - :guilabel:`Preview legend`
      - Previews the legend based on the current settings
+   * - :guilabel:`Choose Image`
+     - Insert image into style (choose existing or upload)
 
 .. figure:: img/styles_editor_data_legend.png
 
    Legend area
 
+.. figure:: img/styles_editor_data_chooseimage.png
+  
+   Choose Image Dialog
 
 .. _styling_webadmin_edit_publishing:
 

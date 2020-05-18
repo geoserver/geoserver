@@ -4,9 +4,6 @@
  */
 package org.geoserver.jsonld.validation;
 
-import static org.geoserver.jsonld.expressions.ExpressionsUtils.determineContextPos;
-import static org.geoserver.jsonld.expressions.ExpressionsUtils.removeBackDots;
-
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
@@ -21,25 +18,25 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
 
     private int contextPos = 0;
 
-    public ValidateExpressionVisitor() {
+    private JsonBuilderContext context;
+
+    public ValidateExpressionVisitor(JsonBuilderContext context) {
         super();
+        this.context = context;
     }
 
     @Override
     public Object visit(PropertyName expression, Object data) {
-        if (expression.getPropertyName().indexOf("@") == -1) {
+        Object result = null;
+        // attribute selector @ will not evaluate against featureType
+        if (!expression.getPropertyName().contains("@")) {
             String xpathPath = expression.getPropertyName();
-            this.contextPos = determineContextPos(xpathPath);
-            xpathPath = removeBackDots(xpathPath);
             PropertyName pn =
                     new AttributeExpressionImpl(xpathPath, expression.getNamespaceContext());
-            JsonBuilderContext context = (JsonBuilderContext) data;
-            int i = 0;
-            while (i < contextPos) {
-                context = context.getParent();
-                i++;
-            }
-            return pn.evaluate(context.getCurrentObj(), Object.class);
-        } else return expression.getPropertyName();
+            result = pn.evaluate(context.getCurrentObj());
+        } else {
+            result = context;
+        }
+        return result;
     }
 }

@@ -59,7 +59,7 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
         // reading
         try {
             URI uri = new URI(input);
-            return uri.getScheme() != null && "file".equalsIgnoreCase(uri.getScheme());
+            return uri.getScheme() == null || "file".equalsIgnoreCase(uri.getScheme());
         } catch (URISyntaxException e) {
             return false;
         }

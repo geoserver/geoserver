@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Groups {@link StaticBuilder} and {@link DynamicValueBuilder}, invoke them and set, if found, the
@@ -20,15 +21,16 @@ public class CompositeBuilder extends SourceBuilder {
 
     private List<JsonBuilder> children;
 
-    public CompositeBuilder(String key) {
-        super(key);
+    public CompositeBuilder(String key, NamespaceSupport namespaces) {
+        super(key, namespaces);
         this.children = new LinkedList<>();
     }
 
     @Override
     public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
         context = evaluateSource(context);
-        if (context.getCurrentObj() != null && canWrite(context)) {
+        Object o = context.getCurrentObj();
+        if (o != null && evaluateFilter(context) && canWrite(context)) {
             writeKey(writer);
             writer.writeStartObject();
             for (JsonBuilder jb : children) {

@@ -13,7 +13,7 @@ import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
-import org.geoserver.jsonld.expressions.ExpressionsUtils;
+import org.geoserver.jsonld.expressions.JsonLdCqlManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.FunctionExpression;
@@ -155,6 +155,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
      */
     private String completeXPath(String xpath) {
         if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
-        return ExpressionsUtils.quoteXpathAttribute(xpath);
+        return JsonLdCqlManager.quoteXpathAttribute(xpath);
     }
 }

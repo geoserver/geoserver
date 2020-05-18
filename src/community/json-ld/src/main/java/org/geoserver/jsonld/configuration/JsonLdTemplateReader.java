@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.builders.*;
 import org.geoserver.jsonld.builders.impl.*;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -20,7 +21,10 @@ public class JsonLdTemplateReader {
 
     public static final String CONTEXTKEY = "@context";
 
+    public static final String FILTERKEY = "$filter";
+
     public static final String EXPRSTART = "${";
+
     private static final Logger LOGGER = Logging.getLogger(JsonLdTemplateReader.class);
 
     private JsonNode template;
@@ -51,13 +55,17 @@ public class JsonLdTemplateReader {
     private void getBuilderFromJsonObject(JsonNode node, JsonBuilder currentBuilder) {
         if (node.has(SOURCEKEY) && node.size() == 1) {
             String source = node.get(SOURCEKEY).asText();
-            ((SourceBuilder) currentBuilder).setSource(source, namespaces);
+            ((SourceBuilder) currentBuilder).setSource(source);
+            if (node.has(FILTERKEY)) {
+                setFilterToBuilder(currentBuilder, node);
+            }
         } else {
             Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
             while (iterator.hasNext()) {
                 Map.Entry<String, JsonNode> nodEntry = iterator.next();
                 String entryName = nodEntry.getKey();
                 JsonNode valueNode = nodEntry.getValue();
+                String strValueNode = valueNode.toString();
                 // These fields have to be jumped cause they got writed
                 // before feature evaluation starts
                 boolean jumpField =
@@ -66,17 +74,24 @@ public class JsonLdTemplateReader {
                                 || entryName.equalsIgnoreCase("features");
                 if (entryName.equals(SOURCEKEY)) {
                     String source = valueNode.asText();
-                    if (currentBuilder instanceof SourceBuilder)
-                        ((SourceBuilder) currentBuilder).setSource(source, namespaces);
+                    if (currentBuilder instanceof SourceBuilder) {
+                        ((SourceBuilder) currentBuilder).setSource(source);
+                    }
+                } else if (entryName.equals(FILTERKEY)) {
+                    setFilterToBuilder(currentBuilder, node);
                 } else if (entryName.equals(CONTEXTKEY)) {
                     RootBuilder rootBuilder = (RootBuilder) currentBuilder;
                     rootBuilder.setContextHeader(valueNode);
-                } else if (!valueNode.toString().contains(EXPRSTART) && !jumpField) {
-                    StaticBuilder builder = new StaticBuilder(entryName, valueNode);
+                } else if (!strValueNode.contains(EXPRSTART)
+                        && !strValueNode.contains(FILTERKEY)
+                        && !jumpField) {
+                    // to do static builder filter management
+                    StaticBuilder builder = new StaticBuilder(entryName, valueNode, namespaces);
                     currentBuilder.addChild(builder);
                 } else {
                     if (valueNode.isObject()) {
-                        CompositeBuilder compositeBuilder = new CompositeBuilder(entryName);
+                        CompositeBuilder compositeBuilder =
+                                new CompositeBuilder(entryName, namespaces);
                         currentBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(valueNode, compositeBuilder);
                     } else if (valueNode.isArray()) {
@@ -92,10 +107,10 @@ public class JsonLdTemplateReader {
 
     private void getBuilderFromJsonArray(
             String nodeName, JsonNode node, JsonBuilder currentBuilder) {
-        IteratingBuilder iteratingBuilder = new IteratingBuilder(nodeName);
+        IteratingBuilder iteratingBuilder = new IteratingBuilder(nodeName, namespaces);
         currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART)) {
-            StaticBuilder staticBuilder = new StaticBuilder(nodeName, node);
+            StaticBuilder staticBuilder = new StaticBuilder(nodeName, node, namespaces);
             currentBuilder.addChild(staticBuilder);
         } else {
             Iterator<JsonNode> arrayIterator = node.elements();
@@ -104,7 +119,7 @@ public class JsonLdTemplateReader {
                 if (childNode.isObject()) {
                     if (!childNode.has(SOURCEKEY) && childNode.toString().contains(EXPRSTART)) {
                         // CompositeBuilder child of Iterating has no key
-                        CompositeBuilder compositeBuilder = new CompositeBuilder(null);
+                        CompositeBuilder compositeBuilder = new CompositeBuilder(null, namespaces);
                         iteratingBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(childNode, compositeBuilder);
                     } else {
@@ -121,13 +136,47 @@ public class JsonLdTemplateReader {
 
     private void getBuilderFromJsonAttribute(
             String nodeName, JsonNode node, JsonBuilder currentBuilder) {
+        String strNode = node.asText();
+        String filter = null;
+        if (strNode.contains(FILTERKEY)) {
+            String[] arrNode = strNode.split(",");
+            strNode = arrNode[1];
+            filter = arrNode[0];
+            filter = filter.replace("$filter{", "").replace("}", "");
+        }
         if (node.toString().contains(EXPRSTART) && !node.asText().equals("FeatureCollection")) {
             DynamicValueBuilder dynamicBuilder =
-                    new DynamicValueBuilder(nodeName, node.asText(), namespaces);
+                    new DynamicValueBuilder(nodeName, strNode, namespaces);
+            if (filter != null) {
+                setFilterToBuilder(dynamicBuilder, filter);
+            }
             currentBuilder.addChild(dynamicBuilder);
         } else {
-            StaticBuilder staticBuilder = new StaticBuilder(nodeName, node);
+            StaticBuilder staticBuilder;
+            if (filter != null) {
+                staticBuilder = new StaticBuilder(nodeName, strNode, namespaces);
+                setFilterToBuilder(staticBuilder, filter);
+            } else {
+                staticBuilder = new StaticBuilder(nodeName, node, namespaces);
+            }
             currentBuilder.addChild(staticBuilder);
+        }
+    }
+
+    private void setFilterToBuilder(JsonBuilder builder, JsonNode node) {
+        String filter = node.get(FILTERKEY).asText();
+        try {
+            ((AbstractJsonBuilder) builder).setFilter(filter);
+        } catch (CQLException e) {
+            throw new RuntimeException("Invalid filter " + filter, e);
+        }
+    }
+
+    private void setFilterToBuilder(JsonBuilder builder, String filter) {
+        try {
+            ((AbstractJsonBuilder) builder).setFilter(filter);
+        } catch (CQLException e) {
+            throw new RuntimeException("Invalid filter " + filter, e);
         }
     }
 }

@@ -1,38 +1,125 @@
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jsonld.expressions;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
-import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.type.Types;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Helper class that mainly allows the extraction of CQL and Xpath expressions out of a plain text
- * string using special separators. It also provides some Utility methods to handle namespaces and
- * xpath syntax
+ * string using special separators. Moreover, since JsonLd templates can declare an xpath('some
+ * xpath') function that has no real FunctionExpression implementation, this class provides methods
+ * to extracts the xpath from the function as a literal, to substitute it after cql encoding
+ * happened with an AttributeExpression.
  */
-public class ExpressionsUtils {
+public class JsonLdCqlManager {
+
+    private String strCql;
+
+    private int contextPos = 0;
+
+    private NamespaceSupport namespaces;
+
+    public JsonLdCqlManager(String strCql, NamespaceSupport namespaces) {
+        this.strCql = strCql;
+        this.namespaces = namespaces;
+    }
 
     static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     public static final String XPATH_FUN_START = "xpath(";
 
-    public static String extractXpath(String xpath) {
+    /**
+     * Create a PropertyName from a String
+     *
+     * @return
+     */
+    public AttributeExpressionImpl getAttributeExpressionFromString() {
+        String strXpath = extractXpath(this.strCql);
+        this.contextPos = determineContextPos(strXpath);
+        strXpath = removeBackDots(strXpath);
+        return new AttributeExpressionImpl(strXpath, namespaces);
+    }
+
+    /**
+     * Create an expression from a string taking care of correctly handling the xpath() expression
+     *
+     * @return
+     */
+    public Expression getExpressionFromString() {
+        // takes xpath fun from cql
+        String strXpathFun = extractXpathFromCQL(this.strCql);
+        if (strXpathFun.indexOf(XPATH_FUN_START) != -1)
+            this.contextPos = determineContextPos(strXpathFun);
+        // takes the literal argument of xpathFun
+        String literalXpath = removeBackDots(toLiteralXpath(strXpathFun));
+
+        // clean the function to obtain a cql expression without xpath() syntax
+        Expression expression =
+                extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
+        // replace the xpath literal inside the expression with a PropertyName
+        return (Expression) setPropertyNameToCQL(expression, literalXpath.replaceAll("'", ""));
+    }
+
+    /**
+     * Create a filter from a string taking care of correctly handling the xpath() expression
+     *
+     * @return
+     * @throws CQLException
+     */
+    public Filter getFilterFromString() throws CQLException {
+        String xpathFunction = extractXpathFromCQL(this.strCql);
+        if (xpathFunction.indexOf(XPATH_FUN_START) != -1)
+            contextPos = determineContextPos(xpathFunction);
+        String literalXpath = removeBackDots(toLiteralXpath(xpathFunction));
+        String cleanedCql = cleanCQL(this.strCql, xpathFunction, literalXpath);
+        return (Filter)
+                setPropertyNameToCQL(ECQL.toFilter(cleanedCql), literalXpath.replaceAll("'", ""));
+    }
+
+    /**
+     * @param cql the cql filter or expression to which set the clean xpath as a PropertyName
+     * @param xpath
+     * @return
+     */
+    private Object setPropertyNameToCQL(Object cql, String xpath) {
+        DuplicatingFilterVisitor filterVisitor =
+                new DuplicatingFilterVisitor() {
+                    @Override
+                    public Object visit(Literal expression, Object extraData) {
+                        if (expression.getValue() instanceof String) {
+                            String strVal = (String) expression.getValue();
+                            if (strVal.endsWith(xpath))
+                                return new AttributeExpressionImpl(xpath, namespaces);
+                        }
+                        return super.visit(expression, extraData);
+                    }
+                };
+        Object result;
+        if (cql instanceof Expression) {
+            result = ((Expression) cql).accept(filterVisitor, null);
+        } else {
+            result = ((Filter) cql).accept(filterVisitor, null);
+        }
+        return result;
+    }
+
+    private String extractXpath(String xpath) {
         boolean inXpath = false;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < xpath.length(); i++) {
@@ -81,7 +168,7 @@ public class ExpressionsUtils {
      * result of parsing each embedded cql expression and string literals in between the cql
      * expressions, in the order they appear in the original string
      */
-    static List<Expression> splitCqlExpressions(String expression) {
+    private List<Expression> splitCqlExpressions(String expression) {
         boolean inCqlExpression = false;
         List<Expression> result = new ArrayList<Expression>();
         StringBuilder sb = new StringBuilder();
@@ -163,7 +250,7 @@ public class ExpressionsUtils {
     }
 
     /** Given an expression list will create an expression concatenating them. */
-    static Expression catenateExpressions(List<Expression> expressions) {
+    private Expression catenateExpressions(List<Expression> expressions) {
         if (expressions == null || expressions.size() == 0)
             throw new IllegalArgumentException(
                     "You should provide at least one expression in the list");
@@ -179,8 +266,78 @@ public class ExpressionsUtils {
      * Builds a CQL expression equivalent to the specified string, see class javadocs for rules on
      * how to build the expression in string form
      */
-    public static Expression extractCqlExpressions(String expression) {
+    private Expression extractCqlExpressions(String expression) {
         return catenateExpressions(splitCqlExpressions(expression));
+    }
+
+    public static String removeQuotes(String cqlFilter) {
+        cqlFilter = cqlFilter.replaceFirst("\"", "");
+        StringBuilder strBuilder = new StringBuilder();
+        for (int i = 0; i < cqlFilter.length(); i++) {
+            char curr = cqlFilter.charAt(i);
+            if (curr != '\"') {
+                strBuilder.append(curr);
+            } else {
+                if (i != cqlFilter.length() && cqlFilter.charAt(i + 1) != ' ')
+                    strBuilder.append(curr);
+            }
+        }
+        return strBuilder.toString();
+    }
+
+    /**
+     * Clean a CQL from the xpath function syntax to make the xpath suitable to be encoded as a
+     * PropertyName
+     */
+    private String cleanCQL(String cql, String toReplace, String replacement) {
+        if (cql.indexOf(XPATH_FUN_START) != -1)
+            return cql.replace(toReplace, replacement).replaceAll("\\.\\./", "");
+        else return cql;
+    }
+
+    public static String removeBackDots(String xpath) {
+        if (xpath.indexOf("../") != -1) return xpath.replaceAll("\\.\\./", "");
+        return xpath;
+    }
+
+    /** Extract the xpath function from CQL Expression if present */
+    private String extractXpathFromCQL(String expression) {
+        int xpathI = expression.indexOf(XPATH_FUN_START);
+        if (xpathI != -1) {
+            int xpathI2 = expression.indexOf(")", xpathI);
+            String strXpath = expression.substring(xpathI, xpathI2 + 1);
+            return strXpath;
+        }
+        return expression;
+    }
+
+
+    /** Extract the literal argument from the xpath function */
+    private String toLiteralXpath(String strXpath) {
+        if (strXpath.indexOf(XPATH_FUN_START) != -1) {
+            return strXpath.replace(XPATH_FUN_START, "").replace(")", "");
+        }
+        return strXpath;
+    }
+
+    /**
+     * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
+     * xpath, and cleans it from ../ notation.
+     *
+     * @param xpath
+     * @return
+     */
+    public static int determineContextPos(String xpath) {
+        int contextPos = 0;
+        while (xpath.contains("../")) {
+            contextPos++;
+            xpath = xpath.replaceFirst("\\.\\./", "");
+        }
+        return contextPos;
+    }
+
+    public int getContextPos() {
+        return contextPos;
     }
 
     /**
@@ -206,109 +363,5 @@ public class ExpressionsUtils {
                     xpathAttribute.toString(), "\"" + xpathAttribute.toString() + "\"");
         }
         return xpath;
-    }
-
-    /**
-     * Extract Namespaces from given FeatureType
-     *
-     * @param type
-     * @return Namespaces if found for the given FeatureType
-     */
-    public static NamespaceSupport declareNamespaces(FeatureType type) {
-        NamespaceSupport namespaceSupport = null;
-        if (type instanceof ComplexFeatureTypeImpl) {
-            Map namespaces = (Map) type.getUserData().get(Types.DECLARED_NAMESPACES_MAP);
-            if (namespaces != null) {
-                namespaceSupport = new NamespaceSupport();
-                for (Iterator it = namespaces.entrySet().iterator(); it.hasNext(); ) {
-                    Map.Entry entry = (Map.Entry) it.next();
-                    String prefix = (String) entry.getKey();
-                    String namespace = (String) entry.getValue();
-                    namespaceSupport.declarePrefix(prefix, namespace);
-                }
-            }
-        }
-        return namespaceSupport;
-    }
-
-    public static String removeQuotes(String cqlFilter) {
-        cqlFilter = cqlFilter.replaceFirst("\"", "");
-        StringBuilder strBuilder = new StringBuilder();
-        for (int i = 0; i < cqlFilter.length(); i++) {
-            char curr = cqlFilter.charAt(i);
-            if (curr != '\"') {
-                strBuilder.append(curr);
-            } else {
-                if (i != cqlFilter.length() && cqlFilter.charAt(i + 1) != ' ')
-                    strBuilder.append(curr);
-            }
-        }
-        return strBuilder.toString();
-    }
-
-    /**
-     * Clean a CQL expression from the xpath function syntax to make the xpath suitable to be
-     * encoded as a PropertyName
-     *
-     * @param expression
-     * @param toReplace
-     * @param replacement
-     * @return
-     */
-    public static String cleanCQLExpression(
-            String expression, String toReplace, String replacement) {
-        if (expression.indexOf(XPATH_FUN_START) != -1)
-            return expression.replace(toReplace, replacement).replaceAll("\\.\\./", "");
-        else return expression;
-    }
-
-    public static String removeBackDots(String xpath) {
-        if (xpath.indexOf("../") != -1) return xpath.replaceAll("\\.\\./", "");
-        return xpath;
-    }
-
-    /**
-     * Extract the xpath function from CQL Expression if present
-     *
-     * @param expression
-     * @return
-     */
-    public static String extractXpathFromCQL(String expression) {
-        int xpathI = expression.indexOf(XPATH_FUN_START);
-        if (xpathI != -1) {
-            int xpathI2 = expression.indexOf(")", xpathI);
-            String strXpath = expression.substring(xpathI, xpathI2 + 1);
-            return strXpath;
-        }
-        return expression;
-    }
-
-    /**
-     * Extract the literal argument from the xpath function
-     *
-     * @param strXpath
-     * @return
-     */
-    public static String getLiteralXpath(String strXpath) {
-        if (strXpath.indexOf(XPATH_FUN_START) != -1) {
-            return strXpath.replace(XPATH_FUN_START, "").replace(")", "");
-        }
-        return strXpath;
-    }
-
-    /**
-     * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
-     * xpath, and cleans it from ../ notation.
-     *
-     * @param xpath
-     * @return
-     */
-    public static int determineContextPos(String xpath) {
-        int contextPos = 0;
-        while (xpath.contains("../")) {
-            contextPos++;
-            xpath = xpath.replaceFirst("\\.\\./", "");
-        }
-        return contextPos;
     }
 }

@@ -133,6 +133,11 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
         }
     }
 
+    public void writeString(String entryName, String value) throws IOException {
+        if (entryName != null && !entryName.equals("")) delegate.writeFieldName(entryName);
+        if (value != null && !value.equals("")) delegate.writeString(value);
+    }
+
     public com.fasterxml.jackson.core.JsonGenerator getDelegate() {
         return delegate;
     }

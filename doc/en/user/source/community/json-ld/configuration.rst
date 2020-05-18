@@ -116,3 +116,104 @@ The content of the json-ld output depends on specified properties in json-ld tem
 * a :code:`"$source":"xpath"` attribute can be added as the first element of an array or of an object;
 * if a :code:`"$source": "xpath"` attribute is present, it will act as a context against which all xpath expression will be evaluated. In the case of an array it will be use to iterate over a collection of element; if source evaluates to null the entire object/array will be skipped;
 * a :code:`../` syntax in an xpath means that xpath evaluation will be relative to the previous :code:`$source`. Give the above template file, the xpath :code:`"../gsml:shape"` will be evaluate not against the corresponding :code:`"$source": "gsml:specification/gsml:GeologicUnit"`, but against the parent one :code:`"$source": "gsml:MappedFeature"`.
+
+
+Filtering Support
+------------------
+
+In order to have a more fined grained control over the output it is possible to specify a filter at the array, object and attribute level.
+Assuming to have a template file like the above, valid filters could be the followings:
+
+array 
+
+.. code-block:: json
+
+ {
+   "lithology":[
+      {
+         "$source":"gsml:lithology",
+         "$filter":"xpath('gsml:ControlledConcept/gsml:name') = 'name_2'"
+      },
+      {
+         "@id":"${gsml:ControlledConcept/@id}",
+         "name":{
+            "value":"${gsml:ControlledConcept/gsml:name}",
+            "@lang":"en"
+         },
+         "vocabulary":{
+            "@href":"urn:ogc:def:nil:OGC::missing"
+         }
+      }
+   ]
+ }
+
+
+object 
+
+.. code-block:: json
+
+ {
+   "gsml:GeologicUnit":{
+      "$source":"gsml:specification/gsml:GeologicUnit",
+      "$filter":"xpath('gml:description') = 'Olivine basalt'",
+      "@id":"${@id}",
+      "description":"${gml:description}",
+      "gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
+      "gsml:composition":"..."
+   }
+ }
+
+
+
+attribute (dynamic) 
+
+.. code-block:: json
+
+  {
+  "gsml:GeologicUnit": {
+        "$source": "gsml:specification/gsml:GeologicUnit",
+        "@id": "${@id}",
+        "description": "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}",
+        "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+        "gsml:composition": "..."
+    }
+  }
+
+
+attribute (static) 
+
+.. code-block:: json
+
+   {
+   "gsml:composition":[
+      {
+         "$source":"gsml:composition"
+      },
+      {
+         "gsml:compositionPart":[
+            {
+               "$source":"gsml:CompositionPart"
+            },
+            {
+               "gsml:role":{
+                  "value":"${gsml:role}",
+                  "@codeSpace":"$filter{xpath('../../gml:description')='Olivine basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
+               }
+            }
+         ]
+      }
+   ]
+ }
+
+
+
+As it is possible to see, in the array and object case the filter sintax expected an :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"` separeted by the cql expression of by the static content from a :code:`,`.
+The evaluation of a filter is handled by the module in the following way:
+
+* if a :code:`"$filter": "cql"` attribute is present after the :code:`"$source"` attribute in an array or an object:
+  * in the array case, each of its element will be included in the output if the condition in the filter condition is true;
+  * in the object case, the entire object will be included in the output if the condition in the filter condition is true;
+
+* if a :code:`$filter{cql}` is present inside an attribute value before the expression or the static content, separated by it from a :code:`,`:
+  * in case of an expression attribute, the result of the expression will be included in the output if the filter condition is true;
+  * in case of a static content attribute, the static content will be included in the output if the filter condition is true.

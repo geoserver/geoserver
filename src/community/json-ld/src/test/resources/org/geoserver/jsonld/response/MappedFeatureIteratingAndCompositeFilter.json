@@ -1,0 +1,95 @@
+{
+  "@context": {
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "schema": "https://schema.org/",
+    "dc": "http://purl.org/dc/terms/",
+    "Feature": "gsp:Feature",
+    "FeatureCollection": "schema:Collection",
+    "Point": "sf:Point",
+    "wkt": "gsp:asWKT",
+    "features": {
+      "@container": "@set",
+      "@id": "schema:hasPart"
+    },
+    "geometry": "sf:geometry",
+    "description": "dc:description",
+    "title": "dc:title",
+    "name": "schema:name"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "gsml:MappedFeature"
+    },
+    {
+      "@id": "${@id}",
+      "@type": [
+        "Feature",
+        "gsml:MappedFeature",
+        "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
+      ],
+      "name": "${gml:name}",
+      "gsml:positionalAccuracy": {
+        "type": "gsml:CGI_NumericValue",
+        "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
+      },
+      "gsml:GeologicUnit": {
+        "$source": "gsml:specification/gsml:GeologicUnit",
+        "$filter": "xpath('gml:description') = 'Olivine basalt'",
+        "@id": "${@id}",
+        "description": "${gml:description}",
+        "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+        "gsml:composition": [
+          {
+            "$source": "gsml:composition"
+          },
+          {
+            "gsml:compositionPart": [
+              {
+                "$source": "gsml:CompositionPart"
+              },
+              {
+                "gsml:role": {
+                  "value": "${gsml:role}",
+                  "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                },
+                "proportion": {
+                  "$source": "gsml:proportion",
+                  "@dataType": "CGI_ValueProperty",
+                  "CGI_TermValue": {
+                    "@dataType": "CGI_TermValue",
+                    "value": {
+                      "value": "${gsml:CGI_TermValue}",
+                      "@codeSpace": "some:uri"
+                    }
+                  }
+                },
+                "lithology": [
+                  {
+                    "$source": "gsml:lithology",
+                    "$filter": "xpath('gsml:ControlledConcept/@id') = 'cc.2'"
+                  },
+                  {
+                    "@id": "${gsml:ControlledConcept/@id}",
+                    "name": {
+                      "value": "${gsml:ControlledConcept/gsml:name}",
+                      "@lang": "en"
+                    },
+                    "vocabulary": {
+                      "@href": "urn:ogc:def:nil:OGC::missing"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "geometry": {
+        "@type": "Polygon",
+        "wkt": "$${toWKT(xpath('gsml:shape'))}"
+      }
+    }
+  ]
+}

@@ -6,59 +6,14 @@ package org.geoserver.jsonld.response;
 
 import static org.junit.Assert.*;
 
-import java.io.*;
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.jsonld.configuration.JsonLdConfiguration;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.test.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.DirtiesContext;
 
-public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestSupport {
-    Catalog catalog;
-    FeatureTypeInfo typeInfo;
-    FeatureTypeInfo typeInfo2;
-    GeoServerDataDirectory dd;
-
-    @Before
-    public void before() {
-        catalog = getCatalog();
-
-        typeInfo = catalog.getFeatureTypeByName("gsml", "MappedFeature");
-        typeInfo2 = catalog.getFeatureTypeByName("gsml", "GeologicUnit");
-        dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
-    }
-
-    private void setUpInvalid() throws IOException {
-        File file2 =
-                dd.getResourceLoader()
-                        .createFile(
-                                "workspaces/gsml/"
-                                        + typeInfo2.getStore().getName()
-                                        + "/"
-                                        + typeInfo2.getName(),
-                                JsonLdConfiguration.JSON_LD_NAME);
-        dd.getResourceLoader().copyFromClassPath("GeoLogicUnit_invalid.json", file2, getClass());
-    }
-
-    private void setUpComplex() throws IOException {
-        File file =
-                dd.getResourceLoader()
-                        .createFile(
-                                "workspaces/gsml/"
-                                        + typeInfo.getStore().getName()
-                                        + "/"
-                                        + typeInfo.getName(),
-                                JsonLdConfiguration.JSON_LD_NAME);
-        dd.getResourceLoader().copyFromClassPath("MappedFeature.json", file, getClass());
-    }
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSupport {
 
     @Test
     public void testJsonLdResponse() throws Exception {
@@ -187,7 +142,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestS
 
     @Test
     public void testInvalidTemplateResponse() throws Exception {
-        setUpInvalid();
+        setUpComplex("GeoLogicUnit_invalid.json", geologicUnit);
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=gsml:GeologicUnit&outputFormat=");
         sb.append("application%2Fld%2Bjson");
@@ -196,7 +151,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestS
                 response.getContentAsString()
                         .contains(
                                 "Failed to validate json-ld template for feature type GeologicUnit. "
-                                        + "Failing attribute is Key: @id Value: invalid/id"));
+                                        + "Failing attribute is Key: @id Value: &amp;quot;invalid/id&amp;quot;"));
     }
 
     private void checkMappedFeatureJSON(JSONObject feature) {
@@ -223,47 +178,5 @@ public class JSONLDGetComplexFeaturesResponseTest extends AbstractAppSchemaTestS
                 assertTrue(lithology.size() > 0);
             }
         }
-    }
-
-    protected JSON getJsonLd(String path) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(path);
-        assertEquals(response.getContentType(), "application/ld+json");
-        return json(response);
-    }
-
-    protected JSON postJsonLd(String xml) throws Exception {
-        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
-        assertEquals(response.getContentType(), "application/ld+json");
-        return json(response);
-    }
-
-    @Override
-    protected AbstractAppSchemaMockData createTestData() {
-        return new FeatureChainingMockData();
-    }
-
-    @After
-    public void cleanup() {
-        Resource res =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + typeInfo.getStore().getName()
-                                        + "/"
-                                        + typeInfo.getName()
-                                        + "/"
-                                        + JsonLdConfiguration.JSON_LD_NAME);
-        if (res != null) res.delete();
-
-        Resource res2 =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + typeInfo2.getStore().getName()
-                                        + "/"
-                                        + typeInfo2.getName()
-                                        + "/"
-                                        + JsonLdConfiguration.JSON_LD_NAME);
-        if (res2 != null) res2.delete();
     }
 }

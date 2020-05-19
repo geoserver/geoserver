@@ -87,10 +87,11 @@ Configuring authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Basic authentication is supported through the ``user`` and ``passwd`` credential parameters. The provided user must have
-superuser privilege on the index to enable the mapping and alias requests performed during store initialization. Optional
-``proxy_user`` and ``proxy_passwd`` parameters can be used to specify an alternate user for document search (OGC service)
-requests. The proxy user can have restricted privileges on the index through document level security. If not provided
-the default user is used for all requests.
+superuser privilege on the index to enable the mapping and alias requests performed during store initialization.
+Note that aliases must already be present on the elasticsearch index. If you enter an alias which is not present, the
+plugin will not generate it for you. Optional ``proxy_user`` and ``proxy_passwd`` parameters can be used to specify an
+alternate user for document search (OGC service) requests. The proxy user can have restricted privileges on the index
+through document level security. If not provided the default user is used for all requests.
 
 The ``runas_geoserver_user`` flag can be used to enable Elasticsearch requests to be submitted on behalf of the
 authenticated GeoServer user. When the run-as mechanism is configured the plugin will add the ``es-security-runas-user``
@@ -144,9 +145,6 @@ The initial layer configuration panel for an Elasticsearch layer will include an
      - Description
    * - ``Use All``
      - Use all fields in the layer feature type
-   * - ``Short Names``
-     - For hierarchical documents with inner fields (e.g. ``parent.child.field_name``), only use the base name 
-       (``field_name``) in the schema. Note, full path will always be included when the base name is duplicated across fields.
    * - ``Use``
      - Used to select the fields that will make up the layer feature type
    * - ``Name``

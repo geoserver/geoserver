@@ -9,7 +9,7 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.ServiceException;
 
 /**
- * <Callback that implementors can call onto in order to manipulate GetFeature data gather before it
+ * Callback that implementors can call onto in order to manipulate GetFeature data gather before it
  * happens, by replacing the data source and the query being run, or just perform checks on the
  * request.
  *

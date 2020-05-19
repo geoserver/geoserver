@@ -29,6 +29,9 @@ public class ParameterInfo {
     /** Depends on parameters */
     private List<ParameterInfo> dependsOn = new ArrayList<ParameterInfo>();
 
+    /** How many of the "depends on" are enforced? * */
+    private int enforcedDependsOn;
+
     public ParameterInfo(String name, ParameterType type, boolean required) {
         this.name = name;
         this.type = type;
@@ -47,12 +50,23 @@ public class ParameterInfo {
         return required;
     }
 
-    public ParameterInfo dependsOn(ParameterInfo... infos) {
+    public ParameterInfo dependsOn(boolean enforced, ParameterInfo... infos) {
+        if (enforced && enforcedDependsOn < dependsOn.size()) {
+            throw new IllegalArgumentException(
+                    "Enforced dependencies must come before non-enforced dependencies.");
+        }
         for (ParameterInfo info : infos) {
             dependsOn.add(info);
             info.dependents.add(this);
         }
+        if (enforced) {
+            enforcedDependsOn += infos.length;
+        }
         return this;
+    }
+
+    public ParameterInfo dependsOn(ParameterInfo... infos) {
+        return dependsOn(true, infos);
     }
 
     public List<ParameterInfo> getDependsOn() {
@@ -61,5 +75,9 @@ public class ParameterInfo {
 
     public List<ParameterInfo> getDependents() {
         return dependents;
+    }
+
+    public int getEnforcedDependsOn() {
+        return enforcedDependsOn;
     }
 }

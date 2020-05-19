@@ -1666,6 +1666,21 @@
       </dependencies>
     </profile>
     <profile>
+      <id>taskmanager-metadata</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-taskmanager-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-taskmanager-metadata</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>mongodb</id>
       <dependencies>
         <dependency>

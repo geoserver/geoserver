@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ public class TaskImpl extends BaseImpl implements Task {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @XStreamOmitField
     private Long id;
 
     @Column private String name;
@@ -71,6 +73,7 @@ public class TaskImpl extends BaseImpl implements Task {
     private List<BatchElement> batchElements = new ArrayList<BatchElement>();
 
     @Column(nullable = false)
+    @XStreamOmitField
     private Long removeStamp = 0L;
 
     @Override

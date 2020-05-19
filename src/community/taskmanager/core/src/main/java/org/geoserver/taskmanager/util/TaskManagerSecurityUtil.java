@@ -84,7 +84,7 @@ public class TaskManagerSecurityUtil {
         return check1 && check2;
     }
 
-    public boolean isWriteable(Authentication user, Configuration config) {
+    public boolean isWritable(Authentication user, Configuration config) {
         WorkspaceInfo wi = getWorkspace(config.getWorkspace());
         if (wi == null) { // lack of default workspace (allow) versus incorrect workspace (deny
             // unless admin)
@@ -182,5 +182,11 @@ public class TaskManagerSecurityUtil {
         WorkspaceAccessLimits limits =
                 secureCatalog.getResourceAccessManager().getAccessLimits(user, ws);
         return limits == null || limits.isAdminable();
+    }
+
+    public boolean isWritable(Authentication user, WorkspaceInfo ws) {
+        WorkspaceAccessLimits limits =
+                secureCatalog.getResourceAccessManager().getAccessLimits(user, ws);
+        return limits == null || limits.isWritable();
     }
 }

@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.decoder.RESTCoverage;
 import it.geosolutions.geoserver.rest.decoder.RESTLayer;
+import it.geosolutions.geoserver.rest.decoder.RESTStyle;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,7 +24,9 @@ import java.util.Date;
 import java.util.HashMap;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
@@ -37,6 +40,7 @@ import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
 import org.geoserver.util.IOUtils;
+import org.geotools.util.Version;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -56,7 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
     /** If your target geoserver supports the metadata module. */
-    private static final boolean SUPPORTS_METADATA = true;
+    private static final boolean SUPPORTS_METADATA = false;
 
     private static final String STYLE = "grass";
     private static final String SECOND_STYLE = "second_grass";
@@ -89,12 +93,15 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
     public boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addStyle(STYLE, getClass().getResource(STYLE + ".sld"));
         DATA_DIRECTORY.addStyle(SECOND_STYLE, getClass().getResource(SECOND_STYLE + ".sld"));
-        try (InputStream is = getClass().getResource("grass_fill.png").openStream()) {
-            try (OutputStream os =
-                    new FileOutputStream(
-                            new File(
-                                    DATA_DIRECTORY.getDataDirectoryRoot(),
-                                    "styles/grass_fill.png"))) {
+        File imgDir = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "styles/");
+        imgDir.mkdirs();
+        try (InputStream is = getClass().getResource("img/grass_fill.png").openStream()) {
+            try (OutputStream os = new FileOutputStream(new File(imgDir, "grass_fill.png"))) {
+                IOUtils.copy(is, os);
+            }
+        }
+        try (InputStream is = getClass().getResource("img/grass_fill.png").openStream()) {
+            try (OutputStream os = new FileOutputStream(new File(imgDir, "grass_bill.png"))) {
                 IOUtils.copy(is, os);
             }
         }
@@ -172,6 +179,14 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         LayerInfo li = geoServer.getCatalog().getLayerByName("DEM");
         StyleInfo si = geoServer.getCatalog().getStyleByName(STYLE);
         li.setDefaultStyle(si);
+        LegendInfo legendInfo = new LegendInfoImpl();
+        legendInfo.setWidth(100);
+        legendInfo.setHeight(100);
+        legendInfo.setFormat("image/png");
+        legendInfo.setOnlineResource("grass_bill.png");
+        si.setLegend(legendInfo);
+        si.setFormatVersion(new Version("1.1"));
+        geoServer.getCatalog().save(si);
         geoServer.getCatalog().save(li);
 
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
@@ -209,12 +224,12 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         ci.setAbstract("new abstract");
         ci.getDimensions().get(0).setName("CUSTOM_DIMENSION");
         ci.getMetadata().put("asomething", "anything");
-        ci.getMetadata().put("adate", new Date());
         if (SUPPORTS_METADATA) {
             HashMap<String, String> map = new HashMap<>();
             map.put("foo", "bar");
             map.put("boo", "far");
             ci.getMetadata().put("complex", map);
+            ci.getMetadata().put("adate", new Date());
         }
         geoServer.getCatalog().save(ci);
         li.getStyles().add(geoServer.getCatalog().getStyleByName(SECOND_STYLE));
@@ -239,19 +254,22 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
                 cov.getEncodedDimensionsInfoList().get(0).getName());
         assertEquals("asomething", cov.getMetadataList().get(0).getKey());
         assertEquals("anything", cov.getMetadataList().get(0).getMetadataElem().getText());
-        assertEquals("adate", cov.getMetadataList().get(1).getKey());
-        assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("date"));
         if (SUPPORTS_METADATA) {
-            assertEquals("complex", cov.getMetadataList().get(2).getKey());
-            assertNotNull(cov.getMetadataList().get(2).getMetadataElem().getChild("map"));
+            assertEquals("complex", cov.getMetadataList().get(1).getKey());
+            assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("map"));
+            assertEquals("adate", cov.getMetadataList().get(2).getKey());
+            assertNotNull(cov.getMetadataList().get(2).getMetadataElem().getChild("date"));
         }
         layer = restManager.getReader().getLayer("wcs", "DEM");
         assertEquals(STYLE, layer.getDefaultStyle());
         assertEquals(1, layer.getStyles().size());
         assertEquals(SECOND_STYLE, layer.getStyles().get(0).getName());
 
-        String style = restManager.getStyleManager().getSLD(STYLE);
-        assertTrue(style.indexOf("CHANGED VERSION") > 0);
+        RESTStyle style = restManager.getStyleManager().getStyle(STYLE);
+        assertEquals("1.1", style.getVersion());
+
+        String sld = restManager.getStyleManager().getSLD(STYLE);
+        assertTrue(sld.indexOf("CHANGED VERSION") > 0);
 
         // clean-up
 

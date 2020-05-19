@@ -17,16 +17,21 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.taskmanager.external.impl.DbTableImpl;
 import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.util.LookupService;
+import org.geoserver.taskmanager.util.TaskManagerSecurityUtil;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,6 +50,8 @@ public class ExtTypes {
     @Autowired private LookupService<FileService> fileServices;
 
     @Autowired private GeoServer geoServer;
+
+    @Autowired private TaskManagerSecurityUtil secUtil;
 
     public final ParameterType dbName =
             new ParameterType() {
@@ -76,7 +83,9 @@ public class ExtTypes {
                                                     null,
                                                     ds.getSchema(),
                                                     "%",
-                                                    new String[] {"TABLE", "VIEW"})) {
+                                                    new String[] {
+                                                        "TABLE", "VIEW", "MATERIALIZED VIEW"
+                                                    })) {
                                         while (rs.next()) {
                                             if (ds.getSchema() != null || rs.getString(2) == null) {
                                                 tables.add(rs.getString(3));
@@ -137,21 +146,73 @@ public class ExtTypes {
                 }
             };
 
+    public final ParameterType workspace =
+            new ParameterType() {
+
+                @Override
+                public List<String> getDomain(List<String> dependsOnRawValues) {
+                    SortedSet<String> workspaces = new TreeSet<>();
+                    for (WorkspaceInfo workspace : geoServer.getCatalog().getWorkspaces()) {
+                        if (secUtil.isWritable(
+                                SecurityContextHolder.getContext().getAuthentication(),
+                                workspace)) {
+                            workspaces.add(workspace.getName());
+                        }
+                    }
+                    return new ArrayList<String>(workspaces);
+                }
+
+                @Override
+                public WorkspaceInfo parse(String value, List<String> dependsOnRawValues) {
+                    return geoServer.getCatalog().getWorkspaceByName(value);
+                }
+            };
+
     public final ParameterType internalLayer =
             new ParameterType() {
 
                 @Override
                 public List<String> getDomain(List<String> dependsOnRawValues) {
                     SortedSet<String> layers = new TreeSet<>();
-                    for (LayerInfo layer : geoServer.getCatalog().getLayers()) {
-                        layers.add(layer.prefixedName());
+                    if (dependsOnRawValues.size() > 0
+                            && !Strings.isEmpty(dependsOnRawValues.get(0))) {
+                        NamespaceInfo ni =
+                                geoServer
+                                        .getCatalog()
+                                        .getNamespaceByPrefix(dependsOnRawValues.get(0));
+                        for (ResourceInfo resource :
+                                geoServer
+                                        .getCatalog()
+                                        .getResourcesByNamespace(ni, ResourceInfo.class)) {
+                            layers.add(resource.getName());
+                        }
+                    } else {
+                        for (LayerInfo layer : geoServer.getCatalog().getLayers()) {
+                            layers.add(layer.prefixedName());
+                            if (layer.getResource()
+                                    .getNamespace()
+                                    .equals(geoServer.getCatalog().getDefaultNamespace())) {
+                                layers.add(layer.getName());
+                            }
+                        }
                     }
                     return new ArrayList<String>(layers);
                 }
 
                 @Override
                 public LayerInfo parse(String value, List<String> dependsOnRawValues) {
-                    return geoServer.getCatalog().getLayerByName(value);
+                    if (dependsOnRawValues.size() > 0
+                            && !Strings.isEmpty(dependsOnRawValues.get(0))) {
+                        NamespaceInfo ns =
+                                geoServer
+                                        .getCatalog()
+                                        .getNamespaceByPrefix(dependsOnRawValues.get(0));
+                        return geoServer
+                                .getCatalog()
+                                .getLayerByName(new NameImpl(ns.getURI(), value));
+                    } else {
+                        return geoServer.getCatalog().getLayerByName(value);
+                    }
                 }
 
                 @Override
@@ -170,15 +231,23 @@ public class ExtTypes {
 
                 @Override
                 public Name parse(String value, List<String> dependsOnRawValues) {
-                    int colon = value.indexOf(':');
                     NamespaceInfo ni;
-                    if (colon >= 0) {
-                        ni = geoServer.getCatalog().getNamespaceByPrefix(value.substring(0, colon));
+                    if (dependsOnRawValues.size() > 0
+                            && !Strings.isEmpty(dependsOnRawValues.get(0))) {
+                        ni = geoServer.getCatalog().getNamespaceByPrefix(dependsOnRawValues.get(0));
                     } else {
-                        ni = geoServer.getCatalog().getDefaultNamespace();
+                        int colon = value.indexOf(':');
+                        if (colon >= 0) {
+                            ni =
+                                    geoServer
+                                            .getCatalog()
+                                            .getNamespaceByPrefix(value.substring(0, colon));
+                            value = value.substring(colon + 1);
+                        } else {
+                            ni = geoServer.getCatalog().getDefaultNamespace();
+                        }
                     }
-                    return new NameImpl(
-                            ni == null ? null : ni.getURI(), value.substring(colon + 1));
+                    return new NameImpl(ni == null ? null : ni.getURI(), value);
                 }
 
                 @Override

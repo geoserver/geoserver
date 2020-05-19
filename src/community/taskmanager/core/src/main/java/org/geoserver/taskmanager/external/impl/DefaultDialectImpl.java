@@ -5,7 +5,12 @@
 package org.geoserver.taskmanager.external.impl;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.util.SqlUtil;
@@ -53,7 +58,7 @@ public class DefaultDialectImpl implements Dialect {
 
     @Override
     public Set<String> getSpatialColumns(
-            Connection sourceConn, String tableName, String defaultSchema) {
+            Connection connection, String tableName, String defaultSchema) {
         return Collections.emptySet();
     }
 
@@ -72,5 +77,48 @@ public class DefaultDialectImpl implements Dialect {
     @Override
     public boolean autoUpdateView() {
         return false;
+    }
+
+    @Override
+    public List<Column> getColumns(Connection connection, String tableName, ResultSet rs)
+            throws SQLException {
+        List<Column> result = new ArrayList<>();
+        ResultSetMetaData rsmd = rs.getMetaData();
+
+        int columnCount = rsmd.getColumnCount();
+
+        for (int i = 1; i <= columnCount; i++) {
+            int col = i;
+            result.add(
+                    new Column() {
+
+                        @Override
+                        public String getName() throws SQLException {
+                            return rsmd.getColumnLabel(col);
+                        }
+
+                        @Override
+                        public String getTypeEtc() throws SQLException {
+                            String typeName = rsmd.getColumnTypeName(col);
+                            StringBuffer sb = new StringBuffer(typeName);
+                            if (("char".equals(typeName) || "varchar".equals(typeName))
+                                    && rsmd.getColumnDisplaySize(col) > 0
+                                    && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
+                                typeName += " (" + rsmd.getColumnDisplaySize(col) + " ) ";
+                            }
+                            switch (isNullable(rsmd.isNullable(col))) {
+                                case ResultSetMetaData.columnNoNulls:
+                                    sb.append(" NOT NULL");
+                                    break;
+                                case ResultSetMetaData.columnNullable:
+                                    sb.append(" NULL");
+                                    break;
+                            }
+                            return sb.toString();
+                        }
+                    });
+        }
+
+        return result;
     }
 }

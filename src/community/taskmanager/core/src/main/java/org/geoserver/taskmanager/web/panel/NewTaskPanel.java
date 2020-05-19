@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.geoserver.taskmanager.data.Configuration;
+import org.geoserver.taskmanager.schedule.TaskType;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 
 public class NewTaskPanel extends Panel {
@@ -27,9 +28,7 @@ public class NewTaskPanel extends Panel {
                 new DropDownChoice<String>(
                                 "type",
                                 new Model<String>(),
-                                new Model<ArrayList<String>>(
-                                        new ArrayList<String>(
-                                                TaskManagerBeans.get().getTaskTypes().names())))
+                                new Model<ArrayList<String>>(getTaskTypeNames(config)))
                         .setRequired(true)
                         .setOutputMarkupId(true));
         add(
@@ -70,6 +69,20 @@ public class NewTaskPanel extends Panel {
                                 target.add(getCopyField());
                             }
                         });
+    }
+
+    private ArrayList<String> getTaskTypeNames(Configuration config) {
+        if (config.isTemplate()) {
+            return new ArrayList<String>(TaskManagerBeans.get().getTaskTypes().names());
+        } else {
+            ArrayList<String> list = new ArrayList<String>();
+            for (TaskType taskType : TaskManagerBeans.get().getTaskTypes().all()) {
+                if (!taskType.templateOnly()) {
+                    list.add(taskType.getName());
+                }
+            }
+            return list;
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -159,9 +159,12 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
 
         String[] splitTableName = TABLE_NAME.split("\\.", 2);
 
-        int numberOfindexesSource = getNumberOfIndexes(SOURCEDB_NAME, splitTableName[1]);
-        int numberOfindexesTarget = getNumberOfIndexes(TARGETDB_NAME, splitTargetTableName[1]);
-        assertEquals(numberOfindexesSource, numberOfindexesTarget);
+        assertEquals(
+                getNumberOfIndexes(SOURCEDB_NAME, splitTableName[1]),
+                getNumberOfIndexes(TARGETDB_NAME, splitTargetTableName[1]));
+        assertEquals(
+                getPrimaryKey(SOURCEDB_NAME, splitTableName[1]),
+                getPrimaryKey(TARGETDB_NAME, splitTargetTableName[1]));
 
         assertTrue(taskUtil.cleanup(config));
 
@@ -450,6 +453,24 @@ public class CopyTableTaskTest extends AbstractTaskManagerTest {
             }
         }
         return indexCount;
+    }
+
+    private String getPrimaryKey(String db, String tableName) throws SQLException {
+        DbSource ds = dbSources.get(db);
+
+        try (Connection conn = ds.getDataSource().getConnection()) {
+            try (ResultSet rsPrimaryKeys =
+                    conn.getMetaData().getPrimaryKeys(null, null, tableName.toUpperCase())) {
+                StringBuilder sb = new StringBuilder();
+                while (rsPrimaryKeys.next()) {
+                    sb.append(rsPrimaryKeys.getString("COLUMN_NAME")).append(", ");
+                }
+                if (sb.length() > 2) {
+                    sb.setLength(sb.length() - 2);
+                }
+                return sb.toString();
+            }
+        }
     }
 
     private boolean tableExists(String db, String schema, String pattern) throws SQLException {

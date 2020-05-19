@@ -109,6 +109,18 @@ public class PostgisJndiDbSourceImpl extends SecuredImpl implements DbSource {
     }
 
     @Override
+    public Map<String, Serializable> getParameters(ExternalGS extGs) {
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        params.put(PostgisNGJNDIDataStoreFactory.DBTYPE.key, "postgis");
+        String targetJndiName = targetJndiNames.get(extGs.getName());
+        params.put(
+                PostgisNGJNDIDataStoreFactory.JNDI_REFNAME.key,
+                targetJndiName == null ? jndiName : targetJndiName);
+        params.put(PostgisNGJNDIDataStoreFactory.SCHEMA.key, schema);
+        return params;
+    }
+
+    @Override
     public String getSchema() {
         return schema;
     }

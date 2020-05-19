@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.tasks;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.StoreType;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import java.io.IOException;
@@ -88,7 +89,10 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
 
     @Override
     protected void postProcess(
-            GSResourceEncoder re, TaskContext ctx, TaskRunnable<GSResourceEncoder> update)
+            StoreType storeType,
+            GSResourceEncoder re,
+            TaskContext ctx,
+            TaskRunnable<GSResourceEncoder> update)
             throws TaskException {
         final DbTable table =
                 (DbTable)

@@ -169,14 +169,14 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
         assertFeedback("dialog:dialog:content:form:userPanel:feedback", "required");
-        formTester.select("userPanel:type", 9);
+        formTester.select("userPanel:type", 10);
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
         assertEquals(3, configModel.getObject().getTasks().size());
         assertEquals(
                 MetadataSyncTaskTypeImpl.NAME,
                 configModel.getObject().getTasks().get("task3").getType());
-        assertEquals(10, attributesPanel.getDataProvider().size());
+        assertEquals(11, attributesPanel.getDataProvider().size());
 
         // edit task parameters
         tester.clickLink(
@@ -195,7 +195,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.submit("submit");
 
         // attributes are updated
-        assertEquals(9, attributesPanel.getDataProvider().size());
+        assertEquals(10, attributesPanel.getDataProvider().size());
 
         // edit task name
         tester.clickLink(
@@ -360,8 +360,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("name", "my_configuration");
         tester.clickLink("configurationForm:save");
 
-        assertFeedback("topFeedback", "Unique");
-        assertFeedback("bottomFeedback", "Unique");
+        assertFeedback("topFeedback", "unique");
+        assertFeedback("bottomFeedback", "unique");
     }
 
     @Test
@@ -376,25 +376,25 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.assertRenderedPage(ConfigurationPage.class);
 
         tester.assertComponent(
-                "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component",
+                "configurationForm:attributesPanel:listContainer:items:11:itemProperties:2:component",
                 PanelListPanel.class);
         tester.assertComponent(
-                "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel",
+                "configurationForm:attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel",
                 ButtonPanel.class);
 
         tester.assertModelValue(
-                "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button",
+                "configurationForm:attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button",
                 "Edit Layer..");
 
         FormTester formTester = tester.newFormTester("configurationForm");
         formTester.submit(
-                "attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
+                "attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button");
         assertFeedback("topFeedback", "You cannot execute this action with this value.");
 
         formTester.select(
-                "attributesPanel:listContainer:items:10:itemProperties:1:component:dropdown", 1);
+                "attributesPanel:listContainer:items:11:itemProperties:1:component:dropdown", 1);
         formTester.submit(
-                "attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
+                "attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button");
         tester.assertNoErrorMessage();
 
         tester.assertRenderedPage(ResourceConfigurationPage.class);
@@ -491,5 +491,40 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         if (!found) {
             fail("Missing expected feedback message: " + partOfMessage);
         }
+    }
+
+    @Test
+    public void testBatchUpdatedInConfiguration() {
+
+        Batch dummy1 = dao.save(dummyBatch1());
+
+        ConfigurationPage page = newPage();
+        tester.startPage(page);
+
+        tester.clickLink(
+                prefix()
+                        + "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:1:component:link");
+
+        tester.assertRenderedPage(BatchPage.class);
+
+        tester.assertModelValue("batchForm:name", dummy1.getName());
+
+        FormTester formTester = tester.newFormTester("batchForm");
+
+        formTester.setValue("description", "my-description");
+
+        formTester.submit("save");
+
+        tester.assertRenderedPage(ConfigurationPage.class);
+
+        assertEquals(
+                "my-description",
+                page.getConfigurationModel()
+                        .getObject()
+                        .getBatches()
+                        .get(dummy1.getName())
+                        .getDescription());
+
+        dao.delete(dummy1);
     }
 }

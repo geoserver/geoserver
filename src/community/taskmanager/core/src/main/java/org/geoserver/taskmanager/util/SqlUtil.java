@@ -9,6 +9,9 @@ public final class SqlUtil {
     private SqlUtil() {}
 
     public static String quote(String tableName) {
+        if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
+            return tableName; // already quoted
+        }
         String[] parts = tableName.split("\\.");
         StringBuffer sb = new StringBuffer();
         for (String part : parts) {

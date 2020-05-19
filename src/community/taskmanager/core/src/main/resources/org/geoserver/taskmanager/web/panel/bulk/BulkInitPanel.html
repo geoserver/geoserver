@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+	<wicket:panel>
+        <div wicket:id="dialog"></div>
+		  <ul>
+			<li><label for="workspace"><wicket:message key="workspace" /></label> 
+			 <input id="workspace" wicket:id="workspace" type="text" class="text"></input> </li>
+			<li><label for="configuration"><wicket:message key="configuration" /></label>
+			 <input id="configuration" wicket:id="configuration" type="text" class="text" /></li>
+             <li><label wicket:id="configsFound"></label> </li>
+            <li><label for="startDelay"><wicket:message key="startDelay" /></label> 
+             <input id="startDelay" wicket:id="startDelay" type="number" class="number" /> </li>
+            <li><label for="betweenDelay"><wicket:message key="betweenDelay" /></label> 
+             <input id="betweenDelay" wicket:id="betweenDelay" type="number" class="number" /> </li>
+            <li>
+              <div class="button-group selfclear">
+                   <a href="#" wicket:id="run"><wicket:message key="run"/></a>
+              </div>
+            </li>
+         </ul>
+	</wicket:panel>
+</body>
+</html>

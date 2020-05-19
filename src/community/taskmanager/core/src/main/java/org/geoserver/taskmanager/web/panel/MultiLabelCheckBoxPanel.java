@@ -19,12 +19,13 @@ public class MultiLabelCheckBoxPanel extends Panel {
             String id,
             String labelContent,
             String checkboxContent,
-            IModel<Boolean> selectionModel) {
+            IModel<Boolean> selectionModel,
+            boolean selectionVisible) {
         super(id);
         Form<?> form = new Form<>("form");
         add(form);
         form.add(new MultiLineLabel("multilabel", labelContent).setEscapeModelStrings(false));
-        form.add(new CheckBox("checkbox", selectionModel));
-        form.add(new Label("checkboxLabel", checkboxContent));
+        form.add(new CheckBox("checkbox", selectionModel).setVisible(selectionVisible));
+        form.add(new Label("checkboxLabel", checkboxContent).setVisible(selectionVisible));
     }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,6 +57,9 @@ public class SecuredLookupServiceImpl<T extends Secured> extends LookupServiceIm
             return false;
         }
         for (GrantedAuthority authority : auth.getAuthorities()) {
+            if (authority.equals(GeoServerRole.ADMIN_ROLE)) {
+                return true;
+            }
             if (sec.getRoles().contains(authority.getAuthority())) {
                 return true;
             }

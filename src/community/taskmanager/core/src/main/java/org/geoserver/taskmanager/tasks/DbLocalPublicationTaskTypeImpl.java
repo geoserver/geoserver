@@ -40,6 +40,8 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
 
     public static final String NAME = "LocalDbPublication";
 
+    public static final String PARAM_WORKSPACE = "workspace";
+
     public static final String PARAM_LAYER = "layer";
 
     public static final String PARAM_DB_NAME = "database";
@@ -65,7 +67,13 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
         paramInfo.put(
                 PARAM_TABLE_NAME,
                 new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, true).dependsOn(dbInfo));
-        paramInfo.put(PARAM_LAYER, new ParameterInfo(PARAM_LAYER, extTypes.name, true));
+        ParameterInfo paramWorkspace =
+                new ParameterInfo(PARAM_WORKSPACE, extTypes.workspace, false);
+        paramInfo.put(PARAM_WORKSPACE, paramWorkspace);
+        paramInfo.put(
+                PARAM_LAYER,
+                new ParameterInfo(PARAM_LAYER, extTypes.name, true)
+                        .dependsOn(false, paramWorkspace));
     }
 
     @Override

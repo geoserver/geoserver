@@ -64,7 +64,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         boolean fileExists = service.checkFileExists(filename);
         Assert.assertTrue(fileExists);
 
-        String actualContent = IOUtils.toString(service.read(filename));
+        String actualContent = IOUtils.toString(service.read(filename), "UTF-8");
         Assert.assertEquals(content, actualContent);
 
         service.delete(filename);
@@ -99,7 +99,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         boolean fileExists = service.checkFileExists(filename);
         Assert.assertTrue(fileExists);
 
-        String actualContent = IOUtils.toString(service.read(filename));
+        String actualContent = IOUtils.toString(service.read(filename), "UTF-8");
         // verify extra text!
         Assert.assertEquals(content + "extra text\n", actualContent);
 
@@ -127,6 +127,18 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
 
         List<String> folders = service.listSubfolders();
         Assert.assertEquals(1, folders.size());
+    }
+
+    @Test
+    public void testFileServiceGetVersioned() throws IOException {
+        new FileOutputStream(new File(FileUtils.getTempDirectoryPath(), "test.6.txt")).close();
+
+        FileServiceImpl service = new FileServiceImpl();
+        service.setRootFolder(FileUtils.getTempDirectoryPath());
+
+        FileReference ref = service.getVersioned("test.###.txt");
+        assertEquals("test.6.txt", ref.getLatestVersion());
+        assertEquals("test.7.txt", ref.getNextVersion());
     }
 
     @Test

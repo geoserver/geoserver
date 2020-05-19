@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -24,10 +25,9 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Run;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Index;
 
 @Entity
-@Table
+@Table(indexes = {@Index(name = "schedulerReferenceIndex", columnList = "schedulerReference")})
 public class BatchRunImpl extends BaseImpl implements BatchRun {
 
     private static final long serialVersionUID = 2468505054020768482L;
@@ -54,9 +54,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @Column(nullable = false)
     private Boolean interruptMe = false;
 
-    @Column
-    @Index(name = "schedulerReferenceIndex")
-    private String schedulerReference;
+    @Column private String schedulerReference;
 
     @Override
     public Long getId() {

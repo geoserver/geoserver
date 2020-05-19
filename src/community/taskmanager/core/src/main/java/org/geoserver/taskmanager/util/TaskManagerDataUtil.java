@@ -258,23 +258,21 @@ public class TaskManagerDataUtil {
     @Transactional("tmTransactionManager")
     public Configuration saveScheduleAndRemove(
             Configuration config, Collection<Task> tasks, Collection<Batch> batches) {
-        config = bjService.saveAndSchedule(config);
         for (Task task : tasks) {
             dao.remove(task);
         }
         for (Batch batch : batches) {
             bjService.remove(batch);
         }
-        return config;
+        return bjService.saveAndSchedule(config);
     }
 
     @Transactional("tmTransactionManager")
     public Batch saveScheduleAndRemove(Batch batch, Collection<BatchElement> bes) {
-        batch = bjService.saveAndSchedule(batch);
         for (BatchElement be : bes) {
             dao.remove(be);
         }
-        return batch;
+        return bjService.saveAndSchedule(batch);
     }
 
     /**

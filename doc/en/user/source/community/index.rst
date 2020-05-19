@@ -61,3 +61,4 @@ officially part of the GeoServer releases. They are however built along with the
    json-ld/index
    ogc-api/index
    gsr/index
+   labeling/index

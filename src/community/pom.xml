@@ -284,6 +284,7 @@
         <module>json-ld</module>
         <module>gsr</module>
         <module>importer-bdb</module>
+        <module>labeling</module>
       </modules>
     </profile>
     <profile>
@@ -755,7 +756,13 @@
     <profile>
       <id>importer-bdb</id>
       <modules>
-        <module>importer-bdb</module>
+	<module>importer-bdb</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>labeling</id>
+      <modules>
+	<module>labeling</module>
       </modules>
     </profile>
   </profiles>  

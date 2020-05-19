@@ -18,7 +18,7 @@ class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
     private final List<ElasticAttribute> attributes;
 
     /** Name of field */
-    static final Property<ElasticAttribute> NAME = new BeanProperty<>("name", "displayName");
+    static final Property<ElasticAttribute> NAME = new BeanProperty<>("name");
 
     /** Class type of field */
     static final Property<ElasticAttribute> TYPE =

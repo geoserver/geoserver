@@ -254,7 +254,7 @@ abstract class ElasticConfigurationPage extends Panel {
                                         && Geometry.class.isAssignableFrom(att.getType());
                         if (property == ElasticAttributeProvider.NAME && isGeometry) {
                             Fragment f = new Fragment(id, "label", ElasticConfigurationPage.this);
-                            f.add(new Label("label", att.getDisplayName() + "*"));
+                            f.add(new Label("label", att.getName() + "*"));
                             return f;
                         } else if (property == ElasticAttributeProvider.TYPE && isGeometry) {
                             Fragment f =

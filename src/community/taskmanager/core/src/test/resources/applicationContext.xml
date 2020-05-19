@@ -96,5 +96,17 @@
         <property name="name" value="temp-directory"/>
         <property name="description" value="Temporary Directory"/>
     </bean>
+   
+   <!-- configure the timestamp task type -->
+   <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+    <property name="properties">
+      <props>      
+        <!--  set data directory in default file service  -->
+        <prop key="timeStampTaskType.dataTimestampProperty">revisionDate</prop>
+        <prop key="timeStampTaskType.metadataTimestampProperty">custom._timestamp</prop>
+      </props>
+    </property>  
+  </bean>
+    
 
 </beans>

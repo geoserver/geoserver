@@ -97,5 +97,17 @@
        <property name="order" value="1003" />
        <property name="authorizer" ref="taskManagerMenuAuthorizer"/>
     </bean>
+    
+    <bean id="bulkOperationsPage" class="org.geoserver.web.MenuPageInfo">
+       <property name="id" value="bulkOperationsPage"/>
+       <property name="titleKey" value="BulkOperationsPage.page.title"/>
+       <property name="descriptionKey" value="BulkOperationsPage.page.description"/>
+       <property name="componentClass" value="org.geoserver.taskmanager.web.BulkOperationsPage"/>
+       <property name="category" ref="taskmanagerCategory" />
+       <property name="order" value="1004" />
+       <property name="authorizer">
+          <bean class="org.geoserver.web.AdminComponentAuthorizer"/>
+        </property>
+    </bean>
 
 </beans>

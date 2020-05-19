@@ -4,6 +4,9 @@
  */
 package org.geoserver.taskmanager.web;
 
+import com.thoughtworks.xstream.XStreamException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,14 +17,17 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
+import org.geoserver.taskmanager.util.XStreamUtil;
 import org.geoserver.taskmanager.web.model.ConfigurationsModel;
 import org.geoserver.taskmanager.web.panel.DropDownPanel;
+import org.geoserver.taskmanager.web.panel.ImportPanel;
 import org.geoserver.taskmanager.web.panel.MultiLabelCheckBoxPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
@@ -32,6 +38,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
@@ -54,7 +61,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
     }
 
     protected ComponentAuthorizer getPageAuthorizer() {
-        return ComponentAuthorizer.AUTHENTICATED;
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
     @Override
@@ -102,7 +109,14 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                                     TaskManagerBeans.get()
                                                             .getDao()
                                                             .getConfigurations(true)) {
-                                                list.add(template.getName());
+                                                if (TaskManagerBeans.get()
+                                                        .getSecUtil()
+                                                        .isReadable(
+                                                                SecurityContextHolder.getContext()
+                                                                        .getAuthentication(),
+                                                                template)) {
+                                                    list.add(template.getName());
+                                                }
                                             }
                                             panel =
                                                     new DropDownPanel(
@@ -210,7 +224,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                                 private String error = null;
 
                                                 private IModel<Boolean> shouldCleanupModel =
-                                                        new Model<Boolean>();
+                                                        new Model<Boolean>(false);
 
                                                 @Override
                                                 protected Component getContents(String id) {
@@ -233,7 +247,8 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                                             new ParamResourceModel(
                                                                             "cleanUp", getPage())
                                                                     .getString(),
-                                                            shouldCleanupModel);
+                                                            shouldCleanupModel,
+                                                            !templates);
                                                 }
 
                                                 @Override
@@ -334,6 +349,9 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                                                 .getSelection()
                                                                 .get(0)
                                                                 .getName());
+                                // re-order attributes, useful if new attributes were added since
+                                // old config/template was made
+                                TaskManagerBeans.get().getTaskUtil().reorderConfiguration(copy);
                                 // make sure we can't copy with workspace we don't have access to
                                 WorkspaceInfo wi =
                                         GeoServerApplication.get()
@@ -354,6 +372,60 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                         });
         copy.setOutputMarkupId(true);
         copy.setEnabled(false);
+
+        add(
+                new AjaxLink<Object>("import") {
+                    private static final long serialVersionUID = 6122970349448584029L;
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        dialog.setTitle(new ParamResourceModel("importDialog.title", getPage()));
+
+                        dialog.showOkCancel(
+                                target,
+                                new GeoServerDialog.DialogDelegate() {
+
+                                    private static final long serialVersionUID =
+                                            -5552087037163833563L;
+
+                                    private ImportPanel panel;
+
+                                    @Override
+                                    protected Component getContents(String id) {
+                                        return panel = new ImportPanel(id);
+                                    }
+
+                                    @Override
+                                    protected boolean onSubmit(
+                                            AjaxRequestTarget target, Component contents) {
+                                        Configuration configuration;
+                                        try (InputStream is =
+                                                panel.getFileUpload()
+                                                        .getFileUpload()
+                                                        .getInputStream()) {
+                                            configuration =
+                                                    (Configuration) XStreamUtil.xs().fromXML(is);
+                                            configuration.setTemplate(templates);
+
+                                            setResponsePage(new ConfigurationPage(configuration));
+
+                                            return true;
+                                        } catch (IOException
+                                                | XStreamException
+                                                | ClassCastException e) {
+                                            Throwable rootCause = ExceptionUtils.getRootCause(e);
+                                            error(
+                                                    rootCause == null
+                                                            ? e.getLocalizedMessage()
+                                                            : rootCause.getLocalizedMessage());
+                                            target.add(panel.getFeedbackPanel());
+
+                                            return false;
+                                        }
+                                    }
+                                });
+                    }
+                });
 
         // the panel
         add(
@@ -413,6 +485,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                 return null;
                             }
                         });
+        configurationsPanel.setItemReuseStrategy(DefaultItemReuseStrategy.getInstance());
         configurationsPanel.setOutputMarkupId(true);
     }
 }

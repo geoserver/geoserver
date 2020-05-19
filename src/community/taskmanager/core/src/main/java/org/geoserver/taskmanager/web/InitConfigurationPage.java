@@ -8,6 +8,7 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.InitConfigUtil;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 
 public class InitConfigurationPage extends GeoServerSecuredPage {
@@ -59,5 +60,9 @@ public class InitConfigurationPage extends GeoServerSecuredPage {
                         }
                     });
         }
+    }
+
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

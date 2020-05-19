@@ -316,6 +316,45 @@ public class TaskManagerTaskUtil {
     }
 
     /**
+     * Reorder a task's parameters will only have lasting effect if this is a new task (no id's)
+     *
+     * @param task the task
+     */
+    public void reorderTask(Task task) {
+        Map<String, Parameter> oldParameters = new HashMap<String, Parameter>(task.getParameters());
+        task.getParameters().clear();
+        TaskType taskType = taskTypes.get(task.getType());
+        for (ParameterInfo info : taskType.getParameterInfo().values()) {
+            task.getParameters().put(info.getName(), oldParameters.remove(info.getName()));
+        }
+        task.getParameters().putAll(oldParameters);
+    }
+
+    /**
+     * Reorder a configuration's attributes and task parameters will only have lasting effect if
+     * this is a new configuration (no id's)
+     *
+     * @param config the configuration
+     */
+    public void reorderConfiguration(Configuration config) {
+        Map<String, Attribute> oldAttributes =
+                new HashMap<String, Attribute>(config.getAttributes());
+        config.getAttributes().clear();
+        for (Task task : config.getTasks().values()) {
+            fixTask(task);
+            reorderTask(task);
+            for (Parameter pam : task.getParameters().values()) {
+                String attName =
+                        TaskManagerBeans.get().getDataUtil().getAssociatedAttributeName(pam);
+                if (attName != null && oldAttributes.containsKey(attName)) {
+                    config.getAttributes().put(attName, oldAttributes.remove(attName));
+                }
+            }
+        }
+        config.getAttributes().putAll(oldAttributes);
+    }
+
+    /**
      * Makes sure that task contains all of its type's attributes and adds missing ones if
      * necessary.
      *
@@ -543,9 +582,10 @@ public class TaskManagerTaskUtil {
                 if (parameter.getValue() != null && !"".equals(parameter.getValue())) {
                     ParameterType pt = info.getType();
                     List<String> dependsOnValues = new ArrayList<String>();
-                    for (ParameterInfo dependsOn : info.getDependsOn()) {
+                    for (int i = 0; i < info.getDependsOn().size(); i++) {
+                        ParameterInfo dependsOn = info.getDependsOn().get(i);
                         String value = rawParameters.get(dependsOn.getName());
-                        if (value == null) {
+                        if (value == null && i < info.getEnforcedDependsOn()) {
                             validationErrors.add(
                                     new ValidationError(
                                             ValidationErrorType.MISSING_DEPENDENCY,

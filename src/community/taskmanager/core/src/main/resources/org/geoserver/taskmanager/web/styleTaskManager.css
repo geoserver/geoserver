@@ -17,6 +17,11 @@ ul.links-above-table {
 	padding: 2px 0px 2px 20px;
 }
 
+.import-link {
+    background: transparent url(img/import.png) scroll no-repeat left center;
+    padding: 2px 0px 2px 20px;
+}
+
 .refresh-link {
 	background: transparent url(img/refresh.png) scroll no-repeat left center;
 	padding: 2px 0px 2px 20px;

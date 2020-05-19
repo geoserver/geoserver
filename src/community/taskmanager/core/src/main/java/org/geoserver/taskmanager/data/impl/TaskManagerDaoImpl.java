@@ -17,18 +17,20 @@ import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.SoftRemove;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
+import org.geoserver.taskmanager.util.InitConfigUtil;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.sql.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -127,8 +129,8 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         Criteria criteria =
                 getSession()
                         .createCriteria(BatchImpl.class)
-                        .createAlias(
-                                "configuration", "configuration", CriteriaSpecification.LEFT_JOIN)
+                        .createAlias("configuration", "configuration", JoinType.LEFT_OUTER_JOIN)
+                        .setFetchMode("elements", FetchMode.JOIN)
                         .add(Restrictions.eq("removeStamp", 0L))
                         .add(
                                 Restrictions.or(
@@ -147,7 +149,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                         .createAlias(
                                 "outerBatch.configuration",
                                 "configuration",
-                                CriteriaSpecification.LEFT_JOIN)
+                                JoinType.LEFT_OUTER_JOIN)
                         .add(Restrictions.eq("outerBatch.removeStamp", 0L));
         criteria.add(
                 Restrictions.or(
@@ -174,7 +176,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
         return getSession()
                 .createCriteria(BatchImpl.class)
-                .createAlias("configuration", "configuration", CriteriaSpecification.LEFT_JOIN)
+                .createAlias("configuration", "configuration", JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.eq("removeStamp", 0L))
                 .add(
                         Restrictions.or(
@@ -198,7 +200,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                         .createAlias(
                                 "outerBatch.configuration",
                                 "configuration",
-                                CriteriaSpecification.LEFT_JOIN)
+                                JoinType.LEFT_OUTER_JOIN)
                         .add(Restrictions.eq("outerBatch.removeStamp", 0L));
         criteria.add(Restrictions.eq("configuration.id", config.getId()));
         criteria.add(
@@ -275,7 +277,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                 getSession()
                         .createCriteria(TaskImpl.class)
                         .createAlias("configuration", "configuration")
-                        .createAlias("batchElements", "batchElements", Criteria.LEFT_JOIN)
+                        .createAlias("batchElements", "batchElements", JoinType.LEFT_OUTER_JOIN)
                         .add(Restrictions.eq("removeStamp", 0L))
                         .add(Restrictions.eq("configuration.removeStamp", 0L))
                         .add(Subqueries.propertyNotIn("id", alreadyInBatch));
@@ -301,15 +303,72 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
             criteria.createAlias("configuration", "configuration")
                     .add(Restrictions.eq("configuration.name", splitName[0]))
                     .add(Restrictions.eq("name", splitName[1]))
-                    .add(Restrictions.eq("removeStamp", 0L))
                     .add(Restrictions.eq("configuration.removeStamp", 0L));
         } else {
             criteria.add(Restrictions.isNull("configuration"))
-                    .add(Restrictions.eq("name", splitName[0]))
-                    .add(Restrictions.eq("removeStamp", 0L));
+                    .add(Restrictions.eq("name", splitName[0]));
         }
 
         return (Batch) criteria.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Batch> findBatches(
+            final String workspacePattern,
+            final String configNamePattern,
+            final String namePattern) {
+        Criteria criteria =
+                getSession()
+                        .createCriteria(BatchImpl.class)
+                        .add(Restrictions.eq("removeStamp", 0L));
+
+        if (configNamePattern != null) {
+            criteria.createAlias("configuration", "configuration")
+                    .add(Restrictions.like("configuration.name", configNamePattern))
+                    .add(Restrictions.like("name", namePattern))
+                    .add(Restrictions.eq("configuration.removeStamp", 0L))
+                    .add(Restrictions.eq("configuration.template", false))
+                    .add(Restrictions.eq("configuration.validated", true))
+                    .add(Restrictions.not(Restrictions.like("name", "@%")));
+            if (workspacePattern == null) {
+                criteria.add(Restrictions.isNull("configuration.workspace"));
+            } else if (!"%".equals(workspacePattern)) {
+                criteria.add(Restrictions.like("configuration.workspace", workspacePattern));
+            }
+        } else {
+            criteria.add(Restrictions.isNull("configuration"))
+                    .add(Restrictions.like("name", namePattern));
+            if (workspacePattern == null) {
+                criteria.add(Restrictions.isNull("workspace"));
+            } else if (!"%".equals(workspacePattern)) {
+                criteria.add(Restrictions.like("workspace", workspacePattern));
+            }
+        }
+
+        return (List<Batch>) criteria.list();
+    }
+
+    @Override
+    public List<Batch> findInitBatches(String workspacePattern, String configNamePattern) {
+        Criteria criteria =
+                getSession()
+                        .createCriteria(BatchImpl.class)
+                        .add(Restrictions.eq("removeStamp", 0L));
+
+        criteria.createAlias("configuration", "configuration")
+                .add(Restrictions.like("configuration.name", configNamePattern))
+                .add(Restrictions.like("name", InitConfigUtil.INIT_BATCH))
+                .add(Restrictions.eq("configuration.removeStamp", 0L))
+                .add(Restrictions.eq("configuration.template", false))
+                .add(Restrictions.eq("configuration.validated", false));
+        if (workspacePattern == null) {
+            criteria.add(Restrictions.isNull("configuration.workspace"));
+        } else if (!"%".equals(workspacePattern)) {
+            criteria.add(Restrictions.like("configuration.workspace", workspacePattern));
+        }
+
+        return (List<Batch>) criteria.list();
     }
 
     @Override
@@ -355,11 +414,33 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                         .add(
                                 Restrictions.in(
                                         "status",
-                                        new Run.Status[] {
-                                            Run.Status.RUNNING,
-                                            Run.Status.READY_TO_COMMIT,
-                                            Run.Status.COMMITTING
-                                        }))
+                                        (Object[])
+                                                new Run.Status[] {
+                                                    Run.Status.RUNNING,
+                                                    Run.Status.READY_TO_COMMIT,
+                                                    Run.Status.COMMITTING
+                                                }))
+                        .setProjection(Projections.groupProperty("batchRun"))
+                        .list());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<BatchRun> getCurrentBatchRuns() {
+        return (List<BatchRun>)
+                (getSession()
+                        .createCriteria(RunImpl.class)
+                        .createAlias("batchRun", "batchRun")
+                        .createAlias("batchRun.batch", "batch")
+                        .add(
+                                Restrictions.in(
+                                        "status",
+                                        (Object[])
+                                                new Run.Status[] {
+                                                    Run.Status.RUNNING,
+                                                    Run.Status.READY_TO_COMMIT,
+                                                    Run.Status.COMMITTING
+                                                }))
                         .setProjection(Projections.groupProperty("batchRun"))
                         .list());
     }

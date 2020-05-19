@@ -8,10 +8,12 @@ import static org.junit.Assert.assertTrue;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.encoder.GSCachedLayerEncoder;
+import java.beans.Introspector;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.Collections;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
@@ -66,6 +68,10 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
 
     @Override
     public boolean setupDataDirectory() throws Exception {
+        GWCConfig config = GWC.get().getConfig();
+        config.setCacheLayersByDefault(false);
+        GWC.get().saveConfig(config);
+
         DATA_DIRECTORY.addWcs11Coverages();
 
         return true;
@@ -162,6 +168,9 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
         XMLGridSubset gridSubset = new XMLGridSubset();
         gridSubset.setGridSetName("MyGridSubSet");
         gridSubset.setZoomStart(1);
+        gridSubset.setZoomStop(20);
+        gridSubset.setMinCachedLevel(2);
+        gridSubset.setMaxCachedLevel(10);
         tileLayer.getInfo().getGridSubsets().clear();
         tileLayer.getInfo().getGridSubsets().add(gridSubset);
         tileLayer.getInfo().getMimeFormats().clear();
@@ -191,6 +200,56 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
         assertEquals(tileLayer.getInfo().getExpireCache(), enc.getExpireCache());
         assertEquals(tileLayer.getInfo().getExpireClients(), enc.getExpireClients());
         assertEquals(tileLayer.getInfo().getGutter(), enc.getGutter());
+        XMLGridSubset gridSet = tileLayer.getInfo().getGridSubsets().iterator().next();
+        assertEquals(gridSet.getGridSetName(), enc.getGridSubsetName(0));
+        assertEquals(gridSet.getZoomStart(), enc.getGridSubsetZoomStart(0));
+        assertEquals(gridSet.getZoomStop(), enc.getGridSubsetZoomStop(0));
+        assertEquals(gridSet.getMinCachedLevel(), enc.getGridSubsetMinCachedLevel(0));
+        assertEquals(gridSet.getMaxCachedLevel(), enc.getGridSubsetMaxCachedLevel(0));
+        assertTrue(tileLayer.getInfo().getMimeFormats().contains(enc.getMimeFormat(0)));
+        assertTrue(tileLayer.getInfo().getMimeFormats().contains(enc.getMimeFormat(1)));
+        assertEquals(
+                tileLayer
+                        .getInfo()
+                        .getParameterFilter(enc.getParameterFilterKey(0))
+                        .getDefaultValue(),
+                enc.getParameterFilterDefaultValue(0));
+        assertEquals(
+                tileLayer
+                        .getInfo()
+                        .getParameterFilter(enc.getParameterFilterKey(1))
+                        .getDefaultValue(),
+                enc.getParameterFilterDefaultValue(1));
+        assertEquals(
+                tileLayer
+                        .getInfo()
+                        .getParameterFilter(enc.getParameterFilterKey(2))
+                        .getDefaultValue(),
+                enc.getParameterFilterDefaultValue(2));
+        assertEquals(
+                Introspector.decapitalize(
+                        tileLayer
+                                .getInfo()
+                                .getParameterFilter(enc.getParameterFilterKey(0))
+                                .getClass()
+                                .getSimpleName()),
+                enc.getParameterFilterType(0));
+        assertEquals(
+                Introspector.decapitalize(
+                        tileLayer
+                                .getInfo()
+                                .getParameterFilter(enc.getParameterFilterKey(1))
+                                .getClass()
+                                .getSimpleName()),
+                enc.getParameterFilterType(1));
+        assertEquals(
+                Introspector.decapitalize(
+                        tileLayer
+                                .getInfo()
+                                .getParameterFilter(enc.getParameterFilterKey(2))
+                                .getClass()
+                                .getSimpleName()),
+                enc.getParameterFilterType(2));
 
         // delete caching configuration
         gwc.removeTileLayers(Collections.singletonList("wcs:DEM"));

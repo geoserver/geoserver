@@ -226,4 +226,10 @@ public interface TaskManagerDao {
     Configuration init(Configuration c);
 
     Batch initHistory(Batch b);
+
+    List<BatchRun> getCurrentBatchRuns();
+
+    List<Batch> findBatches(String workspacePattern, String configNamePattern, String namePattern);
+
+    List<Batch> findInitBatches(String workspacePattern, String configNamePattern);
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+	<wicket:panel>
+        <div wicket:id="dialog"></div>
+		  <ul>
+            <li><label for="template"><wicket:message key="template" /></label> 
+            <select wicket:id="template" /></li>
+			<li><label for="fileUpload"><wicket:message key="fileUpload" /></label> 
+			<input wicket:id="fileUpload" size="40" type="file"/></li>
+            <li><label for="validate"><wicket:message key="validate" /></label> 
+            <input wicket:id="validate" size="40" type="checkbox"/></li>
+            <li>
+              <div class="button-group selfclear">
+                   <a href="#" wicket:id="import"><wicket:message key="import"/></a>
+              </div>
+            </li>
+         </ul>
+	</wicket:panel>
+</body>
+</html>

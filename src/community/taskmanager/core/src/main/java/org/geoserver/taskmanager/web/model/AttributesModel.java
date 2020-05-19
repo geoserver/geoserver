@@ -90,6 +90,10 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
         return attList;
     }
 
+    public void refresh() {
+        attributes.clear();
+    }
+
     public void save(boolean removeEmpty) {
         getItems();
         for (Attribute att : attributes.values()) {

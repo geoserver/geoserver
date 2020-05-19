@@ -5,6 +5,9 @@
 package org.geoserver.taskmanager.external;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,6 +16,12 @@ import java.util.Set;
  * @author Timothy De Bock
  */
 public interface Dialect {
+
+    interface Column {
+        String getName() throws SQLException;
+
+        String getTypeEtc() throws SQLException;
+    }
 
     /**
      * Put quotes arround the schema name and the table name.
@@ -36,7 +45,7 @@ public interface Dialect {
             boolean isUniqueIndex);
 
     /** @return set of spatial columns */
-    Set<String> getSpatialColumns(Connection sourceConn, String tableName, String defaultSchema);
+    Set<String> getSpatialColumns(Connection connection, String tableName, String defaultSchema);
 
     /** translate nullable code */
     int isNullable(int nullable);
@@ -54,4 +63,12 @@ public interface Dialect {
      * @return true or false
      */
     boolean autoUpdateView();
+
+    /**
+     * Return list of column descriptions (name, type, etc)
+     *
+     * @throws SQLException
+     */
+    List<Column> getColumns(Connection connection, String tableName, ResultSet rs)
+            throws SQLException;
 }

@@ -4,11 +4,13 @@
  */
 package org.geoserver.taskmanager.schedule.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
@@ -28,6 +30,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * The scheduled batch job implementation.
@@ -43,6 +47,15 @@ public class BatchJobImpl implements Job {
 
     @Override
     public void execute(final JobExecutionContext context) throws JobExecutionException {
+
+        // run with admin rights
+        SecurityContextHolder.getContext()
+                .setAuthentication(
+                        new UsernamePasswordAuthenticationToken(
+                                "admin",
+                                null,
+                                Collections.singletonList(GeoServerRole.ADMIN_ROLE)));
+
         // get all the context beans
         ApplicationContext appContext;
         try {
@@ -139,12 +152,13 @@ public class BatchJobImpl implements Job {
                         Run runPop = runStack.pop();
                         runPop.setStatus(Run.Status.ROLLING_BACK);
                         runPop = beans.getDao().save(runPop);
+                        TaskResult result = resultStack.pop();
                         try {
-                            resultStack.pop().rollback();
+                            result.rollback();
                             runPop.setStatus(Run.Status.ROLLED_BACK);
                         } catch (Exception e) {
                             Task popTask = runPop.getBatchElement().getTask();
-                            runPop.setMessage(e.getMessage());
+                            runPop.setMessage(e.getMessage() + "; " + result.successMessage());
                             runPop.setStatus(Run.Status.NOT_ROLLED_BACK);
                             LOGGER.log(
                                     Level.SEVERE,
@@ -178,8 +192,10 @@ public class BatchJobImpl implements Job {
                 }
                 runPop = runTemp;
                 try {
-                    resultStack.pop().commit();
+                    TaskResult result = resultStack.pop();
+                    result.commit();
                     runPop.setStatus(Run.Status.COMMITTED);
+                    runPop.setMessage(result.successMessage());
                 } catch (Exception e) {
                     Task task = runPop.getBatchElement().getTask();
                     LOGGER.log(

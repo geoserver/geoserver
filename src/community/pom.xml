@@ -693,6 +693,12 @@
      </modules>
     </profile>
     <profile>
+      <id>taskmanager-metadata</id>
+      <modules>
+        <module>taskmanager</module>
+     </modules>
+    </profile>
+    <profile>
       <id>metadata</id>
       <modules>
         <module>metadata</module>

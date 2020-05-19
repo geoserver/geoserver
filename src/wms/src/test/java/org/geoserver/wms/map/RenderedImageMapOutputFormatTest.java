@@ -1785,6 +1785,21 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertEquals(width * height, validPixelsCount);
     }
 
+    @Test
+    public void testFaultyStyleDoesntBreak() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?BBOX=-180,-90,180,90"
+                                + "&styles=raster&layers=cdf:Fifteen&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=256"
+                                + "&height=256"
+                                + "&srs=EPSG%3A4326");
+
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNotNull(image);
+        assertBlank("testFaultyStyleDoesntBreak", image);
+    }
     /**
      * This dummy producer adds no functionality to DefaultRasterMapOutputFormat, just implements a
      * void formatImageOutputStream to have a concrete class over which test that

@@ -127,27 +127,6 @@ abstract class ElasticConfigurationPage extends Panel {
         elastic_form.add(useAllCheckBox);
         useAllMarkupId = useAllCheckBox.getMarkupId();
 
-        // use short name check box
-        final Boolean useShortName;
-        if (!attributes.isEmpty() && attributes.get(0).getUseShortName() != null) {
-            useShortName = attributes.get(0).getUseShortName();
-        } else {
-            useShortName = false;
-        }
-        AjaxCheckBox checkBox =
-                new AjaxCheckBox("useShortName", Model.of(useShortName)) {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        final boolean useShortName = (Boolean) this.getDefaultModelObject();
-                        for (final ElasticAttribute attribute : attProvider.getItems()) {
-                            attribute.setUseShortName(useShortName);
-                        }
-                        target.add(elasticAttributePanel);
-                    }
-                };
-        checkBox.setOutputMarkupId(true);
-        elastic_form.add(checkBox);
-
         elastic_form.add(
                 new AjaxButton("es_save") {
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

@@ -150,6 +150,10 @@ class RasterDownload {
      * @param bestResolutionOnMatchingCRS When dealing with a Heterogeneous CRS mosaic, given a ROI
      *     and a TargetCRS, with no target size being specified, get the best resolution of data
      *     having nativeCrs matching the TargetCRS
+     * @param resolutionsDifferenceTolerance a tolerance value to control the use" of native
+     *     resolution of the data: if the percentage difference between original and reprojected
+     *     coverages resolutions is below the specified value, the reprojected coverage will be
+     *     forced to use native resolutions
      */
     public Resource execute(
             String mimeType,
@@ -183,6 +187,7 @@ class RasterDownload {
             crsRequestHandler.setFilter(filter);
             crsRequestHandler.setMinimizeReprojections(minimizeReprojections);
             crsRequestHandler.setUseBestResolutionOnMatchingCRS(bestResolutionOnMatchingCRS);
+            crsRequestHandler.setResolutionsDifferenceTolerance(resolutionsDifferenceTolerance);
             crsRequestHandler.init();
             boolean useTargetCrsAsNative = crsRequestHandler.canUseTargetCRSAsNative();
             final ParameterValueGroup readParametersDescriptor =
@@ -273,8 +278,7 @@ class RasterDownload {
                             backgroundValues,
                             isImposedTargetSize,
                             crsRequestHandler,
-                            disposableSources,
-                            resolutionsDifferenceTolerance);
+                            disposableSources);
 
             // Add a bandSelectProcess call if the reader doesn't support bands
             gridCoverage =
@@ -379,8 +383,7 @@ class RasterDownload {
             double[] backgroundValues,
             boolean isImposedTargetSize,
             CRSRequestHandler crsRequestHandler,
-            List<GridCoverage2D> disposableSources,
-            double resolutionsDifferenceTolerance)
+            List<GridCoverage2D> disposableSources)
             throws TransformException, NoninvertibleTransformException, FactoryException,
                     IOException {
 
@@ -488,6 +491,8 @@ class RasterDownload {
             }
             return cropped;
         } else {
+
+            boolean forceNativeRes = crsRequestHandler.getResolutionsDifferenceTolerance() != 0d;
             // If not, proceed with standard read and reproject
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Reading the coverage");
@@ -515,14 +520,14 @@ class RasterDownload {
                                         interpolation,
                                         backgroundValues);
                 // check for native resolution to be applied only if tolerance is not 0
-                if (resolutionsDifferenceTolerance == 0d) {
+                if (!forceNativeRes) {
                     return testCoverage;
                 }
                 GridGeometryProvider gridGeometryProvider =
                         new GridGeometryProvider(crsRequestHandler);
                 GridGeometry2D gg2D =
-                        gridGeometryProvider.getReprojectedGridGeometryWithNativeResolution(
-                                gridCoverage, testCoverage, resolutionsDifferenceTolerance);
+                        gridGeometryProvider.getGridGeometryWithNativeResolution(
+                                gridCoverage, testCoverage);
                 if (gg2D != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.log(Level.FINE, "Forcing native resolution on reprojected coverage");

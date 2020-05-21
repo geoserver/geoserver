@@ -216,7 +216,7 @@ public class VectorTileMapOutputFormatTest {
 
         VectorTileMapOutputFormat vtof_spy = Mockito.spy(vtof);
 
-        // here's the test - the buffer (from style) is 32 bytes
+        // here's the test - the buffer (from style) is 32 pixels
         // however, since there is 16 * oversampling, it will really be a 512 pixel buffer
         int expectedBuffer = 32 * mbbf.getOversampleX();
 

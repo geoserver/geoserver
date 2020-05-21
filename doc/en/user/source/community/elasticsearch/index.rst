@@ -168,6 +168,8 @@ The initial layer configuration panel for an Elasticsearch layer will include an
 
 To return to the field table after it has been closed, click the "Configure Elasticsearch fields" button below the "Feature Type Details" panel on the layer configuration page.
 
+The ``Short Names`` feature has been removed as it is not compatible with Elasticsearch 2.0 and beyond. Previous fields which used the short names will be reverted to the full name, but you can still use aliasing to accomplish the same effect.
+
 .. |field_list_edit| image:: images/elasticsearch_fieldlist_edit.png
    :scale: 100%
    :align: middle

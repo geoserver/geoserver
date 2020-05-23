@@ -592,7 +592,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                 });
         add(
-                new AjaxSubmitLink("submit", styleForm) {
+                new AjaxSubmitLink("save", styleForm) {
                     @Override
                     protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
                         if (form.hasError()) {

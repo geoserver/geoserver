@@ -459,7 +459,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testChangeNameAlreadyExists() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
         form.setValue("context:panel:name", "Default");
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         tester.assertContains(
                 "java.lang.IllegalArgumentException: Style named &#039;Default&#039; already exists");
@@ -587,7 +587,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // Submit the style (no legend should be saved)
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         StyleInfo style = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
         assertNotNull(style);
@@ -707,7 +707,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void applyThenSubmit() throws Exception {
         tester.executeAjaxEvent("apply", "click");
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertNoErrorMessage();
     }
 

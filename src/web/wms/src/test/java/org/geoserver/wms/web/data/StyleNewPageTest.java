@@ -179,7 +179,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
 
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertRenderedPage(StylePage.class);
 
         StyleInfo style = getCatalog().getStyleByName("nolegendtest");
@@ -226,7 +226,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertRenderedPage(StylePage.class);
 
         StyleInfo style = getCatalog().getStyleByName("legendtest");
@@ -391,7 +391,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
         tester.assertRenderedPage(StyleNewPage.class);
 
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertRenderedPage(StylePage.class);
 
         tester.startPage(StyleNewPage.class);
@@ -420,7 +420,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StyleNewPage.class);
         assertNotNull(getCatalog().getStyleByName("test"));
 
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertRenderedPage(StylePage.class);
     }
 
@@ -452,7 +452,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                         .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "test");
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertRenderedPage(StylePage.class);
 
         assertNotNull(getCatalog().getStyleByName("test"));

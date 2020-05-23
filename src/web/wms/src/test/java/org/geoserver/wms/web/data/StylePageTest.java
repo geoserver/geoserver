@@ -152,7 +152,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // click submit and go back to Style page
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         // verify when user navigates back to Layer Page
         // the clear link is visible and filter is populated in text field

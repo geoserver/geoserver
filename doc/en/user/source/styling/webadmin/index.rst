@@ -103,11 +103,11 @@ At the bottom of the Style Editor page is a number of options:
    * - Option
      - Description
    * - :guilabel:`Validate`
-     - Will test the current style for correctness according to the :guilabel:`Format` option selected
+     - Will test the current style for correctness according to the :guilabel:`Format` option selected. For SLD styles, it will check compliance against the SLD schema. Mind, the parser might be able to read and work with a formally incorrect style.
+   * - :guilabel:`Save`
+     - Makes the changes to the style and returns to the Styles page
    * - :guilabel:`Apply`
      - Makes the changes to the style and remain on the Style Editor page. This is useful to update the :ref:`Layer Preview <styling_webadmin_edit_preview>` tab.
-   * - :guilabel:`Submit`
-     - Makes the changes to the style and returns to the Styles page
    * - :guilabel:`Cancel`
      - Cancels all changes to the style and returns to the Styles page
 

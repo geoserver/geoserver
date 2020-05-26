@@ -184,12 +184,12 @@ Mappings
 MongoDB Store
 ^^^^^^^^^^^^^
 
-When configuring app-schema mappings for a MongoDB source there are few things to mind of regarding store configuration.
-The building of a MongoDB Store implies the creation of a Mongo schema, inferred from the db collection. 
-The inferring process by default will use a random Mongo object from the collection. If that object doesn't contain all attributes of interest, the result will be an incomplete schema.  
-This behaviour can thus be controlled by means of the following two parameters that should be provided inside the ``<parameters>`` element under the ``<DataStore>`` node:
+When configuring app-schema mappings for a MongoDB source some connection parameters tweaks might be needed, in order to ensure that the full set of recognized and made available to the mapping.
+The setup of a MongoDB Store implies the creation of a Mongo schema, inferred from the db collection. 
+This process by default will use a random Mongo object from the collection. If that object doesn't contain all attributes of interest, the result will be an incomplete schema.  
+This behaviour can thus be controlled by means of the following two parameters, which should be provided inside the ``<parameters>`` element under the ``<DataStore>`` node:
 
-* the parameter ``objs_id_schema``, which specifies a comma separeted list of MongoDB JSON object to be used to build the schema (not needed if ``max_objs_schema`` is present)
+* ``objs_id_schema``, which specifies a comma separeted list of MongoDB JSON object to be used to build the schema (not needed if ``max_objs_schema`` is present).
 
 .. code-block:: xml
 
@@ -199,7 +199,7 @@ This behaviour can thus be controlled by means of the following two parameters t
   </Parameter>
 
 
-* the parameter ``max_objs_schema``, which specifies the max number of MongoDB JSON object to be used to build the schema and where a value of ``-1`` means all the objects present in the collection (not needed if ``objs_id_schema`` is present)
+* ``max_objs_schema``, which specifies the max number of MongoDB JSON object to be used to build the schema and where a value of ``-1`` means all the objects present in the collection (not needed if ``objs_id_schema`` is present).
 
 .. code-block:: xml
 

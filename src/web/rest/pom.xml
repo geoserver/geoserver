@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>org.geoserver</groupId>
 		<artifactId>web</artifactId>
-		<version>2.16-SNAPSHOT</version>
+		<version>2.16.3</version>
 	</parent>
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>gs-web-rest</artifactId>
-	<version>2.16-SNAPSHOT</version>
+	<version>2.16.3</version>
 	<name>REST UI Module</name>
 	<url>http://maven.apache.org</url>
 	<properties>

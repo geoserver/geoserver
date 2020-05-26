@@ -7,13 +7,13 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-gwc-azure-blob</artifactId>
   <packaging>jar</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>GeoWebCache Azure blob</name>
   <description>GeoWebCache Azure BLOB support plugin</description>
 

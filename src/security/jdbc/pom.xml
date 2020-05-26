@@ -12,12 +12,12 @@
   <parent>
     <groupId>org.geoserver</groupId>    
     <artifactId>gs-security</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
   <groupId>org.geoserver.security</groupId>
   <artifactId>gs-sec-jdbc</artifactId>
   <packaging>jar</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>GeoServer JDBC Security Module</name>
   
   <dependencies>

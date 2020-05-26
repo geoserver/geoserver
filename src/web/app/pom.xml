@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
@@ -421,7 +421,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-arcsde</artifactId>
-          <version>2.16-SNAPSHOT</version>
+          <version>2.16.3</version>
         </dependency>
       </dependencies>
     </profile>
@@ -450,7 +450,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-sqlserver</artifactId>
-          <version>2.16-SNAPSHOT</version>
+          <version>2.16.3</version>
         </dependency>
       </dependencies>
     </profile>
@@ -460,7 +460,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.16-SNAPSHOT</version>
+          <version>2.16.3</version>
         </dependency>
       </dependencies>
     </profile>
@@ -470,7 +470,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.16-SNAPSHOT</version>
+          <version>2.16.3</version>
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
@@ -484,7 +484,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-mysql</artifactId>
-          <version>2.16-SNAPSHOT</version>
+          <version>2.16.3</version>
         </dependency>
       </dependencies>
     </profile>

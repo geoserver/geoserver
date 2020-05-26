@@ -13,13 +13,13 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-dxf</artifactId>
   <packaging>pom</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>DXF WFS output format and WPS PPIO</name>
   
   <modules>

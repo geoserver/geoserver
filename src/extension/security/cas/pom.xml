@@ -12,13 +12,13 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>    
     <artifactId>gs-security</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
 
   <groupId>org.geoserver.security</groupId>
   <artifactId>gs-sec-cas</artifactId>
   <packaging>jar</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>GeoServer CAS Security Module</name>
   
   <dependencies>

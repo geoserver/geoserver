@@ -5,14 +5,14 @@
     <parent>
         <artifactId>community</artifactId>
         <groupId>org.geoserver</groupId>
-        <version>2.16-SNAPSHOT</version>
+        <version>2.16.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-mbstyle</artifactId>
     <packaging>jar</packaging>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
     <name>GeoServer Mapbox Styling</name>
 
     <dependencies>

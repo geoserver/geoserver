@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-nsg-profiles</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-nsg-wfs-profile</artifactId>
   <packaging>jar</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>NSG WFS 2.0 Profile</name>
   <dependencies>
     <!-- geoserver dependencies -->

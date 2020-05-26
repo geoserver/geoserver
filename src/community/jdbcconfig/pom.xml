@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbcconfig</artifactId>
   <packaging>jar</packaging>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
   <name>GeoServer JDBC KV Catalog</name>
   <properties>
       <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>

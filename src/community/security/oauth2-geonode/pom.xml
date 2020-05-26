@@ -10,13 +10,13 @@
 	<parent>
 		<groupId>org.geoserver.community</groupId>
 		<artifactId>gs-security</artifactId>
-		<version>2.16-SNAPSHOT</version>
+		<version>2.16.3</version>
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-sec-oauth2-geonode</artifactId>
 	<packaging>jar</packaging>
-	<version>2.16-SNAPSHOT</version>
+	<version>2.16.3</version>
 	<name>GeoServer OAuth2 Connect Security Module - GeoNode Token Service</name>
 
 	<dependencies>

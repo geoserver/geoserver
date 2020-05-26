@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.16-SNAPSHOT</version>
+        <version>2.16.3</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-taskmanager</artifactId>
     <packaging>pom</packaging>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
 
     <name>GeoServer Task Manager</name>
     

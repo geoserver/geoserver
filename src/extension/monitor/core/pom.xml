@@ -9,7 +9,7 @@
  <parent>
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-monitor</artifactId>
-  <version>2.16-SNAPSHOT</version>
+  <version>2.16.3</version>
  </parent>
  <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-monitor-core</artifactId>
@@ -20,22 +20,22 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
-   <version>2.16-SNAPSHOT</version>
+   <version>2.16.3</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-restconfig</artifactId>
-   <version>2.16-SNAPSHOT</version>
+   <version>2.16.3</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
    <artifactId>gs-web-core</artifactId>
-   <version>2.16-SNAPSHOT</version>
+   <version>2.16.3</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-wms</artifactId>
-   <version>2.16-SNAPSHOT</version>
+   <version>2.16.3</version>
   </dependency>
   <dependency>
    <groupId>com.maxmind</groupId>

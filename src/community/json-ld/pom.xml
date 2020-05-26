@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.16-SNAPSHOT</version>
+        <version>2.16.3</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-json-ld</artifactId>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
     <packaging>jar</packaging>
     <name>JSON-LD Module</name>
     <description>JSON-LD output format support plugin</description>

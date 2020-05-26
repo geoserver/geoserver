@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.16-SNAPSHOT</version>
+        <version>2.16.3</version>
     </parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-wmts-styles</artifactId>
     <packaging>jar</packaging>
-    <version>2.16-SNAPSHOT</version>
+    <version>2.16.3</version>
     <name>WMTS Style editing extension</name>
     <dependencies>
         <dependency>

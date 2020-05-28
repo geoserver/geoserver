@@ -109,7 +109,7 @@ If needed, different storage can be used for the index — like a spatial DBMS, 
 
 .. note:: A shapefile is created automagically if it does not exist or if there is no :file:`datastore.properties` file.
 
-.. warning:: At the time of writing the following spatial DBMS have been tested successfully: Oracle, PostgreSQL, H2. SQl Server is not yet supported.
+.. warning:: At the time of writing the following spatial DBMS have been tested successfully: Oracle, PostgreSQL, H2, SQLServer.
 
 
 .. list-table::
@@ -139,6 +139,7 @@ If needed, different storage can be used for the index — like a spatial DBMS, 
        * PostGIS: ``org.geotools.data.postgis.PostgisNGDataStoreFactory`` 
        * Oracle: ``org.geotools.data.oracle.OracleNGDataStoreFactory`` 
        * H2: ``org.geotools.data.h2.H2DataStoreFactory``
+       * SQLServer: ``org.geotools.data.sqlserver.SQLServerDataStoreFactory``
 
        :ref:`JNDI <tomcat_jndi>` can also be used with any of these stores. If JNDI is used, the DataStoreFactory name will differ from the above.
 
@@ -149,6 +150,7 @@ If needed, different storage can be used for the index — like a spatial DBMS, 
        * `PostGIS <http://docs.geotools.org/latest/userguide/library/jdbc/postgis.html>`_
        * `Oracle <http://docs.geotools.org/latest/userguide/library/jdbc/oracle.html>`_
        * `H2 <http://docs.geotools.org/latest/userguide/library/jdbc/h2.html>`_
+       * `SQLServer <http://docs.geotools.org/latest/userguide/library/jdbc/sqlserver.html>`_
 
        If JNDI is used, the connection parameters will include ``jndiReferenceName`` instead of ``host``, ``port``, etc.
        Note that for any connection parameters that include a space (such as ``loose bbox``), the space must be escaped by preceding it with a backslash (``loose\ bbox``).

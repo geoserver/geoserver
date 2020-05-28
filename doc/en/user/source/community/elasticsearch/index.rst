@@ -168,8 +168,6 @@ The initial layer configuration panel for an Elasticsearch layer will include an
 
 To return to the field table after it has been closed, click the "Configure Elasticsearch fields" button below the "Feature Type Details" panel on the layer configuration page.
 
-The ``Short Names`` feature has been removed as it is not compatible with Elasticsearch 2.0 and beyond. Previous fields which used the short names will be reverted to the full name, but you can still use aliasing to accomplish the same effect.
-
 .. |field_list_edit| image:: images/elasticsearch_fieldlist_edit.png
    :scale: 100%
    :align: middle
@@ -571,3 +569,4 @@ FAQ
 - Filtering on Elasticsearch ``nested`` types is supported only for non-geospatial fields.
 - Circle geometries are approximate and may not be fully consistent with the implementation in Elasticsearch, especially at extreme latitudes (see `#86 <https://github.com/ngageoint/elasticgeo/issues/86>`_).
 - The ``joda-shaded`` module may need to be excluded when importing the project into Eclipse. Otherwise modules may have build errors of the form ``DateTimeFormatter cannot be resolved to a type``.
+- When updating from Elasticgeo 2.16.0, note that the ``Short Names`` feature has been removed as it is not compatible with Elasticsearch 2.0 and beyond. Previous fields which used the short names will be reverted to the full name, but you can still use aliasing to accomplish the same effect.

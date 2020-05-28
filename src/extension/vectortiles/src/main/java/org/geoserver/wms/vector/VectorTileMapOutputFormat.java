@@ -10,8 +10,10 @@ import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 
 import com.google.common.base.Stopwatch;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,8 +94,8 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                             this.tileBuilderFactory.getOversampleY() * mapHeight);
         }
 
-        VectorTileBuilder vectorTileBuilder;
-        vectorTileBuilder = this.tileBuilderFactory.newBuilder(paintArea, renderingArea);
+        final VectorTileBuilder vectorTileBuilder =
+                this.tileBuilderFactory.newBuilder(paintArea, renderingArea);
 
         CoordinateReferenceSystem sourceCrs;
         for (Layer layer : mapContent.layers()) {
@@ -123,11 +125,21 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                                         this.tileBuilderFactory.getOversampleY()),
                                 1); // if 0 (i.e. test case), don't expand
             }
-            Pipeline pipeline =
-                    getPipeline(mapContent, renderingArea, paintArea, sourceCrs, buffer);
 
             Query query = getStyleQuery(layer, mapContent);
-            query.getHints().remove(Hints.SCREENMAP);
+            Hints hints = query.getHints();
+
+            Pipeline pipeline =
+                    getPipeline(
+                            mapContent,
+                            renderingArea,
+                            paintArea,
+                            sourceCrs,
+                            featureSource.getSupportedHints(),
+                            hints,
+                            buffer);
+
+            hints.remove(Hints.SCREENMAP);
 
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
 
@@ -143,8 +155,10 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             final ReferencedEnvelope renderingArea,
             final Rectangle paintArea,
             CoordinateReferenceSystem sourceCrs,
+            final Set<RenderingHints.Key> fsHints,
+            final Hints qHints,
             int buffer) {
-        Pipeline pipeline;
+        final Pipeline pipeline;
         try {
             final PipelineBuilder builder =
                     PipelineBuilder.newBuilder(
@@ -154,9 +168,10 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                     builder.preprocess()
                             .transform(transformToScreenCoordinates)
                             .clip(clipToMapBounds, transformToScreenCoordinates)
-                            .simplify(transformToScreenCoordinates)
+                            .simplify(transformToScreenCoordinates, fsHints, qHints)
                             .collapseCollections()
                             .build();
+
         } catch (FactoryException e) {
             throw new ServiceException(e);
         }
@@ -205,14 +220,17 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                 try {
                     finalGeom = pipeline.execute(originalGeom);
                 } catch (Exception processingException) {
-                    processingException.printStackTrace();
+                    LOGGER.log(
+                            Level.WARNING,
+                            processingException.getLocalizedMessage(),
+                            processingException);
                     continue;
                 }
                 if (finalGeom.isEmpty()) {
                     continue;
                 }
 
-                final String layerName = feature.getName().getLocalPart();
+                final String layerName = feature.getType().getName().getLocalPart();
                 final String featureId = feature.getIdentifier().toString();
                 final String geometryName = geometryDescriptor.getName().getLocalPart();
 

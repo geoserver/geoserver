@@ -159,7 +159,7 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
             pipeline =
                     builder.preprocess()
                             .transform(true)
-                            .simplify(true)
+                            .simplify(true, null, null)
                             .clip(true, true)
                             .collapseCollections()
                             .build();

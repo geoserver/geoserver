@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.wicket.spring.test.ApplicationContextMock;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.config.GeoServerLoader;
@@ -31,6 +32,10 @@ import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryDataStore;
+import org.geotools.data.memory.MemoryFeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentEntry;
+import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -42,7 +47,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.factory.Hints;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -228,6 +235,8 @@ public class VectorTileMapOutputFormatTest {
                         any(ReferencedEnvelope.class),
                         any(Rectangle.class),
                         any(CoordinateReferenceSystem.class),
+                        any(Set.class),
+                        any(Hints.class),
                         eq(expectedBuffer));
     }
 
@@ -494,6 +503,82 @@ public class VectorTileMapOutputFormatTest {
         request.setRawKvp(new HashMap<String, String>());
         request.setBuffer(buffer);
         return request;
+    }
+
+    @Test
+    public void testPregeneralized() throws Exception {
+        /** Simple class to MOCK a Datastore supporting PreGeneralized features */
+        final class PregenDataStore extends MemoryDataStore {
+
+            final class _FeatureSource extends MemoryFeatureSource {
+                public _FeatureSource(ContentEntry entry, Query q) {
+                    super(entry, q);
+                }
+
+                @Override
+                protected void addHints(Set<org.geotools.util.factory.Hints.Key> hints) {
+                    hints.add(Hints.GEOMETRY_DISTANCE);
+                }
+            }
+
+            /** Creates the new feature store. */
+            public PregenDataStore() throws IOException {
+                super();
+            }
+
+            @Override
+            protected ContentFeatureSource createFeatureSource(ContentEntry entry, Query query) {
+                return new _FeatureSource(entry, query);
+            }
+        }
+
+        final String polyTypeSpec = "sp:String,ip:Integer,geom:Polygon:srid=4326";
+        final SimpleFeatureType pregenPolyType =
+                DataUtilities.createType("pregenPolygon", polyTypeSpec);
+
+        final MemoryDataStore _ds = new PregenDataStore();
+        _ds.addFeature(
+                feature(
+                        pregenPolyType,
+                        "pregenPolygon1",
+                        "StringPropX_1",
+                        1000,
+                        "POLYGON ((1 1, 2 2, 3 3, 4 4, 1 1))"));
+
+        final SimpleFeatureSource fs = _ds.getFeatureSource("pregenPolygon");
+
+        final FeatureLayer pregeneralizedLayer = new FeatureLayer(fs, defaultPolygonStyle);
+
+        final ReferencedEnvelope mapBounds = new ReferencedEnvelope(-90, 90, 0, 180, WGS84);
+        final Rectangle renderingArea = new Rectangle(256, 256);
+
+        final WMSMapContent mapContent =
+                createMapContent(mapBounds, renderingArea, 0, pregeneralizedLayer);
+
+        // ensure that the FeatureSource supports GEOMETRY_DISTANCE
+        Assert.assertTrue(
+                pregeneralizedLayer
+                        .getSimpleFeatureSource()
+                        .getSupportedHints()
+                        .contains(Hints.GEOMETRY_DISTANCE));
+
+        MapBoxTileBuilderFactory mbbf = new MapBoxTileBuilderFactory();
+        VectorTileMapOutputFormat vtof = new VectorTileMapOutputFormat(mbbf);
+        VectorTileMapOutputFormat vtof_spy = Mockito.spy(vtof);
+
+        // lets produce a map
+        vtof_spy.produceMap(mapContent);
+
+        // verify that the Pipeline recognize the Hint support adding the hint to the query
+        Mockito.verify(vtof_spy)
+                .getPipeline(
+                        any(WMSMapContent.class),
+                        any(ReferencedEnvelope.class),
+                        any(Rectangle.class),
+                        any(CoordinateReferenceSystem.class),
+                        any(Set.class),
+                        argThat((Hints qH) -> qH.containsKey(Hints.GEOMETRY_DISTANCE)),
+                        any(Integer.class));
     }
 
     // @Test

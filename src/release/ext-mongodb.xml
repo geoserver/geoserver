@@ -10,6 +10,7 @@
       <outputDirectory/>
       <includes>
         <include>*mongo*.jar</include>
+        <include>*bson*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

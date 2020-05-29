@@ -27,6 +27,7 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryDataStore;
@@ -48,6 +49,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.mockito.Mockito;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -199,6 +201,34 @@ public class VectorTileMapOutputFormatTest {
 
         q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
         assertTrue(q.getFilter() == Filter.EXCLUDE);
+    }
+
+    // the calculated style buffer must account for oversampling
+    @Test
+    public void testBufferOversample() throws Exception {
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(-90, 90, 0, 180, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 32, pointLayer);
+
+        MapBoxTileBuilderFactory mbbf = new MapBoxTileBuilderFactory();
+        VectorTileMapOutputFormat vtof = new VectorTileMapOutputFormat(mbbf);
+
+        VectorTileMapOutputFormat vtof_spy = Mockito.spy(vtof);
+
+        // here's the test - the buffer (from style) is 32 pixels
+        // however, since there is 16 * oversampling, it will really be a 512 pixel buffer
+        int expectedBuffer = 32 * mbbf.getOversampleX();
+
+        // verify that this buffer is send down to the Pipeline
+        vtof_spy.produceMap(mapContent);
+        Mockito.verify(vtof_spy)
+                .getPipeline(
+                        any(WMSMapContent.class),
+                        any(ReferencedEnvelope.class),
+                        any(Rectangle.class),
+                        any(CoordinateReferenceSystem.class),
+                        eq(expectedBuffer));
     }
 
     @Test

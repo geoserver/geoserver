@@ -4,6 +4,9 @@
 
 > Reviewing is a process done by project maintainers, mostly on a volunteer basis. We try to keep the overhead as small as possible and appreciate if you help us to do so by completing the following items. Feel free to ask in a comment if you have troubles with any of them.
 
+**Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or inapplicable.**
+
+
 For all pull requests:
 
 - [ ] Confirm you have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) 
@@ -20,5 +23,3 @@ The following are required only for core and extension modules (they are welcome
 - [ ] This PR passes the [QA checks](https://docs.geoserver.org/latest/en/developer/qa-guide/index.html) (QA checks results will be reported by travis-ci after opening this PR)
 - [ ] Commits changing the UI, existing user workflows, or adding new functionality, need to include documentation updates (screenshots, text)
 - [ ] Commits changing the REST API, or any configuration object, should check if the REST API docs (Swagger YAML files and classic documentation) need to be updated.
-
-Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or inapplicable.

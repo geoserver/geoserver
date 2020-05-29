@@ -1,4 +1,4 @@
-<Include a few sentences describing the overall goals for this Pull Request>
+<Include a few sentences describing the overall goals for this Pull Request. Please do not remove the checklist below, pull requests missing it will be ignored.>
 
 ## Checklist
 

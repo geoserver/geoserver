@@ -16,10 +16,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.stream.ImageOutputStream;
@@ -38,8 +35,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.*;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.data.Parameter;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -154,6 +150,10 @@ class RasterDownload {
      * @param bestResolutionOnMatchingCRS When dealing with a Heterogeneous CRS mosaic, given a ROI
      *     and a TargetCRS, with no target size being specified, get the best resolution of data
      *     having nativeCrs matching the TargetCRS
+     * @param resolutionsDifferenceTolerance a tolerance value to control the use" of native
+     *     resolution of the data: if the percentage difference between original and reprojected
+     *     coverages resolutions is below the specified value, the reprojected coverage will be
+     *     forced to use native resolutions
      */
     public Resource execute(
             String mimeType,
@@ -169,7 +169,8 @@ class RasterDownload {
             int[] bandIndices,
             Parameters writeParams,
             boolean minimizeReprojections,
-            boolean bestResolutionOnMatchingCRS)
+            boolean bestResolutionOnMatchingCRS,
+            double resolutionsDifferenceTolerance)
             throws Exception {
 
         List<GridCoverage2D> disposableSources = new ArrayList<GridCoverage2D>();
@@ -181,12 +182,12 @@ class RasterDownload {
             }
             final GridCoverage2DReader reader =
                     (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
-
             CRSRequestHandler crsRequestHandler =
                     new CRSRequestHandler(reader, catalog, targetCRS, roi);
             crsRequestHandler.setFilter(filter);
             crsRequestHandler.setMinimizeReprojections(minimizeReprojections);
             crsRequestHandler.setUseBestResolutionOnMatchingCRS(bestResolutionOnMatchingCRS);
+            crsRequestHandler.setResolutionsDifferenceTolerance(resolutionsDifferenceTolerance);
             crsRequestHandler.init();
             boolean useTargetCrsAsNative = crsRequestHandler.canUseTargetCRSAsNative();
             final ParameterValueGroup readParametersDescriptor =
@@ -490,13 +491,13 @@ class RasterDownload {
             }
             return cropped;
         } else {
-            // If not, proceed with standard read and reproject
 
+            boolean forceNativeRes = crsRequestHandler.getResolutionsDifferenceTolerance() != 0d;
+            // If not, proceed with standard read and reproject
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Reading the coverage");
             }
             GridCoverage2D gridCoverage = reader.read(readParameters);
-
             // check, the reader might have returned a null coverage
             if (gridCoverage == null) {
                 throw new WPSException(
@@ -510,7 +511,7 @@ class RasterDownload {
                     LOGGER.log(Level.FINE, "Reprojecting the coverage");
                 }
                 disposableSources.add(gridCoverage);
-                gridCoverage =
+                GridCoverage2D testCoverage =
                         (GridCoverage2D)
                                 Operations.DEFAULT.resample(
                                         gridCoverage,
@@ -518,6 +519,30 @@ class RasterDownload {
                                         null,
                                         interpolation,
                                         backgroundValues);
+                // check for native resolution to be applied only if tolerance is not 0
+                if (!forceNativeRes) {
+                    return testCoverage;
+                }
+                GridGeometryProvider gridGeometryProvider =
+                        new GridGeometryProvider(crsRequestHandler);
+                GridGeometry2D gg2D =
+                        gridGeometryProvider.getGridGeometryWithNativeResolution(
+                                gridCoverage, testCoverage);
+                if (gg2D != null) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.log(Level.FINE, "Forcing native resolution on reprojected coverage");
+                    }
+                    gridCoverage =
+                            (GridCoverage2D)
+                                    Operations.DEFAULT.resample(
+                                            gridCoverage,
+                                            targetCRS,
+                                            gg2D,
+                                            interpolation,
+                                            backgroundValues);
+                } else {
+                    gridCoverage = testCoverage;
+                }
             }
             return gridCoverage;
         }

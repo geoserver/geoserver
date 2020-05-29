@@ -114,6 +114,15 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                                     paintArea,
                                     VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
                                     (FeatureType) featureSource.getSchema()));
+            if (this.tileBuilderFactory.shouldOversampleScale()) {
+                // buffer is in pixels (style pixels), need to convert to paint area pixels
+                buffer *=
+                        Math.max(
+                                Math.max(
+                                        this.tileBuilderFactory.getOversampleX(),
+                                        this.tileBuilderFactory.getOversampleY()),
+                                1); // if 0 (i.e. test case), don't expand
+            }
             Pipeline pipeline =
                     getPipeline(mapContent, renderingArea, paintArea, sourceCrs, buffer);
 

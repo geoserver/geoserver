@@ -305,10 +305,19 @@ abstract class ElasticConfigurationPage extends Panel {
                                 return new Fragment(id, "empty", ElasticConfigurationPage.this);
                             }
                         } else if (property == ElasticAttributeProvider.DATE_FORMAT) {
-                            if (att.getDateFormat() != null) {
+                            List<String> validFormats = att.getValidDateFormats();
+                            if (validFormats != null) {
                                 Fragment f =
                                         new Fragment(id, "label", ElasticConfigurationPage.this);
-                                f.add(new Label("label", String.valueOf(att.getDateFormat())));
+                                String format = "";
+                                for (int i = 0; i < validFormats.size(); i++) {
+                                    if (i != validFormats.size()) {
+                                        format = format + validFormats.get(i) + " || ";
+                                    } else {
+                                        format = format + validFormats.get(i);
+                                    }
+                                }
+                                f.add(new Label("label", format));
                                 return f;
                             } else {
                                 return new Fragment(id, "empty", ElasticConfigurationPage.this);

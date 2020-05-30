@@ -127,7 +127,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     }
 
     @Override
-    public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
+    public WebMap produceMap(WMSMapContent map, WMS wms) throws ServiceException, IOException {
         TilesFile tiles = createTilesFile();
         addTiles(tiles, map);
         tiles.close();

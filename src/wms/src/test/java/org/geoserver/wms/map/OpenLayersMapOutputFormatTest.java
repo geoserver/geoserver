@@ -372,7 +372,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     String getAsHTML(WMSMapContent map) throws IOException {
         OpenLayersMapOutputFormat mapProducer =
                 GeoServerExtensions.extensions(OpenLayersMapOutputFormat.class).get(0);
-        RawMap rawMap = mapProducer.produceMap(map);
+        RawMap rawMap = mapProducer.produceMap(map, getWMS());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rawMap.writeTo(bos);
         return new String(bos.toByteArray(), "UTF-8");
@@ -381,7 +381,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     String getAsHTMLOL3(WMSMapContent map) throws IOException {
         OpenLayers3MapOutputFormat mapProducer =
                 GeoServerExtensions.extensions(OpenLayers3MapOutputFormat.class).get(0);
-        RawMap rawMap = mapProducer.produceMap(map);
+        RawMap rawMap = mapProducer.produceMap(map, getWMS());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rawMap.writeTo(bos);
         return new String(bos.toByteArray(), "UTF-8");

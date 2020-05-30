@@ -8,7 +8,10 @@ package org.geoserver.wms.map;
 import java.io.IOException;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.decoration.MapDecorationLayout;
+import org.geoserver.wms.decoration.MapDecorationLayout.Block;
 
 /**
  * Handles a GetMap request that spects a map in PDF format.
@@ -40,12 +43,31 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
 
     public static class PDFMap extends org.geoserver.wms.WebMap {
 
+        Block watermark;
+        WMS wms;
+        MapDecorationLayout layout;
+
         public PDFMap(final WMSMapContent mapContent) {
             super(mapContent);
         }
 
         public WMSMapContent getContext() {
             return mapContent;
+        }
+
+        /** @param watermark */
+        public void setWatermark(Block watermark) {
+            this.watermark = watermark;
+        }
+
+        /** @param wms */
+        public void setWMS(WMS wms) {
+            this.wms = wms;
+        }
+
+        /** @param findDecorationLayout */
+        public void setLayout(MapDecorationLayout findDecorationLayout) {
+            this.layout = findDecorationLayout;
         }
     }
 
@@ -54,9 +76,15 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public PDFMap produceMap(final WMSMapContent mapContent) throws ServiceException, IOException {
-
+    public PDFMap produceMap(final WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException {
+        this.wms = wms;
         PDFMap result = new PDFMap(mapContent);
+        result.setWMS(wms);
+        // render the watermark
+        MapDecorationLayout.Block watermark = getWatermark(wms.getServiceInfo());
+        result.setWatermark(watermark);
+        result.setLayout(findDecorationLayout(mapContent.getRequest(), false));
         result.setContentDispositionHeader(mapContent, ".pdf");
         result.setMimeType(MIME_TYPE);
         return result;

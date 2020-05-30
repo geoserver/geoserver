@@ -50,7 +50,7 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     @SuppressWarnings("rawtypes")
-    public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public KMLMap produceMap(WMSMapContent mapContent, WMS wms) throws ServiceException, IOException {
         GetMapRequest request = mapContent.getRequest();
 
         // restore normal kml types (no network link mode)

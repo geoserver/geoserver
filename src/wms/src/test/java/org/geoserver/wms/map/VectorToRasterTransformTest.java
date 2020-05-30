@@ -84,7 +84,7 @@ public class VectorToRasterTransformTest extends WMSTestSupport {
 
         RenderingVariables.setupEnvironmentVariables(map);
         final RenderedImageMap imageMap =
-                new RenderedImageMapOutputFormat(getWMS()).produceMap(map);
+                new RenderedImageMapOutputFormat(getWMS()).produceMap(map, getWMS());
         imageMap.dispose();
         assertTrue("The query filter should have a BBOX", containsBBox.booleanValue());
     }

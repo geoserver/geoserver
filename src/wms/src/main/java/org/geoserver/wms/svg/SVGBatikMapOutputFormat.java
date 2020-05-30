@@ -76,7 +76,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public BatikSVGMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public BatikSVGMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException {
 
         StreamingRenderer renderer = setUpRenderer(mapContent);
         SVGGraphics2D g = createSVGMap(renderer, mapContent);

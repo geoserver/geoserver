@@ -221,7 +221,7 @@ public class VectorTileMapOutputFormatTest {
         int expectedBuffer = 32 * mbbf.getOversampleX();
 
         // verify that this buffer is send down to the Pipeline
-        vtof_spy.produceMap(mapContent);
+        vtof_spy.produceMap(mapContent, null);
         Mockito.verify(vtof_spy)
                 .getPipeline(
                         any(WMSMapContent.class),
@@ -242,7 +242,7 @@ public class VectorTileMapOutputFormatTest {
         WebMap mockMap = mock(WebMap.class);
         when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
 
-        assertSame(mockMap, outputFormat.produceMap(mapContent));
+        assertSame(mockMap, outputFormat.produceMap(mapContent, null));
 
         verify(tileBuilderMock, times(1))
                 .addFeature(
@@ -296,7 +296,7 @@ public class VectorTileMapOutputFormatTest {
         WebMap mockMap = mock(WebMap.class);
         when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
 
-        assertSame(mockMap, outputFormat.produceMap(mapContent));
+        assertSame(mockMap, outputFormat.produceMap(mapContent, null));
 
         verify(tileBuilderMock, times(1))
                 .addFeature(
@@ -346,7 +346,7 @@ public class VectorTileMapOutputFormatTest {
         WebMap mockMap = mock(WebMap.class);
         when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
 
-        assertSame(mockMap, outputFormat.produceMap(mapContent));
+        assertSame(mockMap, outputFormat.produceMap(mapContent, null));
 
         verify(tileBuilderMock, times(1))
                 .addFeature(
@@ -397,7 +397,7 @@ public class VectorTileMapOutputFormatTest {
         WebMap mockMap = mock(WebMap.class);
         when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
 
-        assertSame(mockMap, outputFormat.produceMap(mapContent));
+        assertSame(mockMap, outputFormat.produceMap(mapContent, null));
 
         verify(tileBuilderMock, never())
                 .addFeature(

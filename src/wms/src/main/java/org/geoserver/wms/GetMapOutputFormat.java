@@ -39,9 +39,11 @@ public interface GetMapOutputFormat {
      * Asks this map producer to create a map image for the passed {@linkPlain WMSMapContext}, which
      * contains enough information for doing such a process.
      *
+     * @param wms
      * @throws ServiceException something goes wrong
      */
-    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException;
+    public WebMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException;
 
     /**
      * Returns the list of content type aliases for this output format, that are the ones to be used

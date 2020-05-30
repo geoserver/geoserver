@@ -100,7 +100,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             throws IOException, ServiceException {
 
         Assert.isInstanceOf(PDFMap.class, value);
-        WMSMapContent mapContent = ((PDFMap) value).getContext();
+        PDFMap pdfMap = (PDFMap) value;
+        WMSMapContent mapContent = pdfMap.getContext();
 
         final int width = mapContent.getMapWidth();
         final int height = mapContent.getMapHeight();
@@ -220,11 +221,17 @@ public class PDFMapResponse extends AbstractMapResponse {
                     mapContent.getRenderingArea(),
                     mapContent.getRenderingTransform());
 
-            // render the watermark
-            MapDecorationLayout.Block watermark =
-                    RenderedImageMapOutputFormat.getWatermark(wms.getServiceInfo());
+            // apply watermarking
+            if (pdfMap.layout != null) {
+                try {
+                    pdfMap.layout.paint(graphic, paintArea, mapContent);
+                } catch (Exception e) {
+                    throw new ServiceException(
+                            "Problem occurred while trying to watermark data", e);
+                }
+            }
 
-            if (watermark != null) {
+            if (pdfMap.watermark != null) {
                 MapDecorationLayout layout = new MapDecorationLayout();
                 layout.paint(graphic, paintArea, mapContent);
             }

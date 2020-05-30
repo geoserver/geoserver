@@ -187,7 +187,7 @@ public class RenderedImageMapOutputFormatExtendedTest extends WMSTestSupport {
         // returned the IR image only so the channel selection
         // should have been updated with a proper index (as part of the fix)
         // as already made in the path not involving a RenderingTransformation.
-        RenderedImageMap dstImageMap = this.rasterMapProducer.produceMap(map);
+        RenderedImageMap dstImageMap = this.rasterMapProducer.produceMap(map, getWMS());
         RenderedImage destImage = dstImageMap.getImage();
 
         assertNotNull(destImage);

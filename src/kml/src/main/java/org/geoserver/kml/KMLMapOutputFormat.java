@@ -76,7 +76,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
      *     be used when producing the map.
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
-    public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public KMLMap produceMap(WMSMapContent mapContent, WMS wms) throws ServiceException, IOException {
         // initialize the kml encoding context
         KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, false);
 

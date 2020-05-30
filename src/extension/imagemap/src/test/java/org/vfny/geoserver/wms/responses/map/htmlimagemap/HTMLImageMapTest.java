@@ -161,7 +161,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("Population.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap imageMap = this.mapProducer.produceMap(map);
+        EncodeHTMLImageMap imageMap = this.mapProducer.produceMap(map, null);
 
         assertTestResult("States", imageMap);
     }
@@ -184,7 +184,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("default.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("BasicPolygons", result);
     }
 
@@ -206,7 +206,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("default.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("PolygonWithHoles", result);
     }
 
@@ -228,7 +228,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("default.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("PolygonWithSkippedHoles", result);
     }
 
@@ -266,7 +266,7 @@ public class HTMLImageMapTest {
 
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("ProjectedPolygon", result);
     }
 
@@ -289,7 +289,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("RoadSegments.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("RoadSegments", result);
     }
 
@@ -317,7 +317,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("RoadSegmentsFiltered.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("RoadSegmentsFiltered", result);
     }
 
@@ -340,7 +340,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("BuildingCenters.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("BuildingCenters", result);
     }
 
@@ -363,7 +363,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("BuildingCenters2.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("BuildingCenters2", result);
     }
 
@@ -385,7 +385,7 @@ public class HTMLImageMapTest {
 
         Style basicStyle = getTestStyle("BuildingCenters3.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
 
         assertTestResult("BuildingCenters3", result);
     }
@@ -410,7 +410,7 @@ public class HTMLImageMapTest {
 
         Style basicStyle = getTestStyle("BuildingCenters3.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
 
         assertTestResult("BuildingCenters4", result);
     }
@@ -434,7 +434,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("BuildingCenters.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("BuildingCentersMultiPoint", result);
     }
 
@@ -457,7 +457,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("CollectionSample.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("CollectionSample", result);
     }
 
@@ -479,7 +479,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle("NamedPlaces.sld");
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult("NoCoords", result);
     }
 
@@ -498,7 +498,7 @@ public class HTMLImageMapTest {
         Style basicStyle = getTestStyle(String.format("%s.sld", s));
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
-        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        EncodeHTMLImageMap result = mapProducer.produceMap(map, null);
         assertTestResult(s, result);
     }
 }

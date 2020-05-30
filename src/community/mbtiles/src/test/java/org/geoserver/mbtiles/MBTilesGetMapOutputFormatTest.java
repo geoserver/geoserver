@@ -61,7 +61,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
 
-        WebMap map = format.produceMap(mapContent);
+        WebMap map = format.produceMap(mapContent, getWMS());
         MBTilesFile mbtiles = createMbTilesFiles(map);
 
         MBTilesMetadata metadata = mbtiles.loadMetaData();

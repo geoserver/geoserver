@@ -54,7 +54,8 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public XMLTransformerMap produceMap(WMSMapContent map) throws ServiceException, IOException {
+    public XMLTransformerMap produceMap(WMSMapContent map, WMS wms)
+            throws ServiceException, IOException {
 
         RSSGeoRSSTransformer tx = new RSSGeoRSSTransformer(wms);
         GetMapRequest request = map.getRequest();

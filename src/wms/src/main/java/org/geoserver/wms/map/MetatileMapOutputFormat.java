@@ -26,6 +26,7 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.RasterCleaner;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
@@ -116,7 +117,8 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public WebMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException {
         // get the key that identifies the meta tile. The cache will make sure
         // two threads asking
         // for the same tile will get the same key, and thus will synchronize
@@ -168,7 +170,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                 EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
                 EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
 
-                RenderedImageMap metaTileMap = delegate.produceMap(mapContent);
+                RenderedImageMap metaTileMap = delegate.produceMap(mapContent, wms);
 
                 RenderedImage metaTile = metaTileMap.getImage();
                 RenderedImage[] tiles = split(key, metaTile);

@@ -746,7 +746,7 @@ public class GetMap {
         //
         // /////////////////////////////////////////////////////////
         mapContent = fireBeforeRender(mapContent);
-        WebMap map = delegate.produceMap(mapContent);
+        WebMap map = delegate.produceMap(mapContent, wms);
 
         if (cachingPossible) {
             map.setResponseHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");

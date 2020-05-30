@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationBicubic2;
@@ -42,10 +41,7 @@ import javax.media.jai.ROIShape;
 import javax.media.jai.operator.ConstantDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
@@ -56,11 +52,7 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSPartialMapException;
 import org.geoserver.wms.WMSServiceExceptionHandler;
-import org.geoserver.wms.WatermarkInfo;
-import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
-import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
-import org.geoserver.wms.decoration.WatermarkDecoration;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -89,7 +81,6 @@ import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisi
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
-import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -195,14 +186,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return arr;
     }
 
-    /** A logger for this class. */
-    public static final Logger LOGGER = Logging.getLogger(RenderedImageMapOutputFormat.class);
-
     /** Which format to encode the image in if one is not supplied */
     private static final String DEFAULT_MAP_FORMAT = "image/png";
-
-    /** WMS Service configuration * */
-    protected final WMS wms;
 
     private boolean palleteSupported = true;
 
@@ -272,8 +257,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public final RenderedImageMap produceMap(WMSMapContent mapContent) throws ServiceException {
-        return produceMap(mapContent, false);
+    public final RenderedImageMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException {
+        return produceMap(mapContent, wms, false);
     }
 
     /**
@@ -281,7 +267,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      *
      * @param tiled Indicates whether metatiling is activated for this map producer.
      */
-    public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
+    public RenderedImageMap produceMap(final WMSMapContent mapContent, WMS wms, final boolean tiled)
             throws ServiceException {
         Rectangle paintArea =
                 new Rectangle(0, 0, mapContent.getMapWidth(), mapContent.getMapHeight());
@@ -718,105 +704,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             map.setContentDispositionHeader(mapContent, "." + extension, false);
         }
         return map;
-    }
-
-    protected MapDecorationLayout findDecorationLayout(GetMapRequest request, final boolean tiled) {
-        String layoutName = null;
-        if (request.getFormatOptions() != null) {
-            layoutName = (String) request.getFormatOptions().get("layout");
-        }
-
-        MapDecorationLayout layout = null;
-        if (layoutName != null && !layoutName.trim().isEmpty()) {
-            try {
-                GeoServerResourceLoader loader = wms.getCatalog().getResourceLoader();
-                Resource layouts = loader.get("layouts");
-                if (layouts.getType() == Type.DIRECTORY) {
-                    Resource layoutConfig = layouts.get(layoutName + ".xml");
-
-                    if (layoutConfig.getType() == Type.RESOURCE) {
-                        layout = MapDecorationLayout.fromFile(layoutConfig, tiled);
-                    } else {
-                        LOGGER.log(Level.WARNING, "Unknown layout requested: " + layoutName);
-                    }
-                } else {
-                    LOGGER.log(Level.WARNING, "No layouts directory defined");
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Unable to load layout: " + layoutName, e);
-            }
-
-            if (layout == null) {
-                throw new ServiceException("Could not find decoration layout named: " + layoutName);
-            }
-        }
-
-        if (layout == null) {
-            layout = tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
-        }
-
-        MapDecorationLayout.Block watermark = getWatermark(wms.getServiceInfo());
-        if (watermark != null) {
-            layout.addBlock(watermark);
-        }
-
-        return layout;
-    }
-
-    public static MapDecorationLayout.Block getWatermark(WMSInfo wms) {
-        WatermarkInfo watermark = (wms == null ? null : wms.getWatermark());
-        if (watermark != null && watermark.isEnabled()) {
-            Map<String, String> options = new HashMap<String, String>();
-            options.put("url", watermark.getURL());
-            options.put("opacity", Float.toString((255f - watermark.getTransparency()) / 2.55f));
-
-            MapDecoration d = new WatermarkDecoration();
-            try {
-                d.loadOptions(options);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Couldn't construct watermark from configuration", e);
-                throw new ServiceException(e);
-            }
-
-            MapDecorationLayout.Block.Position p = null;
-
-            switch (watermark.getPosition()) {
-                case TOP_LEFT:
-                    p = MapDecorationLayout.Block.Position.UL;
-                    break;
-                case TOP_CENTER:
-                    p = MapDecorationLayout.Block.Position.UC;
-                    break;
-                case TOP_RIGHT:
-                    p = MapDecorationLayout.Block.Position.UR;
-                    break;
-                case MID_LEFT:
-                    p = MapDecorationLayout.Block.Position.CL;
-                    break;
-                case MID_CENTER:
-                    p = MapDecorationLayout.Block.Position.CC;
-                    break;
-                case MID_RIGHT:
-                    p = MapDecorationLayout.Block.Position.CR;
-                    break;
-                case BOT_LEFT:
-                    p = MapDecorationLayout.Block.Position.LL;
-                    break;
-                case BOT_CENTER:
-                    p = MapDecorationLayout.Block.Position.LC;
-                    break;
-                case BOT_RIGHT:
-                    p = MapDecorationLayout.Block.Position.LR;
-                    break;
-                default:
-                    throw new ServiceException(
-                            "Unknown WatermarkInfo.Position value.  Something is seriously wrong.");
-            }
-
-            return new MapDecorationLayout.Block(d, p, null, new Point(0, 0));
-        }
-
-        return null;
     }
 
     /**

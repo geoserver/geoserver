@@ -10,6 +10,7 @@ import java.util.Set;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 
 /**
@@ -58,7 +59,7 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public StreamingSVGMap produceMap(WMSMapContent mapContent)
+    public StreamingSVGMap produceMap(WMSMapContent mapContent, WMS wms)
             throws ServiceException, IOException {
         StreamingSVGMap svg = new StreamingSVGMap(mapContent);
         svg.setMimeType(getMimeType());

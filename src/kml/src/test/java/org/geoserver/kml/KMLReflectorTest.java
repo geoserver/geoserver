@@ -960,7 +960,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         mapContent.setMapWidth(256);
 
         KMLMapOutputFormat of = new KMLMapOutputFormat(getWMS());
-        KMLMap map = of.produceMap(mapContent);
+        KMLMap map = of.produceMap(mapContent, getWMS());
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         new KMLEncoder().encode(map.getKml(), bout, null);
@@ -1008,7 +1008,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         mapContent.setMapWidth(256);
 
         KMLMapOutputFormat of = new KMLMapOutputFormat(getWMS());
-        KMLMap map = of.produceMap(mapContent);
+        KMLMap map = of.produceMap(mapContent, getWMS());
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         new KMLEncoder().encode(map.getKml(), bout, null);
@@ -1047,7 +1047,7 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         // create hte map producer
         KMZMapOutputFormat mapProducer = new KMZMapOutputFormat(getWMS());
-        KMLMap map = mapProducer.produceMap(mapContent);
+        KMLMap map = mapProducer.produceMap(mapContent, getWMS());
 
         FileOutputStream output = new FileOutputStream(zip);
         new KMLMapResponse(new KMLEncoder(), getWMS()).write(map, output, null);

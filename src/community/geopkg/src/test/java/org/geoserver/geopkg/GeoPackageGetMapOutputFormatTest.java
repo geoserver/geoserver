@@ -58,7 +58,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
                 .getRequest()
                 .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
 
-        WebMap map = format.produceMap(mapContent);
+        WebMap map = format.produceMap(mapContent, null);
         GeoPackage geopkg = createGeoPackage(map);
 
         assertTrue(geopkg.features().isEmpty());
@@ -79,7 +79,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         WMSMapContent mapContent = createMapContent(WORLD);
         mapContent.getRequest().setBbox(new Envelope(-180, 180, -90, 90));
 
-        WebMap map = format.produceMap(mapContent);
+        WebMap map = format.produceMap(mapContent, null);
         GeoPackage geopkg = createGeoPackage(map);
 
         assertTrue(geopkg.features().isEmpty());

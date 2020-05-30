@@ -195,7 +195,8 @@ public class WMSMockData {
          * @see
          *     org.geoserver.wms.map.RasterMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
          */
-        public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+        public WebMap produceMap(WMSMapContent mapContent, WMS wms)
+                throws ServiceException, IOException {
             produceMapCalled = true;
             return new WebMap(mapContent) {};
         }

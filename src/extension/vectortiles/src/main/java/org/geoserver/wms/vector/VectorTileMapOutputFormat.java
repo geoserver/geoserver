@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
@@ -75,7 +76,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     @Override
-    public WebMap produceMap(final WMSMapContent mapContent) throws ServiceException, IOException {
+    public WebMap produceMap(final WMSMapContent mapContent, WMS wms) throws ServiceException, IOException {
         checkNotNull(mapContent);
         checkNotNull(mapContent.getRenderingArea());
         checkArgument(mapContent.getMapWidth() > 0);

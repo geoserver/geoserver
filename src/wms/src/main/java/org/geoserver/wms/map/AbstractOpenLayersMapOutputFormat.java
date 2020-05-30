@@ -99,7 +99,8 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     }
 
     /** @see GetMapOutputFormat#produceMap(WMSMapContent) */
-    public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public RawMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException {
         try {
             // create the template
             String templateName = getTemplateName(mapContent);

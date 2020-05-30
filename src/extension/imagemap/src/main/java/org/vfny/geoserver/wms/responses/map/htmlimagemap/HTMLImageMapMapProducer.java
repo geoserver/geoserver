@@ -8,9 +8,11 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
+
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.springframework.util.Assert;
 
@@ -37,7 +39,7 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      * @throws ServiceException if an error occurs during rendering
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
-    public EncodeHTMLImageMap produceMap(WMSMapContent mapContent)
+    public EncodeHTMLImageMap produceMap(WMSMapContent mapContent, WMS wms)
             throws ServiceException, IOException {
         Assert.notNull(mapContent, "mapContent is not set");
         return new EncodeHTMLImageMap(mapContent);

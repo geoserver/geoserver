@@ -5,9 +5,10 @@
  */
 package org.geoserver.geopkg;
 
-import static org.geoserver.geopkg.GeoPkg.*;
+import static org.geoserver.geopkg.GeoPkg.EXTENSION;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopkg.GeoPkg.NAMES;
 
-import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
@@ -40,6 +42,8 @@ import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.google.common.collect.Sets;
 
 /**
  * WMS GetMap Output Format for GeoPackage
@@ -141,7 +145,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     }
 
     @Override
-    public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
+    public WebMap produceMap(WMSMapContent map, WMS wms) throws ServiceException, IOException {
         /*
          * From the OGC GeoPackage Specification [1]:
          *
@@ -153,7 +157,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
          * [1]: http://www.geopackage.org/spec/#tile_matrix
          */
         map.getRequest().getFormatOptions().put("flipy", "true");
-        return super.produceMap(map);
+        return super.produceMap(map, null);
     }
 
     @Override

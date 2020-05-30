@@ -133,7 +133,7 @@ public class GetMapTest {
         final DummyRasterMapProducer producer =
                 new DummyRasterMapProducer() {
                     @Override
-                    public WebMap produceMap(WMSMapContent ctx)
+                    public WebMap produceMap(WMSMapContent ctx, WMS wms)
                             throws ServiceException, IOException {
                         assertEquals(23, ff.function("env", ff.literal("myParam")).evaluate(null));
                         assertEquals(

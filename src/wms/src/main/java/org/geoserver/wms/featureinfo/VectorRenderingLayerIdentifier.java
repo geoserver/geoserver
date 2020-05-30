@@ -216,7 +216,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
             // and now run the rendering _almost_ like a GetMap
             GetMapOutputFormat rim = createMapOutputFormat(image, featureInfoListener);
-            rim.produceMap(mc);
+            rim.produceMap(mc, wms);
 
             List<SimpleFeature> features = featureInfoListener.getFeatures();
 

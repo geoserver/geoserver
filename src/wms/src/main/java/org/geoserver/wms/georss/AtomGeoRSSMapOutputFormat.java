@@ -53,7 +53,7 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public XMLTransformerMap produceMap(WMSMapContent mapContent)
+    public XMLTransformerMap produceMap(WMSMapContent mapContent, WMS wms)
             throws ServiceException, IOException {
 
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(wms);

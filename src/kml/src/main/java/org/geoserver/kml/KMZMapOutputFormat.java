@@ -58,7 +58,7 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
      *     be used when producing the map.
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public KMLMap produceMap(WMSMapContent mapContent, WMS wms) throws ServiceException, IOException {
         // initialize the kml encoding context
         KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, true);
 

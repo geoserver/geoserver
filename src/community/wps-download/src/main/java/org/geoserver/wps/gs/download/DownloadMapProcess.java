@@ -371,7 +371,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 content.setTransparent(true);
                 content.getViewport().setBounds(bbox);
                 RenderedImageMapOutputFormat renderer = new RenderedImageMapOutputFormat(wms);
-                RenderedImageMap map = renderer.produceMap(content);
+                RenderedImageMap map = renderer.produceMap(content, wms);
 
                 result = mergeImage(result, map.getImage());
             } finally {

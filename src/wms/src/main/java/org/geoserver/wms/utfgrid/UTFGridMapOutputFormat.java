@@ -79,7 +79,8 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     @Override
-    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public WebMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException {
         RenderedImageMapOutputFormat of =
                 new RenderedImageMapOutputFormat(wms) {
                     @Override
@@ -112,7 +113,7 @@ public class UTFGridMapOutputFormat extends AbstractMapOutputFormat {
 
         UTFGridEntries entries = new UTFGridEntries();
         UTFGridMapContent utfGridMapContent = buildUTFGridMapContent(mapContent, entries);
-        RenderedImageMap map = of.produceMap(utfGridMapContent);
+        RenderedImageMap map = of.produceMap(utfGridMapContent, wms);
         return new UTFGridMap(utfGridMapContent, map.getImage());
     }
 

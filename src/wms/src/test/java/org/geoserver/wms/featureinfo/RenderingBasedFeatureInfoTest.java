@@ -514,7 +514,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                         return new AbstractMapOutputFormat("image/png", new String[] {"png"}) {
 
                             @Override
-                            public WebMap produceMap(WMSMapContent mapContent)
+                            public WebMap produceMap(WMSMapContent mapContent, WMS wms)
                                     throws ServiceException, IOException {
                                 // let's capture mapContent for identify purpose, so
                                 // that we can store the scale(s), to be verified later

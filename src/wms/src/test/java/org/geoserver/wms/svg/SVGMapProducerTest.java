@@ -81,7 +81,7 @@ public class SVGMapProducerTest extends WMSTestSupport {
         map.addLayer(new FeatureLayer(fs, basicStyle));
 
         SVGStreamingMapOutputFormat producer = new SVGStreamingMapOutputFormat();
-        StreamingSVGMap encodeSVG = producer.produceMap(map);
+        StreamingSVGMap encodeSVG = producer.produceMap(map, getWMS());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         encodeSVG.encode(out);
         // System.out.println(out.toString());

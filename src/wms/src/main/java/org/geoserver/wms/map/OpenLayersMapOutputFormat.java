@@ -14,6 +14,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.util.Converters;
 
@@ -55,11 +56,12 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
-    public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+    public RawMap produceMap(WMSMapContent mapContent, WMS wms)
+            throws ServiceException, IOException {
         if (isOL3Enabled(mapContent) && ol3Format.browserSupportsOL3(mapContent)) {
-            return ol3Format.produceMap(mapContent);
+            return ol3Format.produceMap(mapContent, wms);
         } else {
-            return ol2Format.produceMap(mapContent);
+            return ol2Format.produceMap(mapContent, wms);
         }
     }
 

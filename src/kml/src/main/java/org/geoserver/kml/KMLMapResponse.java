@@ -105,7 +105,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             // render the map
             RenderedImageMap imageMap;
             try {
-                imageMap = pngProducer.produceMap(subContext);
+                imageMap = pngProducer.produceMap(subContext, wms);
 
                 // write it to the zip stream
                 entry = new ZipEntry(path);

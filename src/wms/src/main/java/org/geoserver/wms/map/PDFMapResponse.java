@@ -100,6 +100,7 @@ public class PDFMapResponse extends AbstractMapResponse {
             throws IOException, ServiceException {
 
         Assert.isInstanceOf(PDFMap.class, value);
+        PDFMap pdfMap = (PDFMap) value;
         WMSMapContent mapContent = ((PDFMap) value).getContext();
 
         final int width = mapContent.getMapWidth();
@@ -224,7 +225,9 @@ public class PDFMapResponse extends AbstractMapResponse {
             MapDecorationLayout.Block watermark =
                     RenderedImageMapOutputFormat.getWatermark(wms.getServiceInfo());
 
-            if (watermark != null) {
+            if (pdfMap.layout != null) {
+                pdfMap.layout.paint(graphic, paintArea, mapContent);
+            } else if (watermark != null) {
                 MapDecorationLayout layout = new MapDecorationLayout();
                 layout.paint(graphic, paintArea, mapContent);
             }

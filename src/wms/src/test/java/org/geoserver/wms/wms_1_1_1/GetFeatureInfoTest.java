@@ -453,7 +453,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                         + layer
                         + "&width=20&height=20&x=10&y=10";
         Document dom = getAsDOM(request);
-
+        assertNotNull(dom);
         // count lines that do contain a forest reference
         XMLAssert.assertXpathEvaluatesTo(
                 "1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);

@@ -835,16 +835,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>gt-ogr-bridj</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-ogr-bridj</artifactId>
-          <version>${gt.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>web-ogr</id>
       <dependencies>
         <dependency>

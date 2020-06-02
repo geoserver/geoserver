@@ -45,7 +45,7 @@ public abstract class LDAPBaseTest extends AbstractLdapTestUnit {
         securityProvider = new LDAPSecurityProvider(securityManager);
 
         createConfig();
-        config.setServerURL(ldapServerUrl + "/" + basePath);
+        config.setServerURL(ldapServerUrl + ":" + getLdapServer().getPort() + "/" + basePath);
         config.setGroupSearchBase("ou=Groups");
         config.setGroupSearchFilter("member=cn={1}");
         config.setUseTLS(false);

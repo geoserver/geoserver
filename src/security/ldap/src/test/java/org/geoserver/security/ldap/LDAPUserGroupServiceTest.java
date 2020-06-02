@@ -26,13 +26,7 @@ import org.junit.runner.RunWith;
 /** @author Niels Charlier */
 @RunWith(FrameworkRunner.class)
 @CreateLdapServer(
-    transports = {
-        @CreateTransport(
-            protocol = "LDAP",
-            address = "localhost",
-            port = LDAPTestUtils.LDAP_SERVER_PORT
-        )
-    },
+    transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
     allowAnonymousAccess = true
 )
 @CreateDS(

@@ -120,13 +120,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {
-            @CreateTransport(
-                protocol = "LDAP",
-                address = "localhost",
-                port = LDAPTestUtils.LDAP_SERVER_PORT
-            )
-        },
+        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
         allowAnonymousAccess = true
     )
     @CreateDS(
@@ -234,13 +228,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {
-            @CreateTransport(
-                protocol = "LDAP",
-                address = "localhost",
-                port = LDAPTestUtils.LDAP_SERVER_PORT
-            )
-        },
+        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
         allowAnonymousAccess = true
     )
     @CreateDS(
@@ -274,13 +262,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {
-            @CreateTransport(
-                protocol = "LDAP",
-                address = "localhost",
-                port = LDAPTestUtils.LDAP_SERVER_PORT
-            )
-        },
+        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
         allowAnonymousAccess = true
     )
     @CreateDS(

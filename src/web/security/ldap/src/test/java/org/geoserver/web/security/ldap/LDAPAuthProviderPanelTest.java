@@ -34,13 +34,7 @@ import org.junit.Test;
 
 /** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
 @CreateLdapServer(
-    transports = {
-        @CreateTransport(
-            protocol = "LDAP",
-            address = "localhost",
-            port = LDAPTestUtils.LDAP_SERVER_PORT
-        )
-    },
+    transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
     allowAnonymousAccess = true
 )
 @CreateDS(
@@ -80,12 +74,16 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
             String userGroupService) {
         config = new LDAPSecurityServiceConfig();
         config.setName("test");
-        config.setServerURL(ldapServerUrl + "/" + basePath);
+        config.setServerURL(getServerURL());
         config.setUserDnPattern(userDnPattern);
         config.setUserFilter(userFilter);
         config.setUserFormat(userFormat);
         config.setUserGroupServiceName(userGroupService);
         setupPanel(config);
+    }
+
+    private String getServerURL() {
+        return ldapServerUrl + ":" + serverRule.getLdapServer().getPort() + "/" + basePath;
     }
 
     @Override

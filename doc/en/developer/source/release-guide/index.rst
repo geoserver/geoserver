@@ -90,12 +90,6 @@ When creating the first release candidate of a series, there are some extra step
 
     git checkout master
     
-* Define a unque LDAP_SERVER_PORT in org.geoserver.security.ldap.LDAPTestUtils for each branch::
-  
-    public static final int LDAP_SERVER_PORT = 10389+18;
-  
-  The number `18` is chosen above for The GeoServer `1.18.x` branch.
-    
 * Update the version in all pom.xml files; for example, if changing master from ``2.17-SNAPSHOT`` to ``2.18-SNAPSHOT``.
   
   Edit :file:`build/rename.xml` to update GeoServer, GeoTools and GeoWebCache version numbers::

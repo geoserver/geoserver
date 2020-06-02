@@ -50,7 +50,7 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # The short X.Y version.
 version = '2.17'
 # The full version, including alpha/beta/rc tags.
-release = '2.17-SNAPSHOT'
+release = '2.17.1'
 
 # Used in build and documentation links
 branch = '2.17.x'

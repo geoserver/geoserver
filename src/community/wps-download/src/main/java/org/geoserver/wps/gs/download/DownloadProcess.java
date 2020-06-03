@@ -73,7 +73,6 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      * Instantiates a new download process.
      *
      * @param geoServer the geo server
-     * @param sendMail the send mail
      * @param estimator the estimator
      * @param resourceManager the resourceManager to track resources to be cleaned up
      */
@@ -92,7 +91,6 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      *
      * @param layerName the layer name
      * @param filter the filter
-     * @param email the email
      * @param mimeType the output format
      * @param targetCRS the target crs
      * @param roiCRS the roi crs
@@ -103,6 +101,21 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      * @param targetSizeY the size of the target image along the Y axis
      * @param bandIndices the band indices selected for output, in case of raster input
      * @param writeParameters optional writing parameters
+     * @param minimizeReprojections When dealing with a Heterogeneous CRS mosaic, avoid
+     *     reprojections of the granules within the ROI, having their nativeCRS equal to the
+     *     targetCRS
+     * @param bestResolutionOnMatchingCRS When dealing with a Heterogeneous CRS mosaic, given a ROI
+     *     and a TargetCRS, with no target size being specified, get the best resolution of data
+     *     having nativeCrs matching the TargetCRS
+     * @param resolutionsDifferenceTolerance the parameter allows to specify a tolerance value to
+     *     control the use of native resolution of the data, when no target size has been specified
+     *     and granules are reprojected. If the percentage difference between original and
+     *     reprojected coverages resolutions is below the specified tolerance value, native
+     *     resolution is the same for all the requested granules, the unit of measure is the same
+     *     for native and target CRS, the reprojected coverage will be forced to use native
+     *     resolutions. i.e. by specifying a value of 5.0, if the percentage difference between
+     *     native and reprojected data is below 5%, assuming that also the other two conditions are
+     *     respected, the native resolutions will be preserved. Default values is 0.
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -174,6 +187,35 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         min = 0
                     )
                     Parameters writeParameters,
+            @DescribeParameter(
+                        name = "minimizeReprojections",
+                        description =
+                                "When dealing with a Heterogeneous CRS mosaic, avoid reprojections of "
+                                        + "the granules within the ROI, having their nativeCRS equal to the targetCRS",
+                        min = 0
+                    )
+                    Boolean minimizeReprojections,
+            @DescribeParameter(
+                        name = "bestResolutionOnMatchingCRS",
+                        description =
+                                "When dealing with a Heterogeneous CRS mosaic given a ROI "
+                                        + "and a TargetCRS, with no target size being specified, get the best "
+                                        + " resolution of data having nativeCrs matching the TargetCRS",
+                        min = 0
+                    )
+                    Boolean bestResolutionOnMatchingCRS,
+            @DescribeParameter(
+                        name = "resolutionsDifferenceTolerance",
+                        description =
+                                "the parameter allows to specify a tolerance value to control the use of native"
+                                        + " resolution of the data, when no target size has been specified and granules are reprojected. If "
+                                        + " the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,"
+                                        + " native resolutions is the same for all the requested granules,"
+                                        + " the unit of measure is the same for native and target CRS, "
+                                        + "the reprojected coverage will be forced to use native resolutions",
+                        min = 0
+                    )
+                    Double resolutionsDifferenceTolerance,
             final ProgressListener progressListener)
             throws ProcessException {
 
@@ -219,7 +261,26 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         (Interpolation)
                                 ImageUtilities.NN_INTERPOLATION_HINT.get(JAI.KEY_INTERPOLATION);
             }
+            // Default behavior is false for backward compatibility
+            if (bestResolutionOnMatchingCRS == null) {
+                bestResolutionOnMatchingCRS = false;
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "best resolution on MatchingCRS is disabled");
+                }
+            }
+            if (minimizeReprojections == null) {
+                minimizeReprojections = false;
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Minimize reprojections is disabled");
+                }
+            }
 
+            if (resolutionsDifferenceTolerance == null) {
+                resolutionsDifferenceTolerance = 0d;
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Use native resolution is disabled");
+                }
+            }
             //
             // do we respect limits?
             //
@@ -312,7 +373,10 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                                         targetSizeX,
                                         targetSizeY,
                                         bandIndices,
-                                        writeParameters);
+                                        writeParameters,
+                                        minimizeReprojections,
+                                        bestResolutionOnMatchingCRS,
+                                        resolutionsDifferenceTolerance);
             } else {
 
                 // wrong type

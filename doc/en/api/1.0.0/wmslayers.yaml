@@ -4,7 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer WMS Store Layers
   description: A WMS store is a store whose source is another WMS. Also known as "Cascading WMS" or "External WMS". A WMS store layer is a layer from this store.
-
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /workspaces/{workspace}/wmslayers:

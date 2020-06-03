@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Security
   description: The Security area shows access rules and other configuration for the security subsystem
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
 

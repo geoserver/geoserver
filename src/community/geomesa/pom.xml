@@ -12,13 +12,12 @@ application directory.
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.17-SNAPSHOT</version>
+    <version>2.18-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-geomesa</artifactId>
   <packaging>jar</packaging>
-  <version>2.17-SNAPSHOT</version>  
   <name>GeoMesa Web Module</name>
 
   <description>GeoMesa GeoServer extensions</description>
@@ -171,7 +170,7 @@ application directory.
     <repositories>
         <repository>
             <id>conjars.org</id>
-            <url>http://conjars.org/repo</url>
+            <url>https://conjars.org/repo</url>
         </repository>
     </repositories>
 

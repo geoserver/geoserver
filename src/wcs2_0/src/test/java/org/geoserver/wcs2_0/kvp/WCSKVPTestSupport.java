@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.GetCoverageType;
-import org.apache.commons.collections.map.CaseInsensitiveMap;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wcs.WCSInfo;

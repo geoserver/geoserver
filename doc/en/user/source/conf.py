@@ -48,12 +48,24 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.17'
+version = '2.18'
+
 # The full version, including alpha/beta/rc tags.
-release = '2.17-SNAPSHOT'
+release = '2.18-SNAPSHOT'
+
+# Used in build and documentation links
+branch = 'master'
+
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.17.x'
+   release = '2.18.x'
+   download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
+   download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
+   download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
+else:
+   download_release = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
+   download_extension = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
+   download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'.x-SNAPSHOT-%s-plugin.zip'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -95,12 +107,15 @@ pygments_style = 'sphinx'
 extlinks = { 
     'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',''),
     'website': ('http://geoserver.org/%s',''),
-    'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
+    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s',''),
     'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/%s','')
+    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s',''),
+    'download_release': (download_release,None),
+    'download_extension': (download_extension,None),
+    'download_community': (download_community,None)
 }
 
 # Common substitutions

@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.17-SNAPSHOT</version>
+  <version>2.18-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -33,24 +33,6 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>
-
-   <dependency>
-     <groupId>org.geoserver.script</groupId>
-     <artifactId>gs-script-py</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <!--
-   <dependency>
-     <groupId>org.geoserver.script</groupId>
-     <artifactId>gs-script-js</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.script</groupId>
-     <artifactId>gs-script-groovy</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>
@@ -96,11 +78,6 @@
      <artifactId>gs-flatgeobuf</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!-- <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-rest-ext</artifactId>
-     <version>${project.version}</version>
-   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-pgraster</artifactId>
@@ -129,6 +106,11 @@
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-web-solr</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-web-elasticsearch</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
@@ -181,13 +163,6 @@
      <artifactId>gs-gwc-sqlite</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!--
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-geogig</artifactId>
-     <version>${project.version}</version>
-   </dependency>
--->
    <dependency>
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-core</artifactId>
@@ -290,11 +265,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-mbstyle</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-nsg-wmts-profile</artifactId>
      <version>${project.version}</version>
    </dependency>
@@ -318,21 +288,9 @@
      <artifactId>gs-mapml</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <!--
-   <dependency>
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-monitor-hibernate</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   -->
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-s3-geotiff</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-web-resource</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
@@ -410,6 +368,16 @@
      <artifactId>gs-json-ld</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gsr</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-importer-bdb</artifactId>
+     <version>${project.version}</version>
+   </dependency>
 </dependencies>
  <build>
   <plugins>
@@ -445,4 +413,74 @@
    </plugin>
   </plugins>
  </build>
+ 
+ <!-- profiles for individual modules -->
+ <profiles>
+   <profile>
+     <id>rest-ext</id>
+     <activation>
+       <property><name>rest-ext</name></property>
+     </activation>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-rest-ext</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+   <profile>
+     <id>script</id>
+     <activation>
+       <property><name>script</name></property>
+     </activation>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.script</groupId>
+         <artifactId>gs-script-py</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.geoserver.script</groupId>
+         <artifactId>gs-script-js</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.geoserver.script</groupId>
+         <artifactId>gs-script-groovy</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+   <profile>
+     <id>monitor-hibernate</id>
+     <dependencies>
+       <dependency>
+        <groupId>org.geoserver.community</groupId>
+        <artifactId>gs-monitor-hibernate</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+   <profile>
+     <id>geogig</id>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-geogig</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+    </dependencies>
+   </profile>
+   <profile>
+     <id>rest-upload</id>
+     <dependencies>
+       <dependency>
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-rest-upload</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+     </dependencies>
+   </profile>
+ </profiles>
 </project>

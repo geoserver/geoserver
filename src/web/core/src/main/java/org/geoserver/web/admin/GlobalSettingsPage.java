@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -35,6 +36,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -55,14 +57,17 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
     public static final ArrayList<String> AVAILABLE_CHARSETS =
             new ArrayList<String>(Charset.availableCharsets().keySet());
+    private final IModel<GeoServerInfo> globalInfoModel;
+    private final IModel<LoggingInfo> loggingInfoModel;
 
     public GlobalSettingsPage() {
-        final IModel<GeoServerInfo> globalInfoModel = getGlobalInfoModel();
-        final IModel<LoggingInfo> loggingInfoModel = getLoggingInfoModel();
+        globalInfoModel = getGlobalInfoModel();
+        loggingInfoModel = getLoggingInfoModel();
 
-        CompoundPropertyModel<GeoServerInfo> model = new CompoundPropertyModel<>(globalInfoModel);
-        PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(model, "settings");
-        Form<GeoServerInfo> form = new Form<>("form", model);
+        CompoundPropertyModel<GeoServerInfo> globalModel =
+                new CompoundPropertyModel<>(globalInfoModel);
+        PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
+        Form<GeoServerInfo> form = new Form<>("form", globalModel);
 
         add(form);
 
@@ -170,13 +175,12 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 new Button("submit") {
                     @Override
                     public void onSubmit() {
-                        GeoServer gs = getGeoServer();
-                        gs.save((GeoServerInfo) globalInfoModel.getObject());
-                        gs.save((LoggingInfo) loggingInfoModel.getObject());
-                        doReturn();
+                        onSave(true);
                     }
                 };
         form.add(submit);
+
+        form.add(applyLink(form));
 
         Button cancel =
                 new Button("cancel") {
@@ -186,6 +190,36 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     }
                 };
         form.add(cancel);
+    }
+
+    private GeoserverAjaxSubmitLink applyLink(Form form) {
+        return new GeoserverAjaxSubmitLink("apply", form, this) {
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                super.onError(target, form);
+                target.add(form);
+            }
+
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    onSave(false);
+                } catch (IllegalArgumentException e) {
+                    form.error(e.getMessage());
+                    target.add(form);
+                }
+            }
+        };
+    }
+
+    public void onSave(boolean doReturn) {
+        GeoServer gs = getGeoServer();
+        gs.save((GeoServerInfo) globalInfoModel.getObject());
+        gs.save((LoggingInfo) loggingInfoModel.getObject());
+        if (doReturn) {
+            doReturn();
+        }
     }
 
     private void logLevelsAppend(Form<GeoServerInfo> form, IModel<LoggingInfo> loggingInfoModel) {

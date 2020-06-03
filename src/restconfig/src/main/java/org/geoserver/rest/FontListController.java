@@ -7,7 +7,7 @@ package org.geoserver.rest;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.collections4.map.HashedMap;
 import org.geotools.renderer.style.FontCache;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

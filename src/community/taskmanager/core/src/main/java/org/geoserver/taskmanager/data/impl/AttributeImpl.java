@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,6 +26,7 @@ public class AttributeImpl extends BaseImpl implements Attribute {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @XStreamOmitField
     private Long id;
 
     @Column(nullable = false)

@@ -9,6 +9,8 @@ import org.geoserver.api.OGCApiTestSupport;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -19,17 +21,10 @@ public class StylesTestSupport extends OGCApiTestSupport {
     protected static final String POLYGON_COMMENT = "PolygonComment";
 
     @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // no test data here
-    }
-
-    @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        // add just the WMS test data sets, besides NamedPlaces, which we have for workspace
-        // specific tests, and Buil
+        super.onSetUp(testData);
+
         Catalog catalog = getCatalog();
-        testData.addVectorLayer(CiteTestData.LAKES, catalog);
-        testData.addVectorLayer(CiteTestData.BUILDINGS, catalog);
 
         // fix the bbox of the layers to get a good thumbnail
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -42,7 +37,7 @@ public class StylesTestSupport extends OGCApiTestSupport {
         // add a work-spaced style
         testData.addWorkspace("ws", "http://www.geoserver.org/ws", catalog);
         WorkspaceInfo ws = catalog.getWorkspaceByName("ws");
-        testData.addStyle(ws, "NamedPlaces", "NamedPlaces.sld", SystemTestData.class, catalog);
+        testData.addStyle(ws, "NamedPlacesWS", "NamedPlaces.sld", SystemTestData.class, catalog);
         // add a style with a comment that can be used for raw style return
         testData.addStyle(POLYGON_COMMENT, "polygonComment.sld", StylesTestSupport.class, catalog);
 
@@ -53,5 +48,20 @@ public class StylesTestSupport extends OGCApiTestSupport {
                 StylesTestSupport.class,
                 catalog,
                 Collections.singletonMap(StyleProperty.FORMAT, "css"));
+
+        // add a style groupd
+        testData.addStyle(
+                "BasicStyleGroupStyle",
+                "BasicStyleGroup.sld",
+                CollectionCallbackIntegrationTest.class,
+                getCatalog());
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        StyleInfo s = catalog.getStyleByName("BasicStyleGroupStyle");
+
+        lg.setName("BasicStyleGroup");
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+        new CatalogBuilder(catalog).calculateLayerGroupBounds(lg);
+        catalog.add(lg);
     }
 }

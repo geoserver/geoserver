@@ -6,7 +6,7 @@ User's Guide
 -  `Security <#security>`__
 -  `Graphical User Interface <#graphical-user-interface>`__
 -  `Task Types <#task-types>`__
--  `Import Tool <#import-tool>`__
+-  `Bulk Operations <#bulk-operations>`__
 -  `Examples <#examples>`__
 
 Installation
@@ -107,7 +107,7 @@ either via JNDI or directly via JDBC.
         </property>
     </bean>
 
-Roles can be specified for `security<#security>` purposes.
+Roles can be specified for `security <#security>`__ purposes.
 
 There is also support for Informix, but it only works as a source
 database (not for publishing).
@@ -140,13 +140,13 @@ configuration file.
 File Services
 ~~~~~~~~~~~~~
 
-File Services are used to upload and access files such as raster layers.
+File Services are used to upload and access files such as raster layers or vector files.
 They are configured via the Spring configuration file.
 
 Regular File Service
 ^^^^^^^^^^^^^^^^^^^^
 
-Regular file services provide support for rasters that are stored on the
+Regular file services provide support for rasters and vector files that are stored on the
 hard drive.
 
 .. code:: xml
@@ -162,7 +162,11 @@ hard drive.
         </property>
     </bean>
 
-Roles can be specified for `security<#security>` purposes.
+Roles can be specified for `security <#security>`__ purposes. 
+
+Non-absolute paths as rootFolder will be relative to the GeoServer Data Directory. 
+
+Alternatively, it is also possible to use ``ResourceFileServiceImpl`` (same properties). This one only accepts relative paths and will use the data directory via the geoserver resource store, so that alternative implementations such as :ref:`JDBC Store <community_jdbcstore>` can be used. This might be useful for :ref:`Application Schemas <app-schema>`, for example.
 
 S3 File Service
 ^^^^^^^^^^^^^^^
@@ -183,7 +187,7 @@ one line per alias to the ``s3.properties`` file:
 The above example will create five s3 file services: alias-comma,
 alias-separated, alias-list, alias-of and alias-buckets.
 
-Roles can optionally be specified for `security<#security>` purposes as follows:
+Roles can optionally be specified for `security <#security>`__ purposes as follows:
 
 ``alias.bucket.s3.roles=comma,separated,list,of,roles``
 
@@ -261,7 +265,7 @@ Configurations
 From the `configurations <basic.html#configurations>`__ page, new
 configurations can be created from scratch or from templates (or copied
 from existing configurations), existing configurations can be edited and
-removed.
+removed. 
 
 .. figure:: img/configurations.png
    :alt: configurations
@@ -301,6 +305,16 @@ button) before they can be added to a batch. In case that the
 and the status/history of current and past batch runs can be displayed.
 Current batch runs can be interrupted (which is not guaranteed to happen
 immediately).
+
+Import/Export
+^^^^^^^^^^^^^
+
+It is also possible to import/export entire configurations to XML, for 
+example to transfer them from one geoserver to another. The import button is
+on the configurations page, while the export button is on the page of a 
+specific configuration. The user is responsible for making sure that the 
+configuration is compatible with the other geoserver (available task extensions, 
+attribute values,...).
 
 Batches
 ~~~~~~~
@@ -385,7 +399,7 @@ Task Types
    This task also supports the version place holder or auto-versioning, 
    in order to combine with the ``CopyFileTask``.
 
--  ``LocalFilePublicationTask`` Publish a file layer locally (taster or
+-  ``LocalFilePublicationTask`` Publish a file layer locally (raster or
    shapefile). The user can specify a file service, a file (which can be
    uploaded unto the service) and a layer name. Supports commit/rollback
    by advertising or removing the layer it created.
@@ -410,8 +424,65 @@ Task Types
 -  ``ClearCachedLayer`` Clear (truncate) all tiles of a cached layer on 
    a remote geoserver with internal GWC.
 
-Import Tool
------------
+-  ``LocalAppSchemaPublicationTask`` Publish an :ref:`Application Schema <app-schema>` layer locally.
+   This is exactly the same as ``LocalFilePublicationTask`` with the Application Schema mapping file
+   as the file being published, and two additional features.
+   
+   * The mapping file may be provided as a template, with placeholders in the form of ``${placeholder}``.
+     The placeholders are replaced by the values of the connection parameters of the database
+     that is provided as parameter to the task. This makes it possible to fill in the underlying source
+     database for different geoservers. 
+     For example: specify ``${jndiReferenceName}`` as source database connection parameter in the mapping file. 
+   
+   * Multiple mapping files may be provided for a single layer (when the layer mapping uses included types), in the
+     form of a ZIP file. The main mapping file and the ZIP file must have the same name before the extension.
+
+-  ``RemoteAppSchemaPublicationTask`` Publish an :ref:`Application Schema <app-schema>` layer remotely.
+   This is exactly the same as ``LocalFilePublicationTask`` with the Application Schema mapping file
+   as the file being published, and two additional features:
+   
+   * The mapping file may be provided as a template, with placeholders in the form of ``${placeholder}``.
+     The placeholders are replaced by the values of the connection parameters of the database
+     that is provided as parameter to the task. This makes it possible to fill in the underlying source
+     database for different geoservers. 
+     For example: specify ``${jndiReferenceName}`` as source database connection parameter in the mapping file.
+   
+   * Multiple mapping files may be provided for a single layer (when the layer mapping uses included types), in the
+     form of a ZIP file. The main mapping file and the ZIP file must have the same name before the extension.
+
+
+-  ``TimeStamp`` update a time stamp in a layer's metadata that represents
+   the last time a layer's data has been updated. Since the data timestamp
+   is part of the metadata, a metadata timestamp can also be updated.
+   The task must be configured through its Spring Bean properties 
+   ``timeStampTaskType.dataTimestampProperty`` and
+   ``timeStampTaskType.metadataTimestampProperty`` which represent the key (or
+   key path) in the layer's resource metadata. If you are using the :ref:`Metadata Community Module <community_metadata>`
+   you should set ``timeStampTaskType.metadataTimestampProperty=custom._timestamp``.
+
+-  ``MetadataTemplateSync`` this task requires the :ref:`Metadata Community Module <community_metadata>` 
+   and the ``taskmanager-metadata`` submodule. It will synchronize all metadata linked to a specific metadata template. 
+   Useful when you change the template.
+
+Bulk Operations
+---------------
+
+The task manager provides a number of bulk operation tools via an additional page in the GUI.
+The import tool is also available via a REST service.
+
+Run Batches
+~~~~~~~~~~~
+
+A whole series of batches may be scheduled all at once.
+You specify a workspace, configuration name and batch name pattern to select the series of batches you want to schedule.
+You may specify how long to wait before starting to execute the batches.
+You may specify how long to wait in between execution of each batch. This option is strongly recommended not to overload your software and cause failures.
+
+.. figure:: img/bulk_runbatches.png
+
+
+Import Configurations
+~~~~~~~~~~~~~~~~~~~~~
 
 The import tool allows bulk creation of an unlimited amount of
 configurations on the basis of a template and a CSV file with attribute
@@ -420,15 +491,27 @@ exposed via a REST service and not via the GUI. The import tool will
 generate a new configuration for each line in the CSV file, except for
 the first. The first line must specify the attribute names which should
 all match attributes that exist in the template, plus ``name`` (required), 
-``description``` (optional) and ``workspace`` (optional) for the configuration
+``description`` (optional) and ``workspace`` (optional) for the configuration
 metadata. The CSV file mustspecify a valid attribute value for each
 required attribute.
 
-To invoke the import tool, ``POST`` your CSV file to
-``http://{geoserver-host}/geoserver/taskmanager-import/{template}``
+Optionally, you may skip validation (at your own risk).
 
-Optionally, you may specify the query parameter `validate=false` 
-which will skip validation (at your own risk).
+As an alternative to using the GUI page, you may ``POST`` your CSV file to
+``http://{geoserver-host}/geoserver/taskmanager-import/{template}[validate=false]``
+
+.. figure:: img/bulk_import.png
+
+
+Initialize Configurations
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you have imported configurations in bulk based on an Initializing template, you 
+may also want to initialize them in bulk. This works similarly to running batches in bulk.
+The configurations will be validated after initalization.
+
+.. figure:: img/bulk_initialize.png
+
 
 Examples
 --------

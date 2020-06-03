@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Styles
   description: A style describes how a resource is symbolized or rendered by the Web Map Service.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
 
@@ -585,7 +591,7 @@ paths:
     post:
       operationId: postLayerStyles
       summary: Add a new style
-      description: Adds a new style entry to the layer. The style named in styleBody must alread exist, and will not be altered by this request. 
+      description: Adds a new style entry to the layer. The style named in styleBody must already exist, and will not be altered by this request. 
       parameters:
         - name: layer
           in: path

@@ -218,7 +218,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         formatReadOnlyMessage.setVisible(false);
         add(formatReadOnlyMessage);
         // add the Legend fields
-        legendPanel = new ExternalGraphicPanel("legendPanel", styleModel, stylePage.styleForm);
+        legendPanel =
+                new ExternalGraphicPanel(
+                        "legendPanel", styleModel, stylePage.styleForm, getStylePage());
         legendPanel.setOutputMarkupId(true);
         add(legendPanel);
         if (style.getId() != null) {

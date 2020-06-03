@@ -1,9 +1,9 @@
 GeoServer HTML documentation
 ----------------------------
 
-This archive contains HTML documentation for GeoServer. 
-There are two folders:
+This archive contains HTML documentation for GeoServer:
 
+  api/ - REST API
   user/ - User Manual
   developer/ - Developer Manual
 

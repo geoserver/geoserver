@@ -648,7 +648,9 @@ public class LegendUtils {
             rlg.setRenderingHint(
                     RenderingHints.KEY_TEXT_ANTIALIASING,
                     g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
-
+            rlg.setRenderingHint(
+                    RenderingHints.KEY_FRACTIONALMETRICS,
+                    g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
             int y = 0 - g.getFontMetrics().getDescent();
             int c = 0;
 
@@ -663,13 +665,15 @@ public class LegendUtils {
             int height = (int) Math.ceil(g.getFontMetrics().getStringBounds(label, g).getHeight());
             int width = (int) Math.ceil(g.getFontMetrics().getStringBounds(label, g).getWidth());
             renderedLabel = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
             Graphics2D rlg = renderedLabel.createGraphics();
             rlg.setColor(labelColor);
             rlg.setFont(g.getFont());
             rlg.setRenderingHint(
                     RenderingHints.KEY_TEXT_ANTIALIASING,
                     g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
+            rlg.setRenderingHint(
+                    RenderingHints.KEY_FRACTIONALMETRICS,
+                    g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
             rlg.drawString(label, 0, height - rlg.getFontMetrics().getDescent());
             rlg.dispose();
         }

@@ -26,6 +26,8 @@ public class ClearCachedLayerTaskTypeImpl implements TaskType {
 
     public static final String PARAM_EXT_GS = "external-geoserver";
 
+    public static final String PARAM_WORKSPACE = "workspace";
+
     public static final String PARAM_LAYER = "layer";
 
     @Autowired protected ExtTypes extTypes;
@@ -38,7 +40,13 @@ public class ClearCachedLayerTaskTypeImpl implements TaskType {
     @PostConstruct
     public void initParamInfo() {
         paramInfo.put(PARAM_EXT_GS, new ParameterInfo(PARAM_EXT_GS, extTypes.extGeoserver, true));
-        paramInfo.put(PARAM_LAYER, new ParameterInfo(PARAM_LAYER, extTypes.internalLayer, true));
+        ParameterInfo paramWorkspace =
+                new ParameterInfo(PARAM_WORKSPACE, extTypes.workspace, false);
+        paramInfo.put(PARAM_WORKSPACE, paramWorkspace);
+        paramInfo.put(
+                PARAM_LAYER,
+                new ParameterInfo(PARAM_LAYER, extTypes.internalLayer, true)
+                        .dependsOn(false, paramWorkspace));
     }
 
     @Override

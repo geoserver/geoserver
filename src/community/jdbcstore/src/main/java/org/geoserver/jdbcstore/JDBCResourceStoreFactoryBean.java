@@ -65,6 +65,7 @@ public class JDBCResourceStoreFactoryBean implements FactoryBean<ResourceStore>,
             Preconditions.checkState(
                     lockProvider != null,
                     "LockProvider has not been set. Check your applicationContext.xml configuration file for JDBCResourceStoreFactoryBean");
+            store.init();
         }
     }
 

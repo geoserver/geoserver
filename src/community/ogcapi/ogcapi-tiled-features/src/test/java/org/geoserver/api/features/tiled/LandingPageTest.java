@@ -43,7 +43,8 @@ public class LandingPageTest extends TiledFeaturesTestSupport {
                         "getTileMatrixSets",
                         "getTileMatrixSet",
                         "describeTiles",
-                        "getTile"));
+                        "getTile",
+                        "getTilesMetadata"));
     }
 
     @Test

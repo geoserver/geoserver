@@ -20,7 +20,6 @@ officially part of the GeoServer releases. They are however built along with the
    keycloak/index
    dds/index
    scripting/index
-   spatialite/index
    colormap/index
    jdbcconfig/index
    mbtiles/index
@@ -29,6 +28,7 @@ officially part of the GeoServer releases. They are however built along with the
    wps-download/index
    jms-cluster/index
    solr/index
+   elasticsearch/index
    geomesa/index
    gwc-distributed/index
    flatgeobuf/index
@@ -59,3 +59,5 @@ officially part of the GeoServer releases. They are however built along with the
    importer-jdbc/index
    hana/index
    json-ld/index
+   ogc-api/index
+   gsr/index

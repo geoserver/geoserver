@@ -20,8 +20,10 @@ The metadata fields are available in the panel :guilabel:`Metadata fields`.
 
 Import from geonetwork
 ^^^^^^^^^^^^^^^^^^^^^^
-Choose a geonetwork from the drop downbox, add the UUID from the metadata record and click `import`.
+See :ref:`community_metadata_advanced_configuration`.
+Choose a geonetwork from the drop downbox, add the UUID from the metadata record and click `Import`.
 All the content of the fields that are mapped in the geonetwork mapping configuration will be deleted.
+All templates will be unlinked.
 The content will be replaced with the content from geonetwork.
 
 Link with metadata template
@@ -40,6 +42,12 @@ The Field is a list
     For Fields that are a list the values from the template will be added as read only fields. The duplicate values in list will be removed if there are any.
 
 When multiple templates are linked with a layer the priority of the template will determine which values are added. If a field is present in both templates the value of the template with the highest priority will be picked. The priority is determined by the `template order`_
+
+
+Copy from other Layer
+^^^^^^^^^^^^^^^^^^^^^^^
+Choose another layer from the drop downbox click `Copy`. 
+Content will be replaced with any metadata content from the other layer, except for UUID's, which will be ignored.
 
 
 Templates
@@ -71,3 +79,40 @@ The value defined in the template with the highest priority will be displayed.
 
 Change the order of the templates with the arrow keys in the priority column and save the changes by clicking `Save` button, this will also recalculate the values in all linked layers that may be affected.
 
+Bulk Operations
+---------------
+
+.. figure:: images/bulk.png
+
+This page provides a number of bulk operations mostly used for maintenance and migrations.
+
+Clean / fix all
+^^^^^^^^^^^^^^^
+This operation will go through all layers and perform a series of different actions on each of them to clean and repair any obsolete, corrupt or inconsistent data. This operation is useful after changing the metadata attribute configuration, bug fixes or other software updates, or exceptionally, unexpected failures.
+
+The actions performed are:
+ - remove any existing metadata that is not according to the configuration
+ - check the internal data structure and fix it if necessary
+ - recalculate derived metadata fields
+ - recalculate :ref:`community_metadata_advanced_configuration_custom_native`
+ - :ref:`Timestamp <community_metadata_uiconfiguration_hidden_fields>`
+
+Import metadata
+^^^^^^^^^^^^^^^
+This option allows bulk import of metadata from GeoNetwork  (see :ref:`community_metadata_advanced_configuration`) and/or linking layers to templates. 
+The layers that should be imported or linked are specified in a CSV file. You may specify a GeoNetwork to import from.
+
+The CSV file should use semicolumn as separator. The first column of your CSV files should be the layer name, the second column should be the geonetwork UUID (or left empty if you do not want to import from geonetwork), and any number of templates may be specified afterwards in the following columns.
+
+Transfer Native To Custom
+^^^^^^^^^^^^^^^^^^^^^^^^^
+This operation will attempt to do the exact reverse of the :ref:`community_metadata_advanced_configuration_custom_native` that happens usually each time you save a layer. 
+This will work in so far as the native attributes follow the patterns configured in your custom-to-native mapping configuration, or your configuration is basic enough.
+This operation is useful when you are migrating layers that were previously configured without the metadata module.
+
+You may optionally specify a selected list of rules if you do not wish to apply all them (by number, in the order of which they appear in the configuration), and a text file with layer names if you do not wish to go through all of them.
+
+Clear metadata
+^^^^^^^^^^^^^^
+Removes all existing metadata from all layers. Optionally, remove all existing templates as well.
+This cannot be be undone.

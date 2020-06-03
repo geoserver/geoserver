@@ -6,13 +6,19 @@
 package org.geoserver.web.data.store;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.layer.NewLayerPage;
 import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geotools.gce.geotiff.GeoTiffFormatFactorySpi;
@@ -29,6 +35,12 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
     String formatType;
 
     String formatDescription;
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.setUpDefaultRasterLayers();
+    }
 
     @Before
     public void init() {
@@ -117,5 +129,39 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         Component urlComponent =
                 tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel:url");
         assertThat(urlComponent, instanceOf(FileParamPanel.class));
+    }
+
+    @Test
+    public void testNewCoverageSave() {
+        CoverageStoreNewPage page = startPage();
+        FormTester ft = tester.newFormTester("rasterStoreForm");
+        ft.setValue(
+                "parametersPanel:url:fileInput:border:border_body:paramValue",
+                "BlueMarble/tazbm.tiff");
+        ft.setValue("namePanel:border:border_body:paramValue", "tazbm2");
+        ft.submit("save");
+
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(NewLayerPage.class);
+        CoverageStoreInfo store = getCatalog().getCoverageStoreByName("tazbm2");
+        assertNotNull(store);
+        assertEquals("BlueMarble/tazbm.tiff", store.getURL());
+    }
+
+    @Test
+    public void testNewCoverageApply() {
+        CoverageStoreNewPage page = startPage();
+        FormTester ft = tester.newFormTester("rasterStoreForm");
+        ft.setValue(
+                "parametersPanel:url:fileInput:border:border_body:paramValue",
+                "BlueMarble/tazbm.tiff");
+        ft.setValue("namePanel:border:border_body:paramValue", "tazbm3");
+        ft.submit("apply");
+
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(CoverageStoreEditPage.class);
+        CoverageStoreInfo store = getCatalog().getCoverageStoreByName("tazbm3");
+        assertNotNull(store);
+        assertEquals("BlueMarble/tazbm.tiff", store.getURL());
     }
 }

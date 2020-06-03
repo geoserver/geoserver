@@ -252,6 +252,7 @@ old_ver=`get_pom_version src/pom.xml`
 echo "updating version numbers from $old_ver to $tag"
 find src -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
+find doc -name pom.xml -exec sed -i "s/$old_ver/$tag/g" {} \;
 
 pushd src/release > /dev/null
 shopt -s extglob
@@ -275,10 +276,13 @@ if [ -z $SKIP_BUILD ]; then
 
   pushd ../doc/en > /dev/null
 
-  ant clean user -Dproject.version=$tag
-  ant user-pdf -Dproject.version=$tag
-  ant developer -Dproject.version=$tag
+  # ant clean user -Dproject.version=$tag
+  # ant user-pdf -Dproject.version=$tag
+  # ant developer -Dproject.version=$tag
 
+  mvn clean compile
+  mvn package
+  
   popd > /dev/null
 else
    echo "Skipping mvn clean install $MAVEN_FLAGS -DskipTests -P release"
@@ -294,8 +298,8 @@ else
    echo "Skipping mvn clean install -P communityRelease -DskipTests"
 fi
 
-
-mvn assembly:attached $MAVEN_FLAGS
+echo "Assemble artifacts"
+mvn assembly:single $MAVEN_FLAGS -N
 
 artifacts=`pwd`/target/release
 echo "artifacts = $artifacts"
@@ -304,32 +308,39 @@ echo "artifacts = $artifacts"
 pushd release/installer/mac > /dev/null
 zip -q -r $artifacts/geoserver-$tag-mac.zip *
 popd > /dev/null
+
 pushd release/installer/win > /dev/null
 zip -q -r $artifacts/geoserver-$tag-win.zip *
 popd > /dev/null
 
 pushd $artifacts > /dev/null
 
-# setup doc artifacts
-if [ -e user ]; then
-  unlink user
-fi
-if [ -e developer ]; then
-  unlink developer
-fi
-
-ln -sf ../../../doc/en/target/user/html user
-ln -sf ../../../doc/en/target/developer/html developer
-ln -sf ../../../doc/en/release/README.txt readme
-
 htmldoc=geoserver-$tag-htmldoc.zip
-if [ -e $htmldoc ]; then
-  rm -f $htmldoc 
+
+if [ -e ../../../doc/en/target/$htmldoc ]; then
+  echo "Using $htmldoc assembly"
+  # use assembly
+  cp ../../../doc/en/target/$htmldoc $htmldoc
+else
+  echo "Creating $htmldoc"
+  # setup doc artifacts
+  if [ -e user ]; then
+    unlink user
+  fi
+  if [ -e developer ]; then
+    unlink developer
+  fi
+  ln -sf ../../../doc/en/target/user/html user
+  ln -sf ../../../doc/en/target/developer/html developer
+  ln -sf ../../../doc/en/release/README.txt readme
+  if [ -e $htmldoc ]; then
+    rm -f $htmldoc 
+  fi
+  zip -q -r $htmldoc user developer readme
+  unlink user
+  unlink developer
+  unlink readme
 fi
-zip -q -r $htmldoc user developer readme
-unlink user
-unlink developer
-unlink readme
 
 popd > /dev/null
 

@@ -44,6 +44,8 @@ public class TaskManagerBeans {
 
     @Autowired private InitConfigUtil initConfigUtil;
 
+    @Autowired private ImportTool importTool;
+
     public LookupService<FileService> getFileServices() {
         return fileServices;
     }
@@ -94,5 +96,9 @@ public class TaskManagerBeans {
 
     public LookupService<Action> getActions() {
         return actions;
+    }
+
+    public ImportTool getImportTool() {
+        return importTool;
     }
 }

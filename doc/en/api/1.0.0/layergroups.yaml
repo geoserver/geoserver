@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Layer Groups
   description: A layer group is a group of layers that can be referenced as a single layer as part of a WMS request. A layer group can also be used as a container for layers.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /layergroups:

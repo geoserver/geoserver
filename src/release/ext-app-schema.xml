@@ -26,10 +26,11 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>release/extensions</directory>
+            <directory>release/</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>LICENSE.txt</include>
+                <include>LGPL.txt</include>
+                <include>GEOTOOLS_NOTICE.txt</include>
             </includes>
         </fileSet>
         <fileSet>

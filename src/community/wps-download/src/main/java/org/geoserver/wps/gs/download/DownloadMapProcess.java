@@ -322,11 +322,21 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         RenderedImage result = null;
         progressListener.started();
         int i = 0;
+        boolean singleDecorated = layers.length == 1 && decorationName != null;
         for (Layer layer : layers) {
             LOGGER.log(Level.FINE, "Rendering layer %s", layer);
             RenderedImage image;
             if (layer.getCapabilities() == null) {
-                RenderedImageMap map = renderInternalLayer(layer, template);
+                GetMapRequest request = produceGetMapRequest(layer, template);
+                if (singleDecorated) {
+                    request.setFormatOptions(Collections.singletonMap("layout", decorationName));
+                    if (time != null) { // allow text decoration timestamping
+                        request.getEnv().put("time", time);
+                    }
+                }
+                // render
+                GetMap mapBuilder = new GetMap(wms);
+                RenderedImageMap map = (RenderedImageMap) mapBuilder.run(request);
                 image = map.getImage();
                 map.getMapContext().dispose();
             } else {
@@ -352,7 +362,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             request.getEnv().put("time", time);
         }
         request.setFormat(format);
-        if (decorationName != null) {
+        if (!singleDecorated && decorationName != null) {
             request.setFormatOptions(Collections.singletonMap("layout", decorationName));
             WMSMapContent content = new WMSMapContent(request);
             try {
@@ -506,7 +516,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         return result;
     }
 
-    private RenderedImageMap renderInternalLayer(Layer layer, Map kvpTemplate) throws Exception {
+    private GetMapRequest produceGetMapRequest(Layer layer, Map kvpTemplate) throws Exception {
         GetMapRequest request = getMapReader.createRequest();
 
         // prepare raw and parsed KVP maps to mimick a GetMap request
@@ -532,10 +542,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
         // parse
         getMapReader.read(request, kvp, rawKvp);
-
-        // render
-        GetMap mapBuilder = new GetMap(wms);
-        return (RenderedImageMap) mapBuilder.run(request);
+        return request;
     }
 
     @Override

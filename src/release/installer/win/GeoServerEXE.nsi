@@ -7,7 +7,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.17-SNAPSHOT"
+!define VERSION "2.18-SNAPSHOT"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 
@@ -221,10 +221,10 @@ Function JRE
 
   ${NSD_CreateLabel} 0 0 100% 36u "Please select the path to your Java Runtime Environment (JRE).\
                                    $\r$\n$\r$\nIf you don't have a JRE installed, you can use the \
-                                   link below to go to Oracle's website to download and install the \
+                                   link below to go to AdoptOpenJDK website to download and install the \
                                    correct JRE for your system."
 
-  ${NSD_CreateLink} 12u 40u 100% 12u "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+  ${NSD_CreateLink} 12u 40u 100% 12u "https://adoptopenjdk.net"
   Pop $LinkHWND
   ${NSD_OnClick} $LinkHWND Link
 
@@ -259,7 +259,7 @@ FunctionEnd
 Function Link
 
   Pop $0
-  ExecShell "open" "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+  ExecShell "open" "https://adoptopenjdk.net"
 
 FunctionEnd
 

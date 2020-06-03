@@ -17,11 +17,14 @@
       </includes>
     </fileSet>
     <fileSet>
-       <directory>release/extensions/css</directory>
-       <outputDirectory></outputDirectory>
-       <includes>
-         <include>SCALA-LICENSE.txt</include>
-       </includes>
+        <directory>release</directory>
+        <outputDirectory></outputDirectory>
+        <includes>
+            <include>GPL.md</include>
+            <include>NOTICE.md</include>
+            <include>LGPL.txt</include>
+            <include>GEOTOOLS_NOTICE.txt</include>
+        </includes>
     </fileSet>
   </fileSets>
 </assembly>

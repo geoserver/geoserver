@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Settings
   description: The Settings area shows global configuration for the server
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /settings:

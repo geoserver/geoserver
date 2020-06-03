@@ -86,34 +86,54 @@ When creating the first release candidate of a series, there are some extra step
 
 * Enable `GitHub branch protection <https://github.com/geoserver/geoserver/settings/branches>`_ for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
 
-* Checkout the master branch and update the version in all pom.xml files; for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
+* Checkout the master branch to update version number.
 
     git checkout master
-    find . -name pom.xml -exec sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' {} \;
+    
+  Update the version in all pom.xml files; for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``.
+  
+  Edit :file:`build/rename.xml` to update GeoServer, GeoTools and GeoWebCache version numbers::
+  
+     <property name="current" value="2.17"/>
+     <property name="release" value="2.18"/>
+     ..
+     <replacefilter token="23-SNAPSHOT" value="24-SNAPSHOT"/>
+     <replacefilter token="1.17-SNAPSHOT" value="1.18-SNAPSHOT"/>
 
-  .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
+     
+  And then run::
+    
+    ant -f build/rename.xml 
+    
+  .. note:: use of sed
+     
+     To update these files using sed::
+  
+      find . -name pom.xml -exec sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' {} \;
 
-* Update release artifact paths and labels, for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
+     .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
 
-    sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/bin.xml
-    sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
-    sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/wrapper.conf
+     Update release artifact paths and labels, for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
 
-  .. note:: These can be written as a single ``sed`` command with multiple files.
+       sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/bin.xml
+       sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
+       sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/wrapper.conf
 
-* Update GeoTools dependency; for example if changing from ``17-SNAPSHOT`` to ``18-SNAPSHOT``::
+     .. note:: These can be written as a single ``sed`` command with multiple files.
 
-    sed -i 's/17-SNAPSHOT/18-SNAPSHOT/g' src/pom.xml
+     Update GeoTools dependency; for example if changing from ``17-SNAPSHOT`` to ``18-SNAPSHOT``::
 
-* Update GeoWebCache dependency; for example if changing from ``1.11-SNAPSHOT`` to ``1.12-SNAPSHOT``::
+       sed -i 's/17-SNAPSHOT/18-SNAPSHOT/g' src/pom.xml
 
-    sed -i 's/1.11-SNAPSHOT/1.12-SNAPSHOT/g' src/pom.xml
+     Update GeoWebCache dependency; for example if changing from ``1.11-SNAPSHOT`` to ``1.12-SNAPSHOT``::
 
-* Manually update hardcoded versions in configuration files:
+       sed -i 's/1.11-SNAPSHOT/1.12-SNAPSHOT/g' src/pom.xml
 
-    * ``doc/en/developer/source/conf.py``
-    * ``doc/en/docguide/source/conf.py``
-    * ``doc/en/user/source/conf.py``
+     Manually update hardcoded versions in configuration files:
+
+     * ``doc/en/developer/source/conf.py``
+     * ``doc/en/docguide/source/conf.py``
+     * ``doc/en/user/source/conf.py``
 
 * Commit the changes and push to the master branch on GitHub::
 

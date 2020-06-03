@@ -5,13 +5,15 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.17-SNAPSHOT</version>
+    <version>2.18-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-nsg-profiles</artifactId>
   <packaging>pom</packaging>
-  <version>2.17-SNAPSHOT</version>
   <name>NSG Profiles</name>
+  <description>
+  NSG Profile introduces aWFS 2.0.2 operation PageResults
+  </description>
   <profiles>
     <profile>
       <id>nsg-wfs-profile</id>

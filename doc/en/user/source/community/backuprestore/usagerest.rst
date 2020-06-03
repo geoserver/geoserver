@@ -56,15 +56,24 @@ In this case we did not specify any options in the backup configuration so defau
 
 Available options are:
 
-#. ``BK_BEST_EFFORT``: Skip any failing resources and proceed with the backup procedure
+#. ``BK_BEST_EFFORT``: Skip any failing resources and proceed with the backup procedure. Default: `false`.
 
 #. ``BK_PARAM_PASSWORDS``: Whether outgoing store passwords should be parameterized in the backup. With this option set
-   all store passwords will be replaced with a token that looks like `${workspaceName:storeName.passwd.encryptedValue}`
+   all store passwords will be replaced with a token that looks like `${workspaceName:storeName.passwd.encryptedValue}`.
+   See also ``BK_PASSWORD_TOKENS`` for the Restore command.
 
-#. ``BK_SKIP_SECURITY``: _Experimental_. This will exclude security settings from the backup.
+#. ``BK_SKIP_SECURITY``: This will exclude security settings from the backup. Default: `true`.
 
-#. ``BK_SKIP_SETTINGS``: _Experimental_. This will attempt to exclude most global settings from the backup, as well as
-   security settings.
+#. ``BK_SKIP_SETTINGS``: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
+
+#. ``BK_SKIP_GWC``: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
+
+#. ``BK_CLEANUP_TEMP``: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
+
+#. ``exclude.file.path``: A ``;`` separated list of paths relative to the ``GEOSERVER_DATA_DIR`` 
+   (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`.
+   WARNING: ``security`` and ``workspaces`` are threated differently. This option should be used only for custom external resources located under the ``GEOSERVER_DATA_DIR``.
+
 
 Also an optional ``Filter`` can be passed to restrict the scope of the restore operation to a list of workspaces. 
 
@@ -198,24 +207,32 @@ In this case we did not specify any options in the restore configuration so defa
 
 Available Options are:
 
-#. ``BK_DRY_RUN``: Only test the archive do not persist the restored configuration
+#. ``BK_DRY_RUN``: Only test the archive do not persist the restored configuration. Default: `false`.
 
-#. ``BK_BEST_EFFORT``: Skip any failing resources and proceed with the restore procedure
+#. ``BK_BEST_EFFORT``: Skip any failing resources and proceed with the restore procedure. Default: `false`.
 
 #. ``BK_PASSWORD_TOKENS``: A comma separated list of equal sign separated key/values to be replaced in data store passwords
    in an incoming backup. For example ::
 
        BK_PASSWORD_TOKENS=${workspace:store1.passwd.encryptedValye}=foo,${workspace:store2.passwd.encryptedValue}=bar
 
-#. ``BK_SKIP_SECURITY``: _Experimental_. This will exclude security settings from the restore. Default: `false`.
+#. ``BK_SKIP_SECURITY``: This will exclude security settings from the restore. Default: `true`.
 
-#. ``BK_SKIP_SETTINGS``: _Experimental_. This will attempt to exclude most global settings from the backup, as well as
-   security settings. Default: `false`
+#. ``BK_SKIP_SETTINGS``: This will attempt to exclude global settings from the backup, as well as security settings. Default: `true`.
 
-#. ``BK_PURGE_RESOURCES``: _Experimental_. This will skip deleting incoming resources where possible. In particular,
-existing workspaces will not be deleted during the restore. Default: `true`
+#. ``BK_PURGE_RESOURCES``: If 'false' this parameter will avoid deleting incoming resources where possible. In particular,
+   existing workspaces will not be deleted during the restore. Default: `true`.
 
-Also an optional ``Filter`` can be passed to restict the scope of the restore operation to a list of workspaces.
+#. ``BK_SKIP_GWC``: This option will avoid backup / restore the GWC catalog and folders. Default: `false`.
+
+#. ``BK_CLEANUP_TEMP``: This will attempt to delete temporary folder at the end of the execution. Default: `true`.
+
+#. ``exclude.file.path``: A ``;`` separated list of paths relative to the ``GEOSERVER_DATA_DIR`` 
+   (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`.
+   WARNING: ``security`` and ``workspaces`` are threated differently. This option should be used only for custom external resources located under the ``GEOSERVER_DATA_DIR``.
+
+
+Also an optional ``Filter`` can be passed to restrict the scope of the restore operation to a list of workspaces.
 
     For example ::
     

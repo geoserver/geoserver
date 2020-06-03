@@ -27,5 +27,13 @@
 				<include>LICENSE.txt</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+            <directory>release</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>LGPL.md</include>
+                <include>GEOTOOLS_NOTICE.txt</include>
+            </includes>
+        </fileSet>
 	</fileSets>
 </assembly>

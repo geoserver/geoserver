@@ -8,7 +8,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -91,6 +93,44 @@ public class PostgisDialectImpl extends DefaultDialectImpl {
         }
 
         return spatialColumns;
+    }
+
+    @Override
+    public List<Column> getColumns(Connection connection, String tableName, ResultSet rs)
+            throws SQLException {
+        // this method generates a more precise type description that the default dialect.
+
+        List<Column> result = new ArrayList<Column>();
+
+        Statement stmt = connection.createStatement();
+
+        ResultSet rsMetadata =
+                stmt.executeQuery(
+                        "select a.attname, a.attnotnull, format_type(a.atttypid, a.atttypmod) "
+                                + "from pg_attribute a where attrelid = '"
+                                + tableName
+                                + "'::regclass and attnum > 0");
+
+        while (rsMetadata.next()) {
+            String name = rsMetadata.getString(1);
+            Boolean notNull = rsMetadata.getBoolean(2);
+            String type = rsMetadata.getString(3);
+            result.add(
+                    new Column() {
+
+                        @Override
+                        public String getName() throws SQLException {
+                            return quote(name);
+                        }
+
+                        @Override
+                        public String getTypeEtc() throws SQLException {
+                            return type + (notNull ? " NOT NULL" : " NULL");
+                        }
+                    });
+        }
+
+        return result;
     }
 
     @Override

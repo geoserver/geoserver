@@ -55,6 +55,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
     service = "Tiles",
     version = "1.0",
     landingPage = "ogc/tiles",
+    core = false,
     serviceClass = TilesServiceInfo.class
 )
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/tiles")

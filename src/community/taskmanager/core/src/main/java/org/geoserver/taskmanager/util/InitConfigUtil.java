@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class InitConfigUtil {
 
-    private static final String INIT_BATCH = "@Initialize";
+    public static final String INIT_BATCH = "@Initialize";
 
     @Autowired private TaskManagerDao dao;
 

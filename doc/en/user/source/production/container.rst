@@ -36,7 +36,7 @@ For more information about JVM configuration, see the article `Performance tunin
 
 .. note:: 
    
-   If you're serving just vector data, you'll be streaming, so having more memory won't increase performance.  If you're serving coverages, however, image processing will use a tile cache and benifit from more memory. As an administrator you can configure the portion of memory available as a tile cache (see the Server Config page in the :ref:`web_admin` section) - for example to use ``0.75`` to allocate ``75%`` of the heap as a tile cache.
+   If you're serving just vector data, you'll be streaming, so having more memory won't increase performance.  If you're serving coverages, however, image processing will use a tile cache and benefit from more memory. As an administrator you can configure the portion of memory available as a tile cache (see the Server Config page in the :ref:`web_admin` section) - for example to use ``0.75`` to allocate ``75%`` of the heap as a tile cache.
 
 .. note::
    
@@ -59,13 +59,16 @@ For more information about JVM configuration, see the article `Performance tunin
 Enable the Marlin rasterizer
 ----------------------------
 
-The Marlin rasterizer in Java 8 and getting better performance and scalability while rendering vector data in Java 8. 
-In order to enable it add the following among the JVM startup options::
+Before Java 9, OpenJDK and Oracle used the Pisces and Ductus renderers to rasterize vector data respectively.  In Java 9 onward they use Marlin which has better overall performance in most situations than either Pisces or Ductus.
+
+In order to enable Marlin on Java 8, or to use a newer version than that provided by your JVM, add the following to the JVM startup options::
 
      -Xbootclasspath/a:$MARLIN_JAR 
      -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine 
 
-where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory.
+where ``$MARLIN_JAR`` is the location of the ``marlin*.jar`` file located in the geoserver/WEB-INF/lib directory or downloaded from the `Marlin project <https://github.com/bourgesl/marlin-renderer/>`_.
+
+The server status page shows which renderer is being used.
 
 .. _production_container.enable_cors:
 

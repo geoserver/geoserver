@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
@@ -15,5 +16,6 @@ public class MetadataXStreamInitializer implements XStreamPersisterInitializer {
     @Override
     public void init(XStreamPersister persister) {
         persister.registerBreifMapComplexType("map", HashMap.class);
+        persister.registerBreifMapComplexType("date", Date.class);
     }
 }

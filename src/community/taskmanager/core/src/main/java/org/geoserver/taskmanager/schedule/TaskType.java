@@ -46,4 +46,14 @@ public interface TaskType extends Named {
     default boolean supportsCleanup() {
         return true;
     }
+
+    /**
+     * task type can only be added via template this is when task should be run as part of an
+     * initialization
+     *
+     * @return true if task type is only addable in template
+     */
+    default boolean templateOnly() {
+        return false;
+    }
 }

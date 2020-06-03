@@ -46,6 +46,7 @@ import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wms.web.data.publish.WMSLayerConfigTest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -181,6 +182,9 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
                 TextField.class);
         tester.assertComponent(
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
+                GeoServerAjaxFormLink.class);
+        tester.assertComponent(
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
                 TextField.class);
         tester.assertComponent(
@@ -230,8 +234,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent(
                 "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        tester.assertComponent(
-                "dialog:dialog:content:form:userPanel", AbstractStylePage.ChooseImagePanel.class);
+        tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
         tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
         tester.assertInvisible("dialog:dialog:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
@@ -330,8 +333,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent(
                 "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        tester.assertComponent(
-                "dialog:dialog:content:form:userPanel", AbstractStylePage.ChooseImagePanel.class);
+        tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
         tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
 
         FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
@@ -457,7 +459,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testChangeNameAlreadyExists() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
         form.setValue("context:panel:name", "Default");
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         tester.assertContains(
                 "java.lang.IllegalArgumentException: Style named &#039;Default&#039; already exists");
@@ -585,7 +587,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // Submit the style (no legend should be saved)
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         StyleInfo style = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
         assertNotNull(style);
@@ -705,7 +707,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void applyThenSubmit() throws Exception {
         tester.executeAjaxEvent("apply", "click");
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
         tester.assertNoErrorMessage();
     }
 

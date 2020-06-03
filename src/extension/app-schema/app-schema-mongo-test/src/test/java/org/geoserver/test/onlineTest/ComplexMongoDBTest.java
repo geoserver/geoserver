@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.security.AccessMode;
 import org.geotools.data.DataAccess;
@@ -51,7 +51,7 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                3,
+                4,
                 "/wfs:FeatureCollection/gml:featureMembers/st:StationFeature");
     }
 

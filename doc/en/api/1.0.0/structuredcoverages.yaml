@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer StructuredCoverageStores
   description: A structured coverage store allows description of its "granules" and management of them.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/index:
@@ -396,6 +402,10 @@ paths:
           required: false
           type: string
           minimum: 0
+        - name: updateBBox
+          in: query
+          required: false
+          description: When set to "true", triggers re-calculation of the layer native bbox. Defaults to "false".
       responses:
         200:
           description: OK
@@ -583,7 +593,11 @@ paths:
             Finally, when set to "all" both data and auxiliary files are removed.
           required: false
           type: string
-          minimum: 0         
+          minimum: 0  
+        - name: updateBBox
+          in: query
+          required: false
+          description: When set to "true", triggers re-calculation of the layer native bbox. Defaults to "false".       
       responses:
         200:
           description: OK

@@ -205,7 +205,7 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         CheckBox selector =
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
-                                "configurationsPanel:listContainer:items:1:selectItemContainer:selectItem"));
+                                "configurationsPanel:listContainer:items:3:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
 

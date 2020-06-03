@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
@@ -48,6 +49,8 @@ public class ImportControllerTest extends ImporterTestSupport {
         dir = unpack("shape/archsites_no_crs.zip");
         this.thirdId =
                 importer.createContext(new SpatialFile(new File(dir, "archsites.shp"))).getId();
+        if (getCatalog().getStoreByName("gs", "skunkworks", DataStoreInfo.class) != null)
+            removeStore("gs", "skunkworks");
     }
 
     @After
@@ -403,5 +406,83 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertNotEquals(0, attributes.size());
 
         assertTrue(layer.containsKey("bbox"));
+    }
+
+    @Test
+    public void testPostTargetWithSameStoreNameTwoWs() throws Exception {
+        createH2DataStore("sf", "skunkworks");
+        // same store name in different ws, to check later that workspace is
+        // properly checked
+        createH2DataStore("gs", "skunkworks");
+
+        String json =
+                "{"
+                        + "\"import\": { "
+                        + "\"targetWorkspace\": {"
+                        + "\"workspace\": {"
+                        + "\"name\": \"sf\""
+                        + "}"
+                        + "},"
+                        + "\"targetStore\": {"
+                        + "\"dataStore\": {"
+                        + "\"name\": \"skunkworks\""
+                        + "}"
+                        + "}"
+                        + "}"
+                        + "}";
+
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports", json, "application/json");
+        assertEquals(201, resp.getStatus());
+        assertNotNull(resp.getHeader("Location"));
+
+        int id = lastId();
+        assertTrue(resp.getHeader("Location").endsWith("/imports/" + id));
+
+        ImportContext ctx = importer.getContext(id);
+        assertNotNull(ctx);
+        assertNotNull(ctx.getTargetWorkspace());
+        // check that the context got the right workspace
+        assertEquals("sf", ctx.getTargetWorkspace().getName());
+        assertNotNull(ctx.getTargetStore());
+        assertEquals("skunkworks", ctx.getTargetStore().getName());
+        resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports/" + id, "");
+        assertEquals(204, resp.getStatus());
+
+        json =
+                "{"
+                        + "\"import\": { "
+                        + "\"targetWorkspace\": {"
+                        + "\"workspace\": {"
+                        + "\"name\": \"gs\""
+                        + "}"
+                        + "},"
+                        + "\"targetStore\": {"
+                        + "\"dataStore\": {"
+                        + "\"name\": \"skunkworks\""
+                        + "}"
+                        + "}"
+                        + "}"
+                        + "}";
+
+        resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/imports", json, "application/json");
+        assertEquals(201, resp.getStatus());
+        assertNotNull(resp.getHeader("Location"));
+
+        id = lastId();
+        assertTrue(resp.getHeader("Location").endsWith("/imports/" + id));
+
+        ctx = importer.getContext(id);
+        assertNotNull(ctx);
+        assertNotNull(ctx.getTargetWorkspace());
+        // check that the context got the right workspace
+        assertEquals("gs", ctx.getTargetWorkspace().getName());
+        assertNotNull(ctx.getTargetStore());
+        assertEquals("skunkworks", ctx.getTargetStore().getName());
+        resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports/" + id, "");
+        assertEquals(204, resp.getStatus());
     }
 }

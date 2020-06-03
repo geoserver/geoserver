@@ -4,11 +4,17 @@
  */
 package org.geoserver.taskmanager;
 
+import static org.geoserver.web.GeoServerApplication.GEOSERVER_CSRF_DISABLED;
+
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -41,6 +47,9 @@ public abstract class AbstractTaskManagerTest {
 
     @BeforeClass
     public static void init() throws Exception {
+        // Disable CSRF protection for tests, since the test framework doesn't set the Referer
+        System.setProperty(GEOSERVER_CSRF_DISABLED, "true");
+
         URL s3propertiesFile = AbstractTaskManagerTest.class.getResource("s3.properties");
         if (s3propertiesFile != null) {
             System.setProperty("s3.properties.location", s3propertiesFile.getFile());
@@ -63,6 +72,26 @@ public abstract class AbstractTaskManagerTest {
         if (setupDataDirectory()) {
             DATA_DIRECTORY.setUp();
             geoServer.reload();
+        }
+    }
+
+    @After
+    public void cleanDataDirectory() throws Exception {
+        for (File file :
+                DATA_DIRECTORY
+                        .getDataDirectoryRoot()
+                        .listFiles(
+                                new FilenameFilter() {
+                                    @Override
+                                    public boolean accept(java.io.File dir, String name) {
+                                        return !name.equals("taskmanager");
+                                    }
+                                })) {
+            if (file.isDirectory()) {
+                FileUtils.cleanDirectory(file);
+            } else {
+                file.delete();
+            }
         }
     }
 

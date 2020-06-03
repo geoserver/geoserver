@@ -4,9 +4,13 @@ info:
   version: 1.0.0
   title: GeoWebCache Filter Update
   description: The REST API for Updating GWC filter
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
 schemes:
 - http
-host: localhost:8080
 basePath: /geoserver/gwc/rest
 paths:
   /filter/{filterName}/update/{updateType}:

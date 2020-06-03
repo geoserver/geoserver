@@ -1,0 +1,47 @@
+# GSIP 1234 - Title
+
+## Overview
+
+### Proposed By
+
+John Doe
+
+### Assigned to Release
+
+This proposal is for GeoServer 2.15-beta.
+
+### State
+
+* [x] Under Discussion
+* [ ] In Progress
+* [ ] Completed
+* [ ] Rejected
+* [ ] Deferred
+
+### Motivation
+
+## Proposal
+
+### Backwards Compatibility
+
+## Feedback
+
+## Voting
+
+Project Steering Committee:
+
+* Alessio Fabiani:
+* Andrea Aime:
+* Ian Turton:
+* Jody Garnett:
+* Jukka Rahkonen:
+* Kevin Smith:
+* Simone Giannecchini:
+* Torben Barsballe:
+* Nuno Oliveira:
+
+## Links
+
+* [Email Discussion](http://osgeo-org.1560.x6.nabble.com/GSIP-1234-discussion-tt5135281.html)
+* [Pull Request 123](https://github.com/geoserver/geoserver/pull/123)
+* [GeoTools / GeoServer Meeting 2019-03-01 ](http://osgeo-org.1560.x6.nabble.com/GeoTools-GeoServer-Meeting-2019-03-02-tt5142734.html)

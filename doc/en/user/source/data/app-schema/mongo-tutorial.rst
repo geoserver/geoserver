@@ -181,6 +181,39 @@ This is the schema that will be used to do the mappings in app-schema:
 Mappings
 --------
 
+MongoDB Store
+^^^^^^^^^^^^^
+
+When configuring app-schema mappings for a MongoDB source some connection parameters tweaks might be needed, in order to ensure that the full set of recognized and made available to the mapping.
+The setup of a MongoDB Store implies the creation of a Mongo schema, inferred from the db collection. 
+This process by default will use a random Mongo object from the collection. If that object doesn't contain all attributes of interest, the result will be an incomplete schema.  
+This behaviour can thus be controlled by means of the following two parameters, which should be provided inside the ``<parameters>`` element under the ``<DataStore>`` node:
+
+* ``objs_id_schema``, which specifies a comma separeted list of MongoDB JSON object to be used to build the schema (not needed if ``max_objs_schema`` is present).
+
+.. code-block:: xml
+
+  <Parameter>
+    <name>objs_id_schema</name>
+    <value>6eb85d889396eb0475f815ef,6eb85d889396eb0475f815eg</value>
+  </Parameter>
+
+
+* ``max_objs_schema``, which specifies the max number of MongoDB JSON object to be used to build the schema and where a value of ``-1`` means all the objects present in the collection (not needed if ``objs_id_schema`` is present).
+
+.. code-block:: xml
+
+  <Parameter>
+    <name>max_objs_schema</name>
+    <value>-1</value>
+  </Parameter>
+
+
+Both parameters can also be specified via the REST API, see :ref:`Cleaning schemas on internal MongoDB stores <rest_App-Schema>` for more details.
+
+Nested elements
+^^^^^^^^^^^^^^^
+
 MongoDB objects may contain nested elements and nested collections. The following three functions make possible to select nested elements and link nested collections using a JSON path:
 
 .. list-table::
@@ -201,6 +234,11 @@ MongoDB objects may contain nested elements and nested collections. The followin
    * - nestedCollectionLink
      - nestedCollectionLink()
      - Used on the nested collection to create a link with the parent feature.
+
+
+
+Mappings file example
+^^^^^^^^^^^^^^^^^^^^^
 
 A station data is composed of some meta-information about the station and a list of measurements. Each measurement as some meta-information and contains a list of values. The mappings will contain three top entities: the station, the measurements and the values.
 
@@ -242,6 +280,10 @@ Follows a the complete mappings file:
         <Parameter>
           <name>data_store_type</name>
           <value>complex</value>
+        </Parameter>
+        <Parameter>
+            <name>max_objs_schema</name>
+            <value>-1</value>
         </Parameter>
       </parameters>
     </DataStore>

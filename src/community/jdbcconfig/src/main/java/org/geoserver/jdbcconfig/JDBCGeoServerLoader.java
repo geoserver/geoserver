@@ -91,6 +91,13 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
             readCatalog(catalog, xp);
             decImportStep();
         }
+
+        if (!config.isInitDb() && !config.isImport() && config.isRepopulate()) {
+            ConfigDatabase configDatabase = ((JDBCCatalogFacade) catalogFacade).getConfigDatabase();
+            configDatabase.repopulateQueryableProperties();
+            config.setRepopulate(false);
+            config.save();
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

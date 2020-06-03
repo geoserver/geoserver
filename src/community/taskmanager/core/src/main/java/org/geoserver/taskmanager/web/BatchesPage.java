@@ -19,6 +19,6 @@ public class BatchesPage extends GeoServerSecuredPage {
     }
 
     protected ComponentAuthorizer getPageAuthorizer() {
-        return ComponentAuthorizer.AUTHENTICATED;
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

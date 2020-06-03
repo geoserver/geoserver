@@ -1,0 +1,70 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>extension</artifactId>
+    <version>2.18-SNAPSHOT</version>
+  </parent>
+  <groupId>org.geoserver.extension</groupId>
+  <artifactId>gs-web-resource</artifactId>
+  <packaging>jar</packaging>
+  <name>GeoServer Resource Browser</name>
+  <description>
+     Web Administration page to manage data directory configuration files
+     such as icons, fonts, and controlflow.properties.
+  </description>
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Google common libraries, featuring great utility classes for collections, io, concurrency, and more -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-test</artifactId>
+       <scope>test</scope>
+    </dependency>
+   </dependencies>
+</project>

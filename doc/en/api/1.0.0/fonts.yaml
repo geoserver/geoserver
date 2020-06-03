@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Fonts
   description: A font is a set of characters that can be used in a style for displaying labels.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /fonts:

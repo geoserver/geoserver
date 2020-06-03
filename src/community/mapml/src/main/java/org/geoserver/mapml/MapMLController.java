@@ -844,19 +844,37 @@ public class MapMLController {
         } else {
             // emit MapML extent that uses WMS requests to request complete images
 
-            ReferencedEnvelope bbbox =
-                    new ReferencedEnvelope(previewTcrsMap.get(projType.value()).getCRS());
+            ReferencedEnvelope bbbox;
             try {
+                // initialization is necessary so as to set the PCRS to which
+                // the resource's bbox will be transformed, below.
+                bbbox = new ReferencedEnvelope(previewTcrsMap.get(projType.value()).getCRS());
                 bbbox =
                         isLayerGroup
                                 ? layerGroupInfo.getBounds()
                                 : layerInfo.getResource().boundingBox();
+                // transform can cause an exception if the bbox coordinates fall
+                // too near the pole (at least in OSMTILE, where the poles are
+                // undefined/out of scope).
+                // If it throws, we need to reset the bbbox value so that its
+                // crs is that of the underlying pcrs from the TCRS, because
+                // the bbbox.transform will leave the CRS set to that of whatever
+                // was returned by layerInfo.getResource().boundingBox() or
+                // layerGroupInfo.getBounds(), above.
+                bbbox = bbbox.transform(previewTcrsMap.get(projType.value()).getCRS(), true);
             } catch (Exception e) {
-                //                    log.info("Exception occured retrieving bbox for "+ layer
-                // );
+                // get the default max/min of the pcrs from the TCRS
+                Bounds defaultBounds = previewTcrsMap.get(projType.value()).getBounds();
+                double x1, x2, y1, y2;
+                x1 = defaultBounds.getMin().x;
+                x2 = defaultBounds.getMax().x;
+                y1 = defaultBounds.getMin().y;
+                y2 = defaultBounds.getMax().x;
+                // use the bounds of the TCRS as the default bounds for this layer
+                bbbox =
+                        new ReferencedEnvelope(
+                                x1, x2, y1, y2, previewTcrsMap.get(projType.value()).getCRS());
             }
-            bbbox = bbbox.transform(previewTcrsMap.get(projType.value()).getCRS(), true);
-
             // image inputs
             // xmin
             input = new Input();

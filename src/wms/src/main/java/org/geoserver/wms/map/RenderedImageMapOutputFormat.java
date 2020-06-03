@@ -12,6 +12,7 @@ import it.geosolutions.jaiext.vectorbin.ROIGeometry;
 import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -65,6 +66,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -79,7 +81,10 @@ import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.renderer.lite.*;
+import org.geotools.renderer.lite.LabelCache;
+import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.renderer.lite.RenderingTransformationHelper;
+import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.styling.RasterSymbolizer;
@@ -97,6 +102,7 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  * A {@link GetMapOutputFormat} that produces {@link RenderedImageMap} instances to be encoded in
@@ -1025,13 +1031,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 // Get the reader
                 //
                 final Feature feature =
-                        mapContent
-                                .layers()
-                                .get(0)
-                                .getFeatureSource()
-                                .getFeatures()
-                                .features()
-                                .next();
+                        DataUtilities.first(
+                                mapContent.layers().get(0).getFeatureSource().getFeatures());
+                if (feature == null || feature.getProperty("grid") == null) {
+                    return null;
+                }
                 final GridCoverage2DReader reader =
                         (GridCoverage2DReader) feature.getProperty("grid").getValue();
                 // render via grid coverage renderer, that will apply the advanced projection
@@ -1117,25 +1121,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
                 if (transformation != null) {
                     RenderingTransformationHelper helper =
-                            new RenderingTransformationHelper() {
-
-                                protected GridCoverage2D readCoverage(
-                                        GridCoverage2DReader reader,
-                                        Object params,
-                                        GridGeometry2D readGG)
-                                        throws IOException {
-                                    context.reader = reader;
-                                    context.params = params;
-                                    return readBestCoverage(
-                                            context,
-                                            ReferencedEnvelope.reference(readGG.getEnvelope()),
-                                            readGG.getGridRange2D(),
-                                            interpolation,
-                                            readerBgColor,
-                                            bandIndices);
-                                }
-                            };
-
+                            new GCRRenderingTransformationHelper(
+                                    mapContent,
+                                    interpolation,
+                                    wms.isAdvancedProjectionHandlingEnabled(),
+                                    wms.isContinuousMapWrappingEnabled());
                     Object result =
                             helper.applyRenderingTransformation(
                                     transformation,
@@ -1505,7 +1495,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (RASTER_CHAIN_DEBUG
                 && ((rawKvp = mapContent.getRequest().getRawKvp()) != null)
                 && Boolean.valueOf(rawKvp.get("showchain"))) {
-            RenderedImageBrowser.showChain(image, true, true, "RenderedImageMapOutput", true);
+            RenderedImageBrowser.showChainAndWaitOnClose(image);
         }
         return image;
     }
@@ -1920,6 +1910,73 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             case Nearest:
             default:
                 return Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+        }
+    }
+
+    private class GCRRenderingTransformationHelper extends RenderingTransformationHelper {
+
+        private final Interpolation interpolation;
+        private final boolean advancedProjectionHandling;
+        private final boolean mapWrapping;
+        private final WMSMapContent mapContent;
+
+        public GCRRenderingTransformationHelper(
+                WMSMapContent mapContent,
+                Interpolation interpolation,
+                boolean advancedProjectionHandling,
+                boolean mapWrapping) {
+            this.mapContent = mapContent;
+            this.interpolation = interpolation;
+            this.advancedProjectionHandling = advancedProjectionHandling;
+            this.mapWrapping = mapWrapping;
+        }
+
+        @Override
+        protected GridCoverage2D readCoverage(
+                GridCoverage2DReader reader, Object readParams, GridGeometry2D readGG)
+                throws IOException {
+            RenderingHints interpolationHints =
+                    new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
+            final GridCoverageRenderer gcr;
+
+            try {
+                final int mapWidth = mapContent.getMapWidth();
+                final int mapHeight = mapContent.getMapHeight();
+                final ReferencedEnvelope mapEnvelope =
+                        getEastNorthEnvelope(mapContent.getRenderingArea());
+                final Rectangle mapRasterArea = new Rectangle(0, 0, mapWidth, mapHeight);
+                final AffineTransform worldToScreen =
+                        RendererUtilities.worldToScreenTransform(mapEnvelope, mapRasterArea);
+
+                gcr =
+                        new GridCoverageRenderer(
+                                mapEnvelope.getCoordinateReferenceSystem(),
+                                mapEnvelope,
+                                mapRasterArea,
+                                worldToScreen,
+                                interpolationHints);
+                gcr.setAdvancedProjectionHandlingEnabled(advancedProjectionHandling);
+                gcr.setWrapEnabled(mapWrapping);
+                RenderedImage ri =
+                        gcr.renderImage(
+                                reader,
+                                (GeneralParameterValue[]) readParams,
+                                null,
+                                interpolation,
+                                null,
+                                256,
+                                256);
+                if (ri != null) {
+                    PlanarImage pi = PlanarImage.wrapRenderedImage(ri);
+                    GridCoverage2D gc2d =
+                            (GridCoverage2D)
+                                    pi.getProperty(GridCoverageRenderer.PARENT_COVERAGE_PROPERTY);
+                    return gc2d;
+                }
+                return null;
+            } catch (TransformException | NoninvertibleTransformException | FactoryException e) {
+                throw new IOException("Failure rendering the coverage", e);
+            }
         }
     }
 }

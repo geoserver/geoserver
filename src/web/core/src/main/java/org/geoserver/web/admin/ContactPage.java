@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -12,11 +13,16 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 
 public class ContactPage extends ServerAdminPage {
+
+    private final IModel geoServerModel;
+    private final IModel contactModel;
+
     public ContactPage() {
-        final IModel geoServerModel = getGeoServerModel();
-        final IModel contactModel = getContactInfoModel();
+        geoServerModel = getGeoServerModel();
+        contactModel = getContactInfoModel();
 
         Form form = new Form("form", new CompoundPropertyModel(contactModel));
         add(form);
@@ -26,13 +32,10 @@ public class ContactPage extends ServerAdminPage {
                 new Button("submit") {
                     @Override
                     public void onSubmit() {
-                        GeoServer gs = (GeoServer) geoServerModel.getObject();
-                        GeoServerInfo global = gs.getGlobal();
-                        global.getSettings().setContact((ContactInfo) contactModel.getObject());
-                        gs.save(global);
-                        doReturn();
+                        save(true);
                     }
                 });
+        form.add(applyLink(form));
         form.add(
                 new Button("cancel") {
                     @Override
@@ -40,5 +43,36 @@ public class ContactPage extends ServerAdminPage {
                         doReturn();
                     }
                 });
+    }
+
+    public void save(boolean doReturn) {
+        GeoServer gs = (GeoServer) geoServerModel.getObject();
+        GeoServerInfo global = gs.getGlobal();
+        global.getSettings().setContact((ContactInfo) contactModel.getObject());
+        gs.save(global);
+        if (doReturn) {
+            doReturn();
+        }
+    }
+
+    private GeoserverAjaxSubmitLink applyLink(Form form) {
+        return new GeoserverAjaxSubmitLink("apply", form, this) {
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                super.onError(target, form);
+                target.add(form);
+            }
+
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    save(false);
+                } catch (IllegalArgumentException e) {
+                    form.error(e.getMessage());
+                    target.add(form);
+                }
+            }
+        };
     }
 }

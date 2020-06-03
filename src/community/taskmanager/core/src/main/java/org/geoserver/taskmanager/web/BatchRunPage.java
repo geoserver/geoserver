@@ -17,6 +17,7 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.web.model.RunsModel;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -95,5 +96,9 @@ public class BatchRunPage extends GeoServerSecuredPage {
                 return null;
             }
         };
+    }
+
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

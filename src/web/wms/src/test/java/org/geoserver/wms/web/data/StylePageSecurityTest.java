@@ -109,7 +109,7 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
         form.submit();
 
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         tester.assertRenderedPage(StylePage.class);
 
@@ -139,7 +139,7 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
         form.submit();
 
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.executeAjaxEvent("submit", "click");
+        tester.executeAjaxEvent("save", "click");
 
         tester.assertErrorMessages("Field 'Workspace' is required.");
 

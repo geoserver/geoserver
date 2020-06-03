@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.collections.EnumerationUtils;
+import org.apache.commons.collections4.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.cache.CacheResponseStatus;
 import org.apache.http.client.cache.HttpCacheContext;

@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -288,7 +288,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 BeanToPropertyValueTransformer transformer =
                         new BeanToPropertyValueTransformer("localName");
                 Collection<String> featureAttributesNames =
-                        CollectionUtils.collect(sft.getAttributeDescriptors(), transformer);
+                        CollectionUtils.collect(
+                                sft.getAttributeDescriptors(),
+                                ad -> (String) transformer.transform(ad));
 
                 FilterAttributeExtractor filterAttriubtes = new FilterAttributeExtractor(null);
                 cqlFilter.accept(filterAttriubtes, null);

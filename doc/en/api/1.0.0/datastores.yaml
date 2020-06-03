@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Data Stores
   description: A data store contains vector format spatial data. It can be a file (such as a shapefile), a database (such as PostGIS), or a server (such as a remote Web Feature Service).
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /workspaces/{workspaceName}/datastores:

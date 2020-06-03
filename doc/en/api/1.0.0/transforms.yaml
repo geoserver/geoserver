@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer XSLT transforms
   description: A transform contains a style sheet that can be used to generate a new textual output format of user choosing for WFS
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
 

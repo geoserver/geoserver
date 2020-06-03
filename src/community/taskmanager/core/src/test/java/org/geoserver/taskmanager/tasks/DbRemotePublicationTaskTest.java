@@ -99,12 +99,10 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
     public boolean setupDataDirectory() throws Exception {
         DATA_DIRECTORY.addStyle(STYLE, getClass().getResource(STYLE + ".sld"));
         DATA_DIRECTORY.addStyle(SECOND_STYLE, getClass().getResource(SECOND_STYLE + ".sld"));
-        try (InputStream is = getClass().getResource("grass_fill.png").openStream()) {
-            try (OutputStream os =
-                    new FileOutputStream(
-                            new File(
-                                    DATA_DIRECTORY.getDataDirectoryRoot(),
-                                    "styles/grass_fill.png"))) {
+        File imgDir = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "styles/");
+        imgDir.mkdirs();
+        try (InputStream is = getClass().getResource("img/grass_fill.png").openStream()) {
+            try (OutputStream os = new FileOutputStream(new File(imgDir, "grass_fill.png"))) {
                 IOUtils.copy(is, os);
             }
         }

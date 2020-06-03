@@ -7,7 +7,6 @@ package org.geoserver.taskmanager.tasks;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
+import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.impl.DbTableImpl;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
@@ -94,7 +94,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
         final DbSource targetdb = (DbSource) ctx.getParameterValues().get(PARAM_TARGET_DB_NAME);
         final DbTable table =
                 (DbTable) ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_TABLE_NAME));
-
+        final String sourceTableName = sourcedb.getDialect().quote(table.getTableName());
         final DbTable targetTable =
                 ctx.getParameterValues().containsKey(PARAM_TARGET_TABLE_NAME)
                         ? (DbTable) ctx.getParameterValues().get(PARAM_TARGET_TABLE_NAME)
@@ -107,76 +107,56 @@ public class CopyTableTaskTypeImpl implements TaskType {
 
         try (Connection sourceConn = sourcedb.getDataSource().getConnection()) {
             sourceConn.setAutoCommit(false);
-            try (Connection destConn = targetdb.getDataSource().getConnection()) {
-                try (Statement stmt = sourceConn.createStatement()) {
-                    stmt.setFetchSize(BATCH_SIZE);
-                    try (ResultSet rs =
-                            stmt.executeQuery(
-                                    "SELECT * FROM "
-                                            + sourcedb.getDialect().quote(table.getTableName()))) {
+            try (Statement stmt = sourceConn.createStatement()) {
+                stmt.setFetchSize(BATCH_SIZE);
+                try (ResultSet rs = stmt.executeQuery("SELECT * FROM " + sourceTableName)) {
 
-                        ResultSetMetaData rsmd = rs.getMetaData();
+                    String tempSchema = SqlUtil.schema(tempTableName);
 
-                        String tempSchema = SqlUtil.schema(tempTableName);
-                        String sqlCreateSchemaIfNotExists =
-                                tempSchema == null
-                                        ? ""
-                                        : targetdb.getDialect()
-                                                .createSchema(
-                                                        destConn,
-                                                        targetdb.getDialect().quote(tempSchema));
+                    // create the temp table structure
+                    StringBuilder sb =
+                            new StringBuilder("CREATE TABLE ")
+                                    .append(targetdb.getDialect().quote(tempTableName))
+                                    .append(" ( ");
 
-                        // create the temp table structure
-                        StringBuilder sb = new StringBuilder(sqlCreateSchemaIfNotExists);
-                        sb.append("CREATE TABLE ")
-                                .append(targetdb.getDialect().quote(tempTableName))
-                                .append(" ( ");
-                        int columnCount = rsmd.getColumnCount();
-
-                        for (int i = 1; i <= columnCount; i++) {
-                            String columnName = targetdb.getDialect().quote(rsmd.getColumnLabel(i));
-                            String typeName = rsmd.getColumnTypeName(i);
-                            sb.append(columnName).append(" ").append(typeName);
-                            if (("char".equals(typeName) || "varchar".equals(typeName))
-                                    && rsmd.getColumnDisplaySize(i) > 0
-                                    && rsmd.getColumnDisplaySize(i) < Integer.MAX_VALUE) {
-                                sb.append(" (").append(rsmd.getColumnDisplaySize(i)).append(" ) ");
-                            }
-                            switch (sourcedb.getDialect().isNullable(rsmd.isNullable(i))) {
-                                case ResultSetMetaData.columnNoNulls:
-                                    sb.append(" NOT NULL");
-                                    break;
-                                case ResultSetMetaData.columnNullable:
-                                    sb.append(" NULL");
-                                    break;
-                            }
-                            sb.append(", ");
+                    int columnCount = 0;
+                    for (Dialect.Column column :
+                            sourcedb.getDialect().getColumns(sourceConn, sourceTableName, rs)) {
+                        sb.append(targetdb.getDialect().quote(column.getName()))
+                                .append(" ")
+                                .append(column.getTypeEtc())
+                                .append(", ");
+                        columnCount++;
+                    }
+                    Set<String> primaryKey = getPrimaryKey(sourceConn, table.getTableName());
+                    boolean hasPrimaryKeyColumn = !primaryKey.isEmpty();
+                    if (!hasPrimaryKeyColumn) {
+                        // create a Primary key column if none exist.
+                        sb.append(GENERATE_ID_COLUMN_NAME + " int PRIMARY KEY");
+                        columnCount++;
+                    } else {
+                        sb.append("PRIMARY KEY(");
+                        for (String colName : primaryKey) {
+                            sb.append(targetdb.getDialect().quote(colName)).append(", ");
                         }
-                        String primaryKey = getPrimaryKey(sourceConn, table.getTableName());
-                        boolean hasPrimaryKeyColumn = !primaryKey.isEmpty();
-                        if (!hasPrimaryKeyColumn) {
-                            // create a Primary key column if none exist.
-                            sb.append(GENERATE_ID_COLUMN_NAME + " int PRIMARY KEY, ");
-                            columnCount++;
-                        }
-
                         sb.setLength(sb.length() - 2);
-                        sb.append(" ); ");
+                        sb.append(")");
+                    }
 
-                        // creating indexes
-                        Map<String, Set<String>> indexAndColumnMap =
-                                getIndexesColumns(sourceConn, table.getTableName());
-                        Set<String> uniqueIndexes =
-                                getUniqueIndexes(sourceConn, table.getTableName());
-                        Set<String> spatialColumns =
-                                sourcedb.getDialect()
-                                        .getSpatialColumns(
-                                                sourceConn,
-                                                table.getTableName(),
-                                                sourcedb.getSchema());
+                    sb.append(" ); ");
 
-                        for (String indexName : indexAndColumnMap.keySet()) {
-                            Set<String> columnNames = indexAndColumnMap.get(indexName);
+                    // creating indexes
+                    Map<String, Set<String>> indexAndColumnMap =
+                            getIndexesColumns(sourceConn, table.getTableName());
+                    Set<String> uniqueIndexes = getUniqueIndexes(sourceConn, table.getTableName());
+                    Set<String> spatialColumns =
+                            sourcedb.getDialect()
+                                    .getSpatialColumns(
+                                            sourceConn, table.getTableName(), sourcedb.getSchema());
+
+                    for (String indexName : indexAndColumnMap.keySet()) {
+                        Set<String> columnNames = indexAndColumnMap.get(indexName);
+                        if (!columnNames.equals(primaryKey)) {
                             boolean isSpatialIndex =
                                     columnNames.size() == 1
                                             && spatialColumns.contains(
@@ -190,19 +170,29 @@ public class CopyTableTaskTypeImpl implements TaskType {
                                                     isSpatialIndex,
                                                     uniqueIndexes.contains(indexName)));
                         }
-                        // we are copying a view and need to create the spatial index.
-                        if (indexAndColumnMap.isEmpty() && !spatialColumns.isEmpty()) {
-                            sb.append(
-                                    targetdb.getDialect()
-                                            .createIndex(
-                                                    tempTableName, spatialColumns, true, false));
-                        }
+                    }
+                    // we are copying a view and need to create the spatial index.
+                    if (indexAndColumnMap.isEmpty() && !spatialColumns.isEmpty()) {
+                        sb.append(
+                                targetdb.getDialect()
+                                        .createIndex(tempTableName, spatialColumns, true, false));
+                    }
 
-                        String dump = sb.toString();
-                        LOGGER.log(Level.FINE, "creating temporary table: " + dump);
+                    String dump = sb.toString();
+                    LOGGER.log(Level.FINE, "creating temporary table: " + dump);
+
+                    try (Connection destConn = targetdb.getDataSource().getConnection()) {
+
+                        String sqlCreateSchemaIfNotExists =
+                                tempSchema == null
+                                        ? ""
+                                        : targetdb.getDialect()
+                                                .createSchema(
+                                                        destConn,
+                                                        targetdb.getDialect().quote(tempSchema));
 
                         try (Statement stmt2 = destConn.createStatement()) {
-                            stmt2.executeUpdate(dump);
+                            stmt2.executeUpdate(sqlCreateSchemaIfNotExists + dump);
                         }
 
                         // copy the data
@@ -224,7 +214,7 @@ public class CopyTableTaskTypeImpl implements TaskType {
                             int batchSize = 0;
                             int primaryKeyValue = 0;
                             while (rs.next()) {
-                                for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+                                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
                                     pstmt.setObject(i, rs.getObject(i));
                                 }
                                 // generate the primary key value
@@ -342,32 +332,31 @@ public class CopyTableTaskTypeImpl implements TaskType {
         return schema;
     }
 
-    private static String getPrimaryKey(Connection conn, String tableName) throws SQLException {
+    private static Set<String> getPrimaryKey(Connection conn, String tableName)
+            throws SQLException {
         String schema = getSchema(conn, tableName);
         String name = getTableName(conn, tableName);
+        Set<String> primaryKey = new HashSet<String>();
 
         try (ResultSet rsPrimaryKeys = conn.getMetaData().getPrimaryKeys(null, schema, name)) {
-            StringBuilder sb = new StringBuilder();
             while (rsPrimaryKeys.next()) {
-                sb.append(rsPrimaryKeys.getString("COLUMN_NAME")).append(", ");
+                primaryKey.add(rsPrimaryKeys.getString("COLUMN_NAME"));
             }
-            if (sb.length() > 2) {
-                sb.setLength(sb.length() - 2);
-            }
-            // if there is no primary key column defined. Check if there is a generated key column
-            // available
-            if (sb.length() < 2) {
-                ResultSet rsColumns = conn.getMetaData().getColumns(null, schema, name, null);
-                while (rsColumns.next()) {
-                    if (GENERATE_ID_COLUMN_NAME.equalsIgnoreCase(
-                            rsColumns.getString("COLUMN_NAME"))) {
-                        return GENERATE_ID_COLUMN_NAME;
-                    }
+        }
+
+        // if there is no primary key column defined. Check if there is a generated key column
+        // available
+        if (primaryKey.isEmpty()) {
+            ResultSet rsColumns = conn.getMetaData().getColumns(null, schema, name, null);
+            while (rsColumns.next()) {
+                String colName = rsColumns.getString("COLUMN_NAME");
+                if (GENERATE_ID_COLUMN_NAME.equalsIgnoreCase(colName)) {
+                    primaryKey.add(colName);
                 }
             }
-
-            return sb.toString();
         }
+
+        return primaryKey;
     }
 
     private Set<String> getUniqueIndexes(Connection conn, String tableName) throws SQLException {

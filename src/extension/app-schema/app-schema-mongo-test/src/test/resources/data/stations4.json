@@ -1,0 +1,56 @@
+{
+  "_id": { "$oid" : "58e5889ce4b02461ad5af083"},
+  "id": "4",
+  "name": "station 4",
+  "inferredAttribute": "ok",
+  "contact": {
+    "mail": "station2@mail.com"
+  },
+  "geometry": {
+    "coordinates": [
+      100,
+      -50
+    ],
+    "type": "Point"
+  },
+  "measurements": [
+    {
+      "name": "temp",
+      "unit": "c",
+      "values": [
+        {
+          "time": 1482146911,
+          "value": 35
+        },
+        {
+          "time": 1482146935,
+          "value": 25
+        }
+      ]
+    },
+    {
+      "name": "wind",
+      "unit": "km/h",
+      "values": [
+        {
+          "time": 1482146964,
+          "value": 80
+        }
+      ]
+    },
+    {
+      "name": "pression",
+      "unit": "pa",
+      "values": [
+        {
+          "time": 1482147026,
+          "value": 1019
+        },
+        {
+          "time": 1482147051,
+          "value": 1015
+        }
+      ]
+    }
+  ]
+}

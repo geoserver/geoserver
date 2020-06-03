@@ -37,6 +37,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.util.SerializableConsumer;
@@ -145,13 +146,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     @Override
                     public void onSubmit() {
                         try {
-                            handleSubmit((T) infoModel.getObject());
-                            // execute all submit hooks
-                            onSubmitHooks.forEach(
-                                    x -> {
-                                        x.accept(null);
-                                    });
-                            doReturn();
+                            onSave(infoModel, true);
                         } catch (IllegalArgumentException ex) {
                             error(ex.getMessage());
                         } catch (Exception e) {
@@ -161,6 +156,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 };
         form.add(submit);
 
+        form.add(applyLink(infoModel, form));
+
         Button cancel =
                 new Button("cancel") {
                     public void onSubmit() {
@@ -169,6 +166,39 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 };
         form.add(cancel);
         cancel.setDefaultFormProcessing(false);
+    }
+
+    protected void onSave(IModel<T> infoModel, boolean doReturn) {
+        handleSubmit((T) infoModel.getObject());
+        // execute all submit hooks
+        onSubmitHooks.forEach(
+                x -> {
+                    x.accept(null);
+                });
+        if (doReturn) {
+            doReturn();
+        }
+    }
+
+    private GeoserverAjaxSubmitLink applyLink(IModel<T> infoModel, Form form) {
+        return new GeoserverAjaxSubmitLink("apply", form, this) {
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                super.onError(target, form);
+                target.add(form);
+            }
+
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    onSave(infoModel, false);
+                } catch (IllegalArgumentException e) {
+                    form.error(e.getMessage());
+                    target.add(form);
+                }
+            }
+        };
     }
 
     protected ListView createExtensionPanelList(String id, final IModel infoModel) {

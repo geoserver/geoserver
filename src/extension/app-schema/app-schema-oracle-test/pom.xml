@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-app-schema</artifactId>
-        <version>2.17-SNAPSHOT</version>
+        <version>2.18-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.extension</groupId>
@@ -172,10 +172,9 @@
             <artifactId>jackson-databind</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Must ensure this has been installed in M2 repository -->
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc7</artifactId>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
         </dependency>
         <!-- required for Web UI tests -->
         <dependency>

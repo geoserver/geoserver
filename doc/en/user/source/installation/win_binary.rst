@@ -10,9 +10,8 @@ The other way of installing GeoServer on Windows is to use the platform-independ
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** environment.  You can `download JRE 8 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, as provided by `AdoptOpenJDK <https://adoptopenjdk.net>`__ Windows installers.
 
-   .. note:: Java 9 is not currently supported.
 
    .. note:: For more information about Java and GeoServer, please see the section on :ref:`production_java`.
 

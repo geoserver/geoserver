@@ -42,6 +42,7 @@
 			<include>activemq-spring*.jar</include>
 			<include>activemq-pool*.jar</include>
 			<include>activemq-protobuf*.jar</include>
+			<include>commons-pool2*.jar</include>
 	      </includes>
 	</fileSet>
  </fileSets>

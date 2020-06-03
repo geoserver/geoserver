@@ -21,6 +21,7 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -139,25 +140,35 @@ public class ApiTest extends StylesTestSupport {
         assertThat(
                 (List<String>) styleId.getSchema().getEnum(),
                 containsInAnyOrder(
+                        "BasicStyleGroupStyle",
+                        "cssSample",
+                        "PolygonComment",
+                        "ws:NamedPlacesWS",
                         "generic",
                         "polygon",
                         "line",
                         "point",
-                        "raster",
-                        "Default",
-                        "ws:NamedPlaces",
-                        "PolygonComment",
-                        "cssSample",
+                        "Streams",
+                        "RoadSegments",
+                        "Ponds",
+                        "NamedPlaces",
+                        "MapNeatline",
+                        "Lakes",
+                        "Forests",
+                        "DividedRoutes",
                         "Buildings",
-                        "Lakes"));
+                        "Bridges",
+                        "BasicPolygons",
+                        "raster",
+                        "Default"));
     }
 
     @Test
     public void testWorkspaceQualifiedAPI() throws Exception {
         OpenAPI api = getOpenAPI("ws/ogc/styles/api");
         Map<String, Parameter> params = api.getComponents().getParameters();
-        Parameter collectionId = params.get("styleId");
-        List<String> collectionIdValues = collectionId.getSchema().getEnum();
+        Parameter styleId = params.get("styleId");
+        List<String> styleIdValues = styleId.getSchema().getEnum();
         List<String> expectedStyleIds =
                 getCatalog()
                         .getStyles()
@@ -168,7 +179,12 @@ public class ApiTest extends StylesTestSupport {
                                                 || "ws".equals(s.getWorkspace().getName()))
                         .map(s -> s.getName())
                         .collect(Collectors.toList());
-        assertThat(collectionIdValues, equalTo(expectedStyleIds));
+        // does not work and I cannot fathom why, both lists have the same size and same elements
+        // by visual inspection
+        // assertThat(styleIdValues, Matchers.containsInAnyOrder(expectedStyleIds));
+        Collections.sort(styleIdValues);
+        Collections.sort(expectedStyleIds);
+        assertEquals(styleIdValues, expectedStyleIds);
     }
 
     @Test

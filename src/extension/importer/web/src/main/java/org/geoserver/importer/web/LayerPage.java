@@ -19,19 +19,21 @@ public class LayerPage extends ResourceConfigurationPage {
     }
 
     @Override
-    protected void doSave() {
+    protected void doSave(boolean doReturn) {
         if (getPublishedInfo().getId() == null) {
             // do not call super.doSave(), because this layer is not part of the catalog yet
 
-            onSuccessfulSave();
+            onSuccessfulSave(doReturn);
         } else {
-            super.doSave();
+            super.doSave(doReturn);
         }
     }
 
     @Override
-    protected void onSuccessfulSave() {
-        setResponsePage(ImportPage.class, sourcePage);
+    protected void onSuccessfulSave(boolean doReturn) {
+        if (doReturn) {
+            setResponsePage(ImportPage.class, sourcePage);
+        }
     }
 
     @Override

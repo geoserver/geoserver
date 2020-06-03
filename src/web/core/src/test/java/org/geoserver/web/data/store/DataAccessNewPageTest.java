@@ -6,15 +6,22 @@
 package org.geoserver.web.data.store;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.layer.NewLayerPage;
 import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geotools.data.property.PropertyDataStoreFactory;
@@ -151,5 +158,41 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
                 tester.getComponentFromLastRenderedPage(
                         "dataStoreForm:parametersPanel:parameters:1:parameterPanel");
         assertThat(component, instanceOf(FileParamPanel.class));
+    }
+
+    @Test
+    public void testNewDataStoreSave() {
+        DataAccessNewPage page = (DataAccessNewPage) startPage();
+        FormTester ft = tester.newFormTester("dataStoreForm");
+
+        ft.setValue(
+                "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
+                "file:cdf");
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "cdf2");
+        ft.submit("save");
+
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(NewLayerPage.class);
+        DataStoreInfo store = getCatalog().getDataStoreByName("cdf2");
+        assertNotNull(store);
+        assertEquals("file:cdf", store.getConnectionParameters().get("directory"));
+    }
+
+    @Test
+    public void testNewDataStoreApply() {
+        DataAccessNewPage page = (DataAccessNewPage) startPage();
+        FormTester ft = tester.newFormTester("dataStoreForm");
+
+        ft.setValue(
+                "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
+                "file:cdf");
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "cdf3");
+        ft.submit("apply");
+
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(DataAccessEditPage.class);
+        DataStoreInfo store = getCatalog().getDataStoreByName("cdf3");
+        assertNotNull(store);
+        assertEquals("file:cdf", store.getConnectionParameters().get("directory"));
     }
 }

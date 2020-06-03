@@ -1,0 +1,49 @@
+<!--suppress ALL -->
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">Elasticsearch fields configuration</wicket:message></title>
+</head>
+<body>
+	<wicket:panel>
+		<form wicket:id="es_form">
+            <input type="checkbox" wicket:id="useAll"/>
+            <wicket:message key="useAll">Use All</wicket:message>
+			<div>
+				<div wicket:id="esAttributes"></div>
+				<div wicket:id="es_feedback">[Feedback Panel]</div>
+				<div class="button-group selfclear" style="height: 50px">
+					<a href="#" wicket:id="es_save">
+						<wicket:message key="es_save">Save</wicket:message>
+					</a>
+				</div>
+			</div>
+		</form>
+	</wicket:panel>
+    
+    <wicket:fragment wicket:id="checkboxDefaultGeometry">
+        <input type="checkbox" wicket:id="defaultGeometry"/>
+    </wicket:fragment>
+    
+	<wicket:fragment wicket:id="checkboxUse">
+		<input type="checkbox" wicket:id="use"/>
+	</wicket:fragment>
+    
+	<wicket:fragment wicket:id="empty"></wicket:fragment>
+
+	<wicket:fragment wicket:id="geometry">
+		<select wicket:id="geometry"></select>
+	</wicket:fragment>
+    
+	<wicket:fragment wicket:id="label">
+		<span wicket:id="label"></span>
+	</wicket:fragment>
+	
+	<wicket:fragment wicket:id="textOrderValue">
+		<input type="text" wicket:id="order" size="2"/>
+	</wicket:fragment>
+	
+	<wicket:fragment wicket:id="textCustomNameValue">
+		<input type="text" wicket:id="customName" size="25"/>
+	</wicket:fragment>
+</body>
+</html>

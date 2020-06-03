@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
@@ -46,6 +48,7 @@ import org.jdom2.output.XMLOutputter;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInterruptedException;
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -105,7 +108,21 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                         if (res.getType() == Type.DIRECTORY
                                         && !res.name().equalsIgnoreCase("temp")
                                         && !res.name().equalsIgnoreCase("tmp")
+                                        && !res.name().equalsIgnoreCase("demo")
+                                        && !res.name().equalsIgnoreCase("logs")
+                                        && !res.name().equalsIgnoreCase("images")
+                                        && !res.name().equalsIgnoreCase("gwc")
+                                        && !res.name().equalsIgnoreCase("gwc-layers")
+                                        && !res.name().equalsIgnoreCase("layergroups")
+                                        && !res.name().equalsIgnoreCase("palettes")
+                                        && !res.name().equalsIgnoreCase("plugIns")
+                                        && !res.name().equalsIgnoreCase("styles")
+                                        && !res.name().equalsIgnoreCase("security")
                                         && !res.name().equalsIgnoreCase("workspaces")
+                                        && !res.name().equalsIgnoreCase("user_projections")
+                                        && !res.name().equalsIgnoreCase("validation")
+                                        && !res.name().equalsIgnoreCase("www")
+                                        && !res.name().equalsIgnoreCase("csw")
                                 || (res.getType() == Type.RESOURCE
                                         && (res.name().endsWith(".properties")
                                                 || res.name().endsWith(".ini")
@@ -245,35 +262,111 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     public void backupRestoreAdditionalResources(ResourceStore resourceStore, Resource baseDir)
             throws Exception {
         try {
+            String[] excludeFilePaths = null;
+            if (getCurrentJobExecution() != null) {
+                JobParameters jobParameters = getCurrentJobExecution().getJobParameters();
+                if (jobParameters.getString(Backup.PARAM_EXCLUDE_FILE_PATH) != null) {
+                    excludeFilePaths =
+                            jobParameters.getString(Backup.PARAM_EXCLUDE_FILE_PATH).split(";");
+                }
+            }
             for (Entry<String, Filter<Resource>> entry : resources.entrySet()) {
                 Resource resource = resourceStore.get(entry.getKey());
-                if (resource != null && Resources.exists(resource)) {
+
+                List<Resource> resourcesToExclude =
+                        checkReosourcesToExclude(resourceStore, resource, excludeFilePaths);
+
+                if (resource != null
+                        && Resources.exists(resource)
+                        && !resourcesToExclude.contains(resource)) {
 
                     List<Resource> resources = Resources.list(resource, entry.getValue(), false);
 
                     Resource targetDir = BackupUtils.dir(baseDir, resource.name());
-                    for (Resource res : resources) {
-                        try {
-                            if (res.getType() != Type.DIRECTORY) {
-                                Resources.copy(res.file(), targetDir);
-                            } else {
-                                Resources.copy(res, BackupUtils.dir(targetDir, res.name()));
-                            }
-                        } catch (Exception e) {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Error occurred while trying to move a Resource!",
-                                    e);
-                            if (getCurrentJobExecution() != null) {
-                                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
-                            }
-                        }
-                    }
+                    copyResources(
+                            resourceStore,
+                            excludeFilePaths,
+                            resources,
+                            entry.getValue(),
+                            targetDir);
                 }
             }
         } catch (Exception e) {
             logValidationExceptions((T) null, e);
         }
+    }
+
+    /**
+     * @param resourceStore
+     * @param excludeFilePaths
+     * @param resources
+     * @param filter
+     * @param targetDir
+     */
+    private void copyResources(
+            ResourceStore resourceStore,
+            String[] excludeFilePaths,
+            List<Resource> resources,
+            Filter<Resource> filter,
+            Resource targetDir) {
+        for (Resource res : resources) {
+            try {
+                if (!checkReosourcesToExclude(resourceStore, res, excludeFilePaths).contains(res)) {
+                    if (res.getType() != Type.DIRECTORY) {
+                        Resources.copy(res.file(), targetDir);
+                    } else {
+                        List<Resource> sub_resources = Resources.list(res, filter, false);
+                        if (sub_resources.size() == 0) {
+                            Resources.copy(res, BackupUtils.dir(targetDir, res.path()));
+                        } else {
+                            copyResources(
+                                    resourceStore,
+                                    excludeFilePaths,
+                                    sub_resources,
+                                    filter,
+                                    targetDir);
+                        }
+                    }
+                } else {
+                    LOGGER.log(Level.INFO, "Excluded Resource " + res.path());
+                    if (getCurrentJobExecution() != null) {
+                        getCurrentJobExecution()
+                                .addWarningExceptions(
+                                        Arrays.asList(
+                                                new Exception("Excluded Resource " + res.path())));
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error occurred while trying to move a Resource!", e);
+                if (getCurrentJobExecution() != null) {
+                    getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                }
+            }
+        }
+    }
+
+    private List<Resource> checkReosourcesToExclude(
+            ResourceStore resourceStore, Resource resource, String[] excludeFilePaths)
+            throws IOException {
+        final String basePath =
+                Paths.convert(resourceStore.get(Paths.BASE).dir().getCanonicalPath());
+        List<Resource> resourcesToExclude = new ArrayList<Resource>();
+        if (excludeFilePaths != null) {
+            for (String exclusionPath : excludeFilePaths) {
+                if (resourceStore.get(exclusionPath) != null) {
+                    String canonicalPath =
+                            resource.getType() == Type.DIRECTORY
+                                    ? resource.dir().getCanonicalPath()
+                                    : resource.file().getCanonicalPath();
+                    canonicalPath = Paths.convert(canonicalPath);
+                    canonicalPath = canonicalPath.replace(basePath, "");
+                    if (canonicalPath.startsWith(exclusionPath)) {
+                        resourcesToExclude.add(resource);
+                    }
+                }
+            }
+        }
+        return resourcesToExclude;
     }
 
     //

@@ -25,6 +25,8 @@ public class TilesTestSupport extends OGCApiTestSupport {
 
     protected static final String POLYGON_COMMENT = "PolygonComment";
     protected static final String NATURE_GROUP = "nature";
+    protected static final String BASIC_STYLE_GROUP = "BasicStyleGroup";
+    protected static final String BASIC_STYLE_GROUP_STYLE = "BasicStyleGroupStyle";
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -74,14 +76,7 @@ public class TilesTestSupport extends OGCApiTestSupport {
 
         // prepare a layer with vector formats only
         String forestsId = getLayerId(MockData.FORESTS);
-        GeoServerTileLayer forestTiles =
-                (GeoServerTileLayer) getGWC().getTileLayerByName(forestsId);
-        Set<String> forestFormats = forestTiles.getInfo().getMimeFormats();
-        forestFormats.clear();
-        forestFormats.add(ApplicationMime.mapboxVector.getFormat());
-        forestFormats.add(ApplicationMime.geojson.getFormat());
-        forestFormats.add(ApplicationMime.topojson.getFormat());
-        getGWC().save(forestTiles);
+        addVectorTileFormats(forestsId, true);
 
         // setup a layer group
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
@@ -95,7 +90,36 @@ public class TilesTestSupport extends OGCApiTestSupport {
             group.getStyles().add(null);
             cb.calculateLayerGroupBounds(group);
             catalog.add(group);
+            addVectorTileFormats(NATURE_GROUP, false);
         }
+
+        // add a style groupd
+        testData.addStyle(
+                BASIC_STYLE_GROUP_STYLE,
+                "BasicStyleGroup.sld",
+                TilesTestSupport.class,
+                getCatalog());
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        StyleInfo s = catalog.getStyleByName("BasicStyleGroupStyle");
+
+        lg.setName(BASIC_STYLE_GROUP);
+        lg.getLayers().add(null);
+        lg.getStyles().add(s);
+        new CatalogBuilder(catalog).calculateLayerGroupBounds(lg);
+        catalog.add(lg);
+        addVectorTileFormats(BASIC_STYLE_GROUP, false);
+    }
+
+    private void addVectorTileFormats(String layerId, boolean clear) {
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) getGWC().getTileLayerByName(layerId);
+        Set<String> formats = tileLayer.getInfo().getMimeFormats();
+        if (clear) {
+            formats.clear();
+        }
+        formats.add(ApplicationMime.mapboxVector.getFormat());
+        formats.add(ApplicationMime.geojson.getFormat());
+        formats.add(ApplicationMime.topojson.getFormat());
+        getGWC().save(tileLayer);
     }
 
     protected GWC getGWC() {

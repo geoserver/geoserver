@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: GeoServer Namespace
   description: A namespace is a uniquely identifiable grouping of feature types. It is identified by a prefix and a URI.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
   /namespaces:

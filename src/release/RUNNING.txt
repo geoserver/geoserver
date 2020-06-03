@@ -13,11 +13,13 @@ In order to install and run this application, follow these steps:
 
 (0) Download and install a Java Development Kit
 
-* Download a Java Runtime Environment (Java 8 or later) from:
+* Download a Java Runtime Environment (Java 8 or Java 11) from:
 
-    http://www.oracle.com/technetwork/java/javase/downloads/
-     or 
     http://openjdk.java.net/
+    
+     or 
+     
+    https://adoptopenjdk.net
 
 * Install the JRE according to the instructions included with the release.
 
@@ -76,8 +78,7 @@ There are two techniques by which GeoServer can be started:
 After startup, the default web administration tool included with GeoServer 
 will be available by browsing:
 
-    http://localhost:8080/
-
+      http://localhost:8080/geoserver
 
 (3) Shut Down GeoServer
 
@@ -135,6 +136,6 @@ distribution of GeoServer:
 (5) Further information
 
 For more information about configuring and running GeoServer, please see the 
-GeoServer web site:
+GeoServer documentation:
 
-    http://geoserver.org/
+    https://docs.geoserver.org

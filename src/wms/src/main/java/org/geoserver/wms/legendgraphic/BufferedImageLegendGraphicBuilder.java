@@ -5,9 +5,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
@@ -161,7 +159,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             RenderedImage legendImage = null;
             if (useProvidedLegend || legend instanceof CascadedLegendRequest) {
                 boolean forceResize = !(legend instanceof CascadedLegendRequest);
-                legendImage = getLayerLegend(legend, w, h, transparent, forceResize, request);
+                legendImage =
+                        getLayerLegend(legend, w, h, transparent, forceResize, request, titleImage);
             }
 
             if (useProvidedLegend && legendImage != null) {
@@ -476,7 +475,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             int h,
             boolean transparent,
             boolean forceDimensions,
-            GetLegendGraphicRequest request) {
+            GetLegendGraphicRequest request,
+            RenderedImage titleImage) {
 
         LegendInfo legendInfo = legend.getLegendInfo();
         if (legendInfo == null) {
@@ -500,19 +500,21 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                 return image;
             }
 
+            image =
+                    rescaleBufferedImage(
+                            image,
+                            titleImage != null
+                                    ? titleImage
+                                    : getLayerTitle(legend, w, h, transparent, request));
             final BufferedImage rescale =
-                    ImageUtils.createImage(w, h, (IndexColorModel) null, true);
+                    ImageUtils.createImage(
+                            image.getWidth(), image.getHeight(), (IndexColorModel) null, true);
 
             Graphics2D g = (Graphics2D) rescale.getGraphics();
             g.setColor(new Color(255, 255, 255, 0));
             g.fillRect(0, 0, w, h);
-
-            double aspect = ((double) h) / ((double) image.getHeight());
-            int legendWidth = (int) (aspect * ((double) image.getWidth()));
-
-            g.drawImage(image, 0, 0, legendWidth, h, null);
+            g.drawImage(image, 0, 0, null);
             g.dispose();
-
             return rescale;
         } catch (IOException notFound) {
             LOGGER.log(Level.FINE, "Unable to legend graphic:" + url, notFound);
@@ -550,5 +552,37 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
     protected Rule[] updateRuleTitles(
             FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
         return processor.preProcessRules(legend, applicableRules);
+    }
+
+    protected BufferedImage rescaleBufferedImage(BufferedImage image, RenderedImage titleImage) {
+        int titleHeight = titleImage != null ? titleImage.getHeight() : 0;
+        int originalHeight = image.getHeight();
+        int originalWidth = image.getWidth();
+        double scaleFactor = getScale(originalHeight, h);
+        double scaleFactorW = getScale(originalWidth, w);
+        int scaleWidth = originalWidth >= w ? w : (int) Math.round(originalWidth * scaleFactorW);
+        int scaleHeight = (int) Math.round(originalHeight * scaleFactor);
+        scaleHeight -= titleHeight;
+        int delta = (scaleHeight + titleHeight) - h;
+        boolean stillTooBig = Math.signum(delta) >= 0;
+        if (stillTooBig) {
+            delta += titleHeight / 2;
+            scaleHeight -= delta;
+        }
+        Image result = image.getScaledInstance(scaleWidth, scaleHeight, Image.SCALE_DEFAULT);
+        if (result instanceof BufferedImage) return (BufferedImage) result;
+        else {
+            BufferedImage bufResult =
+                    new BufferedImage(
+                            image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = bufResult.getGraphics();
+            g.drawImage(result, 0, 0, null);
+            g.dispose();
+            return bufResult;
+        }
+    }
+
+    private double getScale(int original, int target) {
+        return (double) target / (double) original;
     }
 }

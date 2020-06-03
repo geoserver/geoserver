@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -114,8 +115,12 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
 
     /** Checks the specified jsonpath exists in the document */
     protected boolean exists(DocumentContext json, String path) {
-        List items = json.read(path);
-        return items.size() > 0;
+        try {
+            List items = json.read(path);
+            return items.size() > 0;
+        } catch (PathNotFoundException e) {
+            return false;
+        }
     }
 
     /**

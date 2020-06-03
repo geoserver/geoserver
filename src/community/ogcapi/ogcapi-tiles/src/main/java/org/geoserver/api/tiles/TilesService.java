@@ -33,6 +33,7 @@ import org.geoserver.api.OpenAPIMessageConverter;
 import org.geoserver.api.QueryablesDocument;
 import org.geoserver.api.ResourceNotFoundException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
@@ -276,6 +277,10 @@ public class TilesService {
         TileLayer tileLayer = getTileLayer(collectionId);
         if (styleId != null) {
             validateStyle(tileLayer, styleId);
+            if (isLayerGroup(tileLayer)) {
+                // only a notion of default style, remove the styleId
+                styleId = null;
+            }
         }
         MimeType requestedFormat =
                 getRequestedFormat(
@@ -420,17 +425,52 @@ public class TilesService {
         if (styleId.equalsIgnoreCase(tileLayer.getStyles())) {
             return;
         }
-        // look for the other possible values
-        Optional<ParameterFilter> styles =
-                tileLayer
-                        .getParameterFilters()
-                        .stream()
-                        .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
-                        .findFirst();
-        if (!styles.isPresent() && !styles.get().applies(styleId)) {
-            throw new InvalidParameterValueException(
-                    "Invalid style name, please check the collection description for valid style names: "
-                            + tileLayer.getStyles());
+        if (isLayerGroup(tileLayer)) {
+            String name = getLayerGroupStyleName(tileLayer);
+            if (!styleId.equals(name)) {
+                throw new InvalidParameterValueException(
+                        "Invalid style name, please check the collection description for valid style names: "
+                                + name);
+            }
+        } else {
+            // look for the other possible values
+            Optional<ParameterFilter> styles =
+                    tileLayer
+                            .getParameterFilters()
+                            .stream()
+                            .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
+                            .findFirst();
+            if (!styles.isPresent() || !styles.get().applies(styleId)) {
+                throw new InvalidParameterValueException(
+                        "Invalid style name, please check the collection description for valid style names: "
+                                + tileLayer.getStyles());
+            }
+        }
+    }
+
+    static boolean isLayerGroup(TileLayer tileLayer) {
+        if (tileLayer instanceof GeoServerTileLayer) {
+            return ((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerGroupInfo;
+        }
+
+        return false;
+    }
+
+    static boolean isStyleGroup(LayerGroupInfo lg) {
+        if (lg.getRootLayer() != null) return false;
+
+        // a simple style group uses a single top level style as its definition, and no layers
+        return lg.getStyles().size() == 1
+                && lg.getStyles().get(0) != null
+                && lg.getLayers().stream().allMatch(l -> l == null);
+    }
+
+    static String getLayerGroupStyleName(TileLayer tileLayer) {
+        LayerGroupInfo group = (LayerGroupInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo();
+        if (isStyleGroup(group)) {
+            return group.getStyles().get(0).getName();
+        } else {
+            return TiledCollectionDocument.DEFAULT_STYLE_NAME;
         }
     }
 
@@ -499,7 +539,7 @@ public class TilesService {
             throw new APIException(
                     "TileOutOfRange",
                     "Column " + x + " is out of range, min: " + gridCov[0] + " max:" + gridCov[2],
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
         if (y < gridCov[1] || y > gridCov[3]) {
             long minRow = tilesHigh - gridCov[3] - 1;
@@ -508,7 +548,7 @@ public class TilesService {
             throw new APIException(
                     "TileOutOfRange",
                     "Row " + tileRow + " is out of range, min: " + minRow + " max:" + maxRow,
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
 
         return new long[] {x, y, z};
@@ -586,5 +626,47 @@ public class TilesService {
                 && (((GeoServerTileLayer) tileLayer).getPublishedInfo() instanceof LayerInfo)
                 && (((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo()).getResource()
                         instanceof FeatureTypeInfo);
+    }
+
+    @GetMapping(
+        path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
+    @ResponseBody
+    public TileJSON getTileJSON(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "styleId") String styleId,
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
+            @RequestParam(name = "tileFormat") String format)
+            throws FactoryException, TransformException, NoSuchAlgorithmException,
+                    GeoWebCacheException, IOException {
+        return getTileJSONInternal(collectionId, styleId, format, tileMatrixSetId);
+    }
+
+    @GetMapping(
+        path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
+    @ResponseBody
+    public TileJSON getTileJSON(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId)
+            throws FactoryException, TransformException, NoSuchAlgorithmException,
+                    GeoWebCacheException, IOException {
+        return getTileJSONInternal(
+                collectionId, null, "application/vnd.mapbox-vector-tile", tileMatrixSetId);
+    }
+
+    private TileJSON getTileJSONInternal(
+            String collectionId, String styleId, String tileFormat, String tileMatrixSetId)
+            throws GeoWebCacheException, IOException, NoSuchAlgorithmException, TransformException,
+                    FactoryException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        if (styleId != null) {
+            validateStyle(tileLayer, styleId);
+        }
+        return new TileJSONBuilder(collectionId, tileFormat, tileMatrixSetId, tileLayer)
+                .style(styleId)
+                .build();
     }
 }

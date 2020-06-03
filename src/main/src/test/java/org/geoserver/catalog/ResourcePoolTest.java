@@ -1,5 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2014-2020 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -852,5 +851,28 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertNotNull(featureDefaultGeometry);
         assertEquals("pointProperty", schemaDefaultGeometry.getLocalName());
         assertEquals(schemaDefaultGeometry, featureDefaultGeometry);
+    }
+
+    /**
+     * Tests the ability for the ResourcePool to convert input objects for getting a specific
+     * GridCoverageReader using the CoverageReaderInputObjectConverter extension point.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testCoverageReaderInputConverter() throws IOException {
+        Catalog catalog = getCatalog();
+        ResourcePool pool = new ResourcePool(catalog);
+
+        CoverageStoreInfo info = catalog.getFactory().createCoverageStore();
+        info.setType("ImagePyramid");
+        info.setURL(
+                "file://./src/test/resources/data_dir/nested_layer_groups/data/pyramid%20with%20space");
+
+        GridCoverageReader reader = pool.getGridCoverageReader(info, null);
+
+        // the CoverageReaderFileConverter should have successfully converted the URL string to a
+        // File object
+        assertTrue(reader.getSource() instanceof File);
     }
 }

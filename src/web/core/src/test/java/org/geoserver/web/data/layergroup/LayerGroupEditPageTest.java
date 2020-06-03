@@ -450,4 +450,25 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         builder.calculateLayerGroupBounds(lg);
         catalog.add(lg);
     }
+
+    @Test
+    public void testApply() {
+        LayerGroupEditPage page =
+                new LayerGroupEditPage(
+                        new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        // Create the new page
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // Update the title
+        FormTester ft = tester.newFormTester("publishedinfo");
+        String newTitle = "A test title";
+        ft.setValue("tabs:panel:title", newTitle);
+        ft.submit("apply");
+        // no errors, and page is still the same
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+
+        // check the title was updated
+        assertEquals(newTitle, getCatalog().getLayerGroupByName("cite:bridges").getTitle());
+    }
 }

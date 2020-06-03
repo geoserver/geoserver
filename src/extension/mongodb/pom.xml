@@ -4,13 +4,38 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>extension</artifactId>
-        <version>2.17-SNAPSHOT</version>
+        <version>2.18-SNAPSHOT</version>
     </parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-mongodb</artifactId>
     <packaging>jar</packaging>
-    <version>2.17-SNAPSHOT</version>
     <name>MongoDB Data Store</name>
+    
+    <developers>
+        <developer>
+            <id>nunooliveira</id>
+            <name>Nuno Oliveira</name>
+            <email>nuno.oliveira@geo-solutions.it</email>
+            <organization>GeoSolutions S.A.S.</organization>
+            <organizationUrl>http://www.geo-solutions.it</organizationUrl>
+            <roles>
+                <role>Module Maintainer</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>fernandomino</id>
+            <name>Fernando Mino</name>
+            <email>fernando.mino@geo-solutions.it</email>
+            <organization>GeoSolutions S.A.S.</organization>
+            <organizationUrl>http://www.geo-solutions.it</organizationUrl>
+            <roles>
+                <role>Module Maintainer</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
     <dependencies>
         <dependency>
             <groupId>org.geotools</groupId>

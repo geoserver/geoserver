@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.persistence.Transient;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LegendInfo;
@@ -33,7 +32,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     // will style info with empty name
     // intended for legacy functionaloty
     // of using default remote style
-    @Transient public static StyleInfo DEFAULT_ON_REMOTE;
+    public static StyleInfo DEFAULT_ON_REMOTE;
 
     static {
         DEFAULT_ON_REMOTE = new StyleInfoImpl();
@@ -41,7 +40,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         DEFAULT_ON_REMOTE.getMetadata().put("isRemote", true);
     }
 
-    @Transient public static String DEFAULT_FORMAT = "image/png";
+    public static String DEFAULT_FORMAT = "image/png";
 
     protected String forcedRemoteStyle = "";
     protected String preferredFormat = DEFAULT_FORMAT;

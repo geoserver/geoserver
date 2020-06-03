@@ -56,6 +56,22 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testApply() throws Exception {
+        String testValue1 = "100", testValue2 = "0";
+        WFSInfo wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
+        login();
+        tester.startPage(WFSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("maxNumberOfFeaturesForPreview", (String) testValue1);
+        ft.submit("apply");
+        // did not switch
+        tester.assertRenderedPage(WFSAdminPage.class);
+        // value was updated
+        wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
+        assertEquals("testValue1 = 100", 100, (int) wfs.getMaxNumberOfFeaturesForPreview());
+    }
+
+    @Test
     public void testGML32ForceMimeType() throws Exception {
         // make sure GML MIME type overriding is disabled
         WFSInfo info = getGeoServer().getService(WFSInfo.class);

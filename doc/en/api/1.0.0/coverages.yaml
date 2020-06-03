@@ -4,6 +4,10 @@ info:
   version: 1.0.0
   title: GeoServer Coverages
   description: A coverage is a raster data set which originates from a coverage store.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

@@ -17,6 +17,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
@@ -58,6 +59,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.admin.ContactPanel;
 import org.geoserver.web.admin.GlobalSettingsPage;
 import org.geoserver.web.data.namespace.NamespaceDetachableModel;
@@ -190,6 +192,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         tabbedPanel.setOutputMarkupId(true);
         form.add(tabbedPanel);
         form.add(submitLink());
+        form.add(applyLink());
         form.add(new BookmarkablePageLink<WorkspacePage>("cancel", WorkspacePage.class));
         add(form);
     }
@@ -201,83 +204,97 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             @Override
             public void onSubmit() {
-                try {
-                    saveWorkspace();
-                } catch (RuntimeException e) {
-                    LOGGER.log(Level.WARNING, "Failed to save workspace", e);
-                    error(
-                            e.getMessage() == null
-                                    ? "Failed to save workspace, no error message available, see logs for details"
-                                    : e.getMessage());
-                }
+                saveWorkspace(true);
             }
         };
     }
 
-    private void saveWorkspace() {
-        final Catalog catalog = getCatalog();
+    private AjaxSubmitLink applyLink() {
+        return new GeoserverAjaxSubmitLink("apply", this) {
 
-        NamespaceInfo namespaceInfo = (NamespaceInfo) nsModel.getObject();
-        WorkspaceInfo workspaceInfo = (WorkspaceInfo) wsModel.getObject();
-
-        namespaceInfo.setIsolated(workspaceInfo.isIsolated());
-
-        // sync up workspace name with namespace prefix, temp measure until the two become separate
-        namespaceInfo.setPrefix(workspaceInfo.getName());
-
-        // validate workspace and namespace before updating them
-        catalog.validate(workspaceInfo, false).throwIfInvalid();
-        catalog.validate(namespaceInfo, false).throwIfInvalid();
-
-        // this will ensure all datastore namespaces are updated when the workspace is modified
-        catalog.save(workspaceInfo);
-        catalog.save(namespaceInfo);
-        if (basicInfoPanel.defaultWs) {
-            catalog.setDefaultWorkspace(workspaceInfo);
-        }
-
-        GeoServer geoServer = getGeoServer();
-
-        // persist/depersist any settings configured local to the workspace
-        Settings set = settingsPanel.set;
-        if (set.enabled) {
-            if (set.model instanceof NewSettingsModel) {
-                geoServer.add(set.model.getObject());
-            } else {
-                geoServer.save(set.model.getObject());
+            @Override
+            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+                saveWorkspace(false);
             }
-        } else {
-            // remove if necessary
-            if (set.model instanceof ExistingSettingsModel) {
-                geoServer.remove(set.model.getObject());
-            }
-        }
+        };
+    }
 
-        // persist/depersist any services configured local to this workspace
-        for (Service s : servicesPanel.services) {
-            if (s.enabled) {
-                if (s.model instanceof ExistingServiceModel) {
-                    // nothing to do, service has already been added
-                    continue;
+    private void saveWorkspace(boolean doReturn) {
+        try {
+            final Catalog catalog = getCatalog();
+
+            NamespaceInfo namespaceInfo = (NamespaceInfo) nsModel.getObject();
+            WorkspaceInfo workspaceInfo = (WorkspaceInfo) wsModel.getObject();
+
+            namespaceInfo.setIsolated(workspaceInfo.isIsolated());
+
+            // sync up workspace name with namespace prefix, temp measure until the two become
+            // separate
+            namespaceInfo.setPrefix(workspaceInfo.getName());
+
+            // validate workspace and namespace before updating them
+            catalog.validate(workspaceInfo, false).throwIfInvalid();
+            catalog.validate(namespaceInfo, false).throwIfInvalid();
+
+            // this will ensure all datastore namespaces are updated when the workspace is modified
+            catalog.save(workspaceInfo);
+            catalog.save(namespaceInfo);
+            if (basicInfoPanel.defaultWs) {
+                catalog.setDefaultWorkspace(workspaceInfo);
+            }
+
+            GeoServer geoServer = getGeoServer();
+
+            // persist/depersist any settings configured local to the workspace
+            Settings set = settingsPanel.set;
+            if (set.enabled) {
+                if (set.model instanceof NewSettingsModel) {
+                    geoServer.add(set.model.getObject());
+                } else {
+                    geoServer.save(set.model.getObject());
                 }
-                geoServer.add(s.model.getObject());
             } else {
                 // remove if necessary
-                if (s.model instanceof ExistingServiceModel) {
-                    // means they are removing an existing service, look it up and remove
-                    geoServer.remove(s.model.getObject());
+                if (set.model instanceof ExistingSettingsModel) {
+                    geoServer.remove(set.model.getObject());
                 }
             }
-        }
-        try {
-            if (accessDataPanel != null) accessDataPanel.save();
-            doReturn(WorkspacePage.class);
-        } catch (Exception e) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Error saving access rules associated to workspace " + workspaceInfo.getName(),
-                    e);
-            error(e.getMessage() == null ? e.toString() : e.getMessage());
+
+            // persist/depersist any services configured local to this workspace
+            for (Service s : servicesPanel.services) {
+                if (s.enabled) {
+                    if (s.model instanceof ExistingServiceModel) {
+                        // nothing to do, service has already been added
+                        continue;
+                    }
+                    geoServer.add(s.model.getObject());
+                } else {
+                    // remove if necessary
+                    if (s.model instanceof ExistingServiceModel) {
+                        // means they are removing an existing service, look it up and remove
+                        geoServer.remove(s.model.getObject());
+                    }
+                }
+            }
+            try {
+                if (accessDataPanel != null) accessDataPanel.save();
+                if (doReturn) {
+                    doReturn(WorkspacePage.class);
+                }
+            } catch (Exception e) {
+                LOGGER.log(
+                        Level.INFO,
+                        "Error saving access rules associated to workspace "
+                                + workspaceInfo.getName(),
+                        e);
+                error(e.getMessage() == null ? e.toString() : e.getMessage());
+            }
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.WARNING, "Failed to save workspace", e);
+            error(
+                    e.getMessage() == null
+                            ? "Failed to save workspace, no error message available, see logs for details"
+                            : e.getMessage());
         }
     }
 

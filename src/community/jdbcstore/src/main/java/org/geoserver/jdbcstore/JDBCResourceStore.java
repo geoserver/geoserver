@@ -25,8 +25,11 @@ import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.ResourceNotification.Event;
+import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
@@ -89,23 +92,68 @@ public class JDBCResourceStore implements ResourceStore {
             DataSource ds, JDBCResourceStoreProperties config, ResourceStore oldResourceStore) {
         this(ds, config);
         this.oldResourceStore = oldResourceStore;
+    }
 
-        if (config.isImport()) {
+    public void addCachingEvents(Resource resource, boolean forceAsDir) {
+        if (forceAsDir || resource.getType() == Type.DIRECTORY) {
+            resource.addListener(
+                    new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            if (notify.getKind() == Kind.ENTRY_MODIFY
+                                    || notify.getKind() == Kind.ENTRY_CREATE) {
+                                for (Event event : notify.events()) {
+                                    if (event.getKind() == Kind.ENTRY_CREATE) {
+                                        addCachingEvents(
+                                                (JDBCResource) resource.get(event.getPath()),
+                                                false);
+                                    }
+                                }
+                            }
+                        }
+                    });
+            for (Resource child : resource.list()) {
+                addCachingEvents(child, false);
+            }
+        } else if (resource.getType() == Type.RESOURCE) {
+            resource.addListener(
+                    new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            if (notify.getKind() == Kind.ENTRY_MODIFY) {
+                                resource.file();
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void init() {
+        if (dir.getConfig().isImport()) {
             if (oldResourceStore != null) {
                 try {
                     Resource root = oldResourceStore.get("");
                     for (Resource child : root.list()) {
-                        if (!ArrayUtils.contains(config.getIgnoreDirs(), child.name())) {
+                        if (!ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), child.name())) {
                             Resources.copy(child, get(child.name()));
                         }
                     }
-                    config.setImport(false);
-                    config.save();
+                    dir.getConfig().setImport(false);
+                    dir.getConfig().save();
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
             } else {
                 LOGGER.warning("Cannot import resources: no old resource store available.");
+            }
+        } else {
+            for (String cachedDir : dir.getConfig().getCachedDirs()) {
+                Resource child = get(cachedDir);
+                if (child.getType() == Type.DIRECTORY) {
+                    // cache whole dir at beginning
+                    child.dir();
+                }
+                addCachingEvents(child, true);
             }
         }
     }

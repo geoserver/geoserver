@@ -167,7 +167,7 @@
      -->
    </filter>
 
-   <!-- Uncomment following filter to enable CORS
+   <!-- Uncomment following filter to enable CORS in Jetty (won't work in Tomcat)
    <filter>
         <filter-name>cross-origin</filter-name>
         <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
@@ -191,7 +191,7 @@
     -->
 
     <!-- 
-      THIS FILTER MUST BE THE FIRST ONE, otherwise we end up with ruined chars in the input from the GUI
+      THIS FILTER MAPPING MUST BE THE FIRST ONE, otherwise we end up with ruined chars in the input from the GUI
       See the "Note" in the Tomcat character encoding guide:
       http://wiki.apache.org/tomcat/FAQ/CharacterEncoding
     -->
@@ -200,7 +200,7 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
    
-   <!-- Uncomment following filter to enable CORS
+   <!-- Uncomment following filter to enable CORS in Jetty (won't work in Tomcat)
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/*</url-pattern>

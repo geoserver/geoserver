@@ -20,11 +20,19 @@
       </includes>
     </fileSet>
     <fileSet>
-     <directory>release/extensions/printing</directory>
-     <outputDirectory></outputDirectory>
-     <includes>
-       <include>*</include>
-     </includes>
-   </fileSet>
+      <directory>release/extensions/printing</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.md</include>
+         <include>NOTICE.md</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

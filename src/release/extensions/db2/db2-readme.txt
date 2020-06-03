@@ -1,5 +1,5 @@
-GEOSERVER 2.9 DATA STORE EXTRAS README
---------------------------------------
+DB2 DATA STORE EXTENSION
+------------------------
 
 This package contains a DB2 DataStore implementation that is
 distributed as a separate plug-in.

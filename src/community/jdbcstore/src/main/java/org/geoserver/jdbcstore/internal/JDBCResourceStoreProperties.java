@@ -39,4 +39,12 @@ public class JDBCResourceStoreProperties extends JDBCLoaderProperties {
     public String[] getIgnoreDirs() {
         return getProperty("ignoreDirs", "").split(",");
     }
+
+    /**
+     * Directories that are to be permanently cached by jdbc-store (if they need to be permantently
+     * available for non-resource aware components) )
+     */
+    public String[] getCachedDirs() {
+        return getProperty("cachedDirs", "").split(",");
+    }
 }

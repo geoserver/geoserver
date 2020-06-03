@@ -4,6 +4,8 @@
  */
 package org.geoserver.api.tiles;
 
+import static org.geoserver.api.tiles.TilesService.isStyleGroup;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
@@ -46,7 +48,7 @@ import org.springframework.http.HttpStatus;
 @JsonPropertyOrder({"id", "title", "description", "extent", "links", "styles"})
 public class TiledCollectionDocument extends AbstractCollectionDocument {
     static final Logger LOGGER = Logging.getLogger(TiledCollectionDocument.class);
-    public static final String DEFAULT_STYLE_NAME = "";
+    public static final String DEFAULT_STYLE_NAME = "_";
     WMS wms;
     TileLayer layer;
     List<StyleDocument> styles = new ArrayList<>();
@@ -93,6 +95,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
 
             dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
             if (dataTiles) {
+                // tiles
                 addLinksFor(
                         "ogc/tiles/collections/" + id + "/tiles",
                         TilesDocument.class,
@@ -126,9 +129,15 @@ public class TiledCollectionDocument extends AbstractCollectionDocument {
                         this.styles.add(new StyleDocument(style));
                     }
                 } else {
-                    // layer group? no named styles for the moment
-                    this.styles.add(
-                            new StyleDocument(DEFAULT_STYLE_NAME, "The layer default style"));
+                    LayerGroupInfo group = (LayerGroupInfo) published;
+                    if (isStyleGroup(group)) {
+                        StyleDocument styleDocument = new StyleDocument(group.getStyles().get(0));
+                        this.styles.add(styleDocument);
+                    } else {
+                        // layer group? no named styles for the moment
+                        this.styles.add(
+                                new StyleDocument(DEFAULT_STYLE_NAME, "The layer default style"));
+                    }
                 }
             } else {
                 String style = tileLayer.getStyles();

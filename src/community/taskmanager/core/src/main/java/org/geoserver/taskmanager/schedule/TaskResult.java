@@ -16,4 +16,8 @@ public interface TaskResult {
 
     /** batch has failed - cancel all changes */
     void rollback() throws TaskException;
+
+    default String successMessage() {
+        return null;
+    }
 }

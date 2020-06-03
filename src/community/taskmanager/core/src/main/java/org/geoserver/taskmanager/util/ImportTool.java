@@ -46,11 +46,13 @@ public class ImportTool {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{template}", method = RequestMethod.POST)
-    public void doImportWithTemplate(
+    public boolean doImportWithTemplate(
             @PathVariable String template,
             @RequestBody String csvFile,
             @RequestParam(defaultValue = "true") boolean validate)
             throws IOException {
+
+        boolean success = true;
 
         if (!SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -66,6 +68,9 @@ public class ImportTool {
 
                 while (scanner.hasNextLine()) {
                     line = scanner.nextLine();
+                    if (line.isEmpty()) {
+                        continue;
+                    }
                     String[] split = line.split(SPLIT_BY);
                     Map<String, String> record = new HashMap<String, String>();
                     for (int i = 0; i < Math.min(attNames.length, split.length); i++) {
@@ -102,6 +107,7 @@ public class ImportTool {
                                                 + config.getName()
                                                 + ", validation error: "
                                                 + error.toString());
+                                success = false;
                             }
                         } else {
                             config.setValidated(true);
@@ -112,6 +118,7 @@ public class ImportTool {
                                         Level.SEVERE,
                                         "Failed to import configuration " + config.getName(),
                                         e);
+                                success = false;
                             }
                         }
                     } else {
@@ -122,10 +129,13 @@ public class ImportTool {
                                     Level.SEVERE,
                                     "Failed to import configuration " + config.getName(),
                                     e);
+                            success = false;
                         }
                     }
                 }
             }
         }
+
+        return success;
     }
 }

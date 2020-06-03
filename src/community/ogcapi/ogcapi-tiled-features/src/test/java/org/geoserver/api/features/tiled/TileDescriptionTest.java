@@ -1,15 +1,18 @@
 package org.geoserver.api.features.tiled;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.Arrays;
 import org.geoserver.data.test.MockData;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -70,7 +73,7 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
         // check basic properties
         assertThat(json.read("identifier"), equalTo("EPSG:4326"));
         assertThat(
-                json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/EPSG/0/4326"));
+                json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(json.read("title"), startsWith("A default WGS84"));
 
         // check a tile matrix definitions
@@ -109,6 +112,18 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/collections\\/cite:RoadSegments\\/tiles\\?.*/ && @.rel == 'alternate')].type"),
                 hasItems("application/x-yaml"));
+
+        // test the describedBy template
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/tiles/{tileMatrixSetId}/metadata?f=application%2Fjson",
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='describedBy' && @.type=='application/json')].href"));
+        assertEquals(
+                Boolean.TRUE,
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='describedBy' && @.type=='application/json')].templated"));
 
         checkRoadSegmentsTileMatrix(json);
     }
@@ -153,5 +168,27 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
         assertEquals(Integer.valueOf(512), json.read(webMercatorLimit10 + ".maxTileRow"));
         assertEquals(Integer.valueOf(511), json.read(webMercatorLimit10 + ".minTileCol"));
         assertEquals(Integer.valueOf(512), json.read(webMercatorLimit10 + ".maxTileCol"));
+    }
+
+    @Test
+    public void testTileJSONSingleLayer() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "/ogc/features/collections/cite:RoadSegments/tiles/EPSG:4326/metadata?f=application%2Fjson",
+                        200);
+        assertThat(doc.read("name"), equalTo("cite:RoadSegments"));
+        assertThat(doc.read("scheme"), equalTo("xyz"));
+        assertThat(
+                readSingle(doc, "tiles"),
+                equalTo(
+                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles/EPSG:4326/{z}/{y}/{x}?f=application%2Fvnd.mapbox-vector-tile"));
+        assertThat(doc.read("center"), equalTo(Arrays.asList(0d, 0d, 0d)));
+        assertThat(doc.read("bounds"), equalTo(Arrays.asList(-0.0042, -0.0024, 0.0042, 0.0024)));
+        assertThat(
+                readSingle(doc, "vector_layers[?(@.id == 'RoadSegments')].fields"),
+                allOf(hasEntry("FID", "string"), hasEntry("NAME", "string")));
+        assertThat(
+                readSingle(doc, "vector_layers[?(@.id == 'RoadSegments')].geometry_type"),
+                equalTo("line"));
     }
 }

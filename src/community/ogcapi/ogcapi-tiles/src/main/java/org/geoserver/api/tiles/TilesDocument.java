@@ -53,33 +53,57 @@ public class TilesDocument extends AbstractDocument {
         if (type == Type.RawTiles) {
             for (MimeType dataFormat :
                     tileTypes.stream().filter(mt -> mt.isVector()).collect(Collectors.toList())) {
-                addLinkForFormat(
+                addTilesLinkForFormat(
                         this.id,
                         baseURL,
                         dataFormat.getFormat(),
                         "/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
                         TILE_REL);
             }
+
+            // tileJSON
+            addLinksFor(
+                    "ogc/tiles/collections/" + id + "/tiles/{tileMatrixSetId}/metadata",
+                    TileJSON.class,
+                    "Tiles metadata as ",
+                    "metadata",
+                    (m, l) -> l.setTemplated(true),
+                    "describedBy");
         } else {
             List<MimeType> imageFormats =
                     tileTypes.stream().filter(mt -> !mt.isVector()).collect(Collectors.toList());
             for (MimeType imgeFormat : imageFormats) {
-                addLinkForFormat(
+                addTilesLinkForFormat(
                         this.id,
                         baseURL,
                         imgeFormat.getFormat(),
                         "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
                         TILE_REL);
             }
+
             // add the info links (might be needed only for maps, but we always have a style so...)
             for (String infoFormat : wms.getAvailableFeatureInfoFormats()) {
-                addLinkForFormat(
+                addTilesLinkForFormat(
                         this.id,
                         baseURL,
                         infoFormat,
                         "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info",
                         "info");
             }
+
+            // tileJSON
+            addLinksFor(
+                    "ogc/tiles/collections/"
+                            + id
+                            + "/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
+                    TileJSON.class,
+                    "Tiles metadata as ",
+                    "metadata",
+                    (m, l) -> {
+                        l.setTemplated(true);
+                        l.setHref(l.getHref() + "&tileFormat={tileFormat}");
+                    },
+                    "describedBy");
         }
     }
 
@@ -87,7 +111,7 @@ public class TilesDocument extends AbstractDocument {
         return tileMatrixSetLinks;
     }
 
-    protected void addLinkForFormat(
+    protected void addTilesLinkForFormat(
             String layerName, String baseURL, String format, String path, String rel) {
         String apiUrl =
                 ResponseUtils.buildURL(
@@ -95,6 +119,8 @@ public class TilesDocument extends AbstractDocument {
                         "ogc/tiles/collections/" + ResponseUtils.urlEncode(layerName) + path,
                         Collections.singletonMap("f", format),
                         URLMangler.URLType.SERVICE);
-        addLink(new Link(apiUrl, rel, format, layerName + " tiles as " + format.toString()));
+        Link link = new Link(apiUrl, rel, format, layerName + " tiles as " + format.toString());
+        link.setTemplated(true);
+        addLink(link);
     }
 }

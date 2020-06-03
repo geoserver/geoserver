@@ -17,6 +17,7 @@ A field is defined in the yaml following key-value pairs:
     - `fieldType`_
     - `label`_
     - `occurrence`_
+    - `condition`_
     - `values`_  (specific field types)
     - `derivedFrom`_  (specific field types)
     - `typename`_  (specific field types)
@@ -54,6 +55,7 @@ Key               Required  Value
                                 - UUID
                                 - DROPDOWN
                                 - SUGGESTBOX
+                                - REQUIREBOX
                                 - DERIVED
 ================  ========  ============================
 
@@ -101,10 +103,21 @@ Key               Required  Value
                               - REPEAT
 ================  ========  ============================
 
+condition
+^^^^^^^^^
+
+Conditional attributes are attributes that are only visible for some layers. A typical example are attributes only present for raster or vector layers.
+The condition is specified in `CQL <cql_tutorial>`_ which is evaluated against the layer's `ResourceInfo <csw_features>`_ object.
+
+For example:
+
+.. code:: YAML
+
+  condition: equalTo(typeOf("."), 'FeatureTypeInfo')
 
 values
 ^^^^^^
-The choices in a `DROPDOWN`_ or a `SUGGESTBOX`_ can be set using the ``values``  attribute in the yaml. 
+The choices in a `DROPDOWN`_, `SUGGESTBOX`_ or `REQUIREBOX`_ can be set using the ``values``  attribute in the yaml. 
 This is useful for small list, for larger list it can be better to list the choices in a separate .csv file.
 
 derivedFrom
@@ -129,6 +142,7 @@ Field Types
         - `DATETIME`_
         - `DROPDOWN`_
         - `SUGGESTBOX`_
+        - `REQUIREBOX`_
         - `DERIVED`_
         - `COMPLEX`_
 
@@ -293,6 +307,11 @@ The values can be put in a separate CSV file in the same way as for the DROPDOWN
             - second
             - third
 
+REQUIREBOX
+^^^^^^^^^^
+This type is identical to suggestbox, except that the user is not allowed to fill in a custom value but enforced to choose a suggested value.
+This can be handy when an field value must be an element from a list, but this list is too long for a dropdown to be practical. 
+
 DERIVED
 ^^^^^^^
 A derived field is a hidden field whose value depends on an other field. The yaml key ``derivedFrom`` should contain the key of the field it depends on.
@@ -397,13 +416,22 @@ In the example the featureCatalog object has two attributes. A unique identifier
           occurrence: REPEAT
 
 
-The ``Generate`` action will check the database metadata for that layer and generate a feature type for each column in the table.
+The ``Generate`` action will check the database metadata for that layer and generate a feature attribute for each column in the table.
 
 .. figure:: images/fa02.png
 
     e.g. Feature attribute with generate feature types
 
-Whitin each feature type there is another ``Generate`` action that will generate the domain.
+Whitin each feature attribute there is another ``Generate`` action that will generate the domain. 
+
+.. figure:: images/generate_domain.png
+
+    e.g. Generate domain dialog
+
+There are two options to do this:
+  - Using the existing data in the database for this attribute.
+  - Using data from a look-up table in the same database. In this case you must specify the table, an attribute from which to take values and an attribute from which to take definitions.
+
 
 .. figure:: images/fa03.png
 
@@ -430,6 +458,12 @@ e.g.
 .. code::
 
   metadata.generated.form.metadata-identifier=Metadata identificator
+
+Drop-down labels can be translated too, in the same properties file, using the key ``metadata.generated.form.[attributeKey].[value]=[label]``. 
+The value that will be internally stored for this field stays the same.
+
+
+.. _community_metadata_uiconfiguration_hidden_fields:
 
 Hidden Fields
 -------------

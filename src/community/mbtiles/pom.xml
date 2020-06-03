@@ -9,7 +9,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.17-SNAPSHOT</version>
+  <version>2.18-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-mbtiles</artifactId>
@@ -105,8 +105,20 @@
    <artifactId>gs-web-demo</artifactId>
    <scope>test</scope>
    <version>${project.version}</version>
-  </dependency>   	
-  
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-restconfig</artifactId>
+   <scope>test</scope>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-restconfig</artifactId>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+   <version>${project.version}</version>
+  </dependency>
  </dependencies>
 
  <build>

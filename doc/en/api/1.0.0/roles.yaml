@@ -4,9 +4,12 @@ info:
   version: 1.0.0
   title: Roles
   description: Organisation of security roles
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest/security
-
 
 paths:
   /roles:

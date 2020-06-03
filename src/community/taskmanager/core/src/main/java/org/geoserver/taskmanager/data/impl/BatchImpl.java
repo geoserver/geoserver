@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -43,6 +44,7 @@ public class BatchImpl extends BaseImpl implements Batch {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @XStreamOmitField
     private Long id;
 
     @OneToMany(
@@ -62,7 +64,7 @@ public class BatchImpl extends BaseImpl implements Batch {
 
     // stupid work-around
     // duplicate of name only set if configuration == null, just for unique constraint
-    @Column private String nameNoConfig;
+    @Column @XStreamOmitField private String nameNoConfig;
 
     @ManyToOne
     @JoinColumn(name = "configuration", nullable = true)
@@ -77,6 +79,7 @@ public class BatchImpl extends BaseImpl implements Batch {
     private Boolean enabled = true;
 
     @Column(nullable = false)
+    @XStreamOmitField
     private Long removeStamp = 0L;
 
     @OneToMany(
@@ -86,9 +89,10 @@ public class BatchImpl extends BaseImpl implements Batch {
         cascade = CascadeType.ALL
     )
     @OrderBy("id")
+    @XStreamOmitField
     private List<BatchRun> batchRuns = new ArrayList<BatchRun>();
 
-    @Transient private BatchRun latestBatchRun;
+    @Transient @XStreamOmitField private BatchRun latestBatchRun;
 
     @Override
     public Long getId() {

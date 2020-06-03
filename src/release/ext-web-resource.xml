@@ -1,0 +1,31 @@
+<assembly>
+  <id>web-resource-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-web-resource*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>GPL.md</include>
+         <include>NOTICE.md</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>extension/web-resource/README.md</source>
+      <outputDirectory></outputDirectory>
+      <destName>web-resource-README.txt</destName>
+    </file>
+  </files>
+</assembly>

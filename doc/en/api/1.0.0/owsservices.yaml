@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   title: OWS Services
   description: An OWS service refers to any of the OGC services that GeoServer supports, such as WFS, WMS, and WCS. These endpoints controls the settings of these services.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
 
 paths:
 

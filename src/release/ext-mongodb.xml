@@ -10,6 +10,17 @@
       <outputDirectory/>
       <includes>
         <include>*mongo*.jar</include>
+        <include>*bson*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+         <include>LGPL.md</include>
+         <include>GEOTOOLS_NOTICE.txt</include>
+         <include>GPL.md</include>
+         <include>NOTICE.md</include>
       </includes>
     </fileSet>
   </fileSets>

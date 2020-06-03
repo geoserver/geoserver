@@ -1,3 +1,4 @@
+ .. _community_metadata_advanced_configuration:
 
 Advanced Configuration
 ======================
@@ -84,6 +85,8 @@ Key               Required  Description
 **mappingType:**   no        | CUSTOM (default; map to fields from the metadata module configuration)
                              | NATIVE (map to geoserver native fields)
 ================  ========  ============================
+
+.. _community_metadata_advanced_configuration_custom_native:
 
 Custom to Native Mapping
 ------------------------

@@ -157,7 +157,7 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         tester.clickLink("batchesPanel:refresh");
 
         tester.assertModelValue(
-                "batchesPanel:form:batchesPanel:listContainer:items:3:itemProperties:7:component",
+                "batchesPanel:form:batchesPanel:listContainer:items:4:itemProperties:7:component",
                 Status.ROLLED_BACK);
     }
 

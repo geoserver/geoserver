@@ -1,0 +1,11 @@
+#
+# Image descriptors
+#
+
+descriptor  org.geoserver.wps.gs.download.vertical.op.VerticalTransformDescriptor
+
+#
+# RenderedImageFactories
+#
+
+rendered  org.geoserver.wps.gs.download.vertical.op.VerticalTransformCRIF it.geosolutions.jaiext  verticalTransform verticalTransform

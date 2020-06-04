@@ -139,10 +139,13 @@ public class JsonLdTemplateReader {
         String strNode = node.asText();
         String filter = null;
         if (strNode.contains(FILTERKEY)) {
-            String[] arrNode = strNode.split(",");
+            strNode = strNode.replace(FILTERKEY + "{", "");
+            int sepIndex = strNode.indexOf('}') + 1;
+            String sep = String.valueOf(strNode.charAt(sepIndex));
+            String[] arrNode = strNode.split(sep);
             strNode = arrNode[1];
             filter = arrNode[0];
-            filter = filter.replace("$filter{", "").replace("}", "");
+            filter = filter.substring(0, filter.length() - 1);
         }
         if (node.toString().contains(EXPRSTART) && !node.asText().equals("FeatureCollection")) {
             DynamicValueBuilder dynamicBuilder =

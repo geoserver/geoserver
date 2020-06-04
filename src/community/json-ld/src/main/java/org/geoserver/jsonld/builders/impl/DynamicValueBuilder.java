@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.expressions.JsonLdCqlManager;
+import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
@@ -35,13 +35,11 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     public DynamicValueBuilder(String key, String expression, NamespaceSupport namespaces) {
         super(key, namespaces);
         this.namespaces = namespaces;
-        JsonLdCqlManager cqlManager = new JsonLdCqlManager(expression, namespaces);
+        JsonLdCQLManager cqlManager = new JsonLdCQLManager(expression, namespaces);
         if (expression.startsWith("$${")) {
             this.cql = cqlManager.getExpressionFromString();
-            // strCqlToExpression(expression);
         } else if (expression.startsWith("${")) {
             this.xpath = cqlManager.getAttributeExpressionFromString();
-            // strXpathToPropertyName(expression);
         }
         this.contextPos = cqlManager.getContextPos();
     }

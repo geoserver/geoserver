@@ -27,7 +27,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  * to extracts the xpath from the function as a literal, to substitute it after cql encoding
  * happened with an AttributeExpression.
  */
-public class JsonLdCqlManager {
+public class JsonLdCQLManager {
 
     private String strCql;
 
@@ -35,7 +35,7 @@ public class JsonLdCqlManager {
 
     private NamespaceSupport namespaces;
 
-    public JsonLdCqlManager(String strCql, NamespaceSupport namespaces) {
+    public JsonLdCQLManager(String strCql, NamespaceSupport namespaces) {
         this.strCql = strCql;
         this.namespaces = namespaces;
     }

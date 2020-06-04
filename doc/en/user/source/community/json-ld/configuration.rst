@@ -207,13 +207,19 @@ attribute (static)
 
 
 
-As it is possible to see, in the array and object case the filter sintax expected an :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"` separeted by the cql expression of by the static content from a :code:`,`.
+In the array and object case the filter sintax expected a :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"`, followed by  the cql expression, or by the static content, with a comma separating the two.
 The evaluation of a filter is handled by the module in the following way:
 
 * if a :code:`"$filter": "cql"` attribute is present after the :code:`"$source"` attribute in an array or an object:
-  * in the array case, each of its element will be included in the output if the condition in the filter condition is true;
-  * in the object case, the entire object will be included in the output if the condition in the filter condition is true;
+  
+  * in the array case, each array element will be included in the output only if the condition in the filter is matched, otherwise it will be skipped;
+  
+  * in the object case, the entire object will be included in the output only if the condition in the filter is matched, otherwise the object will be skipped;
 
 * if a :code:`$filter{cql}` is present inside an attribute value before the expression or the static content, separated by it from a :code:`,`:
+  
   * in case of an expression attribute, the result of the expression will be included in the output if the filter condition is true;
+  
   * in case of a static content attribute, the static content will be included in the output if the filter condition is true.
+  
+  * in case the expression is not matched, the content, static or dynamic, will not be set, resulting in the attribute being skipped.

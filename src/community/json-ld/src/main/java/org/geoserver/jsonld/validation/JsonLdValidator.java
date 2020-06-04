@@ -13,7 +13,7 @@ import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.expressions.JsonLdCqlManager;
+import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
@@ -138,7 +138,7 @@ public class JsonLdValidator {
         if (pn instanceof AttributeExpressionImpl) {
             AttributeExpressionImpl old = (AttributeExpressionImpl) pn;
             String strXpath = old.getPropertyName();
-            int contextPos = JsonLdCqlManager.determineContextPos(strXpath);
+            int contextPos = JsonLdCQLManager.determineContextPos(strXpath);
             int i = 0;
             String newSource = source;
             if (newSource != null) {

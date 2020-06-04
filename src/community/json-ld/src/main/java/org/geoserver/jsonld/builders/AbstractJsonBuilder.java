@@ -7,10 +7,9 @@ package org.geoserver.jsonld.builders;
 import java.io.IOException;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
-import org.geoserver.jsonld.expressions.JsonLdCqlManager;
+import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.filter.text.cql2.CQLException;
 import org.opengis.filter.Filter;
-import org.opengis.filter.expression.*;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Abstract implementation of {@link JsonBuilder} who groups some common attributes and methods. */
@@ -36,11 +35,9 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
 
     protected boolean evaluateFilter(JsonBuilderContext context) {
         if (filter == null) return true;
-        int i = 0;
         JsonBuilderContext evaluationContenxt = context;
-        while (i < filterContextPos) {
+        for (int i = 0; i < filterContextPos; i++) {
             evaluationContenxt = evaluationContenxt.getParent();
-            i++;
         }
         return filter.evaluate(evaluationContenxt.getCurrentObj());
     }
@@ -58,7 +55,7 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
     }
 
     public void setFilter(String filter) throws CQLException {
-        JsonLdCqlManager cqlManager = new JsonLdCqlManager(filter, namespaces);
+        JsonLdCQLManager cqlManager = new JsonLdCQLManager(filter, namespaces);
         this.filter = cqlManager.getFilterFromString();
         this.filterContextPos = cqlManager.getContextPos();
     }

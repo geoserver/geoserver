@@ -100,6 +100,8 @@ class CRSRequestHandler {
 
     private String crsAttribute;
 
+    private double resolutionsDifferenceTolerance;
+
     public CRSRequestHandler(
             GridCoverage2DReader reader,
             Catalog catalog,
@@ -350,5 +352,13 @@ class CRSRequestHandler {
             // Reproject the granule geometry to the requested CRS
             return JTS.bounds(geom, schemaCRS).transform(targetCRS, true);
         }
+    }
+
+    public double getResolutionsDifferenceTolerance() {
+        return resolutionsDifferenceTolerance;
+    }
+
+    public void setResolutionsDifferenceTolerance(double resolutionsDifferenceTolerance) {
+        this.resolutionsDifferenceTolerance = resolutionsDifferenceTolerance;
     }
 }

@@ -671,9 +671,11 @@ public class LegendUtils {
             rlg.setRenderingHint(
                     RenderingHints.KEY_TEXT_ANTIALIASING,
                     g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
-            rlg.setRenderingHint(
-                    RenderingHints.KEY_FRACTIONALMETRICS,
-                    g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
+            if (g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS) != null) {
+                rlg.setRenderingHint(
+                        RenderingHints.KEY_FRACTIONALMETRICS,
+                        g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
+            }
             rlg.drawString(label, 0, height - rlg.getFontMetrics().getDescent());
             rlg.dispose();
         }

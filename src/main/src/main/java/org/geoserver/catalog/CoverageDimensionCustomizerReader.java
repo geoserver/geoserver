@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import javax.measure.Unit;
-import javax.measure.format.ParserException;
+import javax.measure.format.MeasurementParseException;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PropertySource;
 import javax.media.jai.PropertySourceImpl;
@@ -55,7 +55,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
-import tec.uom.se.format.SimpleUnitFormat;
+import tech.units.indriya.format.SimpleUnitFormat;
 
 /**
  * A {@link GridCoverage2DReader} wrapper to customize the {@link CoverageDimensionInfo} associated
@@ -596,7 +596,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 if (uom != null) {
                     unit = SimpleUnitFormat.getInstance().parse(uom);
                 }
-            } catch (ParserException | IllegalArgumentException iae) {
+            } catch (MeasurementParseException | IllegalArgumentException iae) {
                 if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
                     LOGGER.warning(
                             "Unable to parse the specified unit ("

@@ -275,6 +275,11 @@
     <version>${gt.version}</version>
    </dependency>
    <dependency>
+    <groupId>org.geotools.jdbc</groupId>
+    <artifactId>gt-jdbc-h2</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
     <groupId>org.geotools.xsd</groupId>
     <artifactId>gt-xsd-core</artifactId>
     <version>${gt.version}</version>

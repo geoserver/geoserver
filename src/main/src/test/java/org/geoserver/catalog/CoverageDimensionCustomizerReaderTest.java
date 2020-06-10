@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.opengis.coverage.ColorInterpretation;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.SampleDimensionType;
-import tec.uom.se.unit.BaseUnit;
+import tech.units.indriya.unit.BaseUnit;
 
 public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSupport {
 

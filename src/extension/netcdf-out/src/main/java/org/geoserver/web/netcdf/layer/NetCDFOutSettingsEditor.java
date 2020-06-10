@@ -33,7 +33,7 @@ import org.geotools.coverage.io.netcdf.cf.Entry;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 import si.uom.NonSI;
 import si.uom.SI;
-import tec.uom.se.format.SimpleUnitFormat;
+import tech.units.indriya.format.SimpleUnitFormat;
 
 /**
  * Extension of the {@link NetCDFPanel} adding support for setting the Layer name and Unit of

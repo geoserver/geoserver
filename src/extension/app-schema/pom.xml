@@ -20,6 +20,29 @@
     <packaging>pom</packaging>
     <name>Application Schema Support</name>
 
+    <developers>
+        <developer>
+            <name>Nuno Oliveira</name>
+            <id>nmco</id>
+            <email>nuno.oliveira@geo-solutions.it</email>
+            <organization>GeoSolutions</organization>
+            <roles>
+                <role>Module Maintainer</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Fernando Mino</name>
+            <id>fernandor777</id>
+            <email>fernando.mino@geo-solutions.it</email>
+            <organization>GeoSolutions</organization>
+            <roles>
+                <role>Module Maintainer</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <modules>
         <module>app-schema-test</module>
         <module>sample-data-access-test</module>

@@ -1977,8 +1977,8 @@
   <gt.version>24-SNAPSHOT</gt.version>
   <gwc.version>1.18-SNAPSHOT</gwc.version>
   <jts.version>1.16.1</jts.version>
-  <spring.version>5.1.14.RELEASE</spring.version>
-  <spring.security.version>5.1.9.RELEASE</spring.security.version>
+  <spring.version>5.1.16.RELEASE</spring.version>
+  <spring.security.version>5.1.11.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>
   <jetty.version>9.4.18.v20190429</jetty.version>
   <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>

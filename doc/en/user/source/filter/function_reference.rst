@@ -145,6 +145,9 @@ Feature functions
      - Returns the value of the property ``propertyName``.  
        Allows property names to be computed or specified by 
        :ref:`sld_variable_substitution`.
+   * - mapGet
+     - ``f``:Feature, ``map``:Map, ``key``:String
+     - Get the value of the map ``map`` related to the specified ``key``.
      
 Spatial Relationship functions
 ------------------------------

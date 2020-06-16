@@ -64,7 +64,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     static final Property<StoreInfo> NAME = new BeanProperty<>("name", "name");
 
-    final Property<StoreInfo> TYPE =
+    static final Property<StoreInfo> TYPE =
             new AbstractProperty<StoreInfo>("type") {
 
                 public Object getPropertyValue(StoreInfo item) {
@@ -73,7 +73,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
                         return type;
                     }
                     try {
-                        ResourcePool resourcePool = getCatalog().getResourcePool();
+                        ResourcePool resourcePool = item.getCatalog().getResourcePool();
                         if (item instanceof DataStoreInfo) {
                             DataStoreInfo dsInfo = (DataStoreInfo) item;
                             DataAccessFactory factory = resourcePool.getDataStoreFactory(dsInfo);
@@ -102,7 +102,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> CREATED_TIMESTAMP =
             new BeanProperty<>("datecreated", "dateCreated");
 
-    final List<Property<StoreInfo>> PROPERTIES =
+    static final List<Property<StoreInfo>> PROPERTIES =
             Arrays.asList(DATA_TYPE, WORKSPACE, NAME, TYPE, ENABLED);
 
     WorkspaceInfo workspace;

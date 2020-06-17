@@ -7,7 +7,6 @@ package org.geoserver.inspire.web;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.wicket.model.IModel;
 import org.geoserver.inspire.UniqueResourceIdentifier;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -16,10 +15,11 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 public class UniqueResourceIdentifiersProvider
         extends GeoServerDataProvider<UniqueResourceIdentifier> {
 
-    IModel<UniqueResourceIdentifiers> model;
+    UniqueResourceIdentifiers items;
 
-    public UniqueResourceIdentifiersProvider(IModel<UniqueResourceIdentifiers> model) {
-        this.model = model;
+    public UniqueResourceIdentifiersProvider(UniqueResourceIdentifiers items) {
+        this.items = new UniqueResourceIdentifiers(items);
+        setEditable(true);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UniqueResourceIdentifiersProvider
     }
 
     @Override
-    protected List<UniqueResourceIdentifier> getItems() {
-        return model.getObject();
+    protected UniqueResourceIdentifiers getItems() {
+        return items;
     }
 }

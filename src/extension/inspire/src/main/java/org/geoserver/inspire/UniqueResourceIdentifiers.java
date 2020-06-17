@@ -15,4 +15,12 @@ import java.util.ArrayList;
 public class UniqueResourceIdentifiers extends ArrayList<UniqueResourceIdentifier> {
 
     private static final long serialVersionUID = -6132343935725006351L;
+
+    public UniqueResourceIdentifiers() {}
+
+    public UniqueResourceIdentifiers(UniqueResourceIdentifiers identifiers) {
+        for (UniqueResourceIdentifier identifier : identifiers) {
+            add(new UniqueResourceIdentifier(identifier));
+        }
+    }
 }

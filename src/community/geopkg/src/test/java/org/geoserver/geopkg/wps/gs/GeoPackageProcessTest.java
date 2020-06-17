@@ -6,12 +6,18 @@ package org.geoserver.geopkg.wps.gs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureReader;
@@ -21,6 +27,7 @@ import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.geopkg.TileReader;
 import org.geotools.util.URLs;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -31,6 +38,15 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
+    }
+
+    @Before
+    public void disableXXEDetection() {
+        // running tests in the IDE having also GeoTools loaded otherwise fails
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
+        global.setXmlExternalEntitiesEnabled(true);
+        gs.save(global);
     }
 
     @Test
@@ -250,6 +266,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
     @Test
     public void testGeoPackageProcessValidationXXE() throws Exception {
+        // for this one test we want the check on
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
+        global.setXmlExternalEntitiesEnabled(false);
+        gs.save(global);
+
         String xml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                         + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"

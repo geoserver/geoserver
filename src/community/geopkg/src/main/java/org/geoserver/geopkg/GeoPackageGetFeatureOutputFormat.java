@@ -12,6 +12,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,7 +90,8 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
 
-        GeoPackage geopkg = new GeoPackage();
+        File file = File.createTempFile("geopkg", ".tmp.gpkg");
+        GeoPackage geopkg = GeoPkg.getGeoPackage(file);
 
         for (FeatureCollection collection : featureCollection.getFeatures()) {
 
@@ -110,7 +112,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
 
             geopkg.add(e, features);
 
-            if ("true".equals(System.getProperty(PROPERTY_INDEXED))) {
+            if (!"false".equals(System.getProperty(PROPERTY_INDEXED))) {
                 geopkg.createSpatialIndex(e);
             }
         }

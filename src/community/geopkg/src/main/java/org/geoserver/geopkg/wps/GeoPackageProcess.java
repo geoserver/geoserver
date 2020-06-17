@@ -23,6 +23,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.geopkg.GeoPackageGetMapOutputFormat;
+import org.geoserver.geopkg.GeoPkg;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.GetFeature;
 import org.geoserver.wfs.WFSInfo;
@@ -129,7 +130,7 @@ public class GeoPackageProcess implements GeoServerProcess {
             file = resources.getOutputResource(null, outputName).file();
         }
 
-        GeoPackage gpkg = new GeoPackage(file);
+        GeoPackage gpkg = GeoPkg.getGeoPackage(file);
         // Initialize the GeoPackage file in order to avoid exceptions when accessing the geoPackage
         // file
         gpkg.init();

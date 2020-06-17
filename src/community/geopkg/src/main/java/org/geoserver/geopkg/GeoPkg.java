@@ -6,7 +6,14 @@
 package org.geoserver.geopkg;
 
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import org.geotools.geopkg.GeoPackage;
+import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.sqlite.SQLiteConfig;
 
 /**
  * GeoPackage Utility class.
@@ -24,4 +31,20 @@ public class GeoPkg {
     /** names/aliases for the format */
     public static final Collection<String> NAMES =
             Lists.newArrayList("geopackage", "geopkg", "gpkg");
+
+    /**
+     * Initialize a GeoPackage connection with top speed for single user writing
+     *
+     * @param file The GeoPackage location
+     */
+    public static GeoPackage getGeoPackage(File file) throws IOException {
+        SQLiteConfig config = new SQLiteConfig();
+        config.setSharedCache(true);
+        config.setJournalMode(SQLiteConfig.JournalMode.OFF);
+        config.setPragma(SQLiteConfig.Pragma.SYNCHRONOUS, "OFF");
+        config.setLockingMode(SQLiteConfig.LockingMode.EXCLUSIVE);
+        Map<String, Object> params = new HashMap<>();
+        params.put(JDBCDataStoreFactory.BATCH_INSERT_SIZE.key, 10000);
+        return new GeoPackage(file, config, params);
+    }
 }

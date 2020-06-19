@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.data.DataAccessFactoryProducer;
 import org.geoserver.data.DataStoreFactoryInitializer;
 import org.geoserver.feature.retype.RetypingDataStore;
@@ -296,10 +297,7 @@ public abstract class DataStoreUtils {
     }
 
     // A utility method for retreiving supported SRS on WMSLayerInfo resource
-    public static List<String> getOtherSRSFromWMSStore(ResourceInfo resource) {
-        if (!(resource instanceof WMSLayerInfo)) return Collections.EMPTY_LIST;
-
-        WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) resource;
+    public static List<String> getOtherSRSFromWMSStore(WMSLayerInfo wmsLayerInfo) {
         try {
 
             Layer wmsLayer = wmsLayerInfo.getWMSLayer(new NullProgressListener());
@@ -314,10 +312,32 @@ public abstract class DataStoreUtils {
         } catch (IOException e) {
             LOGGER.log(
                     Level.SEVERE,
-                    "Error while reading other SRS from WMS Layer :" + resource.getNativeName(),
+                    "Error while reading other SRS from WMS Layer :" + wmsLayerInfo.getNativeName(),
                     e);
         }
         // default to legacy behavior on failure
+        return Collections.EMPTY_LIST;
+    }
+
+    // A utility method for retreiving supported SRS on WMTSLayerInfo resource
+    public static List<String> getOtherSRSFromWMTSStore(WMTSLayerInfo wmtsLayerInfo) {
+        try {
+
+            Layer wmtsLayer = wmtsLayerInfo.getWMTSLayer(new NullProgressListener());
+
+            Set<String> supportedSRS = wmtsLayer.getSrs();
+            // check if there are additional srs available
+            // if not return an empty list for legacy behavior
+            if (supportedSRS.size() == 1) return Collections.EMPTY_LIST;
+            List<String> otherSRS = supportedSRS.stream().collect(Collectors.toList());
+            return otherSRS;
+        } catch (IOException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error while reading other SRS from WMS Layer :"
+                            + wmtsLayerInfo.getNativeName(),
+                    e);
+        }
         return Collections.EMPTY_LIST;
     }
 }

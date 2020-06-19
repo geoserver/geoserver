@@ -1447,6 +1447,7 @@ public class CatalogBuilder {
                 CoordinateReferenceSystem crs = CRS.decode(srs);
                 wli.setSRS(srs);
                 wli.setNativeCRS(crs);
+                break;
             } catch (Exception e) {
                 LOGGER.log(
                         Level.INFO,

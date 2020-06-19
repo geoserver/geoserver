@@ -35,7 +35,7 @@ script:
   - if [ "$ACTION" == "build" ]; then grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50; fi
   - if [ "$ACTION" == "docs" ]; then mvn -f doc/en install; fi
   - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae --builder smart -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:single -nsu -N; mvn -f src/community/pom.xml assembly:single -nsu -N; fi
-before-caching:
+before_cache:
   - rm -rf $HOME/.m2/repository/org/geotools
   - rm -rf $HOME/.m2/repository/org/geowebcache
   - rm -rf $HOME/.m2/repository/org/geoserver

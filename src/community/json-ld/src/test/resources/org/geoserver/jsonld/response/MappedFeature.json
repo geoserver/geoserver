@@ -44,6 +44,7 @@
             "$source": "gsml:composition"
           },
           {
+            "previousContextValue": "${../gml:description}",
             "gsml:compositionPart": [
               {
                 "$source": "gsml:CompositionPart"

@@ -13,7 +13,6 @@ import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
@@ -31,8 +30,6 @@ public class JsonLdValidator {
 
     private String failingAttribute;
 
-    private String source;
-
     public JsonLdValidator(FeatureTypeInfo type) {
         this.type = type;
     }
@@ -41,18 +38,20 @@ public class JsonLdValidator {
         try {
             ValidateExpressionVisitor validateVisitor =
                     new ValidateExpressionVisitor(new JsonBuilderContext(type.getFeatureType()));
-            return validateExpressions(root, validateVisitor);
+            String source = null;
+            return validateExpressions(root, validateVisitor, source);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    private boolean validateExpressions(JsonBuilder builder, ValidateExpressionVisitor visitor) {
+    private boolean validateExpressions(
+            JsonBuilder builder, ValidateExpressionVisitor visitor, String source) {
         for (JsonBuilder jb : builder.getChildren()) {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder djb = (DynamicValueBuilder) jb;
-                Expression toValidate = getExpressionToValidate(djb);
+                Expression toValidate = getExpressionToValidate(djb, source, djb.getContextPos());
                 if (validate(toValidate, visitor) == null)
                     if (djb.getCql() != null) {
                         this.failingAttribute =
@@ -65,21 +64,26 @@ public class JsonLdValidator {
                     }
             } else if (jb instanceof SourceBuilder) {
                 SourceBuilder sb = ((SourceBuilder) jb);
+                String siblingSource = null;
                 if (sb.getSource() != null) {
                     String typeName =
                             sb.getStrSource().substring(sb.getStrSource().indexOf(":") + 1);
                     if (!type.getName().contains(typeName)) {
-                        if (validate(getSourceToValidate(sb), visitor) == null) {
+                        PropertyName pn = getSourceToValidate(sb, source);
+                        if (validate(pn, visitor) == null) {
                             failingAttribute = "Source: " + sb.getStrSource();
                             return false;
+                        } else {
+                            siblingSource = pn.getPropertyName();
                         }
                     }
                 } else {
                     if (sb instanceof IteratingBuilder) return false;
                 }
-                return validateExpressions(jb, visitor);
+                if (!validateExpressions(
+                        jb, visitor, siblingSource != null ? siblingSource : source)) return false;
             } else {
-                Filter filter = getFilterToValidate((AbstractJsonBuilder) builder);
+                Filter filter = getFilterToValidate((AbstractJsonBuilder) builder, source);
                 if (filter != null && validate(filter, visitor) == null) {
                     return false;
                 }
@@ -106,19 +110,21 @@ public class JsonLdValidator {
      * Produce an AttributeExpressionImpl from the source attribute, suitable to be validated, eg.
      * taking cares of handling properly changes of context
      */
-    private AttributeExpressionImpl getSourceToValidate(SourceBuilder sb) {
+    private AttributeExpressionImpl getSourceToValidate(SourceBuilder sb, String strSource) {
         AttributeExpressionImpl source = (AttributeExpressionImpl) sb.getSource();
-        if (this.source == null) this.source = sb.getStrSource();
-        else this.source += "/" + sb.getStrSource();
-        return new AttributeExpressionImpl(this.source, source.getNamespaceContext());
+        if (strSource == null) strSource = sb.getStrSource();
+        else strSource += "/" + sb.getStrSource();
+        return new AttributeExpressionImpl(strSource, source.getNamespaceContext());
     }
 
     /**
      * Produce a Filter from the filter attribute, suitable to be validated eg. taking cares of
      * handling properly ../ and changes of context
      */
-    private Filter getFilterToValidate(AbstractJsonBuilder ab) {
-        if (ab.getFilter() != null) return (Filter) completeXpathWithVisitor(ab.getFilter());
+    private Filter getFilterToValidate(AbstractJsonBuilder ab, String source) {
+        if (ab.getFilter() != null)
+            return (Filter)
+                    completeXpathWithVisitor(ab.getFilter(), source, ab.getFilterContextPos());
         return null;
     }
 
@@ -126,25 +132,27 @@ public class JsonLdValidator {
      * Produce an expression from the xpath or the cql expression hold by the DynamicBuilder,
      * suitable to be validated, eg. taking care of handling properly ../ and changes of context
      */
-    private Expression getExpressionToValidate(DynamicValueBuilder db) {
+    private Expression getExpressionToValidate(
+            DynamicValueBuilder db, String source, int contextPos) {
         if (db.getXpath() != null) {
-            return completeXpathForValidation(db.getXpath());
+            return completeXpathForValidation(db.getXpath(), source, contextPos);
         } else {
-            return (Expression) completeXpathWithVisitor(db.getCql());
+            return (Expression) completeXpathWithVisitor(db.getCql(), source, contextPos);
         }
     }
 
-    private PropertyName completeXpathForValidation(PropertyName pn) {
+    private PropertyName completeXpathForValidation(
+            PropertyName pn, String source, int contextPos) {
         if (pn instanceof AttributeExpressionImpl) {
             AttributeExpressionImpl old = (AttributeExpressionImpl) pn;
             String strXpath = old.getPropertyName();
-            int contextPos = JsonLdCQLManager.determineContextPos(strXpath);
             int i = 0;
             String newSource = source;
             if (newSource != null) {
                 while (i < contextPos) {
                     strXpath = strXpath.replaceFirst("\\.\\./", "");
                     newSource = source.substring(0, source.lastIndexOf('/'));
+                    i++;
                 }
                 return new AttributeExpressionImpl(
                         newSource + "/" + old.getPropertyName(), old.getNamespaceContext());
@@ -156,12 +164,12 @@ public class JsonLdValidator {
         }
     }
 
-    private Object completeXpathWithVisitor(Object cql) {
+    private Object completeXpathWithVisitor(Object cql, String source, int contextPos) {
         DuplicatingFilterVisitor visitor =
                 new DuplicatingFilterVisitor() {
                     @Override
                     public Object visit(PropertyName filter, Object extraData) {
-                        Object result = completeXpathForValidation(filter);
+                        Object result = completeXpathForValidation(filter, source, contextPos);
                         if (result != null) return result;
                         return super.visit(filter, extraData);
                     }

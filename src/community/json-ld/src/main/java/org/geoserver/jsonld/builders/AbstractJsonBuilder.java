@@ -59,4 +59,8 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
         this.filter = cqlManager.getFilterFromString();
         this.filterContextPos = cqlManager.getContextPos();
     }
+
+    public int getFilterContextPos() {
+        return filterContextPos;
+    }
 }

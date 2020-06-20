@@ -1,0 +1,41 @@
+{
+  "@context": {
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "schema": "https://schema.org/",
+    "dc": "http://purl.org/dc/terms/",
+    "Feature": "gsp:Feature",
+    "FeatureCollection": "schema:Collection",
+    "Point": "sf:Point",
+    "wkt": "gsp:asWKT",
+    "features": {
+      "@container": "@set",
+      "@id": "schema:hasPart"
+    },
+    "geometry": "sf:geometry",
+    "description": "dc:description",
+    "title": "dc:title",
+    "name": "schema:name"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "ex:FirstParentFeature"
+    },
+    {
+      "@id": "${invalid/id}",
+      "featureType": "FirstParentFeature",
+      "ex:nestedComponent": [
+        {
+          "$source": "ex:nestedFeature"
+        },
+        {
+          "ex.simpleContent": {
+            "SimpleContent": "${ex:SimpleContent}",
+            "anAttribute": "${ex:SimpleContent/ex:someAttribute}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -138,4 +138,8 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
     public NamespaceSupport getNamespaces() {
         return namespaces;
     }
+
+    public int getContextPos() {
+        return contextPos;
+    }
 }

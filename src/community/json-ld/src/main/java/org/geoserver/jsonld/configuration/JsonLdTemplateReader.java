@@ -7,11 +7,9 @@ package org.geoserver.jsonld.configuration;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.geoserver.jsonld.builders.*;
 import org.geoserver.jsonld.builders.impl.*;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
@@ -24,8 +22,6 @@ public class JsonLdTemplateReader {
     public static final String FILTERKEY = "$filter";
 
     public static final String EXPRSTART = "${";
-
-    private static final Logger LOGGER = Logging.getLogger(JsonLdTemplateReader.class);
 
     private JsonNode template;
 

@@ -28,11 +28,11 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class JsonLdConfiguration {
 
     private final LoadingCache<CacheKey, JsonLdTemplate> templateCache;
-    private GeoServerDataDirectory dd;
+    private GeoServerDataDirectory dataDirectory;
     public static final String JSON_LD_NAME = "json-ld-template.json";
 
     public JsonLdConfiguration(GeoServerDataDirectory dd) {
-        this.dd = dd;
+        this.dataDirectory = dd;
         templateCache =
                 CacheBuilder.newBuilder()
                         .maximumSize(100)
@@ -54,7 +54,8 @@ public class JsonLdConfiguration {
                                                             + e.getMessage());
                                         }
                                         Resource resource =
-                                                dd.get(key.getResource(), key.getPath());
+                                                getDataDirectory()
+                                                        .get(key.getResource(), key.getPath());
                                         JsonLdTemplate template =
                                                 new JsonLdTemplate(resource, namespaces);
                                         return template;
@@ -109,6 +110,10 @@ public class JsonLdConfiguration {
             }
         }
         return namespaceSupport;
+    }
+
+    GeoServerDataDirectory getDataDirectory() {
+        return dataDirectory;
     }
 
     private class CacheKey {

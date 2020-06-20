@@ -5,8 +5,6 @@
 package org.geoserver.jsonld.builders.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,8 +13,6 @@ import org.geoserver.jsonld.builders.AbstractJsonBuilder;
 import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.FunctionExpression;
-import org.geotools.filter.MathExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
@@ -141,5 +137,9 @@ public class DynamicValueBuilder extends AbstractJsonBuilder {
 
     public NamespaceSupport getNamespaces() {
         return namespaces;
+    }
+
+    public int getContextPos() {
+        return contextPos;
     }
 }

@@ -16,8 +16,6 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class ValidateExpressionVisitor extends DefaultFilterVisitor {
 
-    private int contextPos = 0;
-
     private JsonBuilderContext context;
 
     public ValidateExpressionVisitor(JsonBuilderContext context) {
@@ -38,5 +36,13 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
             result = context;
         }
         return result;
+    }
+
+    public JsonBuilderContext getContext() {
+        return context;
+    }
+
+    public void setContext(JsonBuilderContext context) {
+        this.context = context;
     }
 }

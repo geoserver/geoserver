@@ -124,16 +124,32 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
 
     @Test
     public void testInvalidTemplateResponse() throws Exception {
-        setUpComplex("GeoLogicUnit_invalid.json", geologicUnit);
+        setUpComplex("FirstParentFeature_invalid.json", "ex", parentFeature);
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
-        sb.append("&TYPENAME=gsml:GeologicUnit&outputFormat=");
+        sb.append("&TYPENAME=ex:FirstParentFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         assertTrue(
                 response.getContentAsString()
                         .contains(
-                                "Failed to validate json-ld template for feature type GeologicUnit. "
+                                "Failed to validate json-ld template for feature type FirstParentFeature. "
                                         + "Failing attribute is Key: @id Value: &amp;quot;invalid/id&amp;quot;"));
+    }
+
+    @Test
+    public void testInvalidTemplateResponse2() throws Exception {
+        // check that validation fails for an invalid attribute down in the template
+        // the failing attribute also point to a previous context attribute (../)
+        setUpComplex("GeologicUnit_invalid.json", geologicUnit);
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=gsml:GeologicUnit&outputFormat=");
+        sb.append("application%2Fld%2Bjson");
+        MockHttpServletResponse resp = getAsServletResponse(sb.toString());
+        assertTrue(
+                resp.getContentAsString()
+                        .contains(
+                                "Failed to validate json-ld template for feature type GeologicUnit. "
+                                        + "Failing attribute is Key: invalidAttr Value: &amp;quot;gsml:notExisting&amp;quot;"));
     }
 
     private void checkMappedFeatureJSON(JSONObject feature) {
@@ -144,9 +160,17 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
         assertEquals(String.valueOf(geom.get("@type")), "Polygon");
         assertNotNull(geom.get("wkt"));
         JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
+        String geologicUnitDescr = geologicUnit.getString("description");
+        assertNotNull(geologicUnitDescr);
         JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
         assertTrue(composition.size() > 0);
         for (int i = 0; i < composition.size(); i++) {
+            JSONObject compositionObj = composition.getJSONObject(i);
+
+            String previousContextEl = compositionObj.getString("previousContextValue");
+            // check an ${../xpath} expression to be equal to the one
+            // acquired previously
+            assertEquals(geologicUnitDescr, previousContextEl);
             JSONArray compositionPart =
                     (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
             assertTrue(compositionPart.size() > 0);

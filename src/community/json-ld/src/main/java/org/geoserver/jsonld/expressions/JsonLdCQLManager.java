@@ -311,7 +311,6 @@ public class JsonLdCQLManager {
         return expression;
     }
 
-
     /** Extract the literal argument from the xpath function */
     private String toLiteralXpath(String strXpath) {
         if (strXpath.indexOf(XPATH_FUN_START) != -1) {

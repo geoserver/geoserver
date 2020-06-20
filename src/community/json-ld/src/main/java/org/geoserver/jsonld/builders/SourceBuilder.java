@@ -25,7 +25,7 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
 
     public JsonBuilderContext evaluateSource(JsonBuilderContext context) {
 
-        if (source != null && !source.equals(context.getCurrentSource())) {
+        if (source != null && !source.getPropertyName().equals(context.getCurrentSource())) {
             Object o = evaluateSource(context.getCurrentObj());
             JsonBuilderContext newContext = new JsonBuilderContext(o, source.getPropertyName());
             newContext.setParent(context);

@@ -26,6 +26,7 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
     Catalog catalog;
     FeatureTypeInfo mappedFeature;
     FeatureTypeInfo geologicUnit;
+    FeatureTypeInfo parentFeature;
     GeoServerDataDirectory dd;
 
     @Before
@@ -34,18 +35,29 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
 
         mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
         geologicUnit = catalog.getFeatureTypeByName("gsml", "GeologicUnit");
+        parentFeature = catalog.getFeatureTypeByName("ex", "FirstParentFeature");
         dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
     }
 
     protected void setUpComplex() throws IOException {
-        setUpComplex("MappedFeature.json", mappedFeature);
+        setUpComplex("MappedFeature.json", "gsml", mappedFeature);
     }
 
     protected void setUpComplex(String templateFileName, FeatureTypeInfo ft) throws IOException {
+        setUpComplex(templateFileName, "gsml", ft);
+    }
+
+    protected void setUpComplex(String templateFileName, String workspace, FeatureTypeInfo ft)
+            throws IOException {
         File file =
                 dd.getResourceLoader()
                         .createFile(
-                                "workspaces/gsml/" + ft.getStore().getName() + "/" + ft.getName(),
+                                "workspaces/"
+                                        + workspace
+                                        + "/"
+                                        + ft.getStore().getName()
+                                        + "/"
+                                        + ft.getName(),
                                 JsonLdConfiguration.JSON_LD_NAME);
 
         dd.getResourceLoader().copyFromClassPath(templateFileName, file, getClass());
@@ -91,5 +103,16 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + JsonLdConfiguration.JSON_LD_NAME);
         if (res2 != null) res2.delete();
+
+        Resource res3 =
+                dd.getResourceLoader()
+                        .get(
+                                "workspaces/ex/"
+                                        + parentFeature.getStore().getName()
+                                        + "/"
+                                        + parentFeature.getName()
+                                        + "/"
+                                        + JsonLdConfiguration.JSON_LD_NAME);
+        if (res3 != null) res3.delete();
     }
 }

@@ -21,7 +21,7 @@ jobs:
         restore-keys: |
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
-      run: mvn -B clean install -T2 -Prelease --file src/pom.xml
+      run: mvn -B clean install -T2 -Prelease -Pmacos-github-build --file src/pom.xml
     - name: Remove SNAPSHOT jars from repository
       run: |
         find .m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

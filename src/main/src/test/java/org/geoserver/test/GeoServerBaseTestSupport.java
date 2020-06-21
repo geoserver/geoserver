@@ -168,7 +168,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         }
     }
 
-    private TestSetupFrequency lookupTestSetupPolicy() {
+    protected TestSetupFrequency lookupTestSetupPolicy() {
         Class clazz = getClass();
         while (clazz != null && !Object.class.equals(clazz)) {
             TestSetup testSetup = (TestSetup) clazz.getAnnotation(TestSetup.class);

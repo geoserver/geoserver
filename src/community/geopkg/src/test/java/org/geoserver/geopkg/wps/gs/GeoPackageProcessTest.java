@@ -9,16 +9,31 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.geopkg.wps.GeoPkgAnnotationReference;
+import org.geoserver.geopkg.wps.GeoPkgSemanticAnnotation;
+import org.geoserver.geopkg.wps.GeoPkgStyle;
+import org.geoserver.geopkg.wps.GeoPkgStyleSheet;
+import org.geoserver.geopkg.wps.GeoPkgSymbol;
+import org.geoserver.geopkg.wps.GeoPkgSymbolImage;
+import org.geoserver.geopkg.wps.PortrayalExtension;
+import org.geoserver.geopkg.wps.SemanticAnnotationsExtension;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureReader;
 import org.geotools.geopkg.FeatureEntry;
@@ -27,6 +42,7 @@ import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.geopkg.TileReader;
 import org.geotools.util.URLs;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -38,6 +54,22 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        testData.addStyle("burg", "burg.sld", this.getClass(), catalog);
+        try (InputStream is = this.getClass().getResourceAsStream("burg02.svg")) {
+            testData.copyTo(is, "styles/burg02.svg");
+        }
+
+        Catalog catalog = getCatalog();
+        StyleInfo burgStyle = catalog.getStyleByName("burg");
+        LayerInfo lakesLayer = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        lakesLayer.getStyles().add(burgStyle);
+        catalog.save(lakesLayer);
     }
 
     @Before
@@ -87,6 +119,15 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         fr.next();
         fr.close();
 
+        // style for fifteen was not exported
+        PortrayalExtension portrayal = gpkg.getExtension(PortrayalExtension.class);
+        SemanticAnnotationsExtension annotations =
+                gpkg.getExtension(SemanticAnnotationsExtension.class);
+        assertEquals(
+                3, portrayal.getStyles().size()); // the default style is associated to all layers
+        GeoPkgStyle fifteenStyle = portrayal.getStyle("Fifteen");
+        assertNull(fifteenStyle);
+
         fe = features.get(1);
         assertEquals("Lakes", fe.getTableName());
         assertEquals("lakes description", fe.getDescription());
@@ -96,6 +137,60 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertTrue(fr.hasNext());
         fr.next();
         fr.close();
+
+        // check the style
+        GeoPkgStyle lakesStyle = portrayal.getStyle("Lakes");
+        assertNotNull(lakesStyle);
+        assertEquals("http://localhost:8080/geoserver/styles/Lakes.sld", lakesStyle.getUri());
+        List<GeoPkgStyleSheet> lakesStylesheets = portrayal.getStylesheets(lakesStyle);
+        assertEquals(1, lakesStylesheets.size());
+        GeoPkgStyleSheet lakesStylesheet = lakesStylesheets.get(0);
+        assertEquals("application/vnd.ogc.sld+xml", lakesStylesheet.getFormat());
+        String expectedFill =
+                "                        <CssParameter name=\"fill\">\n"
+                        + "                            <ogc:Literal>#4040C0</ogc:Literal>\n"
+                        + "                        </CssParameter>\n";
+        assertThat(lakesStylesheet.getStylesheet(), CoreMatchers.containsString(expectedFill));
+
+        // the symbology
+        GeoPkgSymbol burg = portrayal.getSymbol("burg02.svg");
+        assertNotNull(burg);
+        assertEquals("symbols://burg/0", burg.getUri());
+        List<GeoPkgSymbolImage> images = portrayal.getImages(burg);
+        assertEquals(1, images.size());
+        GeoPkgSymbolImage image = images.get(0);
+        assertEquals("image/svg+xml", image.getFormat());
+        assertEquals("symbols://burg/0", image.getUri());
+        String svg = IOUtils.toString(image.getContent(), "UTF-8");
+        assertThat(
+                svg,
+                containsString(
+                        "<line fill=\"none\" stroke=\"#000000\" stroke-width=\"1\" x1=\"10\" y1=\"10\" x2=\"10\" y2=\"0\" />"));
+
+        // the association with the layer
+        List<GeoPkgSemanticAnnotation> lakesAnnotations =
+                annotations.getAnnotationsByURI("http://localhost:8080/geoserver/styles/Lakes.sld");
+        GeoPkgSemanticAnnotation lakesAnnotation = lakesAnnotations.get(0);
+        assertNotNull(lakesAnnotation);
+        assertEquals(PortrayalExtension.SA_TYPE_STYLE, lakesAnnotation.getType());
+        assertEquals("Lakes", lakesAnnotation.getTitle());
+        List<GeoPkgAnnotationReference> references =
+                annotations.getReferencesForAnnotation(lakesAnnotation);
+        assertEquals(2, references.size());
+        GeoPkgAnnotationReference lakesReference1 = references.get(0);
+        assertEquals("Lakes", lakesReference1.getTableName());
+        assertNull(lakesReference1.getKeyColumnName());
+        assertNull(lakesReference1.getKeyValue());
+        assertEquals(lakesAnnotation, lakesReference1.getAnnotation());
+        GeoPkgAnnotationReference lakesReference2 = references.get(1);
+        assertEquals("gpkgext_styles", lakesReference2.getTableName());
+        assertEquals("id", lakesReference2.getKeyColumnName());
+        assertEquals(lakesStyle.getId(), (long) lakesReference2.getKeyValue());
+        assertEquals(lakesAnnotation, lakesReference2.getAnnotation());
+
+        GeoPkgStyle defaultStyle = portrayal.getStyle("Default");
+        assertNotNull(defaultStyle);
+        assertEquals("http://localhost:8080/geoserver/styles/Default.sld", defaultStyle.getUri());
 
         List<TileEntry> tiles = gpkg.tiles();
         assertEquals(2, tiles.size());
@@ -345,6 +440,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + " </fes:PropertyIsEqualTo>"
                 + " </filter>"
                 + "    <indexed>true</indexed>"
+                + "    <styles>true</styles>"
                 + "   </features>"
                 + "  <tiles name=\"world_lakes\" identifier=\"wl1\">"
                 + "    <description>world and lakes overlay</description>  "

@@ -886,6 +886,12 @@ public class GeoServerDataDirectory {
         return locator;
     }
 
+    public ResourceLocator getResourceLocator(WorkspaceInfo ws) {
+        GeoServerResourceLocator locator = new GeoServerResourceLocator();
+        locator.setSourceUrl(URLs.fileToUrl(getStyles(ws).dir()));
+        return locator;
+    }
+
     private class ResourceAwareResourceLocator extends DefaultResourceLocator {
         @Override
         protected URL validateRelativeURL(URL relativeUrl) {

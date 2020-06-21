@@ -22,6 +22,8 @@
       <constructor-arg index="1" ref="geopkgGetMapOutputFormat" />
       <constructor-arg index="2" ref="wpsResourceManager"/>
       <constructor-arg index="3" ref="filterFactory"/>
+      <constructor-arg index="4" ref="dataDirectory"/>
+      <constructor-arg index="5" ref="entityResolverProvider"/>
     </bean>
     
     <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" >

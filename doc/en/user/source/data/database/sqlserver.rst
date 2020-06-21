@@ -17,8 +17,6 @@ The extension supports SQL Server 2008 and SQL Azure.
 Installing the SQL Server extension
 -----------------------------------
 
-.. warning:: Due to licensing requirements, not all files are included with the extension.  To install SQL Server support, it is necessary to download additional files. 
-
 GeoServer files
 ```````````````
 
@@ -32,6 +30,8 @@ GeoServer files
 
 Microsoft files
 ```````````````
+
+.. note:: These additional steps are only required for Geoserver versions prior to 2.16.3.
 
 #. Navigate to the download page for `Microsoft JDBC Drivers for SQL Server <https://www.microsoft.com/en-us/download/details.aspx?id=11774>`_.
 
@@ -72,10 +72,10 @@ Configuring a SQL Server data store
      - The database schema to access tables from (optional).
    * - ``user``
      - The name of the user to connect to the oracle database as.
-   * - ``password``     
+   * - ``password``
      - The password to use when connecting to the database. Leave blank for no password.
    * - ``max connections``
- 
+
        ``min connections``
 
      - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details. If you are connecting to SQL Azure make sure to set the ``validate connections`` flag as SQL Azure closes inactive connections after a very short delay.
@@ -102,16 +102,14 @@ Its presence is indicated via the SQL Server datastore connection parameter name
 The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter)::
 
 	CREATE TABLE GEOMETRY_COLUMNS(
-	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL, 
-	   F_TABLE_NAME VARCHAR(30) NOT NULL, 
-	   F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL, 
-	   COORD_DIMENSION INTEGER, 
-	   SRID INTEGER NOT NULL, 
+	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL,
+	   F_TABLE_NAME VARCHAR(30) NOT NULL,
+	   F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL,
+	   COORD_DIMENSION INTEGER,
+	   SRID INTEGER NOT NULL,
 	   TYPE VARCHAR(30) NOT NULL,
 	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
 	   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
-	   
+
 When the table is present the store first searches it for information about each geometry column
 to be classified, and falls back on data inspection only if the table does not contain any information.
-
-

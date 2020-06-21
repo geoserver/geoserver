@@ -94,4 +94,25 @@
 	   </plugin>
 	  </plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>windows-github-build</id>
+			<build>
+				<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>${test.exclude.pattern}</exclude>
+						<exclude>NewUserPageTest</exclude>
+						<exclude>RoleListPageTest</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

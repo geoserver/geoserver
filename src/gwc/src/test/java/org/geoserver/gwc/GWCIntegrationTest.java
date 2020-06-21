@@ -951,7 +951,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     private void waitTileBreederCompletion() throws InterruptedException {
         long start = System.currentTimeMillis();
         final int MAX_WAIT_SECS = 10;
-        while (GWC.get().getPendingTasks().hasNext()) {
+        while (GWC.get().getRunningAndPendingTasks().hasNext()) {
             Thread.sleep(10);
             long now = System.currentTimeMillis();
             if (now - start > MAX_WAIT_SECS * 1000) {

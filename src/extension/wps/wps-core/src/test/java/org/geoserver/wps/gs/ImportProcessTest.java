@@ -40,6 +40,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
@@ -121,6 +122,7 @@ public class ImportProcessTest extends WPSTestSupport {
 
     @Test
     public void testImportBuildingsCancellation() throws Exception {
+        Assume.assumeFalse(System.getProperty("macos-github-build") != null);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =

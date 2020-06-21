@@ -99,7 +99,9 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Delete the created directory
         blobStore.destroy();
         if (directory.exists()) {
-            FileUtils.deleteDirectory(directory);
+            // use deleteQuietly, because it could get concurrent with the GWC own cleanup threads,
+            // and end up trying to remove a sub-directory that's already gone
+            FileUtils.deleteQuietly(directory);
         }
     }
 

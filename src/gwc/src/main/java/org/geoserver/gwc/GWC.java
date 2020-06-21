@@ -2631,6 +2631,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return tileBreeder.getPendingTasks();
     }
 
+    /** Returns the list of all tasks in the tile breeder that have yet to complete */
+    public Iterator<GWCTask> getRunningAndPendingTasks() {
+        return tileBreeder.getRunningAndPendingTasks();
+    }
+
     public static void setCacheControlHeaders(Map<String, String> map, TileLayer layer) {
         Integer cacheAgeMax = getCacheAge(layer);
         log.log(Level.FINE, "Using cacheAgeMax {0}", cacheAgeMax);

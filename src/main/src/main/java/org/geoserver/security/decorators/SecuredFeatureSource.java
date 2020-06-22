@@ -89,7 +89,11 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                     ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
                     return (FeatureCollection) SecuredObjects.secure(retyped, policy);
                 } else {
-                    if (!readQuery.equals(Query.ALL)) {
+                    List<PropertyName> readProps = readQuery.getProperties();
+                    List<PropertyName> queryProps = query.getProperties();
+                    // logs only if properties have been limited by the security subsystem
+                    if (readProps != null
+                            && (queryProps == null || !readProps.containsAll(queryProps))) {
                         // complex feature store eh? No way to fix it at least warn the admin
                         LOGGER.log(
                                 Level.SEVERE,

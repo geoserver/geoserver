@@ -4,13 +4,26 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import freemarker.template.*;
-import java.io.*;
+import static org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.fromPattern;
+
+import freemarker.template.Configuration;
+import freemarker.template.SimpleHash;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateHashModel;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
+import org.apache.log4j.Logger;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
@@ -19,6 +32,7 @@ import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.RuleItem;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -27,6 +41,9 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * provides methods to retrieve templates and write the output processing them.
  */
 public abstract class FreeMarkerTemplateManager {
+
+    /** Config key determining the restrictions for accessing static members */
+    static final String KEY_STATIC_MEMBER_ACCESS = "org.geoserver.htmlTemplates.staticMemberAccess";
 
     enum OutputFormat {
         JSON("application/json"),
@@ -48,6 +65,8 @@ public abstract class FreeMarkerTemplateManager {
     private static DirectTemplateFeatureCollectionFactory tfcFactory =
             new DirectTemplateFeatureCollectionFactory();
 
+    private static Logger logger = Logger.getLogger(FreeMarkerTemplateManager.class);
+
     static {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
@@ -66,9 +85,41 @@ public abstract class FreeMarkerTemplateManager {
                                     "geoJSON",
                                     getStaticModel(
                                             "org.geoserver.wms.featureinfo.GeoJSONTemplateManager"));
+                            addConfiguredStatics(map);
                             return map;
                         }
                         return super.wrap(object);
+                    }
+
+                    private void addConfiguredStatics(SimpleHash aMap)
+                            throws TemplateModelException {
+                        String tmpAccessPattern =
+                                GeoServerExtensions.getProperty(KEY_STATIC_MEMBER_ACCESS);
+                        FreemarkerStaticsAccessRule tmpRule = fromPattern(tmpAccessPattern);
+                        if (tmpRule.isUnrestricted()) {
+                            aMap.put("statics", getStaticModels());
+                        } else {
+                            for (RuleItem tmpItem : tmpRule.getAllowedItems()) {
+                                String tmpAlias = tmpItem.getAlias();
+                                String tmpClassName = tmpItem.getClassName();
+                                aMap.put(tmpItem.getAlias(), tmpClassName);
+                                if (tmpItem.isNumberedAlias()) {
+                                    logger.warn(
+                                            "Granting access to static members of "
+                                                    + tmpClassName
+                                                    + " using the variable name "
+                                                    + tmpAlias
+                                                    + " to keep names unique.");
+                                } else {
+                                    logger.warn(
+                                            "Granting access to static members of "
+                                                    + tmpClassName
+                                                    + " using the variable name "
+                                                    + tmpAlias
+                                                    + ".");
+                                }
+                            }
+                        }
                     }
 
                     private TemplateHashModel getStaticModel(String path)

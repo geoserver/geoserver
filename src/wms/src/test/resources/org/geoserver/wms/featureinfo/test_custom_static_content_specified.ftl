@@ -1,0 +1,1 @@
+${Locale2.m()} from ${Locale.GERMAN.getLanguage()}

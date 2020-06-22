@@ -51,6 +51,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -349,5 +350,50 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         assertEquals(String.valueOf(Math.max(10, 100)), result);
+    }
+
+    /** Verifies calls to static methods are possible in unrestricted case. */
+    @Test
+    public void testStaticMethodsUnrestrictedInTemplate() throws IOException {
+        System.setProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS, "*");
+        currentTemplate = "test_custom_static_content.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        assertEquals(String.format("Amount: %.2f €", 47.11), result);
+    }
+
+    /** Verifies calls to static methods are disabled by default. */
+    @Test(expected = IOException.class)
+    public void testStaticMethodsDisabledInTemplate() throws IOException {
+        System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
+        currentTemplate = "test_custom_static_content.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+    }
+
+    // for test below: Name has to be duplicate of existing class
+    public static final class Locale {
+        public static String m() {
+            return "Hello world";
+        }
+    }
+
+    /** Verifies calls to static methods for are enabled for specified classes. */
+    @Test(expected = IOException.class)
+    public void testSpecifiedStaticMethodsInTemplateAvailable() throws IOException {
+        System.setProperty(
+                FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS,
+                java.util.Locale.class.getName() + "," + Locale.class.getName());
+        currentTemplate = "test_custom_static_content_specified.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        assertEquals("Hello world from de", result);
+    }
+
+    @After
+    public void tearDownStaticAccessKey() {
+        System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
     }
 }

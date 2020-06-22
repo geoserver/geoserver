@@ -89,12 +89,14 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                     ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
                     return (FeatureCollection) SecuredObjects.secure(retyped, policy);
                 } else {
-                    // complex feature store eh? No way to fix it at least warn the admin
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "Complex store returned more properties than allowed "
-                                    + "by security (because they are required by the schema). "
-                                    + "Either the security setup is broken or you have a security breach");
+                    if (!readQuery.equals(Query.ALL)) {
+                        // complex feature store eh? No way to fix it at least warn the admin
+                        LOGGER.log(
+                                Level.SEVERE,
+                                "Complex store returned more properties than allowed "
+                                        + "by security (because they are required by the schema). "
+                                        + "Either the security setup is broken or you have a security breach");
+                    }
                     return (FeatureCollection) SecuredObjects.secure(fc, policy);
                 }
             } else {

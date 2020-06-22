@@ -5,12 +5,12 @@ Microsoft SQL Server and SQL Azure
 
 .. note:: GeoServer does not come built-in with support for SQL Server; it must be installed through an extension. Proceed to :ref:`sqlserver_install` for installation details.
 
-Microsoft's `SQL Server <http://www.microsoft.com/sqlserver/2008>`_ is a relational database with spatial functionality. SQL Azure is the database option provided in the Azure cloud solution which is in many respects similar to SQL Server 2008.
+Microsoft's `SQL Server <http://www.microsoft.com/sqlserver>`_ is a relational database with spatial functionality. SQL Azure is the database option provided in the Azure cloud solution which is in many respects similar to SQL Server 2008.
 
 Supported versions
 ------------------
 
-The extension supports SQL Server 2008 and SQL Azure.
+The extension supports SQL Server 2008 - 2019 and SQL Azure.
 
 .. _sqlserver_install:
 
@@ -27,19 +27,6 @@ GeoServer files
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 #. Restart the GeoServer to load the extension.
-
-Microsoft files
-```````````````
-
-.. note:: These additional steps are only required for Geoserver versions prior to 2.16.3.
-
-#. Navigate to the download page for `Microsoft JDBC Drivers for SQL Server <https://www.microsoft.com/en-us/download/details.aspx?id=11774>`_.
-
-#. Extract the contents of the archive.
-
-#. Copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
-
-#. If GeoServer is installed on Windows, additionally copy ``auth\x86\sqljdbc_auth.dll`` and ``xa\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``.
 
 Adding a SQL Server database
 ----------------------------

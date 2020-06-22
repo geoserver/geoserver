@@ -133,6 +133,11 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         testData.setUpDefaultRasterLayers();
     }
 
+    //    @Override
+    //    protected String getLogConfiguration() {
+    //        return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
+    //    }
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // workaround to add our custom multi dimensional format

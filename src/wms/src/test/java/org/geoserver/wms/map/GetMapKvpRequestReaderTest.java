@@ -6,6 +6,7 @@
 package org.geoserver.wms.map;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
@@ -31,6 +32,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
@@ -976,5 +978,137 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         viewParams = viewParamsList.get(1);
         assertEquals("WHERE PERSONS > 1000000", viewParams.get("where"));
         assertEquals("ABCD", viewParams.get("str"));
+    }
+
+    public void testMissingLayersAndStylesParametersWithSld() throws Exception {
+        URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
+        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put("sld", decoded);
+        raw.put("format", "image/jpeg");
+        raw.put("crs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "true");
+        raw.put("request", "GetMap");
+        raw.put("version", "1.3.0");
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+    }
+
+    public void testMissingCrsParameterInGetMapRequest11() throws Exception {
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("styles", MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("format", "image/jpeg");
+        raw.put("srs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "true");
+        raw.put("request", "GetMap");
+        raw.put("version", "1.1.0");
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+    }
+
+    private void validateMissingParameterInGetMapRequest13(String paramToRemove) throws Exception {
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("styles", MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("format", "image/jpeg");
+        raw.put("crs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "true");
+        raw.put("request", "GetMap");
+        raw.put("version", "1.3.0");
+        raw.remove(paramToRemove);
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+            throw new Exception("Shouldn't get here");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), not(containsString("Shouldn't get here")));
+        }
+        service.setCiteCompliant(false);
+        geoServer.save(service);
+    }
+
+    public void testMissingStylesParameterInGetMapRequest13() throws Exception {
+        validateMissingParameterInGetMapRequest13("styles");
+    }
+
+    public void testMissingCrsParameterInGetMapRequest13() throws Exception {
+        validateMissingParameterInGetMapRequest13("crs");
+    }
+
+    public void testTransparencyValueInInspireGetMapRequest() throws Exception {
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("styles", MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("format", "image/jpeg");
+        raw.put("crs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "ZZZZZZ");
+        raw.put("request", "GetMap");
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+            throw new Exception("Shouldn't get here");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), not(containsString("Shouldn't get here")));
+        }
+        service.setCiteCompliant(false);
+        geoServer.save(service);
     }
 }

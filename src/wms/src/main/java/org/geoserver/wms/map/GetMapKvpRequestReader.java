@@ -243,11 +243,24 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // set the raw params used to create the request
         getMap.setRawKvp(rawKvp);
 
+        boolean citeCompliant = wms.getServiceInfo().isCiteCompliant();
+
         // wms 1.3, srs changed to crs
         if (kvp.containsKey("crs")) {
             getMap.setSRS((String) kvp.get("crs"));
+        } else if (citeCompliant && WMS.VERSION_1_3_0.equals(WMS.version(getMap.getVersion()))) {
+            throw new ServiceException("GetMap CRS parameter is mandatory in WMS 1.3");
         }
         // do some additional checks
+
+        if (citeCompliant && rawKvp != null && rawKvp.containsKey("transparent")) {
+            String trans = (String) rawKvp.get("transparent");
+
+            if (!trans.equalsIgnoreCase("false") && !trans.equalsIgnoreCase("true")) {
+                throw new Exception(
+                        "Invalid value of GetMap TRANSPARENT parameter, choose between true or false");
+            }
+        }
 
         // srs
         String epsgCode = getMap.getSRS();
@@ -288,6 +301,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (layerParam != null) {
             List<String> layerNames = KvpUtils.readFlat(layerParam);
             requestedLayerInfos.addAll(parseLayers(layerNames, remoteOwsUrl, remoteOwsType));
+        } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
+            // The SLD extensions to WMS allow a request not to have layers, as long as a full SLD
+            // is specified either using &sld or &sld_body. The error must not be thrown in these
+            // conditions (which are probably not what INSPIRE had in mind, but nonetheless a OGC
+            // specification.
+            throw new ServiceException(
+                    "GetMap LAYERS parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
         // raw styles parameter
@@ -295,6 +315,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         List<String> styleNameList = new ArrayList<String>();
         if (stylesParam != null) {
             styleNameList.addAll(KvpUtils.readFlat(stylesParam));
+        } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
+            // The SLD extensions to WMS allow a request not to have styles, as long as a full SLD
+            // is specified either using &sld or &sld_body. The error must not be thrown in these
+            // conditions (which are probably not what INSPIRE had in mind, but nonetheless a OGC
+            // specification.
+            throw new ServiceException(
+                    "GetMap STYLES parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
         // raw interpolations parameter

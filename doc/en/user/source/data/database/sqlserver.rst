@@ -5,7 +5,7 @@ Microsoft SQL Server and SQL Azure
 
 .. note:: GeoServer does not come built-in with support for SQL Server; it must be installed through an extension. Proceed to :ref:`sqlserver_install` for installation details.
 
-Microsoft's `SQL Server <http://www.microsoft.com/sqlserver>`_ is a relational database with spatial functionality. SQL Azure is the database option provided in the Azure cloud solution which is in many respects similar to SQL Server 2008.
+Microsoft's `SQL Server <http://www.microsoft.com/sqlserver>`_ is a relational database with spatial functionality. SQL Azure is the database option provided in the Azure cloud solution which is in many respects similar to SQL Server.
 
 Supported versions
 ------------------

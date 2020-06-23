@@ -523,7 +523,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         wmtsInfo.setStore(storeInfo);
         catalog.add(wmtsInfo);
         LayerInfo layerInfo =
-                xp.load(getClass().getResourceAsStream("/wmtslayer.xml"), LayerInfo.class);
+                xp.load(getClass().getResourceAsStream("/wmtsLayer.xml"), LayerInfo.class);
         layerInfo.setResource(wmtsInfo);
         // page should show additional SRS in WMTS cap document
         login();

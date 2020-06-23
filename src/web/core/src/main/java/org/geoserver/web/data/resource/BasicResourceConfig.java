@@ -91,7 +91,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         // for resources coming from WMS and WFS Datastore
         // then check if it has more than one SRS, then add FIND SRS button in Native SRS
         // which will allow user to set other SRS as Native SRS
-        List<String> otherSRS = getOtherSRSFromWFSOrWMSOrWMTS(model.getObject());
+        List<String> otherSRS = getOtherSRS(model.getObject());
         CRSPanel nativeCRS;
         if (otherSRS.isEmpty()) {
             // normal behavior for resoureces not belonging to WFS and WMS Store
@@ -326,7 +326,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     public boolean addOtherSRS(ResourceInfo resourceInfo) {
 
         // first check if its WFS-NG or WMSStore
-        List<String> otherSRS = getOtherSRSFromWFSOrWMSOrWMTS(resourceInfo);
+        List<String> otherSRS = getOtherSRS(resourceInfo);
 
         if (otherSRS != null) {
             if (!otherSRS.isEmpty()) {
@@ -356,16 +356,19 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         return "";
     }
 
-    private List<String> getOtherSRSFromWFSOrWMSOrWMTS(ResourceInfo resourceInfo) {
+    /**
+     * Returns a list of alternative SRS for resources that support multiple ones, e.g., WMS, WFS,
+     * WMTS cascaded layers
+     */
+    private List<String> getOtherSRS(ResourceInfo resourceInfo) {
         // first check if its WFS-NG
-        List<String> otherSRS = DataStoreUtils.getOtherSRSFromWfsNg(resourceInfo);
-        // second check if its wms
-        if (otherSRS.isEmpty()) {
-            if (resourceInfo instanceof WMSLayerInfo)
-                otherSRS = DataStoreUtils.getOtherSRSFromWMSStore((WMSLayerInfo) resourceInfo);
-            else if (resourceInfo instanceof WMTSLayerInfo)
-                otherSRS = DataStoreUtils.getOtherSRSFromWMTSStore((WMTSLayerInfo) resourceInfo);
-        }
+        List<String> otherSRS = Collections.EMPTY_LIST;
+        if (resourceInfo instanceof FeatureTypeInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWfsNg((FeatureTypeInfo) resourceInfo);
+        else if (resourceInfo instanceof WMSLayerInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWMSStore((WMSLayerInfo) resourceInfo);
+        else if (resourceInfo instanceof WMTSLayerInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWMTSStore((WMTSLayerInfo) resourceInfo);
 
         return otherSRS;
     }

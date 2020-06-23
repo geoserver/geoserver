@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.data.DataAccessFactoryProducer;
@@ -268,14 +267,14 @@ public abstract class DataStoreUtils {
     }
 
     // A utility method for retreiving supported SRS on WFS-NG resource
-    public static List<String> getOtherSRSFromWfsNg(ResourceInfo resourceInfo) {
+    public static List<String> getOtherSRSFromWfsNg(FeatureTypeInfo resourceInfo) {
         // do nothing when
         if (resourceInfo.getStore().getType() == null) return Collections.EMPTY_LIST;
         else if (!resourceInfo.getStore().getType().equalsIgnoreCase("Web Feature Server (NG)"))
             return Collections.EMPTY_LIST;
         try {
             // featureType.
-            FeatureTypeInfo featureType = (FeatureTypeInfo) resourceInfo;
+            FeatureTypeInfo featureType = resourceInfo;
             Name nativeName = new NameImpl(featureType.getNativeName());
 
             org.geotools.data.wfs.internal.FeatureTypeInfo info =

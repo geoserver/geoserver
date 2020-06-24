@@ -3,7 +3,7 @@
 Container Considerations
 ========================
 
-Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <http://www.mortbay.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance.
+Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <https://www.eclipse.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance.
 
 Optimize your JVM
 -----------------
@@ -77,9 +77,9 @@ Enable CORS
 
 The standalone distributions of GeoServer include the Jetty application server. `Enable Cross-Origin Resource Sharing (CORS) <https://enable-cors.org/>`_ to allow JavaScript applications outside of your own domain, or web browsers, to use GeoServer.
 
-For more information on what this does and other options see `Jetty Documentation <http://www.eclipse.org/jetty/documentation>`_
+For more information on what this does and other options see the `Jetty documentation <http://www.eclipse.org/jetty/documentation>`_ or the `Tomcat documentation <https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter>`_.
 
-Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoserver/WEB-INF/web.xml`::
+Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoserver/WEB-INF/web.xml` if using Jetty::
 
   <filter>
     <filter-name>cross-origin</filter-name>
@@ -102,14 +102,7 @@ Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoser
     </init-param>
   </filter>
 
-and::
-
-  <filter-mapping>
-    <filter-name>cross-origin</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-If you are using Tomcat and not Jetty the <filter> section of the configuration needs replacing::
+or Tomcat::
 
   <filter>
     <filter-name>cross-origin</filter-name>
@@ -128,4 +121,9 @@ If you are using Tomcat and not Jetty the <filter> section of the configuration 
     </init-param>
   </filter>
 
+and regardless of application server choice uncomment::
 
+  <filter-mapping>
+    <filter-name>cross-origin</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>

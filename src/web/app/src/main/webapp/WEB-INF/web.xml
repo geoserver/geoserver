@@ -167,26 +167,45 @@
      -->
    </filter>
 
-   <!-- Uncomment following filter to enable CORS in Jetty (won't work in Tomcat)
-   <filter>
-        <filter-name>cross-origin</filter-name>
-        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-       <init-param>
-           <param-name>chainPreflight</param-name>
-           <param-value>false</param-value>
-       </init-param>
-       <init-param>
-           <param-name>allowedOrigins</param-name>
-           <param-value>*</param-value>
-       </init-param>
-       <init-param>
-           <param-name>allowedMethods</param-name>
-           <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
-       </init-param>
-       <init-param>
-           <param-name>allowedHeaders</param-name>
-           <param-value>*</param-value>
-       </init-param>
+   <!-- Uncomment following filter to enable CORS in Jetty. Do not forget the second config block further down.
+    <filter>
+      <filter-name>cross-origin</filter-name>
+      <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+      <init-param>
+        <param-name>chainPreflight</param-name>
+        <param-value>false</param-value>
+      </init-param>
+      <init-param>
+        <param-name>allowedOrigins</param-name>
+        <param-value>*</param-value>
+      </init-param>
+      <init-param>
+        <param-name>allowedMethods</param-name>
+        <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+      </init-param>
+      <init-param>
+        <param-name>allowedHeaders</param-name>
+        <param-value>*</param-value>
+      </init-param>
+    </filter>
+    -->
+    
+   <!-- Uncomment following filter to enable CORS in Tomcat. Do not forget the second config block further down.
+    <filter>
+      <filter-name>cross-origin</filter-name>
+      <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+      <init-param>
+        <param-name>cors.allowed.origins</param-name>
+        <param-value>*</param-value>
+      </init-param>
+      <init-param>
+        <param-name>cors.allowed.methods</param-name>
+        <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+      </init-param>
+      <init-param>
+        <param-name>cors.allowed.headers</param-name>
+        <param-value>*</param-value>
+      </init-param>
     </filter>
     -->
 
@@ -200,7 +219,7 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
    
-   <!-- Uncomment following filter to enable CORS in Jetty (won't work in Tomcat)
+   <!-- Uncomment following filter to enable CORS
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/*</url-pattern>

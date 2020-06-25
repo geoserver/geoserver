@@ -50,6 +50,7 @@ import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
 import org.geoserver.mapml.xml.Select;
 import org.geoserver.mapml.xml.UnitType;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -137,7 +138,13 @@ public class MapMLController {
         final String workspace;
         String styleName = style.orElse("");
         String imageFormat = format.orElse("image/png");
-        String baseUrl = ResponseUtils.baseURL(request);
+        String proxyBaseUrl = geoServer.getSettings().getProxyBaseUrl();
+        String baseUrl =
+                ResponseUtils.buildURL(
+                        proxyBaseUrl != null ? proxyBaseUrl : ResponseUtils.baseURL(request),
+                        null,
+                        null,
+                        URLMangler.URLType.EXTERNAL);
         String baseUrlPattern = baseUrl;
         if (isLayerGroup) {
             layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
@@ -476,8 +483,13 @@ public class MapMLController {
 
         String styleName = style.orElse("");
         String imageFormat = format.orElse("image/png");
-
-        String baseUrl = ResponseUtils.baseURL(request);
+        String proxyBaseUrl = geoServer.getSettings().getProxyBaseUrl();
+        String baseUrl =
+                ResponseUtils.buildURL(
+                        proxyBaseUrl != null ? proxyBaseUrl : ResponseUtils.baseURL(request),
+                        null,
+                        null,
+                        URLMangler.URLType.EXTERNAL);
         String baseUrlPattern = baseUrl;
 
         // handle shard config
@@ -503,7 +515,7 @@ public class MapMLController {
         HeadContent head = new HeadContent();
         head.setTitle(layerName);
         Base base = new Base();
-        base.setHref(baseUrl + "mapml");
+        base.setHref(ResponseUtils.buildURL(baseUrl, "mapml", null, URLMangler.URLType.EXTERNAL));
         head.setBase(base);
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();

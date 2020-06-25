@@ -22,13 +22,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;group ref="{}threeOrMoreCoordinatePairs" maxOccurs="unbounded"/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;group ref="{}threeOrMoreCoordinatePairs" maxOccurs="unbounded"/&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -38,7 +38,11 @@ import javax.xml.bind.annotation.XmlType;
 )
 public class Polygon {
 
-    @XmlElementRef(name = "coordinates", type = JAXBElement.class)
+    @XmlElementRef(
+        name = "coordinates",
+        type = JAXBElement.class,
+        namespace = "http://www.w3.org/1999/xhtml/"
+    )
     protected List<JAXBElement<List<String>>> threeOrMoreCoordinatePairs;
 
     /**
@@ -59,7 +63,7 @@ public class Polygon {
      */
     public List<JAXBElement<List<String>>> getThreeOrMoreCoordinatePairs() {
         if (threeOrMoreCoordinatePairs == null) {
-            threeOrMoreCoordinatePairs = new ArrayList<JAXBElement<List<String>>>();
+            threeOrMoreCoordinatePairs = new ArrayList<>();
         }
         return this.threeOrMoreCoordinatePairs;
     }

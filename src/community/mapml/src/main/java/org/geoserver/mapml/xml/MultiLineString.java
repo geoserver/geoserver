@@ -22,13 +22,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;group ref="{}twoOrMoreCoordinatePairs" maxOccurs="unbounded"/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;group ref="{}twoOrMoreCoordinatePairs" maxOccurs="unbounded"/&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -38,7 +38,11 @@ import javax.xml.bind.annotation.XmlType;
 )
 public class MultiLineString {
 
-    @XmlElementRef(name = "coordinates", type = JAXBElement.class)
+    @XmlElementRef(
+        name = "coordinates",
+        type = JAXBElement.class,
+        namespace = "http://www.w3.org/1999/xhtml/"
+    )
     protected List<JAXBElement<List<String>>> twoOrMoreCoordinatePairs;
 
     /**
@@ -56,10 +60,12 @@ public class MultiLineString {
      *
      * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
      * <}{@link List }{@code <}{@link String }{@code >}{@code >}
+     *
+     * @return two or more coordinate pairs
      */
     public List<JAXBElement<List<String>>> getTwoOrMoreCoordinatePairs() {
         if (twoOrMoreCoordinatePairs == null) {
-            twoOrMoreCoordinatePairs = new ArrayList<JAXBElement<List<String>>>();
+            twoOrMoreCoordinatePairs = new ArrayList<>();
         }
         return this.twoOrMoreCoordinatePairs;
     }

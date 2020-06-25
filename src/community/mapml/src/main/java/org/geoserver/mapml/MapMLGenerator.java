@@ -20,10 +20,19 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryType;
 
+/**
+ * @author prushforth
+ *     <p>methods to convert GeoServer features markup
+ */
 public class MapMLGenerator {
 
     static ObjectFactory factory = new ObjectFactory();
 
+    /**
+     * @param sf a feature
+     * @return the feature
+     * @throws IOException - IOException
+     */
     public static Feature buildFeature(SimpleFeature sf) throws IOException {
 
         Feature f = new Feature();
@@ -34,7 +43,7 @@ public class MapMLGenerator {
 
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "<table><thead><tr>"
+                "<table xmlns=\"http://www.w3.org/1999/xhtml/\"><thead><tr>"
                         + "<th role=\"columnheader\" scope=\"col\">Property name</th>"
                         + "<th role=\"columnheader\" scope=\"col\">Property value</th>"
                         + "</tr></thead><tbody>");
@@ -45,16 +54,18 @@ public class MapMLGenerator {
                 g = (org.locationtech.jts.geom.Geometry) (sf.getAttribute(attr.getName()));
             } else {
                 String escapedName = StringEscapeUtils.escapeXml10(attr.getLocalName());
-                sb.append(
-                        "<tr><th scope=\"row\">"
-                                + escapedName
-                                + "</th>"
-                                + "<td itemprop=\""
-                                + escapedName
-                                + "\">"
-                                + StringEscapeUtils.escapeXml10(
-                                        sf.getAttribute(attr.getName()).toString())
-                                + "</td></tr>");
+                String value =
+                        sf.getAttribute(attr.getName()) != null
+                                ? sf.getAttribute(attr.getName()).toString()
+                                : "";
+                sb.append("<tr><th scope=\"row\">")
+                        .append(escapedName)
+                        .append("</th>")
+                        .append("<td itemprop=\"")
+                        .append(escapedName)
+                        .append("\">")
+                        .append(StringEscapeUtils.escapeXml10(value))
+                        .append("</td></tr>");
             }
         }
 
@@ -64,6 +75,11 @@ public class MapMLGenerator {
         return f;
     }
 
+    /**
+     * @param g
+     * @return
+     * @throws IOException - IOException
+     */
     public static GeometryContent buildGeometry(org.locationtech.jts.geom.Geometry g)
             throws IOException {
         GeometryContent geom = new GeometryContent();
@@ -101,7 +117,11 @@ public class MapMLGenerator {
 
         return geom;
     }
-
+    /**
+     * @param g a JTS Geometry
+     * @return
+     * @throws IOException - IOException
+     */
     private static Object buildSpecificGeom(org.locationtech.jts.geom.Geometry g)
             throws IOException {
         switch (g.getGeometryType()) {
@@ -124,7 +144,11 @@ public class MapMLGenerator {
                 throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
     }
-
+    /**
+     * @param gc a JTS GeometryCollection
+     * @return
+     * @throws IOException - IOException
+     */
     private static org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(
             org.locationtech.jts.geom.GeometryCollection gc) throws IOException {
         org.geoserver.mapml.xml.GeometryCollection geomColl =
@@ -135,7 +159,10 @@ public class MapMLGenerator {
         }
         return geomColl;
     }
-
+    /**
+     * @param mpg a JTS MultiPolygo
+     * @return
+     */
     private static org.geoserver.mapml.xml.MultiPolygon buildMultiPolygon(
             org.locationtech.jts.geom.MultiPolygon mpg) {
         org.geoserver.mapml.xml.MultiPolygon multiPoly = new org.geoserver.mapml.xml.MultiPolygon();
@@ -145,7 +172,10 @@ public class MapMLGenerator {
         }
         return multiPoly;
     }
-
+    /**
+     * @param ml a JTS MultiLineString
+     * @return
+     */
     private static org.geoserver.mapml.xml.MultiLineString buildMultiLineString(
             org.locationtech.jts.geom.MultiLineString ml) {
         org.geoserver.mapml.xml.MultiLineString multiLine =
@@ -161,7 +191,10 @@ public class MapMLGenerator {
         }
         return multiLine;
     }
-
+    /**
+     * @param l a JTS LineString
+     * @return
+     */
     private static org.geoserver.mapml.xml.LineString buildLineString(
             org.locationtech.jts.geom.LineString l) {
         org.geoserver.mapml.xml.LineString lineString = new org.geoserver.mapml.xml.LineString();
@@ -169,7 +202,10 @@ public class MapMLGenerator {
         buildCoordinates(l.getCoordinateSequence(), lsCoords);
         return lineString;
     }
-
+    /**
+     * @param mp a JTS MultiPoint
+     * @return
+     */
     private static org.geoserver.mapml.xml.MultiPoint buildMultiPoint(
             org.locationtech.jts.geom.MultiPoint mp) {
         org.geoserver.mapml.xml.MultiPoint multiPoint = new org.geoserver.mapml.xml.MultiPoint();
@@ -177,13 +213,19 @@ public class MapMLGenerator {
         buildCoordinates(new CoordinateArraySequence(mp.getCoordinates()), mpCoords);
         return multiPoint;
     }
-
+    /**
+     * @param p a JTS Point
+     * @return
+     */
     private static org.geoserver.mapml.xml.Point buildPoint(org.locationtech.jts.geom.Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
         point.getCoordinates().add(p.getX() + " " + p.getY());
         return point;
     }
-
+    /**
+     * @param p a JTS Polygon
+     * @return
+     */
     private static org.geoserver.mapml.xml.Polygon buildPolygon(
             org.locationtech.jts.geom.Polygon p) {
         org.geoserver.mapml.xml.Polygon poly = new org.geoserver.mapml.xml.Polygon();
@@ -197,10 +239,14 @@ public class MapMLGenerator {
         }
         return poly;
     }
-
+    /**
+     * @param cs a JTS CoordinateSequence
+     * @param coordList a list of coordinate strings to add to
+     * @return
+     */
     private static List<String> buildCoordinates(CoordinateSequence cs, List<String> coordList) {
         if (coordList == null) {
-            coordList = new ArrayList<String>(cs.size());
+            coordList = new ArrayList<>(cs.size());
         }
         for (int i = 0; i < cs.size(); i++) {
             coordList.add(cs.getX(i) + " " + cs.getY(i));

@@ -9,10 +9,21 @@ package org.geoserver.mapml.tcrs;
  * and x is postive to the right, y is positive down. The left/top edge is the coordinate value.
  */
 public class TileCoordinates {
+
+    /** */
     public int z;
+
+    /** */
     public long x;
+
+    /** */
     public long y;
 
+    /**
+     * @param x
+     * @param y
+     * @param zoom
+     */
     public TileCoordinates(long x, long y, int zoom) {
         this.z = zoom;
         this.x = x;

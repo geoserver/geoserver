@@ -18,6 +18,8 @@ import org.opengis.referencing.operation.TransformException;
 /*
  * The Projection class supplies projection/unprojection transformations for known projections
  */
+
+/** @author prushforth */
 public class Projection {
 
     protected CoordinateReferenceSystem crs;
@@ -25,6 +27,7 @@ public class Projection {
     protected MathTransform toProjected;
     protected MathTransform toLatLng;
 
+    /** @param code */
     public Projection(String code) {
         try {
             this.crs = CRS.decode(code);
@@ -34,13 +37,17 @@ public class Projection {
                             : this.crs;
             this.toProjected = CRS.findMathTransform(this.baseCRS, crs);
             this.toLatLng = this.toProjected.inverse();
-        } catch (FactoryException ex) {
-            Logger.getLogger(Projection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoninvertibleTransformException ex) {
+        } catch (FactoryException | NoninvertibleTransformException ex) {
             Logger.getLogger(Projection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * @param latlng
+     * @return
+     * @throws MismatchedDimensionException - MismatchedDimensionException
+     * @throws TransformException - TransformException
+     */
     public Point project(LatLng latlng) throws MismatchedDimensionException, TransformException {
         if (toProjected.isIdentity()) {
             return new Point(latlng.lng, latlng.lat);
@@ -51,6 +58,12 @@ public class Projection {
         return new Point(projected.x, projected.y);
     }
 
+    /**
+     * @param p
+     * @return
+     * @throws MismatchedDimensionException - MismatchedDimensionException
+     * @throws TransformException - TransformException
+     */
     public LatLng unproject(Point p) throws MismatchedDimensionException, TransformException {
         if (toLatLng.isIdentity()) {
             return new LatLng(p.y, p.x);
@@ -60,6 +73,7 @@ public class Projection {
         return new LatLng(unprojected.getOrdinate(0), unprojected.getOrdinate(1));
     }
 
+    /** @return */
     public CoordinateReferenceSystem getCRS() {
         return this.crs;
     }

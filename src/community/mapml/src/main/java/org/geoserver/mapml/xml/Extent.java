@@ -27,36 +27,36 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{}input"/>
- *         &lt;element ref="{}datalist"/>
- *         &lt;group ref="{}links"/>
- *         &lt;element ref="{}select"/>
- *         &lt;element ref="{}label"/>
- *       &lt;/choice>
- *       &lt;attribute name="units" type="{}projType" />
- *       &lt;attribute name="action" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
- *       &lt;attribute name="method">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *             &lt;enumeration value="get"/>
- *             &lt;enumeration value="GET"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;attribute name="enctype">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *             &lt;enumeration value="application/x-www-form-urlencoded"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}input"/&gt;
+ *         &lt;element ref="{}datalist"/&gt;
+ *         &lt;group ref="{}links"/&gt;
+ *         &lt;element ref="{}select"/&gt;
+ *         &lt;element ref="{}label"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="units" type="{}projType" /&gt;
+ *       &lt;attribute name="action" type="{http://www.w3.org/2001/XMLSchema}anyURI" /&gt;
+ *       &lt;attribute name="method"&gt;
+ *         &lt;simpleType&gt;
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *             &lt;enumeration value="get"/&gt;
+ *             &lt;enumeration value="GET"/&gt;
+ *           &lt;/restriction&gt;
+ *         &lt;/simpleType&gt;
+ *       &lt;/attribute&gt;
+ *       &lt;attribute name="enctype"&gt;
+ *         &lt;simpleType&gt;
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *             &lt;enumeration value="application/x-www-form-urlencoded"/&gt;
+ *           &lt;/restriction&gt;
+ *         &lt;/simpleType&gt;
+ *       &lt;/attribute&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -64,15 +64,27 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     name = "",
     propOrder = {"inputOrDatalistOrLink"}
 )
-@XmlRootElement(name = "extent")
+@XmlRootElement(name = "extent", namespace = "http://www.w3.org/1999/xhtml/")
 public class Extent {
 
     @XmlElements({
-        @XmlElement(name = "input", type = Input.class),
-        @XmlElement(name = "datalist", type = Datalist.class),
-        @XmlElement(name = "link", type = Link.class),
-        @XmlElement(name = "select", type = Select.class),
-        @XmlElement(name = "label", type = Label.class)
+        @XmlElement(
+            name = "input",
+            type = Input.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(
+            name = "datalist",
+            type = Datalist.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(name = "link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml/"),
+        @XmlElement(
+            name = "select",
+            type = Select.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(name = "label", type = Label.class, namespace = "http://www.w3.org/1999/xhtml/")
     })
     protected List<Object> inputOrDatalistOrLink;
 
@@ -109,7 +121,7 @@ public class Extent {
      */
     public List<Object> getInputOrDatalistOrLink() {
         if (inputOrDatalistOrLink == null) {
-            inputOrDatalistOrLink = new ArrayList<Object>();
+            inputOrDatalistOrLink = new ArrayList<>();
         }
         return this.inputOrDatalistOrLink;
     }

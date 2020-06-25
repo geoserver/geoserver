@@ -6,15 +6,28 @@ package org.geoserver.mapml.tcrs;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
+/** @author prushforth */
 public class LatLngBounds {
 
-    protected LatLng southWest, northEast;
+    /** */
+    protected LatLng southWest,
 
+            /** */
+            northEast;
+
+    /**
+     * @param sw
+     * @param ne
+     */
     public LatLngBounds(LatLng sw, LatLng ne) {
         this.extend(sw);
         this.extend(ne);
     }
 
+    /**
+     * @param latlng
+     * @return
+     */
     public final LatLngBounds extend(LatLng latlng) {
         if (southWest == null && northEast == null) {
             this.southWest = new LatLng(latlng.lat, latlng.lng);
@@ -33,35 +46,43 @@ public class LatLngBounds {
         return this;
     }
 
+    /** @param e */
     public LatLngBounds(ReferencedEnvelope e) {
         this.setSouthWest(new LatLng(e.getMinY(), e.getMinX()));
         this.setNorthEast(new LatLng(e.getMaxY(), e.getMaxX()));
     }
 
+    /** @return */
     public LatLng getSouthWest() {
         return southWest;
     }
 
+    /** @param southWest */
     public final void setSouthWest(LatLng southWest) {
         this.southWest = southWest;
     }
 
+    /** @return */
     public LatLng getNorthEast() {
         return northEast;
     }
 
+    /** @param northEast */
     public final void setNorthEast(LatLng northEast) {
         this.northEast = northEast;
     }
 
+    /** @return */
     public LatLng getNorthWest() {
         return new LatLng(this.northEast.lat, this.southWest.lng);
     }
 
+    /** @return */
     public LatLng getSouthEast() {
         return new LatLng(this.southWest.lat, this.northEast.lng);
     }
 
+    /** @return */
     public LatLng getCentre() {
         return new LatLng(
                 this.northEast.lat - this.southWest.lat, this.northEast.lng - this.southWest.lng);

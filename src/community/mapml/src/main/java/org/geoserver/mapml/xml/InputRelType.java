@@ -20,12 +20,12 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="inputRelType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="map"/>
- *     &lt;enumeration value="tile"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="inputRelType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="map"/&gt;
+ *     &lt;enumeration value="tile"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "inputRelType")

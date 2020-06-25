@@ -21,34 +21,34 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType name="headContent">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{}base"/>
- *         &lt;element ref="{}meta"/>
- *         &lt;element ref="{}title"/>
- *         &lt;group ref="{}links"/>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="headContent"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}base"/&gt;
+ *         &lt;element ref="{}meta"/&gt;
+ *         &lt;element ref="{}title"/&gt;
+ *         &lt;group ref="{}links"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "headContent")
 public class HeadContent {
 
-    @XmlElement(name = "title")
+    @XmlElement(name = "title", namespace = "http://www.w3.org/1999/xhtml/")
     protected String title;
 
-    @XmlElement(name = "base")
+    @XmlElement(name = "base", namespace = "http://www.w3.org/1999/xhtml/")
     protected Base base;
 
-    @XmlElement(name = "meta", type = Meta.class)
+    @XmlElement(name = "meta", type = Meta.class, namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Meta> metas;
 
-    @XmlElement(name = "link", type = Link.class)
+    @XmlElement(name = "link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Link> links;
 
     public void setTitle(String title) {
@@ -71,10 +71,12 @@ public class HeadContent {
      * <pre>
      *    getMetas().add(newItem);
      * </pre>
+     *
+     * @return list of meta elements
      */
     public List<Meta> getMetas() {
         if (metas == null) {
-            metas = new ArrayList<Meta>();
+            metas = new ArrayList<>();
         }
         return this.metas;
     }
@@ -91,10 +93,12 @@ public class HeadContent {
      * <pre>
      *    getLinks().add(newItem);
      * </pre>
+     *
+     * @return list of links
      */
     public List<Link> getLinks() {
         if (links == null) {
-            links = new ArrayList<Link>();
+            links = new ArrayList<>();
         }
         return this.links;
     }

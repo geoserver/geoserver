@@ -4,12 +4,19 @@
  */
 package org.geoserver.mapml.tcrs;
 
+/** @author prushforth */
 public class Transformation {
     private final double a;
     private final double b;
     private final double c;
     private final double d;
 
+    /**
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     */
     public Transformation(double a, double b, double c, double d) {
         this.a = a;
         this.b = b;
@@ -17,6 +24,11 @@ public class Transformation {
         this.d = d;
     }
 
+    /**
+     * @param p
+     * @param scale
+     * @return
+     */
     public Point transform(Point p, double scale) {
         if (Double.compare(scale, 0D) == 0) {
             scale = 1.0D;
@@ -24,6 +36,11 @@ public class Transformation {
         return new Point(scale * (this.a * p.x + this.b), scale * (this.c * p.y + this.d));
     }
 
+    /**
+     * @param p
+     * @param scale
+     * @return
+     */
     public Point untransform(Point p, double scale) {
         if (Double.compare(scale, 0D) == 0) {
             scale = 1.0D;

@@ -23,27 +23,27 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{}bbox"/>
- *         &lt;choice>
- *           &lt;element ref="{}image"/>
- *           &lt;element ref="{}geometry"/>
- *         &lt;/choice>
- *         &lt;element ref="{}properties"/>
- *       &lt;/choice>
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}bbox"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element ref="{}image"/&gt;
+ *           &lt;element ref="{}geometry"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;element ref="{}properties"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@XmlRootElement(name = "feature")
+@XmlRootElement(name = "feature", namespace = "http://www.w3.org/1999/xhtml/")
 public class Feature {
 
     //    @XmlElementRefs({
@@ -54,16 +54,16 @@ public class Feature {
     //    })
     //    protected List<Object> bboxOrImageOrGeometry;
     //
-    @XmlElement(name = "geometry", required = false)
+    @XmlElement(name = "geometry", required = false, namespace = "http://www.w3.org/1999/xhtml/")
     protected GeometryContent geometry;
 
-    @XmlElement(name = "bbox", required = false)
+    @XmlElement(name = "bbox", required = false, namespace = "http://www.w3.org/1999/xhtml/")
     protected JAXBElement bbox;
 
-    @XmlElement(name = "image", required = false)
+    @XmlElement(name = "image", required = false, namespace = "http://www.w3.org/1999/xhtml/")
     protected Image image;
 
-    @XmlElement(name = "properties", required = false)
+    @XmlElement(name = "properties", required = false, namespace = "http://www.w3.org/1999/xhtml/")
     protected PropertyContent properties;
 
     @XmlAttribute(name = "id")

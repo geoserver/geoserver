@@ -4,24 +4,41 @@
  */
 package org.geoserver.mapml;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DataBindingException;
-import javax.xml.bind.JAXB;
+import javax.xml.transform.stream.StreamResult;
+import org.custommonkey.xmlunit.NamespaceContext;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
+import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Extent;
@@ -33,21 +50,52 @@ import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
 import org.geoserver.mapml.xml.UnitType;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geowebcache.grid.GridSubset;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 public class MapMLControllerTest extends WMSTestSupport {
-    MapMLController mc;
+    private GWC gwc;
+    private MapMLController mc;
+    private Jaxb2Marshaller mapmlMarshaller;
+    private XpathEngine xpath;
+    private GridSubset osmtile;
+    private GWCConfig defaults;
 
     @Before
-    public void setupController() {
+    public void setup() {
         mc = applicationContext.getBean(MapMLController.class);
+        mapmlMarshaller = (Jaxb2Marshaller) applicationContext.getBean("mapmlMarshaller");
+        HashMap<String, String> m = new HashMap<>();
+        m.put("html", "http://www.w3.org/1999/xhtml/");
+
+        NamespaceContext ctx = new SimpleNamespaceContext(m);
+        XMLUnit.setXpathNamespaceContext(ctx);
+        xpath = XMLUnit.newXpathEngine();
+
+        Catalog catalog = getCatalog();
+        // restore data set up default
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
+
+        layerMeta.getMetadata().put("mapml.useTiles", false);
+        catalog.save(layerMeta);
+        gwc = applicationContext.getBean(GWC.class);
+        defaults = GWCConfig.getOldDefaults();
+        // it seems just the fact of retrieving the bean causes the
+        // GridSets to be added to the gwc GridSetBroker, but if you don't do
+        // this, they are not added automatically
+        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
+        this.osmtile = createGridSubSet(mgs.getGridSet("OSMTILE").get());
     }
 
     @Override
@@ -59,6 +107,10 @@ public class MapMLControllerTest extends WMSTestSupport {
         String lines = MockData.LINES.getLocalPart();
         String polygons = MockData.POLYGONS.getLocalPart();
         CatalogBuilder cb = new CatalogBuilder(catalog);
+        ResourceInfo ri =
+                catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
+        cb.setupBounds(ri);
+        catalog.save(ri);
         cb.setupBounds(catalog.getLayerByName(points).getResource());
         cb.setupBounds(catalog.getLayerByName(lines).getResource());
         cb.setupBounds(catalog.getLayerByName(polygons).getResource());
@@ -71,8 +123,19 @@ public class MapMLControllerTest extends WMSTestSupport {
         lg.getLayers().add(catalog.getLayerByName(lines));
         lg.getLayers().add(catalog.getLayerByName(polygons));
         CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.calculateLayerGroupBounds(lg);
+        builder.calculateLayerGroupBounds(lg, DefaultGeographicCRS.WGS84);
         catalog.add(lg);
+
+        LayerGroupInfo lgi = catalog.getLayerGroupByName(NATURE_GROUP);
+        CoordinateReferenceSystem webMerc = MapMLController.previewTcrsMap.get("OSMTILE").getCRS();
+        Bounds webMercBounds = MapMLController.previewTcrsMap.get("OSMTILE").getBounds();
+        double x1 = webMercBounds.getMin().x;
+        double x2 = webMercBounds.getMax().x;
+        double y1 = webMercBounds.getMin().y;
+        double y2 = webMercBounds.getMax().y;
+        ReferencedEnvelope webMercEnv = new ReferencedEnvelope(x1, x2, y1, y2, webMerc);
+        lgi.setBounds(webMercEnv);
+        catalog.save(lgi);
     }
 
     @Test
@@ -84,22 +147,29 @@ public class MapMLControllerTest extends WMSTestSupport {
         testLayersAndGroupsMapML(li);
 
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
+        assertSame(DefaultGeographicCRS.WGS84, lgi.getBounds().getCoordinateReferenceSystem());
+        testLayersAndGroupsMapML(lgi);
+
+        lgi = cat.getLayerGroupByName(NATURE_GROUP);
+        assertSame(
+                MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
+                lgi.getBounds().getCoordinateReferenceSystem());
         testLayersAndGroupsMapML(lgi);
     }
 
-    @Ignore
+    @Test
     public void testHTML() throws Exception {
 
         Catalog cat = getCatalog();
 
-        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        LayerInfo li = cat.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         testLayersAndGroupsHTML(li);
 
         LayerGroupInfo lgi = cat.getLayerGroupByName(NATURE_GROUP);
         testLayersAndGroupsHTML(lgi);
     }
 
-    @Ignore
+    @Test
     public void testNonExistentLayer() throws Exception {
         MockHttpServletRequest request = createRequest("mapml/" + "foo" + "/osmtile/");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -118,7 +188,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                 response.getStatus() == HttpServletResponse.SC_NOT_FOUND);
     }
 
-    @Ignore
+    @Test
     public void testNonExistentProjection() throws Exception {
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
@@ -171,15 +241,16 @@ public class MapMLControllerTest extends WMSTestSupport {
                         Optional.empty());
         assertNotNull("Html method must return a document", htmlResponse);
         Document doc = Jsoup.parse(htmlResponse);
-        Element webmapimport = doc.head().select("link").first();
+        Element webmapimport = doc.head().select("script").first();
         assertTrue(
-                "HTML document must import web-map.html",
-                webmapimport.attr("href").matches(".*web-map\\.html"));
-        Element map = doc.body().select("map[is=web-map]").first();
+                "HTML document script must use mapml-viewer.js module",
+                webmapimport.attr("src").matches(".*mapml-viewer\\.js"));
+        Element map = doc.body().select("mapml-viewer").first();
         Element layer = map.getElementsByTag("layer-").first();
         assertTrue(
                 "Layer must have label equal to string ",
                 layer.attr("label").equalsIgnoreCase(((PublishedInfo) l).getName()));
+        assertTrue(!"0".equalsIgnoreCase(doc.select("mapml-viewer").attr("zoom")));
     }
 
     private void testLayersAndGroupsMapML(Object l) throws Exception {
@@ -200,10 +271,14 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertNotNull("mapML method must return a MapML document", mapml);
         StringWriter sw = new StringWriter();
         try {
-            JAXB.marshal(mapml, sw);
+            mapmlMarshaller.marshal(mapml, new StreamResult(sw));
         } catch (DataBindingException ex) {
             fail("DataBindingException while reading MapML JAXB object");
         }
+
+        String result = sw.toString();
+        // this tests that the result has had namespaces mapped to minimum possible cruft
+        assertTrue(result.matches("<mapml xmlns=\"http://www.w3.org/1999/xhtml/\">.*"));
 
         BodyContent b = mapml.getBody();
         assertNotNull("mapML method must return MapML body in response", b);
@@ -248,12 +323,401 @@ public class MapMLControllerTest extends WMSTestSupport {
                             "input[type=location/@min must equal -2.0037508342780735E7",
                             input.getMin().equalsIgnoreCase("-2.0037508342780735E7"));
                     assertTrue(
-                            "input[type=location/@max must equal 2.0037508342789244E7",
-                            input.getMax().equalsIgnoreCase("2.0037508342789244E7"));
+                            "input[type=location/@max must equal 2.003750834278071E7",
+                            input.getMax().equalsIgnoreCase("2.003750834278071E7"));
                 }
             } else {
                 fail("Unrecognized test object type:" + o.getClass().getTypeName());
             }
         }
+    }
+
+    @Test
+    public void testShardingMapMLLayer() throws Exception {
+        String path =
+                "mapml/"
+                        + MockData.ROAD_SEGMENTS.getPrefix()
+                        + ":"
+                        + MockData.ROAD_SEGMENTS.getLocalPart()
+                        + "/osmtile/";
+
+        // set up mapml layer to useTiles
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
+        MetadataMap mm = layerMeta.getMetadata();
+        mm.put("mapml.enableSharding", true);
+        mm.put("mapml.shardList", "server1,server2,server3");
+        mm.put("mapml.shardServerPattern", "{s}.example.com");
+        catalog.save(layerMeta);
+
+        org.w3c.dom.Document doc = getMapML(path);
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        String host = url.getHost();
+        assertTrue(host.equalsIgnoreCase("{s}.example.com"));
+        assertXpathEvaluatesTo("1", "count(//html:datalist[@id='servers'])", doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@list='servers'][@type='hidden'][@shard='true'][@name='s'])",
+                doc);
+        assertXpathEvaluatesTo("3", "count(//html:datalist/html:option)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:datalist/html:option[@value='server1'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:datalist/html:option[@value='server2'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:datalist/html:option[@value='server3'])", doc);
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        host = url.getHost();
+        assertTrue(host.equalsIgnoreCase("{s}.example.com"));
+    }
+
+    @Test
+    public void testDimensionsMapMLLayerConfig() throws Exception {
+        String path =
+                "mapml/"
+                        + MockData.LAKES.getPrefix()
+                        + ":"
+                        + MockData.LAKES.getLocalPart()
+                        + "/osmtile/";
+
+        // set up mapml layer to useTiles
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.LAKES.getLocalPart()).getResource();
+        MetadataMap mm = layerMeta.getMetadata();
+        mm.put("mapml.dimension", null);
+        catalog.save(layerMeta);
+    }
+
+    @Test
+    public void testDefaultConfiguredMapMLLayer() throws Exception {
+        String path =
+                "mapml/"
+                        + MockData.ROAD_SEGMENTS.getPrefix()
+                        + ":"
+                        + MockData.ROAD_SEGMENTS.getLocalPart()
+                        + "/osmtile/";
+
+        org.w3c.dom.Document doc = getMapML(path);
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        HashMap<String, String> vars = parseQuery(url);
+
+        assertTrue(vars.get("request").equalsIgnoreCase("GetMap"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
+        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
+        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
+        assertTrue(vars.get("format").equalsIgnoreCase("image/png"));
+        assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
+        assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
+        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
+        assertTrue(vars.get("styles").equalsIgnoreCase(""));
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        vars = parseQuery(url);
+
+        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
+        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
+        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
+        assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
+        assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
+        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
+        assertTrue(vars.get("styles").equalsIgnoreCase(""));
+        assertTrue(vars.get("x").equalsIgnoreCase("{i}"));
+        assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
+        assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
+        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+
+        // make sure there's an input for each template variable
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@name='xmin'][@type='location'][@units='pcrs'][@axis='easting'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@name='ymin'][@type='location'][@units='pcrs'][@axis='northing'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@name='xmax'][@type='location'][@units='pcrs'][@axis='easting'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@name='ymax'][@type='location'][@units='pcrs'][@axis='northing'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo("1", "count(//html:input[@name='w'][@type='width'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:input[@name='h'][@type='height'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:input[@name='i'][@type='location'][@units='map'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:input[@name='j'][@type='location'][@units='map'])", doc);
+
+        // this is a weird one, probably should not be necessary, but if we
+        // remove the requirement to have it, we will have to specify a
+        // requirement to specify a zoom range via a <meta> element
+        assertXpathEvaluatesTo(
+                "1", "count(//html:input[@name='z'][@type='zoom'][@min][@max])", doc);
+    }
+
+    @Test
+    public void testWMSTilesConfiguredMapMLLayer() throws Exception {
+        String path =
+                "mapml/"
+                        + MockData.ROAD_SEGMENTS.getPrefix()
+                        + ":"
+                        + MockData.ROAD_SEGMENTS.getLocalPart()
+                        + "/osmtile/";
+
+        org.w3c.dom.Document doc = getMapML(path);
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+
+        // set up mapml layer to useTiles
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
+
+        layerMeta.getMetadata().put("mapml.useTiles", true);
+        catalog.save(layerMeta);
+
+        doc = getMapML(path);
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='tile'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:link[@rel='tile']/@tref", doc));
+        HashMap<String, String> vars = parseQuery(url);
+
+        assertTrue(vars.get("request").equalsIgnoreCase("GetMap"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
+        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
+        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("bbox").equalsIgnoreCase("{txmin},{tymin},{txmax},{tymax}"));
+        assertTrue(vars.get("format").equalsIgnoreCase("image/png"));
+        assertTrue(vars.get("width").equalsIgnoreCase("256"));
+        assertTrue(vars.get("height").equalsIgnoreCase("256"));
+        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
+        assertTrue(vars.get("styles").equalsIgnoreCase(""));
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        vars = parseQuery(url);
+
+        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
+        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
+        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("bbox").equalsIgnoreCase("{txmin},{tymin},{txmax},{tymax}"));
+        assertTrue(vars.get("width").equalsIgnoreCase("256"));
+        assertTrue(vars.get("height").equalsIgnoreCase("256"));
+        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
+        assertTrue(vars.get("styles").equalsIgnoreCase(""));
+        assertTrue(vars.get("x").equalsIgnoreCase("{i}"));
+        assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
+        assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
+        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+
+        // make sure there's an input for each template variable
+        String xpath =
+                "count(//html:input[@name='txmin'][@type='location'][@units='tilematrix'][@axis='easting'][@min][@max])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+        xpath =
+                "count(//html:input[@name='tymin'][@type='location'][@units='tilematrix'][@axis='northing'][@min][@max])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+        xpath =
+                "count(//html:input[@name='txmax'][@type='location'][@units='tilematrix'][@axis='easting'][@min][@max])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+        xpath =
+                "count(//html:input[@name='tymax'][@type='location'][@units='tilematrix'][@axis='northing'][@min][@max])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+        xpath = "count(//html:input[@name='w'][@type='width'])";
+        assertXpathEvaluatesTo("0", xpath, doc);
+        xpath = "count(//html:input[@name='h'][@type='height'])";
+        assertXpathEvaluatesTo("0", xpath, doc);
+        xpath = "count(//html:input[@name='i'][@type='location'][@units='tile'])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+        xpath = "count(//html:input[@name='j'][@type='location'][@units='tile'])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+
+        // this is a weird one, probably should not be necessary, but if we
+        // remove the requirement to have it, we will have to specify a
+        // requirement to specify a zoom range via a <meta> element
+        xpath = "count(//html:input[@name='z'][@type='zoom'][@min][@max])";
+        assertXpathEvaluatesTo("1", xpath, doc);
+    }
+
+    @Test
+    public void testGWCTilesConfiguredMapMLLayer() throws Exception {
+        String path =
+                "mapml/"
+                        + MockData.ROAD_SEGMENTS.getPrefix()
+                        + ":"
+                        + MockData.ROAD_SEGMENTS.getLocalPart()
+                        + "/osmtile/";
+
+        org.w3c.dom.Document doc = getMapML(path);
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+
+        // set up mapml layer to useTiles
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
+
+        layerMeta.getMetadata().put("mapml.useTiles", true);
+        catalog.save(layerMeta);
+        LayerInfo layerInfo = catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        GeoServerTileLayer layerInfoTileLayer =
+                new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        layerInfoTileLayer.addGridSubset(osmtile);
+        gwc.save(layerInfoTileLayer);
+        String wmtsLayerName =
+                MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart();
+
+        doc = getMapML(path);
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='tile'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:link[@rel='tile']/@tref", doc));
+        HashMap<String, String> vars = parseQuery(url);
+        assertTrue(vars.get("request").equalsIgnoreCase("GetTile"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMTS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.0.0"));
+        assertTrue(vars.get("layer").equalsIgnoreCase(wmtsLayerName));
+        assertTrue(vars.get("format").equalsIgnoreCase("image/png"));
+        assertTrue(vars.get("tilematrixset").equalsIgnoreCase("OSMTILE"));
+        assertTrue(vars.get("tilematrix").equalsIgnoreCase("{z}"));
+        assertTrue(vars.get("TileRow").equalsIgnoreCase("{y}"));
+        assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
+        assertTrue(vars.get("style").equalsIgnoreCase(""));
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        vars = parseQuery(url);
+
+        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMTS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.0.0"));
+        assertTrue(vars.get("layer").equalsIgnoreCase(wmtsLayerName));
+        assertTrue(vars.get("tilematrixset").equalsIgnoreCase("OSMTILE"));
+        assertTrue(vars.get("tilematrix").equalsIgnoreCase("{z}"));
+        assertTrue(vars.get("TileRow").equalsIgnoreCase("{y}"));
+        assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
+        assertTrue(vars.get("style").equalsIgnoreCase(""));
+        assertTrue(vars.get("i").equalsIgnoreCase("{i}"));
+        assertTrue(vars.get("j").equalsIgnoreCase("{j}"));
+        assertTrue(vars.get("infoformat").equalsIgnoreCase("text/mapml"));
+        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+
+        // make sure there's an input for each template variable
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@name='x'][@type='location'][@units='tilematrix'][@axis='column'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//html:input[@name='y'][@type='location'][@units='tilematrix'][@axis='row'][@min][@max])",
+                doc);
+        assertXpathEvaluatesTo("0", "count(//html:input[@name='w'][@type='width'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:input[@name='h'][@type='height'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:input[@name='i'][@type='location'][@units='tile'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:input[@name='j'][@type='location'][@units='tile'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:input[@name='z'][@type='zoom'][@min][@max])", doc);
+    }
+
+    @Test
+    public void testDefaultConfiguredMapMLLayerGetFeatureInfoAsMapML() throws Exception {
+        String path =
+                "mapml/"
+                        + MockData.BASIC_POLYGONS.getPrefix()
+                        + ":"
+                        + MockData.BASIC_POLYGONS.getLocalPart()
+                        + "/osmtile/";
+
+        org.w3c.dom.Document doc = getMapML(path);
+
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        HashMap<String, String> vars = parseQuery(url);
+
+        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
+        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
+        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
+        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.BASIC_POLYGONS.getLocalPart()));
+        assertTrue(vars.get("crs").equalsIgnoreCase("urn:x-ogc:def:crs:EPSG:3857"));
+        assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
+        assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
+        assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
+        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
+        assertTrue(vars.get("styles").equalsIgnoreCase(""));
+        assertTrue(vars.get("x").equalsIgnoreCase("{i}"));
+        assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
+        assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
+        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+        vars.put(
+                "bbox",
+                "-967387.0299771908,-118630.26789859355,884223.543202919,920913.3167798058");
+        vars.put("width", "757");
+        vars.put("height", "425");
+        vars.put("x", "379");
+        vars.put("y", "213");
+
+        doc = getMapML("wms", vars);
+        assertXpathEvaluatesTo("2", "count(//html:feature)", doc);
+        assertXpathEvaluatesTo("", "//html:feature/html:geometry/@cs", doc);
+        assertXpathEvaluatesTo("2", "count(//html:feature//html:polygon[1])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:meta[@name='projection'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:meta[@name='cs'])", doc);
+    }
+
+    /**
+     * Executes a request using the GET method and returns the result as an MapML document.
+     *
+     * @param path The portion of the request after the context, example:
+     * @param query A map representing kvp to be used by the request.
+     * @return A result of the request parsed into a dom.
+     */
+    protected org.w3c.dom.Document getMapML(final String path, HashMap<String, String> query)
+            throws Exception {
+        MockHttpServletRequest request = createRequest(path, query);
+        request.addHeader("Accept", "text/mapml");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        String resp = dispatch(request, "UTF-8").getContentAsString();
+        return dom(new ByteArrayInputStream(resp.getBytes()), true);
+    }
+    /**
+     * Executes a request using the GET method and returns the result as an MapML document.
+     *
+     * @param path The portion of the request after the context, example:
+     * @return A result of the request parsed into a dom.
+     */
+    protected org.w3c.dom.Document getMapML(final String path) throws Exception {
+        MockHttpServletRequest request = createRequest(path, false);
+        request.addHeader("Accept", "text/mapml");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        String resp = dispatch(request, "UTF-8").getContentAsString();
+        return dom(new ByteArrayInputStream(resp.getBytes()), true);
+    }
+
+    private HashMap<String, String> parseQuery(URL url) {
+        String[] variableValues = url.getQuery().split("&");
+        HashMap<String, String> vars = new HashMap<>(variableValues.length);
+        // int i = variableValues.length;
+        for (String variableValue : variableValues) {
+            String[] varValue = variableValue.split("=");
+            vars.put(varValue[0], varValue.length == 2 ? varValue[1] : "");
+        }
+        return vars;
     }
 }

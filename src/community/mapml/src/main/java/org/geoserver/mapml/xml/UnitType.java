@@ -20,16 +20,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="unitType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="tilematrix"/>
- *     &lt;enumeration value="pcrs"/>
- *     &lt;enumeration value="tcrs"/>
- *     &lt;enumeration value="map"/>
- *     &lt;enumeration value="gcrs"/>
- *     &lt;enumeration value="tile"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="unitType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="tilematrix"/&gt;
+ *     &lt;enumeration value="pcrs"/&gt;
+ *     &lt;enumeration value="tcrs"/&gt;
+ *     &lt;enumeration value="map"/&gt;
+ *     &lt;enumeration value="gcrs"/&gt;
+ *     &lt;enumeration value="tile"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "unitType")

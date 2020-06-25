@@ -22,20 +22,20 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{}Point"/>
- *         &lt;element ref="{}LineString"/>
- *         &lt;element ref="{}Polygon"/>
- *         &lt;element ref="{}MultiPoint"/>
- *         &lt;element ref="{}MultiLineString"/>
- *         &lt;element ref="{}MultiPolygon"/>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}Point"/&gt;
+ *         &lt;element ref="{}LineString"/&gt;
+ *         &lt;element ref="{}Polygon"/&gt;
+ *         &lt;element ref="{}MultiPoint"/&gt;
+ *         &lt;element ref="{}MultiLineString"/&gt;
+ *         &lt;element ref="{}MultiPolygon"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -46,12 +46,36 @@ import javax.xml.bind.annotation.XmlType;
 public class GeometryCollection {
 
     @XmlElements({
-        @XmlElement(name = "point", type = Point.class),
-        @XmlElement(name = "linestring", type = LineString.class),
-        @XmlElement(name = "polygon", type = Polygon.class),
-        @XmlElement(name = "multipoint", type = MultiPoint.class),
-        @XmlElement(name = "multilinestring", type = MultiLineString.class),
-        @XmlElement(name = "multipolygon", type = MultiPolygon.class)
+        @XmlElement(
+            name = "point",
+            type = Point.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(
+            name = "linestring",
+            type = LineString.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(
+            name = "polygon",
+            type = Polygon.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(
+            name = "multipoint",
+            type = MultiPoint.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(
+            name = "multilinestring",
+            type = MultiLineString.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        ),
+        @XmlElement(
+            name = "multipolygon",
+            type = MultiPolygon.class,
+            namespace = "http://www.w3.org/1999/xhtml/"
+        )
     })
     protected List<Object> pointOrLineStringOrPolygon;
 
@@ -73,7 +97,7 @@ public class GeometryCollection {
      */
     public List<Object> getPointOrLineStringOrPolygon() {
         if (pointOrLineStringOrPolygon == null) {
-            pointOrLineStringOrPolygon = new ArrayList<Object>();
+            pointOrLineStringOrPolygon = new ArrayList<>();
         }
         return this.pointOrLineStringOrPolygon;
     }

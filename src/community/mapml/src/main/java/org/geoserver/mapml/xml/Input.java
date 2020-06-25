@@ -21,30 +21,30 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="type" use="required" type="{}inputType" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="rel" type="{}inputRelType" />
- *       &lt;attribute name="shard" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="list" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="position" type="{}positionType" />
- *       &lt;attribute name="axis" type="{}axisType" />
- *       &lt;attribute name="units" type="{}unitType" />
- *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="min" type="{http://www.w3.org/2001/XMLSchema}decimal" />
- *       &lt;attribute name="max" type="{http://www.w3.org/2001/XMLSchema}decimal" />
- *       &lt;attribute name="step" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="type" use="required" type="{}inputType" /&gt;
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="rel" type="{}inputRelType" /&gt;
+ *       &lt;attribute name="shard" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="list" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *       &lt;attribute name="position" type="{}positionType" /&gt;
+ *       &lt;attribute name="axis" type="{}axisType" /&gt;
+ *       &lt;attribute name="units" type="{}unitType" /&gt;
+ *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="min" type="{http://www.w3.org/2001/XMLSchema}decimal" /&gt;
+ *       &lt;attribute name="max" type="{http://www.w3.org/2001/XMLSchema}decimal" /&gt;
+ *       &lt;attribute name="step" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "input")
+@XmlRootElement(name = "input", namespace = "http://www.w3.org/1999/xhtml/")
 public class Input {
 
     @XmlAttribute(name = "name", required = true)

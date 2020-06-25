@@ -16,38 +16,61 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+/** @author prushforth */
 public class MapMLMessageConverter extends BaseMessageConverter<Object> {
 
     @Autowired private Jaxb2Marshaller mapmlMarshaller;
 
+    /** */
     public MapMLMessageConverter() {
         super(MapMLConstants.MAPML_MEDIA_TYPE);
     }
 
+    /**
+     * @param clazz
+     * @param mediaType
+     * @return
+     */
     @Override
     public boolean canRead(Class<?> clazz, @Nullable MediaType mediaType) {
         return false;
     }
 
+    /**
+     * @param clazz
+     * @param mediaType
+     * @return
+     */
     @Override
     public boolean canWrite(Class<?> clazz, @Nullable MediaType mediaType) {
         return (canWrite(mediaType) && mapmlMarshaller.supports(clazz));
     }
 
+    /**
+     * @param clazz
+     * @return
+     */
     @Override
     protected boolean supports(Class<?> clazz) {
         // should not be called, since we override canRead()/canWrite()
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param o
+     * @param outputMessage
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
     @Override
     protected void writeInternal(Object o, HttpOutputMessage outputMessage)
             throws UnsupportedEncodingException, IOException {
-        OutputStreamWriter osw =
+        try (OutputStreamWriter osw =
                 new OutputStreamWriter(
-                        outputMessage.getBody(), geoServer.getSettings().getCharset());
-        Result result = new StreamResult(osw);
-        mapmlMarshaller.marshal(o, result);
-        osw.flush();
+                        outputMessage.getBody(), geoServer.getSettings().getCharset())) {
+            Result result = new StreamResult(osw);
+            mapmlMarshaller.marshal(o, result);
+            osw.flush();
+        }
     }
 }

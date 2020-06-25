@@ -5,18 +5,18 @@
 
 package org.geoserver.mapml;
 
-import static org.geoserver.mapml.MapMLConstants.*;
+import static org.geoserver.mapml.MapMLConstants.DATE_FORMAT;
+import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.DimensionInfo;
@@ -50,6 +50,7 @@ import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
 import org.geoserver.mapml.xml.Select;
 import org.geoserver.mapml.xml.UnitType;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -66,6 +67,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author prushforth
+ *     <p>This controller has two methods which map requests for layers depending on the MIME media
+ *     type requested by the client. The first returns HTML (text/html) representing a layer
+ *     preview. This preview uses the Web-Map-Custom-Element viewer polyfill, which is bundled as
+ *     static resources in the built project. The second method returns MapML (text/mapml) for a
+ *     layer, which is how the layer polyfill embedded in the text/html response "requests itself".
+ */
 @RestController
 @RequestMapping(path = "/mapml")
 @CrossOrigin
@@ -113,6 +122,19 @@ public class MapMLController {
         DISPLAYS.put("DESKTOP", desktops);
     }
 
+    /**
+     * Return an HTML representation of a layer, by embedding the Web-Map-Custom-Element viewer
+     * reference in the generated HTML.
+     *
+     * @param request
+     * @param response
+     * @param layer layer or layer group name
+     * @param proj TCRS name
+     * @param style A named WMS style
+     * @param transparent boolean corresponding to WMS' transparent parameter
+     * @param format string corresponding to WMS' format parameter
+     * @return a text/html representation
+     */
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
@@ -130,26 +152,15 @@ public class MapMLController {
         ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
         ResourceInfo resourceInfo = null;
         LayerGroupInfo layerGroupInfo = null;
-        MetadataMap layerMeta;
         boolean isLayerGroup = (layerInfo == null);
-        boolean isTransparent = transparent.orElse(true);
         String layerName = "";
-        final String workspace;
         String styleName = style.orElse("");
-        String imageFormat = format.orElse("image/png");
-        String baseUrl = ResponseUtils.baseURL(request);
-        String baseUrlPattern = baseUrl;
         if (isLayerGroup) {
             layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
             if (layerGroupInfo == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return "Invalid layer or layer group name: " + layer;
             }
-            workspace =
-                    (layerGroupInfo.getWorkspace() != null
-                            ? layerGroupInfo.getWorkspace().getName()
-                            : "");
-            layerMeta = layerGroupInfo.getMetadata();
             for (LayerInfo li : layerGroupInfo.layers()) {
                 bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
             }
@@ -168,12 +179,6 @@ public class MapMLController {
                     resourceInfo.getTitle().isEmpty()
                             ? layerInfo.getName().isEmpty() ? layer : layerInfo.getName()
                             : resourceInfo.getTitle();
-            layerMeta = resourceInfo.getMetadata();
-            workspace =
-                    (resourceInfo.getStore().getWorkspace() != null
-                            ? resourceInfo.getStore().getWorkspace().getName()
-                            : "");
-            isTransparent = transparent.orElse(!layerInfo.isOpaque());
         }
         ProjType projType;
         try {
@@ -187,35 +192,8 @@ public class MapMLController {
         Double longitude = bbox.centre().getX();
         Double latitude = bbox.centre().getY();
 
-        String dimension = layerMeta.get("mapml.dimension", String.class);
-        boolean timeEnabled = false;
-        boolean elevationEnabled = false;
-        if ("Time".equalsIgnoreCase(dimension)) {
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
-                DimensionInfo timeInfo =
-                        typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-                if (timeInfo.isEnabled()) {
-                    timeEnabled = true;
-                }
-            }
-        } else if ("Elevation".equalsIgnoreCase(dimension)) {
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
-                DimensionInfo elevInfo =
-                        typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
-                if (elevInfo.isEnabled()) {
-                    elevationEnabled = true;
-                }
-            }
-        }
-
-        final boolean te = timeEnabled;
-        final boolean ee = elevationEnabled;
         final ReferencedEnvelope bbbox;
         int zoom = 0;
-        final boolean t = isTransparent;
-        Set<String> sources = new HashSet<>();
         try {
             ReferencedEnvelope lb =
                     isLayerGroup
@@ -231,90 +209,19 @@ public class MapMLController {
             // in both dimensions
             zoom = TCRS.fitProjectedBoundsToDisplay(pb, DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
 
-            for (String deviceType : DISPLAYS.keySet()) {
-                String source =
-                        "<source media=\"(min-width: "
-                                + new Double(DISPLAYS.get(deviceType).get(0).getWidth()).intValue()
-                                + "px)\" sizes=\"100vw\" srcset=\""
-                                + DISPLAYS.get(deviceType)
-                                        .stream()
-                                        .map(
-                                                b -> {
-                                                    int z = TCRS.fitProjectedBoundsToDisplay(pb, b);
-                                                    Bounds db =
-                                                            TCRS.getProjectedBoundsForDisplayBounds(
-                                                                    z, pb.getCentre(), b);
-                                                    return new StringBuilder()
-                                                            .append(baseUrlPattern)
-                                                            .append(
-                                                                    workspace.isEmpty()
-                                                                            ? ""
-                                                                            : workspace)
-                                                            .append("/")
-                                                            .append(
-                                                                    "wms?version=1.3.0&service=WMS&request=GetMap&crs=")
-                                                            .append(TCRS.getCode())
-                                                            .append("&layers=")
-                                                            .append(layer)
-                                                            .append("&styles=")
-                                                            .append(styleName)
-                                                            .append(te ? "&time={time}" : "")
-                                                            .append(
-                                                                    ee
-                                                                            ? "&elevation={elevation}"
-                                                                            : "")
-                                                            .append("&bbox=")
-                                                            .append(db.getMin().x)
-                                                            .append(",")
-                                                            .append(db.getMin().y)
-                                                            .append(",")
-                                                            .append(db.getMax().x)
-                                                            .append(",")
-                                                            .append(db.getMax().y)
-                                                            .append("&format=")
-                                                            .append(imageFormat)
-                                                            .append("&transparent=")
-                                                            .append(t)
-                                                            .append("&width=")
-                                                            .append(
-                                                                    new Double(b.getWidth())
-                                                                            .intValue())
-                                                            .append("&height=")
-                                                            .append(
-                                                                    new Double(b.getHeight())
-                                                                            .intValue())
-                                                            .append(" ")
-                                                            .append(
-                                                                    new Double(b.getWidth())
-                                                                            .intValue())
-                                                            .append("w")
-                                                            .toString();
-                                                })
-                                        .collect(Collectors.joining(","))
-                                + "\">";
-                sources.add(source);
-            }
         } catch (Exception e) {
             // what to do?
             // log.info("Exception occured retrieving bbox for "+ layer
             // );
         }
-
-        String viewerPath = request.getContextPath() + request.getServletPath() + "/viewer";
+        String base = ResponseUtils.baseURL(request);
+        String viewerPath =
+                ResponseUtils.buildURL(
+                        base,
+                        "/mapml/viewer/widget/mapml-viewer.js",
+                        null,
+                        URLMangler.URLType.RESOURCE);
         String title = "GeoServer MapML preview " + layerName;
-        String removeImageScript =
-                "function removeAllChildren(element){\n"
-                        + "  while(element.firstChild){\n"
-                        + "    element.removeChild(element.firstChild);\n"
-                        + "  }\n"
-                        + "};\n"
-                        + "document.addEventListener('DOMContentLoaded',function() {  \n"
-                        + "  removeAllChildren(document.getElementById('data-web-map-responsive')); \n"
-                        + "});";
-        // figure out JavaScript to make the map responsively fill the
-        // browser window. This would be a media query I think... and the
-        // map could receive a zoom parameter based on the media query
-
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\n")
                 .append("<html>\n")
@@ -323,22 +230,24 @@ public class MapMLController {
                 .append(title)
                 .append("</title>\n")
                 .append("<meta charset='utf-8'>\n")
-                .append("<script>")
-                .append(removeImageScript)
-                .append("</script>")
-                .append("<script src=\"")
+                .append("<script type=\"module\"  src=\"")
                 .append(viewerPath)
-                .append("/bower_components/webcomponentsjs/webcomponents-lite.min.js\"></script>\n")
-                .append("<link rel=\"import\" href=\"")
-                .append(viewerPath)
-                .append("/bower_components/web-map/web-map.html\">\n")
+                .append("\"></script>\n")
                 .append("<style>\n")
-                .append("* {margin: 0;padding: 0;}\n")
-                .append("map { height: 100vh;}\n") // important map must have a height
-                .append("</style>")
+                .append("html, body { height: 100%; }\n")
+                .append("* { margin: 0; padding: 0; }\n")
+                .append("mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }\n")
+                .append("mapml-viewer:not(:defined) > * { display: none; } n")
+                .append("layer- { display: none; }\n")
+                .append("</style>\n")
+                .append("<noscript>\n")
+                .append("<style>\n")
+                .append("mapml-viewer:not(:defined) > :not(layer-) { display: initial; }\n")
+                .append("</style>\n")
+                .append("</noscript>\n")
                 .append("</head>\n")
                 .append("<body>\n")
-                .append("<map name=\"mappy\" is=\"web-map\" projection=\"")
+                .append("<mapml-viewer projection=\"")
                 .append(projType.value())
                 .append("\" ")
                 .append("zoom=\"")
@@ -362,24 +271,29 @@ public class MapMLController {
                 .append("/")
                 .append(!styleName.isEmpty() ? "?style=" + styleName : "")
                 .append("\" checked></layer->\n")
-                .append("</map>\n")
-                .append("<div id=data-web-map-responsive>")
-                .append("<picture>\n")
-                .append(sources.stream().collect(Collectors.joining()))
-                .append("<img usemap=\"#mappy\" ")
-                .append("src=\"\"")
-                .append(" style=\"object-fit: contain; ")
-                .append("width: 100vw; height: 100vh\" ")
-                .append(" alt=\"Map of ")
-                .append(layerName)
-                .append("\">\n")
-                .append("</picture>\n")
-                .append("</div>")
+                .append("</mapml-viewer>\n")
                 .append("</body>\n")
                 .append("</html>");
         return sb.toString();
     }
 
+    /**
+     * Return a MapML representation of a layer, by embedding the Web-Map-Custom-Element viewer
+     * reference in the generated HTML.
+     *
+     * @param request
+     * @param response
+     * @param layer
+     * @param proj
+     * @param style
+     * @param transparent boolean corresponding to WMS' transparent parameter
+     * @param format string corresponding to WMS' format parameter
+     * @return a text/mapml representation
+     * @throws NoSuchAuthorityCodeException - NoSuchAuthorityCodeException
+     * @throws TransformException - TransformException
+     * @throws FactoryException - FactoryException
+     * @throws IOException - IOException
+     */
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
@@ -476,8 +390,9 @@ public class MapMLController {
 
         String styleName = style.orElse("");
         String imageFormat = format.orElse("image/png");
-
-        String baseUrl = ResponseUtils.baseURL(request);
+        String baseUrl =
+                ResponseUtils.buildURL(
+                        ResponseUtils.baseURL(request), null, null, URLMangler.URLType.EXTERNAL);
         String baseUrlPattern = baseUrl;
 
         // handle shard config
@@ -503,7 +418,7 @@ public class MapMLController {
         HeadContent head = new HeadContent();
         head.setTitle(layerName);
         Base base = new Base();
-        base.setHref(baseUrl + "mapml");
+        base.setHref(ResponseUtils.buildURL(baseUrl, "mapml/", null, URLMangler.URLType.EXTERNAL));
         head.setBase(base);
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
@@ -548,16 +463,18 @@ public class MapMLController {
                 Link styleLink = new Link();
                 styleLink.setRel(RelType.STYLE);
                 styleLink.setTitle(si.getName());
-                styleLink.setHref(
-                        baseUrl
-                                + "mapml/"
-                                + layer
-                                + "/"
-                                + proj
-                                + "?style="
-                                + si.getName()
-                                + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
-                                + (format.isPresent() ? "&format=" + imageFormat : ""));
+                HashMap<String, String> params = new HashMap<>();
+                params.put("style", si.getName());
+                if (transparent.isPresent()) {
+                    params.put("transparent", Boolean.toString(isTransparent));
+                }
+                if (format.isPresent()) {
+                    params.put("format", imageFormat);
+                }
+                String path = "mapml/" + layer + "/" + proj;
+                String url =
+                        ResponseUtils.buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
+                styleLink.setHref(url);
                 links.add(styleLink);
             }
             // output the self style link, taking care to handle the default empty string styleName
@@ -565,17 +482,17 @@ public class MapMLController {
             Link selfStyleLink = new Link();
             selfStyleLink.setRel(RelType.SELF_STYLE);
             selfStyleLink.setTitle(effectiveStyleName);
-            selfStyleLink.setHref(
-                    baseUrl
-                            + "mapml/"
-                            + layer
-                            + "/"
-                            + proj
-                            + "?style="
-                            + styleName
-                            + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
-                            + (format.isPresent() ? "&format=" + imageFormat : ""));
-
+            HashMap<String, String> params = new HashMap<>();
+            params.put("style", styleName);
+            if (transparent.isPresent()) {
+                params.put("transparent", Boolean.toString(isTransparent));
+            }
+            if (format.isPresent()) {
+                params.put("format", imageFormat);
+            }
+            String path = "mapml/" + layer + "/" + proj;
+            String url = ResponseUtils.buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
+            selfStyleLink.setHref(url);
             links.add(selfStyleLink);
         }
 
@@ -586,16 +503,17 @@ public class MapMLController {
             Link projectionLink = new Link();
             projectionLink.setRel(RelType.ALTERNATE);
             projectionLink.setProjection(pt);
-            projectionLink.setHref(
-                    baseUrl
-                            + "mapml/"
-                            + layer
-                            + "/"
-                            + pt.value()
-                            + "?style="
-                            + styleName
-                            + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
-                            + (format.isPresent() ? "&format=" + imageFormat : ""));
+            HashMap<String, String> params = new HashMap<>();
+            params.put("style", styleName);
+            if (transparent.isPresent()) {
+                params.put("transparent", Boolean.toString(isTransparent));
+            }
+            if (format.isPresent()) {
+                params.put("format", imageFormat);
+            }
+            String path = "mapml/" + layer + "/" + pt.value();
+            String url = ResponseUtils.buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
+            projectionLink.setHref(url);
             links.add(projectionLink);
         }
 
@@ -629,9 +547,9 @@ public class MapMLController {
             Datalist datalist = new Datalist();
             datalist.setId("servers");
             List<Option> options = datalist.getOptions();
-            for (int s = 0; s < shardArray.length; s++) {
+            for (String sa : shardArray) {
                 Option o = new Option();
-                o.setValue(shardArray[s]);
+                o.setValue(sa);
                 options.add(o);
             }
             extentList.add(datalist);
@@ -728,23 +646,24 @@ public class MapMLController {
                 // tile link
                 Link tileLink = new Link();
                 tileLink.setRel(RelType.TILE);
-                tileLink.setTref(
-                        baseUrlPattern
-                                + (baseUrlPattern.endsWith("/") ? "" : "/")
-                                + "gwc/service/wmts?layer="
-                                + (workspace.isEmpty() ? "" : workspace + ":")
-                                + layerName
-                                + "&style="
-                                + styleName
-                                + "&tilematrixset="
-                                + projType.value()
-                                + "&service=WMTS&request=GetTile"
-                                + "&version=1.0.0"
-                                + "&tilematrix={z}"
-                                + "&TileCol={x}"
-                                + "&TileRow={y}"
-                                + "&format="
-                                + imageFormat);
+                String path = "gwc/service/wmts";
+                HashMap<String, String> params = new HashMap<>();
+                params.put("layer", (workspace.isEmpty() ? "" : workspace + ":") + layerName);
+                params.put("style", styleName);
+                params.put("tilematrixset", projType.value());
+                params.put("service", "WMTS");
+                params.put("request", "GetTile");
+                params.put("version", "1.0.0");
+                params.put("tilematrix", "{z}");
+                params.put("TileCol", "{x}");
+                params.put("TileRow", "{y}");
+                params.put("format", imageFormat);
+                String urlTemplate =
+                        URLDecoder.decode(
+                                ResponseUtils.buildURL(
+                                        baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
+                                "UTF-8");
+                tileLink.setTref(urlTemplate);
                 extentList.add(tileLink);
             } else {
                 // emit MapML extent that uses WMS GetMap requests to request tiles
@@ -764,11 +683,18 @@ public class MapMLController {
                             isLayerGroup
                                     ? layerGroupInfo.getBounds()
                                     : layerInfo.getResource().boundingBox();
+                    bbbox = bbbox.transform(previewTcrsMap.get(projType.value()).getCRS(), true);
                 } catch (Exception e) {
-                    //                    log.info("Exception occured retrieving bbox for "+ layer
-                    // );
+                    // sometimes, when the bbox is right to 90N or 90S, in epsg:3857,
+                    // the transform method will throw. In that case, use the
+                    // bounds of the TCRS to define the bbox for the layer
+                    TiledCRS t = previewTcrsMap.get(projType.value());
+                    double x1 = t.getBounds().getMax().x;
+                    double y1 = t.getBounds().getMax().y;
+                    double x2 = t.getBounds().getMin().x;
+                    double y2 = t.getBounds().getMin().y;
+                    bbbox = new ReferencedEnvelope(x1, y1, x2, y2, t.getCRS());
                 }
-                bbbox = bbbox.transform(previewTcrsMap.get(projType.value()).getCRS(), true);
 
                 // tile inputs
                 // txmin
@@ -822,23 +748,31 @@ public class MapMLController {
                 // tile link
                 Link tileLink = new Link();
                 tileLink.setRel(RelType.TILE);
-                tileLink.setTref(
-                        baseUrlPattern
-                                + (workspace.isEmpty() ? "" : workspace + "/")
-                                + "wms?version=1.3.0&service=WMS&request=GetMap&crs="
-                                + previewTcrsMap.get(projType.value()).getCode()
-                                + "&layers="
-                                + layerName
-                                + "&styles="
-                                + styleName
-                                + (timeEnabled ? "&time={time}" : "")
-                                + (elevationEnabled ? "&elevation={elevation}" : "")
-                                + "&bbox={txmin},{tymin},{txmax},{tymax}"
-                                + "&format="
-                                + imageFormat
-                                + "&transparent="
-                                + isTransparent
-                                + "&width=256&height=256");
+                String path = "wms";
+                HashMap<String, String> params = new HashMap<>();
+                params.put("version", "1.3.0");
+                params.put("service", "WMS");
+                params.put("request", "GetMap");
+                params.put("crs", previewTcrsMap.get(projType.value()).getCode());
+                params.put("layers", layerName);
+                params.put("styles", styleName);
+                if (timeEnabled) {
+                    params.put("time", "{time}");
+                }
+                if (elevationEnabled) {
+                    params.put("elevation", "{elevation}");
+                }
+                params.put("bbox", "{txmin},{tymin},{txmax},{tymax}");
+                params.put("format", imageFormat);
+                params.put("transparent", Boolean.toString(isTransparent));
+                params.put("width", "256");
+                params.put("height", "256");
+                String urlTemplate =
+                        URLDecoder.decode(
+                                ResponseUtils.buildURL(
+                                        baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
+                                "UTF-8");
+                tileLink.setTref(urlTemplate);
                 extentList.add(tileLink);
             }
         } else {
@@ -869,7 +803,7 @@ public class MapMLController {
                 x1 = defaultBounds.getMin().x;
                 x2 = defaultBounds.getMax().x;
                 y1 = defaultBounds.getMin().y;
-                y2 = defaultBounds.getMax().x;
+                y2 = defaultBounds.getMax().y;
                 // use the bounds of the TCRS as the default bounds for this layer
                 bbbox =
                         new ReferencedEnvelope(
@@ -943,23 +877,31 @@ public class MapMLController {
             // image link
             Link imageLink = new Link();
             imageLink.setRel(RelType.IMAGE);
-            imageLink.setTref(
-                    baseUrlPattern
-                            + (workspace.isEmpty() ? "" : workspace + "/")
-                            + "wms?version=1.3.0&service=WMS&request=GetMap&crs="
-                            + previewTcrsMap.get(projType.value()).getCode()
-                            + "&layers="
-                            + layerName
-                            + "&styles="
-                            + styleName
-                            + (timeEnabled ? "&time={time}" : "")
-                            + (elevationEnabled ? "&elevation={elevation}" : "")
-                            + "&bbox={xmin},{ymin},{xmax},{ymax}"
-                            + "&format="
-                            + imageFormat
-                            + "&transparent="
-                            + isTransparent
-                            + "&width={w}&height={h}");
+            String path = "wms";
+            HashMap<String, String> params = new HashMap<>();
+            params.put("version", "1.3.0");
+            params.put("service", "WMS");
+            params.put("request", "GetMap");
+            params.put("crs", previewTcrsMap.get(projType.value()).getCode());
+            params.put("layers", layerName);
+            params.put("styles", styleName);
+            if (timeEnabled) {
+                params.put("time", "{time}");
+            }
+            if (elevationEnabled) {
+                params.put("elevation", "{elevation}");
+            }
+            params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
+            params.put("format", imageFormat);
+            params.put("transparent", Boolean.toString(isTransparent));
+            params.put("width", "{w}");
+            params.put("height", "{h}");
+            String urlTemplate =
+                    URLDecoder.decode(
+                            ResponseUtils.buildURL(
+                                    baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
+                            "UTF-8");
+            imageLink.setTref(urlTemplate);
             extentList.add(imageLink);
         }
 
@@ -985,26 +927,28 @@ public class MapMLController {
                 // query link
                 Link queryLink = new Link();
                 queryLink.setRel(RelType.QUERY);
-                queryLink.setTref(
-                        baseUrlPattern
-                                + (baseUrlPattern.endsWith("/") ? "" : "/")
-                                + "gwc/service/wmts/"
-                                + "?LAYER="
-                                + (workspace.isEmpty() ? "" : workspace + ":")
-                                + layerName
-                                + "&TILEMATRIX={z}"
-                                + "&TileCol={x}&TileRow={y}"
-                                + "&TILEMATRIXSET="
-                                + projType.value()
-                                + "&SERVICE=WMTS"
-                                + "&VERSION=1.0.0"
-                                + "&REQUEST=GetFeatureInfo&FEATURE_COUNT=50"
-                                + "&FORMAT="
-                                + imageFormat
-                                + "&STYLE="
-                                + styleName
-                                + "&INFOFORMAT=text/mapml"
-                                + "&I={i}&J={j}");
+                String path = "gwc/service/wmts";
+                HashMap<String, String> params = new HashMap<>();
+                params.put("layer", (workspace.isEmpty() ? "" : workspace + ":") + layerName);
+                params.put("tilematrix", "{z}");
+                params.put("TileCol", "{x}");
+                params.put("TileRow", "{y}");
+                params.put("tilematrixset", projType.value());
+                params.put("service", "WMTS");
+                params.put("version", "1.0.0");
+                params.put("request", "GetFeatureInfo");
+                params.put("feature_count", "50");
+                params.put("format", imageFormat);
+                params.put("style", styleName);
+                params.put("infoformat", "text/mapml");
+                params.put("i", "{i}");
+                params.put("j", "{j}");
+                String urlTemplate =
+                        URLDecoder.decode(
+                                ResponseUtils.buildURL(
+                                        baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
+                                "UTF-8");
+                queryLink.setTref(urlTemplate);
                 extentList.add(queryLink);
             } else {
 
@@ -1031,26 +975,41 @@ public class MapMLController {
                 // query link
                 Link queryLink = new Link();
                 queryLink.setRel(RelType.QUERY);
-                queryLink.setTref(
-                        baseUrlPattern
-                                + (workspace.isEmpty() ? "" : workspace + "/")
-                                + "wms?version=1.3.0&service=WMS&request=GetFeatureInfo&FEATURE_COUNT=50&crs="
-                                + previewTcrsMap.get(projType.value()).getCode()
-                                + "&layers="
-                                + layerName
-                                + "&query_layers="
-                                + layerName
-                                + "&styles="
-                                + styleName
-                                + (timeEnabled ? "&time={time}" : "")
-                                + (elevationEnabled ? "&elevation={elevation}" : "")
-                                + (Boolean.TRUE.equals(useTiles)
-                                        ? "&bbox={txmin},{tymin},{txmax},{tymax}&width=256&height=256"
-                                        : "&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}")
-                                + "&info_format=text/mapml"
-                                + "&transparent="
-                                + isTransparent
-                                + "&x={i}&y={j}");
+                String path = "wms";
+                HashMap<String, String> params = new HashMap<>();
+                params.put("version", "1.3.0");
+                params.put("service", "WMS");
+                params.put("request", "GetFeatureInfo");
+                params.put("feature_count", "50");
+                params.put("crs", previewTcrsMap.get(projType.value()).getCode());
+                params.put("layers", layerName);
+                params.put("query_layers", layerName);
+                params.put("styles", styleName);
+                if (timeEnabled) {
+                    params.put("time", "{time}");
+                }
+                if (elevationEnabled) {
+                    params.put("elevation", "{elevation}");
+                }
+                if (Boolean.TRUE.equals(useTiles)) {
+                    params.put("bbox", "{txmin},{tymin},{txmax},{tymax}");
+                    params.put("width", "256");
+                    params.put("height", "256");
+                } else {
+                    params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
+                    params.put("width", "{w}");
+                    params.put("height", "{h}");
+                }
+                params.put("info_format", "text/mapml");
+                params.put("transparent", Boolean.toString(isTransparent));
+                params.put("x", "{i}");
+                params.put("y", "{j}");
+                String urlTemplate =
+                        URLDecoder.decode(
+                                ResponseUtils.buildURL(
+                                        baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
+                                "UTF-8");
+                queryLink.setTref(urlTemplate);
                 extentList.add(queryLink);
             }
         }
@@ -1060,6 +1019,11 @@ public class MapMLController {
         return mapml;
     }
 
+    /**
+     * @param req
+     * @param shardServerPattern
+     * @return
+     */
     private static String shardBaseURL(HttpServletRequest req, String shardServerPattern) {
         StringBuffer sb = new StringBuffer(req.getScheme());
         sb.append("://")

@@ -20,15 +20,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="mimeType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="text/css"/>
- *     &lt;enumeration value="text/mapml"/>
- *     &lt;enumeration value="image/png"/>
- *     &lt;enumeration value="image/jpeg"/>
- *     &lt;enumeration value="text/html"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="mimeType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="text/css"/&gt;
+ *     &lt;enumeration value="text/mapml"/&gt;
+ *     &lt;enumeration value="image/png"/&gt;
+ *     &lt;enumeration value="image/jpeg"/&gt;
+ *     &lt;enumeration value="text/html"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "mimeType")

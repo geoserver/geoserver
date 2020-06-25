@@ -22,21 +22,21 @@ import javax.xml.namespace.QName;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType name="PropertyContent">
- *   &lt;complexContent>
- *     &lt;extension base="{}any_content">
- *       &lt;attGroup ref="{}any_attribute"/>
- *       &lt;anyAttribute processContents='skip'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="PropertyContent"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{}any_content"&gt;
+ *       &lt;attGroup ref="{}any_attribute"/&gt;
+ *       &lt;anyAttribute processContents='skip'/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "propertyContent")
 public class PropertyContent extends AnyContent {
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute private final Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets a map that contains attributes that aren't bound to any typed property on this class.

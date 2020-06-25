@@ -14,13 +14,16 @@ import java.util.logging.Logger;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import net.opengis.wfs.FeatureCollectionType;
+import org.geoserver.mapml.tcrs.TiledCRSConstants;
+import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
-import org.geoserver.mapml.xml.Extent;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.HeadContent;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
@@ -33,6 +36,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+/** @author prushforth */
 public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml");
 
@@ -40,17 +44,35 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
 
     private WMS wms;
 
+    /** @param wms */
     public MapMLGetFeatureInfoOutputFormat(WMS wms) {
         super(MapMLConstants.MAPML_MIME_TYPE);
         this.wms = wms;
     }
 
+    /**
+     * @param results
+     * @param request
+     * @param out
+     * @throws ServiceException
+     * @throws IOException
+     */
     @Override
     public void write(
             FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException {
 
         String baseUrl = request.getBaseUrl();
+        // the MapMLController serialized the CRS parameter, so we can rely
+        // on it being a string match for TiledCRSParamms.code field.
+        String crs = request.getRawKvp().get("CRS");
+        String projection = null;
+        for (TiledCRSParams tcrs : TiledCRSConstants.tiledCRSDefinitions.values()) {
+            if (tcrs.getCode().equalsIgnoreCase(crs)) {
+                projection = tcrs.getName();
+                break;
+            }
+        }
 
         // build the mapML doc
         Mapml mapml = new Mapml();
@@ -59,7 +81,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         HeadContent head = new HeadContent();
         head.setTitle("GetFeatureInfo Results");
         Base base = new Base();
-        base.setHref(baseUrl + "mapml");
+        base.setHref(ResponseUtils.buildURL(baseUrl, "mapml/", null, URLMangler.URLType.SERVICE));
         head.setBase(base);
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
@@ -69,17 +91,25 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         meta.setHttpEquiv("Content-Type");
         meta.setContent(MapMLConstants.MAPML_MIME_TYPE); // ;projection=" + projType.value());
         metas.add(meta);
+        Meta tcrsMeta = new Meta();
+        tcrsMeta.setName("projection");
+        tcrsMeta.setContent(projection);
+        Meta csMeta = new Meta();
+        // for GetFeatureInfo requests, the coordinate system is always pcrs
+        csMeta.setName("cs");
+        csMeta.setContent("pcrs");
+        metas.add(tcrsMeta);
+        metas.add(csMeta);
         mapml.setHead(head);
 
         // build the body
         BodyContent body = new BodyContent();
         mapml.setBody(body);
-        Extent extent = new Extent();
-        body.setExtent(extent);
 
+        @SuppressWarnings("unchecked")
         List<FeatureCollection> featureCollections = results.getFeature();
         SimpleFeatureCollection fc;
-        if (featureCollections.size() > 0) {
+        if (!featureCollections.isEmpty()) {
             int lastFeatureCollection = featureCollections.size() - 1;
             if (!(featureCollections.get(lastFeatureCollection)
                     instanceof SimpleFeatureCollection)) {
@@ -87,21 +117,21 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             }
             fc = (SimpleFeatureCollection) featureCollections.get(lastFeatureCollection);
             List<Feature> features = body.getFeatures();
-            SimpleFeatureIterator iterator = fc.features();
-            while (iterator.hasNext()) {
-                SimpleFeature feature;
-                try {
-                    // this can throw due to the feature not fitting into
-                    // the extent of the CRS when it's transformed. Could
-                    // see if in such a case we could just return the
-                    // scalar properties
-                    feature = iterator.next();
-                    // convert feature to xml
-                    Feature f = MapMLGenerator.buildFeature(feature);
-                    features.add(f);
-                    break; // stop after one feature
-                } catch (IllegalStateException e) {
-                    LOGGER.log(Level.INFO, "Error transforming feature.");
+            try (SimpleFeatureIterator iterator = fc.features()) {
+                while (iterator.hasNext()) {
+                    SimpleFeature feature;
+                    try {
+                        // this can throw due to the feature not fitting into
+                        // the extent of the CRS when it's transformed. Could
+                        // see if in such a case we could just return the
+                        // scalar properties
+                        feature = iterator.next();
+                        // convert feature to xml
+                        Feature f = MapMLGenerator.buildFeature(feature);
+                        features.add(f);
+                    } catch (IllegalStateException e) {
+                        LOGGER.log(Level.INFO, "Error transforming feature.");
+                    }
                 }
             }
         }

@@ -21,6 +21,7 @@ import org.geowebcache.grid.GridSetFactory;
 import org.geowebcache.grid.SRS;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/** @author prushforth */
 public class MapMLGridsets extends SimpleGridSetConfiguration {
     private static final Log log = LogFactory.getLog(MapMLGridsets.class);
 
@@ -30,6 +31,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
     private final GridSet APSTILE;
     @Autowired private GWC gwc = GWC.get();
 
+    /** */
     public MapMLGridsets() {
         log.debug("Adding MapML WGS84 gridset");
         WGS84 =
@@ -152,7 +154,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
             log.info("Error occured saving MapMLGridsets config.", ioe);
         }
     }
-
+    /** @return array of resolutions m/px */
     private double[] CBMTILEResolutions() {
         double[] CBMTILEResolutions = {
             38364.660062653464D,
@@ -184,7 +186,10 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         };
         return CBMTILEResolutions;
     }
-
+    /**
+     * @param resolutions
+     * @return array of string integer representations of zoom levels
+     */
     private String[] integerLevelNames(int resolutions) {
         String[] names = new String[resolutions];
         for (int i = 0; i < resolutions; i++) {
@@ -193,6 +198,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         return names;
     }
 
+    /** @return array of resolutions m/px */
     private double[] APSTILEResolutions() {
         double[] APSTILEResolutions = {
             238810.813354D,
@@ -219,6 +225,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         return APSTILEResolutions;
     }
 
+    /** @return array of resolutions m/px */
     private double[] OSMTILEResolutions() {
         double[] OSMTILEResolutions = {
             156543.03390625D,
@@ -256,14 +263,17 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         return OSMTILEResolutions;
     }
 
+    /** @throws GeoWebCacheException */
     @Override
     public void afterPropertiesSet() throws GeoWebCacheException {}
 
+    /** @return */
     @Override
     public String getIdentifier() {
         return "DefaultGridsets";
     }
 
+    /** @return */
     @Override
     public String getLocation() {
         return "Default";

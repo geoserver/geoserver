@@ -20,19 +20,19 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="positionType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="top-left"/>
- *     &lt;enumeration value="top-right"/>
- *     &lt;enumeration value="bottom-left"/>
- *     &lt;enumeration value="bottom-right"/>
- *     &lt;enumeration value="center-left"/>
- *     &lt;enumeration value="center-right"/>
- *     &lt;enumeration value="top-center"/>
- *     &lt;enumeration value="bottom-center"/>
- *     &lt;enumeration value="center"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="positionType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="top-left"/&gt;
+ *     &lt;enumeration value="top-right"/&gt;
+ *     &lt;enumeration value="bottom-left"/&gt;
+ *     &lt;enumeration value="bottom-right"/&gt;
+ *     &lt;enumeration value="center-left"/&gt;
+ *     &lt;enumeration value="center-right"/&gt;
+ *     &lt;enumeration value="top-center"/&gt;
+ *     &lt;enumeration value="bottom-center"/&gt;
+ *     &lt;enumeration value="center"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "positionType")

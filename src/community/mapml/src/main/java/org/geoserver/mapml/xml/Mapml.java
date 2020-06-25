@@ -20,16 +20,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{}head" minOccurs="0"/>
- *         &lt;element ref="{}body"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{}head" minOccurs="0"/&gt;
+ *         &lt;element ref="{}body"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -37,12 +37,13 @@ import javax.xml.bind.annotation.XmlType;
     name = "",
     propOrder = {"head", "body"}
 )
-@XmlRootElement(name = "mapml")
+@XmlRootElement(name = "mapml", namespace = "http://www.w3.org/1999/xhtml/")
 public class Mapml {
 
+    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml/")
     protected HeadContent head;
 
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml/")
     protected BodyContent body;
 
     /**

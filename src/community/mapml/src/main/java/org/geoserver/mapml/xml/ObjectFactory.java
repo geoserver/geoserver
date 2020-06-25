@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
+@SuppressWarnings("unchecked")
+
 /**
  * This object contains factory methods for each Java content interface and Java element interface
  * generated in the org.geoserver.mapml.xml package.
@@ -26,21 +28,31 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private static final QName _MultiPoint_QNAME = new QName("", "multipoint");
-    private static final QName _GeometryContent_QNAME = new QName("", "geometrycontent");
-    private static final QName _MultiLineString_QNAME = new QName("", "multilinestring");
-    private static final QName _Bbox_QNAME = new QName("", "bbox");
-    private static final QName _Point_QNAME = new QName("", "point");
-    private static final QName _Title_QNAME = new QName("", "title");
-    private static final QName _Body_QNAME = new QName("", "body");
-    private static final QName _Head_QNAME = new QName("", "head");
-    private static final QName _GeometryCollection_QNAME = new QName("", "geometrycollection");
-    private static final QName _LineString_QNAME = new QName("", "linestring");
-    private static final QName _MultiPolygon_QNAME = new QName("", "multipolygon");
-    private static final QName _Geometry_QNAME = new QName("", "geometry");
-    private static final QName _Polygon_QNAME = new QName("", "polygon");
-    private static final QName _Properties_QNAME = new QName("", "properties");
-    private static final QName _MultiPointCoordinates_QNAME = new QName("", "coordinates");
+    private static final QName _MultiPoint_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "multipoint");
+    private static final QName _GeometryContent_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "geometrycontent");
+    private static final QName _MultiLineString_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "multilinestring");
+    private static final QName _Bbox_QNAME = new QName("http://www.w3.org/1999/xhtml/", "bbox");
+    private static final QName _Point_QNAME = new QName("http://www.w3.org/1999/xhtml/", "point");
+    private static final QName _Title_QNAME = new QName("http://www.w3.org/1999/xhtml/", "title");
+    private static final QName _Body_QNAME = new QName("http://www.w3.org/1999/xhtml/", "body");
+    private static final QName _Head_QNAME = new QName("http://www.w3.org/1999/xhtml/", "head");
+    private static final QName _GeometryCollection_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "geometrycollection");
+    private static final QName _LineString_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "linestring");
+    private static final QName _MultiPolygon_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "multipolygon");
+    private static final QName _Geometry_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "geometry");
+    private static final QName _Polygon_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "polygon");
+    private static final QName _Properties_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "properties");
+    private static final QName _MultiPointCoordinates_QNAME =
+            new QName("http://www.w3.org/1999/xhtml/", "coordinates");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes
@@ -175,138 +187,137 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPoint }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "multipoint",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<MultiPoint> createMultiPoint(MultiPoint value) {
-        return new JAXBElement<MultiPoint>(_MultiPoint_QNAME, MultiPoint.class, null, value);
+        return new JAXBElement<>(_MultiPoint_QNAME, MultiPoint.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link Object }{@code >}} */
-    @XmlElementDecl(namespace = "", name = "GeometryContent")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "GeometryContent")
     public JAXBElement<Object> createGeometryContent(Object value) {
-        return new JAXBElement<Object>(_GeometryContent_QNAME, Object.class, null, value);
+        return new JAXBElement<>(_GeometryContent_QNAME, Object.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiLineString }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "multilinestring",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<MultiLineString> createMultiLineString(MultiLineString value) {
-        return new JAXBElement<MultiLineString>(
-                _MultiLineString_QNAME, MultiLineString.class, null, value);
+        return new JAXBElement<>(_MultiLineString_QNAME, MultiLineString.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @XmlElementDecl(namespace = "", name = "bbox")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "bbox")
     public JAXBElement<List<String>> createBbox(List<String> value) {
-        return new JAXBElement<List<String>>(
-                _Bbox_QNAME, ((Class) List.class), null, ((List<String>) value));
+        return new JAXBElement<>(_Bbox_QNAME, ((Class) List.class), null, ((List<String>) value));
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link Point }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "point",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<Point> createPoint(Point value) {
-        return new JAXBElement<Point>(_Point_QNAME, Point.class, null, value);
+        return new JAXBElement<>(_Point_QNAME, Point.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}} */
-    @XmlElementDecl(namespace = "", name = "title")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "title")
     public JAXBElement<String> createTitle(String value) {
-        return new JAXBElement<String>(_Title_QNAME, String.class, null, value);
+        return new JAXBElement<>(_Title_QNAME, String.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link BodyContent }{@code >}} */
-    @XmlElementDecl(namespace = "", name = "body")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "body")
     public JAXBElement<BodyContent> createBody(BodyContent value) {
-        return new JAXBElement<BodyContent>(_Body_QNAME, BodyContent.class, null, value);
+        return new JAXBElement<>(_Body_QNAME, BodyContent.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link HeadContent }{@code >}} */
-    @XmlElementDecl(namespace = "", name = "head")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "head")
     public JAXBElement<HeadContent> createHead(HeadContent value) {
-        return new JAXBElement<HeadContent>(_Head_QNAME, HeadContent.class, null, value);
+        return new JAXBElement<>(_Head_QNAME, HeadContent.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link GeometryCollection }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "GeometryCollection",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<GeometryCollection> createGeometryCollection(GeometryCollection value) {
-        return new JAXBElement<GeometryCollection>(
-                _GeometryCollection_QNAME, GeometryCollection.class, null, value);
+        return new JAXBElement<>(_GeometryCollection_QNAME, GeometryCollection.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link LineString }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "linestring",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<LineString> createLineString(LineString value) {
-        return new JAXBElement<LineString>(_LineString_QNAME, LineString.class, null, value);
+        return new JAXBElement<>(_LineString_QNAME, LineString.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "multipolygon",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<MultiPolygon> createMultiPolygon(MultiPolygon value) {
-        return new JAXBElement<MultiPolygon>(_MultiPolygon_QNAME, MultiPolygon.class, null, value);
+        return new JAXBElement<>(_MultiPolygon_QNAME, MultiPolygon.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link GeometryContent }{@code >}} */
-    @XmlElementDecl(namespace = "", name = "geometry")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "geometry")
     public JAXBElement<GeometryContent> createGeometry(GeometryContent value) {
-        return new JAXBElement<GeometryContent>(
-                _Geometry_QNAME, GeometryContent.class, null, value);
+        return new JAXBElement<>(_Geometry_QNAME, GeometryContent.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link Polygon }{@code >}} */
     @XmlElementDecl(
-        namespace = "",
+        namespace = "http://www.w3.org/1999/xhtml/",
         name = "polygon",
-        substitutionHeadNamespace = "",
+        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml/",
         substitutionHeadName = "GeometryContent"
     )
     public JAXBElement<Polygon> createPolygon(Polygon value) {
-        return new JAXBElement<Polygon>(_Polygon_QNAME, Polygon.class, null, value);
+        return new JAXBElement<>(_Polygon_QNAME, Polygon.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link PropertyContent }{@code >}} */
-    @XmlElementDecl(namespace = "", name = "properties")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml/", name = "properties")
     public JAXBElement<PropertyContent> createProperties(PropertyContent value) {
-        return new JAXBElement<PropertyContent>(
-                _Properties_QNAME, PropertyContent.class, null, value);
+        return new JAXBElement<>(_Properties_QNAME, PropertyContent.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @XmlElementDecl(namespace = "", name = "coordinates", scope = MultiPoint.class)
+    @XmlElementDecl(
+        namespace = "http://www.w3.org/1999/xhtml/",
+        name = "coordinates",
+        scope = MultiPoint.class
+    )
     public JAXBElement<List<String>> createMultiPointCoordinates(List<String> value) {
-        return new JAXBElement<List<String>>(
+        return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,
                 ((Class) List.class),
                 MultiPoint.class,
@@ -317,9 +328,13 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @XmlElementDecl(namespace = "", name = "coordinates", scope = Polygon.class)
+    @XmlElementDecl(
+        namespace = "http://www.w3.org/1999/xhtml/",
+        name = "coordinates",
+        scope = Polygon.class
+    )
     public JAXBElement<List<String>> createPolygonCoordinates(List<String> value) {
-        return new JAXBElement<List<String>>(
+        return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,
                 ((Class) List.class),
                 Polygon.class,
@@ -330,9 +345,13 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @XmlElementDecl(namespace = "", name = "coordinates", scope = MultiLineString.class)
+    @XmlElementDecl(
+        namespace = "http://www.w3.org/1999/xhtml/",
+        name = "coordinates",
+        scope = MultiLineString.class
+    )
     public JAXBElement<List<String>> createMultiLineStringCoordinates(List<String> value) {
-        return new JAXBElement<List<String>>(
+        return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,
                 ((Class) List.class),
                 MultiLineString.class,

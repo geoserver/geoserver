@@ -8,7 +8,10 @@ import java.util.HashMap;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.TransformException;
 
+/** @author prushforth */
 public class TiledCRSConstants {
+
+    /** */
     public static final HashMap<String, TiledCRSParams> tiledCRSDefinitions = new HashMap<>();
 
     static {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.mapml.tcrs;
 
+/** @author prushforth */
 public class TiledCRSParams {
 
     private final String name;
@@ -13,6 +14,14 @@ public class TiledCRSParams {
     private final double[] scales;
     private final Point origin;
 
+    /**
+     * @param name
+     * @param code
+     * @param bounds
+     * @param tileSize
+     * @param origin
+     * @param scales
+     */
     public TiledCRSParams(
             String name, String code, Bounds bounds, int tileSize, Point origin, double[] scales) {
         this.name = name;
@@ -23,26 +32,32 @@ public class TiledCRSParams {
         this.scales = scales;
     }
 
+    /** @return */
     public String getName() {
         return name;
     }
 
+    /** @return */
     public String getCode() {
         return code;
     }
 
+    /** @return */
     public Bounds getBounds() {
         return bounds;
     }
 
+    /** @return */
     public int getTILE_SIZE() {
         return TILE_SIZE;
     }
 
+    /** @return */
     public double[] getScales() {
         return scales;
     }
 
+    /** @return */
     public Point getOrigin() {
         return origin;
     }

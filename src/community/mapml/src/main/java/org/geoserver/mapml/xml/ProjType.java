@@ -20,14 +20,14 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="projType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="OSMTILE"/>
- *     &lt;enumeration value="CBMTILE"/>
- *     &lt;enumeration value="APSTILE"/>
- *     &lt;enumeration value="WGS84"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="projType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="OSMTILE"/&gt;
+ *     &lt;enumeration value="CBMTILE"/&gt;
+ *     &lt;enumeration value="APSTILE"/&gt;
+ *     &lt;enumeration value="WGS84"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "projType")

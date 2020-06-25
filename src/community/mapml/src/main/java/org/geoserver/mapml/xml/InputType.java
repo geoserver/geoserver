@@ -20,16 +20,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="inputType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="zoom"/>
- *     &lt;enumeration value="hidden"/>
- *     &lt;enumeration value="location"/>
- *     &lt;enumeration value="datetime"/>
- *     &lt;enumeration value="width"/>
- *     &lt;enumeration value="height"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="inputType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="zoom"/&gt;
+ *     &lt;enumeration value="hidden"/&gt;
+ *     &lt;enumeration value="location"/&gt;
+ *     &lt;enumeration value="datetime"/&gt;
+ *     &lt;enumeration value="width"/&gt;
+ *     &lt;enumeration value="height"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "inputType")

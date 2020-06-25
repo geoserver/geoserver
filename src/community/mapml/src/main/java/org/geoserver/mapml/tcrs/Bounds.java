@@ -8,15 +8,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/** @author prushforth */
 public class Bounds {
 
     protected Point min, max;
 
+    /**
+     * @param a
+     * @param b
+     */
     public Bounds(Point a, Point b) {
         this.extend(a);
         this.extend(b);
     }
 
+    /** @param bounds */
     public Bounds(String bounds) {
         List<Double> ord;
         try {
@@ -53,6 +59,10 @@ public class Bounds {
         return ordDoubles;
     }
 
+    /**
+     * @param aString a comma-separated string of strings to be split
+     * @return a list of strings of what was found between the commas
+     */
     private static List<String> commaSeparatedStringToStringArray(String aString) {
         String[] splittArray = null;
         if (aString != null && !aString.equalsIgnoreCase("")) {
@@ -66,6 +76,10 @@ public class Bounds {
         return Arrays.asList(splittArray);
     }
 
+    /**
+     * @param point
+     * @return
+     */
     final Bounds extend(Point point) {
         if (min == null && max == null) {
             min = point.clone();
@@ -83,37 +97,46 @@ public class Bounds {
         return this;
     }
 
+    /** @return a point at the centre of this (bounds) */
     public Point getCentre() {
         return new Point((this.min.x + this.max.x) / 2, (this.min.y + this.max.y) / 2);
     }
 
+    /** @return the "min" of the bounds */
     public Point getMin() {
         return this.min;
     }
 
+    /** @return the "max" point of the bounds */
     public Point getMax() {
         return this.max;
     }
 
+    /** @return the width of the bounds along the x axis */
     public double getWidth() {
         return this.max.x - this.min.x;
     }
 
+    /** @return the height of the bounds along the y axis */
     public double getHeight() {
         return this.max.y - this.min.y;
     }
 
+    /**
+     * @param other
+     * @return boolean whether these bounds and the other bounds intersect
+     */
     public boolean intersects(Bounds other) {
 
-        Point min = this.min;
-        Point max = this.max;
-        Point min2 = other.min;
-        Point max2 = other.max;
-        boolean xIntersects = (max2.x >= min.x) && (min2.x <= max.x);
-        boolean yIntersects = (max2.y >= min.y) && (min2.y <= max.y);
+        boolean xIntersects = (other.max.x >= this.min.x) && (other.min.x <= this.max.x);
+        boolean yIntersects = (other.max.y >= this.min.y) && (other.min.y <= this.max.y);
         return xIntersects && yIntersects;
     }
 
+    /**
+     * @param other
+     * @return boolean whether these bounds contain the other bounds
+     */
     public boolean contains(Bounds other) {
         return (other.min.x >= this.min.x && other.max.x <= this.max.x)
                 && (other.min.y >= this.min.y && other.max.y <= this.max.y);

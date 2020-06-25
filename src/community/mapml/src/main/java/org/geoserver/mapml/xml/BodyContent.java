@@ -21,40 +21,40 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType name="bodyContent">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{}extent"/>
- *         &lt;group ref="{}links"/>
- *         &lt;choice>
- *           &lt;element ref="{}feature"/>
- *           &lt;element ref="{}tile"/>
- *           &lt;element ref="{}image"/>
- *         &lt;/choice>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="bodyContent"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element ref="{}extent"/&gt;
+ *         &lt;group ref="{}links"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element ref="{}feature"/&gt;
+ *           &lt;element ref="{}tile"/&gt;
+ *           &lt;element ref="{}image"/&gt;
+ *         &lt;/choice&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "bodyContent")
 public class BodyContent {
 
-    @XmlElement(name = "extent")
+    @XmlElement(name = "extent", namespace = "http://www.w3.org/1999/xhtml/")
     protected Extent extent;
 
-    @XmlElement(name = "link")
+    @XmlElement(name = "link", namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Link> links;
 
-    @XmlElement(name = "feature")
+    @XmlElement(name = "feature", namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Feature> features;
 
-    @XmlElement(name = "tile")
+    @XmlElement(name = "tile", namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Tile> tiles;
 
-    @XmlElement(name = "image")
+    @XmlElement(name = "image", namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Image> images;
 
     public Extent getExtent() {
@@ -80,28 +80,28 @@ public class BodyContent {
      */
     public List<Link> getLinks() {
         if (links == null) {
-            links = new ArrayList<Link>();
+            links = new ArrayList<>();
         }
         return this.links;
     }
 
     public List<Feature> getFeatures() {
         if (features == null) {
-            features = new ArrayList<Feature>();
+            features = new ArrayList<>();
         }
         return this.features;
     }
 
     public List<Tile> getTiles() {
         if (tiles == null) {
-            tiles = new ArrayList<Tile>();
+            tiles = new ArrayList<>();
         }
         return this.tiles;
     }
 
     public List<Image> getImages() {
         if (images == null) {
-            images = new ArrayList<Image>();
+            images = new ArrayList<>();
         }
         return this.images;
     }

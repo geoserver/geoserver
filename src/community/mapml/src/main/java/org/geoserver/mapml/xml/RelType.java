@@ -20,25 +20,25 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="relType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="stylesheet"/>
- *     &lt;enumeration value="license"/>
- *     &lt;enumeration value="alternate"/>
- *     &lt;enumeration value="style"/>
- *     &lt;enumeration value="self"/>
- *     &lt;enumeration value="self style"/>
- *     &lt;enumeration value="style self"/>
- *     &lt;enumeration value="legend"/>
- *     &lt;enumeration value="next"/>
- *     &lt;enumeration value="zoomin"/>
- *     &lt;enumeration value="zoomout"/>
- *     &lt;enumeration value="image"/>
- *     &lt;enumeration value="tile"/>
- *     &lt;enumeration value="query"/>
- *     &lt;enumeration value="features"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="relType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="stylesheet"/&gt;
+ *     &lt;enumeration value="license"/&gt;
+ *     &lt;enumeration value="alternate"/&gt;
+ *     &lt;enumeration value="style"/&gt;
+ *     &lt;enumeration value="self"/&gt;
+ *     &lt;enumeration value="self style"/&gt;
+ *     &lt;enumeration value="style self"/&gt;
+ *     &lt;enumeration value="legend"/&gt;
+ *     &lt;enumeration value="next"/&gt;
+ *     &lt;enumeration value="zoomin"/&gt;
+ *     &lt;enumeration value="zoomout"/&gt;
+ *     &lt;enumeration value="image"/&gt;
+ *     &lt;enumeration value="tile"/&gt;
+ *     &lt;enumeration value="query"/&gt;
+ *     &lt;enumeration value="features"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "relType")

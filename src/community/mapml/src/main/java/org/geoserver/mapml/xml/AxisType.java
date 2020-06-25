@@ -20,20 +20,20 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  *
  * <pre>
- * &lt;simpleType name="axisType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
- *     &lt;enumeration value="latitude"/>
- *     &lt;enumeration value="longitude"/>
- *     &lt;enumeration value="easting"/>
- *     &lt;enumeration value="northing"/>
- *     &lt;enumeration value="x"/>
- *     &lt;enumeration value="y"/>
- *     &lt;enumeration value="row"/>
- *     &lt;enumeration value="column"/>
- *     &lt;enumeration value="i"/>
- *     &lt;enumeration value="j"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="axisType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token"&gt;
+ *     &lt;enumeration value="latitude"/&gt;
+ *     &lt;enumeration value="longitude"/&gt;
+ *     &lt;enumeration value="easting"/&gt;
+ *     &lt;enumeration value="northing"/&gt;
+ *     &lt;enumeration value="x"/&gt;
+ *     &lt;enumeration value="y"/&gt;
+ *     &lt;enumeration value="row"/&gt;
+ *     &lt;enumeration value="column"/&gt;
+ *     &lt;enumeration value="i"/&gt;
+ *     &lt;enumeration value="j"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  */
 @XmlType(name = "axisType")

@@ -20,15 +20,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType name="GeometryContent">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{}GeometryContent"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="GeometryContent"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{}GeometryContent"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -38,7 +38,11 @@ import javax.xml.bind.annotation.XmlType;
 )
 public class GeometryContent {
 
-    @XmlElementRef(name = "GeometryContent", type = JAXBElement.class)
+    @XmlElementRef(
+        name = "GeometryContent",
+        type = JAXBElement.class,
+        namespace = "http://www.w3.org/1999/xhtml/"
+    )
     protected JAXBElement<?> geometryContent;
 
     /**

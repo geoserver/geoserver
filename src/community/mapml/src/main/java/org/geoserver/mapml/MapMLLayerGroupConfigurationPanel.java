@@ -19,49 +19,53 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
 
     private static final long serialVersionUID = 1L;
 
-    /** Adds MapML configuration panel */
+    /**
+     * Adds MapML configuration panel
+     *
+     * @param panelId
+     * @param model
+     */
     public MapMLLayerGroupConfigurationPanel(
             final String panelId, final IModel<LayerGroupInfo> model) {
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =
-                new MapModel<String>(
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "metadata"), "mapml.licenseTitle");
-        TextField<String> licenseTitle = new TextField<String>("licenseTitle", licenseTitleModel);
+        TextField<String> licenseTitle = new TextField<>("licenseTitle", licenseTitleModel);
         add(licenseTitle);
 
         MapModel<String> licenseLinkModel =
-                new MapModel<String>(
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "metadata"), "mapml.licenseLink");
-        TextField<String> licenseLink = new TextField<String>("licenseLink", licenseLinkModel);
+        TextField<String> licenseLink = new TextField<>("licenseLink", licenseLinkModel);
         add(licenseLink);
 
         // add the checkbox to select tiled or not
         MapModel<Boolean> useTilesModel =
-                new MapModel<Boolean>(
-                        new PropertyModel<MetadataMap>(model, "metadata"), "mapml.useTiles");
+                new MapModel<>(new PropertyModel<MetadataMap>(model, "metadata"), "mapml.useTiles");
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
         add(useTiles);
 
         // add the checkbox to enable sharding or not
         MapModel<Boolean> enableShardingModel =
-                new MapModel<Boolean>(
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "metadata"), "mapml.enableSharding");
         CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
         add(enableSharding);
 
         MapModel<String> shardListModel =
-                new MapModel<String>(
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "metadata"), "mapml.shardList");
-        TextField<String> shardList = new TextField<String>("shardList", shardListModel);
+        TextField<String> shardList = new TextField<>("shardList", shardListModel);
         add(shardList);
 
         MapModel<String> shardServerPatternModel =
-                new MapModel<String>(
+                new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "metadata"),
                         "mapml.shardServerPattern");
         TextField<String> shardServerPattern =
-                new TextField<String>("shardServerPattern", shardServerPatternModel);
+                new TextField<>("shardServerPattern", shardServerPatternModel);
         add(shardServerPattern);
     }
 }

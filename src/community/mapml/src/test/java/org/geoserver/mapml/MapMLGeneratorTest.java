@@ -9,17 +9,27 @@ import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
 import javax.xml.bind.DataBindingException;
-import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBElement;
+import javax.xml.transform.stream.StreamResult;
 import org.geoserver.mapml.xml.GeometryContent;
+import org.geoserver.test.GeoServerTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-public class MapMLGeneratorTest {
+public class MapMLGeneratorTest extends GeoServerTestSupport {
+    Jaxb2Marshaller mapmlMarshaller;
 
+    @Before
+    public void setupMarshaller() {
+        mapmlMarshaller = (Jaxb2Marshaller) applicationContext.getBean("mapmlMarshaller");
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     public void testMapMLMultiPointFromJTSMultiPointGenerator() throws Exception {
 
@@ -36,6 +46,7 @@ public class MapMLGeneratorTest {
         JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
         try {
             GeometryContent g = MapMLGenerator.buildGeometry(jtsMultiPoint);
+
             mp = (JAXBElement<org.geoserver.mapml.xml.MultiPoint>) g.getGeometryContent();
         } catch (Exception e) {
             fail("org.geoserver.mapml.xml.MultiPoint should be returned by JAXB");
@@ -43,14 +54,13 @@ public class MapMLGeneratorTest {
 
         StringWriter sw = new StringWriter();
         try {
-            JAXB.marshal(mp, sw);
+            mapmlMarshaller.marshal(mp, new StreamResult(sw));
         } catch (DataBindingException ex) {
             fail("DataBindingException while reading MapML JAXB MultiPoint object");
         }
         assertTrue(
                 sw.toString()
                         .contains(
-                                "<multipoint>\r\n   "
-                                        + "<coordinates>-75.705338 45.397785 -75.702082 45.397847</coordinates>"));
+                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml/\"><coordinates>-75.705338 45.397785 -75.702082 45.397847</coordinates>"));
     }
 }

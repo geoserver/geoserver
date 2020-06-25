@@ -15,7 +15,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Extent;
 import org.geoserver.mapml.xml.Feature;
@@ -37,10 +36,12 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+/** @author prushforth */
 public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Autowired private Jaxb2Marshaller mapmlMarshaller;
 
+    /** @param gs */
     public MapMLGetFeatureOutputFormat(GeoServer gs) {
         super(gs, MapMLConstants.FORMAT_NAME);
     }
@@ -56,8 +57,6 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             OutputStream out,
             Operation getFeature)
             throws IOException, ServiceException {
-
-        String baseUrl = featureCollectionResponse.getBaseUrl();
 
         List<FeatureCollection> featureCollections = featureCollectionResponse.getFeatures();
         if (featureCollections.size() != 1) {
@@ -80,9 +79,9 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         // build the head
         HeadContent head = new HeadContent();
         head.setTitle(layerInfo.getName());
-        Base base = new Base();
-        base.setHref(baseUrl + "mapml");
-        head.setBase(base);
+        // I know of no way to build a base URL within this method
+        // as featureCollectionResponse.getBaseURL() returns null
+        // which will impact provision of external style sheets, perhaps TBD
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
         meta.setCharset("utf-8");

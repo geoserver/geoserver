@@ -21,15 +21,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{}Polygon" maxOccurs="unbounded"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{}Polygon" maxOccurs="unbounded"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 )
 public class MultiPolygon {
 
-    @XmlElement(name = "polygon", required = true)
+    @XmlElement(name = "polygon", required = true, namespace = "http://www.w3.org/1999/xhtml/")
     protected List<Polygon> polygon;
 
     /**
@@ -56,10 +56,12 @@ public class MultiPolygon {
      * </pre>
      *
      * <p>Objects of the following type(s) are allowed in the list {@link Polygon }
+     *
+     * @return polygon
      */
     public List<Polygon> getPolygon() {
         if (polygon == null) {
-            polygon = new ArrayList<Polygon>();
+            polygon = new ArrayList<>();
         }
         return this.polygon;
     }

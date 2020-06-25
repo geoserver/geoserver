@@ -4,76 +4,87 @@
  */
 package org.geoserver.jsonld.builders.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import org.geoserver.jsonld.JsonLdGenerator;
-import org.geoserver.jsonld.builders.JsonBuilder;
+import java.util.*;
+import org.geoserver.jsonld.builders.TemplateBuilder;
+import org.geoserver.jsonld.writers.TemplateOutputWriter;
 
-/**
- * The root of the builders' tree. It manages the writing of the starting, the ending and
- * the @context json object of json-ld output, and trigger the evaluation
- */
-public class RootBuilder implements JsonBuilder {
+/** The root of the builders' tree. It triggers the evaluation process */
+public class RootBuilder implements TemplateBuilder {
 
-    private List<JsonBuilder> children;
+    private List<TemplateBuilder> children;
 
-    private JsonNode contextHeader;
+    private Map<String, String> vendorOptions;
 
-    public RootBuilder() {
-        this.children = new ArrayList<JsonBuilder>(2);
+    protected List<String> supportedOptions = new ArrayList<>();
+
+    /** Enum listing available vendor options */
+    public enum VendorOption {
+        FLAT_OUTPUT("flat_output");
+
+        private String vendorOptionName;
+
+        VendorOption(String vendorOptionName) {
+            this.vendorOptionName = vendorOptionName;
+        }
+
+        public String getVendorOptionName() {
+            return vendorOptionName;
+        }
     }
 
-    public void addChild(JsonBuilder builder) {
+    public RootBuilder() {
+        super();
+        this.children = new ArrayList<TemplateBuilder>(2);
+        this.vendorOptions = new HashMap<>();
+    }
+
+    public void addChild(TemplateBuilder builder) {
         this.children.add(builder);
     }
 
     @Override
-    public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
-        for (JsonBuilder jb : children) {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
+            throws IOException {
+        for (TemplateBuilder jb : children) {
             jb.evaluate(writer, context);
         }
     }
 
-    public void startJsonLd(JsonLdGenerator generator) throws IOException {
-
-        generator.writeStartObject();
-        generator.writeFieldName("@context");
-        generator.writeStartObject();
-        Iterator<Map.Entry<String, JsonNode>> iterator = contextHeader.fields();
-        while (iterator.hasNext()) {
-            Map.Entry<String, JsonNode> nodEntry = iterator.next();
-            String entryName = nodEntry.getKey();
-            JsonNode childNode = nodEntry.getValue();
-            if (childNode.isObject()) {
-                generator.writeObjectNode(entryName, childNode);
-            } else if (childNode.isValueNode()) {
-                generator.writeValueNode(entryName, childNode);
-            } else {
-                generator.writeArrayNode(entryName, childNode);
-            }
-        }
-        generator.writeEndObject();
-        generator.writeFieldName("type");
-        generator.writeString("FeatureCollection");
-        generator.writeFieldName("features");
-        generator.writeStartArray();
-    }
-
-    public void endJsonLd(JsonLdGenerator generator) throws IOException {
-        generator.writeEndArray();
-        generator.writeEndObject();
-    }
-
     @Override
-    public List<JsonBuilder> getChildren() {
+    public List<TemplateBuilder> getChildren() {
         return children;
     }
 
-    public void setContextHeader(JsonNode contextHeader) {
-        this.contextHeader = contextHeader;
+    /**
+     * Get the vendor option by name
+     *
+     * @param optionName the vendor option name
+     * @return
+     */
+    public String getVendorOption(String optionName) {
+        return vendorOptions.get(optionName);
+    }
+
+    /**
+     * Set the vendor option
+     *
+     * @param vendorOption a string array containing vendor option name and value
+     */
+    public void setVendorOptions(String[] vendorOption) {
+        if (supportVendorOption(vendorOption[0])) {
+            vendorOptions.put(vendorOption[0], vendorOption[1]);
+        }
+    }
+
+    /**
+     * Checks if vendor option is supported
+     *
+     * @param vendorOptionName the name of the vendor option
+     * @return
+     */
+    protected boolean supportVendorOption(String vendorOptionName) {
+        if (supportedOptions.contains(vendorOptionName)) return true;
+        else return false;
     }
 }

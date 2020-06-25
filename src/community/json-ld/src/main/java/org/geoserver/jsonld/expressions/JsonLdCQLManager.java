@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
+import org.geoserver.jsonld.builders.impl.TemplateBuilderContext;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
@@ -320,8 +320,8 @@ public class JsonLdCQLManager {
     }
 
     /**
-     * Determines how many times is needed to walk up {@link JsonBuilderContext} in order to execute
-     * xpath, and cleans it from ../ notation.
+     * Determines how many times is needed to walk up {@link TemplateBuilderContext} in order to
+     * execute xpath, and cleans it from ../ notation.
      */
     public static int determineContextPos(String xpath) {
         int contextPos = 0;

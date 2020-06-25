@@ -6,13 +6,13 @@ package org.geoserver.jsonld.validation;
 
 import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.builders.JsonBuilder;
+import org.geoserver.jsonld.builders.AbstractTemplateBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
+import org.geoserver.jsonld.builders.TemplateBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
-import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
+import org.geoserver.jsonld.builders.impl.TemplateBuilderContext;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
@@ -21,24 +21,26 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * This class perform a validation of the json-ld template by evaluating dynamic and source fields
- * using {@link ValidateExpressionVisitor}
+ * This class perform a validation of a template by evaluating dynamic and source fields using
+ * {@link ValidateExpressionVisitor}
  */
-public class JsonLdValidator {
+public class TemplateValidator {
 
     private FeatureTypeInfo type;
 
     private String failingAttribute;
 
-    public JsonLdValidator(FeatureTypeInfo type) {
+    public TemplateValidator(FeatureTypeInfo type) {
         this.type = type;
     }
 
     public boolean validateTemplate(RootBuilder root) {
         try {
-            ValidateExpressionVisitor validateVisitor =
-                    new ValidateExpressionVisitor(new JsonBuilderContext(type.getFeatureType()));
             String source = null;
+
+            ValidateExpressionVisitor validateVisitor =
+                    new ValidateExpressionVisitor(
+                            new TemplateBuilderContext(type.getFeatureType()));
             return validateExpressions(root, validateVisitor, source);
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,8 +49,8 @@ public class JsonLdValidator {
     }
 
     private boolean validateExpressions(
-            JsonBuilder builder, ValidateExpressionVisitor visitor, String source) {
-        for (JsonBuilder jb : builder.getChildren()) {
+            TemplateBuilder builder, ValidateExpressionVisitor visitor, String source) {
+        for (TemplateBuilder jb : builder.getChildren()) {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder djb = (DynamicValueBuilder) jb;
                 Expression toValidate = getExpressionToValidate(djb, source, djb.getContextPos());
@@ -82,9 +84,10 @@ public class JsonLdValidator {
                 }
                 if (!validateExpressions(
                         jb, visitor, siblingSource != null ? siblingSource : source)) return false;
-            } else {
-                Filter filter = getFilterToValidate((AbstractJsonBuilder) builder, source);
+            } else if (builder instanceof AbstractTemplateBuilder) {
+                Filter filter = getFilterToValidate((AbstractTemplateBuilder) builder, source);
                 if (filter != null && validate(filter, visitor) == null) {
+                    failingAttribute = "Filter: " + CQL.toCQL(filter);
                     return false;
                 }
             }
@@ -121,7 +124,7 @@ public class JsonLdValidator {
      * Produce a Filter from the filter attribute, suitable to be validated eg. taking cares of
      * handling properly ../ and changes of context
      */
-    private Filter getFilterToValidate(AbstractJsonBuilder ab, String source) {
+    private Filter getFilterToValidate(AbstractTemplateBuilder ab, String source) {
         if (ab.getFilter() != null)
             return (Filter)
                     completeXpathWithVisitor(ab.getFilter(), source, ab.getFilterContextPos());
@@ -151,11 +154,15 @@ public class JsonLdValidator {
             if (newSource != null) {
                 while (i < contextPos) {
                     strXpath = strXpath.replaceFirst("\\.\\./", "");
-                    newSource = source.substring(0, source.lastIndexOf('/'));
+                    if (source.lastIndexOf('/') != -1)
+                        newSource = source.substring(0, source.lastIndexOf('/'));
+                    else newSource = "";
                     i++;
                 }
-                return new AttributeExpressionImpl(
-                        newSource + "/" + old.getPropertyName(), old.getNamespaceContext());
+                String newXpath;
+                if (!newSource.equals("")) newXpath = newSource + "/" + old.getPropertyName();
+                else newXpath = old.getPropertyName();
+                return new AttributeExpressionImpl(newXpath, old.getNamespaceContext());
             } else {
                 return pn;
             }

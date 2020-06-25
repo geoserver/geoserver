@@ -1,86 +1,85 @@
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jsonld.response;
 
-import java.io.*;
-import java.util.List;
+import java.io.IOException;
+import java.io.OutputStream;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.jsonld.builders.TemplateBuilder;
+import org.geoserver.jsonld.builders.geojson.GeoJsonRootBuilder;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
 import org.geoserver.jsonld.builders.impl.TemplateBuilderContext;
-import org.geoserver.jsonld.builders.jsonld.JsonLdRootBuilder;
 import org.geoserver.jsonld.configuration.TemplateConfiguration;
 import org.geoserver.jsonld.configuration.TemplateIdentifier;
-import org.geoserver.jsonld.writers.JsonLdWriter;
+import org.geoserver.jsonld.writers.CommonJsonWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 
-/**
- * Encodes features in json-ld output format by means of a ${@link TemplateBuilder} tree obtained by
- * a JSON-LD template
- */
-public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
-
-    /** The MIME type for a JSON-LD response* */
-    public static final String MIME = "application/ld+json";
+/** Write a valid GeoJSON output from a template */
+public class GeoJsonTemplateGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
     private TemplateConfiguration configuration;
 
-    public JSONLDGetFeatureResponse(GeoServer gs, TemplateConfiguration configuration) {
-        super(gs, MIME);
+    private GeoJSONGetFeatureResponse delegate;
+
+    public GeoJsonTemplateGetFeatureResponse(
+            GeoServer gs, TemplateConfiguration configuration, GeoJSONGetFeatureResponse delegate) {
+        super(gs, TemplateIdentifier.GEOJSON.getOutputFormat());
         this.configuration = configuration;
+        this.delegate = delegate;
     }
 
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
-
+        String mime = getMimeType(null, null);
         TemplateGetFeatureResponseHelper helper =
-                new TemplateGetFeatureResponseHelper(gs.getCatalog(), TemplateIdentifier.JSONLD);
+                new TemplateGetFeatureResponseHelper(gs.getCatalog(), TemplateIdentifier.GEOJSON);
+        GetFeatureRequest getFeatureRequest =
+                GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         FeatureTypeInfo info =
-                helper.getFeatureTypeInfo(GetFeatureRequest.adapt(getFeature.getParameters()[0]));
-        JsonLdWriter writer = null;
+                getFeatureRequest != null
+                        ? helper.getFeatureTypeInfo(getFeatureRequest)
+                        : helper.getFeatureType(getFeature.getParameters()[0].toString());
+        CommonJsonWriter writer = null;
         try {
-            JsonLdRootBuilder rootBuilder =
-                    (JsonLdRootBuilder) configuration.getTemplate(info, MIME);
+            GeoJsonRootBuilder rootBuilder =
+                    (GeoJsonRootBuilder) configuration.getTemplate(info, mime);
             if (rootBuilder == null) {
                 throw new RuntimeException(
                         "No template found for feature type "
                                 + info.getName()
-                                + "and output format"
-                                + TemplateIdentifier.JSONLD.getOutputFormat());
+                                + "for output format"
+                                + TemplateIdentifier.GEOJSON.getOutputFormat());
             }
             String flattenedList =
                     rootBuilder.getVendorOption(
                             RootBuilder.VendorOption.FLAT_OUTPUT.getVendorOptionName());
             writer =
-                    (JsonLdWriter)
+                    (CommonJsonWriter)
                             helper.getOutputWriter(
                                     output,
                                     flattenedList != null ? Boolean.valueOf(flattenedList) : false);
-            writer.setContextHeader(rootBuilder.getContextHeader());
             writer.startJson();
-            List<FeatureCollection> collectionList = featureCollection.getFeature();
-
-            for (FeatureCollection collection : collectionList) {
+            for (FeatureCollection collection : featureCollection.getFeature()) {
                 FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
                 if (!info.getName().equals(fti.getName())) info = fti;
-                JsonLdRootBuilder rb = (JsonLdRootBuilder) configuration.getTemplate(fti, MIME);
+                GeoJsonRootBuilder rb = (GeoJsonRootBuilder) configuration.getTemplate(fti, mime);
                 if (rb == null) {
                     throw new RuntimeException(
                             "No template found for feature type "
                                     + info.getName()
                                     + "and output format"
-                                    + TemplateIdentifier.JSONLD.getOutputFormat());
+                                    + TemplateIdentifier.GEOJSON.getOutputFormat());
                 } else {
                     rootBuilder = rb;
                 }
@@ -109,7 +108,12 @@ public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
     }
 
     @Override
+    public String getCapabilitiesElementName() {
+        return delegate.getCapabilitiesElementName();
+    }
+
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return MIME;
+        return delegate.getMimeType(value, operation);
     }
 }

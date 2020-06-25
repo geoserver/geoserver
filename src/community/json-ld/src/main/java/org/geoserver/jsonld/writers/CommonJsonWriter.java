@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.jsonld;
+package org.geoserver.jsonld.writers;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,27 +12,40 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
+import org.geoserver.jsonld.builders.impl.StaticBuilder;
 import org.locationtech.jts.geom.*;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 
 /** Decorator for a JsonGenerator that add some functionality mainly to write JsonNode */
-public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
+public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGenerator
+        implements TemplateOutputWriter {
 
     private com.fasterxml.jackson.core.JsonGenerator delegate;
+    private boolean flatOutput;
 
-    public JsonLdGenerator(com.fasterxml.jackson.core.JsonGenerator generator) {
+    public CommonJsonWriter(
+            com.fasterxml.jackson.core.JsonGenerator generator, boolean flatOutput) {
         this.delegate = generator;
+        this.flatOutput = flatOutput;
     }
 
+    @Override
+    public void writeStaticContent(String key, Object staticContent) throws IOException {
+        if (staticContent instanceof String) {
+            writeStringField(key, (String) staticContent);
+        } else {
+            JsonNode jsonNode = (JsonNode) staticContent;
+            if (jsonNode.isArray()) writeArrayNode(key, jsonNode);
+            else if (jsonNode.isObject()) writeObjectNode(key, jsonNode);
+            else writeValueNode(key, jsonNode);
+        }
+    }
     /**
-     * Write contents from a Json Object. Used with {@link
-     * org.geoserver.jsonld.builders.impl.StaticBuilder} to write content as it is from the json-ld
-     * template to the json-ld output
+     * Write contents from a Json Object. Used with {@link StaticBuilder} to write content as it is
+     * from the json-ld template to the json-ld output
      */
     public void writeObjectNode(String nodeName, JsonNode node) throws IOException {
         if (nodeName != null && !nodeName.equals("")) delegate.writeFieldName(nodeName);
@@ -54,9 +67,8 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
     }
 
     /**
-     * Write contents from a Json Array. Used with {@link
-     * org.geoserver.jsonld.builders.impl.StaticBuilder}ù to write content as it is from the json-ld
-     * template to the json-ld output
+     * Write contents from a Json Array. Used with {@link StaticBuilder}ù to write content as it is
+     * from the json-ld template to the json-ld output
      */
     public void writeArrayNode(String nodeName, JsonNode arNode) throws IOException {
         if (nodeName != null && !nodeName.equals("")) delegate.writeFieldName(nodeName);
@@ -78,9 +90,8 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
     }
 
     /**
-     * Write contents from a Json attribute's value. Used with {@link
-     * org.geoserver.jsonld.builders.impl.StaticBuilder}ù to write content as it is from the json-ld
-     * template to the json-ld output
+     * Write contents from a Json attribute's value. Used with {@link StaticBuilder}ù to write
+     * content as it is from the json-ld template to the json-ld output
      */
     public void writeValueNode(String entryName, JsonNode valueNode) throws IOException {
         if (entryName != null && !entryName.equals("")) delegate.writeFieldName(entryName);
@@ -97,49 +108,76 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
         }
     }
 
+    protected abstract void writeValue(Object value) throws IOException;
+
+    protected abstract void writeGeometry(Object value) throws IOException;
+
+    @Override
+    public void writeElementName(Object elementName) throws IOException {
+        writeFieldName(elementName.toString());
+    }
+
     /**
      * Write the result of an xpath or cql expression evaluation operated by the {@link
-     * org.geoserver.jsonld.builders.impl.DynamicValueBuilder}
+     * DynamicValueBuilder}
      */
-    public void writeResult(Object result) throws IOException {
+    public void writeElementValue(Object result) throws IOException {
+        writeElementNameAndValue(result, null);
+    }
+
+    /**
+     * Write the key and the result of an xpath or cql expression evaluation operated by the {@link
+     * DynamicValueBuilder}
+     */
+    public void writeElementNameAndValue(Object result, String key) throws IOException {
         if (result instanceof String || result instanceof Number || result instanceof Boolean) {
-            writeString(String.valueOf(result));
+            if (flatOutput) writeElementName(key);
+            writeValue(result);
         } else if (result instanceof Date) {
+            if (flatOutput) writeElementName(key);
             Date timeStamp = (Date) result;
             DateFormat df = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
-            writeResult(df.format(timeStamp));
+            writeElementNameAndValue(df.format(timeStamp), key);
+        } else if (result instanceof Geometry) {
+            if (flatOutput) writeElementName(key);
+            writeGeometry(result);
         } else if (result instanceof ComplexAttribute) {
             ComplexAttribute attr = (ComplexAttribute) result;
-            writeResult(attr.getValue());
+            writeElementNameAndValue(attr.getValue(), key);
         } else if (result instanceof Attribute) {
             Attribute attr = (Attribute) result;
-            writeResult(attr.getValue());
-        } else if (result instanceof List) {
+            writeElementNameAndValue(attr.getValue(), key);
+        } else if (result instanceof Collection) {
             List list = (List) result;
             if (list.size() == 1) {
-                writeResult(list.get(0));
+                writeElementNameAndValue(list.get(0), key);
             } else {
-                writeStartArray();
+                if (!flatOutput) writeStartArray();
                 for (int i = 0; i < list.size(); i++) {
-                    writeResult(list.get(i));
+                    String itKey = null;
+                    if (flatOutput) itKey = key + "_" + (i + 1);
+                    writeElementNameAndValue(list.get(i), itKey != null ? itKey : key);
                 }
-                writeEndArray();
+                if (!flatOutput) writeEndArray();
             }
         } else if (result == null) {
+            if (flatOutput) writeElementName(key);
             writeNull();
-        } else {
-            throw new RuntimeException(
-                    "We can't handle the provided object o type '" + result.getClass() + "'.");
         }
     }
 
-    public void writeString(String entryName, String value) throws IOException {
-        if (entryName != null && !entryName.equals("")) delegate.writeFieldName(entryName);
-        if (value != null && !value.equals("")) delegate.writeString(value);
+    public void startJson() throws IOException {
+
+        writeStartObject();
+        writeFieldName("type");
+        writeString("FeatureCollection");
+        writeFieldName("features");
+        writeStartArray();
     }
 
-    public com.fasterxml.jackson.core.JsonGenerator getDelegate() {
-        return delegate;
+    public void endJson() throws IOException {
+        writeEndArray();
+        writeEndObject();
     }
 
     @Override
@@ -186,6 +224,26 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
     @Override
     public com.fasterxml.jackson.core.JsonGenerator useDefaultPrettyPrinter() {
         return delegate.useDefaultPrettyPrinter();
+    }
+
+    @Override
+    public void startObject() throws IOException {
+        writeStartObject();
+    }
+
+    @Override
+    public void endObject() throws IOException {
+        writeEndObject();
+    }
+
+    @Override
+    public void startArray() throws IOException {
+        writeStartArray();
+    }
+
+    @Override
+    public void endArray() throws IOException {
+        writeEndArray();
     }
 
     @Override

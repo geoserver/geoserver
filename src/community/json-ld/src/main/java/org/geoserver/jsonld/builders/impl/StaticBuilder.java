@@ -6,15 +6,15 @@ package org.geoserver.jsonld.builders.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.geoserver.jsonld.JsonLdGenerator;
-import org.geoserver.jsonld.builders.AbstractJsonBuilder;
+import org.geoserver.jsonld.builders.AbstractTemplateBuilder;
+import org.geoserver.jsonld.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** This class provides functionality to write content from Json-ld template file as it is */
-public class StaticBuilder extends AbstractJsonBuilder {
+public class StaticBuilder extends AbstractTemplateBuilder {
 
-    private JsonNode staticValue;
-    private String strValue;
+    protected JsonNode staticValue;
+    protected String strValue;
 
     public StaticBuilder(String key, JsonNode value, NamespaceSupport namespaces) {
         super(key, namespaces);
@@ -27,22 +27,19 @@ public class StaticBuilder extends AbstractJsonBuilder {
     }
 
     @Override
-    public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
+            throws IOException {
         if (evaluateFilter(context)) {
-            if (strValue != null) {
-                writer.writeString(key, strValue);
-            } else {
-                if (staticValue.isObject()) {
-                    writer.writeObjectNode(key, staticValue);
-                } else if (staticValue.isArray()) {
-                    writer.writeArrayNode(key, staticValue);
-                } else {
-                    writer.writeValueNode(key, staticValue);
-                }
-            }
+            if (strValue != null) writer.writeStaticContent(key, strValue);
+            else writer.writeStaticContent(key, staticValue);
         }
     }
 
+    /**
+     * Get the static value as a JsonNode
+     *
+     * @return the static value
+     */
     public JsonNode getStaticValue() {
         return staticValue;
     }

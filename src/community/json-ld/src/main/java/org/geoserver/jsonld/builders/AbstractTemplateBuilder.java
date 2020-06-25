@@ -5,15 +5,17 @@
 package org.geoserver.jsonld.builders;
 
 import java.io.IOException;
-import org.geoserver.jsonld.JsonLdGenerator;
-import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
+import org.geoserver.jsonld.builders.impl.TemplateBuilderContext;
 import org.geoserver.jsonld.expressions.JsonLdCQLManager;
+import org.geoserver.jsonld.writers.TemplateOutputWriter;
 import org.geotools.filter.text.cql2.CQLException;
 import org.opengis.filter.Filter;
 import org.xml.sax.helpers.NamespaceSupport;
 
-/** Abstract implementation of {@link JsonBuilder} who groups some common attributes and methods. */
-public abstract class AbstractJsonBuilder implements JsonBuilder {
+/**
+ * Abstract implementation of {@link TemplateBuilder} who groups some common attributes and methods.
+ */
+public abstract class AbstractTemplateBuilder implements TemplateBuilder {
 
     protected String key;
 
@@ -23,19 +25,20 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
 
     protected NamespaceSupport namespaces;
 
-    public AbstractJsonBuilder(String key, NamespaceSupport namespaces) {
+    public AbstractTemplateBuilder(String key, NamespaceSupport namespaces) {
         this.key = key;
         this.namespaces = namespaces;
     }
 
-    protected void writeKey(JsonLdGenerator writer) throws IOException {
-        if (key != null && !key.equals("")) writer.writeFieldName(key);
-        else throw new RuntimeException("Cannot write null key value");
-    }
-
-    protected boolean evaluateFilter(JsonBuilderContext context) {
+    /**
+     * Evaluate the filter against the provided template context
+     *
+     * @param context the current context
+     * @return return the result of filter evaluation
+     */
+    protected boolean evaluateFilter(TemplateBuilderContext context) {
         if (filter == null) return true;
-        JsonBuilderContext evaluationContenxt = context;
+        TemplateBuilderContext evaluationContenxt = context;
         for (int i = 0; i < filterContextPos; i++) {
             evaluationContenxt = evaluationContenxt.getParent();
         }
@@ -50,17 +53,44 @@ public abstract class AbstractJsonBuilder implements JsonBuilder {
         this.key = key;
     }
 
+    /**
+     * Get the filter if present
+     *
+     * @return
+     */
     public Filter getFilter() {
         return filter;
     }
 
+    /**
+     * Set the filter to the builder
+     *
+     * @param filter the filter to be setted
+     * @throws CQLException
+     */
     public void setFilter(String filter) throws CQLException {
         JsonLdCQLManager cqlManager = new JsonLdCQLManager(filter, namespaces);
         this.filter = cqlManager.getFilterFromString();
         this.filterContextPos = cqlManager.getContextPos();
     }
 
+    /**
+     * Get context position of the filter if present
+     *
+     * @return
+     */
     public int getFilterContextPos() {
         return filterContextPos;
+    }
+
+    /**
+     * Write the attribute key if present
+     *
+     * @param writer the template writer
+     * @throws IOException
+     */
+    protected void writeKey(TemplateOutputWriter writer) throws IOException {
+        if (key != null && !key.equals("")) writer.writeElementName(key);
+        else throw new RuntimeException("Cannot write null key value");
     }
 }

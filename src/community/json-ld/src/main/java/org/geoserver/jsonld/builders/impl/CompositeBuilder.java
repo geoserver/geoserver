@@ -7,10 +7,9 @@ package org.geoserver.jsonld.builders.impl;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.geoserver.jsonld.JsonLdGenerator;
-import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
+import org.geoserver.jsonld.builders.TemplateBuilder;
+import org.geoserver.jsonld.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -19,7 +18,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class CompositeBuilder extends SourceBuilder {
 
-    private List<JsonBuilder> children;
+    protected List<TemplateBuilder> children;
 
     public CompositeBuilder(String key, NamespaceSupport namespaces) {
         super(key, namespaces);
@@ -27,53 +26,54 @@ public class CompositeBuilder extends SourceBuilder {
     }
 
     @Override
-    public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
+            throws IOException {
         context = evaluateSource(context);
         Object o = context.getCurrentObj();
         if (o != null && evaluateFilter(context) && canWrite(context)) {
-            writeKey(writer);
-            writer.writeStartObject();
-            for (JsonBuilder jb : children) {
-                jb.evaluate(writer, context);
-            }
-            writer.writeEndObject();
+            evaluateChildren(writer, context);
         }
     }
 
-    public boolean canWrite(JsonBuilderContext context) {
-        List<JsonBuilder> filtered =
-                children.stream()
-                        .filter(
-                                b ->
-                                        b instanceof DynamicValueBuilder
-                                                || b instanceof CompositeBuilder)
-                        .collect(Collectors.toList());
-        if (filtered.size() == children.size()) {
-            int falseCounter = 0;
-            for (JsonBuilder b : filtered) {
-                if (b instanceof CompositeBuilder) {
-                    if (!((CompositeBuilder) b).canWrite(context)) falseCounter++;
-                } else {
-                    if (!((DynamicValueBuilder) b).checkNotNullValue(context)) falseCounter++;
-                }
-            }
-            if (falseCounter == filtered.size()) return false;
+    /**
+     * Start the evaluation of the builder children
+     *
+     * @param writer the template output writer
+     * @param context the context to be passed to the children
+     * @throws IOException
+     */
+    protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
+            throws IOException {
+        writeKey(writer);
+        writer.startObject();
+        for (TemplateBuilder jb : children) {
+            jb.evaluate(writer, context);
         }
+        writer.endObject();
+    }
+
+    /**
+     * Check if it is possible to write its content to the output
+     *
+     * @param context the current context
+     * @return true if can write the output, else false
+     */
+    public boolean canWrite(TemplateBuilderContext context) {
         return true;
     }
 
     @Override
-    public void addChild(JsonBuilder children) {
+    public void addChild(TemplateBuilder children) {
         this.children.add(children);
     }
 
     @Override
-    public List<JsonBuilder> getChildren() {
+    public List<TemplateBuilder> getChildren() {
         return children;
     }
 
     @Override
-    protected void writeKey(JsonLdGenerator writer) throws IOException {
-        if (key != null && !key.equals("")) writer.writeFieldName(key);
+    protected void writeKey(TemplateOutputWriter writer) throws IOException {
+        if (key != null && !key.equals("")) writer.writeElementName(key);
     }
 }

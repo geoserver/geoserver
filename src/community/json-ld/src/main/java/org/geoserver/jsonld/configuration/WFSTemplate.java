@@ -13,29 +13,29 @@ import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * This class handles the management of a single json-ld template file, giving access to the ${@link
- * RootBuilder} produced from the template file and issuing the reloading of the file when needed
- * through ${@link JsonLdTemplateWatcher}
+ * This class handles the management of a single template file, giving access to the ${@link
+ * RootBuilder} produced from it and issuing the reloading of the file when needed through ${@link
+ * WFSTemplateWatcher}
  */
-public class JsonLdTemplate {
+public class WFSTemplate {
 
     private Resource templateFile;
-    private JsonLdTemplateWatcher watcher;
+    private WFSTemplateWatcher watcher;
     private RootBuilder builderTree;
 
-    private static final Logger LOGGER = Logging.getLogger(JsonLdTemplate.class);
+    private static final Logger LOGGER = Logging.getLogger(WFSTemplate.class);
 
-    public JsonLdTemplate(Resource templateFile, NamespaceSupport namespaces) {
+    public WFSTemplate(Resource templateFile, NamespaceSupport namespaces) {
         this.templateFile = templateFile;
-        this.watcher = new JsonLdTemplateWatcher(templateFile, namespaces);
+        this.watcher = new WFSTemplateWatcher(templateFile, namespaces);
         try {
-            this.builderTree = watcher.getJsonLdTemplate();
+            this.builderTree = watcher.getTemplate();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
     }
 
-    /** Check if json-ld template file has benn modified an eventually reload it. */
+    /** Check if the template file has benn modified and eventually reload it. */
     public boolean checkTemplate() {
         if (watcher != null && watcher.isModified()) {
             LOGGER.log(
@@ -45,7 +45,7 @@ public class JsonLdTemplate {
             synchronized (this) {
                 if (watcher != null && watcher.isModified()) {
                     try {
-                        RootBuilder root = watcher.getJsonLdTemplate();
+                        RootBuilder root = watcher.getTemplate();
                         this.builderTree = root;
                     } catch (IOException ioe) {
                         throw new RuntimeException(ioe);
@@ -56,6 +56,11 @@ public class JsonLdTemplate {
         return false;
     }
 
+    /**
+     * Provides the template in the form of a builder tree
+     *
+     * @return the builder tree as a RootBuilder
+     */
     public RootBuilder getRootBuilder() {
         return builderTree;
     }

@@ -4,23 +4,23 @@
 
 <beans>
 
-    <bean id="jsonldConfiguration" class="org.geoserver.jsonld.configuration.JsonLdConfiguration">
+    <bean id="templateConfiguration" class="org.geoserver.jsonld.configuration.TemplateConfiguration">
         <constructor-arg ref="dataDirectory"/>
     </bean>
 
-    <bean id="jsonldCallback" class="org.geoserver.jsonld.request.JsonLdTemplateCallback">
+    <bean id="jsonCallback" class="org.geoserver.jsonld.request.JsonTemplateCallback">
         <constructor-arg ref="geoServer"/>
-        <constructor-arg ref="jsonldConfiguration"/>
+        <constructor-arg ref="templateConfiguration"/>
     </bean>
 
-    <bean id="jsonldCallbackOGC" class="org.geoserver.jsonld.request.JsonLdTemplateCallBackOGC">
+    <bean id="jsonCallbackOGC" class="org.geoserver.jsonld.request.JsonTemplateCallBackOGC">
         <constructor-arg ref="geoServer"/>
-        <constructor-arg ref="jsonldConfiguration"/>
+        <constructor-arg ref="templateConfiguration"/>
     </bean>
 
     <bean id="JSONLDGetFeatureResponse" class="org.geoserver.jsonld.response.JSONLDGetFeatureResponse">
         <constructor-arg ref="geoServer"/>
-        <constructor-arg ref="jsonldConfiguration"/>
+        <constructor-arg ref="templateConfiguration"/>
     </bean>
 
 </beans>

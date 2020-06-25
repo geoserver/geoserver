@@ -4,21 +4,21 @@
  */
 package org.geoserver.jsonld.validation;
 
-import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
+import org.geoserver.jsonld.builders.impl.TemplateBuilderContext;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * Visitor to perform a validation of json-ld template based on evaluation of xpath against the
- * {@link FeatureType} and on the checking of param count for CQL expression
+ * Visitor to perform a validation of a template based on evaluation of xpath against the {@link
+ * FeatureType} and on the checking of param count for CQL expression
  */
 public class ValidateExpressionVisitor extends DefaultFilterVisitor {
 
-    private JsonBuilderContext context;
+    private TemplateBuilderContext context;
 
-    public ValidateExpressionVisitor(JsonBuilderContext context) {
+    public ValidateExpressionVisitor(TemplateBuilderContext context) {
         super();
         this.context = context;
     }
@@ -38,11 +38,11 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
         return result;
     }
 
-    public JsonBuilderContext getContext() {
+    public TemplateBuilderContext getContext() {
         return context;
     }
 
-    public void setContext(JsonBuilderContext context) {
+    public void setContext(TemplateBuilderContext context) {
         this.context = context;
     }
 }

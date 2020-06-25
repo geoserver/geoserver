@@ -17,21 +17,20 @@ import org.eclipse.emf.common.util.URI;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.validation.JsonLdValidator;
+import org.geoserver.jsonld.validation.TemplateValidator;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
-import org.geotools.feature.type.Types;
+import org.geotools.data.complex.feature.type.Types;
 import org.opengis.feature.type.FeatureType;
 import org.xml.sax.helpers.NamespaceSupport;
 
-/** Manage the cache and the retrieving of all json-ld template files related */
-public class JsonLdConfiguration {
+/** Manage the cache and the retrieving for all templates files */
+public class TemplateConfiguration {
 
-    private final LoadingCache<CacheKey, JsonLdTemplate> templateCache;
+    private final LoadingCache<CacheKey, WFSTemplate> templateCache;
     private GeoServerDataDirectory dataDirectory;
-    public static final String JSON_LD_NAME = "json-ld-template.json";
 
-    public JsonLdConfiguration(GeoServerDataDirectory dd) {
+    public TemplateConfiguration(GeoServerDataDirectory dd) {
         this.dataDirectory = dd;
         templateCache =
                 CacheBuilder.newBuilder()
@@ -39,9 +38,9 @@ public class JsonLdConfiguration {
                         .initialCapacity(1)
                         .expireAfterAccess(120, TimeUnit.MINUTES)
                         .build(
-                                new CacheLoader<CacheKey, JsonLdTemplate>() {
+                                new CacheLoader<CacheKey, WFSTemplate>() {
                                     @Override
-                                    public JsonLdTemplate load(CacheKey key) {
+                                    public WFSTemplate load(CacheKey key) {
                                         NamespaceSupport namespaces = null;
                                         try {
                                             FeatureType type = key.getResource().getFeatureType();
@@ -56,8 +55,8 @@ public class JsonLdConfiguration {
                                         Resource resource =
                                                 getDataDirectory()
                                                         .get(key.getResource(), key.getPath());
-                                        JsonLdTemplate template =
-                                                new JsonLdTemplate(resource, namespaces);
+                                        WFSTemplate template =
+                                                new WFSTemplate(resource, namespaces);
                                         return template;
                                     }
                                 });
@@ -67,25 +66,24 @@ public class JsonLdConfiguration {
      * Get the template related to the featureType. If template has benn modified updates the cache
      * with the new JsonLdTemplate
      */
-    public RootBuilder getTemplate(FeatureTypeInfo typeInfo) throws ExecutionException {
-        CacheKey key = new CacheKey(typeInfo, JSON_LD_NAME);
-        JsonLdTemplate template = templateCache.get(key);
+    public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat)
+            throws ExecutionException {
+        String fileName = getTemplateName(outputFormat);
+        CacheKey key = new CacheKey(typeInfo, fileName);
+        WFSTemplate template = templateCache.get(key);
         if (template.checkTemplate()) templateCache.put(key, template);
         boolean isValid;
         RootBuilder root = template.getRootBuilder();
         if (root != null) {
-            JsonLdValidator validator = new JsonLdValidator(typeInfo);
+            TemplateValidator validator = new TemplateValidator(typeInfo);
             isValid = validator.validateTemplate(root);
             if (!isValid) {
                 throw new RuntimeException(
-                        "Failed to validate json-ld template for feature type "
+                        "Failed to validate template for feature type "
                                 + typeInfo.getName()
                                 + ". Failing attribute is "
                                 + URI.decode(validator.getFailingAttribute()));
             }
-        } else {
-            throw new RuntimeException(
-                    "No Json-Ld template found for feature type " + typeInfo.getName());
         }
         return root;
     }
@@ -120,8 +118,8 @@ public class JsonLdConfiguration {
         private FeatureTypeInfo resource;
         private String path;
 
-        public CacheKey(FeatureTypeInfo reosurce, String path) {
-            this.resource = reosurce;
+        public CacheKey(FeatureTypeInfo resource, String path) {
+            this.resource = resource;
             this.path = path;
         }
 
@@ -148,5 +146,15 @@ public class JsonLdConfiguration {
         public int hashCode() {
             return Objects.hash(resource, path);
         }
+    }
+
+    private String getTemplateName(String outputFormat) {
+        String templateName = "";
+        if (outputFormat.equals(TemplateIdentifier.GEOJSON.getOutputFormat())) {
+            templateName = TemplateIdentifier.GEOJSON.getFilename();
+        } else if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+            templateName = TemplateIdentifier.JSONLD.getFilename();
+        }
+        return templateName;
     }
 }

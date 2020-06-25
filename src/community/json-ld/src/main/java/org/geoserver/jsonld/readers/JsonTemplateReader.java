@@ -2,18 +2,26 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.jsonld.configuration;
+package org.geoserver.jsonld.readers;
+
+import static org.geoserver.jsonld.builders.impl.RootBuilder.VendorOption.FLAT_OUTPUT;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
 import java.util.Map;
-import org.geoserver.jsonld.builders.*;
+import org.geoserver.jsonld.builders.AbstractTemplateBuilder;
+import org.geoserver.jsonld.builders.BuilderFactory;
+import org.geoserver.jsonld.builders.SourceBuilder;
+import org.geoserver.jsonld.builders.TemplateBuilder;
+import org.geoserver.jsonld.builders.geojson.*;
 import org.geoserver.jsonld.builders.impl.*;
+import org.geoserver.jsonld.builders.jsonld.JsonLdRootBuilder;
+import org.geoserver.jsonld.configuration.TemplateIdentifier;
 import org.geotools.filter.text.cql2.CQLException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
-public class JsonLdTemplateReader {
+public class JsonTemplateReader implements TemplateReader {
 
     public static final String SOURCEKEY = "$source";
 
@@ -23,32 +31,52 @@ public class JsonLdTemplateReader {
 
     public static final String EXPRSTART = "${";
 
+    public static final String VENDOROPTION = "$VendorOptions";
+
     private JsonNode template;
 
     private NamespaceSupport namespaces;
 
-    public JsonLdTemplateReader(JsonNode template, NamespaceSupport namespaces) {
+    private boolean flatOutput = false;
+
+    public JsonTemplateReader(JsonNode template, NamespaceSupport namespaces) {
         this.template = template;
         this.namespaces = namespaces;
     }
 
+    /**
+     * Get a builder tree as a ${@link RootBuilder} mapping it from a Json template
+     *
+     * @return
+     */
+    @Override
     public RootBuilder getRootBuilder() {
-        RootBuilder root = new RootBuilder();
-        getBuilderFromJson(null, template, root);
+        RootBuilder root;
+        String outputFormat;
+        if (template.has(CONTEXTKEY)) outputFormat = TemplateIdentifier.JSONLD.getOutputFormat();
+        else outputFormat = TemplateIdentifier.GEOJSON.getOutputFormat();
+        BuilderFactory factory = new BuilderFactory(outputFormat);
+        root = factory.getRootBuilder();
+        getBuilderFromJson(null, template, root, factory);
         return root;
     }
 
-    private void getBuilderFromJson(String nodeName, JsonNode node, JsonBuilder currentBuilder) {
+    private void getBuilderFromJson(
+            String nodeName,
+            JsonNode node,
+            TemplateBuilder currentBuilder,
+            BuilderFactory factory) {
         if (node.isObject()) {
-            getBuilderFromJsonObject(node, currentBuilder);
+            getBuilderFromJsonObject(node, currentBuilder, factory);
         } else if (node.isArray()) {
-            getBuilderFromJsonArray(nodeName, node, currentBuilder);
+            getBuilderFromJsonArray(nodeName, node, currentBuilder, factory);
         } else {
-            getBuilderFromJsonAttribute(nodeName, node, currentBuilder);
+            getBuilderFromJsonAttribute(nodeName, node, currentBuilder, factory);
         }
     }
 
-    private void getBuilderFromJsonObject(JsonNode node, JsonBuilder currentBuilder) {
+    private void getBuilderFromJsonObject(
+            JsonNode node, TemplateBuilder currentBuilder, BuilderFactory factory) {
         if (node.has(SOURCEKEY) && node.size() == 1) {
             String source = node.get(SOURCEKEY).asText();
             ((SourceBuilder) currentBuilder).setSource(source);
@@ -76,25 +104,28 @@ public class JsonLdTemplateReader {
                 } else if (entryName.equals(FILTERKEY)) {
                     setFilterToBuilder(currentBuilder, node);
                 } else if (entryName.equals(CONTEXTKEY)) {
-                    RootBuilder rootBuilder = (RootBuilder) currentBuilder;
+                    JsonLdRootBuilder rootBuilder = (JsonLdRootBuilder) currentBuilder;
                     rootBuilder.setContextHeader(valueNode);
+                } else if (entryName.equals(VENDOROPTION)) {
+                    setVendorOptions(valueNode, (RootBuilder) currentBuilder, factory);
                 } else if (!strValueNode.contains(EXPRSTART)
                         && !strValueNode.contains(FILTERKEY)
                         && !jumpField) {
-                    // to do static builder filter management
-                    StaticBuilder builder = new StaticBuilder(entryName, valueNode, namespaces);
+                    TemplateBuilder builder =
+                            factory.getStaticBuilder(entryName, valueNode, namespaces);
                     currentBuilder.addChild(builder);
                 } else {
                     if (valueNode.isObject()) {
-                        CompositeBuilder compositeBuilder =
-                                new CompositeBuilder(entryName, namespaces);
+                        TemplateBuilder compositeBuilder =
+                                factory.getCompositeBuilder(entryName, namespaces);
                         currentBuilder.addChild(compositeBuilder);
-                        getBuilderFromJsonObject(valueNode, compositeBuilder);
+                        getBuilderFromJsonObject(valueNode, compositeBuilder, factory);
                     } else if (valueNode.isArray()) {
-                        getBuilderFromJsonArray(entryName, valueNode, currentBuilder);
+                        getBuilderFromJsonArray(entryName, valueNode, currentBuilder, factory);
                     } else {
                         if (!jumpField)
-                            getBuilderFromJsonAttribute(entryName, valueNode, currentBuilder);
+                            getBuilderFromJsonAttribute(
+                                    entryName, valueNode, currentBuilder, factory);
                     }
                 }
             }
@@ -102,11 +133,14 @@ public class JsonLdTemplateReader {
     }
 
     private void getBuilderFromJsonArray(
-            String nodeName, JsonNode node, JsonBuilder currentBuilder) {
-        IteratingBuilder iteratingBuilder = new IteratingBuilder(nodeName, namespaces);
+            String nodeName,
+            JsonNode node,
+            TemplateBuilder currentBuilder,
+            BuilderFactory factory) {
+        TemplateBuilder iteratingBuilder = factory.getIteratingBuilder(nodeName, namespaces);
         currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART)) {
-            StaticBuilder staticBuilder = new StaticBuilder(nodeName, node, namespaces);
+            TemplateBuilder staticBuilder = factory.getStaticBuilder(nodeName, node, namespaces);
             currentBuilder.addChild(staticBuilder);
         } else {
             Iterator<JsonNode> arrayIterator = node.elements();
@@ -115,23 +149,27 @@ public class JsonLdTemplateReader {
                 if (childNode.isObject()) {
                     if (!childNode.has(SOURCEKEY) && childNode.toString().contains(EXPRSTART)) {
                         // CompositeBuilder child of Iterating has no key
-                        CompositeBuilder compositeBuilder = new CompositeBuilder(null, namespaces);
+                        TemplateBuilder compositeBuilder =
+                                factory.getCompositeBuilder(null, namespaces);
                         iteratingBuilder.addChild(compositeBuilder);
-                        getBuilderFromJsonObject(childNode, compositeBuilder);
+                        getBuilderFromJsonObject(childNode, compositeBuilder, factory);
                     } else {
-                        getBuilderFromJsonObject(childNode, iteratingBuilder);
+                        getBuilderFromJsonObject(childNode, iteratingBuilder, factory);
                     }
                 } else if (childNode.isArray()) {
-                    getBuilderFromJsonArray(nodeName, childNode, iteratingBuilder);
+                    getBuilderFromJsonArray(nodeName, childNode, iteratingBuilder, factory);
                 } else {
-                    getBuilderFromJsonAttribute(nodeName, node, iteratingBuilder);
+                    getBuilderFromJsonAttribute(nodeName, node, iteratingBuilder, factory);
                 }
             }
         }
     }
 
     private void getBuilderFromJsonAttribute(
-            String nodeName, JsonNode node, JsonBuilder currentBuilder) {
+            String nodeName,
+            JsonNode node,
+            TemplateBuilder currentBuilder,
+            BuilderFactory factory) {
         String strNode = node.asText();
         String filter = null;
         if (strNode.contains(FILTERKEY)) {
@@ -144,38 +182,50 @@ public class JsonLdTemplateReader {
             filter = filter.substring(0, filter.length() - 1);
         }
         if (node.toString().contains(EXPRSTART) && !node.asText().equals("FeatureCollection")) {
-            DynamicValueBuilder dynamicBuilder =
-                    new DynamicValueBuilder(nodeName, strNode, namespaces);
+            TemplateBuilder dynamicBuilder =
+                    factory.getDynamicBuilder(nodeName, strNode, namespaces);
             if (filter != null) {
                 setFilterToBuilder(dynamicBuilder, filter);
             }
             currentBuilder.addChild(dynamicBuilder);
         } else {
-            StaticBuilder staticBuilder;
+            TemplateBuilder staticBuilder;
             if (filter != null) {
-                staticBuilder = new StaticBuilder(nodeName, strNode, namespaces);
+                staticBuilder = factory.getStaticBuilder(nodeName, strNode, namespaces);
                 setFilterToBuilder(staticBuilder, filter);
             } else {
-                staticBuilder = new StaticBuilder(nodeName, node, namespaces);
+                staticBuilder = factory.getStaticBuilder(nodeName, node, namespaces);
             }
             currentBuilder.addChild(staticBuilder);
         }
     }
 
-    private void setFilterToBuilder(JsonBuilder builder, JsonNode node) {
+    private void setFilterToBuilder(TemplateBuilder builder, JsonNode node) {
         String filter = node.get(FILTERKEY).asText();
         try {
-            ((AbstractJsonBuilder) builder).setFilter(filter);
+            ((AbstractTemplateBuilder) builder).setFilter(filter);
         } catch (CQLException e) {
             throw new RuntimeException("Invalid filter " + filter, e);
         }
     }
 
-    private void setFilterToBuilder(JsonBuilder builder, String filter) {
+    private void setFilterToBuilder(TemplateBuilder builder, String filter) {
         try {
-            ((AbstractJsonBuilder) builder).setFilter(filter);
+            ((AbstractTemplateBuilder) builder).setFilter(filter);
         } catch (CQLException e) {
             throw new RuntimeException("Invalid filter " + filter, e);
         }
+    }
+
+    private void setVendorOptions(JsonNode node, RootBuilder builder, BuilderFactory factory) {
+        String vendorOption = node.asText();
+        String[] options = vendorOption.split(";");
+        for (String option : options) {
+            String[] arrOp = option.split(":");
+            builder.setVendorOptions(arrOp);
+        }
+        String strFlatOutput = builder.getVendorOption(FLAT_OUTPUT.getVendorOptionName());
+        if (strFlatOutput != null)
+            factory.setFlatOutput(Boolean.valueOf(strFlatOutput).booleanValue());
     }
 }

@@ -8,52 +8,52 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.jsonld.builders.AbstractJsonBuilder;
-import org.geoserver.jsonld.builders.JsonBuilder;
+import org.geoserver.jsonld.builders.AbstractTemplateBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
+import org.geoserver.jsonld.builders.TemplateBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
 import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.FunctionExpression;
+import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.ows.ServiceException;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.BinaryExpression;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * This visitor search for a Filter in {@link JsonBuilder} tree using the json-ld path provided as a
+ * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
  * guideline.
  */
-public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
+public class JsonPathVisitor extends DuplicatingFilterVisitor {
 
     private int currentEl;
     private String currentSource;
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-    static final Logger LOGGER = Logging.getLogger(JsonLdPathVisitor.class);
+    static final Logger LOGGER = Logging.getLogger(JsonPathVisitor.class);
     boolean isSimple;
 
-    public JsonLdPathVisitor(FeatureType type) {
+    public JsonPathVisitor(FeatureType type) {
         this.isSimple = type instanceof SimpleFeatureType;
     }
 
     public Object visit(PropertyName expression, Object extraData) {
         String propertyValue = expression.getPropertyName();
         Object newExpression = null;
-        if (extraData instanceof JsonBuilder) {
+        if (extraData instanceof TemplateBuilder) {
             String[] elements;
             if (propertyValue.indexOf(".") != -1) {
                 elements = propertyValue.split("\\.");
             } else {
                 elements = propertyValue.split("/");
             }
-            JsonBuilder builder = (JsonBuilder) extraData;
+            TemplateBuilder builder = (TemplateBuilder) extraData;
             try {
                 currentSource = null;
                 currentEl = 0;
@@ -75,18 +75,21 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     }
 
     private void findXpathArg(Object newExpression) {
-        if (newExpression instanceof AttributeExpressionImpl) {
-            AttributeExpressionImpl pn = (AttributeExpressionImpl) newExpression;
-            pn.setPropertyName(completeXPath(pn.getPropertyName()));
-        } else if (newExpression instanceof FunctionExpression) {
-            FunctionExpression function = (FunctionExpression) newExpression;
-            for (Expression ex : function.getParameters()) {
-                findXpathArg(ex);
-            }
-        } else if (newExpression instanceof BinaryExpression) {
-            BinaryExpression binary = (BinaryExpression) newExpression;
-            findXpathArg(binary.getExpression1());
-            findXpathArg(binary.getExpression2());
+        DefaultFilterVisitor defaultFilterVisitor =
+                new DefaultFilterVisitor() {
+                    @Override
+                    public Object visit(PropertyName filter, Object extraData) {
+                        if (filter instanceof AttributeExpressionImpl) {
+                            AttributeExpressionImpl pn = (AttributeExpressionImpl) filter;
+                            pn.setPropertyName(completeXPath(pn.getPropertyName()));
+                        }
+                        return extraData;
+                    }
+                };
+        if (newExpression instanceof Expression) {
+            ((Expression) newExpression).accept(defaultFilterVisitor, null);
+        } else if (newExpression instanceof Filter) {
+            ((Filter) newExpression).accept(defaultFilterVisitor, null);
         }
     }
 
@@ -94,10 +97,11 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
      * Find the corresponding function to which json-ld path is pointing, by iterating over
      * builder's tree
      */
-    public Object findFunction(List<JsonBuilder> children, String[] eles) throws ServiceException {
+    public Object findFunction(List<TemplateBuilder> children, String[] eles)
+            throws ServiceException {
         if (children != null) {
-            for (JsonBuilder jb : children) {
-                String key = ((AbstractJsonBuilder) jb).getKey();
+            for (TemplateBuilder jb : children) {
+                String key = ((AbstractTemplateBuilder) jb).getKey();
                 if (key == null || key.equals(eles[currentEl])) {
                     if (jb instanceof SourceBuilder) {
                         String source = ((SourceBuilder) jb).getStrSource();

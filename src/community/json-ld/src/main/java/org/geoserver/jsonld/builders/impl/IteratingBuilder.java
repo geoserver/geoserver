@@ -6,9 +6,9 @@ package org.geoserver.jsonld.builders.impl;
 
 import java.io.IOException;
 import java.util.List;
-import org.geoserver.jsonld.JsonLdGenerator;
-import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
+import org.geoserver.jsonld.builders.TemplateBuilder;
+import org.geoserver.jsonld.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -17,7 +17,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class IteratingBuilder extends SourceBuilder {
 
-    private boolean isFeaturesField;
+    protected boolean isFeaturesField;
 
     public IteratingBuilder(String key, NamespaceSupport namespaces) {
         super(key, namespaces);
@@ -25,36 +25,63 @@ public class IteratingBuilder extends SourceBuilder {
     }
 
     @Override
-    public void evaluate(JsonLdGenerator writer, JsonBuilderContext context) throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
+            throws IOException {
         if (!isFeaturesField) {
             context = evaluateSource(context);
             if (context.getCurrentObj() != null) {
-                writeKey(writer);
-                writer.writeStartArray();
-                if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
-                else evaluateInternal(writer, context);
-                writer.writeEndArray();
+                evaluateNonFeaturesField(writer, context);
             }
         } else {
             evaluateInternal(writer, context);
         }
     }
 
-    public void evaluateCollection(JsonLdGenerator writer, JsonBuilderContext context)
+    /**
+     * Method used to evaluate if this IteratingBuilder is not the root one
+     *
+     * @param writer the template writer
+     * @param context the current context
+     * @throws IOException
+     */
+    protected void evaluateNonFeaturesField(
+            TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
+        writeKey(writer);
+        writer.startArray();
+        if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
+        else evaluateInternal(writer, context);
+        writer.endArray();
+    }
+
+    /**
+     * Evaluate a context which is a List
+     *
+     * @param writer the template writer
+     * @param context the context against which evaluate
+     * @throws IOException
+     */
+    protected void evaluateCollection(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
 
         List elements = (List) context.getCurrentObj();
         for (Object o : elements) {
-            JsonBuilderContext childContext = new JsonBuilderContext(o);
+            TemplateBuilderContext childContext = new TemplateBuilderContext(o);
             childContext.setParent(context.getParent());
             evaluateInternal(writer, childContext);
         }
     }
 
-    private void evaluateInternal(JsonLdGenerator writer, JsonBuilderContext context)
+    /**
+     * Triggers the children evaluation
+     *
+     * @param writer the template writer
+     * @param context the current context
+     * @throws IOException
+     */
+    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         if (evaluateFilter(context)) {
-            for (JsonBuilder child : children) {
+            for (TemplateBuilder child : children) {
                 child.evaluate(writer, context);
             }
         }

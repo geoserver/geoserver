@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.resources;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.wicket.model.IModel;
@@ -24,9 +26,27 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     private ResourceExpandedStates expandedStates;
 
+    private String uniqueId;
+
     public ResourceNode(Resource resource, ResourceExpandedStates expandedStates) {
         this.resource = Resources.serializable(resource);
         this.expandedStates = expandedStates;
+        this.uniqueId = getUniqueId(this.resource.path());
+    }
+
+    public static String getUniqueId(String path) {
+        if (path.isEmpty()) {
+            return "/";
+        } else if (!path.contains(":") && !path.contains("~")) {
+            // Helps prevent duplicate Wicket IDs if there is a filename that
+            // is the Base64 encoded path of a file that has to be encoded
+            // without having to unnecessarily encode everything.
+            return "/" + path;
+        }
+        // Base64 encode the file path to replace special characters that are
+        // not allowed in Wicket component IDs.
+        byte[] bytes = path.getBytes(StandardCharsets.UTF_8);
+        return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
     @Override
@@ -78,12 +98,7 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     @Override
     public String getUniqueId() {
-        String path = resource.path();
-        if (path.isEmpty()) {
-            return "/";
-        } else {
-            return path;
-        }
+        return uniqueId;
     }
 
     @Override

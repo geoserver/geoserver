@@ -1782,11 +1782,11 @@
       </dependencies>
     </profile>
     <profile>
-      <id>json-ld</id>
+      <id>wfs-templating</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-json-ld</artifactId>
+          <artifactId>gs-wfs-templating</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

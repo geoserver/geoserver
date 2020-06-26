@@ -26,6 +26,10 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-cql</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -92,7 +96,7 @@
           <descriptor>release/ext-geostyler.xml</descriptor>
           <descriptor>release/ext-csw-iso.xml</descriptor>
           <descriptor>release/ext-importer-jdbc.xml</descriptor>
-          <descriptor>release/ext-json-ld.xml</descriptor>
+          <descriptor>release/ext-wfs-templating.xml</descriptor>
           <descriptor>release/ext-metadata.xml</descriptor>
           <descriptor>release/ext-gsr.xml</descriptor>
           <!-- As per our discussion on list, the module does not work, leaving it for eventual salvage,
@@ -281,7 +285,7 @@
         <module>metadata</module>
         <module>csw-iso</module>
         <module>importer-jdbc</module>
-        <module>json-ld</module>
+        <module>wfs-templating</module>
         <module>gsr</module>
         <module>importer-bdb</module>
       </modules>
@@ -741,9 +745,9 @@
       </modules>
     </profile>
     <profile>
-      <id>json-ld</id>
+      <id>wfs-templating</id>
       <modules>
-        <module>json-ld</module>
+        <module>wfs-templating</module>
       </modules>
     </profile>
     <profile>

@@ -18,14 +18,14 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
 
     protected List<JsonBuilder> children;
 
-    public SourceBuilder(String key) {
-        super(key);
+    public SourceBuilder(String key, NamespaceSupport namespaces) {
+        super(key, namespaces);
         this.children = new LinkedList<JsonBuilder>();
     }
 
     public JsonBuilderContext evaluateSource(JsonBuilderContext context) {
 
-        if (source != null && !source.equals(context.getCurrentSource())) {
+        if (source != null && !source.getPropertyName().equals(context.getCurrentSource())) {
             Object o = evaluateSource(context.getCurrentObj());
             JsonBuilderContext newContext = new JsonBuilderContext(o, source.getPropertyName());
             newContext.setParent(context);
@@ -56,7 +56,7 @@ public abstract class SourceBuilder extends AbstractJsonBuilder {
         return source != null ? source.getPropertyName() : null;
     }
 
-    public void setSource(String source, NamespaceSupport namespaces) {
+    public void setSource(String source) {
         this.source = new AttributeExpressionImpl(source, namespaces);
     }
 }

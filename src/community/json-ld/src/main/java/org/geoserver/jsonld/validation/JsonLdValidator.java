@@ -6,14 +6,17 @@ package org.geoserver.jsonld.validation;
 
 import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.jsonld.builders.AbstractJsonBuilder;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.IteratingBuilder;
 import org.geoserver.jsonld.builders.impl.JsonBuilderContext;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geotools.filter.FunctionExpression;
-import org.opengis.filter.expression.BinaryExpression;
+import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
@@ -23,58 +26,67 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class JsonLdValidator {
 
-    private ValidateExpressionVisitor visitor;
-
     private FeatureTypeInfo type;
 
     private String failingAttribute;
 
     public JsonLdValidator(FeatureTypeInfo type) {
-        visitor = new ValidateExpressionVisitor();
         this.type = type;
     }
 
     public boolean validateTemplate(RootBuilder root) {
         try {
-            return validateExpressions(root, new JsonBuilderContext(type.getFeatureType()));
+            ValidateExpressionVisitor validateVisitor =
+                    new ValidateExpressionVisitor(new JsonBuilderContext(type.getFeatureType()));
+            String source = null;
+            return validateExpressions(root, validateVisitor, source);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    private boolean validateExpressions(JsonBuilder builder, JsonBuilderContext context) {
+    private boolean validateExpressions(
+            JsonBuilder builder, ValidateExpressionVisitor visitor, String source) {
         for (JsonBuilder jb : builder.getChildren()) {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder djb = (DynamicValueBuilder) jb;
-                if (djb.getCql() != null) {
-                    if (!validateCQL(djb.getCql(), context, djb.getKey())) return false;
-                } else if (djb.getXpath() != null) {
-                    if (!validatePropertyName((PropertyName) djb.getXpath(), context, djb.getKey()))
+                Expression toValidate = getExpressionToValidate(djb, source, djb.getContextPos());
+                if (validate(toValidate, visitor) == null)
+                    if (djb.getCql() != null) {
+                        this.failingAttribute =
+                                "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getCql());
                         return false;
-                }
+                    } else if (djb.getXpath() != null) {
+                        this.failingAttribute =
+                                "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getXpath());
+                        return false;
+                    }
             } else if (jb instanceof SourceBuilder) {
-                Object newType = null;
                 SourceBuilder sb = ((SourceBuilder) jb);
+                String siblingSource = null;
                 if (sb.getSource() != null) {
                     String typeName =
                             sb.getStrSource().substring(sb.getStrSource().indexOf(":") + 1);
                     if (!type.getName().contains(typeName)) {
-                        newType = sb.getSource().accept(visitor, context);
-                        if (newType == null) {
+                        PropertyName pn = getSourceToValidate(sb, source);
+                        if (validate(pn, visitor) == null) {
                             failingAttribute = "Source: " + sb.getStrSource();
                             return false;
+                        } else {
+                            siblingSource = pn.getPropertyName();
                         }
                     }
                 } else {
                     if (sb instanceof IteratingBuilder) return false;
                 }
-                if (newType != null) {
-                    JsonBuilderContext newContext = new JsonBuilderContext(newType);
-                    newContext.setParent(context);
-                    context = newContext;
+                if (!validateExpressions(
+                        jb, visitor, siblingSource != null ? siblingSource : source)) return false;
+            } else {
+                Filter filter = getFilterToValidate((AbstractJsonBuilder) builder, source);
+                if (filter != null && validate(filter, visitor) == null) {
+                    return false;
                 }
-                return validateExpressions(jb, context);
             }
         }
         return true;
@@ -84,36 +96,85 @@ public class JsonLdValidator {
         return failingAttribute;
     }
 
-    private boolean validateCQL(Expression expression, JsonBuilderContext context, String key) {
-        PropertyName pn;
-        if (expression instanceof PropertyName) {
-            pn = (PropertyName) expression;
-            if (!validatePropertyName(pn, context, key)) return false;
-        } else if (expression instanceof FunctionExpression) {
-            FunctionExpression function = (FunctionExpression) expression;
-            if (function.getParameters().size() > 0) {
-                for (Expression ex : function.getParameters()) {
-                    if (!validateCQL(ex, context, key)) return false;
-                }
-            }
-        } else if (expression instanceof BinaryExpression) {
-            BinaryExpression binary = (BinaryExpression) expression;
-            if (!validateCQL(binary.getExpression1(), context, key)) return false;
-            if (!validateCQL(binary.getExpression2(), context, key)) return false;
+    public Object validate(Object toValidate, ValidateExpressionVisitor visitor) {
+        Object result = null;
+        if (toValidate instanceof Expression)
+            result = ((Expression) toValidate).accept(visitor, null);
+        else {
+            result = ((Filter) toValidate).accept(visitor, null);
         }
-        return true;
+        return result;
     }
 
-    private boolean validatePropertyName(PropertyName pn, JsonBuilderContext context, String key) {
-        try {
-            if (pn != null && pn.accept(visitor, context) == null) {
-                failingAttribute = "Key: " + key + " Value: " + pn.getPropertyName();
-                return false;
-            }
-        } catch (Exception e) {
-            failingAttribute = "Exception: " + e.getMessage();
-            return false;
+    /**
+     * Produce an AttributeExpressionImpl from the source attribute, suitable to be validated, eg.
+     * taking cares of handling properly changes of context
+     */
+    private AttributeExpressionImpl getSourceToValidate(SourceBuilder sb, String strSource) {
+        AttributeExpressionImpl source = (AttributeExpressionImpl) sb.getSource();
+        if (strSource == null) strSource = sb.getStrSource();
+        else strSource += "/" + sb.getStrSource();
+        return new AttributeExpressionImpl(strSource, source.getNamespaceContext());
+    }
+
+    /**
+     * Produce a Filter from the filter attribute, suitable to be validated eg. taking cares of
+     * handling properly ../ and changes of context
+     */
+    private Filter getFilterToValidate(AbstractJsonBuilder ab, String source) {
+        if (ab.getFilter() != null)
+            return (Filter)
+                    completeXpathWithVisitor(ab.getFilter(), source, ab.getFilterContextPos());
+        return null;
+    }
+
+    /**
+     * Produce an expression from the xpath or the cql expression hold by the DynamicBuilder,
+     * suitable to be validated, eg. taking care of handling properly ../ and changes of context
+     */
+    private Expression getExpressionToValidate(
+            DynamicValueBuilder db, String source, int contextPos) {
+        if (db.getXpath() != null) {
+            return completeXpathForValidation(db.getXpath(), source, contextPos);
+        } else {
+            return (Expression) completeXpathWithVisitor(db.getCql(), source, contextPos);
         }
-        return true;
+    }
+
+    private PropertyName completeXpathForValidation(
+            PropertyName pn, String source, int contextPos) {
+        if (pn instanceof AttributeExpressionImpl) {
+            AttributeExpressionImpl old = (AttributeExpressionImpl) pn;
+            String strXpath = old.getPropertyName();
+            int i = 0;
+            String newSource = source;
+            if (newSource != null) {
+                while (i < contextPos) {
+                    strXpath = strXpath.replaceFirst("\\.\\./", "");
+                    newSource = source.substring(0, source.lastIndexOf('/'));
+                    i++;
+                }
+                return new AttributeExpressionImpl(
+                        newSource + "/" + old.getPropertyName(), old.getNamespaceContext());
+            } else {
+                return pn;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private Object completeXpathWithVisitor(Object cql, String source, int contextPos) {
+        DuplicatingFilterVisitor visitor =
+                new DuplicatingFilterVisitor() {
+                    @Override
+                    public Object visit(PropertyName filter, Object extraData) {
+                        Object result = completeXpathForValidation(filter, source, contextPos);
+                        if (result != null) return result;
+                        return super.visit(filter, extraData);
+                    }
+                };
+        if (cql instanceof Expression) return ((Expression) cql).accept(visitor, null);
+        else return ((Filter) cql).accept(visitor, null);
     }
 }

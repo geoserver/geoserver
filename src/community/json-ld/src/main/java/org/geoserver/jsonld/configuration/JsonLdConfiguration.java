@@ -8,15 +8,19 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.emf.common.util.URI;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.jsonld.builders.impl.RootBuilder;
-import org.geoserver.jsonld.expressions.ExpressionsUtils;
 import org.geoserver.jsonld.validation.JsonLdValidator;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
+import org.geotools.feature.type.Types;
 import org.opengis.feature.type.FeatureType;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -24,11 +28,11 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class JsonLdConfiguration {
 
     private final LoadingCache<CacheKey, JsonLdTemplate> templateCache;
-    private GeoServerDataDirectory dd;
+    private GeoServerDataDirectory dataDirectory;
     public static final String JSON_LD_NAME = "json-ld-template.json";
 
     public JsonLdConfiguration(GeoServerDataDirectory dd) {
-        this.dd = dd;
+        this.dataDirectory = dd;
         templateCache =
                 CacheBuilder.newBuilder()
                         .maximumSize(100)
@@ -41,7 +45,7 @@ public class JsonLdConfiguration {
                                         NamespaceSupport namespaces = null;
                                         try {
                                             FeatureType type = key.getResource().getFeatureType();
-                                            namespaces = ExpressionsUtils.declareNamespaces(type);
+                                            namespaces = declareNamespaces(type);
                                         } catch (IOException e) {
                                             throw new RuntimeException(
                                                     "Error retrieving FeatureType "
@@ -50,7 +54,8 @@ public class JsonLdConfiguration {
                                                             + e.getMessage());
                                         }
                                         Resource resource =
-                                                dd.get(key.getResource(), key.getPath());
+                                                getDataDirectory()
+                                                        .get(key.getResource(), key.getPath());
                                         JsonLdTemplate template =
                                                 new JsonLdTemplate(resource, namespaces);
                                         return template;
@@ -76,13 +81,39 @@ public class JsonLdConfiguration {
                         "Failed to validate json-ld template for feature type "
                                 + typeInfo.getName()
                                 + ". Failing attribute is "
-                                + validator.getFailingAttribute());
+                                + URI.decode(validator.getFailingAttribute()));
             }
         } else {
             throw new RuntimeException(
                     "No Json-Ld template found for feature type " + typeInfo.getName());
         }
         return root;
+    }
+
+    /**
+     * Extract Namespaces from given FeatureType
+     *
+     * @return Namespaces if found for the given FeatureType
+     */
+    private NamespaceSupport declareNamespaces(FeatureType type) {
+        NamespaceSupport namespaceSupport = null;
+        if (type instanceof ComplexFeatureTypeImpl) {
+            Map namespaces = (Map) type.getUserData().get(Types.DECLARED_NAMESPACES_MAP);
+            if (namespaces != null) {
+                namespaceSupport = new NamespaceSupport();
+                for (Iterator it = namespaces.entrySet().iterator(); it.hasNext(); ) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String prefix = (String) entry.getKey();
+                    String namespace = (String) entry.getValue();
+                    namespaceSupport.declarePrefix(prefix, namespace);
+                }
+            }
+        }
+        return namespaceSupport;
+    }
+
+    GeoServerDataDirectory getDataDirectory() {
+        return dataDirectory;
     }
 
     private class CacheKey {

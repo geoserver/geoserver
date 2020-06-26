@@ -9,6 +9,7 @@ import java.util.List;
 import org.geoserver.jsonld.JsonLdGenerator;
 import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This builder handle the writing of a Json array by invoking its children builders and setting the
@@ -18,8 +19,8 @@ public class IteratingBuilder extends SourceBuilder {
 
     private boolean isFeaturesField;
 
-    public IteratingBuilder(String key) {
-        super(key);
+    public IteratingBuilder(String key, NamespaceSupport namespaces) {
+        super(key, namespaces);
         this.isFeaturesField = key != null && key.equalsIgnoreCase("features");
     }
 
@@ -52,8 +53,10 @@ public class IteratingBuilder extends SourceBuilder {
 
     private void evaluateInternal(JsonLdGenerator writer, JsonBuilderContext context)
             throws IOException {
-        for (JsonBuilder child : children) {
-            child.evaluate(writer, context);
+        if (evaluateFilter(context)) {
+            for (JsonBuilder child : children) {
+                child.evaluate(writer, context);
+            }
         }
     }
 }

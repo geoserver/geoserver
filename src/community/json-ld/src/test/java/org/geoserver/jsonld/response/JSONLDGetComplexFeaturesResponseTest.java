@@ -8,16 +8,19 @@ import static org.junit.Assert.*;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.jsonld.configuration.TemplateIdentifier;
+import org.geoserver.platform.resource.Resource;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSupport {
+public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTestSupport {
 
     @Test
     public void testJsonLdResponse() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
@@ -34,7 +37,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
 
     @Test
     public void testJsonLdResponseOGCAPI() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
@@ -52,19 +55,17 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
 
     @Test
     public void testJsonLdResponseWithoutTemplate() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=ex:FirstParentFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
-        assertTrue(
-                response.getContentAsString()
-                        .contains("No Json-Ld template found for feature type"));
+        assertTrue(response.getContentAsString().contains("No template found for feature type"));
     }
 
     @Test
     public void testJsonLdQueryWithGET() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
@@ -81,7 +82,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
 
     @Test
     public void testJsonLdQueryOGCAPI() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
@@ -100,7 +101,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
 
     @Test
     public void testJsonLdQueryPointingToExpr() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
@@ -115,7 +116,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
 
     @Test
     public void testJsonLdQueryWithPOST() throws Exception {
-        setUpComplex();
+        setUpMappedFeature();
         StringBuilder xml =
                 new StringBuilder("<wfs:GetFeature ")
                         .append(" service=\"WFS\" ")
@@ -150,7 +151,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
         assertTrue(
                 response.getContentAsString()
                         .contains(
-                                "Failed to validate json-ld template for feature type FirstParentFeature. "
+                                "Failed to validate template for feature type FirstParentFeature. "
                                         + "Failing attribute is Key: @id Value: &amp;quot;invalid/id&amp;quot;"));
     }
 
@@ -166,7 +167,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
         assertTrue(
                 resp.getContentAsString()
                         .contains(
-                                "Failed to validate json-ld template for feature type GeologicUnit. "
+                                "Failed to validate template for feature type GeologicUnit. "
                                         + "Failing attribute is Key: invalidAttr Value: &amp;quot;gsml:notExisting&amp;quot;"));
     }
 
@@ -202,5 +203,35 @@ public class JSONLDGetComplexFeaturesResponseTest extends JSONLDComplexTestSuppo
                 assertTrue(lithology.size() > 0);
             }
         }
+    }
+
+    @After
+    public void cleanup() {
+        Resource res =
+                dd.getResourceLoader()
+                        .get(
+                                "workspaces/gsml/"
+                                        + mappedFeature.getStore().getName()
+                                        + "/"
+                                        + mappedFeature.getName()
+                                        + "/"
+                                        + TemplateIdentifier.JSONLD.getFilename());
+        if (res != null) res.delete();
+
+        Resource res2 =
+                dd.getResourceLoader()
+                        .get(
+                                "workspaces/gsml/"
+                                        + geologicUnit.getStore().getName()
+                                        + "/"
+                                        + geologicUnit.getName()
+                                        + "/"
+                                        + TemplateIdentifier.JSONLD.getFilename());
+        if (res2 != null) res2.delete();
+    }
+
+    @Override
+    protected String getTemplateFileName() {
+        return TemplateIdentifier.JSONLD.getFilename();
     }
 }

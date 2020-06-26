@@ -12,7 +12,6 @@ import net.sf.json.JSON;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.jsonld.configuration.JsonLdConfiguration;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
@@ -21,7 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
+public abstract class TemplateJSONComplexTestSupport extends AbstractAppSchemaTestSupport {
 
     Catalog catalog;
     FeatureTypeInfo mappedFeature;
@@ -39,15 +38,19 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
         dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
     }
 
-    protected void setUpComplex() throws IOException {
-        setUpComplex("MappedFeature.json", "gsml", mappedFeature);
+    protected void setUpMappedFeature() throws IOException {
+        setUpComplex("MappedFeature.json", mappedFeature);
     }
 
-    protected void setUpComplex(String templateFileName, FeatureTypeInfo ft) throws IOException {
-        setUpComplex(templateFileName, "gsml", ft);
+    protected void setUpMappedFeature(String fileName) throws IOException {
+        setUpComplex(fileName, mappedFeature);
     }
 
-    protected void setUpComplex(String templateFileName, String workspace, FeatureTypeInfo ft)
+    protected void setUpComplex(String fileName, FeatureTypeInfo ft) throws IOException {
+        setUpComplex(fileName, "gsml", ft);
+    }
+
+    protected void setUpComplex(String fileName, String workspace, FeatureTypeInfo ft)
             throws IOException {
         File file =
                 dd.getResourceLoader()
@@ -58,9 +61,9 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
                                         + ft.getStore().getName()
                                         + "/"
                                         + ft.getName(),
-                                JsonLdConfiguration.JSON_LD_NAME);
+                                getTemplateFileName());
 
-        dd.getResourceLoader().copyFromClassPath(templateFileName, file, getClass());
+        dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
     }
 
     protected JSON getJsonLd(String path) throws Exception {
@@ -80,8 +83,21 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
         return new FeatureChainingMockData();
     }
 
+    protected JSON getJson(String path) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals(response.getContentType(), "application/json");
+        return json(response);
+    }
+
+    protected JSON postJson(String xml) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+        assertEquals(response.getContentType(), "application/json");
+        return json(response);
+    }
+
     @After
     public void cleanup() {
+        String templateFileName = getTemplateFileName();
         Resource res =
                 dd.getResourceLoader()
                         .get(
@@ -90,7 +106,7 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + mappedFeature.getName()
                                         + "/"
-                                        + JsonLdConfiguration.JSON_LD_NAME);
+                                        + templateFileName);
         if (res != null) res.delete();
 
         Resource res2 =
@@ -101,7 +117,7 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + geologicUnit.getName()
                                         + "/"
-                                        + JsonLdConfiguration.JSON_LD_NAME);
+                                        + templateFileName);
         if (res2 != null) res2.delete();
 
         Resource res3 =
@@ -112,7 +128,9 @@ public class JSONLDComplexTestSupport extends AbstractAppSchemaTestSupport {
                                         + "/"
                                         + parentFeature.getName()
                                         + "/"
-                                        + JsonLdConfiguration.JSON_LD_NAME);
+                                        + getTemplateFileName());
         if (res3 != null) res3.delete();
     }
+
+    protected abstract String getTemplateFileName();
 }

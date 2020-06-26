@@ -8,9 +8,10 @@ import static org.junit.Assert.*;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.jsonld.configuration.TemplateIdentifier;
 import org.junit.Test;
 
-public class JSONLDGetComplexFeaturesResponseFilteringTest extends JSONLDComplexTestSupport {
+public class JSONLDGetComplexFeaturesResponseFilteringTest extends TemplateJSONComplexTestSupport {
 
     @Test
     public void testJsonLdWithFilterOnIteratingAndComposite() throws Exception {
@@ -96,5 +97,10 @@ public class JSONLDGetComplexFeaturesResponseFilteringTest extends JSONLDComplex
                 }
             }
         }
+    }
+
+    @Override
+    protected String getTemplateFileName() {
+        return TemplateIdentifier.JSONLD.getFilename();
     }
 }

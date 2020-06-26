@@ -1,4 +1,4 @@
-/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,105 +11,100 @@ import net.sf.json.JSONObject;
 import org.geoserver.jsonld.configuration.TemplateIdentifier;
 import org.junit.Test;
 
-public class JSONLDGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestSupport {
+public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestSupport {
 
     @Test
-    public void testJsonLdResponse() throws Exception {
-        setUpSimple("NamedPlaces.json");
+    public void testGeoJSONResponse() throws Exception {
+        setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=cite:NamedPlaces&outputFormat=");
-        sb.append("application%2Fld%2Bjson");
-        JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
+        sb.append("application/json");
+        JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 2);
-        checkFeature((JSONObject) features.get(0));
+        for (int i = 0; i < features.size(); i++) {
+            checkFeature(features.getJSONObject(i));
+        }
     }
 
     @Test
-    public void testJsonLdResponseOGCAPI() throws Exception {
-        setUpSimple("NamedPlaces.json");
+    public void testGeoJSONResponseOGCAPI() throws Exception {
+        setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("cite:NamedPlaces")
-                        .append("/items?f=application%2Fld%2Bjson");
-        JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
+                        .append("/items?f=application/json");
+        JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 2);
-        checkFeature((JSONObject) features.get(0));
+        for (int i = 0; i < features.size(); i++) {
+            checkFeature(features.getJSONObject(i));
+        }
     }
 
     @Test
-    public void testJsonLdQueryPointingToExpr() throws Exception {
-        setUpSimple("NamedPlaces.json");
+    public void testGeoJSONQueryPointingToExpr() throws Exception {
+        setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
-                        .append("application%2Fld%2Bjson")
-                        .append("&cql_filter= features.geometry.wkt IS NULL ");
-        JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
+                        .append("application/json")
+                        .append("&cql_filter= features.name = 'Name: Goose Island' ");
+        JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 0);
+        assertTrue(features.size() == 1);
+        assertEquals(features.getJSONObject(0).getString("name"), "Name: Goose Island");
     }
 
     @Test
-    public void testJsonLdResponseWithFilter() throws Exception {
-        setUpSimple("NamedPlaces.json");
+    public void testGeoJSONResponseWithFilter() throws Exception {
+        setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder path =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=cite:NamedPlaces")
-                        .append("&outputFormat=application%2Fld%2Bjson")
+                        .append("&outputFormat=application/json")
                         .append("&cql_filter= features.id = '118'");
-        JSONObject result = (JSONObject) getJsonLd(path.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
+        JSONObject result = (JSONObject) getJson(path.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 1);
         JSONObject feature = (JSONObject) features.get(0);
         assertEquals(feature.getString("id"), "118");
         assertNotNull(feature.getString("name"), "Goose Island");
         JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("@type"), "MultiPolygon");
-        assertNotNull(geometry.getString("wkt"));
+        assertEquals(geometry.getString("type"), "MultiPolygon");
     }
 
     @Test
-    public void testJsonLdResponseOGCAPIWithFilter() throws Exception {
-        setUpSimple("NamedPlaces.json");
+    public void testGeoJSONResponseOGCAPIWithFilter() throws Exception {
+        setUpSimple("NamedPlacesGeoJSON.json");
         StringBuilder path =
                 new StringBuilder("ogc/features/collections/")
                         .append("cite:NamedPlaces")
-                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("/items?f=application/json")
                         .append("&filter= features.id = '118'")
                         .append("&filter-lang=cql-text");
-        JSONObject result = (JSONObject) getJsonLd(path.toString());
-        JSONObject context = (JSONObject) result.get("@context");
-        assertNotNull(context);
+        JSONObject result = (JSONObject) getJson(path.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 1);
         JSONObject feature = (JSONObject) features.get(0);
         assertEquals(feature.getString("id"), "118");
         assertNotNull(feature.getString("name"), "Goose Island");
         JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("@type"), "MultiPolygon");
-        assertNotNull(geometry.getString("wkt"));
+        assertEquals(geometry.getString("type"), "MultiPolygon");
     }
 
     private void checkFeature(JSONObject feature) {
         assertNotNull(feature.getString("id"));
         assertNotNull(feature.getString("name"));
         JSONObject geometry = (JSONObject) feature.get("geometry");
-        assertEquals(geometry.getString("@type"), "MultiPolygon");
-        assertNotNull(geometry.getString("wkt"));
+        assertEquals(geometry.getString("type"), "MultiPolygon");
+        JSONArray coordinates = geometry.getJSONArray("coordinates");
+        assertNotNull(coordinates);
+        assertFalse(coordinates.isEmpty());
     }
 
     @Override
     protected String getTemplateFileName() {
-        return TemplateIdentifier.JSONLD.getFilename();
+        return TemplateIdentifier.GEOJSON.getFilename();
     }
 }

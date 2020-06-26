@@ -29,12 +29,9 @@ public class JsonLdTemplateCallback extends AbstractDispatcherCallback {
 
     private Catalog catalog;
 
-    private GeoServer gs;
-
     private JsonLdConfiguration configuration;
 
     public JsonLdTemplateCallback(GeoServer gs, JsonLdConfiguration configuration) {
-        this.gs = gs;
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
     }

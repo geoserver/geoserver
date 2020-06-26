@@ -13,7 +13,7 @@ import org.geoserver.jsonld.builders.JsonBuilder;
 import org.geoserver.jsonld.builders.SourceBuilder;
 import org.geoserver.jsonld.builders.impl.DynamicValueBuilder;
 import org.geoserver.jsonld.builders.impl.StaticBuilder;
-import org.geoserver.jsonld.expressions.ExpressionsUtils;
+import org.geoserver.jsonld.expressions.JsonLdCQLManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.FunctionExpression;
@@ -26,7 +26,6 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.BinaryExpression;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
-import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * This visitor search for a Filter in {@link JsonBuilder} tree using the json-ld path provided as a
@@ -39,7 +38,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     static final Logger LOGGER = Logging.getLogger(JsonLdPathVisitor.class);
     boolean isSimple;
-    private NamespaceSupport namespaces;
 
     public JsonLdPathVisitor(FeatureType type) {
         this.isSimple = type instanceof SimpleFeatureType;
@@ -122,7 +120,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
                         if (currentEl + 1 != eles.length) throw new ServiceException("error");
                         if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
                         else {
-                            this.namespaces = dvb.getNamespaces();
                             return super.visit(dvb.getCql(), null);
                         }
                     } else if (jb instanceof StaticBuilder) {
@@ -160,6 +157,6 @@ public class JsonLdPathVisitor extends DuplicatingFilterVisitor {
      */
     private String completeXPath(String xpath) {
         if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
-        return ExpressionsUtils.quoteXpathAttribute(xpath);
+        return JsonLdCQLManager.quoteXpathAttribute(xpath);
     }
 }

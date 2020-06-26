@@ -20,31 +20,17 @@
   "type": "FeatureCollection",
   "features": [
     {
-      "$source": "gsml:MappedFeature"
+      "$source": "gsml:GeologicUnit"
     },
     {
-      "@id": "${@id}",
-      "@type": [
-        "Feature",
-        "gsml:MappedFeature",
-        "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
-      ],
-      "name": "${gml:name}",
-      "gsml:positionalAccuracy": {
-        "type": "gsml:CGI_NumericValue",
-        "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
-      },
-      "gsml:GeologicUnit": {
-        "$source": "gsml:specification/gsml:GeologicUnit",
         "@id": "${@id}",
-        "description": "${gml:description}",
+        "description": "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}",
         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
         "gsml:composition": [
           {
             "$source": "gsml:composition"
           },
           {
-            "previousContextValue": "${../gml:description}",
             "gsml:compositionPart": [
               {
                 "$source": "gsml:CompositionPart"
@@ -52,7 +38,7 @@
               {
                 "gsml:role": {
                   "value": "${gsml:role}",
-                  "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
+                  "@codeSpace": "$filter{xpath('../../gml:description')='Olivine basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
                 },
                 "proportion": {
                   "$source": "gsml:proportion",
@@ -84,11 +70,6 @@
             ]
           }
         ]
-      },
-      "geometry": {
-        "@type": "Polygon",
-        "wkt": "$${toWKT(xpath('gsml:shape'))}"
-      }
     }
   ]
 }

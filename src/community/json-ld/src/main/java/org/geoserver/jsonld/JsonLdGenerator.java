@@ -106,7 +106,7 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
             writeString(String.valueOf(result));
         } else if (result instanceof Date) {
             Date timeStamp = (Date) result;
-            DateFormat df = new SimpleDateFormat("YYYY/MM/DD hh:mm:ss");
+            DateFormat df = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
             writeResult(df.format(timeStamp));
         } else if (result instanceof ComplexAttribute) {
             ComplexAttribute attr = (ComplexAttribute) result;
@@ -133,12 +133,13 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
         }
     }
 
-    public com.fasterxml.jackson.core.JsonGenerator getDelegate() {
-        return delegate;
+    public void writeString(String entryName, String value) throws IOException {
+        if (entryName != null && !entryName.equals("")) delegate.writeFieldName(entryName);
+        if (value != null && !value.equals("")) delegate.writeString(value);
     }
 
-    public void setDelegate(com.fasterxml.jackson.core.JsonGenerator delegate) {
-        this.delegate = delegate;
+    public com.fasterxml.jackson.core.JsonGenerator getDelegate() {
+        return delegate;
     }
 
     @Override
@@ -177,6 +178,7 @@ public class JsonLdGenerator extends com.fasterxml.jackson.core.JsonGenerator {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public com.fasterxml.jackson.core.JsonGenerator setFeatureMask(int i) {
         return delegate.setFeatureMask(i);
     }

@@ -36,6 +36,7 @@
       },
       "gsml:GeologicUnit": {
         "$source": "gsml:specification/gsml:GeologicUnit",
+        "$filter": "xpath('gml:description') = 'Olivine basalt'",
         "@id": "${@id}",
         "description": "${gml:description}",
         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
@@ -44,7 +45,6 @@
             "$source": "gsml:composition"
           },
           {
-            "previousContextValue": "${../gml:description}",
             "gsml:compositionPart": [
               {
                 "$source": "gsml:CompositionPart"
@@ -67,7 +67,8 @@
                 },
                 "lithology": [
                   {
-                    "$source": "gsml:lithology"
+                    "$source": "gsml:lithology",
+                    "$filter": "xpath('gsml:ControlledConcept/@id') = 'cc.2'"
                   },
                   {
                     "@id": "${gsml:ControlledConcept/@id}",

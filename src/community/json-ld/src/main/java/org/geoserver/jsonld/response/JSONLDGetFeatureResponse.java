@@ -43,12 +43,11 @@ public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
             throws ServiceException {
         FeatureTypeInfo info =
                 getFeatureType(GetFeatureRequest.adapt(getFeature.getParameters()[0]));
-        JsonLdGenerator writer = null;
-        try {
+        try (JsonLdGenerator writer =
+                new JsonLdGenerator(new JsonFactory().createGenerator(output, JsonEncoding.UTF8))) {
+
             RootBuilder rootBuilder = configuration.getTemplate(info);
-            writer =
-                    new JsonLdGenerator(
-                            new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+
             rootBuilder.startJsonLd(writer);
             for (FeatureCollection collection : featureCollection.getFeature()) {
                 FeatureIterator iterator = collection.features();
@@ -66,7 +65,6 @@ public class JSONLDGetFeatureResponse extends WFSGetFeatureOutputFormat {
             throw new ServiceException(e);
         } finally {
             try {
-                if (writer != null && !writer.isClosed()) writer.close();
                 output.close();
             } catch (IOException ioex) {
                 throw new ServiceException(ioex);

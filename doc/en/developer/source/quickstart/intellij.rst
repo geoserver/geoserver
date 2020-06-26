@@ -35,6 +35,15 @@ Import modules into Intellij
    .. image:: img/intellij_import_finish.png
       :width: 600
 
+Add Error Prone compiler plugin
+---------------------------
+
+Geoserver uses Error Prone tool for static code analysis. However, this tool supports Java 9 and later, so to run it on Java 8 you need to do some additional steps:
+
+#. Install Error Prone Compiler plugin: go to Settings - Plugins, search for "Error Prone" and install it
+#. Restart the IDE
+#. Set it as Java compiler for the project: search for Java Compiler in Settings and choose "Javac with error-prone"
+
 Run GeoServer from Intellij
 ---------------------------
 

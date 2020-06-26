@@ -1,7 +1,7 @@
-JSON-LD Bacward Mapping
+Backward Mapping
 ============================
 
-When performing queries, using CQL filters, against layers that support a JSON-LD output, it will be possible to reference the JSON-LD document attributes in the CQL expressions. The JSON-LD output format plugin will take care of interpreting the CQL filter and translate it, when possible, to a data source native filter. For example, if that data source is a relational database, the CQL filter will be translated to one or multiple SQL queries that will be used to retrieve only the needed data.    
+When performing queries, using CQL filters, against layers that support a templated output, it will be possible to reference the template attributes in the CQL expressions. The plugin will take care of interpreting the CQL filter and translate it, when possible, to a data source native filter. For example, if that data source is a relational database, the CQL filter will be translated to one or multiple SQL queries that will be used to retrieve only the needed data.    
 
 Consider the following JSON-LD output example:
 

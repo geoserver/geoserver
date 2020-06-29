@@ -12,6 +12,11 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
+import static org.geoserver.wms.capabilities.CapabilityUtil.LAYER_GROUP_STYLE_ABSTRACT_PREFIX;
+import static org.geoserver.wms.capabilities.CapabilityUtil.LAYER_GROUP_STYLE_ABSTRACT_SUFFIX;
+import static org.geoserver.wms.capabilities.CapabilityUtil.LAYER_GROUP_STYLE_NAME;
+import static org.geoserver.wms.capabilities.CapabilityUtil.LAYER_GROUP_STYLE_TITLE_PREFIX;
+import static org.geoserver.wms.capabilities.CapabilityUtil.LAYER_GROUP_STYLE_TITLE_SUFFIX;
 import static org.geoserver.wms.capabilities.CapabilityUtil.validateLegendInfo;
 
 import com.google.common.collect.Iterables;
@@ -1056,8 +1061,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 qatts.addAttribute(
                         "", "cascaded", "cascaded", "", String.valueOf(cascadedHopCount));
             }
+
+            String layerName = layer.prefixedName();
+
             start("Layer", qatts);
-            element("Name", layer.prefixedName());
+            element("Name", layerName);
             // REVISIT: this is bad, layer should have title and anbstract by itself
             element("Title", layer.getResource().getTitle());
             element("Abstract", layer.getResource().getAbstract());
@@ -1117,8 +1125,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             // handle DataURLs
             handleDataList(layer.getResource().getDataLinks());
+
             // TODO: FeatureListURL
-            handleStyles(layer);
+
+            handleLayerStyles(layerName, layer.getDefaultStyle(), layer.getStyles());
 
             handleScaleDenominator(layer);
 
@@ -1158,34 +1168,61 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
-        private void handleStyles(final LayerInfo layer) {
+        /**
+         * Handle Style blocks for layers
+         *
+         * @param layerName the layer name, used to construct the LegendURL block
+         * @param defaultStyle the default style for the layer
+         * @param styles the list of styles for the layer
+         */
+        private void handleLayerStyles(
+                String layerName, StyleInfo defaultStyle, Set<StyleInfo> styles) {
             // if WMSLayerInfo do nothing for the moment, we may want to list the set of cascaded
             // named styles
             // in the future (when we add support for that)
             // support added :GEOS-9312
 
-            // add the layer style
-            start("Style");
-
-            StyleInfo defaultStyle = layer.getDefaultStyle();
             if (defaultStyle == null) {
-                throw new NullPointerException(
-                        "Layer " + layer.getName() + " has no default style");
+                throw new NullPointerException("Layer " + layerName + " has no default style");
             }
+
+            // add the default style
+            start("Style");
             handleCommonStyleElements(defaultStyle);
-            handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
+            handleLegendURL(layerName, defaultStyle.getLegend(), null, defaultStyle);
             end("Style");
 
-            Set<StyleInfo> styles = layer.getStyles();
-
+            // add all the styles
             if (styles != null) {
                 for (StyleInfo styleInfo : styles) {
                     start("Style");
                     handleCommonStyleElements(styleInfo);
-                    handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
+                    handleLegendURL(layerName, styleInfo.getLegend(), styleInfo, styleInfo);
                     end("Style");
                 }
             }
+        }
+
+        /**
+         * Handle Style blocks for layer groups
+         *
+         * @param layerName the layer name, used to construct the LegendURL block
+         */
+        private void handleLayerGroupStyles(String layerName) {
+            start("Style");
+            element("Name", LAYER_GROUP_STYLE_NAME);
+            element(
+                    "Title",
+                    LAYER_GROUP_STYLE_TITLE_PREFIX
+                            .concat(layerName)
+                            .concat(LAYER_GROUP_STYLE_TITLE_SUFFIX));
+            element(
+                    "Abstract",
+                    LAYER_GROUP_STYLE_ABSTRACT_PREFIX
+                            .concat(layerName)
+                            .concat(LAYER_GROUP_STYLE_ABSTRACT_SUFFIX));
+            handleLegendURL(layerName, null, null, null);
+            end("Style");
         }
 
         private void handleCommonStyleElements(StyleInfo defaultStyle) {
@@ -1403,6 +1440,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             handleMetadataList(metadataLinks);
 
+            // add the layer group style
+            handleLayerGroupStyles(layerName);
+
             // the layer style is not provided since the group does just have
             // one possibility, the lack of styles that will make it use
             // the default ones for each layer
@@ -1485,14 +1525,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * <p>It is common practice to supply a URL to a WMS accessible legend graphic when it is
          * difficult to create a dynamic legend for a layer.
          *
-         * @param layer The layer.
+         * @param layerName The layer prefixed name
          * @param legend The user specified legend url. If null a default url pointing back to the
          *     GetLegendGraphic operation will be automatically created.
          * @param style The style for the layer.
          * @param sampleStyle The style to use for sample sizing.
          */
         protected void handleLegendURL(
-                LayerInfo layer, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
+                String layerName, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
 
             int legendWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;
             int legendHeight = GetLegendGraphicRequest.DEFAULT_HEIGHT;
@@ -1550,7 +1590,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("Format", defaultFormat);
             attrs.clear();
 
-            String layerName = layer.prefixedName();
             Map<String, String> params =
                     params(
                             "service",

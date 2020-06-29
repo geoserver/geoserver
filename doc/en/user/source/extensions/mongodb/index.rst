@@ -3,8 +3,8 @@
 MongoDB Data Store
 ==================
 
-This module provides support for MongoDB data store. This extension is build on top of `GeoTools MongoDB plugin
-<http://docs.geotools.org/latest/userguide/library/data/mongodb.html>`_.
+This module provides support for MongoDB data store. This extension is build on top of :geotools:`GeoTools MongoDB plugin
+<library/data/mongodb.html>`.
 
 Installation
 ------------
@@ -40,5 +40,5 @@ Configuring a new MongoDB data store requires providing:
 
    *Configuring a MongoDB data store.*
 
-For more details about the usage of this data store please check the `GeoTools MongoDB plugin documentation
-<http://docs.geotools.org/latest/userguide/library/data/mongodb.html>`_.
+For more details about the usage of this data store please check the :geotools:`GeoTools MongoDB plugin documentation
+<library/data/mongodb.html>`.

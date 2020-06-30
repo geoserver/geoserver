@@ -7,9 +7,7 @@ package org.geoserver.test;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -123,9 +121,13 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                                 + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
         // validate the obtained response
         checkStation1Exists(response);
-        JSONObject station = getFeaturePropertiesById(response, "st.3");
+        // get station number 3 which should have null geometry value
+        JSONObject station3 = (JSONObject) ((JSONObject) response).getJSONArray("features").get(2);
+        JSONObject geometry = station3.getJSONObject("geometry");
+        // check we got the geometry key encoded
+        assertTrue(station3.containsKey("geometry"));
         // check we got the null geometry value encoded
-        assertEquals(station.get("geometry"), null);
+        assertTrue(geometry.isNullObject());
     }
 
     /** Helper method that station 1 exists and was correctly encoded in the GeoJSON response. */

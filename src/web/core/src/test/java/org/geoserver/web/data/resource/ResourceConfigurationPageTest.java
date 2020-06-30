@@ -30,6 +30,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -40,17 +41,10 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CatalogFactory;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
@@ -474,5 +468,57 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
             GeoServerExtensionsHelper.clear();
             GeoServerExtensionsHelper.singleton("secureCatalog", oldSc, SecureCatalogImpl.class);
         }
+    }
+
+    @Test
+    public void testWMTSOtherCRS() throws IOException {
+        String baseURL = TestHttpClientProvider.MOCKSERVER;
+        MockHttpClient client = new MockHttpClient();
+        Catalog catalog = getCatalog();
+        URL descURL = new URL(baseURL + "/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
+        client.expectGet(
+                descURL,
+                new MockHttpResponse(getClass().getResource("/wmts_getCaps.xml"), "text/xml"));
+
+        TestHttpClientProvider.bind(client, descURL);
+        WMTSStoreInfo storeInfo = new WMTSStoreInfoImpl(getCatalog());
+        storeInfo.setName("Mock WMTS Store");
+        storeInfo.setCapabilitiesURL(descURL.toString());
+        storeInfo.setConnectTimeout(60);
+        storeInfo.setMaxConnections(10);
+        storeInfo.setDateCreated(new Date());
+        storeInfo.setDateModified(new Date());
+        catalog.add(storeInfo);
+
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        WMTSLayerInfo wmtsInfo =
+                xp.load(getClass().getResourceAsStream("/wmtsLayerInfo.xml"), WMTSLayerInfo.class);
+        final String actualNativeSRS = wmtsInfo.getSRS();
+        wmtsInfo.setStore(storeInfo);
+        catalog.add(wmtsInfo);
+        LayerInfo layerInfo =
+                xp.load(getClass().getResourceAsStream("/wmtsLayer.xml"), LayerInfo.class);
+        layerInfo.setResource(wmtsInfo);
+        // page should show additional SRS in WMTS cap document
+        login();
+        tester.startPage(new ResourceConfigurationPage(layerInfo, true));
+        // click the FIND button next to open SRS selection popup
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:find");
+
+        // verify Layer`s resource is updated with metadata
+        assertNotNull(layerInfo.getResource().getMetadata().get(FeatureTypeInfo.OTHER_SRS));
+
+        // click first item in SRS
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
+                true);
+
+        // assert that native SRS has changed
+        String newNativeSRS =
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
+                        .getDefaultModelObjectAsString();
+        assertFalse(newNativeSRS.equalsIgnoreCase(actualNativeSRS));
     }
 }

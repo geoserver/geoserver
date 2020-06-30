@@ -5,10 +5,11 @@
 
 package org.geoserver.wfstemplating.writers;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /** Base interface for all the writers */
-public interface TemplateOutputWriter {
+public interface TemplateOutputWriter extends Closeable {
 
     /**
      * Write an element name. An element name may be the field name in a JSON or an element tag name
@@ -64,4 +65,11 @@ public interface TemplateOutputWriter {
      * @throws IOException
      */
     void endArray() throws IOException;
+
+    void startTemplateOutput() throws IOException;
+
+    void endTemplateOutput() throws IOException;
+
+    @Override
+    void close() throws IOException;
 }

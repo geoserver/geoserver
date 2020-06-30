@@ -4,7 +4,9 @@
  */
 package org.geoserver.wfstemplating.request;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
@@ -50,64 +52,131 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                 && (request.getOutputFormat().equals(TemplateIdentifier.JSONLD.getOutputFormat())
                         || request.getOutputFormat()
                                 .equals(TemplateIdentifier.GEOJSON.getOutputFormat()))) {
-            FeatureTypeInfo typeInfo = null;
-            GetFeatureRequest getFeature = null;
-            getFeature = GetFeatureRequest.adapt(operation.getParameters()[0]);
-            List<Query> queries = getFeature.getQueries();
-            if (getFeature != null && queries != null && queries.size() > 0) {
-                for (int i = 0; i < queries.size(); i++) {
-                    Query q = queries.get(i);
-                    QName type = q.getTypeNames().get(0);
-                    typeInfo =
-                            catalog.getFeatureTypeByName(
-                                    new NameImpl(type.getPrefix(), type.getLocalPart()));
-                    if (typeInfo != null) {
-                        try {
-                            RootBuilder root =
-                                    configuration.getTemplate(typeInfo, request.getOutputFormat());
-                            if (root != null) {
-                                JsonPathVisitor visitor =
-                                        new JsonPathVisitor(typeInfo.getFeatureType());
-                                if (q.getFilter() != null) {
-                                    Filter newFilter = (Filter) q.getFilter().accept(visitor, root);
-                                    q.setFilter(newFilter);
-                                }
-                            }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+            try {
+                GetFeatureRequest getFeature =
+                        GetFeatureRequest.adapt(operation.getParameters()[0]);
+                List<Query> queries = getFeature.getQueries();
+
+                if (getFeature != null && queries != null && queries.size() > 0) {
+                    handleTemplateFilterInQueries(queries, request.getOutputFormat());
                 }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
         return super.operationDispatched(request, operation);
+    }
+
+    // iterate over queries to eventually handle a templates query paths
+    private void handleTemplateFilterInQueries(List<Query> queries, String outputFormat)
+            throws ExecutionException {
+        for (Query q : queries) {
+            List<FeatureTypeInfo> featureTypeInfos = getFeatureTypeInfoFromQuery(q);
+            List<RootBuilder> rootBuilders =
+                    getRootBuildersFromFeatureTypeInfo(featureTypeInfos, outputFormat);
+            for (int i = 0; i < featureTypeInfos.size(); i++) {
+                FeatureTypeInfo fti = featureTypeInfos.get(i);
+                RootBuilder root = rootBuilders.get(i);
+                replaceTemplatePath(q, fti, root);
+            }
+        }
+    }
+
+    // get the FeatureTypeInfo from the query
+    private List<FeatureTypeInfo> getFeatureTypeInfoFromQuery(Query q) {
+        List<FeatureTypeInfo> typeInfos = new ArrayList<>();
+        for (QName typeName : q.getTypeNames()) {
+            typeInfos.add(
+                    catalog.getFeatureTypeByName(
+                            new NameImpl(typeName.getPrefix(), typeName.getLocalPart())));
+        }
+        return typeInfos;
+    }
+
+    private List<RootBuilder> getRootBuildersFromFeatureTypeInfo(
+            List<FeatureTypeInfo> typeInfos, String outputFormat) throws ExecutionException {
+        List<RootBuilder> rootBuilders = new ArrayList<>();
+        int nullRootIndex = 0;
+        for (int i = 0; i < typeInfos.size(); i++) {
+            FeatureTypeInfo fti = typeInfos.get(i);
+            RootBuilder root = ensureTemplatesExist(fti, outputFormat);
+            if (root == null) nullRootIndex = i;
+            else rootBuilders.add(root);
+        }
+        int rootsSize = rootBuilders.size();
+        if (rootsSize > 0 && rootsSize != typeInfos.size()) {
+            // we are missing a template throwing exception
+            throw new RuntimeException(
+                    "No template found for feature type "
+                            + typeInfos.get(nullRootIndex).getName()
+                            + " for output format "
+                            + outputFormat);
+        }
+        return rootBuilders;
+    }
+
+    // invokes the path visitor to map the  template path if present
+    // to the pointed template attribute and set the new filter to the query
+    private void replaceTemplatePath(Query q, FeatureTypeInfo fti, RootBuilder root) {
+        try {
+
+            JsonPathVisitor visitor = new JsonPathVisitor(fti.getFeatureType());
+            if (q.getFilter() != null) {
+                Filter newFilter = (Filter) q.getFilter().accept(visitor, root);
+                q.setFilter(newFilter);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         if (response instanceof GeoJSONGetFeatureResponse) {
-            FeatureTypeInfo typeInfo = null;
-            GetFeatureRequest getFeature = null;
-            getFeature = GetFeatureRequest.adapt(operation.getParameters()[0]);
-            QName type = getFeature.getQueries().get(0).getTypeNames().get(0);
-            typeInfo =
-                    catalog.getFeatureTypeByName(
-                            new NameImpl(type.getPrefix(), type.getLocalPart()));
-            if (typeInfo != null) {
-                try {
-                    RootBuilder root =
-                            configuration.getTemplate(typeInfo, request.getOutputFormat());
-                    if (root != null) {
-                        response =
-                                new GeoJsonTemplateGetFeatureResponse(
-                                        gs, configuration, (GeoJSONGetFeatureResponse) response);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+            GetFeatureRequest getFeature = GetFeatureRequest.adapt(operation.getParameters()[0]);
+            List<Query> queries = getFeature.getQueries();
+            for (Query q : queries) {
+                List<FeatureTypeInfo> typeInfos = getFeatureTypeInfoFromQuery(q);
+                Response wrapped =
+                        wrapGeoJSONResponse(typeInfos, response, request.getOutputFormat());
+                if (wrapped != null) response = wrapped;
             }
         }
         return super.responseDispatched(request, operation, result, response);
+    }
+
+    private Response wrapGeoJSONResponse(
+            List<FeatureTypeInfo> typeInfos, Response original, String outputFormat) {
+        Response response = null;
+        try {
+
+            List<RootBuilder> rootBuilders =
+                    getRootBuildersFromFeatureTypeInfo(typeInfos, outputFormat);
+            if (rootBuilders.size() > 0) {
+                response =
+                        new GeoJsonTemplateGetFeatureResponse(
+                                gs, configuration, (GeoJSONGetFeatureResponse) original);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return response;
+    }
+
+    // get the root builder and eventually throws exception if it is
+    // null and json-ld output is requested
+    private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat)
+            throws ExecutionException {
+
+        RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
+        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat()) && root == null) {
+            throw new RuntimeException(
+                    "No template found for feature type "
+                            + typeInfo.getName()
+                            + " for output format "
+                            + outputFormat);
+        }
+        return root;
     }
 }

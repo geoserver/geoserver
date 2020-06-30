@@ -15,8 +15,8 @@ import org.geotools.filter.function.FilterFunction_toWKT;
 /** Implements its superclass methods to write a valid json-ld output */
 public class JsonLdWriter extends CommonJsonWriter {
 
-    public JsonLdWriter(JsonGenerator generator, boolean flattenedList) {
-        super(generator, flattenedList);
+    public JsonLdWriter(JsonGenerator generator) {
+        super(generator);
     }
 
     private JsonNode contextHeader;
@@ -34,7 +34,7 @@ public class JsonLdWriter extends CommonJsonWriter {
     }
 
     @Override
-    public void startJson() throws IOException {
+    public void startTemplateOutput() throws IOException {
         writeStartObject();
         writeFieldName("@context");
         writeStartObject();

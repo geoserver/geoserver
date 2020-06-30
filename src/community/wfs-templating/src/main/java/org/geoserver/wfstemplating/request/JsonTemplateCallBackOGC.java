@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfstemplating.request;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import org.geoserver.api.features.FeaturesResponse;
 import org.geoserver.catalog.Catalog;
@@ -25,6 +26,7 @@ import org.geoserver.wfstemplating.configuration.TemplateConfiguration;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
 import org.geoserver.wfstemplating.response.GeoJsonTemplateGetFeatureResponse;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
 import org.springframework.http.HttpHeaders;
@@ -94,26 +96,31 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private void replaceJsonLdPathWithFilter(
             String strFilter, String outputFormat, Operation operation) throws Exception {
+        FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
+        RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
         if (strFilter != null && strFilter.indexOf(".") != -1) {
-            FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
-            RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
             if (root != null) {
-                JsonPathVisitor visitor = new JsonPathVisitor(typeInfo.getFeatureType());
-                /* Todo find a better way to replace json-ld path with corresponding template attribute*/
-                // Get filter from string in order to make it accept the visitor
-                Filter f = (Filter) XCQL.toFilter(strFilter).accept(visitor, root);
-                // Taking back a string from Function cause
-                // OGC API get a string cql filter from query string
-                String newFilter =
-                        JsonLdCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");
-                newFilter = JsonLdCQLManager.quoteXpathAttribute(newFilter);
-                for (int i = 0; i < operation.getParameters().length; i++) {
-                    Object p = operation.getParameters()[i];
-                    if (p != null && ((String.valueOf(p)).trim().equals(strFilter.trim()))) {
-                        operation.getParameters()[i] = newFilter;
-                        break;
-                    }
-                }
+                replaceFilter(strFilter, root, typeInfo, operation);
+            }
+        }
+    }
+
+    private void replaceFilter(
+            String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            throws IOException, CQLException {
+        JsonPathVisitor visitor = new JsonPathVisitor(typeInfo.getFeatureType());
+        /* Todo find a better way to replace json-ld path with corresponding template attribute*/
+        // Get filter from string in order to make it accept the visitor
+        Filter f = (Filter) XCQL.toFilter(strFilter).accept(visitor, root);
+        // Taking back a string from Function cause
+        // OGC API get a string cql filter from query string
+        String newFilter = JsonLdCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");
+        newFilter = JsonLdCQLManager.quoteXpathAttribute(newFilter);
+        for (int i = 0; i < operation.getParameters().length; i++) {
+            Object p = operation.getParameters()[i];
+            if (p != null && ((String.valueOf(p)).trim().equals(strFilter.trim()))) {
+                operation.getParameters()[i] = newFilter;
+                break;
             }
         }
     }
@@ -123,32 +130,12 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
             Request request, Operation operation, Object result, Response response) {
         String format = getFormatSupportingTemplating(request);
         if (format != null && format.equals(TemplateIdentifier.GEOJSON.getOutputFormat())) {
-            FeatureTypeInfo typeInfo = null;
-            typeInfo = getFeatureType((String) operation.getParameters()[0]);
+            FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
             if (typeInfo != null) {
                 try {
                     RootBuilder root = configuration.getTemplate(typeInfo, format);
                     if (root != null) {
-                        GeoJSONGetFeatureResponse featureResponse =
-                                (GeoJSONGetFeatureResponse)
-                                        GeoServerExtensions.bean("geoJSONGetFeatureResponse");
-                        GeoJsonTemplateGetFeatureResponse templatingResp =
-                                new GeoJsonTemplateGetFeatureResponse(
-                                        gs, configuration, featureResponse) {
-                                    @Override
-                                    protected void write(
-                                            FeatureCollectionResponse featureCollection,
-                                            OutputStream output,
-                                            Operation getFeature)
-                                            throws ServiceException {
-                                        FeaturesResponse fr = (FeaturesResponse) result;
-                                        super.write(fr.getResponse(), output, operation);
-                                    }
-                                };
-
-                        response = templatingResp;
-                        request.getHttpResponse()
-                                .setContentType(TemplateIdentifier.GEOJSON.getOutputFormat());
+                        response = wrapResponse(operation, result);
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -156,5 +143,23 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
             }
         }
         return response;
+    }
+
+    private Response wrapResponse(Operation operation, Object result) {
+        GeoJSONGetFeatureResponse featureResponse =
+                (GeoJSONGetFeatureResponse) GeoServerExtensions.bean("geoJSONGetFeatureResponse");
+        GeoJsonTemplateGetFeatureResponse templatingResp =
+                new GeoJsonTemplateGetFeatureResponse(gs, configuration, featureResponse) {
+                    @Override
+                    protected void write(
+                            FeatureCollectionResponse featureCollection,
+                            OutputStream output,
+                            Operation getFeature)
+                            throws ServiceException {
+                        FeaturesResponse fr = (FeaturesResponse) result;
+                        super.write(fr.getResponse(), output, operation);
+                    }
+                };
+        return templatingResp;
     }
 }

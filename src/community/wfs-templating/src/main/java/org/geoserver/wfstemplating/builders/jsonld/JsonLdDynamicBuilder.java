@@ -1,6 +1,6 @@
-/**
- * The root of the builders' tree. It manages the writing of the starting, the ending and
- * the @context json object of json-ld output, and trigger the evaluation
+/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wfstemplating.builders.jsonld;
 

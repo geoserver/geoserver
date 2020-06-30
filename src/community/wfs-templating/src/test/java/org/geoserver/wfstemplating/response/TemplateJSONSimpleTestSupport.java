@@ -71,7 +71,10 @@ public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestS
 
     protected JSON getJson(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        assertEquals(response.getContentType(), "application/json");
+        String contentType = response.getContentType();
+        // in case of GEOSJSON response with ogcapi, the output format is not
+        // set to MockHttpServlet request, so skipping
+        if (contentType != null) assertEquals(contentType, "application/json");
         return json(response);
     }
 }

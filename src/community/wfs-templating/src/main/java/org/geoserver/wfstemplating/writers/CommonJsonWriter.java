@@ -26,10 +26,8 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
     private com.fasterxml.jackson.core.JsonGenerator delegate;
     private boolean flatOutput;
 
-    public CommonJsonWriter(
-            com.fasterxml.jackson.core.JsonGenerator generator, boolean flatOutput) {
+    public CommonJsonWriter(com.fasterxml.jackson.core.JsonGenerator generator) {
         this.delegate = generator;
-        this.flatOutput = flatOutput;
     }
 
     @Override
@@ -134,7 +132,6 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
             if (flatOutput) writeElementName(key);
             writeValue(result);
         } else if (result instanceof Date) {
-            if (flatOutput) writeElementName(key);
             Date timeStamp = (Date) result;
             DateFormat df = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
             writeElementNameAndValue(df.format(timeStamp), key);
@@ -147,7 +144,7 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
         } else if (result instanceof Attribute) {
             Attribute attr = (Attribute) result;
             writeElementNameAndValue(attr.getValue(), key);
-        } else if (result instanceof Collection) {
+        } else if (result instanceof List) {
             List list = (List) result;
             if (list.size() == 1) {
                 writeElementNameAndValue(list.get(0), key);
@@ -166,7 +163,8 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
         }
     }
 
-    public void startJson() throws IOException {
+    @Override
+    public void startTemplateOutput() throws IOException {
 
         writeStartObject();
         writeFieldName("type");
@@ -175,9 +173,14 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
         writeStartArray();
     }
 
-    public void endJson() throws IOException {
+    @Override
+    public void endTemplateOutput() throws IOException {
         writeEndArray();
         writeEndObject();
+    }
+
+    public void setFlatOutput(boolean flatOutput) {
+        this.flatOutput = flatOutput;
     }
 
     @Override

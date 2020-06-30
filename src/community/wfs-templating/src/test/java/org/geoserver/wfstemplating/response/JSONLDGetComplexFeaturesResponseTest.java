@@ -55,9 +55,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
 
     @Test
     public void testJsonLdResponseWithoutTemplate() throws Exception {
-        setUpMappedFeature();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
-        sb.append("&TYPENAME=ex:FirstParentFeature&outputFormat=");
+        sb.append("&TYPENAME=ex:SecondParentFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         assertTrue(response.getContentAsString().contains("No template found for feature type"));

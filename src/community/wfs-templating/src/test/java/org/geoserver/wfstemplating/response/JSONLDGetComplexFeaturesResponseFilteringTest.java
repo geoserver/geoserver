@@ -10,7 +10,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class JSONLDGetComplexFeaturesResponseFilteringTest extends TemplateJSONComplexTestSupport {
 
     @Test

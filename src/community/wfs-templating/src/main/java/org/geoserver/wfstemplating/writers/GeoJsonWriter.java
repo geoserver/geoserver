@@ -17,8 +17,8 @@ import org.locationtech.jts.geom.Geometry;
 /** Implements its superclass methods to write a valid GeoJSON output */
 public class GeoJsonWriter extends CommonJsonWriter {
 
-    public GeoJsonWriter(JsonGenerator generator, boolean flattenedList) {
-        super(generator, flattenedList);
+    public GeoJsonWriter(JsonGenerator generator) {
+        super(generator);
     }
 
     @Override
@@ -49,10 +49,5 @@ public class GeoJsonWriter extends CommonJsonWriter {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualObj = mapper.readTree(strGeom);
         writeObjectNode(null, actualObj);
-    }
-
-    @Override
-    public void startJson() throws IOException {
-        super.startJson();
     }
 }

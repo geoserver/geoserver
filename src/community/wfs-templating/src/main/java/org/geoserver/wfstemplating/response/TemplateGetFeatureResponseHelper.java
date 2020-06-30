@@ -38,21 +38,18 @@ class TemplateGetFeatureResponseHelper {
         this.format = format;
     }
 
-    TemplateOutputWriter getOutputWriter(OutputStream output, boolean flattenList)
-            throws IOException {
+    TemplateOutputWriter getOutputWriter(OutputStream output) throws IOException {
         TemplateOutputWriter outputWriter;
         switch (format) {
             case GEOJSON:
                 outputWriter =
                         new GeoJsonWriter(
-                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8),
-                                flattenList);
+                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
                 break;
             case JSONLD:
                 outputWriter =
                         new JsonLdWriter(
-                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8),
-                                flattenList);
+                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
                 break;
             default:
                 outputWriter = null;
@@ -60,7 +57,7 @@ class TemplateGetFeatureResponseHelper {
         return outputWriter;
     }
 
-    FeatureTypeInfo getFeatureTypeInfo(GetFeatureRequest request) {
+    FeatureTypeInfo getFirstFeatureTypeInfo(GetFeatureRequest request) {
         Query query = request.getQueries().get(0);
         QName typeName = query.getTypeNames().get(0);
         return getFeatureTypeInfo(

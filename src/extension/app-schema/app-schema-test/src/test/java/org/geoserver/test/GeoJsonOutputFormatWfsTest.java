@@ -7,9 +7,7 @@ package org.geoserver.test;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -111,6 +109,25 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         assertEquals("http://www.geoserver.org/featureB", featureLinkB.getString("@href"));
         JSONObject featureLinkC = station.getJSONObject("featureLinkC");
         assertEquals("http://www.geoserver.org/featureC", featureLinkC.getString("@href"));
+    }
+
+    @Test
+    public void testGetGeoJsonResponseWfs20WithNullGeometryAttribute() throws Exception {
+        // tests that with a null geometry value and minOccurs 0 in mappings
+        // conf, ComplexGeoJSONWriter doesn't throw npe but encode a geometry:null attribute
+        JSON response =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=2.0"
+                                + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
+        // validate the obtained response
+        checkStation1Exists(response);
+        // get station number 3 which should have null geometry value
+        JSONObject station3 = (JSONObject) ((JSONObject) response).getJSONArray("features").get(2);
+        JSONObject geometry = station3.getJSONObject("geometry");
+        // check we got the geometry key encoded
+        assertTrue(station3.containsKey("geometry"));
+        // check we got the null geometry value encoded
+        assertTrue(geometry.isNullObject());
     }
 
     /** Helper method that station 1 exists and was correctly encoded in the GeoJSON response. */

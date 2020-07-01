@@ -176,7 +176,7 @@ class ComplexGeoJsonWriter {
             }
             // store the attribute name and geometry value of the current feature
             geometryAttribute = feature.getProperty(geometryType.getName());
-            geometry = (Geometry) geometryAttribute.getValue();
+            geometry = geometryAttribute != null ? (Geometry) geometryAttribute.getValue() : null;
         } else {
             // this feature seems to not have a geometry, write the default axis order
             jsonWriter.setAxisOrder(CRS.AxisOrder.EAST_NORTH);

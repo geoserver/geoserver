@@ -16,7 +16,7 @@
                             </xs:simpleContent>
                         </xs:complexType>
                     </xs:element>
-                    <xs:element name="location" type="gml:GeometryPropertyType"/>
+                    <xs:element name="location" type="gml:GeometryPropertyType" minOccurs="0"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="measurements"
                                 type="st:MeasurementPropertyType"/>
                     <xs:element name="featureLinkA" type="gml:FeaturePropertyType" maxOccurs="unbounded" nillable="true"/>

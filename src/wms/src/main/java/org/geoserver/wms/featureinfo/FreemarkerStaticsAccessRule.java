@@ -1,6 +1,6 @@
-/* (c) 2020 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/*
+ * (c) 2020 Open Source Geospatial Foundation - all rights reserved This code is licensed under the
+ * GPL 2.0 license, available at the root application directory.
  */
 package org.geoserver.wms.featureinfo;
 
@@ -53,10 +53,11 @@ class FreemarkerStaticsAccessRule {
 
     /** Instance signals unrestricted access */
     private static final FreemarkerStaticsAccessRule UNRESTRICTED =
-            new FreemarkerStaticsAccessRule();
+            new FreemarkerStaticsAccessRule(true);
 
     /** Instance signals access is disabled */
-    private static final FreemarkerStaticsAccessRule DISABLED = new FreemarkerStaticsAccessRule();
+    private static final FreemarkerStaticsAccessRule DISABLED =
+            new FreemarkerStaticsAccessRule(false);
 
     public static FreemarkerStaticsAccessRule fromPattern(String aPattern) {
         if (aPattern == null || aPattern.trim().isEmpty()) {
@@ -67,23 +68,19 @@ class FreemarkerStaticsAccessRule {
 
         // check for validity
         List<Class<?>> tmpClasses = new ArrayList<>();
-        for (StringTokenizer tmpTokenizer = new StringTokenizer(aPattern, ",");
-                tmpTokenizer.hasMoreTokens(); ) {
+        for (StringTokenizer tmpTokenizer = new StringTokenizer(aPattern, ","); tmpTokenizer
+                .hasMoreTokens();) {
             String tmpCandidate = tmpTokenizer.nextToken().trim();
             if (SourceVersion.isName(tmpCandidate)) {
                 try {
                     tmpClasses.add(Class.forName(tmpCandidate));
                 } catch (ClassNotFoundException e) {
-                    logger.warn(
-                            "Denying access to static members of '"
-                                    + tmpCandidate
-                                    + "': Class not found.");
+                    logger.warn("Denying access to static members of '" + tmpCandidate
+                            + "': Class not found.");
                 }
             } else {
-                logger.warn(
-                        "Denying access to static members of '"
-                                + tmpCandidate
-                                + "': Not a valid class name.");
+                logger.warn("Denying access to static members of '" + tmpCandidate
+                        + "': Not a valid class name.");
             }
         }
         if (tmpClasses.isEmpty()) {
@@ -111,15 +108,20 @@ class FreemarkerStaticsAccessRule {
 
     private static Logger logger = Logger.getLogger(FreemarkerStaticsAccessRule.class);
 
+    /**
+     * "true" for rules representing unrestricted access
+     */
+    private boolean unrestricted;
+
     /** Classes allowed to be accessed */
     private List<RuleItem> rulesItems = Collections.emptyList();
 
-    public FreemarkerStaticsAccessRule() {
-        super();
+    public FreemarkerStaticsAccessRule(boolean anUnRestricted) {
+        unrestricted = anUnRestricted;
     }
 
     public FreemarkerStaticsAccessRule(List<RuleItem> someItems) {
-        super();
+        this(false);
         rulesItems = someItems;
     }
 
@@ -130,6 +132,12 @@ class FreemarkerStaticsAccessRule {
 
     /** @return true, if unrestricted access to static members is allowed. */
     public boolean isUnrestricted() {
-        return this == UNRESTRICTED;
+        return unrestricted;
+    }
+
+    @Override
+    public String toString() {
+        return "FreemarkerStaticsAccessRule [unrestricted=" + unrestricted + ", rulesItems="
+                + rulesItems + "]";
     }
 }

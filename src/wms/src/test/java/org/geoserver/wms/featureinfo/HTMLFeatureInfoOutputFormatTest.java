@@ -12,8 +12,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-
-import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +25,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
@@ -59,6 +55,9 @@ import org.junit.rules.ExpectedException;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import freemarker.template.TemplateException;
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 
 public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private HTMLFeatureInfoOutputFormat outputFormat;
@@ -355,7 +354,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     /** Verifies calls to static methods are possible in unrestricted case. */
     @Test
     public void testStaticMethodsUnrestrictedInTemplate() throws IOException {
-        System.setProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS, "*");
+        activateStaticsAccessRules("*");
         currentTemplate = "test_custom_static_content.ftl";
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
@@ -366,7 +365,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     /** Verifies calls to static methods are disabled by default. */
     @Test(expected = IOException.class)
     public void testStaticMethodsDisabledInTemplate() throws IOException {
-        System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
+        activateStaticsAccessRules(null);
         currentTemplate = "test_custom_static_content.ftl";
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
@@ -382,9 +381,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     /** Verifies calls to static methods for are enabled for specified classes. */
     @Test(expected = IOException.class)
     public void testSpecifiedStaticMethodsInTemplateAvailable() throws IOException {
-        System.setProperty(
-                FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS,
-                java.util.Locale.class.getName() + "," + Locale.class.getName());
+        activateStaticsAccessRules(java.util.Locale.class.getName() + "," + Locale.class.getName());
         currentTemplate = "test_custom_static_content_specified.ftl";
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
@@ -392,8 +389,25 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         assertEquals("Hello world from de", result);
     }
 
+    /** Restore FreeMarkerTemplateManager default state */
     @After
+    @Before
     public void tearDownStaticAccessKey() {
-        System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
+        activateStaticsAccessRules(null);
+    }
+
+    /**
+     * Activates the rule for the given pattern by re-initializing the
+     * {@link FreeMarkerTemplateManager}.
+     * 
+     * @param aPattern
+     */
+    private void activateStaticsAccessRules(String aPattern) {
+        if(aPattern == null) {
+            System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
+        }else {
+            System.setProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS, aPattern);
+        }
+        FreeMarkerTemplateManager.initStaticsAccessRule();
     }
 }

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.CachedGridReaderLayer;
 import org.geoserver.wms.GetMapCallback;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
@@ -73,8 +74,8 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
                 // wrap
                 CroppedGridCoverage2DReader croppedGridReader =
                         new CroppedGridCoverage2DReader(gr.getReader(), wktGeom);
-                GridReaderLayer croppedGridLayer =
-                        new GridReaderLayer(croppedGridReader, layer.getStyle());
+                CachedGridReaderLayer croppedGridLayer =
+                        new CachedGridReaderLayer(croppedGridReader, layer.getStyle());
                 BeanUtilsBean2.getInstance().copyProperties(croppedGridLayer, gr);
                 croppedGridLayer.getUserData().putAll(layer.getUserData());
                 return croppedGridLayer;

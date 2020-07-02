@@ -41,8 +41,7 @@ public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPan
             GeoServerTileLayerInfo info = ((GeoServerTileLayer) tileLayer).getInfo();
             tileLayerInfo = info.clone();
         }
-
-        tileLayerInfo.setEnabled(true);
+        if (isNew) tileLayerInfo.setEnabled(true);
         final boolean initWithTileLayer =
                 (isNew && defaultSettings.isCacheLayersByDefault()) || tileLayer != null;
 

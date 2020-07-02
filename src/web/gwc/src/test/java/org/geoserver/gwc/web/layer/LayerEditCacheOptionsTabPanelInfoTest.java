@@ -96,4 +96,27 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         ownModel = panelInfo.createOwnModel(layerModel, isNew);
         assertEquals(expected, ownModel.getObject());
     }
+
+    @Test
+    public void testCreateOwnModelExistingWithEnabledFalse() {
+
+        // test that if a layer is existing and has enable caching set to false
+        // enable value is not replaced with true
+        final boolean isNew = false;
+
+        IModel<GeoServerTileLayerInfo> ownModel;
+        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        assertNotNull(ownModel);
+        GeoServerTileLayerInfo expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
+        assertEquals(expected, ownModel.getObject());
+
+        GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
+        expected = new GeoServerTileLayerInfoImpl();
+        expected.setEnabled(false);
+        when(tileLayer.getInfo()).thenReturn(expected);
+        when(gwc.getTileLayer(same(layer))).thenReturn(tileLayer);
+
+        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        assertEquals(expected, ownModel.getObject());
+    }
 }

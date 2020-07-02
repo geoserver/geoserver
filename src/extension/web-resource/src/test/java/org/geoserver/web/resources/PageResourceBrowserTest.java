@@ -19,14 +19,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.treeview.TreeNode;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -37,6 +40,8 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
     protected final String PATH_DIR = "temp/dir";
     protected final String PATH_RES = "temp/dir/something";
     protected final String PATH_RES2 = "temp/dir/somethingelse";
+    protected final String DIR_FORBIDDEN_CHARS = "the:~dir";
+    protected final String FILE_FORBIDDEN_CHARS = "the:~file.txt";
     protected final String DATA = "foobar";
     protected final String DATA2 = "barfoo";
 
@@ -50,12 +55,20 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         resourceBrowser = new PageResourceBrowser();
 
-        try (OutputStream os = resourceBrowser.store().get(PATH_RES).out()) {
+        ResourceStore store = resourceBrowser.store();
+        try (OutputStream os = store.get(PATH_RES).out()) {
             os.write(DATA.getBytes());
         }
 
-        try (OutputStream os = resourceBrowser.store().get(PATH_RES2).out()) {
+        try (OutputStream os = store.get(PATH_RES2).out()) {
             os.write(DATA.getBytes());
+        }
+
+        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+            store.get(DIR_FORBIDDEN_CHARS).dir();
+            try (OutputStream os = store.get(FILE_FORBIDDEN_CHARS).out()) {
+                os.write(DATA.getBytes());
+            }
         }
 
         tester.startPage(resourceBrowser);
@@ -386,5 +399,32 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
             assertEquals(
                     DATA2 + System.lineSeparator(), IOUtils.toString(is, StandardCharsets.UTF_8));
         }
+    }
+
+    @Test
+    public void testForbiddenChars() throws Exception {
+        // the resources with invalid chars are created only on linux and OSX
+        Assume.assumeTrue(SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX);
+
+        // getting here is already a win, means it did not blow up unlike reported on
+        // https://osgeo-org.atlassian.net/browse/GEOS-9545
+
+        // go check the resources are there, the file
+        Component file =
+                tester.getComponentFromLastRenderedPage(
+                        "treeview:rootView:/:children"
+                                + ":ce63ebeba3a21aa680fa4ed3b9de6f486a5deecbdc97b75e2dcd0c001960c766");
+        Resource fileResouce = ((ResourceNode) file.getDefaultModelObject()).getObject();
+        assertEquals(FILE_FORBIDDEN_CHARS, fileResouce.path());
+        assertEquals(Resource.Type.RESOURCE, fileResouce.getType());
+
+        // and the directory
+        Component dir =
+                tester.getComponentFromLastRenderedPage(
+                        "treeview:rootView:/:children"
+                                + ":540096237c0dc5840ce6cebb9dcecc26c8a772d534b1a6cc503b304f4d8a63d6");
+        Resource dirResouce = ((ResourceNode) dir.getDefaultModelObject()).getObject();
+        assertEquals(DIR_FORBIDDEN_CHARS, dirResouce.path());
+        assertEquals(Resource.Type.DIRECTORY, dirResouce.getType());
     }
 }

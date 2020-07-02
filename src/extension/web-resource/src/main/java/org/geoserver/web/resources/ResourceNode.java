@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.resources;
 
+import com.google.common.hash.Hashing;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.wicket.model.IModel;
@@ -24,9 +26,29 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     private ResourceExpandedStates expandedStates;
 
+    private String uniqueId;
+
     public ResourceNode(Resource resource, ResourceExpandedStates expandedStates) {
         this.resource = Resources.serializable(resource);
         this.expandedStates = expandedStates;
+        this.uniqueId = getNodeId(resource);
+    }
+
+    /**
+     * It's handy to use the path as the id, however two characters are forbidden in Wicket ids,
+     * <code>:</code> and <code>~</code>. If those are present, switch to a SHA-256 instead
+     * (likelyness of conflict is astronomically low, provides better chances thatn just replacing
+     * the forbidden chars with a fixed sane replacement).
+     */
+    private String getNodeId(Resource resource) {
+        String path = resource.path();
+        if (path.isEmpty()) {
+            return "/";
+        } else if (path.contains(":") || path.contains("~")) {
+            return Hashing.sha256().hashString(path, StandardCharsets.UTF_8).toString();
+        } else {
+            return path;
+        }
     }
 
     @Override
@@ -78,12 +100,7 @@ public class ResourceNode implements TreeNode<Resource>, Comparable<ResourceNode
 
     @Override
     public String getUniqueId() {
-        String path = resource.path();
-        if (path.isEmpty()) {
-            return "/";
-        } else {
-            return path;
-        }
+        return uniqueId;
     }
 
     @Override

@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.kvp;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import org.geoserver.ows.KvpParser;
 
@@ -14,6 +15,8 @@ import org.geoserver.ows.KvpParser;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class URLKvpParser extends KvpParser {
+
+    private final Boolean FIX_URL_FIRST = Boolean.getBoolean("org.geoserver.kvp.urlfix");
     /**
      * Creates the parser specifying the name of the key to latch to.
      *
@@ -24,7 +27,14 @@ public class URLKvpParser extends KvpParser {
     }
 
     public Object parse(String value) throws Exception {
-        return new URL(fixURL(value));
+        if (FIX_URL_FIRST) return new URL(fixURL(value));
+        else {
+            try {
+                return new URL(value);
+            } catch (MalformedURLException e) {
+                return new URL(fixURL(value));
+            }
+        }
     }
 
     /**

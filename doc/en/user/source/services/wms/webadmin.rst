@@ -157,3 +157,14 @@ By default GetFeatureInfo results are reproject to the map coordinate reference 
 .. figure:: img/service_WMS_disableFeaturesReprojection.png
 
 When the flag is checked, GetFeatureInfo requests results will not be reprojected and will instead used the layer coordinate reference system.
+
+Setting Remote Style max connection and request time
+----------------------------------------------------
+
+Remote styles max request time and connection timeout can be configured in milliseconds.
+
+.. figure:: img/service_WMS_remoteStyleTime.png
+
+**Timeout in milliseconds**—The max connection timeout in milliseconds for remote style requests.
+
+**Max request time in milliseconds**—The max request time limit in milliseconds for remote style requests.

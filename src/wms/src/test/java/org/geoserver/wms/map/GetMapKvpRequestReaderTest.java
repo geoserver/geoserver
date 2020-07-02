@@ -9,13 +9,19 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -23,6 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic;
 import javax.media.jai.InterpolationBilinear;
 import javax.media.jai.InterpolationNearest;
@@ -51,6 +62,7 @@ import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -59,6 +71,9 @@ import org.opengis.filter.sort.SortOrder;
 
 @SuppressWarnings("unchecked")
 public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
+
+    private static final Logger LOG = Logging.getLogger(GetMapKvpRequestReaderTest.class);
+
     GetMapKvpRequestReader reader;
 
     Dispatcher dispatcher;
@@ -1110,5 +1125,131 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         }
         service.setCiteCompliant(false);
         geoServer.save(service);
+    }
+
+    /** Tests the timeout parameter and the max execution time. */
+    public void testSldTooLongLookup() throws Exception {
+        HttpServer server = createServer();
+        GeoServer geoServer = this.getGeoServer();
+        WMSInfo wmsInfo = geoServer.getService(WMSInfo.class);
+        wmsInfo.setRemoteStyleMaxRequestTime(1000);
+        geoServer.save(wmsInfo);
+        try {
+            WMS wms = new WMS(getGeoServer());
+            reader = new GetMapKvpRequestReader(wms);
+            server.start();
+            int port = server.getAddress().getPort();
+
+            // nothing matches the required style name
+            HashMap kvp = new HashMap();
+            URL url = new URL("http://localhost:" + port + "/sld/style.sld");
+            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+            kvp.put(
+                    "layers",
+                    MockData.BASIC_POLYGONS.getPrefix()
+                            + ":"
+                            + MockData.BASIC_POLYGONS.getLocalPart());
+            kvp.put("styles", "ThisStyleDoesNotExists");
+
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            Instant startInstant = Instant.now();
+            try {
+                reader.setLaxStyleMatchAllowed(false);
+                request =
+                        (GetMapRequest)
+                                reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+            } catch (ServiceException e) {
+                LOG.log(Level.INFO, e.getMessage(), e);
+            }
+            long millis = Instant.now().toEpochMilli() - startInstant.toEpochMilli();
+            assertTrue("Max timeout should be 2 seconds", millis < 2000);
+        } finally {
+            server.stop(0);
+            wmsInfo = geoServer.getService(WMSInfo.class);
+            wmsInfo.setRemoteStyleMaxRequestTime(60000);
+            geoServer.save(wmsInfo);
+        }
+    }
+
+    /** Tests the timeout parameter. */
+    public void testSldTimeoutLookup() throws Exception {
+        HttpServer server = createServer();
+        GeoServer geoServer = this.getGeoServer();
+        WMSInfo wmsInfo = geoServer.getService(WMSInfo.class);
+        wmsInfo.setRemoteStyleTimeout(1000);
+        geoServer.save(wmsInfo);
+        try {
+            WMS wms = new WMS(getGeoServer());
+            reader = new GetMapKvpRequestReader(wms);
+            server.start();
+            int port = server.getAddress().getPort();
+
+            // nothing matches the required style name
+            HashMap kvp = new HashMap();
+            URL url = new URL("http://localhost:" + port + "/sld/style.sld");
+            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+            kvp.put(
+                    "layers",
+                    MockData.BASIC_POLYGONS.getPrefix()
+                            + ":"
+                            + MockData.BASIC_POLYGONS.getLocalPart());
+            kvp.put("styles", "ThisStyleDoesNotExists");
+
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            Instant startInstant = Instant.now();
+            try {
+                reader.setLaxStyleMatchAllowed(false);
+                request =
+                        (GetMapRequest)
+                                reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+            } catch (ServiceException e) {
+                LOG.log(Level.INFO, e.getMessage(), e);
+            }
+            long millis = Instant.now().toEpochMilli() - startInstant.toEpochMilli();
+            assertTrue("Max timeout should be 2 seconds", millis < 2000);
+        } finally {
+            server.stop(0);
+            wmsInfo = geoServer.getService(WMSInfo.class);
+            wmsInfo.setRemoteStyleTimeout(30000);
+            geoServer.save(wmsInfo);
+        }
+    }
+
+    /** Creates a HTTP embedded server with a dynamic port for testing the configures timeout. */
+    private HttpServer createServer() throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        LOG.log(
+                Level.INFO,
+                "Creating a mock http server at port: {0}",
+                server.getAddress().getPort());
+        server.createContext("/sld", createLongResponseHandler());
+        ThreadPoolExecutor threadPoolExecutor =
+                (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+        server.setExecutor(threadPoolExecutor);
+
+        return server;
+    }
+
+    private HttpHandler createLongResponseHandler() {
+        HttpHandler handler =
+                new HttpHandler() {
+
+                    @Override
+                    public void handle(com.sun.net.httpserver.HttpExchange t) throws IOException {
+                        try {
+                            t.sendResponseHeaders(200, 5000000000l);
+                            TimeUnit.SECONDS.sleep(4);
+                            OutputStream outputStream = t.getResponseBody();
+                            outputStream.write("This is a bad style".getBytes());
+                            outputStream.flush();
+                            outputStream.close();
+                        } catch (InterruptedException e) {
+                            LOG.log(Level.INFO, e.getMessage(), e);
+                        }
+                    }
+                };
+        return handler;
     }
 }

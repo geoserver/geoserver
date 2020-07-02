@@ -376,6 +376,15 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(cacheEntrySize);
 
         form.add(new CheckBox("cacheConfiguration.enabled"));
+
+        // Remote style time settings
+        TextField<Integer> remoteStylesTimeout = new TextField<Integer>("remoteStyleTimeout");
+        remoteStylesTimeout.add(RangeValidator.minimum(1));
+        form.add(remoteStylesTimeout);
+        TextField<Integer> remoteStylesMaxRequestTime =
+                new TextField<Integer>("remoteStyleMaxRequestTime");
+        remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
+        form.add(remoteStylesMaxRequestTime);
     }
 
     @Override

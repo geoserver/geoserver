@@ -188,4 +188,16 @@ public interface WMSInfo extends ServiceInfo {
 
     /** Set current WMS cache configuration for remote resources. */
     void setCacheConfiguration(CacheConfiguration cacheCfg);
+
+    /** Returns the remote style max request time in milliseconds */
+    int getRemoteStyleMaxRequestTime();
+
+    /** Sets the remote style max request time in milliseconds */
+    void setRemoteStyleMaxRequestTime(int time);
+
+    /** Returns the remote style timeout in milliseconds * */
+    int getRemoteStyleTimeout();
+
+    /** Sets the remote style timeout in milliseconds * */
+    void setRemoteStyleTimeout(int time);
 }

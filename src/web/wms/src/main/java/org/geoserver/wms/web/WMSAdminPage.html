@@ -301,6 +301,21 @@
         </ul>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="remoteStyleTime">Remote Styles Time Settings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="remoteStyleTimeout">Timeout in milliseconds</wicket:message></label>
+            <input class="text" type="text" wicket:id="remoteStyleTimeout"></input>
+          </li>
+          <li>
+            <label><wicket:message key="remoteStyleMaxRequestTime">Max request time in milliseconds</wicket:message></label>
+            <input class="text" type="text" wicket:id="remoteStyleMaxRequestTime"></input>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
     <div wicket:id="modal"></div>
   </wicket:extend>
 </body>

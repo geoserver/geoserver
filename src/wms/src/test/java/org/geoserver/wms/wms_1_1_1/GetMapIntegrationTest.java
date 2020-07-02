@@ -37,10 +37,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
@@ -1938,6 +1950,22 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         "image/png");
 
         ImageAssert.assertEquals(expectedImage, response, 100);
+    }
+
+    @Test
+    public void testVendorOptionClipMosaic() throws Exception {
+        String clipPolygon = "POLYGON ((8 38, 10 38, 10 40, 8 40, 8 38))";
+        String url =
+                "wms?LAYERS=mosaic&"
+                        + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                        + "&BBOX=7,37,11,41&WIDTH=200&HEIGHT=200&bgcolor=0xFF0000"
+                        + "&CLIP="
+                        + clipPolygon;
+        BufferedImage response = getAsImage(url, "image/png");
+
+        File expected = new File("./src/test/resources/org/geoserver/wms/wms_clip_mosaic.png");
+        ImageAssert.assertEquals(expected, response, 100);
     }
 
     @Test

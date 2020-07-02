@@ -1924,6 +1924,22 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testVendorOptionClipMosaic() throws Exception {
+        String clipPolygon = "POLYGON ((8 38, 10 38, 10 40, 8 40, 8 38))";
+        String url =
+                "wms?LAYERS=mosaic&"
+                        + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                        + "&BBOX=7,37,11,41&WIDTH=200&HEIGHT=200&bgcolor=0xFF0000"
+                        + "&CLIP="
+                        + clipPolygon;
+        BufferedImage response = getAsImage(url, "image/png");
+
+        File expected = new File("./src/test/resources/org/geoserver/wms/wms_clip_mosaic.png");
+        ImageAssert.assertEquals(expected, response, 100);
+    }
+
+    @Test
     public void testLayoutLegendStyleOnlineResource() throws Exception {
         Catalog catalog = getCatalog();
         File layouts = getDataDirectory().findOrCreateDir("layouts");

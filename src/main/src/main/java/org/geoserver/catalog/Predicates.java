@@ -15,6 +15,7 @@ import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.opengis.filter.Not;
 import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.PropertyName;
@@ -216,6 +217,17 @@ public class Predicates {
         }
 
         return factory.and(children);
+    }
+
+    /**
+     * Returns a negated filter. If the filter was already a negation, its child fiter will be
+     * returned instead (simplifying out the double negation)
+     */
+    public static Filter not(Filter filter) {
+        if (filter instanceof Not) {
+            return ((Not) filter).getFilter();
+        }
+        return factory.not(filter);
     }
 
     /**

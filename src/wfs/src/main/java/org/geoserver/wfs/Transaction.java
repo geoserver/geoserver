@@ -21,6 +21,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.TransactionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.SecurityUtils;
@@ -297,6 +298,11 @@ public class Transaction {
             }
         } catch (WFSTransactionException e) {
             LOGGER.log(Level.SEVERE, "Transaction failed", e);
+
+            // don't process security exceptions, we want them to go up and change the way the
+            // response is presented to the user, e.g., challenge authentication or describe access
+            // was denied
+            if (Dispatcher.isSecurityException(e.getCause())) throw e;
 
             exception = e;
 

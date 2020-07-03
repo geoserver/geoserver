@@ -1804,7 +1804,7 @@ public class Dispatcher extends AbstractController {
      * @param t Throwable
      * @return true if t is a security exception
      */
-    protected static boolean isSecurityException(Throwable t) {
+    public static boolean isSecurityException(Throwable t) {
         return t != null
                 && t.getClass().getPackage().getName().startsWith("org.springframework.security");
     }

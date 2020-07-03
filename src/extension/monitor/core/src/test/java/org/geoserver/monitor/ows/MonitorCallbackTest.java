@@ -9,12 +9,12 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
@@ -606,6 +606,18 @@ public class MonitorCallbackTest {
         PropertyFileWatcher savedProps = new PropertyFileWatcher(controlFlowProps);
 
         assertEquals(savedProps.getProperties(), monitor.getConfig().getProperties());
+    }
+
+    @Test
+    public void testWMSGetLegendGraphicMissingFeatureType() {
+        // test that the logging of a GetLegendGraphicRequest doesn't throw
+        // npe for missing featureType
+        GetLegendGraphicRequest glg = new GetLegendGraphicRequest();
+        glg.setLayer(null);
+        callback.operationDispatched(new Request(), op("GetLegendGraphic", "WMS", "1.1.1", glg));
+        List<String> resources = data.getResources();
+        assertEquals(data.getOperation(), "GetLegendGraphic");
+        assertEquals(resources, null);
     }
 
     static File createTempDir() throws IOException {

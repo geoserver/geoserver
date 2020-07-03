@@ -496,7 +496,9 @@ public class RasterSymbolizerBuilder {
         double total = DoubleStream.of(classMembers).sum();
         double[] percentages = new double[classNum];
         for (int i = 0; i < classNum; i++) {
-            percentages[i] = (classMembers[i] / total) * 100;
+            double cm = classMembers[i];
+            if (cm != 0d && total != 0d) percentages[i] = (classMembers[i] / total) * 100;
+            else percentages[i] = 0d;
         }
         return percentages;
     }
@@ -509,7 +511,9 @@ public class RasterSymbolizerBuilder {
         double[] percentages = new double[intervals];
         int total = IntStream.of(bins).sum();
         for (int i = 0; i < intervals; i++) {
-            percentages[i] = ((double) bins[i] / total) * 100;
+            double classMembers = bins[i];
+            if (classMembers != 0d && total != 0d) percentages[i] = (classMembers / total) * 100;
+            else percentages[i] = 0d;
         }
         return percentages;
     }

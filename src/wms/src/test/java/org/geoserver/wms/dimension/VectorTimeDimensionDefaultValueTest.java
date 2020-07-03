@@ -5,8 +5,10 @@
  */
 package org.geoserver.wms.dimension;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.Calendar;
@@ -44,6 +46,9 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     static final QName TIME_WITH_START_END =
             new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
 
+    static final QName TIME_ELEVATION_TRUNCATED =
+            new QName(MockData.SF_URI, "TimeElevationTruncated", MockData.SF_PREFIX);
+
     WMS wms;
 
     @Override
@@ -58,8 +63,15 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         ((SystemTestData) testData)
                 .addVectorLayer(
                         TIME_WITH_START_END,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         "TimeElevationWithStartEnd.properties",
+                        getClass(),
+                        getCatalog());
+        ((SystemTestData) testData)
+                .addVectorLayer(
+                        TIME_ELEVATION_TRUNCATED,
+                        Collections.emptyMap(),
+                        "TimeElevationTruncated.properties",
                         getClass(),
                         getCatalog());
     }
@@ -313,6 +325,27 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         assertTrue("Default time should be the closest one", d.getTime() == expected.getTime());
     }
 
+    /** [GEOS-9482] Test the NPE issue on a truncated dataset and NearestMatch enabled. */
+    @Test
+    public void testNearestOnTruncatedDataset() throws Exception {
+        String preferredTimeStr = "2020-06-01T03:00:00.000Z";
+
+        // Use explicit default value DimensionInfo setup:
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.NEAREST);
+        defaultValueSetting.setReferenceValue(preferredTimeStr);
+
+        setupFeatureTimeDimensionOnTruncated(defaultValueSetting);
+
+        BufferedImage image =
+                getAsImage(
+                        MockData.SF_PREFIX
+                                + "/wms??service=WMS&version=1.1.0&request=GetMap&layers=sf:TimeElevationTruncated"
+                                + "&bbox=-180,-90,180,90&width=768&height=330&srs=EPSG:4326&format=image/png",
+                        "image/png");
+        assertNotNull(image);
+    }
+
     protected void setupFeatureTimeDimension(DimensionDefaultValueSetting defaultValue) {
         FeatureTypeInfo info =
                 getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
@@ -321,6 +354,20 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         di.setAttribute("startTime");
         di.setDefaultValue(defaultValue);
         di.setPresentation(DimensionPresentation.LIST);
+        info.getMetadata().put(ResourceInfo.TIME, di);
+        getCatalog().save(info);
+    }
+
+    protected void setupFeatureTimeDimensionOnTruncated(DimensionDefaultValueSetting defaultValue) {
+        FeatureTypeInfo info =
+                getCatalog().getFeatureTypeByName(TIME_ELEVATION_TRUNCATED.getLocalPart());
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setAttribute("time");
+        di.setDefaultValue(defaultValue);
+        di.setNearestMatchEnabled(true);
+        di.setAcceptableInterval("PT98M/PT0H");
+        di.setPresentation(DimensionPresentation.DISCRETE_INTERVAL);
         info.getMetadata().put(ResourceInfo.TIME, di);
         getCatalog().save(info);
     }

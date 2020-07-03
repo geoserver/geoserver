@@ -166,6 +166,7 @@ public abstract class NearestMatchFinder {
      *     HTTP warning head)
      */
     public Object getNearest(Object value) throws IOException {
+        if (value == null) return null;
         // simple point vs point comparison?
         if (endAttribute == null
                 && (!(value instanceof Range)

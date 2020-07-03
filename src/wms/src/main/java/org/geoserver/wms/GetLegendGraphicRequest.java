@@ -405,7 +405,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
     public List<FeatureType> getLayers() {
         List<FeatureType> types = new ArrayList<>(legends.size());
         for (LegendRequest layer : legends) {
-            types.add(layer.getFeatureType());
+            FeatureType ft = layer.getFeatureType();
+            if (ft != null) types.add(ft);
         }
         return types;
     }

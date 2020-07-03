@@ -926,6 +926,30 @@ padding-top: 18px;
 padding-top: 1em;
 }
 
+/* button bar in forms */
+.toolbar-sticky {
+  position: sticky;
+  bottom: 0px;
+  padding: 10px 0px;
+  background-color: #fff;
+}
+.toolbar-sticky .form-button-save, .toolbar-sticky .form-button-apply, .toolbar-sticky .form-button-validate, .toolbar-sticky .form-button-ok,
+.toolbar-sticky .form-button-import, .toolbar-sticky .form-button-close, .toolbar-sticky .form-button-start, .toolbar-sticky .form-button-back {
+  padding: 6px 12px;
+}
+.toolbar-sticky .form-button-cancel {
+  background: none;
+  border-color: transparent;
+  padding: 6px 12px;
+}
+.toolbar-sticky .form-button-cancel:hover {
+  background-color: #f7f7f7;
+  border-color: #f7f7f7;
+}
+.toolbar-sticky .form-progress {
+  display: block;
+  margin-top: 5px;
+}
 
 * html .page-header { /* IE6 */
 background-position: 0 -2px;

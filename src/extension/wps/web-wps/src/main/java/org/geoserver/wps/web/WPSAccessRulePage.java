@@ -189,21 +189,17 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                 new SubmitLink("submit", new StringResourceModel("save", (Component) null, null)) {
                     @Override
                     public void onSubmit() {
-                        try {
-                            // overwrite the process factories that we did clone to achieve
-                            // isolation
-                            List<ProcessGroupInfo> factories = wpsInfo.getProcessGroups();
-                            factories.clear();
-                            factories.addAll(processFactories);
-                            getGeoServer().save(wpsInfo);
-                            doReturn();
-                        } catch (Exception e) {
-                            error(e);
-                        }
+                        saveProcessFactories(true);
                     }
                 };
         form.add(submit);
-
+        Button apply =
+                new Button("apply") {
+                    public void onSubmit() {
+                        saveProcessFactories(false);
+                    }
+                };
+        form.add(apply);
         Button cancel =
                 new Button("cancel") {
                     public void onSubmit() {
@@ -213,6 +209,21 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         form.add(cancel);
 
         add(form);
+    }
+
+    private void saveProcessFactories(boolean doReturn) {
+        try {
+            // overwrite the process factories that we did clone to achieve isolation
+            List<ProcessGroupInfo> factories = wpsInfo.getProcessGroups();
+            factories.clear();
+            factories.addAll(processFactories);
+            getGeoServer().save(wpsInfo);
+            if (doReturn) {
+                doReturn();
+            }
+        } catch (Exception e) {
+            error(e);
+        }
     }
 
     private List<ProcessGroupInfo> cloneFactoryInfos(List<ProcessGroupInfo> processFactories) {

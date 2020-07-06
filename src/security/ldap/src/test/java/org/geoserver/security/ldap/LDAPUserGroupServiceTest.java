@@ -99,7 +99,7 @@ public class LDAPUserGroupServiceTest extends LDAPBaseTest {
 
     @Test
     public void testGroupCount() throws Exception {
-        assertEquals(4, service.getGroupCount());
+        assertEquals(8, service.getGroupCount());
     }
 
     @Test
@@ -165,7 +165,7 @@ public class LDAPUserGroupServiceTest extends LDAPBaseTest {
         SortedSet<GeoServerUserGroup> groups =
                 service.getGroupsForUser(service.getUserByUsername("nestedUser"));
         assertNotNull(groups);
-        assertEquals(2, groups.size());
+        assertEquals(6, groups.size());
         assertTrue(groups.stream().anyMatch(x -> "extra".equals(x.getGroupname())));
     }
 }

@@ -1,0 +1,47 @@
+version: '3.0'
+
+services:
+  geoserver:
+    image: ogccite/geoserver:${GEOSERVER_TAG:-latest}
+    build:
+      context: .
+      #context: ../../
+      dockerfile: ./geoserver/Dockerfile
+      args:
+        GEOSERVER_WEBAPP_SRC: "https://build.geoserver.org/geoserver/master/geoserver-master-latest-war.zip"
+        # GEOSERVER_DATA_DIR_SRC: "./datadir.tar.gz"
+        # TOMCAT_EXTRAS: "false"
+    ports:
+      - 8080
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "-s", "http://localhost:8080/geoserver/wms?request=GetCapabilities&version=1.3.0", "||", "exit", "1" ]
+      interval: 10s
+      #start_period: 90s
+      timeout: 5s
+      retries: 3
+    env_file:
+      - ./.env
+      - ./geoserver/geoserver.env
+    environment:
+      JAVA_OPTS: >-
+        -Xms${HEAP_SIZE_MIN:-1024m}
+        -Xmx${HEAP_SIZE_MAX:-1024m}
+    volumes:
+    #- gs_datadir:/var/geoserver/datadir:rw
+    - gs_logs:/var/geoserver/logs:rw
+    - gs_gwc_cache_dir:/var/geoserver/gwc_cache_dir:rw
+
+  teamengine:
+    image: geosolutionsit/teamengine:${TEAMENGINE_TAG:-latest}
+    ports:
+      - 8080
+    depends_on:
+      - geoserver
+    volumes:
+      - ./logs:/root/te_base/users/root
+      - ./run-test.sh:/run-test.sh
+
+volumes:
+  gs_datadir:
+  gs_logs:
+  gs_gwc_cache_dir:

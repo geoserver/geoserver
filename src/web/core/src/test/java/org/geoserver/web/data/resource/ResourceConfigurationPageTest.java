@@ -592,7 +592,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items");
 
         // we got two epsg in the otherSrs container
-        assertEquals(2, epsgContainer.size());
+        assertEquals(3, epsgContainer.size());
 
         Component epsgComponent1 =
                 tester.getComponentFromLastRenderedPage(
@@ -601,9 +601,14 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 tester.getComponentFromLastRenderedPage(
                         "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:2:itemProperties:0:component:link:label");
 
+        Component epsgComponent3 =
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:3:itemProperties:0:component:link:label");
+
         // checks that they have been properly displayed with not urn format being cut
 
         assertEquals("3857", epsgComponent1.getDefaultModel().getObject());
-        assertEquals("900913", epsgComponent2.getDefaultModel().getObject());
+        assertEquals("urn:ogc:def:crs:EPSG::900913", epsgComponent2.getDefaultModel().getObject());
+        assertEquals("urn:ogc:def:crs:EPSG::3857", epsgComponent3.getDefaultModel().getObject());
     }
 }

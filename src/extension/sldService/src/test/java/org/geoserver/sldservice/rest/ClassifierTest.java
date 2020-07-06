@@ -2537,4 +2537,55 @@ public class ClassifierTest extends SLDServiceBaseTest {
         }
         assertTrue(percentagesSum == 100.0);
     }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterCustomZeroValues() throws Exception {
+        // test custom classes with intervals outside data values
+        // to test 0.0% value is put inside labels
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "customClasses=100000,800000,#FF0000;800000,1600000,#00FF00&fullSLD=true"
+                        + "&percentages=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(3, entries.length);
+        for (ColorMapEntry e : entries) {
+            if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                assertEquals(0d, Double.valueOf(label.substring(i + 1, i2)), 0d);
+            }
+        }
+    }
+
+    @Test
+    public void testPercentagesInRuleLabelsVectorCustomZeroValues() throws Exception {
+        // test custom classes with intervals outside data values
+        // to test 0.0% value is put inside labels
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&customClasses=10000,30000,#FF0000;30000,50000,#00FF00"
+                        + "&percentages=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 2);
+        for (Rule r : rules) {
+            r.getDescription().getTitle().toString().contains("(0.0%)");
+        }
+    }
 }

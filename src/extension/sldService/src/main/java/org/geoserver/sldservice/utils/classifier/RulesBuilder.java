@@ -559,7 +559,10 @@ public class RulesBuilder {
     private double[] computeCustomPercentages(int[][] bins, double totalSize) {
         double[] percentages = new double[bins.length];
         for (int i = 0; i < bins.length; i++) {
-            percentages[i] = ((double) bins[i][0] / totalSize) * 100;
+            double classMembers = bins[i][0];
+            if (classMembers != 0d && totalSize != 0d)
+                percentages[i] = (classMembers / totalSize) * 100;
+            else percentages[i] = 0d;
         }
         return percentages;
     }

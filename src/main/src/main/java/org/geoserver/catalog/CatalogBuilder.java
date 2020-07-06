@@ -44,6 +44,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.ows.wms.CRSEnvelope;
 import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.GeoToolsUnitFormat;
@@ -1438,22 +1439,29 @@ public class CatalogBuilder {
         }
         wli.setNamespace(namespace);
 
-        Layer layer = wli.getWMTSLayer(null);
+        WMTSLayer layer = wli.getWMTSLayer(null);
         // TODO: handle axis order here ?
         // try to get the native SRS -> we use the bounding boxes, GeoServer will publish all of the
         // supported SRS in the root, if we use getSRS() we'll get them all
-        for (String srs : layer.getBoundingBoxes().keySet()) {
-            try {
-                CoordinateReferenceSystem crs = CRS.decode(srs);
-                wli.setSRS(srs);
-                wli.setNativeCRS(crs);
-                break;
-            } catch (Exception e) {
-                LOGGER.log(
-                        Level.INFO,
-                        "Skipping "
-                                + srs
-                                + " definition, it was not recognized by the referencing subsystem");
+        CoordinateReferenceSystem preferred = layer.getPreferredCRS();
+        if (preferred != null) {
+            wli.setSRS(CRS.toSRS(preferred));
+            wli.setNativeCRS(preferred);
+        } else {
+
+            for (String srs : layer.getSrs()) {
+                try {
+                    CoordinateReferenceSystem crs = CRS.decode(srs);
+                    wli.setSRS(srs);
+                    wli.setNativeCRS(crs);
+                    break;
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.INFO,
+                            "Skipping "
+                                    + srs
+                                    + " definition, it was not recognized by the referencing subsystem");
+                }
             }
         }
 

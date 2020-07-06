@@ -320,16 +320,17 @@ public abstract class DataStoreUtils {
 
     // A utility method for retreiving supported SRS on WMTSLayerInfo resource
     public static List<String> getOtherSRSFromWMTSStore(WMTSLayerInfo wmtsLayerInfo) {
+        List<String> otherSRS = new ArrayList<>();
         try {
-
             Layer wmtsLayer = wmtsLayerInfo.getWMTSLayer(new NullProgressListener());
-
             Set<String> supportedSRS = wmtsLayer.getSrs();
-            // check if there are additional srs available
-            // if not return an empty list for legacy behavior
-            if (supportedSRS.size() == 1) return Collections.EMPTY_LIST;
-            List<String> otherSRS = supportedSRS.stream().collect(Collectors.toList());
-            return otherSRS;
+            String urnFormat = "urn:ogc:def:crs:EPSG::";
+            // when parsing getCapabilities geotools add the urn format
+            // checking and replacing it with epsg, avoiding to add duplicates
+            for (String srs : supportedSRS) {
+                if (srs.indexOf(urnFormat) != -1) srs = srs.replaceAll(urnFormat, "EPSG:");
+                if (!otherSRS.contains(srs)) otherSRS.add(srs);
+            }
         } catch (IOException e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -337,6 +338,9 @@ public abstract class DataStoreUtils {
                             + wmtsLayerInfo.getNativeName(),
                     e);
         }
-        return Collections.EMPTY_LIST;
+        // no additional srs, return an empty list for legacy behavior
+        if (otherSRS.size() == 1) return Collections.EMPTY_LIST;
+
+        return otherSRS;
     }
 }

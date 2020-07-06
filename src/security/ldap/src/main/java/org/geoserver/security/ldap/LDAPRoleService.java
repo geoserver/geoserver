@@ -178,7 +178,8 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                 });
 
         if (useNestedGroups) {
-            for (GeoServerRole erole : roles) {
+            final SortedSet<GeoServerRole> parentRoles = new TreeSet<GeoServerRole>(roles);
+            for (GeoServerRole erole : parentRoles) {
                 searchNestedParentRoles(erole, roles, 1);
             }
         }

@@ -408,7 +408,9 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                 });
         // if nested groups search is enabled, add hierarchical parent groups
         if (useNestedGroups) {
-            for (GeoServerUserGroup egroup : groups) {
+            final SortedSet<GeoServerUserGroup> parentGroups =
+                    new TreeSet<GeoServerUserGroup>(groups);
+            for (GeoServerUserGroup egroup : parentGroups) {
                 addNestedParentGroups(egroup, groups, 1);
             }
         }

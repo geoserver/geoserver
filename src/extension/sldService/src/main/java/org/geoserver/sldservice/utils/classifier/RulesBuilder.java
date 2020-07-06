@@ -561,7 +561,7 @@ public class RulesBuilder {
         for (int i = 0; i < bins.length; i++) {
             double classMembers = bins[i][0];
             if (classMembers != 0d && totalSize != 0d)
-                percentages[i] = ((double) bins[i][0] / totalSize) * 100;
+                percentages[i] = (classMembers / totalSize) * 100;
             else percentages[i] = 0d;
         }
         return percentages;

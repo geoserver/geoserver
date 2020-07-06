@@ -482,7 +482,7 @@ public class RasterSymbolizerBuilder {
     private double[] getCustomClassifierPercentages(RenderedImage image, Number[] breaks) {
         ImageWorker iw = new ImageWorker(image);
         int classNum = breaks.length - 1;
-        double classMembers[] = new double[classNum];
+        double classMembersAr[] = new double[classNum];
         for (int i = 0; i < classNum; i++) {
             double[] low = new double[] {(double) breaks[i]};
             double dHigh =
@@ -491,13 +491,13 @@ public class RasterSymbolizerBuilder {
                             : (double) breaks[i + 1];
             double[] high = new double[] {dHigh};
             Histogram hist = iw.getHistogram(new int[] {1}, low, high);
-            classMembers[i] = hist.getBins(0)[0];
+            classMembersAr[i] = hist.getBins(0)[0];
         }
-        double total = DoubleStream.of(classMembers).sum();
+        double total = DoubleStream.of(classMembersAr).sum();
         double[] percentages = new double[classNum];
         for (int i = 0; i < classNum; i++) {
-            double cm = classMembers[i];
-            if (cm != 0d && total != 0d) percentages[i] = (classMembers[i] / total) * 100;
+            double classMembers = classMembersAr[i];
+            if (classMembers != 0d && total != 0d) percentages[i] = (classMembers / total) * 100;
             else percentages[i] = 0d;
         }
         return percentages;

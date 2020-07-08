@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundatisdon - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -270,10 +270,16 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                 Integer epsgCode = CRS.lookupEpsgCode(crs, false);
                 String srs = srsTextField.getModelObject();
                 // do not append
-                if (srs != null && srs.startsWith(BasicResourceConfig.URN_OGC_PREFIX)) {
+                if (srs != null
+                        && srs.contains(
+                                epsgCode.toString()) // assert that text field is in sync with
+                        // passed crs
+                        && (srs.startsWith(BasicResourceConfig.URN_OGC_PREFIX)
+                                || srs.startsWith(BasicResourceConfig.EPSG_PREFIX))) {
                     return srs;
                 }
-                return epsgCode != null ? "EPSG:" + epsgCode : "UNKNOWN";
+                // prefix if text field only had the EPSG code.
+                return epsgCode != null ? BasicResourceConfig.EPSG_PREFIX + epsgCode : "UNKNOWN";
             } else {
                 return "UNKNOWN";
             }

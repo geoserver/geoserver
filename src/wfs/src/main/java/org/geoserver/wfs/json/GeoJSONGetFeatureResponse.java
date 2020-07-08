@@ -5,9 +5,15 @@
  */
 package org.geoserver.wfs.json;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
@@ -425,7 +431,22 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             jsonWriter.value(TemporalUtils.printDate((Date) value));
                         } else {
                             jsonWriter.key(ad.getLocalName());
-                            jsonWriter.value(value);
+                            if ((value instanceof Double && Double.isNaN((Double) value))
+                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                                jsonWriter.value(null);
+                            } else if ((value instanceof Double
+                                            && ((Double) value) == Double.POSITIVE_INFINITY)
+                                    || value instanceof Float
+                                            && ((Float) value) == Float.POSITIVE_INFINITY) {
+                                jsonWriter.value("Infinity");
+                            } else if ((value instanceof Double
+                                            && ((Double) value) == Double.NEGATIVE_INFINITY)
+                                    || value instanceof Float
+                                            && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                                jsonWriter.value("-Infinity");
+                            } else {
+                                jsonWriter.value(value);
+                            }
                         }
                     }
                     jsonWriter.endObject(); // end the properties

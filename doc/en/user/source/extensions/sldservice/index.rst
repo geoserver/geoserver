@@ -6,7 +6,7 @@ SLD REST Service
 The SLD Service is a GeoServer REST service that can be used to create SLD styles on published GeoServer
 layers doing a classification on the layer data, following user provided directives.
 
-The purpose of the service is to allow clients to dinamically publish data and create simple styles on it.
+The purpose of the service is to allow clients to dynamically publish data and create simple styles on it.
 
 All the services are published under the common prefix ``/rest/sldservice/{layer}``, where **layer** is 
 the layer to classify/query.
@@ -207,7 +207,7 @@ The parameters usable to customize the ColorMap are:
      - 
    * - stddevs
      - limits the data the classifier is working on to a range of "stddevs" standard deviations around the mean value. 
-     - a positive floating point number (e.g., '1', '2.5', '3').
+     - a positive floating-point number (e.g., '1', '2.5', '3').
      -
    * - env
      - a list of environment variables that the underlying layer may be using to select features/rasters to be
@@ -215,12 +215,12 @@ The parameters usable to customize the ColorMap are:
      - a semicolon separate list of name to value assignments, e.g. ``name1:value1;name2:value2;name3:value3;...``
      -
    * - continuous
-     - used only for raster layers, if set to true will generate a raster pallette that interpolates linearly between classified values 
+     - used only for raster layers, if set to true will generate a raster palette that interpolates linearly between classified values 
      - true|false
      -
    * - percentages
      - allows to obtain percentages of values in each class. For raster layers they will be included in the label of the ColorMapEntry, 
-       while for vector layer they will  be placed in the rule title; in both cases they will be placed at then end of the text between parenthesis.
+       while for vector layer they will  be placed in the rule title; in both cases they will be placed at the end of the text between parentheses.
      - true|false
      - 
    * - percentagesScale
@@ -486,7 +486,7 @@ color ramp and 3 **open** intervals.
 Classify Raster Data
 --------------------
 
-This resource is deprecated, as the classify endpoint can now handle also raster data
+This resource is deprecated, as the classify endpoint can now also handle raster data
 
 ``/rasterize[.<format>]``
 
@@ -505,7 +505,7 @@ This resource is deprecated, as the classify endpoint can now handle also raster
      - HTML
 
 The service can be used to create a ColorMap SLD for the given coverage,
-specyfing the **type of ColorMap** (VALUES, INTERVALS, RAMP) and one of the
+specifying the **type of ColorMap** (VALUES, INTERVALS, RAMP) and one of the
 **predefined color ranges** (RED, BLUE, GRAY, JET, RANDOM, CUSTOM).
 
 Using the **CUSTOM** ColorMap, startColor and endColor (and optionally midColor)

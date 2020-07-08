@@ -269,9 +269,9 @@ public abstract class DataStoreUtils {
     // A utility method for retreiving supported SRS on WFS-NG resource
     public static List<String> getOtherSRSFromWfsNg(FeatureTypeInfo resourceInfo) {
         // do nothing when
-        if (resourceInfo.getStore().getType() == null) return Collections.EMPTY_LIST;
+        if (resourceInfo.getStore().getType() == null) return Collections.emptyList();
         else if (!resourceInfo.getStore().getType().equalsIgnoreCase("Web Feature Server (NG)"))
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         try {
             // featureType.
             FeatureTypeInfo featureType = resourceInfo;
@@ -292,7 +292,7 @@ public abstract class DataStoreUtils {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
 
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     // A utility method for retreiving supported SRS on WMSLayerInfo resource
@@ -304,7 +304,7 @@ public abstract class DataStoreUtils {
             Set<String> supportedSRS = wmsLayer.getSrs();
             // check if there are additional srs available
             // if not return an empty list for legacy behavior
-            if (supportedSRS.size() == 1) return Collections.EMPTY_LIST;
+            if (supportedSRS.size() == 1) return Collections.emptyList();
             // int index="EPSG:".length();
             List<String> otherSRS = supportedSRS.stream().collect(Collectors.toList());
             return otherSRS;
@@ -315,21 +315,18 @@ public abstract class DataStoreUtils {
                     e);
         }
         // default to legacy behavior on failure
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     // A utility method for retreiving supported SRS on WMTSLayerInfo resource
     public static List<String> getOtherSRSFromWMTSStore(WMTSLayerInfo wmtsLayerInfo) {
+        List<String> otherSRS = Collections.emptyList();
         try {
-
             Layer wmtsLayer = wmtsLayerInfo.getWMTSLayer(new NullProgressListener());
-
             Set<String> supportedSRS = wmtsLayer.getSrs();
-            // check if there are additional srs available
-            // if not return an empty list for legacy behavior
-            if (supportedSRS.size() == 1) return Collections.EMPTY_LIST;
-            List<String> otherSRS = supportedSRS.stream().collect(Collectors.toList());
-            return otherSRS;
+            // do we have additional srs?
+            if (!(supportedSRS.size() == 1))
+                otherSRS = supportedSRS.stream().collect(Collectors.toList());
         } catch (IOException e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -337,6 +334,7 @@ public abstract class DataStoreUtils {
                             + wmtsLayerInfo.getNativeName(),
                     e);
         }
-        return Collections.EMPTY_LIST;
+
+        return otherSRS;
     }
 }

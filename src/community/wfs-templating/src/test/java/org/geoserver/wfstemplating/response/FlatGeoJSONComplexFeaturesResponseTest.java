@@ -29,13 +29,16 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
             JSONObject feature = (JSONObject) features.get(i);
             checkInspireMappedFeature(feature);
         }
+        checkAdditionalInfo(result);
     }
 
     @Test
     public void testGeoJSONResponseOGCAPI() throws Exception {
         setUpMappedFeature("FlatGeoJSONMappedFeature.json");
         String path =
-                "ogc/features/collections/" + "gsml:MappedFeature" + "/items?f=application/json";
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items?f=application%2Fgeo%2Bjson";
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 4);
@@ -43,6 +46,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
             JSONObject feature = (JSONObject) features.get(i);
             checkInspireMappedFeature(feature);
         }
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -59,6 +63,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkInspireMappedFeature(features.getJSONObject(0));
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -67,7 +72,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
-                        .append("/items?f=application/json")
+                        .append("/items?f=application%2Fgeo%2Bjson")
                         .append("&filter-lang=cql-text")
                         .append(
                                 "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name")
@@ -77,6 +82,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkInspireMappedFeature(features.getJSONObject(0));
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -95,6 +101,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
         JSONObject properties = feature.getJSONObject("properties");
         assertEquals("FeatureName: MURRADUC BASALT", properties.getString("name"));
         checkInspireMappedFeature(feature);
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -121,6 +128,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkInspireMappedFeature(features.getJSONObject(0));
+        checkAdditionalInfo(result);
     }
 
     private void checkInspireMappedFeature(JSONObject feature) {
@@ -240,6 +248,6 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
 
     @Override
     protected String getTemplateFileName() {
-        return TemplateIdentifier.GEOJSON.getFilename();
+        return TemplateIdentifier.JSON.getFilename();
     }
 }

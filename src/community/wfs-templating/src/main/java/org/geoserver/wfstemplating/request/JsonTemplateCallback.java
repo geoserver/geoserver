@@ -51,7 +51,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                 && request.getOutputFormat() != null
                 && (request.getOutputFormat().equals(TemplateIdentifier.JSONLD.getOutputFormat())
                         || request.getOutputFormat()
-                                .equals(TemplateIdentifier.GEOJSON.getOutputFormat()))) {
+                                .equals(TemplateIdentifier.JSON.getOutputFormat()))) {
             try {
                 GetFeatureRequest getFeature =
                         GetFeatureRequest.adapt(operation.getParameters()[0]);
@@ -74,10 +74,12 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
             List<FeatureTypeInfo> featureTypeInfos = getFeatureTypeInfoFromQuery(q);
             List<RootBuilder> rootBuilders =
                     getRootBuildersFromFeatureTypeInfo(featureTypeInfos, outputFormat);
-            for (int i = 0; i < featureTypeInfos.size(); i++) {
-                FeatureTypeInfo fti = featureTypeInfos.get(i);
-                RootBuilder root = rootBuilders.get(i);
-                replaceTemplatePath(q, fti, root);
+            if (rootBuilders.size() > 0) {
+                for (int i = 0; i < featureTypeInfos.size(); i++) {
+                    FeatureTypeInfo fti = featureTypeInfos.get(i);
+                    RootBuilder root = rootBuilders.get(i);
+                    replaceTemplatePath(q, fti, root);
+                }
             }
         }
     }
@@ -138,16 +140,14 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
             List<Query> queries = getFeature.getQueries();
             for (Query q : queries) {
                 List<FeatureTypeInfo> typeInfos = getFeatureTypeInfoFromQuery(q);
-                Response wrapped =
-                        wrapGeoJSONResponse(typeInfos, response, request.getOutputFormat());
+                Response wrapped = wrapGeoJSONResponse(typeInfos, request.getOutputFormat());
                 if (wrapped != null) response = wrapped;
             }
         }
         return super.responseDispatched(request, operation, result, response);
     }
 
-    private Response wrapGeoJSONResponse(
-            List<FeatureTypeInfo> typeInfos, Response original, String outputFormat) {
+    private Response wrapGeoJSONResponse(List<FeatureTypeInfo> typeInfos, String outputFormat) {
         Response response = null;
         try {
 
@@ -156,7 +156,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
             if (rootBuilders.size() > 0) {
                 response =
                         new GeoJsonTemplateGetFeatureResponse(
-                                gs, configuration, (GeoJSONGetFeatureResponse) original);
+                                gs, configuration, TemplateIdentifier.JSON);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

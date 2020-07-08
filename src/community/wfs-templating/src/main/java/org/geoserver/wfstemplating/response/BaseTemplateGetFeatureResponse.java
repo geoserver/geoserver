@@ -21,21 +21,24 @@ import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.Feature;
 
 /**
  * An abstract template response to be extended from the output specific implementation, defining
- * the steps of the output production
+ * the steps of the output production and providing hooks
  */
 public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
     private TemplateConfiguration configuration;
     protected TemplateGetFeatureResponseHelper helper;
+    protected TemplateIdentifier identifier;
 
     public BaseTemplateGetFeatureResponse(
             GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
         super(gs, identifier.getOutputFormat());
         this.configuration = configuration;
         this.helper = new TemplateGetFeatureResponseHelper(gs.getCatalog(), identifier);
+        this.identifier = identifier;
     }
 
     @Override
@@ -69,8 +72,8 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
         for (FeatureCollection collection : collectionList) {
             FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
             RootBuilder root = configuration.getTemplate(fti, getMimeType(null, null));
-            beforeEvaluation(writer, root);
-            doBuilderEvaluation(root, writer, collection);
+            beforeFeatureIteration(writer, root, fti);
+            iterateFeatures(root, writer, collection);
         }
     }
 
@@ -82,13 +85,15 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
      * @param collection the feature collection to be evaluated
      * @throws IOException
      */
-    protected void doBuilderEvaluation(
+    protected void iterateFeatures(
             RootBuilder rootBuilder, TemplateOutputWriter writer, FeatureCollection collection)
             throws IOException {
         FeatureIterator iterator = collection.features();
         try {
             while (iterator.hasNext()) {
-                TemplateBuilderContext context = new TemplateBuilderContext(iterator.next());
+                Feature feature = iterator.next();
+                beforeEvaluation(writer, rootBuilder, feature);
+                TemplateBuilderContext context = new TemplateBuilderContext(feature);
                 rootBuilder.evaluate(writer, context);
             }
         } finally {
@@ -97,10 +102,21 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
     }
 
     /**
-     * Allows to perform actions before starting the evaluation process
+     * Allows subclasses to perform actions before starting the features iteration
      *
-     * @param writer
-     * @param root
+     * @param writer the current TemplateWriter
+     * @param root the current RootBuilder
      */
-    protected abstract void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root);
+    protected abstract void beforeFeatureIteration(
+            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo);
+
+    /**
+     * Allows subclasses to perform actions before evaluation the feature
+     *
+     * @param writer the current TemplateWriter
+     * @param root the current RootBuilder
+     * @param feature the feature being evaluated by the builders' tree
+     */
+    protected abstract void beforeEvaluation(
+            TemplateOutputWriter writer, RootBuilder root, Feature feature);
 }

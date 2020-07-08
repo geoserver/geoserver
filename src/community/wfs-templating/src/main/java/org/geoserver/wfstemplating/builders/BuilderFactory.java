@@ -15,7 +15,6 @@ import org.geoserver.wfstemplating.builders.impl.*;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdCompositeBuilder;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdDynamicBuilder;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdRootBuilder;
-import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -24,11 +23,11 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class BuilderFactory {
 
-    private String outputFormat;
+    private boolean isJsonLd;
     private boolean flatOutput;
 
-    public BuilderFactory(String outputFormat) {
-        this.outputFormat = outputFormat;
+    public BuilderFactory(boolean isJsonLd) {
+        this.isJsonLd = isJsonLd;
     }
 
     /**
@@ -40,7 +39,7 @@ public class BuilderFactory {
      */
     public TemplateBuilder getIteratingBuilder(String key, NamespaceSupport namespaces) {
         TemplateBuilder iterating;
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+        if (isJsonLd) {
             iterating = new IteratingBuilder(key, namespaces);
         } else {
             if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces);
@@ -58,7 +57,7 @@ public class BuilderFactory {
      */
     public TemplateBuilder getCompositeBuilder(String key, NamespaceSupport namespaces) {
         TemplateBuilder composite;
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+        if (isJsonLd) {
             composite = new JsonLdCompositeBuilder(key, namespaces);
         } else {
             if (flatOutput) composite = new FlatCompositeBuilder(key, namespaces);
@@ -78,7 +77,7 @@ public class BuilderFactory {
     public TemplateBuilder getDynamicBuilder(
             String key, String expression, NamespaceSupport namespaces) {
         TemplateBuilder dynamic;
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+        if (isJsonLd) {
             dynamic = new JsonLdDynamicBuilder(key, expression, namespaces);
         } else {
             if (flatOutput) dynamic = new FlatDynamicBuilder(key, expression, namespaces);
@@ -98,7 +97,7 @@ public class BuilderFactory {
     public TemplateBuilder getStaticBuilder(
             String key, String strValue, NamespaceSupport namespaces) {
         TemplateBuilder staticBuilder;
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+        if (isJsonLd) {
             staticBuilder = new StaticBuilder(key, strValue, namespaces);
         } else {
             if (flatOutput) staticBuilder = new FlatStaticBuilder(key, strValue, namespaces);
@@ -118,7 +117,7 @@ public class BuilderFactory {
     public TemplateBuilder getStaticBuilder(
             String key, JsonNode value, NamespaceSupport namespaces) {
         TemplateBuilder staticBuilder;
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+        if (isJsonLd) {
             staticBuilder = new StaticBuilder(key, value, namespaces);
         } else {
             if (flatOutput) staticBuilder = new FlatStaticBuilder(key, value, namespaces);
@@ -133,8 +132,7 @@ public class BuilderFactory {
      * @return a RootBuilder
      */
     public RootBuilder getRootBuilder() {
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat()))
-            return new JsonLdRootBuilder();
+        if (isJsonLd) return new JsonLdRootBuilder();
         else return new GeoJsonRootBuilder();
     }
 

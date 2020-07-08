@@ -14,11 +14,9 @@ import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.XCQL;
-import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
 import org.geoserver.wfstemplating.builders.impl.RootBuilder;
@@ -81,17 +79,23 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
     private String getFormatSupportingTemplating(Request request) {
         String accept = request.getHttpRequest().getHeader(HttpHeaders.ACCEPT);
         String format = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
-        if (format != null
-                && (format.equals(TemplateIdentifier.JSONLD.getOutputFormat())
-                        || format.equals(TemplateIdentifier.GEOJSON.getOutputFormat()))) {
+        if (format != null && isFormatSupported(format)) {
             return format;
         } else if (accept != null) {
-            if (accept.contains(TemplateIdentifier.GEOJSON.getOutputFormat()))
-                return TemplateIdentifier.GEOJSON.getOutputFormat();
+            if (accept.contains(TemplateIdentifier.JSON.getOutputFormat()))
+                return TemplateIdentifier.JSON.getOutputFormat();
             else if (accept.contains(TemplateIdentifier.JSONLD.getOutputFormat()))
                 return TemplateIdentifier.JSONLD.getOutputFormat();
+            else if (accept.contains(TemplateIdentifier.GEOJSON.getOutputFormat()))
+                return TemplateIdentifier.GEOJSON.getOutputFormat();
         }
         return null;
+    }
+
+    private boolean isFormatSupported(String format) {
+        return format.equals(TemplateIdentifier.JSONLD.getOutputFormat())
+                || format.equals(TemplateIdentifier.JSON.getOutputFormat())
+                || format.equals(TemplateIdentifier.GEOJSON.getOutputFormat());
     }
 
     private void replaceJsonLdPathWithFilter(
@@ -129,13 +133,22 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         String format = getFormatSupportingTemplating(request);
-        if (format != null && format.equals(TemplateIdentifier.GEOJSON.getOutputFormat())) {
+        boolean isJson = format != null && format.equals(TemplateIdentifier.JSON.getOutputFormat());
+        boolean isGeoJson =
+                format != null && format.equals(TemplateIdentifier.GEOJSON.getOutputFormat());
+        if (isJson || isGeoJson) {
             FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
             if (typeInfo != null) {
                 try {
                     RootBuilder root = configuration.getTemplate(typeInfo, format);
                     if (root != null) {
-                        response = wrapResponse(operation, result);
+                        response =
+                                wrapResponse(
+                                        operation,
+                                        result,
+                                        isGeoJson
+                                                ? TemplateIdentifier.GEOJSON
+                                                : TemplateIdentifier.JSON);
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -145,11 +158,11 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         return response;
     }
 
-    private Response wrapResponse(Operation operation, Object result) {
-        GeoJSONGetFeatureResponse featureResponse =
-                (GeoJSONGetFeatureResponse) GeoServerExtensions.bean("geoJSONGetFeatureResponse");
+    private Response wrapResponse(
+            Operation operation, Object result, TemplateIdentifier identifier) {
+
         GeoJsonTemplateGetFeatureResponse templatingResp =
-                new GeoJsonTemplateGetFeatureResponse(gs, configuration, featureResponse) {
+                new GeoJsonTemplateGetFeatureResponse(gs, configuration, identifier) {
                     @Override
                     protected void write(
                             FeatureCollectionResponse featureCollection,

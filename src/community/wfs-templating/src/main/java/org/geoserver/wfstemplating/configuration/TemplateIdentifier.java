@@ -7,7 +7,8 @@ package org.geoserver.wfstemplating.configuration;
 
 /** This enum provides constants which match output formats with template names */
 public enum TemplateIdentifier {
-    GEOJSON("application/json", "geojson-template.json"),
+    JSON("application/json", "geojson-template.json"),
+    GEOJSON("application/geo+json", "geojson-template.json"),
     JSONLD("application/ld+json", "json-ld-template.json");
 
     private String outputFormat;

@@ -25,6 +25,7 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         for (int i = 0; i < features.size(); i++) {
             checkFeature(features.getJSONObject(i));
         }
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -40,6 +41,7 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         for (int i = 0; i < features.size(); i++) {
             checkFeature(features.getJSONObject(i));
         }
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -54,6 +56,7 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
         assertEquals(features.getJSONObject(0).getString("name"), "Name: Goose Island");
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -72,6 +75,7 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         assertNotNull(feature.getString("name"), "Goose Island");
         JSONObject geometry = (JSONObject) feature.get("geometry");
         assertEquals(geometry.getString("type"), "MultiPolygon");
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -91,6 +95,7 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
         assertNotNull(feature.getString("name"), "Goose Island");
         JSONObject geometry = (JSONObject) feature.get("geometry");
         assertEquals(geometry.getString("type"), "MultiPolygon");
+        checkAdditionalInfo(result);
     }
 
     private void checkFeature(JSONObject feature) {
@@ -105,6 +110,6 @@ public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTest
 
     @Override
     protected String getTemplateFileName() {
-        return TemplateIdentifier.GEOJSON.getFilename();
+        return TemplateIdentifier.JSON.getFilename();
     }
 }

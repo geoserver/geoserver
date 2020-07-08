@@ -15,7 +15,6 @@ import org.geoserver.wfstemplating.builders.SourceBuilder;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
 import org.geoserver.wfstemplating.builders.impl.*;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdRootBuilder;
-import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geotools.filter.text.cql2.CQLException;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -49,10 +48,10 @@ public class JsonTemplateReader implements TemplateReader {
     @Override
     public RootBuilder getRootBuilder() {
         RootBuilder root;
-        String outputFormat;
-        if (template.has(CONTEXTKEY)) outputFormat = TemplateIdentifier.JSONLD.getOutputFormat();
-        else outputFormat = TemplateIdentifier.GEOJSON.getOutputFormat();
-        BuilderFactory factory = new BuilderFactory(outputFormat);
+        boolean isJsonLd;
+        if (template.has(CONTEXTKEY)) isJsonLd = true;
+        else isJsonLd = false;
+        BuilderFactory factory = new BuilderFactory(isJsonLd);
         root = factory.getRootBuilder();
         getBuilderFromJson(null, template, root, factory);
         return root;

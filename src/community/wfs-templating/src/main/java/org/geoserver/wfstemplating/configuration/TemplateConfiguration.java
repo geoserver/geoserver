@@ -150,9 +150,11 @@ public class TemplateConfiguration {
 
     private String getTemplateName(String outputFormat) {
         String templateName = "";
-        if (outputFormat.equals(TemplateIdentifier.GEOJSON.getOutputFormat())) {
+        if (outputFormat.equals(TemplateIdentifier.JSON.getOutputFormat()))
+            templateName = TemplateIdentifier.JSON.getFilename();
+        else if (outputFormat.equals(TemplateIdentifier.GEOJSON.getOutputFormat()))
             templateName = TemplateIdentifier.GEOJSON.getFilename();
-        } else if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+        else if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
             templateName = TemplateIdentifier.JSONLD.getFilename();
         }
         return templateName;

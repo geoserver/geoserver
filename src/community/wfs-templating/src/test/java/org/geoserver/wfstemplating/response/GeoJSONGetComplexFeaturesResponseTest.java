@@ -28,6 +28,7 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeature(feature);
         }
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -42,6 +43,7 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeature(feature);
         }
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -58,6 +60,7 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeature(features.getJSONObject(0));
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -76,6 +79,7 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeature(features.getJSONObject(0));
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -92,6 +96,7 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
         JSONObject feature = features.getJSONObject(0);
         assertEquals("FeatureName: MURRADUC BASALT", feature.getString("name"));
         checkMappedFeature(feature);
+        checkAdditionalInfo(result);
     }
 
     @Test
@@ -118,6 +123,7 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeature(features.getJSONObject(0));
+        checkAdditionalInfo(result);
     }
 
     private void checkMappedFeature(JSONObject feature) {
@@ -148,6 +154,6 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTe
 
     @Override
     protected String getTemplateFileName() {
-        return TemplateIdentifier.GEOJSON.getFilename();
+        return TemplateIdentifier.JSON.getFilename();
     }
 }

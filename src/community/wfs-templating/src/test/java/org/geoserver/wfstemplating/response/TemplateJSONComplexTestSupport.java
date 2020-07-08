@@ -4,11 +4,13 @@
  */
 package org.geoserver.wfstemplating.response;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -88,7 +90,10 @@ public abstract class TemplateJSONComplexTestSupport extends AbstractAppSchemaTe
         String contentType = response.getContentType();
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
-        if (contentType != null) assertEquals(contentType, "application/json");
+        if (contentType != null)
+            assertTrue(
+                    contentType.equals("application/json")
+                            || contentType.equals("application/geo+json"));
         return json(response);
     }
 
@@ -139,4 +144,19 @@ public abstract class TemplateJSONComplexTestSupport extends AbstractAppSchemaTe
     }
 
     protected abstract String getTemplateFileName();
+
+    protected void checkAdditionalInfo(JSONObject result) {
+        assertNotNull(result.get("numberReturned"));
+        assertNotNull(result.get("timeStamp"));
+        if (result.has("crs")) {
+            JSONObject crs = result.getJSONObject("crs");
+            JSONObject props = crs.getJSONObject("properties");
+            assertNotNull(props);
+            assertNotNull(props.getString("name"));
+        }
+        if (result.has("links")) {
+            JSONArray links = result.getJSONArray("links");
+            assertTrue(links.size() > 0);
+        }
+    }
 }

@@ -49,12 +49,17 @@ public class WFSTemplateWatcher extends FileWatcher<RootBuilder> {
 
     private TemplateReader getReader(InputStream in) throws IOException {
         TemplateReader templateReader = null;
-        if (fileName.equals(TemplateIdentifier.GEOJSON.getFilename())
-                || fileName.equals(TemplateIdentifier.JSONLD.getFilename())) {
+        if (isJsonTemplateType()) {
             ObjectMapper mapper =
                     new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
             templateReader = new JsonTemplateReader(mapper.readTree(in), namespaces);
         }
         return templateReader;
+    }
+
+    private boolean isJsonTemplateType() {
+        return fileName.equals(TemplateIdentifier.JSON.getFilename())
+                || fileName.equals(TemplateIdentifier.JSONLD.getFilename())
+                || fileName.equals(TemplateIdentifier.GEOJSON.getFilename());
     }
 }

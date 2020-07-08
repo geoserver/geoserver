@@ -41,6 +41,7 @@ class TemplateGetFeatureResponseHelper {
     TemplateOutputWriter getOutputWriter(OutputStream output) throws IOException {
         TemplateOutputWriter outputWriter;
         switch (format) {
+            case JSON:
             case GEOJSON:
                 outputWriter =
                         new GeoJsonWriter(

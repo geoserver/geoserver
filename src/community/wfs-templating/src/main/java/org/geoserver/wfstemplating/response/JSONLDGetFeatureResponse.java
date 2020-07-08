@@ -20,6 +20,7 @@ import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.writers.JsonLdWriter;
 import org.geoserver.wfstemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.Feature;
 
 /**
  * Encodes features in json-ld output format by means of a ${@link TemplateBuilder} tree obtained by
@@ -61,6 +62,10 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         }
     }
 
+    @Override
+    protected void beforeFeatureIteration(
+            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {}
+
     protected void iterateFeatureCollection(
             TemplateOutputWriter writer,
             FeatureCollectionResponse featureCollection,
@@ -69,12 +74,13 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         List<FeatureCollection> collectionList = featureCollection.getFeature();
 
         for (FeatureCollection collection : collectionList) {
-            doBuilderEvaluation(root, writer, collection);
+            iterateFeatures(root, writer, collection);
         }
     }
 
     @Override
-    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root) {}
+    protected void beforeEvaluation(
+            TemplateOutputWriter writer, RootBuilder root, Feature feature) {}
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {

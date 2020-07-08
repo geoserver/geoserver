@@ -56,6 +56,8 @@ public class GeoJSONTest extends WFSTestSupport {
                     SystemTestData.CITE_URI, "MultiGeometriesWithNull", SystemTestData.CITE_PREFIX);
     public static QName POINT_REDUCED =
             new QName(SystemTestData.CITE_URI, "PointReduced", SystemTestData.CITE_PREFIX);
+    public static QName NAN_INFINITE =
+            new QName(SystemTestData.CITE_URI, "NanInfinite", SystemTestData.CITE_PREFIX);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -107,6 +109,14 @@ public class GeoJSONTest extends WFSTestSupport {
         pointReduced.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         pointReduced.setNumDecimals(2);
         getCatalog().save(pointReduced);
+
+        // add a feature with NaN and infinite for both float and double
+        data.addVectorLayer(
+                NAN_INFINITE,
+                Collections.EMPTY_MAP,
+                "nanInfinite.properties",
+                getClass(),
+                getCatalog());
     }
 
     @Test
@@ -897,5 +907,35 @@ public class GeoJSONTest extends WFSTestSupport {
         } catch (FactoryException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @Test
+    public void testNanInfinite() throws Exception {
+        String url =
+                "wfs?request=GetFeature&version=1.0.0&typename=cite:NanInfinite"
+                        + "&outputformat="
+                        + JSONType.json
+                        + "&sortby=name";
+        JSONObject rootObject = (JSONObject) getAsJSON(url, 200);
+        assertEquals(rootObject.get("type"), "FeatureCollection");
+        JSONArray features = rootObject.getJSONArray("features");
+
+        // f1 has NaN in both
+        JSONObject f1 = features.getJSONObject(0);
+        assertEquals("ni1", getProperty(f1, "name"));
+        assertEquals(JSONNull.getInstance(), getProperty(f1, "d"));
+        assertEquals(JSONNull.getInstance(), getProperty(f1, "f"));
+        // f2 has -Infinity in both
+        JSONObject f2 = features.getJSONObject(1);
+        assertEquals("-Infinity", getProperty(f2, "d"));
+        assertEquals("-Infinity", getProperty(f2, "f"));
+        // f3 has Infinity in both
+        JSONObject f3 = features.getJSONObject(2);
+        assertEquals("Infinity", getProperty(f3, "d"));
+        assertEquals("Infinity", getProperty(f3, "f"));
+    }
+
+    private Object getProperty(JSONObject feature, String propertyName) {
+        return feature.getJSONObject("properties").get(propertyName);
     }
 }

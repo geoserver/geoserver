@@ -6,9 +6,10 @@
 package org.geoserver.wms.featureinfo;
 
 import it.geosolutions.jaiext.range.Range;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,13 +27,16 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.clip.CroppedGridCoverage2DReader;
+import org.geoserver.wms.map.RasterSymbolizerVisitor;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.FeatureCollection;
@@ -47,6 +51,8 @@ import org.geotools.image.util.ImageUtilities;
 import org.geotools.ows.ServiceException;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RenderingTransformationHelper;
+import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -58,6 +64,7 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.parameter.GeneralParameterValue;
@@ -280,7 +287,40 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             }
         }
 
-        final GridCoverage2D coverage = reader.read(parameters);
+        GridCoverage2D coverage = reader.read(parameters);
+
+        Style style = params.getStyle();
+        RasterSymbolizerVisitor visitor =
+                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+        style.accept(visitor);
+        Expression transformation = visitor.getRasterRenderingTransformation();
+
+        if (transformation != null) {
+            RenderingTransformationHelper helper =
+                    new RenderingTransformationHelper() {
+                        @Override
+                        protected GridCoverage2D readCoverage(
+                                GridCoverage2DReader reader, Object params, GridGeometry2D readGG)
+                                throws IOException {
+                            return null;
+                        }
+                    };
+            Object result =
+                    helper.applyRenderingTransformation(
+                            transformation,
+                            DataUtilities.source(FeatureUtilities.wrapGridCoverage(coverage)),
+                            Query.ALL,
+                            Query.ALL,
+                            null,
+                            coverage.getCoordinateReferenceSystem2D(),
+                            null);
+            if (result instanceof GridCoverage2D) {
+                coverage = (GridCoverage2D) result;
+            } else {
+                return null;
+            }
+        }
+
         if (coverage == null) {
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine("Unable to load raster data for this request.");

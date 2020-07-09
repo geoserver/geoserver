@@ -622,7 +622,8 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals("urn:ogc:def:crs:EPSG::900913", epsgComponent2.getDefaultModel().getObject());
         assertEquals("urn:ogc:def:crs:EPSG::3857", epsgComponent3.getDefaultModel().getObject());
     }
-    
+
+    @Test
     public void testUrnOgcSRIDResource() throws Exception {
         String urnOgc = "urn:ogc:def:crs:EPSG::4326";
         Catalog catalog = getGeoServerApplication().getCatalog();

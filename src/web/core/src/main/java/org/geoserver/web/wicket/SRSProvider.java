@@ -149,11 +149,11 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
     // a constructor to pass custom list of SRS list
     public SRSProvider(List<String> srsList) {
-        String epsg = "EPSG:";
         List<SRS> otherSRS = new ArrayList<>();
         for (String srs : srsList) {
 
-            if (srs.startsWith(epsg)) srs = srs.substring(epsg.length());
+            if (srs.startsWith(BasicResourceConfig.EPSG_PREFIX))
+                srs = srs.substring(BasicResourceConfig.EPSG_PREFIX.length());
 
             otherSRS.add(new SRS(srs));
         }

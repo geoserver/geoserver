@@ -26,7 +26,8 @@ public class JSONLDGetComplexFeaturesResponseFilteringTest extends TemplateJSONC
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         int size = features.size();
@@ -72,7 +73,8 @@ public class JSONLDGetComplexFeaturesResponseFilteringTest extends TemplateJSONC
                         .append("&TYPENAME=gsml:GeologicUnit&outputFormat=")
                         .append("application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         int size = features.size();

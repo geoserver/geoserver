@@ -25,7 +25,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
         sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 4);
@@ -43,7 +44,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fld%2Bjson";
         JSONObject result = (JSONObject) getJsonLd(path);
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 4);
@@ -72,7 +74,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                         .append(
                                 "&cql_filter=features.gsml:GeologicUnit.description = 'Olivine basalt'");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
@@ -91,7 +94,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                                 "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value")
                         .append(" = 'name_2' ");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
@@ -107,7 +111,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                         .append("application%2Fld%2Bjson")
                         .append("&cql_filter= features.geometry.wkt IS NULL");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 0);
@@ -133,7 +138,8 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                         .append("</ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query>")
                         .append("</wfs:GetFeature>");
         JSONObject result = (JSONObject) postJsonLd(xml.toString());
-        JSONObject context = (JSONObject) result.get("@context");
+        Object context = result.get("@context");
+        checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);

@@ -8,8 +8,6 @@ package org.geoserver.wfstemplating.writers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 import org.geotools.filter.function.FilterFunction_toWKT;
 
 /** Implements its superclass methods to write a valid json-ld output */
@@ -36,22 +34,10 @@ public class JsonLdWriter extends CommonJsonWriter {
     @Override
     public void startTemplateOutput() throws IOException {
         writeStartObject();
-        writeFieldName("@context");
-        writeStartObject();
-        Iterator<Map.Entry<String, JsonNode>> iterator = contextHeader.fields();
-        while (iterator.hasNext()) {
-            Map.Entry<String, JsonNode> nodEntry = iterator.next();
-            String entryName = nodEntry.getKey();
-            JsonNode childNode = nodEntry.getValue();
-            if (childNode.isObject()) {
-                writeObjectNode(entryName, childNode);
-            } else if (childNode.isValueNode()) {
-                writeValueNode(entryName, childNode);
-            } else {
-                writeArrayNode(entryName, childNode);
-            }
-        }
-        writeEndObject();
+        String contextName = "@context";
+        if (contextHeader.isArray()) writeArrayNode(contextName, contextHeader);
+        else if (contextHeader.isObject()) writeObjectNode(contextName, contextHeader);
+        else writeValueNode(contextName, contextHeader);
         writeFieldName("type");
         writeString("FeatureCollection");
         writeFieldName("features");

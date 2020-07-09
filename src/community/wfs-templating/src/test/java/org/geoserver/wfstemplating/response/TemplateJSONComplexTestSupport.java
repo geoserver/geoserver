@@ -159,4 +159,14 @@ public abstract class TemplateJSONComplexTestSupport extends AbstractAppSchemaTe
             assertTrue(links.size() > 0);
         }
     }
+
+    protected void checkContext(Object context) {
+        if (context instanceof JSONArray) {
+            int size = ((JSONArray) context).size();
+            assertTrue(size > 0);
+        }
+        if (context instanceof JSONObject) {
+            assertFalse(((JSONObject) context).isEmpty());
+        }
+    }
 }

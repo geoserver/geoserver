@@ -31,6 +31,8 @@ import static org.mockito.Mockito.when;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +44,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.media.jai.RenderedOp;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,6 +82,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.capabilities.LegendSample;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.geoserver.wms.map.RenderedImageTimeDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -96,6 +102,7 @@ import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.MetadataURL;
 import org.geowebcache.locks.MemoryLockProvider;
+import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
@@ -891,6 +898,72 @@ public class GeoServerTileLayerTest {
         assertThat(
                 legendsInfo.get("alternateStyle-2").getLegendUrl().trim(),
                 is("http://localhost:8080/geoserver/some-url"));
+    }
+
+    @Test
+    public void testReaderDisposeCalledOnMetaTileImage() {
+
+        Object reader = mock(ImageReader.class);
+        RenderedImageTimeDecorator metaTile =
+                getMockRenderedImageTimeDecoratorWithParameters(reader);
+
+        GeoServerMetaTile gsMetaTile = getTestGeoServerMetaTile();
+        gsMetaTile.setImage(metaTile);
+        gsMetaTile.dispose();
+
+        verify((ImageReader) reader, times(1)).dispose();
+    }
+
+    @Test
+    public void testImageInputStreamIsClosedForMetaTileImage() {
+        Object imageInputStream = mock(ImageInputStream.class);
+        RenderedImageTimeDecorator metaTile =
+                getMockRenderedImageTimeDecoratorWithParameters(imageInputStream);
+
+        GeoServerMetaTile gsMetaTile = getTestGeoServerMetaTile();
+        gsMetaTile.setImage(metaTile);
+        gsMetaTile.dispose();
+
+        try {
+            verify((ImageInputStream) imageInputStream, times(1)).close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private RenderedImageTimeDecorator getMockRenderedImageTimeDecoratorWithParameters(
+            Object param) {
+        ParameterBlock parameterBlock = new ParameterBlock();
+        parameterBlock.add(param);
+
+        RenderedOp image = mock(RenderedOp.class);
+        when(image.getParameterBlock()).thenReturn(parameterBlock);
+
+        RenderedImageTimeDecorator metaTile = mock(RenderedImageTimeDecorator.class);
+        when(metaTile.getDelegate()).thenReturn(image);
+
+        return metaTile;
+    }
+
+    private GeoServerMetaTile getTestGeoServerMetaTile() {
+        long[] testArray = {1L, 1L, 1L, 1L, 1L};
+        GridSubset mockGridSubset = mock(GridSubset.class);
+        when(mockGridSubset.getTileWidth()).thenReturn(0);
+        when(mockGridSubset.getTileHeight()).thenReturn(0);
+        when(mockGridSubset.getCoverage(1)).thenReturn(testArray);
+        when(mockGridSubset.boundsFromRectangle(testArray)).thenReturn(mock(BoundingBox.class));
+
+        GeoServerMetaTile gsMetaTile =
+                new GeoServerMetaTile(
+                        mockGridSubset,
+                        mock(MimeType.class),
+                        mock(FormatModifier.class),
+                        testArray,
+                        1,
+                        1,
+                        4);
+
+        return gsMetaTile;
     }
 
     private void setupUrlContext() {

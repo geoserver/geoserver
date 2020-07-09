@@ -23,6 +23,7 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.geoserver.wms.map.RenderedImageTimeDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.metadata.i18n.ErrorKeys;
@@ -238,6 +239,11 @@ public class GeoServerMetaTile extends MetaTile {
             metaTileMap.dispose();
             metaTileMap = null;
         }
+
+        if (metaTileImage instanceof RenderedImageTimeDecorator) {
+            metaTileImage = ((RenderedImageTimeDecorator) metaTileImage).getDelegate();
+        }
+
         super.dispose();
     }
 }

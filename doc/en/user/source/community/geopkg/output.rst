@@ -68,12 +68,16 @@ Outline of the features layer::
 	      <featuretype>myfeaturetype</featuretype>
 	      <propertynames>property1, property2</propertynames>
 	      <filter>..</filter>
+	      <indexed>true</indexed>
+	      <styles>true</styles>
       </features>
 
 Each features layer has the following properties: 
   * ``featuretype`` (mandatory): the feature type
   * ``propertynames`` (optional): list of comma-separated names of properties in feature type to be included (default is all properties)
   * ``filter`` (optional): any OGC filter that will be applied on features before output
+  * ``indexed`` (optional): include spatial indexes in the output (true/false)
+  * ``styles`` (optional): include styles in the output using the portrayal and semantic annotation extensions (true/false)
 
 Outline of the tiles layer::
 

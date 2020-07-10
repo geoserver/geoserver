@@ -177,14 +177,14 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             List<T[][]> rings = new ArrayList<>();
             LineString shell = polygon.getExteriorRing();
             if (Orientation.isCCW(shell.getCoordinateSequence())) {
-                shell = (LineString) ((Geometry)shell).reverse();
+                shell = (LineString) ((Geometry) shell).reverse();
             }
             rings.add(embeddedLineString(shell));
 
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 LineString hole = polygon.getInteriorRingN(i);
                 if (!Orientation.isCCW(hole.getCoordinateSequence())) {
-                    hole = (LineString) ((Geometry)hole).reverse();
+                    hole = (LineString) ((Geometry) hole).reverse();
                 }
                 rings.add(embeddedLineString(hole));
             }
@@ -207,7 +207,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 // encode the outer ring
                 LineString outer = geometryN.getExteriorRing();
                 if (Orientation.isCCW(outer.getCoordinateSequence())) {
-                    outer = (LineString) ((Geometry)outer).reverse();
+                    outer = (LineString) ((Geometry) outer).reverse();
                 }
                 rings.add(embeddedLineString(outer));
 

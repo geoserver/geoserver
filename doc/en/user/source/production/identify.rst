@@ -14,7 +14,7 @@ mechanisms:
   * as an environment variable
   * as a servlet context parameter
 
-``GEOSERVER_NODE_OPTS`` is a semicolumn separate list of key/value pairs and it can contain the following keys:
+``GEOSERVER_NODE_OPTS`` is a semicolon separated list of key/value pairs and it can contain the following keys:
 
   * id: the string identifying the node, which in turn can be a static string, or include the following substitution tokens
 

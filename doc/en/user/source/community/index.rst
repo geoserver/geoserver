@@ -57,5 +57,5 @@ officially part of the GeoServer releases. They are however built along with the
    csw-iso/index
    importer-jdbc/index
    hana/index
-   json-ld/index
+   wfs-templating/index
    gsr/index

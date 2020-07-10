@@ -13,13 +13,13 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -90,13 +90,24 @@ public class MetadataLinkEditor extends Panel {
                                         "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                         // link info
-                        DropDownChoice<String> dropDownChoice =
-                                new DropDownChoice<>(
+                        TextField<String> metadataType =
+                                new TextField<>(
                                         "type",
-                                        new PropertyModel<String>(item.getModel(), "metadataType"),
-                                        LINK_TYPES);
-                        dropDownChoice.setRequired(true);
-                        item.add(dropDownChoice);
+                                        new PropertyModel<String>(item.getModel(), "metadataType"));
+                        final RepeatingView commonKeys = new RepeatingView("commonTypes");
+                        item.add(commonKeys);
+                        for (String key : LINK_TYPES) {
+                            commonKeys.add(new Label(commonKeys.newChildId(), key));
+                        }
+                        metadataType.setRequired(true);
+                        item.add(metadataType);
+
+                        TextField<String> about =
+                                new TextField<>(
+                                        "about",
+                                        new PropertyModel<String>(item.getModel(), "about"));
+                        item.add(about);
+
                         FormComponentFeedbackBorder urlBorder =
                                 new FormComponentFeedbackBorder("urlBorder");
                         item.add(urlBorder);

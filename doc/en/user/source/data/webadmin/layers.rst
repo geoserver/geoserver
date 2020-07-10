@@ -102,7 +102,7 @@ The metadata information will appear in the capabilities documents which refer t
 * **Title**—Human-readable description to briefly identify the layer to clients (required)
 * **Abstract**—Describes the layer in detail
 * **Keywords**—List of short words associated with the layer to assist catalog searching
-* **Metadata Links**—Allows linking to external documents that describe the data layer. Currently only two standard format types are valid: TC211 and FGDC. TC211 refers to the metadata structure established by the `ISO Technical Committee for Geographic Information/Geomatics <http://www.isotc211.org/>`_ (ISO/TC 211) while FGDC refers to those set out by the `Federal Geographic Data Committee <http://www.fgdc.gov/>`_ (FGDC) of the United States.
+* **Metadata Links**—Allows linking to external documents that describe the data layer. The "type" input provides a few example types, like FGDC or ISO19115:2003, but allows any other type to be declared. The optional "About" entry can be used to point to the definition of the metadata standard, or any other side information about it. Finally, "URL" points to the actual metadata, while "Format" provides its mime type. 
 
   .. figure:: img/data_layers_meta.png
 

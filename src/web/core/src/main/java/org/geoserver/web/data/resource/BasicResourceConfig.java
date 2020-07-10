@@ -45,6 +45,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     private static final long serialVersionUID = -552158739086379566L;
 
+    public static final String URN_OGC_PREFIX = "urn:ogc:def:crs:EPSG::";
+    public static final String EPSG_PREFIX = "EPSG:";
+
     DropDownChoice<ProjectionPolicy> projectionPolicy;
 
     CRSPanel declaredCRS;

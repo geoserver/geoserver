@@ -23,6 +23,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.web.data.resource.BasicResourceConfig;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -267,7 +268,18 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         try {
             if (crs != null) {
                 Integer epsgCode = CRS.lookupEpsgCode(crs, false);
-                return epsgCode != null ? "EPSG:" + epsgCode : "UNKNOWN";
+                String srs = srsTextField.getModelObject();
+                // do not append
+                if (srs != null
+                        && srs.contains(
+                                epsgCode.toString()) // assert that text field is in sync with
+                        // passed crs
+                        && (srs.startsWith(BasicResourceConfig.URN_OGC_PREFIX)
+                                || srs.startsWith(BasicResourceConfig.EPSG_PREFIX))) {
+                    return srs;
+                }
+                // prefix if text field only had the EPSG code.
+                return epsgCode != null ? BasicResourceConfig.EPSG_PREFIX + epsgCode : "UNKNOWN";
             } else {
                 return "UNKNOWN";
             }
@@ -300,7 +312,13 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                     protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
                         popupWindow.close(target);
 
-                        String srs = "EPSG:" + epsgCode;
+                        String srs = epsgCode;
+
+                        // do not append EPSG for OGC URN
+                        if (!epsgCode.startsWith(BasicResourceConfig.URN_OGC_PREFIX)) {
+                            srs = "EPSG:" + srs;
+                        }
+
                         srsTextField.setModelObject(srs);
                         target.add(srsTextField);
 

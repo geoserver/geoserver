@@ -42,7 +42,17 @@ import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
@@ -70,6 +80,7 @@ import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -610,5 +621,28 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals("3857", epsgComponent1.getDefaultModel().getObject());
         assertEquals("urn:ogc:def:crs:EPSG::900913", epsgComponent2.getDefaultModel().getObject());
         assertEquals("urn:ogc:def:crs:EPSG::3857", epsgComponent3.getDefaultModel().getObject());
+    }
+
+    @Test
+    public void testUrnOgcSRIDResource() throws Exception {
+        String urnOgc = "urn:ogc:def:crs:EPSG::4326";
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        LayerInfo layer = catalog.getLayerByName(getLayerId(LINES));
+        assertNotNull(layer);
+        ResourceInfo ft = layer.getResource();
+        ft.setSRS(urnOgc);
+        ft.setNativeCRS(CRS.decode(urnOgc));
+        catalog.save(ft);
+        login();
+        // render page for a layer with resource with SRID defind in URN OGC format
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        // assert no error occurred on page and page is available for configuration
+        tester.assertNoErrorMessage();
+        // assert that native srs is correctly set
+        String nativeSRSTextFieldValue =
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
+                        .getDefaultModelObjectAsString();
+        assertEquals("Asserting EPSG code", "EPSG:4326", nativeSRSTextFieldValue);
     }
 }

@@ -29,7 +29,7 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-geojson</artifactId>
+      <artifactId>gt-geojsondatastore</artifactId>
       <version>${gt.version}</version>
     </dependency>
     <dependency>

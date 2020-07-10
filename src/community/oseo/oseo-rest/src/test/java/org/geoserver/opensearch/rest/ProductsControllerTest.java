@@ -44,10 +44,11 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.rest.ProductsController.ProductPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.NameImpl;
-import org.geotools.geojson.feature.FeatureJSON;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.hamcrest.Matchers;
@@ -261,7 +262,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 jsonArray(250d, 500d, 250d, 500d), json.read("$.properties['atm:verticalRange']"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
@@ -291,7 +292,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeEnd']"));
         assertEquals("123456", json.read("$.properties['gs:test']"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
@@ -310,7 +311,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(timeEnd, json.read("$.properties['timeEnd']"));
         assertEquals("EPSG:32632", json.read("$.properties['crs']"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
@@ -750,7 +751,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // parse the geojson, check the geometries have been parsed correctly
         SimpleFeatureCollection fc =
                 (SimpleFeatureCollection)
-                        new FeatureJSON().readFeatureCollection(json.jsonString());
+                        GeoJSONReader.parseFeatureCollection(json.jsonString());
+        
+        
+        
+         
         assertEquals(2, fc.size());
         final SimpleFeatureIterator it = fc.features();
         SimpleFeature sf = it.next();

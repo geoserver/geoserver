@@ -58,7 +58,7 @@ class TruncateHelper {
         final ObjectId newCommit = newRef.isPresent() ? newRef.get().getObjectId() : ObjectId.NULL;
 
         final String tileLayerName = tileLayer.getName();
-        final String layerTreeName = tileLayer.getLayerInfo().getResource().getNativeName();
+        final String layerTreeName = ((LayerInfo) tileLayer.getInfo()).getResource().getNativeName();
 
         LOGGER.debug(
                 String.format(
@@ -99,7 +99,7 @@ class TruncateHelper {
         }
         final Set<String> gridSubsets = tileLayer.getGridSubsets();
 
-        LayerInfo layerInfo = tileLayer.getLayerInfo();
+        LayerInfo layerInfo = (LayerInfo) tileLayer.getInfo();
         ResourceInfo resource = layerInfo.getResource();
         final CoordinateReferenceSystem sourceCrs;
         {

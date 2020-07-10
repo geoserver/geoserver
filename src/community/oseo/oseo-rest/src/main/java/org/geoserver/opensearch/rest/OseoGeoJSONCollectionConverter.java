@@ -5,11 +5,17 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.data.geojson.GeoJSONWriter;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.geojson.feature.FeatureJSON;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -33,14 +39,24 @@ public class OseoGeoJSONCollectionConverter extends BaseMessageConverter<Object>
     protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) t;
-        FeatureJSON json = new FeatureJSON();
-        json.writeFeatureCollection((FeatureCollection) fc, outputMessage.getBody());
+        
+        String out = GeoJSONWriter.toGeoJSON(fc);
+        PrintWriter pw = new PrintWriter(outputMessage.getBody());
+        pw.write(out);
+        pw.close();
     }
 
     @Override
     protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        return new FeatureJSON().readFeatureCollection(inputMessage.getBody());
+        InputStream body = inputMessage.getBody();
+        StringWriter writer = new StringWriter();
+        HttpHeaders headers = inputMessage.getHeaders();
+        String contentEncoding = headers.getFirst("content-encoding");
+        IOUtils.copy(body, writer,contentEncoding);
+        String theString = writer.toString();
+        return GeoJSONReader.parseFeatureCollection(theString);
+
     }
 
     public int getPriority() {

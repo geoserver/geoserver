@@ -24,7 +24,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
-import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -476,7 +476,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("MSI", json.read("$.properties['eo:instrument']"));
         assertEquals("2012-04-23T18:25:43.511+0000", json.read("$.properties['timeStart']"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }

@@ -171,7 +171,7 @@ public class GpxEncoder {
         Coordinate[] coordinates = ls.getCoordinates();
         for (int ic = 0; ic < coordinates.length; ic++) {
             writeWpt(
-                    writer, ptElementName, coordinates[ic].x, coordinates[ic].y, coordinates[ic].z);
+                    writer, ptElementName, coordinates[ic].x, coordinates[ic].y, coordinates[ic].getZ());
         }
     }
 
@@ -209,8 +209,8 @@ public class GpxEncoder {
         Coordinate c = pt.getCoordinate();
         writer.writeAttribute("lon", format.format(c.x));
         writer.writeAttribute("lat", format.format(c.y));
-        if (!Double.isNaN(c.z)) {
-            writer.writeAttribute("ele", format.format(c.z));
+        if (!Double.isNaN(c.getZ())) {
+            writer.writeAttribute("ele", format.format(c.getZ()));
         }
         if (writeExtendedData) {
             writeData(writer, f);

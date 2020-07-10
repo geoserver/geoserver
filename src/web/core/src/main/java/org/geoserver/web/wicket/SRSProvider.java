@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import org.geoserver.web.data.resource.BasicResourceConfig;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.util.factory.Hints;
@@ -73,10 +74,10 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
                     // description = CRS.getAuthorityFactory(true).getDescriptionText("EPSG:" +
                     // code)
                     // .toString(getLocale()).toUpperCase();
-                    desc =
-                            CRS.getAuthorityFactory(true)
-                                    .getDescriptionText("EPSG:" + code)
-                                    .toString();
+                    String epsgcode = code;
+                    if (!epsgcode.startsWith(BasicResourceConfig.URN_OGC_PREFIX))
+                        epsgcode = "EPSG:" + epsgcode;
+                    desc = CRS.getAuthorityFactory(true).getDescriptionText(epsgcode).toString();
                 } catch (Exception e) {
                     // no problem
                 }
@@ -148,14 +149,15 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
     // a constructor to pass custom list of SRS list
     public SRSProvider(List<String> srsList) {
-        String epsg = "EPSG:";
         List<SRS> otherSRS = new ArrayList<>();
         for (String srs : srsList) {
 
-            if (srs.startsWith(epsg)) srs = srs.substring(epsg.length());
+            if (srs.startsWith(BasicResourceConfig.EPSG_PREFIX))
+                srs = srs.substring(BasicResourceConfig.EPSG_PREFIX.length());
 
             otherSRS.add(new SRS(srs));
         }
+
         this.items = otherSRS;
     }
 

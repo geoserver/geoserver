@@ -5,6 +5,8 @@ Storing a coverage in a JDBC database
 
 .. warning:: The screenshots on this tutorial have not yet been updated for the 2.0.x user interface.  But most all the rest of the information should be valid, and the user interface is roughly the same, but a bit more easy to use.
 
+.. warning:: The imagemosaic-jdbc module is a community extension, thus, unsupported.
+
 Introduction
 ------------
 

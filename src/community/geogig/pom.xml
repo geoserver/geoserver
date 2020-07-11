@@ -74,7 +74,7 @@
      -->
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-geojson</artifactId>
+      <artifactId>gt-geojsondatastore</artifactId>
       <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>

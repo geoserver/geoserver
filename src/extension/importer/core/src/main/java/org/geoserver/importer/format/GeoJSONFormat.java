@@ -10,8 +10,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -32,10 +34,13 @@ import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geotools.data.DataStore;
 import org.geotools.data.FeatureReader;
+import org.geotools.data.geojson.GeoJSONDataStore;
+import org.geotools.data.geojson.GeoJSONDataStoreFactory;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geojson.feature.FeatureJSON;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -54,10 +59,15 @@ public class GeoJSONFormat extends VectorFormat {
     @Override
     public FeatureReader read(ImportData data, ImportTask item) throws IOException {
         final SimpleFeatureType featureType = item.getFeatureType();
-        FeatureJSON json = new FeatureJSON();
-        json.setFeatureType(featureType);
+        
+        //json.setFeatureType(featureType);
+        File file = file(data, item);
+        HashMap<String, Serializable> params = new HashMap<>();
+        GeoJSONDataStoreFactory fac = new GeoJSONDataStoreFactory();
+        DataStore ds = fac.createDataStore(params);
+        
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
-        final FeatureIterator it = json.streamFeatureCollection(file(data, item));
+        final FeatureIterator it = ds.getFeatureSource(ds.getTypeNames()[0]).getFeatures().features();
         return new FeatureReader() {
 
             @Override
@@ -110,14 +120,18 @@ public class GeoJSONFormat extends VectorFormat {
 
     SimpleFeature sniff(File file) {
         try {
-            FeatureIterator it = new FeatureJSON().streamFeatureCollection(file);
-            try {
+            
+            HashMap<String, Serializable> params = new HashMap<>();
+            GeoJSONDataStoreFactory fac = new GeoJSONDataStoreFactory();
+            DataStore ds = fac.createDataStore(params);
+            
+            
+            
+            try(FeatureIterator it = ds.getFeatureSource(ds.getTypeNames()[0]).getFeatures().features()) {
                 if (it.hasNext()) {
                     return (SimpleFeature) it.next();
                 }
-            } finally {
-                it.close();
-            }
+            } 
         } catch (Exception e) {
             LOG.log(Level.FINER, "Error reading file as json", e);
         }
@@ -152,7 +166,12 @@ public class GeoJSONFormat extends VectorFormat {
         CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
 
         // get the composite feature type
-        SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file, false);
+       
+        HashMap<String, Serializable> params = new HashMap<>();
+        GeoJSONDataStoreFactory fac = new GeoJSONDataStoreFactory();
+        DataStore ds = fac.createDataStore(params);
+        
+        SimpleFeatureType featureType = ds.getSchema(ds.getTypeNames()[0]);
         LOG.log(Level.FINE, featureType.toString());
 
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();

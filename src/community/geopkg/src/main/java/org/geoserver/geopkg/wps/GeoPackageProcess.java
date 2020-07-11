@@ -273,7 +273,7 @@ public class GeoPackageProcess implements GeoServerProcess {
                 }
 
                 List<LayerInfo> layers = catalog.getLayers(ft);
-                if (contents.isStyles() && layers != null && !layers.isEmpty()) {
+                if (features.isStyles() && layers != null && !layers.isEmpty()) {
                     LayerInfo layerInfo = layers.get(0);
                     if (layerInfo != null) {
                         addLayerStyles(gpkg, layerInfo);

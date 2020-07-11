@@ -132,7 +132,12 @@
 	<artifactId>gs-web-demo</artifactId>
 	<scope>test</scope>
 	<version>${project.version}</version>
-  </dependency>   
+  </dependency>
+  <dependency>
+   <groupId>org.hamcrest</groupId>
+   <artifactId>hamcrest-library</artifactId>
+   <scope>test</scope>
+  </dependency>
  </dependencies>
 
  <build>

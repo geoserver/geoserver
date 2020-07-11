@@ -115,7 +115,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
             ps.setString(1, uri);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     result.add(mapSemanticAnnotation(rs));
                 }
             }

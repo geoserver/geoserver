@@ -13,6 +13,8 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.geoserver.wps.XMLEncoderDelegate;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDataTypeBinding {
 
@@ -45,5 +47,17 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
         }
 
         return cd;
+    }
+
+    /** Override to handle plain text contents */
+    public Element encode(Object object, Document document, Element value) throws Exception {
+        ComplexDataType complex = (ComplexDataType) object;
+        if (!complex.getData().isEmpty() && complex.getData().get(0) instanceof String) {
+            Object v = complex.getData().get(0);
+            if (v != null) {
+                value.appendChild(document.createTextNode(v.toString()));
+            }
+        }
+        return value;
     }
 }

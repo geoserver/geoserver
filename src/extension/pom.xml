@@ -112,13 +112,6 @@
     </profile>
 
     <profile>
-      <id>imagemosaic-jdbc</id>
-      <modules>
-        <module>imagemosaic-jdbc</module>
-      </modules>
-    </profile>
-    
-    <profile>
       <id>jp2k</id>
       <modules>
         <module>jp2k</module>
@@ -386,7 +379,6 @@
         <module>excel</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
-        <module>imagemosaic-jdbc</module>
         <module>control-flow</module>
         <module>wps</module>
         <module>querylayer</module>
@@ -434,7 +426,6 @@
         <module>excel</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
-        <module>imagemosaic-jdbc</module>
         <module>control-flow</module>
         <module>wps</module>
         <module>querylayer</module>

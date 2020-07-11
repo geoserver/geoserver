@@ -1526,7 +1526,6 @@
       <descriptor>release/bin.xml</descriptor>
       <descriptor>release/ext-db2.xml</descriptor>
       <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
-      <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>
       <descriptor>release/ext-jp2k.xml</descriptor>
       <descriptor>release/ext-mysql.xml</descriptor>
       <descriptor>release/ext-oracle.xml</descriptor>

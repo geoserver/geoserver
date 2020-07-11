@@ -3,7 +3,7 @@
 Custom JDBC Access for image data
 =================================
 
-.. note:: GeoServer does not come built-in with support for Custom JDBC Access; it must be installed through an extension. Proceed to :doc:`Image Mosaic JDBC<imagemosaicjdbc>` for installation details. This extension includes the support for Custom JDBC Access.
+.. note:: GeoServer does not come built-in with support for Custom JDBC Access; it must be installed through an extension. Proceed to :doc:`Image Mosaic JDBC<index>` for installation details. This extension includes the support for Custom JDBC Access.
 
 
 Adding a coverage based on Custom JDBC Access
@@ -11,7 +11,7 @@ Adding a coverage based on Custom JDBC Access
 
 This extension  is targeted to users having a special database layout for storing their image data or use a special data base extension concerning raster data.
 
-Read the geotools documentation for Custom JDBC Access: `<http://docs.geotools.org/latest/userguide/library/coverage/jdbc/customized.html>`_.
+Read the geotools documentation for Custom JDBC Access: `<https://docs.geotools.org/latest/userguide/unsupported/imagemosaic-jdbc/customized.html>`_.
 
 After developing the custom plugin, package the classes into a jar file and copy it into the :file:`WEB-INF/lib`  directory of the geoserver installation.
 

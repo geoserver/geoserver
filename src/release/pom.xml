@@ -175,11 +175,6 @@
   </dependency> 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>gs-imagemosaic-jdbc</artifactId>
-   <version>${project.version}</version>
-  </dependency> 
-  <dependency>
-   <groupId>org.geoserver.extension</groupId>
    <artifactId>gs-jp2k</artifactId>
    <version>${project.version}</version>
   </dependency> 

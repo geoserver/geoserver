@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -52,6 +53,7 @@ import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
+import org.geoserver.wms.wms_1_3.GetMapIntegrationTest;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -91,6 +93,9 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
     protected static QName TIMESERIES =
             new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+
+    private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
+    private static final String RAIN_RT_STYLE = "filteredRain";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -221,6 +226,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         LayerInfo layer = catalog.getLayerByName(getLayerId(STATES));
         layer.setQueryable(false);
         catalog.save(layer);
+
+        // add global rain and style
+        testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
+        testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapIntegrationTest.class, catalog);
     }
 
     /** Test GetFeatureInfo with 3D content, and the result returns the expected point. */
@@ -1475,5 +1484,56 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // assert no features were returned
         responseJson = JSONObject.fromObject(json);
         assertTrue(responseJson.getJSONArray("features").isEmpty());
+    }
+
+    @Test
+    public void testRasterRenderingTransformation() throws Exception {
+        // get and test rain unfiltered
+        JSONObject jsonUnfiltered =
+                (JSONObject)
+                        getAsJSON(
+                                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
+                                        + "&layers=rain"
+                                        + "&styles=&bbox=-180,-90,180,90&width=600&height=300"
+                                        + "&x=20&y=150"
+                                        + "&info_format=application/json&query_layers=rain"
+                                        + "&srs=EPSG:4326",
+                                200);
+
+        assertEquals(
+                491,
+                jsonUnfiltered
+                        .getJSONArray("features")
+                        .getJSONObject(0)
+                        .getJSONObject("properties")
+                        .getDouble("rain"),
+                0d);
+
+        // get and test rain with Jiffle filter
+        JSONObject jsonFiltered =
+                (JSONObject)
+                        getAsJSON(
+                                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
+                                        + "&layers=rain"
+                                        + "&styles="
+                                        + RAIN_RT_STYLE
+                                        + "&bbox=-180,-90,180,90&width=600&height=300"
+                                        + "&x=20&y=150"
+                                        + "&info_format=application/json&query_layers=rain"
+                                        + "&srs=EPSG:4326");
+
+        print(jsonFiltered);
+        assertEquals(
+                JSONNull.getInstance(),
+                jsonFiltered
+                        .getJSONArray("features")
+                        .getJSONObject(0)
+                        .getJSONObject("properties")
+                        .get("jiffle"));
+    }
+
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
     }
 }

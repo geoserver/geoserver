@@ -14,6 +14,7 @@ import org.geoserver.wfstemplating.builders.geojson.GeoJsonRootBuilder;
 import org.geoserver.wfstemplating.builders.impl.*;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdCompositeBuilder;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdDynamicBuilder;
+import org.geoserver.wfstemplating.builders.jsonld.JsonLdIteratingBuilder;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdRootBuilder;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -40,7 +41,7 @@ public class BuilderFactory {
     public TemplateBuilder getIteratingBuilder(String key, NamespaceSupport namespaces) {
         TemplateBuilder iterating;
         if (isJsonLd) {
-            iterating = new IteratingBuilder(key, namespaces);
+            iterating = new JsonLdIteratingBuilder(key, namespaces);
         } else {
             if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces);
             else iterating = new IteratingBuilder(key, namespaces);

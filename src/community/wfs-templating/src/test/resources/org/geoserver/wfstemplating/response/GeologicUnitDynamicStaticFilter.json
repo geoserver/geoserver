@@ -58,7 +58,8 @@
                 },
                 "lithology": [
                   {
-                    "$source": "gsml:lithology"
+                    "$source": "gsml:lithology",
+                    "$filter": "xpath('gsml:ControlledConcept/@id') = '0'"
                   },
                   {
                     "@id": "${gsml:ControlledConcept/@id}",

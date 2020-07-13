@@ -24,6 +24,7 @@ import org.geoserver.wfstemplating.configuration.TemplateConfiguration;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
 import org.geoserver.wfstemplating.response.GeoJsonTemplateGetFeatureResponse;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
@@ -57,6 +58,18 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
                 if (filterLang != null && filterLang.equalsIgnoreCase("CQL-TEXT")) {
                     String filter = (String) request.getKvp().get("FILTER");
                     replaceJsonLdPathWithFilter(filter, outputFormat, operation);
+                }
+                String envParam =
+                        request.getRawKvp().get("ENV") != null
+                                ? request.getRawKvp().get("ENV").toString()
+                                : null;
+
+                if (envParam != null) {
+                    String[] arEnvParams = envParam.split(";");
+                    for (String e : arEnvParams) {
+                        String[] singleParam = e.split(":");
+                        EnvFunction.setLocalValue(singleParam[0], singleParam[1]);
+                    }
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);

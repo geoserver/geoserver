@@ -26,16 +26,14 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
+    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (evaluateFilter(context)) {
-            if (strValue != null)
-                writer.writeStaticContent(nameHelper.getFinalAttributeName(), strValue);
-            else writer.writeStaticContent(nameHelper.getFinalAttributeName(), staticValue);
-        }
+        if (strValue != null)
+            writer.writeStaticContent(nameHelper.getFinalAttributeName(), strValue);
+        else writer.writeStaticContent(nameHelper.getFinalAttributeName(), staticValue);
     }
 
     public void setParentKey(String parentKey) {
-        this.nameHelper = new AttributeNameHelper(key, parentKey);
+        this.nameHelper = new AttributeNameHelper(getKey(), parentKey);
     }
 }

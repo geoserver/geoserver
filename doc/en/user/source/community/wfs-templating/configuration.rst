@@ -372,3 +372,10 @@ Given the above configuration file, the plugin will act in the following way:
 
 An example output, give this configuration file, can be seen in the output section.
 
+Environment parametrization
+---------------------------
+
+A template configuration can also be manipulated on the fly, replacing existing attributes, attributes' names and sources using the :code:`env` parameter. 
+To achieve this the attribute name, the attribute, or the source should be replaced by the env function in the following way :code:`$${env('nameOfTheEnvParameter','defaultValue')}`. 
+If in the request it is specified an env query parameter :code:`env='nameOfTheEnvParameter':'newValue'`, the default value will be replaced in the final output with the one specified in the request.
+The functionality is supported also for filter arguments, eg. :code:`"$filter":"xpath('gsml:ControlledConcept/gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.

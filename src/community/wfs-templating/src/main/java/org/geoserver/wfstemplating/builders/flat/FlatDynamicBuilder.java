@@ -28,6 +28,6 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
 
     @Override
     public void setParentKey(String parentKey) {
-        this.nameHelper = new AttributeNameHelper(key, parentKey);
+        this.nameHelper = new AttributeNameHelper(getKey(), parentKey);
     }
 }

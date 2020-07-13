@@ -7,14 +7,16 @@ package org.geoserver.wfstemplating.builders;
 import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.wfstemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Abstract class for builders that can set the context for their children through source xpath */
 public abstract class SourceBuilder extends AbstractTemplateBuilder {
 
-    private AttributeExpressionImpl source;
+    private Expression source;
 
     protected List<TemplateBuilder> children;
 
@@ -31,10 +33,9 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
      */
     public TemplateBuilderContext evaluateSource(TemplateBuilderContext context) {
 
-        if (source != null && !source.getPropertyName().equals(context.getCurrentSource())) {
+        if (source != null && !getStrSource().equals(context.getCurrentSource())) {
             Object o = evaluateSource(context.getCurrentObj());
-            TemplateBuilderContext newContext =
-                    new TemplateBuilderContext(o, source.getPropertyName());
+            TemplateBuilderContext newContext = new TemplateBuilderContext(o, getStrSource());
             newContext.setParent(context);
             return newContext;
         }
@@ -48,6 +49,11 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
      * @return the result of the evaluation
      */
     public Object evaluateSource(Object o) {
+        if (!(source instanceof AttributeExpressionImpl)) {
+            AttributeExpressionImpl sourceToEval =
+                    new AttributeExpressionImpl(source.evaluate(null).toString(), namespaces);
+            return sourceToEval.evaluate(o);
+        }
         return source.evaluate(o);
     }
 
@@ -67,6 +73,9 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
      * @return the source as an Expression
      */
     public Expression getSource() {
+        if (!(source instanceof AttributeExpressionImpl) && source != null) {
+            return new AttributeExpressionImpl(source.evaluate(null).toString(), namespaces);
+        }
         return source;
     }
 
@@ -76,7 +85,11 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
      * @return the source a string
      */
     public String getStrSource() {
-        return source != null ? source.getPropertyName() : null;
+        if (source == null) return null;
+
+        if (source instanceof AttributeExpressionImpl)
+            return ((AttributeExpressionImpl) source).getPropertyName();
+        else return source.evaluate(null).toString();
     }
 
     /**
@@ -85,6 +98,11 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
      * @param source the string source
      */
     public void setSource(String source) {
-        this.source = new AttributeExpressionImpl(source, namespaces);
+        JsonLdCQLManager cqlManager = new JsonLdCQLManager(source, namespaces);
+        Expression sourceExpr = cqlManager.getExpressionFromString();
+        if (sourceExpr instanceof Literal)
+            this.source =
+                    new AttributeExpressionImpl(sourceExpr.evaluate(null).toString(), namespaces);
+        else this.source = sourceExpr;
     }
 }

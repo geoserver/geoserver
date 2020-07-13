@@ -55,7 +55,7 @@ public class TemplateValidator {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder djb = (DynamicValueBuilder) jb;
                 Expression toValidate = getExpressionToValidate(djb, source, djb.getContextPos());
-                if (validate(toValidate, visitor) == null)
+                if (!validate(toValidate, visitor))
                     if (djb.getCql() != null) {
                         this.failingAttribute =
                                 "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getCql());
@@ -72,7 +72,7 @@ public class TemplateValidator {
                             sb.getStrSource().substring(sb.getStrSource().indexOf(":") + 1);
                     if (!type.getName().contains(typeName)) {
                         PropertyName pn = getSourceToValidate(sb, source);
-                        if (validate(pn, visitor) == null) {
+                        if (!validate(pn, visitor)) {
                             failingAttribute = "Source: " + sb.getStrSource();
                             return false;
                         } else {
@@ -90,7 +90,7 @@ public class TemplateValidator {
                         getFilterToValidate(
                                 (AbstractTemplateBuilder) jb,
                                 siblingSource != null ? siblingSource : source);
-                if (filter != null && validate(filter, visitor) == null) {
+                if (filter != null && !validate(filter, visitor)) {
                     failingAttribute = "Filter: " + CQL.toCQL(filter);
                     return false;
                 }
@@ -103,14 +103,13 @@ public class TemplateValidator {
         return failingAttribute;
     }
 
-    public Object validate(Object toValidate, ValidateExpressionVisitor visitor) {
+    public boolean validate(Object toValidate, ValidateExpressionVisitor visitor) {
         Object result = null;
-        if (toValidate instanceof Expression)
-            result = ((Expression) toValidate).accept(visitor, null);
+        if (toValidate instanceof Expression) ((Expression) toValidate).accept(visitor, null);
         else {
-            result = ((Filter) toValidate).accept(visitor, null);
+            ((Filter) toValidate).accept(visitor, null);
         }
-        return result;
+        return visitor.isValid();
     }
 
     /**

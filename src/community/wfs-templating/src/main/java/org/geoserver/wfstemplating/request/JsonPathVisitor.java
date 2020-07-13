@@ -33,8 +33,8 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class JsonPathVisitor extends DuplicatingFilterVisitor {
 
-    private int currentEl;
-    private String currentSource;
+    protected int currentEl;
+    protected String currentSource;
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     static final Logger LOGGER = Logging.getLogger(JsonPathVisitor.class);
     boolean isSimple;
@@ -99,6 +99,34 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
      */
     public Object findFunction(List<TemplateBuilder> children, String[] eles)
             throws ServiceException {
+        TemplateBuilder jb = findBuilder(children, eles);
+        if (jb != null) {
+            if (jb instanceof DynamicValueBuilder) {
+                DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
+                if (currentEl + 1 != eles.length) throw new ServiceException("error");
+                if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
+                else {
+                    return super.visit(dvb.getCql(), null);
+                }
+            } else if (jb instanceof StaticBuilder) {
+                JsonNode staticNode = ((StaticBuilder) jb).getStaticValue();
+                while (currentEl < eles.length) {
+                    JsonNode child = staticNode.get(eles[currentEl]);
+                    staticNode = child != null ? child : staticNode;
+                    currentEl++;
+                }
+                if (currentEl != eles.length) throw new ServiceException("error");
+                return FF.literal(staticNode.asText());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find the corresponding function to which json-ld path is pointing, by iterating over
+     * builder's tree
+     */
+    public TemplateBuilder findBuilder(List<TemplateBuilder> children, String[] eles) {
         if (children != null) {
             for (TemplateBuilder jb : children) {
                 String key = ((AbstractTemplateBuilder) jb).getKey();
@@ -114,32 +142,18 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
                             }
                         }
                     }
-                    if (jb instanceof DynamicValueBuilder) {
-                        DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
-                        if (currentEl + 1 != eles.length) throw new ServiceException("error");
-                        if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
-                        else {
-                            return super.visit(dvb.getCql(), null);
-                        }
-                    } else if (jb instanceof StaticBuilder) {
-                        JsonNode staticNode = ((StaticBuilder) jb).getStaticValue();
-                        while (currentEl < eles.length) {
-                            JsonNode child = staticNode.get(eles[currentEl]);
-                            staticNode = child != null ? child : staticNode;
-                            currentEl++;
-                        }
-                        if (currentEl != eles.length) throw new ServiceException("error");
-                        return FF.literal(staticNode.asText());
+                    if (jb instanceof DynamicValueBuilder || jb instanceof StaticBuilder) {
+                        return jb;
                     } else {
                         if (key != null) currentEl++;
-                        Object result = findFunction(jb.getChildren(), eles);
+                        TemplateBuilder result = findBuilder(jb.getChildren(), eles);
                         if (result != null) {
                             return result;
                         }
                     }
                 } else {
                     if (jb.getChildren() != null) {
-                        Object result = findFunction(jb.getChildren(), eles);
+                        TemplateBuilder result = findBuilder(jb.getChildren(), eles);
                         if (result != null) {
                             return result;
                         }

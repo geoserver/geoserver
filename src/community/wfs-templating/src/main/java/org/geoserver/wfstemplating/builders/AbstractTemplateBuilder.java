@@ -8,8 +8,10 @@ import java.io.IOException;
 import org.geoserver.wfstemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
 import org.geoserver.wfstemplating.writers.TemplateOutputWriter;
+import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -17,7 +19,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public abstract class AbstractTemplateBuilder implements TemplateBuilder {
 
-    protected String key;
+    protected Expression key;
 
     protected Filter filter;
 
@@ -26,7 +28,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     protected NamespaceSupport namespaces;
 
     public AbstractTemplateBuilder(String key, NamespaceSupport namespaces) {
-        this.key = key;
+        this.key = getKeyAsExpression(key);
         this.namespaces = namespaces;
     }
 
@@ -46,11 +48,11 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     }
 
     public String getKey() {
-        return key;
+        return key != null ? key.evaluate(null).toString() : null;
     }
 
     public void setKey(String key) {
-        this.key = key;
+        this.key = getKeyAsExpression(key);
     }
 
     /**
@@ -90,7 +92,27 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
      * @throws IOException
      */
     protected void writeKey(TemplateOutputWriter writer) throws IOException {
-        if (key != null && !key.equals("")) writer.writeElementName(key);
+        if (key != null && !key.evaluate(null).equals(""))
+            writer.writeElementName(key.evaluate(null));
         else throw new RuntimeException("Cannot write null key value");
+    }
+
+    public NamespaceSupport getNamespaces() {
+        return namespaces;
+    }
+
+    private Expression getKeyAsExpression(String key) {
+        Expression keyExpr;
+        if (key != null) {
+            if (key.startsWith("$${")) {
+                JsonLdCQLManager cqlManager = new JsonLdCQLManager(key, null);
+                keyExpr = cqlManager.getExpressionFromString();
+            } else {
+                keyExpr = new LiteralExpressionImpl(key);
+            }
+        } else {
+            keyExpr = null;
+        }
+        return keyExpr;
     }
 }

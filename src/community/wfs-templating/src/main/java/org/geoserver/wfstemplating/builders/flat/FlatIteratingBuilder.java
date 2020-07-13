@@ -76,6 +76,6 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
     @Override
     public void setParentKey(String parentKey) {
-        this.nameHelper = new AttributeNameHelper(key, parentKey);
+        this.nameHelper = new AttributeNameHelper(getKey(), parentKey);
     }
 }

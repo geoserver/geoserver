@@ -46,11 +46,13 @@ public class IteratingBuilder extends SourceBuilder {
      */
     protected void evaluateNonFeaturesField(
             TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
-        writeKey(writer);
-        writer.startArray();
-        if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
-        else evaluateInternal(writer, context);
-        writer.endArray();
+        if (canWrite(context)) {
+            writeKey(writer);
+            writer.startArray();
+            if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
+            else evaluateInternal(writer, context);
+            writer.endArray();
+        }
     }
 
     /**
@@ -85,5 +87,9 @@ public class IteratingBuilder extends SourceBuilder {
                 child.evaluate(writer, context);
             }
         }
+    }
+
+    protected boolean canWrite(TemplateBuilderContext context) {
+        return true;
     }
 }

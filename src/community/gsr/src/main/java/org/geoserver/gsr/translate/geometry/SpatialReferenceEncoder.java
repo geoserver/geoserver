@@ -107,7 +107,8 @@ public class SpatialReferenceEncoder {
                 "Could not determine coordinate reference system from spatial reference: " + sr);
     }
 
-    private static CoordinateReferenceSystem interpret(String wkid) throws FactoryException {
+    // unused private method commented
+    /*private static CoordinateReferenceSystem interpret(String wkid) throws FactoryException {
         String withEPSGPrefix;
         try {
             Integer asInteger = Integer.valueOf(wkid);
@@ -117,5 +118,5 @@ public class SpatialReferenceEncoder {
         }
 
         return CRS.decode(withEPSGPrefix);
-    }
+    }*/
 }

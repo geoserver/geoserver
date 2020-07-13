@@ -52,6 +52,7 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
  *
  * @param <T> The coordinate type. Must be a {@link Number}.
  */
+@SuppressWarnings("deprecation")
 public abstract class AbstractGeometryEncoder<T extends Number> implements Converter {
 
     @Override

@@ -121,15 +121,10 @@ public class ImageResourceController extends AbstractController {
     }
 
     protected void writeImageData(File imageFile, HttpServletResponse response) throws IOException {
-        InputStream is = null;
-        OutputStream os = null;
-        try {
-            is = new FileInputStream(imageFile);
-            os = response.getOutputStream();
+
+        try (InputStream is = new FileInputStream(imageFile);
+                OutputStream os = response.getOutputStream()) {
             IOUtils.copy(is, os);
-        } finally {
-            IOUtils.closeQuietly(is);
-            IOUtils.closeQuietly(os);
         }
     }
 

@@ -142,4 +142,12 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
     protected void endFeature() {
         startingCoords = null;
     }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public CoordinateReferenceSystem getOutCrs() {
+        return outCrs;
+    }
 }

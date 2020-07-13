@@ -80,6 +80,6 @@ public class GSRModelReader extends BaseMessageConverter<GSRModel> {
             }
         }
         throw new HttpMessageNotReadableException(
-                this.getClass().getName() + " does not support deserialization");
+                this.getClass().getName() + " does not support deserialization", inputMessage);
     }
 }

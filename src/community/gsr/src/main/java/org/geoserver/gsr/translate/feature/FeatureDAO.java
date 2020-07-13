@@ -10,6 +10,8 @@
 
 package org.geoserver.gsr.translate.feature;
 
+import static java.util.logging.Level.SEVERE;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
@@ -199,6 +201,12 @@ public class FeatureDAO {
                         e,
                         FeatureServiceErrors.nonSpecific(
                                 Collections.singletonList(e.getMessage())));
+            }
+        } finally {
+            try {
+                transaction.close();
+            } catch (IOException e) {
+                LOGGER.log(SEVERE, "Error closing transaction", e);
             }
         }
         return results;

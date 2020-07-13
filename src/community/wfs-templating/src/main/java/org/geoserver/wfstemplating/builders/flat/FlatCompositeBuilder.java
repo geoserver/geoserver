@@ -27,7 +27,7 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
     @Override
     protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY)) {
+        if (getKey() != null && getKey().equals(AttributeNameHelper.PROPERTIES_KEY)) {
             writeKey(writer);
             writer.startObject();
         }
@@ -36,10 +36,11 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
                     .setParentKey(attributeNameHelper.getCompleteCompositeAttributeName());
             jb.evaluate(writer, context);
         }
-        if (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY)) writer.endObject();
+        if (getKey() != null && getKey().equals(AttributeNameHelper.PROPERTIES_KEY))
+            writer.endObject();
     }
 
     public void setParentKey(String parentKey) {
-        this.attributeNameHelper = new AttributeNameHelper(key, parentKey);
+        this.attributeNameHelper = new AttributeNameHelper(getKey(), parentKey);
     }
 }

@@ -30,9 +30,14 @@ public class StaticBuilder extends AbstractTemplateBuilder {
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         if (evaluateFilter(context)) {
-            if (strValue != null) writer.writeStaticContent(key, strValue);
-            else writer.writeStaticContent(key, staticValue);
+            evaluateInternal(writer, context);
         }
+    }
+
+    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
+            throws IOException {
+        if (strValue != null) writer.writeStaticContent(getKey(), strValue);
+        else writer.writeStaticContent(getKey(), staticValue);
     }
 
     /**

@@ -46,9 +46,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         Object o = null;
         if (evaluateFilter(context)) {
             if (xpath != null) {
-
                 o = evaluateXPath(context);
-
             } else if (cql != null) {
                 o = evaluateExpressions(context);
             }

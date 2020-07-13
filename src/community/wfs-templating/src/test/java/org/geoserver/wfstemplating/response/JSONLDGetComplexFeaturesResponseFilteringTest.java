@@ -103,6 +103,37 @@ public class JSONLDGetComplexFeaturesResponseFilteringTest extends TemplateJSONC
         }
     }
 
+    @Test
+    public void testJsonLdNotEncodingArrayFilteredOut() throws Exception {
+        // filter on dynamic:
+        // "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}"
+        // filter on static
+        //  "@codeSpace": "$filter{xpath('../../gml:description')='Olivine
+        // basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
+        setUpComplex("GeologicUnitDynamicStaticFilter.json", geologicUnit);
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:GeologicUnit&outputFormat=")
+                        .append("application%2Fld%2Bjson");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        int size = features.size();
+        assertEquals(3, size);
+        for (int i = 0; i < size; i++) {
+            JSONArray composition = features.getJSONObject(i).getJSONArray("gsml:composition");
+            for (int j = 0; j < composition.size(); j++) {
+                JSONArray compositionPart =
+                        (JSONArray) ((JSONObject) composition.get(j)).get("gsml:compositionPart");
+                for (int z = 0; z < compositionPart.size(); z++) {
+                    assertNull(compositionPart.getJSONObject(z).get("lithology"));
+                }
+            }
+        }
+    }
+
     @Override
     protected String getTemplateFileName() {
         return TemplateIdentifier.JSONLD.getFilename();

@@ -64,14 +64,15 @@ public class JsonLdCQLManager {
     public Expression getExpressionFromString() {
         // takes xpath fun from cql
         String strXpathFun = extractXpathFromCQL(this.strCql);
-        if (strXpathFun.indexOf(XPATH_FUN_START) != -1)
-            this.contextPos = determineContextPos(strXpathFun);
+        boolean isXpath = strXpathFun.indexOf(XPATH_FUN_START) != -1;
+        if (isXpath) this.contextPos = determineContextPos(strXpathFun);
         // takes the literal argument of xpathFun
         String literalXpath = removeBackDots(toLiteralXpath(strXpathFun));
 
         // clean the function to obtain a cql expression without xpath() syntax
         Expression expression =
                 extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
+        if (!isXpath) return expression;
         // replace the xpath literal inside the expression with a PropertyName
         return (Expression) setPropertyNameToCQL(expression, literalXpath.replaceAll("'", ""));
     }

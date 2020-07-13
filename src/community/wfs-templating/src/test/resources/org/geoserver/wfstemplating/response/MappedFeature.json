@@ -20,10 +20,10 @@
   "type": "FeatureCollection",
   "features": [
     {
-      "$source": "gsml:MappedFeature"
+      "$source": "$${strConcat('gsml:',env('source', 'MappedFeature'))}"
     },
     {
-      "@id": "${@id}",
+      "$${env('id','@id')}": "${@id}",
       "@type": [
         "Feature",
         "gsml:MappedFeature",
@@ -31,7 +31,7 @@
       ],
       "name": "${gml:name}",
       "gsml:positionalAccuracy": {
-        "type": "gsml:CGI_NumericValue",
+        "type": "$${env('positionalAccuracyType','CGI_NumericValue')}",
         "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
       },
       "gsml:GeologicUnit": {

@@ -10,6 +10,13 @@
       <outputDirectory></outputDirectory>
       <includes>	
         <include>gs-gsr*.jar</include>
+        <include>gs-ogcapi-core*.jar</include>
+        <include>jackson-databind*.jar</include>
+        <include>jackson-annotations*.jar</include>
+        <include>jackson-dataformat-*.jar</include>
+        <include>swagger-core*.jar</include>
+        <include>swagger-models*.jar</include>
+        <include>gson*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

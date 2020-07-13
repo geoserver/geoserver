@@ -176,6 +176,62 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                                         + "Failing attribute is Key: invalidAttr Value: &amp;quot;gsml:notExisting&amp;quot;"));
     }
 
+    @Test
+    public void testJsonLdQueryEnvSubstitutionOnAttributeName() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&env=id:envId");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            assertTrue(feature.has("envId"));
+        }
+    }
+
+    @Test
+    public void testJsonLdQueryEnvSubstitutionOnSource() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&env=source:NotMappedFeature");
+        MockHttpServletResponse response = getAsServletResponse(sb.toString());
+        // source changed validation should fail
+        assertTrue(
+                response.getContentAsString()
+                        .contains(
+                                "Failed to validate template for feature type MappedFeature. "
+                                        + "Failing attribute is Source: gsml:NotMappedFeature"));
+    }
+
+    @Test
+    public void testJsonLdQueryEnvSubstitutionOnAttribute() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&env=positionalAccuracyType:CGI_NotNumericValue");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            String typeValue = feature.getJSONObject("gsml:positionalAccuracy").getString("type");
+            assertEquals("CGI_NotNumericValue", typeValue);
+        }
+    }
+
     private void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);
         assertNotNull(feature.getString("@id"));

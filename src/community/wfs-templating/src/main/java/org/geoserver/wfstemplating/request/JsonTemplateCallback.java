@@ -58,7 +58,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                 List<Query> queries = getFeature.getQueries();
 
                 if (getFeature != null && queries != null && queries.size() > 0) {
-                    handleTemplateFilterInQueries(queries, request.getOutputFormat());
+                    handleTemplateFilters(queries, request.getOutputFormat());
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -68,7 +68,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
     }
 
     // iterate over queries to eventually handle a templates query paths
-    private void handleTemplateFilterInQueries(List<Query> queries, String outputFormat)
+    private void handleTemplateFilters(List<Query> queries, String outputFormat)
             throws ExecutionException {
         for (Query q : queries) {
             List<FeatureTypeInfo> featureTypeInfos = getFeatureTypeInfoFromQuery(q);

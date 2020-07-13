@@ -6,7 +6,7 @@ package org.geoserver.wfstemplating.validation;
 
 import org.geoserver.wfstemplating.builders.impl.TemplateBuilderContext;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.visitor.DefaultFilterVisitor;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.expression.PropertyName;
 
@@ -14,9 +14,11 @@ import org.opengis.filter.expression.PropertyName;
  * Visitor to perform a validation of a template based on evaluation of xpath against the {@link
  * FeatureType} and on the checking of param count for CQL expression
  */
-public class ValidateExpressionVisitor extends DefaultFilterVisitor {
+public class ValidateExpressionVisitor extends DuplicatingFilterVisitor {
 
     private TemplateBuilderContext context;
+
+    private boolean valid = true;
 
     public ValidateExpressionVisitor(TemplateBuilderContext context) {
         super();
@@ -32,10 +34,9 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
             PropertyName pn =
                     new AttributeExpressionImpl(xpathPath, expression.getNamespaceContext());
             result = pn.evaluate(context.getCurrentObj());
-        } else {
-            result = context;
+            if (result == null) valid = false;
         }
-        return result;
+        return super.visit(expression, data);
     }
 
     public TemplateBuilderContext getContext() {
@@ -44,5 +45,9 @@ public class ValidateExpressionVisitor extends DefaultFilterVisitor {
 
     public void setContext(TemplateBuilderContext context) {
         this.context = context;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

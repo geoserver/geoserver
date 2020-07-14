@@ -46,7 +46,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
 
                 if (!Resources.exists(file)) {
                     final String styleAbsolutePath = event.getResourcePath();
-                    if (styleAbsolutePath.indexOf("workspaces") > 0) {
+                    if (styleAbsolutePath.contains("workspaces")) {
                         file =
                                 loader.get(
                                         styleAbsolutePath.substring(

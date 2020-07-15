@@ -519,12 +519,12 @@ public class ImportTaskController extends ImportBaseController {
         l.setResource(resource);
         // @hack workaround OWSUtils bug - trying to copy null collections
         // why these are null in the first place is a different question
-        LayerInfoImpl impl = (LayerInfoImpl) orig.getLayer();
-        if (impl.getAuthorityURLs() == null) {
-            impl.setAuthorityURLs(new ArrayList(1));
+        LayerInfo layerInfo = orig.getLayer();
+        if (layerInfo.getAuthorityURLs() == null) {
+            layerInfo.setAuthorityURLs(new ArrayList(1));
         }
-        if (impl.getIdentifiers() == null) {
-            impl.setIdentifiers(new ArrayList(1));
+        if (layerInfo.getIdentifiers() == null) {
+            layerInfo.setIdentifiers(new ArrayList(1));
         }
         // @endhack
         cb.updateLayer(orig.getLayer(), l);

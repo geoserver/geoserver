@@ -50,6 +50,10 @@
             <targetColumn>OWNER</targetColumn>
             <targetValue>TAG</targetValue>
           </jdbcMultipleValue>
+          <ClientProperty>
+            <name>ms_${GML_PREFIX}:code</name>
+            <value>CODE</value>
+          </ClientProperty>
         </AttributeMapping>
         <AttributeMapping>
           <targetAttribute>FEATURE_LINK[1]</targetAttribute>

@@ -6,6 +6,8 @@ package org.geoserver.wfstemplating.request;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.geoserver.api.features.FeaturesResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -129,6 +131,12 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         /* Todo find a better way to replace json-ld path with corresponding template attribute*/
         // Get filter from string in order to make it accept the visitor
         Filter f = (Filter) XCQL.toFilter(strFilter).accept(visitor, root);
+        List<Filter> templateFilters = new ArrayList<>();
+        templateFilters.addAll(visitor.getFilters());
+        if (templateFilters != null && templateFilters.size() > 0) {
+            templateFilters.add(f);
+            f = JsonTemplateCallback.ff.and(templateFilters);
+        }
         // Taking back a string from Function cause
         // OGC API get a string cql filter from query string
         String newFilter = JsonLdCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");

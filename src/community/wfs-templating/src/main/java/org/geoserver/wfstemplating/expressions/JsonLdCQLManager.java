@@ -279,8 +279,10 @@ public class JsonLdCQLManager {
             if (curr != '\"') {
                 strBuilder.append(curr);
             } else {
-                if (i != cqlFilter.length() && cqlFilter.charAt(i + 1) != ' ')
-                    strBuilder.append(curr);
+                if (i != cqlFilter.length()
+                        && i > 0
+                        && cqlFilter.charAt(i - 1) != ' '
+                        && cqlFilter.charAt(i + 1) != ' ') strBuilder.append(curr);
             }
         }
         return strBuilder.toString();

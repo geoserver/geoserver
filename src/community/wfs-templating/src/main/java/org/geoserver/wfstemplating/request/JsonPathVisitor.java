@@ -5,9 +5,8 @@
 package org.geoserver.wfstemplating.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.geoserver.wfstemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.wfstemplating.builders.SourceBuilder;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
@@ -16,10 +15,9 @@ import org.geoserver.wfstemplating.builders.impl.StaticBuilder;
 import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.visitor.DefaultFilterVisitor;
+import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.ows.ServiceException;
-import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -36,8 +34,8 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
     protected int currentEl;
     protected String currentSource;
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-    static final Logger LOGGER = Logging.getLogger(JsonPathVisitor.class);
     boolean isSimple;
+    private List<Filter> filters = new ArrayList<>();
 
     public JsonPathVisitor(FeatureType type) {
         this.isSimple = type instanceof SimpleFeatureType;
@@ -58,39 +56,41 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
                 currentSource = null;
                 currentEl = 0;
                 newExpression = findFunction(builder.getChildren(), elements);
-                findXpathArg(newExpression);
+                newExpression = findXpathArg(newExpression);
                 if (newExpression != null) {
                     return newExpression;
                 }
             } catch (Throwable ex) {
-                LOGGER.log(
-                        Level.INFO,
+                throw new RuntimeException(
                         "Unable to evaluate the json-ld path against"
-                                + "the json-ld template. Cause: {0}",
-                        ex.getMessage());
+                                + "the json-ld template. Cause: "
+                                + ex.getMessage());
             }
         }
         return getFactory(extraData)
                 .property(expression.getPropertyName(), expression.getNamespaceContext());
     }
 
-    private void findXpathArg(Object newExpression) {
-        DefaultFilterVisitor defaultFilterVisitor =
-                new DefaultFilterVisitor() {
+    private Object findXpathArg(Object newExpression) {
+        DuplicatingFilterVisitor duplicatingFilterVisitor =
+                new DuplicatingFilterVisitor() {
                     @Override
                     public Object visit(PropertyName filter, Object extraData) {
+                        filter = (PropertyName) super.visit(filter, extraData);
                         if (filter instanceof AttributeExpressionImpl) {
                             AttributeExpressionImpl pn = (AttributeExpressionImpl) filter;
                             pn.setPropertyName(completeXPath(pn.getPropertyName()));
+                            filter = pn;
                         }
-                        return extraData;
+                        return filter;
                     }
                 };
         if (newExpression instanceof Expression) {
-            ((Expression) newExpression).accept(defaultFilterVisitor, null);
+            return ((Expression) newExpression).accept(duplicatingFilterVisitor, null);
         } else if (newExpression instanceof Filter) {
-            ((Filter) newExpression).accept(defaultFilterVisitor, null);
+            return ((Filter) newExpression).accept(duplicatingFilterVisitor, null);
         }
+        return null;
     }
 
     /**
@@ -132,7 +132,8 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
                 String key = ((AbstractTemplateBuilder) jb).getKey();
                 if (key == null || key.equals(eles[currentEl])) {
                     if (jb instanceof SourceBuilder) {
-                        String source = ((SourceBuilder) jb).getStrSource();
+                        SourceBuilder sb = (SourceBuilder) jb;
+                        String source = sb.getStrSource();
                         if (source != null) {
                             if (currentSource != null) {
                                 source = "/" + source;
@@ -141,6 +142,7 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
                                 currentSource = source;
                             }
                         }
+                        addFilter(sb.getFilter());
                     }
                     if (jb instanceof DynamicValueBuilder || jb instanceof StaticBuilder) {
                         return jb;
@@ -171,5 +173,19 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
     private String completeXPath(String xpath) {
         if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
         return JsonLdCQLManager.quoteXpathAttribute(xpath);
+    }
+
+    private void addFilter(Filter filter) {
+        if (filter != null) {
+            String f = CQL.toCQL(filter);
+            if (!f.contains("@")) {
+                filter = (Filter) findXpathArg(filter);
+                filters.add(filter);
+            }
+        }
+    }
+
+    public List<Filter> getFilters() {
+        return filters;
     }
 }

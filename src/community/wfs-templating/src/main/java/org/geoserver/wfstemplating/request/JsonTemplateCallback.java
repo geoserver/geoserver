@@ -23,8 +23,10 @@ import org.geoserver.wfstemplating.builders.impl.RootBuilder;
 import org.geoserver.wfstemplating.configuration.TemplateConfiguration;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.response.GeoJsonTemplateGetFeatureResponse;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 /**
  * This {@link DispatcherCallback} implementation checks on operation dispatched event if a json-ld
@@ -38,6 +40,8 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
     private GeoServer gs;
 
     private TemplateConfiguration configuration;
+
+    static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
     public JsonTemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
         this.gs = gs;
@@ -125,6 +129,12 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
             JsonPathVisitor visitor = new JsonPathVisitor(fti.getFeatureType());
             if (q.getFilter() != null) {
                 Filter newFilter = (Filter) q.getFilter().accept(visitor, root);
+                List<Filter> templateFilters = new ArrayList<>();
+                templateFilters.addAll(visitor.getFilters());
+                if (templateFilters != null && templateFilters.size() > 0) {
+                    templateFilters.add(newFilter);
+                    newFilter = ff.and(templateFilters);
+                }
                 q.setFilter(newFilter);
             }
         } catch (Exception e) {

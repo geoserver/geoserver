@@ -1052,28 +1052,28 @@
     <artifactId>jt-concurrent-tile-cache</artifactId>
     <version>${jaiext.version}</version>
    </dependency>
-         <!-- EMF -->
+   <!-- EMF -->
 
-      <dependency>
-	    <groupId>org.eclipse.emf</groupId>
-	    <artifactId>org.eclipse.emf.common</artifactId>
-	    <version>2.12.0</version>
-    </dependency>
-	<dependency>
-		<groupId>org.eclipse.emf</groupId>
-		<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-		<version>2.12.0</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.emf</groupId>
-		<artifactId>org.eclipse.emf.ecore</artifactId>
-		<version>2.12.0</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.xsd</groupId>
-		<artifactId>org.eclipse.xsd</artifactId>
-		<version>2.12.0</version>
-	</dependency>
+   <dependency>
+    <groupId>org.eclipse.emf</groupId>
+    <artifactId>org.eclipse.emf.common</artifactId>
+    <version>${eclipse.emf.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.eclipse.emf</groupId>
+    <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+    <version>${eclipse.emf.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.eclipse.emf</groupId>
+    <artifactId>org.eclipse.emf.ecore</artifactId>
+    <version>${eclipse.emf.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.eclipse.emf</groupId>
+    <artifactId>org.eclipse.xsd</artifactId>
+    <version>${eclipse.emf.version}</version>
+   </dependency>
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>
@@ -2008,6 +2008,7 @@
   <joda-time.version>2.8.1</joda-time.version>
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
+  <eclipse.emf.version>2.15.0</eclipse.emf.version>
   <jackson1.version>1.9.13</jackson1.version>
   <jackson2.version>2.10.1</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>

@@ -232,6 +232,33 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
         }
     }
 
+    @Test
+    public void testJsonLdQueryEnvSubstitutionOnXpath() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&env=previous:@id");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
+            String geologicUnitId = geologicUnit.getString("@id");
+            assertNotNull(geologicUnitId);
+            JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
+            assertTrue(composition.size() > 0);
+            for (int j = 0; j < composition.size(); j++) {
+                JSONObject compositionObj = composition.getJSONObject(j);
+                assertEquals(geologicUnitId, compositionObj.getString("previousContextValue"));
+            }
+        }
+    }
+
     private void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);
         assertNotNull(feature.getString("@id"));

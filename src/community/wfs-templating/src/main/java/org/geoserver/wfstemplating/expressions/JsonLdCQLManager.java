@@ -13,11 +13,13 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -67,14 +69,13 @@ public class JsonLdCQLManager {
         boolean isXpath = strXpathFun.indexOf(XPATH_FUN_START) != -1;
         if (isXpath) this.contextPos = determineContextPos(strXpathFun);
         // takes the literal argument of xpathFun
-        String literalXpath = removeBackDots(toLiteralXpath(strXpathFun));
+        String literalXpath = removeBackDots(strXpathFun);
 
         // clean the function to obtain a cql expression without xpath() syntax
-        Expression expression =
-                extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
-        if (!isXpath) return expression;
-        // replace the xpath literal inside the expression with a PropertyName
-        return (Expression) setPropertyNameToCQL(expression, literalXpath.replaceAll("'", ""));
+        Expression cql = extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
+        DefaultFilterVisitor visitor = new TemplatingExpressionVisitor();
+        cql.accept(visitor, null);
+        return cql;
     }
 
     /**
@@ -87,10 +88,12 @@ public class JsonLdCQLManager {
         String xpathFunction = extractXpathFromCQL(this.strCql);
         if (xpathFunction.indexOf(XPATH_FUN_START) != -1)
             contextPos = determineContextPos(xpathFunction);
-        String literalXpath = removeBackDots(toLiteralXpath(xpathFunction));
+        String literalXpath = removeBackDots(xpathFunction);
         String cleanedCql = cleanCQL(this.strCql, xpathFunction, literalXpath);
-        return (Filter)
-                setPropertyNameToCQL(ECQL.toFilter(cleanedCql), literalXpath.replaceAll("'", ""));
+        Filter templateFilter = ECQL.toFilter(cleanedCql);
+        TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
+        templateFilter.accept(visitor, null);
+        return templateFilter;
     }
 
     /**
@@ -362,5 +365,15 @@ public class JsonLdCQLManager {
                     xpathAttribute.toString(), "\"" + xpathAttribute.toString() + "\"");
         }
         return xpath;
+    }
+
+    private final class TemplatingExpressionVisitor extends DefaultFilterVisitor {
+        @Override
+        public Object visit(PropertyName expression, Object data) {
+            if (expression instanceof XpathFunction) {
+                ((XpathFunction) expression).setNamespaceContext(namespaces);
+            }
+            return super.visit(expression, data);
+        }
     }
 }

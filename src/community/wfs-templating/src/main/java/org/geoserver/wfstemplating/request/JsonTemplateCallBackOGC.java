@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.api.features.FeaturesResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -16,6 +17,7 @@ import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.XCQL;
@@ -38,6 +40,8 @@ import org.springframework.http.HttpHeaders;
  * {@link TemplateBuilder} tree to get the corresponding {@link Filter}
  */
 public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
+
+    static final FormatOptionsKvpParser PARSER = new FormatOptionsKvpParser("env");
 
     private Catalog catalog;
 
@@ -66,18 +70,23 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
                                 ? request.getRawKvp().get("ENV").toString()
                                 : null;
 
-                if (envParam != null) {
-                    String[] arEnvParams = envParam.split(";");
-                    for (String e : arEnvParams) {
-                        String[] singleParam = e.split(":");
-                        EnvFunction.setLocalValue(singleParam[0], singleParam[1]);
-                    }
-                }
+                setEnvParameter(envParam);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
         return super.operationDispatched(request, operation);
+    }
+
+    private void setEnvParameter(String env) {
+        if (env != null) {
+            try {
+                Map<String, Object> localEnvVars = (Map<String, Object>) PARSER.parse(env);
+                EnvFunction.setLocalValues(localEnvVars);
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid syntax for environment variables", e);
+            }
+        }
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {

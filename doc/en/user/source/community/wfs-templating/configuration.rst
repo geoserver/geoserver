@@ -366,9 +366,10 @@ Below an example configuration file for a Complex Feature type:
 
 
 Given the above configuration file, the plugin will act in the following way:
- * the encoding of nested arrays and objects will be skipped, by encoding only their attributes;
- * arrays' and objects' attribute names will be concatenated with the ones of their json attributes;
- * the final output will have a flat list of attributes with names produced by the concatenation.
+
+ * the encoding of nested arrays and objects will be skipped, by encoding only their attributes.
+ * Arrays' and objects' attribute names will be concatenated with the ones of their json attributes.
+ * The final output will have a flat list of attributes with names produced by the concatenation.
 
 An example output, give this configuration file, can be seen in the output section.
 
@@ -378,4 +379,8 @@ Environment parametrization
 A template configuration can also be manipulated on the fly, replacing existing attributes, attributes' names and sources using the :code:`env` parameter. 
 To achieve this the attribute name, the attribute, or the source should be replaced by the env function in the following way :code:`$${env('nameOfTheEnvParameter','defaultValue')}`. 
 If in the request it is specified an env query parameter :code:`env='nameOfTheEnvParameter':'newValue'`, the default value will be replaced in the final output with the one specified in the request.
-The functionality is supported also for filter arguments, eg. :code:`"$filter":"xpath('gsml:ControlledConcept/gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.
+
+The functionality allows also to manipulate dynamically filters and expression. For example it is possible to change Filter arguments: :code:`"$filter":"xpath('gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.
+
+Xpaths can be manipulated as well to be totally or partially replaced: :code:`$${xpath(env('xpath','gsml:ControlledConcept/gsml:name')}` or :code:`$${xpath(strConcat('env('gsml:ControlledConcept',xpath','/gsml:name')))}`.
+

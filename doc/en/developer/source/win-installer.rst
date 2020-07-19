@@ -6,6 +6,8 @@ However you can create your own installer (using a Windows machine).
 
 .. note:: This step requires a Windows machine.
 
+.. note:: A Powershell script that automates the folliwing steps is avaialble `Here <https://github.com/geoserver/geoserver/edit/master/src/release/installer/win/win-installer-builder.ps1>`_.
+
 #. Download and install `NSIS <http://nsis.sourceforge.net/>`_.
 
 #. Install the `NSIS Access Control plugin <http://nsis.sourceforge.net/AccessControl_plug-in>`_.  The simplest way to do this is to download the zip, extract the .DLL files (:file:`AccessControl.dll`) and copy it to the NSIS plugins directory (usually :file:`C:\\Program Files\\NSIS\\Plugins`).

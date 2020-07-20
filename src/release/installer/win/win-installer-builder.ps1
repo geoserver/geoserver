@@ -14,7 +14,7 @@ $nsis_name = "nsis-"+$nsis_ver
 "The instructions implented here can be found at:"
 "https://docs.geoserver.org/latest/en/developer/win-installer.html"
 
-"Clonening repo..."
+"Cloning repo..."
 
 git clone https://github.com/geoserver/geoserver.git $repo
 git --git-dir=$repo/.git --work-tree=$repo pull

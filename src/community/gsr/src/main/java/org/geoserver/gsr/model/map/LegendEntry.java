@@ -57,9 +57,7 @@ class LegendEntry {
                 canvas.setColor(strokeColor);
                 canvas.setStroke(stroke);
                 canvas.draw(shape);
-                // } else if (symbol instanceof PictureMarkerSymbol) {
                 // TODO: Implement image preview
-                // } else if (symbol instanceof TextSymbol) {
                 // TODO: Implement font preview
             } else if (symbol instanceof SimpleFillSymbol) {
                 SimpleFillSymbol simpleFillSymbol = (SimpleFillSymbol) symbol;

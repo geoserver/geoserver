@@ -52,7 +52,6 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
  *
  * @param <T> The coordinate type. Must be a {@link Number}.
  */
-@SuppressWarnings("deprecation")
 public abstract class AbstractGeometryEncoder<T extends Number> implements Converter {
 
     @Override
@@ -215,7 +214,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 for (int j = 0; j < geometryN.getNumInteriorRing(); j++) {
                     LineString inner = geometryN.getInteriorRingN(j);
                     if (!Orientation.isCCW(inner.getCoordinateSequence())) {
-                        inner = (LineString) inner.reverse();
+                        inner = (LineString) ((Geometry) inner).reverse();
                     }
                     rings.add(embeddedLineString(inner));
                 }
@@ -500,7 +499,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             Multipoint mp = (Multipoint) geometry;
 
             Number[][] points = mp.getPoints();
-            return geometries.createMultiPoint(arrayToCoordinates(points));
+            return geometries.createMultiPointFromCoords(arrayToCoordinates(points));
         } else if (geometry instanceof Polyline) {
 
             Polyline pl = (Polyline) geometry;

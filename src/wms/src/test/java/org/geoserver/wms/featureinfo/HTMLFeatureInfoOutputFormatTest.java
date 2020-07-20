@@ -12,6 +12,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+
+import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +27,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
@@ -55,9 +59,6 @@ import org.junit.rules.ExpectedException;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
-import freemarker.template.TemplateException;
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
 
 public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private HTMLFeatureInfoOutputFormat outputFormat;
@@ -397,15 +398,15 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Activates the rule for the given pattern by re-initializing the
-     * {@link FreeMarkerTemplateManager}.
-     * 
+     * Activates the rule for the given pattern by re-initializing the {@link
+     * FreeMarkerTemplateManager}.
+     *
      * @param aPattern
      */
     private void activateStaticsAccessRules(String aPattern) {
-        if(aPattern == null) {
+        if (aPattern == null) {
             System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
-        }else {
+        } else {
             System.setProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS, aPattern);
         }
         FreeMarkerTemplateManager.initStaticsAccessRule();

@@ -55,11 +55,11 @@ For more information about JVM configuration, see the article `Performance tunin
       uintx MaxHeapSize       := 4294967296    {product}
     
    The above results (from a 16 GB laptop) amount to initial heap size of 256m, and a max heap size of around 4 GB (or around 1/4 of system memory).
-   
+
+.. _production_container.marlin:
+
 Enable the Marlin rasterizer
 ----------------------------
-
-Before Java 9, OpenJDK and Oracle used the Pisces and Ductus renderers to rasterize vector data respectively.  In Java 9 onward they use Marlin which has better overall performance in most situations than either Pisces or Ductus.
 
 In order to enable Marlin on Java 8, or to use a newer version than that provided by your JVM, add the following to the JVM startup options::
 

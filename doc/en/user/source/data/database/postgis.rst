@@ -248,18 +248,18 @@ To insert multi-line text (for use with labeling) remember to use escaped text::
 JsonPointer Function support
 ----------------------------
 
-GeoServer is able to translate a jsonPointer function to a query using PostgreSQL support for JSON types. 
+GeoServer is able to translate the ``jsonPointer`` function to a query using PostgreSQL support for JSON types. 
 The following are the main characteristics of the implementation:
 
-* the jsonPointer function syntax is like the following: ``jsonPointer(attributeName,'/path/to/json/attribute')``;
+* The jsonPointer function syntax is like the following: ``jsonPointer(attributeName,'/path/to/json/attribute')``.
 
-* the function is able to select attributes inside json arrays by specifying the index of the target element in the json path eg. ``'/path/to/array/element/0'``;
+* The function is able to select attributes inside json arrays by specifying the index of the target element in the json path eg. ``'/path/to/array/element/0'``.
 
-* when accessing a JSON property it is implicitly assumed that the same property will have the same type on all features, otherwise a cast exception will be thrown by the database;
+* When accessing a JSON property it is implicitly assumed that the same property will have the same type on all features, otherwise a cast exception will be thrown by the database.
 
-* GeoServer will perform a cast automatically to the expect type from the evaluation; the cast is completely delegated to the database;
+* GeoServer will perform a cast automatically to the expect type from the evaluation; the cast is completely delegated to the database.
 
-* if the property doesn't exists no errors will be issued, but the features that have that property will be excluded; hence the property we whish to query is not mandatory in all features
+* If the property doesn't exists no errors will be issued, but the features that have that property will be excluded; hence the property we whish to query is not mandatory in all features.
 
 Examples
 ````````
@@ -288,9 +288,9 @@ Having a json column storing jsonvalues like the following,
 
 and assuming an attribute name as ``city``, valid jsonPointer functions would be: 
 
-* ``jsonPointer(city, '/name')``, 
+* ``jsonPointer(city, '/name')``.
 
-* ``jsonPointer(city, '/population/average_age')``, 
+* ``jsonPointer(city, '/population/average_age')``.
 
 * ``jsonPointer(city, '/districts/0/name')``.
 
@@ -330,12 +330,12 @@ DataTypes
 
 PostgreSQL defines two JSON datatypes: 
 
- * ``json`` that stores an exact copy of the input text;
+ * ``json`` that stores an exact copy of the input text.
 
  * ``jsonb`` which store the value in a decomposed binary format.
 
 The jsonPointer function supports both, as well as the text format if it contains a valid json representation. 
-Anyway it is worth mentioning that, according to the PostgreSQL documentation, jsonb is the recommended type to be used since it is faster to process. 
+Anyways, the PostgreSQL documentation recommends usage of jsonb, as it is faster to process. 
 
 PostgreSQL supports also indexing on json types. And index on a specific json attribute can be created as follow:
 

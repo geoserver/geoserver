@@ -1052,28 +1052,8 @@
     <artifactId>jt-concurrent-tile-cache</artifactId>
     <version>${jaiext.version}</version>
    </dependency>
-   <!-- EMF -->
 
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>org.eclipse.emf.common</artifactId>
-    <version>${eclipse.emf.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-    <version>${eclipse.emf.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>org.eclipse.emf.ecore</artifactId>
-    <version>${eclipse.emf.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.eclipse.emf</groupId>
-    <artifactId>org.eclipse.xsd</artifactId>
-    <version>${eclipse.emf.version}</version>
-   </dependency>
+   <!-- Text -->
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>

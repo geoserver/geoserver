@@ -33,10 +33,6 @@
       <artifactId>gt-jdbc-sqlserver</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-arcsde</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-kml</artifactId>
       <version>${gt.version}</version>

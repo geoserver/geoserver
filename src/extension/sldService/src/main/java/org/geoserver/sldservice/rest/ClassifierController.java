@@ -625,6 +625,10 @@ public class ClassifierController extends BaseSLDServiceController {
                 rules =
                         builder.equalAreaClassification(
                                 ftCollection, property, propertyType, intervals, open, normalize);
+            } else if ("standardDeviation".equals(method)) {
+                rules =
+                        builder.standardDeviationClassification(
+                                ftCollection, property, propertyType, intervals, open, normalize);
             } else {
                 throw new RestException(
                         "Unknown classification method " + method, HttpStatus.BAD_REQUEST);

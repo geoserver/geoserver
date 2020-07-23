@@ -110,7 +110,7 @@ Classify Raster and Vector Data
 
 The service can be used to create a set of SLD rules for the given vector
 layer, specifying the **attribute** used for classification, the  **classification 
-type** (equalInterval, uniqueInterval, quantile, jenks, equalArea) and one of the
+type** (equalInterval, uniqueInterval, quantile, jenks, equalArea, standardDeviation) and one of the
 **predefined color ranges** (red, blue, gray, jet, random, custom), together
 with some other optional parameters.
 
@@ -139,7 +139,7 @@ The parameters usable to customize the ColorMap are:
      - No default for vectors, "1" for rasters
    * - method
      - Classification method
-     - equalInterval, uniqueInterval, quantile, jenks, equalArea
+     - equalInterval, uniqueInterval, quantile, jenks, equalArea, standardDeviation (intervals above and below the mean of one standard deviation, available for vectors only)
      - equalInterval
    * - open
      - open or closed ranges

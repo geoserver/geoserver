@@ -451,4 +451,8 @@ public class RelationshipDAO {
         workspaceInfo.getMetadata().put(RELATIONSHIP_CLASS_KEY, relationshipClasses);
         catalog.save(workspaceInfo);
     }
+
+    public GeoServer getGeoServer() {
+        return geoServer;
+    }
 }

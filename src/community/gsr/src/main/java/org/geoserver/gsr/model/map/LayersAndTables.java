@@ -12,7 +12,6 @@ package org.geoserver.gsr.model.map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.gsr.model.AbstractGSRModel;
 import org.geoserver.gsr.model.GSRModel;
@@ -25,8 +24,6 @@ import org.geoserver.gsr.translate.map.LayerDAO;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LayersAndTables extends AbstractGSRModel implements GSRModel {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
 
     public final ArrayList<LayerOrTable> layers;
 

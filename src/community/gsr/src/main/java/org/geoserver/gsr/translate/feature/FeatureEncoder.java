@@ -233,17 +233,18 @@ public class FeatureEncoder {
             throws IOException {
         org.opengis.feature.Feature sampleFeature = null;
         String featureIdPrefix = "";
-        FeatureIterator i = targetFeature.getFeatureSource(null, null).getFeatures().features();
-        if (i.hasNext()) {
-            sampleFeature = i.next();
-            String fid = sampleFeature.getIdentifier().getID();
+        try (FeatureIterator i =
+                targetFeature.getFeatureSource(null, null).getFeatures().features()) {
+            if (i.hasNext()) {
+                sampleFeature = i.next();
+                String fid = sampleFeature.getIdentifier().getID();
 
-            Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
-            if (matcher.matches()) {
-                featureIdPrefix = matcher.group(1);
+                Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
+                if (matcher.matches()) {
+                    featureIdPrefix = matcher.group(1);
+                }
             }
         }
-        i.close();
         return featureIdPrefix;
     }
 

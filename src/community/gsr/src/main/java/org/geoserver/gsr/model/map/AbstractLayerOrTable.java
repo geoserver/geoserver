@@ -120,7 +120,6 @@ public abstract class AbstractLayerOrTable extends AbstractGSRModel implements G
         this.name = layer.getName();
         this.description = layer.getAbstract() == null ? "" : layer.getAbstract();
 
-        List<MetadataLinkInfo> metadataLinks = layer.getResource().getMetadataLinks();
         copyrightText = copyrightText(layer);
 
         ScaleRange range = ScaleRange.extract(layer.getDefaultStyle().getStyle());

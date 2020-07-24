@@ -47,9 +47,8 @@ public class GSRExceptionHandler implements APIExceptionHandler {
                             throwable.getMessage(),
                             Collections.singletonList(throwable.getMessage())));
         }
-        try {
+        try (ServletOutputStream os = httpServletResponse.getOutputStream()) {
             ObjectMapper mapper = new ObjectMapper();
-            ServletOutputStream os = httpServletResponse.getOutputStream();
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {

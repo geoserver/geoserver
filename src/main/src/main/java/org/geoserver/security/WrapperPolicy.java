@@ -33,7 +33,11 @@ public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
     }
 
     public static final WrapperPolicy readWrite(AccessLimits limits) {
-        return new WrapperPolicy(AccessLevel.READ_WRITE, Response.HIDE, limits);
+        Response respone =
+                limits == null || limits.getMode() == CatalogMode.HIDE
+                        ? Response.HIDE
+                        : Response.CHALLENGE;
+        return new WrapperPolicy(AccessLevel.READ_WRITE, respone, limits);
     }
 
     WrapperPolicy(AccessLevel level, Response response, AccessLimits limits) {

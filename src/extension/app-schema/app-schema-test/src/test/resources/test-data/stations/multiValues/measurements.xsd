@@ -19,10 +19,18 @@
         <xs:sequence>
           <xs:element name="name" type="xs:string"/>
           <xs:element name="unit" type="xs:string"/>
-          <xs:element name="tag" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+          <xs:element name="tag" minOccurs="0" maxOccurs="unbounded" type="ms:TagType"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="TagType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="code" type="xs:integer"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:element name="Measurement_${GML_PREFIX}" type="ms:MeasurementType" substitutionGroup="gml:AbstractFeature"/>

@@ -232,7 +232,6 @@ GeoServer is tested with Java 11 (LTS), with industry `support up to 2024 <https
 GeoServer 2.15 onward will run under Java 11 with no additional configuration on **Tomcat 9** or newer and **Jetty 9.4.12** or newer. Running GeoServer using Java 11 on other Application Servers may require some additional configuration as not all Application Servers support Java 11 yet.
 
 * Java 11 already includes Marlin Renderer, although you may wish to consider installing a newer version
-* Java 11 includes Installing Unlimited Strength Jurisdiction Policy Files
+* Java 11 includes the Unlimited Strength Jurisdiction Policy Files, no need for a separate installation
 * Java 11 does not support Native JAI and ImageIO extensions
-
 

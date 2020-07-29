@@ -14,18 +14,47 @@ cd "/root/te_base/bin/unix/"
 # test.sh comes from https://github.com/opengeospatial/teamengine/blob/master/teamengine-console/src/main/scripts/shell/unix/test.sh
 # viewlog.sh comes from https://github.com/opengeospatial/teamengine/blob/master/teamengine-console/src/main/scripts/shell/unix/viewlog.sh
 
-_run() {
-  ./test.sh \
-    -source="$source" \
-    -form="$form"  && \
+_show_logs() {
     ./viewlog.sh      \
     -logdir="$TE_LOG_DIR" \
     -session=s0001
+}
+
+_parse_logs(){
+  _show_logs | grep "Failed"
+  local grep_exit_code=$?
+  if [ "$grep_exit_code" -ne "1" ]; then
+      echo "Failed tests found in logs! (grep exit code: $grep_exit_code)" >&2
+      return 3
+  else
+      echo "No Failed tests found in logs" >&2
+      return 0
+  fi
+}
+
+_run() {
+  ./test.sh \
+    -source="$source" \
+    -form="$form"
   local rc=$?
   if [ "$rc" -ne "0" ]; then
       echo "test.sh failed!" >&2
+      rc=10
   fi
-  return $status
+
+  _show_logs
+  if [ "$?" -ne "0" ]; then
+      echo "viewlog.sh failed, I cannot tell if the tests failed or not." >&2
+      return 20
+  fi
+
+  _parse_logs
+  if [ "$?" -ne "0" ]; then
+      echo "The log shows a failed test!" >&2
+      rc=3
+  fi
+
+  return $rc
 }
 
 wms11 () {

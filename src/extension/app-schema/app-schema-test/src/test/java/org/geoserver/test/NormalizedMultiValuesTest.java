@@ -346,6 +346,42 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         checkStation1Gml32(document);
     }
 
+    @Test
+    public void testGetFilteredAttributeMultiValuesWfs20() throws Exception {
+        // check if this is an online test with a JDBC based data store
+        if (notJdbcBased()) {
+            // not a JDBC online test
+            return;
+        }
+        // execute the WFS 2.0 request
+        String request = "wfs";
+        Document document =
+                postAsDOM(
+                        request,
+                        readResource(
+                                "/test-data/stations/multiValues/requests/station_tag_code_filter_wfs20.xml"));
+        // check that we got he correct station
+        checkStation1Gml32(document);
+    }
+
+    @Test
+    public void testGetFilteredAttributeMultiValuesWfs11() throws Exception {
+        // check if this is an online test with a JDBC based data store
+        if (notJdbcBased()) {
+            // not a JDBC online test
+            return;
+        }
+        // execute the WFS 1.1.0 request
+        String request = "wfs";
+        Document document =
+                postAsDOM(
+                        request,
+                        readResource(
+                                "/test-data/stations/multiValues/requests/station_tag_code_filter_wfs11.xml"));
+        // check that we got he correct station
+        checkStation1Gml31(document);
+    }
+
     /** Helper method that checks that station 1 is present in the provided document. */
     private void checkStation1Gml31(Document document) {
         // check station exists
@@ -506,6 +542,15 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                         + "[@gml:id='ms.1']"
                         + "[ms_gml32:tag='temperature_tag']"
                         + "[ms_gml32:tag='desert_tag']");
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32"
+                        + "[@gml:id='st.1']"
+                        + "/st_gml32:measurements/ms_gml32:Measurement_gml32"
+                        + "[@gml:id='ms.1']"
+                        + "/ms_gml32:tag[@ms_gml32:code='8']");
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,

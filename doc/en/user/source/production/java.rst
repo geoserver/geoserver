@@ -23,7 +23,7 @@ For best performance we recommend the use *OpenJDK 8* (also known as JRE 1.8).
      - GeoServer Compatibility
    * - **Java 11**
      - tested
-     - tested
+     -
      -
      - GeoServer 2.15.x and above
    * - **Java 8**

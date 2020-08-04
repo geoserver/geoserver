@@ -68,9 +68,9 @@ Available, but not recommended:
 Marlin renderer (Recommended)
 `````````````````````````````
 
-Further speed improvements can be released using `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`__ alternate renderer for Java 8.
+Further speed improvements can be realized using `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`__ alternate renderer for Java 8.
 
-Before Java 9, OpenJDK the Pisces renderer, and Oracle used the Ductus renderer, to rasterize vector data respectively.  In Java 9 onward they use Marlin renderer which has better overall performance in most situations than either Pisces or Ductus.
+Before Java 9, OpenJDK used the Pisces renderer, and Oracle used the Ductus renderer, to rasterize vector data respectively.  In Java 9 onward they both use Marlin renderer which has better overall performance in most situations than either Pisces or Ductus.
 
 In order to enable Marlin on Java 8, see :ref:`production_container.marlin` on the next page.
 

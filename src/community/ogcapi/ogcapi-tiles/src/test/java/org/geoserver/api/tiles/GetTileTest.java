@@ -187,7 +187,7 @@ public class GetTileTest extends TilesTestSupport {
         VectorTileDecoder.FeatureIterable features =
                 new VectorTileDecoder().decode(sr.getContentAsByteArray());
         // one road is before greenwich, not included in this tile
-        assertEquals(4, features.asList().size());
+        assertEquals(5, features.asList().size());
     }
 
     @Test

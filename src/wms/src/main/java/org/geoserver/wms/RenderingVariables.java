@@ -18,18 +18,28 @@ import org.geotools.util.logging.Logging;
 public class RenderingVariables {
 
     static final Logger LOGGER = Logging.getLogger(RenderingVariables.class);
+    /** The WMS GetMap BBOX, as a {@link org.geotools.geometry.jts.ReferencedEnvelope} */
+    public static final String WMS_BBOX = "wms_bbox";
+    /** The GetMap SRS, as a {@link org.opengis.referencing.crs.CoordinateReferenceSystem} object */
+    private static final String WMS_SRS = "wms_srs";
+    /** The GetMap width, as an {@link Integer} */
+    private static final String WMS_WIDTH = "wms_width";
+    /** The GetMap height, as an {@link Integer} */
+    private static final String WMS_HEIGHT = "wms_height";
+    /** The GetMap scale denominator, as an {@link Double} */
+    private static final String WMS_SCALE_DENOMINATOR = "wms_scale_denominator";
 
     public static void setupEnvironmentVariables(WMSMapContent mapContent) {
         // setup some SLD variable substitution environment used by rendering transformations
-        EnvFunction.setLocalValue("wms_bbox", mapContent.getRenderingArea());
+        EnvFunction.setLocalValue(WMS_BBOX, mapContent.getRenderingArea());
         EnvFunction.setLocalValue(
                 "wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
-        EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
-        EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
-        EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
+        EnvFunction.setLocalValue(WMS_SRS, mapContent.getRequest().getSRS());
+        EnvFunction.setLocalValue(WMS_WIDTH, mapContent.getMapWidth());
+        EnvFunction.setLocalValue(WMS_HEIGHT, mapContent.getMapHeight());
         try {
             double scaleDenominator = mapContent.getScaleDenominator(true);
-            EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
+            EnvFunction.setLocalValue(WMS_SCALE_DENOMINATOR, scaleDenominator);
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,

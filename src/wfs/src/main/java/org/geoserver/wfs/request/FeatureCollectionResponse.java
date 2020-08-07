@@ -198,12 +198,14 @@ public abstract class FeatureCollectionResponse extends RequestObject {
 
         @Override
         public BigInteger getTotalNumberOfFeatures() {
-            return eGet(adaptee, "numberMatched", BigInteger.class);
+            BigInteger result = eGet(adaptee, "numberMatched", BigInteger.class);
+            if (result != null && result.signum() < 0) return null;
+            return result;
         }
 
         @Override
         public void setTotalNumberOfFeatures(BigInteger n) {
-            eSet(adaptee, "numberMatched", (n.longValue() < 0) ? null : n);
+            eSet(adaptee, "numberMatched", n);
         }
 
         @Override

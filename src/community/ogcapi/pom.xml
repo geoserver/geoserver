@@ -27,6 +27,7 @@
         <module>ogcapi-images</module>
         <module>ogcapi-changeset</module>
         <module>ogcapi-tiled-features</module>
+        <module>dggs</module>
     </modules>
     
 </project>

@@ -54,11 +54,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
@@ -677,8 +677,8 @@ public class ConfigDatabase {
         String[] steps = localPropertyName.split("\\.");
         // Step back through ancestor property references If starting at a.b.c.d, then look at
         // a.b.c, then a.b, then a
-        for (int i = steps.length - 1; i >= 0; i--) {
-            String backPropName = Strings.join(".", Arrays.copyOfRange(steps, 0, i));
+        for (int len = steps.length - 1; len > 0; len--) {
+            String backPropName = Arrays.stream(steps).limit(len).collect(Collectors.joining("."));
             Object backProp = ff.property(backPropName).evaluate(info);
             if (backProp != null) {
                 if (prop.isCollectionProperty()

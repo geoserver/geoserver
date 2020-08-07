@@ -31,6 +31,10 @@
         <include>h2-*.jar</include>
         <include>geodb-*.jar</include>
         <include>hatbox-*.jar</include>
+        <!-- DGGS stuff -->
+        <include>*dggs*.jar</include>
+        <include>h3*.jar</include>
+        <include>jep*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

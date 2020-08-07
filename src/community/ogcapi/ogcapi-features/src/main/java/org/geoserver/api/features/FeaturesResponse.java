@@ -8,6 +8,7 @@ package org.geoserver.api.features;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.api.AbstractDocument;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
 /**
@@ -16,7 +17,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
  */
 @JsonIgnoreType // not meant for jackson serialization
 @XmlTransient
-public class FeaturesResponse {
+public class FeaturesResponse extends AbstractDocument {
 
     private final EObject request;
     private final FeatureCollectionResponse response;

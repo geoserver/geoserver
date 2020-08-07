@@ -1,0 +1,298 @@
+/*
+ *    GeoTools - The Open Source Java GIS Toolkit
+ *    http://geotools.org
+ *
+ *    (C) 2020, Open Source Geospatial Foundation (OSGeo)
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation;
+ *    version 2.1 of the License.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ */
+package org.geotools.dggs.h3;
+
+import com.uber.h3core.H3Core;
+import com.uber.h3core.util.GeoCoord;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.geotools.data.store.EmptyIterator;
+import org.geotools.dggs.DGGSInstance;
+import org.geotools.dggs.Zone;
+import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.LiteCoordinateSequenceFactory;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.predicate.RectangleContains;
+import org.locationtech.jts.operation.predicate.RectangleIntersects;
+import org.opengis.feature.type.AttributeDescriptor;
+
+public class H3DGGSInstance implements DGGSInstance {
+
+    final H3Core h3;
+    final GeometryFactory gf = new GeometryFactory(new LiteCoordinateSequenceFactory());
+    final Set<Long> northPoleZones;
+    final Set<Long> southPoleZones;
+
+    H3DGGSInstance(H3Core h3) {
+        this.h3 = h3;
+
+        int[] resolutions = getResolutions();
+        this.northPoleZones =
+                Arrays.stream(resolutions)
+                        .mapToObj(r -> getZone(90, 0, r).id)
+                        .collect(Collectors.toSet());
+        this.southPoleZones =
+                Arrays.stream(resolutions)
+                        .mapToObj(r -> getZone(-90, 0, r).id)
+                        .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "H3";
+    }
+
+    @Override
+    public void close() {
+        // nothing to do here
+    }
+
+    @Override
+    public int[] getResolutions() {
+        int[] result = new int[16];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = i;
+        }
+        return result;
+    }
+
+    @Override
+    public Zone getZone(String id) throws IllegalArgumentException {
+        try {
+            long lid = h3.stringToH3(id);
+            return new H3Zone(this, lid);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not build zone from id, is the id valid?", e);
+        }
+    }
+
+    @Override
+    public H3Zone getZone(double lat, double lon, int resolution) {
+        long id = h3.geoToH3(lat, lon, resolution);
+        return new H3Zone(this, id);
+    }
+
+    @Override
+    public Iterator<Zone> zonesFromEnvelope(Envelope envelope, int resolution) {
+        Envelope intersection = envelope.intersection(WORLD);
+        if (intersection.isNull()) {
+            return new EmptyIterator();
+        }
+        return new H3ZoneIterator<>(
+                h3,
+                // When crossing the dateline, the parent and child are not always sitting on the
+                // same side of the dateline, need to drill down.
+                // TODO: determine a safe distance from the envelope to the dateline at which this
+                // won't cause mis-matches (depends on the current resolution)
+                // Also, a parent does not cover the exact same area as
+                // the children, so we need to check if a 1-ring overlaps to dedice whether to skip
+                // a cell.
+                id ->
+                        h3.h3GetResolution(id) < resolution
+                                && (ringOverlaps((long) id, envelope)
+                                        || datelineCrossing((long) id)),
+                id -> h3.h3GetResolution(id) == resolution && overlaps((long) id, envelope),
+                id -> new H3Zone(this, id));
+    }
+
+    private boolean datelineCrossing(long id) {
+        return new H3Zone(this, id).overlapsDateline();
+    }
+
+    private boolean ringOverlaps(Long zoneId, Envelope envelope) {
+        if (overlaps(zoneId, envelope)) {
+            return true;
+        }
+
+        // check the ring too
+        List<Long> ringItems = h3.kRing(zoneId, 1);
+        return ringItems.stream().anyMatch(id -> overlaps(id, envelope));
+    }
+
+    private boolean overlaps(Long zoneId, Envelope envelope) {
+        // quick test, check center is in
+        GeoCoord center = h3.h3ToGeo(zoneId);
+        if (envelope.contains(center.lng, center.lat)) return true;
+
+        // get the fixed boundary, check if there is an overlap
+        H3Zone zone = new H3Zone(this, zoneId);
+        Polygon polygon = zone.getBoundary();
+        if (!polygon.getEnvelopeInternal().intersects(envelope)) return false;
+
+        // ok, go for a full test then...
+        RectangleIntersects intersects = new RectangleIntersects(JTS.toGeometry(envelope));
+        return intersects.intersects(polygon);
+    }
+
+    private boolean ringContained(Long zoneId, Envelope envelope) {
+        if (!containedInEnvelope(zoneId, envelope)) {
+            return false;
+        }
+
+        // check the ring too
+        List<Long> ringItems = h3.kRing(zoneId, 1);
+        return ringItems.stream().allMatch(id -> containedInEnvelope(id, envelope));
+    }
+
+    private boolean containedInEnvelope(Long zoneId, Envelope envelope) {
+        // get the boundary, check if there is an overlap
+        H3Zone zone = new H3Zone(this, zoneId);
+        Polygon polygon = zone.getBoundary();
+        if (envelope.contains(polygon.getEnvelopeInternal())) return true;
+
+        // ok, go for a full test then...
+        RectangleContains contains = new RectangleContains(JTS.toGeometry(envelope));
+        return contains.contains(polygon);
+    }
+
+    @Override
+    public long countZonesFromEnvelope(Envelope envelope, int resolution) {
+        Envelope intersection = envelope.intersection(WORLD);
+        if (intersection.isNull()) {
+            return 0;
+        }
+        // abuse the iteration machinery to count fast
+        AtomicLong counter = new AtomicLong();
+        H3ZoneIterator<AtomicLong> iterator =
+                new H3ZoneIterator<>(
+                        h3,
+                        // drill down if the zone is overlapping but not ring contained, need better
+                        // accuracy
+                        id ->
+                                h3.h3GetResolution(id) < resolution
+                                        // do not test single polygon, the cell might not be
+                                        // overlapping the search area, but one of its child could
+                                        // however if all its neibords are also contained, this one
+                                        // is inside and can be counted quickly
+                                        && !ringContained((long) id, envelope),
+                        // if the zone is ring contained, just count all of its childern
+                        id -> {
+                            int currentResolution = h3.h3GetResolution(id);
+                            if (currentResolution == resolution) {
+                                if (overlaps(id, envelope)) {
+                                    counter.addAndGet(1);
+                                    return true;
+                                }
+                            } else if (ringContained(id, envelope)) {
+                                counter.addAndGet(
+                                        childrenCount(id, resolution - currentResolution));
+                            }
+                            return false;
+                        },
+                        // just return the current counter value
+                        id -> counter);
+        // make it visit
+        while (iterator.hasNext()) iterator.next();
+        return counter.get();
+    }
+
+    private long childrenCount(Long zoneId, int depth) {
+        if (!h3.h3IsPentagon(zoneId)) {
+            // easy, each hexagon contains 7 children, recursively
+            return (long) Math.pow(7, depth);
+        } else {
+            return pentagonCount(depth);
+        }
+    }
+
+    private long pentagonCount(int depth) {
+        if (depth == 0) return 0;
+        // each pentagon has 1 pentagon child in the middle, and 5 hexagons around it
+        return 1 + pentagonCount(depth - 1) + 5 * ((long) Math.pow(7, depth - 1));
+    }
+
+    @Override
+    public List<AttributeDescriptor> getExtraProperties() {
+        List<AttributeDescriptor> result = new ArrayList<>();
+        AttributeTypeBuilder builder = new AttributeTypeBuilder();
+        builder.setName("shape");
+        builder.setBinding(String.class);
+        result.add(builder.buildDescriptor("shape"));
+
+        return result;
+    }
+
+    @Override
+    public Iterator<Zone> neighbors(String id, int radius) {
+        // Using H3 facilities. Upside fast and accurate (considering dateline and pole neighbors
+        // too), downside, will quickly go OOM, radius should be limited
+        long h3Id = this.h3.stringToH3(id);
+        return this.h3
+                .kRing(h3Id, radius)
+                .stream()
+                .filter(zoneId -> h3Id != zoneId)
+                .map(zoneId -> (Zone) new H3Zone(this, zoneId))
+                .iterator();
+    }
+
+    @Override
+    public Iterator<Zone> children(String zoneId, int resolution) {
+        Zone zone = getZone(zoneId);
+        if (zone.getResolution() >= resolution) return new EmptyIterator();
+
+        // all the children of the given cell
+        return new H3ZoneIterator<>(
+                h3,
+                id -> h3.h3GetResolution(id) < resolution,
+                id -> h3.h3GetResolution(id) == resolution,
+                id -> new H3Zone(this, id),
+                Arrays.asList(h3.stringToH3(zoneId)));
+    }
+
+    @Override
+    public Iterator<Zone> parents(String zoneId) {
+        long id = h3.stringToH3(zoneId);
+        return new H3ParentIterator(id, this);
+    }
+
+    @Override
+    public Zone point(Point point, int resolution) {
+        long id = h3.geoToH3(point.getY(), point.getX(), resolution);
+        return new H3Zone(this, id);
+    }
+
+    @Override
+    public Iterator<Zone> polygon(Polygon polygon, int resolution) {
+        List<GeoCoord> shell = getGeoCoords(polygon.getExteriorRing());
+        List<List<GeoCoord>> holes =
+                IntStream.range(0, polygon.getNumInteriorRing())
+                        .mapToObj(i -> getGeoCoords(polygon.getInteriorRingN(i)))
+                        .collect(Collectors.toList());
+        // TODO replace with a walk similar to RHealPix, this might be faster for
+        // small numbers, but it's memory bound and gets slow
+        // pretty quickly due to memory pressure,
+        List<Long> zones = h3.polyfill(shell, holes, resolution);
+        return zones.stream().map(id -> (Zone) new H3Zone(this, id)).iterator();
+    }
+
+    private List<GeoCoord> getGeoCoords(LinearRing ring) {
+        return Arrays.stream(ring.getCoordinates())
+                .map(c -> new GeoCoord(c.y, c.x))
+                .collect(Collectors.toList());
+    }
+}

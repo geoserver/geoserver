@@ -105,7 +105,15 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         writeLinks(response, operation, jw, null);
     }
 
-    private void writeLinks(
+    /**
+     * Subclasses can override to adapt links to another service
+     *
+     * @param response
+     * @param operation
+     * @param jw
+     * @param featureId
+     */
+    protected void writeLinks(
             FeatureCollectionResponse response,
             Operation operation,
             GeoJSONBuilder jw,
@@ -165,7 +173,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         jw.endArray();
     }
 
-    private FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
+    protected FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
         // a WFS3 always has a collection reference, so one query
         Query query = request.getQueries().get(0);
         QName typeName = query.getTypeNames().get(0);
@@ -208,15 +216,13 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     @Override
     public boolean canHandle(Operation operation) {
-        if ("GetFeature".equalsIgnoreCase(operation.getId())
-                || "GetFeatureWithLock".equalsIgnoreCase(operation.getId())
-                || "getTile".equalsIgnoreCase(operation.getId())) {
-            // also check that the resultType is "results"
-            GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
-            if (req.isResultTypeResults()) {
-                // call subclass hook
-                return canHandleInternal(operation);
-            }
+        String operationId = operation.getId();
+        if ("GetFeatures".equalsIgnoreCase(operationId)
+                || "GetFeature".equalsIgnoreCase(operationId)
+                || "GetFeatureWithLock".equalsIgnoreCase(operationId)
+                || "getTile".equalsIgnoreCase(operationId)) {
+            return operation.getService() != null
+                    && "Features".equals(operation.getService().getId());
         }
         return false;
     }

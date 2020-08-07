@@ -19,6 +19,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <!-- Just for the GeoJSON response, sigh -->
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-ogcapi-features</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-rest</artifactId>
             <version>${project.version}</version>

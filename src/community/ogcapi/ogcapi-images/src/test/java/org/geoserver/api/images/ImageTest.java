@@ -43,7 +43,7 @@ public class ImageTest extends ImagesTestSupport {
         assertThat(featureId, startsWith("watertemp."));
         // check properties (location is gone, time torned to "datetime")
         String basePath = "features[?(@.id == '" + featureId + "')]";
-        checkWaterTemp(json, basePath);
+        checkWaterTemp(json, basePath, featureId);
 
         // also check the links (will fail if the link is not available
         assertThat(
@@ -55,7 +55,7 @@ public class ImageTest extends ImagesTestSupport {
                         "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.4?f=application%2Fstac%2Bjson"));
     }
 
-    public void checkWaterTemp(DocumentContext json, String basePath) {
+    public void checkWaterTemp(DocumentContext json, String basePath, String featureId) {
         assertThat(readSingle(json, basePath + ".properties.size()"), equalTo(2));
         // check mandatory STAC item properties
         assertThat(readSingle(json, basePath + ".stac_version"), equalTo("0.8.0"));
@@ -72,13 +72,17 @@ public class ImageTest extends ImagesTestSupport {
         assertThat(
                 readSingle(json, basePath + ".links[?(@.rel=='self')].href"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1?f=application%2Fstac%2Bjson"));
+                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/"
+                                + featureId
+                                + "?f=application%2Fstac%2Bjson"));
         assertThat(
                 readSingle(
                         json,
                         basePath + ".links[?(@.rel=='alternate' && @.type =='text/html')].href"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1?f=text%2Fhtml"));
+                        "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/"
+                                + featureId
+                                + "?f=text%2Fhtml"));
         // check the assets (also mandatory in STAC)
         assertThat(
                 readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].title"),
@@ -87,7 +91,9 @@ public class ImageTest extends ImagesTestSupport {
                 readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href"),
                 allOf(
                         startsWith(
-                                "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.1/assets/"),
+                                "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/"
+                                        + featureId
+                                        + "/assets/"),
                         endsWith("-NCOM_wattemp_100_20081101T0000000_12.tiff")));
     }
 
@@ -124,8 +130,7 @@ public class ImageTest extends ImagesTestSupport {
                         "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
 
-        // get the single feature now by service call
-        // system
+        // get the single feature now by service call system
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/images/collections/"

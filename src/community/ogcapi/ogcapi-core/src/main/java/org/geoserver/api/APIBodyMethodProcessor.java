@@ -24,6 +24,7 @@ import org.geoserver.platform.ServiceException;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -74,6 +75,9 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         this.templateSupport = templateSupport;
         this.geoServer = geoServer;
         this.callbacks = callbacks;
+        // allow converter overrides, the Spring internal machinery picks the first one matching
+        // but does not seem to be respecting the @Order and Ordered interfaces
+        Collections.sort(this.messageConverters, AnnotationAwareOrderComparator.INSTANCE);
     }
 
     protected <T> void writeWithMessageConverters(

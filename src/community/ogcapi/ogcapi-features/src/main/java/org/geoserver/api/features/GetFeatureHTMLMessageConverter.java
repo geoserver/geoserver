@@ -61,12 +61,8 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
             referenceFeatureType = getResource(collections.get(0));
         }
 
-        Template header =
-                templateSupport.getTemplate(
-                        referenceFeatureType, "getfeature-header.ftl", this.getClass());
-        Template footer =
-                templateSupport.getTemplate(
-                        referenceFeatureType, "getfeature-footer.ftl", this.getClass());
+        Template header = getHeaderTemplate(referenceFeatureType);
+        Template footer = getFooterTemplate(referenceFeatureType);
 
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", request.getBaseURL());
@@ -82,29 +78,21 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
             }
 
             // process content template for all feature collections found
-            boolean version3 =
-                    request.getVersion() != null && request.getVersion().startsWith("3.");
             for (int i = 0; i < collections.size(); i++) {
                 FeatureCollection fc = collections.get(i);
-                if (fc != null && fc.size() > 0) {
+                if (fc != null && !fc.isEmpty()) {
                     Template content = null;
                     FeatureTypeInfo typeInfo = getResource(fc);
                     if (!(fc.getSchema() instanceof SimpleFeatureType)) {
                         // if there is a specific template for complex features, use that.
-                        content =
-                                templateSupport.getTemplate(
-                                        typeInfo,
-                                        "getfeature-complex-content.ftl",
-                                        this.getClass());
+                        content = getComplexContentTemplate(typeInfo);
                     }
                     if (content == null) {
-                        content =
-                                templateSupport.getTemplate(
-                                        typeInfo, "getfeature-content.ftl", this.getClass());
+                        content = getContentTemplate(typeInfo);
                     }
                     model.put("data", fc);
                     // allow building a collection backlink
-                    if (version3 && fc instanceof TypeInfoCollectionWrapper) {
+                    if (fc instanceof TypeInfoCollectionWrapper && includeCollectionLink()) {
                         FeatureTypeInfo info =
                                 ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
                         if (info != null) {
@@ -140,5 +128,29 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
         } finally {
             purgeIterators();
         }
+    }
+
+    protected boolean includeCollectionLink() {
+        // it's a API request, not a classic OGC one
+        return APIRequestInfo.get() != null;
+    }
+
+    protected Template getContentTemplate(FeatureTypeInfo typeInfo) throws IOException {
+        return templateSupport.getTemplate(typeInfo, "getfeature-content.ftl", this.getClass());
+    }
+
+    protected Template getComplexContentTemplate(FeatureTypeInfo typeInfo) throws IOException {
+        return templateSupport.getTemplate(
+                typeInfo, "getfeature-complex-content.ftl", this.getClass());
+    }
+
+    protected Template getFooterTemplate(FeatureTypeInfo referenceFeatureType) throws IOException {
+        return templateSupport.getTemplate(
+                referenceFeatureType, "getfeature-footer.ftl", this.getClass());
+    }
+
+    protected Template getHeaderTemplate(FeatureTypeInfo referenceFeatureType) throws IOException {
+        return templateSupport.getTemplate(
+                referenceFeatureType, "getfeature-header.ftl", this.getClass());
     }
 }

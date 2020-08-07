@@ -1,0 +1,779 @@
+openapi: 3.0.3
+info:
+  title: 'WIP: OGC Testbed-16 D137 DGGS server API - process style'
+  description: |-
+    WARNING - This is work-in-progress.
+
+    The API supports, as per CFP, "the geographic location to zone-ID(s) and reverse conversion", plus other eventual additions to allow better comparison and discussion.
+
+    Basic ideas:
+    * The same API elements are used for a DGGS-RS service and a DGGS-Data service
+    * In the case of a DGGS-RS service, the collections are the DGGS instances themselves, 
+      and the returned features have no properties other than the geometry and resolution
+      (e.g., in GeoJSON the properties object will be ``null``)
+    * In the case of a DGGS-Data service, the collections are the sample DGGS data (hence, made available in a particular DGGS instance, too), and the returned features have
+      actual values associated in the ``properties`` object.
+
+    To care for different use cases, two different output formats will be implemented
+    for each endpoint returning cells:
+    * A classic GeoJSON output, with geometry being either the boundary or the center 
+      point of the zone (to be controlled with a request parameter), for usage in classic
+      GIS tools. The longitudes ill eventually be extended outside of the -180,180 
+      range to allow visualization by tools that cannot deal properly with dateline crossing.
+    * A DGGSJSON output, small variation of the classic GeoJSON where the geometry is 
+      replaced by an array of zone-ids, to be used in both zone oriented and feature oriented
+      API (e.g., the)
+
+    Questions, discussion topics:
+    * Support for multiple DDGSs, we are using rHealPix and H3, to offer the 
+      clients and DGGS data server at least a DGGS they are not already supporting natively
+    * Is the API going to be sufficiently self describing that the clients
+      can figure out everything it needs by just walking the API, or will it need specific knowledge contained in an API profile (e.g, a profile for rHeadlPix, one for H3, cosider for example zoneId and how to determine them)
+    * For parametric DDGSs (e.g., rHealPix) do we expose a specific instance as its own DGGS, or somehow expose the full parameters of the DGGS in each resource?
+    * This API follows a process API, where most resources are a process and one needs to know valid values to hit them
+
+
+    CHANGES
+    * 2020-07-02 initial version
+    * 2020-07-23 usage of zones instead of cells everywhere, extending to support also data DGGS servers.
+    * 2020-09-22 minor updates before publication of a working service based on the API
+  contact:
+    name: Andrea Aime
+    email: andrea.aime@geo-solutions.it
+  license:
+    name: OGC License
+    url: 'http://www.opengeospatial.org/legal/'
+  version: 0.0.3
+tags:
+  - name: Capabilities
+    description: essential characteristics of this API
+
+paths:
+  /:
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition, the conformance
+        statements and to other resources provided by the API.
+      responses:
+        '200':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  /conformance:
+    get:
+      tags:
+        - Capabilities
+      summary: information about specifications that this API conforms to.
+      description: |-
+        A list of all conformance classes specified in a standard that the
+        server conforms to.
+      responses:
+        '200':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ConformanceDeclaration'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  /collections:
+    get:
+      tags:
+        - Capabilities
+      summary: the list of supported collections
+      responses:
+        '200':
+          $ref: '#/components/responses/DGGSList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}:
+    get:
+      tags:
+        - DGGS access
+      summary: Describes a particular DGGS
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/DGGSDescription'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/zones:
+    get:
+      tags:
+        - DGGS access
+      summary: Access the list of zones in a given DGGS. Can list either all the zones, or a particular subset based on resolution, WGS84 bbox, or list of containing zones (e.g., polygon defined in DGGS terms)
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/zone:
+    get:
+      tags:
+        - DGGS access
+      summary: Access the definition of a particular zone
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Zone'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/neighbors:
+    get:
+      tags:
+        - DGGS access
+      summary: Get the list of neighboring zones, to a given zone (should it return just a list of identifiers instead of a GeoJSON collection? Could even be a list of links in the zone itself)
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/radius'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/parents:
+    get:
+      tags:
+        - DGGS access
+      summary: Get the list of parent zones, to a given zone (should it return just a list of identifiers instead of a GeoJSON collection?)
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/levels'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/children:
+    get:
+      tags:
+        - DGGS access
+      summary: Get the list of zones children of a given zone (should it return just a list of identifiers instead of a GeoJSON collection?)
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/levels'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/point:
+    get:
+      tags:
+        - DGGS access
+      summary: Returns the id of the zone containing the given point, at the given resolution
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/point'
+        - $ref: '#/components/parameters/resolution'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/polygon:
+    get:
+      tags:
+        - DGGS access
+      summary: Lists zones contained in the polygon
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/polygon'
+        - $ref: '#/components/parameters/resolution'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+components:
+  schemas:
+    collection:
+      type: object
+      required:
+        - id
+        - links
+      properties:
+        id:
+          description: dentifier of the the collection. In case it's a DGGS RS service, it will be the DGGS instance identifier, otherwise, it's going to be the data collection id.
+          type: string
+          example: TB16-Pix
+        dggs-id:
+          description: identifiers of the DGGS instance. For DGGS RS services, it will be the same as the id, for DGGS Data services, it identifiers the particular DGGS instance used.
+          type: string
+          example: TB16-Pix
+        title:
+          description: human readable title of the collection
+          type: string
+          example: Testbed 16 DGGS reference system based on rHealPix
+        description:
+          description: a description of the collection
+          type: string
+          example: Some description of the DGGS here
+        resolutions:
+          type: array
+          items:
+            type: number
+        links:
+          type: array
+          description: The list of links, e.g., to the operations provided by this DGGS collection.
+          items:
+            $ref: "#/components/schemas/link"
+          example:
+            - href: http://data.example.com/buildings
+              rel: item
+            - href: http://example.com/concepts/buildings.html
+              rel: describedBy
+              type: text/html
+    collection-list:
+      type: object
+      required:
+        - links
+        - dggs-list
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        dggs-list:
+          type: array
+          items:
+            type: string
+    zoneGeoJSON:
+      allOf:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON'
+        - type: object
+          required:
+            - resolution
+          properties:
+            resolution:
+              type: number
+    DGGSJSON:
+      type: object
+      required:
+        - id
+        - type
+        - geometry
+        - properties
+      properties:
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          description: The geometry of the feature, as a list of DGGS zone ids
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          nullable: true
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+    zoneCollectionGeoJSON:
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/zoneGeoJSON"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        timeStamp:
+          $ref: "#/components/schemas/timeStamp"
+        numberMatched:
+          $ref: "#/components/schemas/numberMatched"
+        numberReturned:
+          $ref: "#/components/schemas/numberReturned"
+    zoneCollectionDGGSJSON:
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/DGGSJSON"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        timeStamp:
+          $ref: "#/components/schemas/timeStamp"
+        numberMatched:
+          $ref: "#/components/schemas/numberMatched"
+        numberReturned:
+          $ref: "#/components/schemas/numberReturned"
+    zoneList:
+      type: object
+      required:
+        - zones
+        - links
+      properties:
+        zones:
+          type: array
+          items:
+            type: string
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        timeStamp:
+          $ref: "#/components/schemas/timeStamp"
+        numberMatched:
+          $ref: "#/components/schemas/numberMatched"
+        numberReturned:
+          $ref: "#/components/schemas/numberReturned"
+    link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          example: http://data.example.com/buildings/123
+        rel:
+          type: string
+          example: alternate
+        type:
+          type: string
+          example: application/geo+json
+        hreflang:
+          type: string
+          example: en
+        title:
+          type: string
+          example: Trierer Strasse 70, 53115 Bonn
+        length:
+          type: integer
+    timeStamp:
+      description: This property indicates the time and date when the response was generated.
+      type: string
+      format: date-time
+      example: '2017-08-17T08:05:32Z'
+    numberMatched:
+      description: |-
+        The number of features of the feature type that match the selection
+        parameters like `bbox`.
+      type: integer
+      minimum: 0
+      example: 127
+    numberReturned:
+      description: |-
+        The number of features in the feature collection.
+
+        A server may omit this information in a response, if the information
+        about the number of features is not known or difficult to compute.
+
+        If the value is provided, the value shall be identical to the number
+        of items in the "features" array.
+      type: integer
+      minimum: 0
+      example: 10
+  responses:
+    NotSupported:
+      description: None of the requested media types is supported at the path.
+      content:
+        application/json:
+          schema:
+            $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/schemas/exception'
+        text/html:
+          schema:
+            type: string
+    DGGSDescription:
+      description: |-
+        Describes a particular DGGS
+
+        This information includes:
+
+        * A local identifier for the DGGS that is unique for this API;
+        * An optional human readable title and description for the DGGS;
+        * The predominant zone shape (rectangular, triangular, hexagonal)
+        * The list of resolutions for the particular DGGS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collection'
+          example:
+            id: TB16-Pix
+            title: Testbed 16 DGGS reference system based on rHealPix
+            description: A rHealPix instance based on WGS84, rotated so that all the corners of the cube lie in water
+            resolutions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+            links:
+              - href: 'https://iopscience.iop.org/article/10.1088/1755-1315/34/1/012012/pdf'
+                rel: describedBy
+                type: application/PDF
+                title: The rHealPix DGGS specification
+        text/html:
+          schema:
+            type: string
+    DGGSList:
+      description: |-
+        The list of DGGS available and link to the processes
+
+        The response contains the list of DGGS objects.
+        This information includes:
+
+        * A local identifier for the DGGS that is unique for this API;
+        * An optional human readable title and description for the DGGS;
+        * The predominant zone shape (rectangular, triangular, hexagonal)
+        * The list of resolutions for the particular DGGS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collection-list'
+          example:
+            links:
+              - href: 'http://data.example.org/dggs.json'
+                rel: self
+                type: application/json
+                title: this document
+              - href: 'http://data.example.org/dggs.html'
+                rel: alternate
+                type: text/html
+                title: this document as HTML
+            dggs-list:
+              - id: TB16-Pix
+                title: The Testbed16 DGGS based on rHealPix
+                description: The rHealPix DGGS
+                resolutions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                links:
+                  - href: 'https://iopscience.iop.org/article/10.1088/1755-1315/34/1/012012/pdf'
+                    rel: describedBy
+                    type: application/PDF
+                    title: The rHealPix DGGS specification
+                  - href: 'http://data.example.org/dggs/rHealPix/zones'
+                    rel: zones
+                    type: appplication/json
+              - id: H3
+                title: H3
+                description: The H3 DGGS
+                resolutions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+                links:
+                  - href: 'https://eng.uber.com/h3/'
+                    rel: describedBy
+                    type: text/html
+                    title: The H3 specification
+                  - href: 'http://data.example.org/dggs/H3/zones'
+                    rel: zones
+                    type: appplication/json
+        text/html:
+          schema:
+            type: string
+    ZoneList:
+      description: |-
+        A list of DGGS zones.
+
+        The response contains a list of DGGS zones. The response can be a GeoJSON payload with full boundaries, for traditional clients, or a simple list of zone ids, for DGGS aware clients
+      content:
+        application/geo+json:
+          schema:
+            $ref: '#/components/schemas/zoneCollectionGeoJSON'
+          example:
+            - type: FeatureCollection
+              features:
+                - type: Feature
+                  id: 'P4'
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - ...
+                  properties:
+                    resolution: 0
+                    center:
+                      type: Point
+                      coordinates: [0, 0]
+                - type: Feature
+                  id: 'Q4'
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - ...
+                  properties:
+                    resolution: 0
+                    center:
+                      type: Point
+                      coordinates: [0, 0]
+        application/dggs+json:
+          schema:
+            $ref: '#/components/schemas/zoneCollectionDGGSJSON'
+          example:
+            - type: FeatureCollection
+              features:
+                - type: Feature
+                  id: 'P4'
+                  geometry: [ 'P4' ]
+                  properties: null
+                - type: Feature
+                  id: 'Q4'
+                  geometry: ['Q4']
+                  properties:
+                    myAttribute: 3
+                    otherAttribute: "abc"
+                - type: Feature
+                  id: 'myFeature.1'
+                  geometry: ['Q4', 'P4', 'P32']
+                  properties:
+                    myAttribute: 3
+                    otherAttribute: "abc"
+        text/html:
+          schema:
+            type: string
+    Zone:
+      description: |-
+        A single DGGS zone
+
+        The response contains the description of a single DGGS zone
+      content:
+        application/geo+json:
+          schema:
+            $ref: '#/components/schemas/zoneGeoJSON'
+          example:
+            type: Feature
+            id: 'P4'
+            geometry:
+              type: Polygon
+              coordinates:
+                - ...
+            resolution: 0
+            properties:
+              att1: value1
+              att2: value2
+        application/dggs+json:
+          schema:
+            $ref: '#/components/schemas/DGGSJSON'
+          example:
+            type: Feature
+            id: 'P4'
+            geometry: ['P4']
+            properties:
+              att1: value1
+              att2: value2
+        text/html:
+          schema:
+            type: string
+  parameters:
+    f:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http
+        rules apply,i.e., the accept header shall be used to determine the format.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+    zoneId:
+      name: zoneId
+      in: query
+      required: true
+      schema:
+        type: string
+        example: Q3
+    levels:
+      name: levels
+      description: Number of levels for zone parent/children extration
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 5
+    radius:
+      name: radius
+      description: Distance, in zones, from the center zone, to be walked when extracting neighbours. Also known as ``k`` in a k-ring extraction in some DGGSs.
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 5
+    resolution:
+      name: resolution
+      in: query
+      required: true
+      schema:
+        type: number
+    crs:
+      name: crs
+      in: query
+      description: |-
+        The coordinate reference system of the response geometries. Default is
+        WGS84 longitude/latitude (http://www.opengis.net/def/crs/OGC/1.3/CRS84).
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        default: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+        enum:
+          - 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+          - 'http://www.opengis.net/def/crs/EPSG/0/3857'
+          - 'http://www.opengis.net/def/crs/EPSG/0/4326'
+    bbox:
+      name: bbox
+      in: query
+      description: |-
+        Only features that have a geometry that intersects the bounding box are selected.
+        The bounding box is provided as four or six numbers, depending on whether the
+        coordinate reference system includes a vertical axis (height or depth):
+
+        * Lower left corner, coordinate axis 1
+        * Lower left corner, coordinate axis 2
+        * Minimum value, coordinate axis 3 (optional)
+        * Upper right corner, coordinate axis 1
+        * Upper right corner, coordinate axis 2
+        * Maximum value, coordinate axis 3 (optional)
+
+        The coordinate reference system of the values is WGS 84 longitude/latitude
+        (http://www.opengis.net/def/crs/OGC/1.3/CRS84) unless a different coordinate
+        reference system is specified in the parameter `bbox-crs`.
+
+        For WGS 84 longitude/latitude the values are in most cases the sequence of
+        minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+        However, in cases where the box spans the antimeridian the first value
+        (west-most box edge) is larger than the third value (east-most box edge).
+
+        If the vertical axis is included, the third and the sixth number are
+        the bottom and the top of the 3-dimensional bounding box.
+
+        If a feature has multiple spatial geometry properties, it is the decision of the
+        server whether only a single spatial geometry property is used to determine
+        the extent or all relevant geometries.
+      required: false
+      schema:
+        type: array
+        minItems: 4
+        maxItems: 6
+        items:
+          type: number
+      style: form
+      explode: false
+    point:
+      name: point
+      in: query
+      description: |-
+        Only zones that contain/touch the ponit are returned. The point is provided as:
+
+        * Longitude
+        * Latitude
+
+        The coordinate reference system of the values is WGS 84 longitude/latitude
+        (http://www.opengis.net/def/crs/OGC/1.3/CRS84).
+      required: false
+      schema:
+        type: array
+        minItems: 2
+        maxItems: 2
+        items:
+          type: number
+      style: form
+      explode: false
+    polygon:
+      name: polygon
+      in: query
+      description: |-
+        Only zones contained in the polygon are returned. The polygon is specifed in WKT form.
+
+        The coordinate reference system of the values is WGS 84 longitude/latitude
+        (http://www.opengis.net/def/crs/OGC/1.3/CRS84).
+      required: false
+      schema:
+        type: string
+      style: form
+      explode: false
+    limit:
+      name: limit
+      in: query
+      description: |-
+        The optional limit parameter limits the number of items that are presented in the response document.
+
+        Only items are counted that are on the first level of the collection in the response document.
+        Nested objects contained within the explicitly requested items shall not be counted.
+
+        Minimum = 1. Maximum = 10000. Default = 10.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 10000
+        default: 10
+      style: form
+    zoneIdList:
+      name: zoneIdList
+      in: query
+      description: |-
+        Comma separated list of zone identifiers
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    collectionId:
+      name: collectionId
+      in: path
+      description: local identifier of a collection
+      required: true
+      schema:
+        type: string

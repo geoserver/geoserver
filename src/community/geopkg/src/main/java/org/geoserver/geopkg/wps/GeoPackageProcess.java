@@ -45,28 +45,38 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.data.DefaultTransaction;
+import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.Entry;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.geopkg.GeoPkgDataStoreFactory;
+import org.geotools.geopkg.GeoPkgDialect;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest.FeaturesLayer;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest.Layer;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest.LayerType;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest.TilesLayer;
+import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
-import org.geotools.styling.Style;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
@@ -77,6 +87,8 @@ import org.opengis.referencing.crs.GeographicCRS;
 public class GeoPackageProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(GeoPackageProcess.class);
+    static final double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
+    private static final double DISTANCE_SCALE_FACTOR = 0.0254 / (25.4 / 0.28);
 
     private final GeoServerDataDirectory dataDirectory;
     private final EntityResolverProvider resolverProvider;
@@ -199,7 +211,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         TilesLayer tiles = (TilesLayer) layer;
         GetMapRequest request = new GetMapRequest();
 
-        request.setLayers(new ArrayList<MapLayerInfo>());
+        request.setLayers(new ArrayList<>());
         for (QName layerQName : tiles.getLayers()) {
             LayerInfo layerInfo = null;
             if ("".equals(layerQName.getNamespaceURI())) {
@@ -280,7 +292,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         } else if (tiles.getSldBody() != null) {
             request.setStyleBody(tiles.getSldBody());
         } else {
-            request.setStyles(new ArrayList<Style>());
+            request.setStyles(new ArrayList<>());
             if (tiles.getStyles() != null) {
                 for (String styleName : tiles.getStyles()) {
                     StyleInfo info = catalog.getStyleByName(styleName);
@@ -431,6 +443,11 @@ public class GeoPackageProcess implements GeoServerProcess {
             }
         }
 
+        List<GeoPackageProcessRequest.Overview> overviews = features.getOverviews();
+        if (overviews != null) {
+            addOverviews(gpkg, features, overviews);
+        }
+
         List<LayerInfo> layers = catalog.getLayers(ft);
         if (features.isStyles() && layers != null && !layers.isEmpty()) {
             LayerInfo layerInfo = layers.get(0);
@@ -449,6 +466,129 @@ public class GeoPackageProcess implements GeoServerProcess {
         if (contents.isContext()) {
             contextWriter.addFeatureTypeContext(ft, layer.getName());
         }
+    }
+
+    /**
+     * Converts a scale denominator to a generalization distance using the OGC SLD scale denominator
+     * computation rules
+     *
+     * @param crs The CRS of the data
+     * @param scaleDenominator The target scale denominator
+     * @return
+     */
+    static double scaleToDistance(CoordinateReferenceSystem crs, double scaleDenominator) {
+        return scaleDenominator * DISTANCE_SCALE_FACTOR / RendererUtilities.toMeters(1, crs);
+    }
+
+    /**
+     * Converts a generalization distance to a scale denominator using the OGC SLD scale denominator
+     * computation rules
+     *
+     * @param crs The CRS of the data
+     * @param distance The target generalization distance
+     * @return
+     */
+    static double distanceToScale(CoordinateReferenceSystem crs, double distance) {
+        return distance * RendererUtilities.toMeters(1, crs) / 0.00028;
+    }
+
+    private void addOverviews(
+            GeoPackage gpkg, FeaturesLayer layer, List<GeoPackageProcessRequest.Overview> overviews)
+            throws IOException {
+        Collections.sort(overviews);
+        GeoPackageProcessRequest.Overview previousOverview = null;
+
+        // create the datastore, allow access to tables not registered among the contents
+        JDBCDataStore dataStore = getStoreFromPackage(gpkg, false);
+        try {
+            for (GeoPackageProcessRequest.Overview overview : overviews) {
+                // create the overview schema
+                String orginalLayerName = layer.getFeatureType().getLocalPart();
+                SimpleFeatureType schema = dataStore.getSchema(orginalLayerName);
+                SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+                tb.init(schema);
+                String overviewName = overview.getName();
+                tb.setName(overviewName);
+                SimpleFeatureType ft = tb.buildFeatureType();
+                ft.getUserData().put(GeoPackage.SKIP_REGISTRATION, true);
+                dataStore.createSchema(ft);
+
+                // prepare the query
+                Query q = new Query();
+                Filter filter = overview.getFilter();
+                if (overview.getFilter() != null) {
+                    q.setFilter(filter);
+                }
+
+                // build from previous overview if possible, base table otherwise
+                String sourceTable =
+                        previousOverview != null ? previousOverview.getName() : orginalLayerName;
+                SimpleFeatureStore source =
+                        (SimpleFeatureStore) dataStore.getFeatureSource(sourceTable);
+
+                // make sure the distance is updated
+                double distance = overview.getDistance();
+                double scaleDenominator = overview.getScaleDenominator();
+                CoordinateReferenceSystem crs = schema.getCoordinateReferenceSystem();
+                if (distance == 0) {
+                    if (scaleDenominator > 0) {
+                        distance = scaleToDistance(crs, scaleDenominator);
+                    }
+                } else if (scaleDenominator == 0) {
+                    scaleDenominator = distanceToScale(crs, distance);
+                }
+
+                // grab the data source, using a single transaction for both reading and writing, to
+                // avoid exclusive locks
+
+                try (Transaction t = new DefaultTransaction()) {
+                    source.setTransaction(t);
+                    SimpleFeatureCollection fc = source.getFeatures(q);
+
+                    SimpleFeatureStore featureStore =
+                            (SimpleFeatureStore) dataStore.getFeatureSource(ft.getTypeName());
+                    featureStore.setTransaction(t);
+                    featureStore.addFeatures(SimplifyingFeatureCollection.simplify(fc, distance));
+                    t.commit();
+                }
+
+                // create the spatial index, tricking the store with a fake entry
+                FeatureEntry fe = new FeatureEntry();
+                fe.setTableName(ft.getTypeName());
+                fe.setGeometryColumn(ft.getGeometryDescriptor().getLocalName());
+                new GeoPackage(dataStore).createSpatialIndex(fe);
+
+                // register the overview table
+                try {
+                    GeneralizedTablesExtension generalized =
+                            gpkg.getExtension(GeneralizedTablesExtension.class);
+                    GeneralizedTable gt =
+                            new GeneralizedTable(orginalLayerName, overviewName, distance);
+                    String provenance = "Source table: " + sourceTable;
+                    if (filter != null) {
+                        provenance += "\nFilter as CQL: " + ECQL.toCQL(filter);
+                    }
+                    gt.setProvenance(provenance);
+                    generalized.addTable(gt);
+                } catch (SQLException e) {
+                    throw new IOException(e);
+                }
+            }
+        } finally {
+            // just to avoid a nagging message about not closing stores, it does not really
+            // do anything since the data source is not a ManageableDataSource
+            dataStore.dispose();
+        }
+    }
+
+    static JDBCDataStore getStoreFromPackage(GeoPackage gpkg, boolean contentsOnly)
+            throws IOException {
+        Map<String, Object> params = new HashMap<>();
+        params.put(GeoPkgDataStoreFactory.DATASOURCE.key, gpkg.getDataSource());
+        JDBCDataStore dataStore =
+                new GeoPkgDataStoreFactory(gpkg.getWriterConfiguration()).createDataStore(params);
+        ((GeoPkgDialect) dataStore.getSQLDialect()).setContentsOnly(contentsOnly);
+        return dataStore;
     }
 
     private void addLayerStyles(GeoPackage gpkg, LayerInfo layerInfo) throws IOException {

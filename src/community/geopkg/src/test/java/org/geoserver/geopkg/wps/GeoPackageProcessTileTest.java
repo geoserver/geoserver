@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg.wps.gs;
+package org.geoserver.geopkg.wps;
 
 import static org.junit.Assert.*;
 

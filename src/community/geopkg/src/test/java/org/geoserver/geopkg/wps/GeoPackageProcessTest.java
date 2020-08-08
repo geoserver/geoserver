@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg.wps.gs;
+package org.geoserver.geopkg.wps;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -44,29 +44,32 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geopkg.wps.GeoPkgAnnotationReference;
-import org.geoserver.geopkg.wps.GeoPkgSemanticAnnotation;
-import org.geoserver.geopkg.wps.GeoPkgStyle;
-import org.geoserver.geopkg.wps.GeoPkgStyleSheet;
-import org.geoserver.geopkg.wps.GeoPkgSymbol;
-import org.geoserver.geopkg.wps.GeoPkgSymbolImage;
-import org.geoserver.geopkg.wps.OWSContextWriter;
-import org.geoserver.geopkg.wps.PortrayalExtension;
-import org.geoserver.geopkg.wps.SemanticAnnotationsExtension;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureReader;
+import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.geopkg.GeoPkgExtension;
 import org.geotools.geopkg.GeoPkgMetadata;
 import org.geotools.geopkg.GeoPkgMetadataExtension;
 import org.geotools.geopkg.GeoPkgMetadataReference;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.geopkg.TileReader;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.referencing.CRS;
 import org.geotools.util.URLs;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.MultiLineString;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -150,7 +153,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
     @Test
     public void testGeoPackageProcess() throws Exception {
-        String urlPath = string(post("wps", getXml())).trim();
+        String urlPath = string(post("wps", getXml(getXMLInnerRequest()))).trim();
         String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletResponse response = getAsServletResponse(resourceUrl);
         File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
@@ -866,7 +869,80 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertThat(message, containsString("Entity resolution disallowed"));
     }
 
-    public String getXml() {
+    @Test
+    public void testGeoPackageVectorOverviews() throws Exception {
+        String urlPath = string(post("wps", getXml(getXMLInnerRequestOverviews()))).trim();
+        String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
+        MockHttpServletResponse response = getAsServletResponse(resourceUrl);
+        File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
+        FileUtils.writeByteArrayToFile(file, getBinary(response));
+        assertNotNull(file);
+        assertEquals("test.gpkg", file.getName());
+        assertTrue(file.exists());
+
+        GeoPackage gpkg = new GeoPackage(file);
+
+        List<FeatureEntry> features = gpkg.features();
+        assertEquals(1, features.size());
+
+        FeatureEntry fe = features.get(0);
+        String primaryTableName = "RoadSegments";
+        assertEquals(primaryTableName, fe.getTableName());
+
+        // getting direct access to the underlying packages, showing all tables, paints a different
+        // picture
+        JDBCDataStore store = GeoPackageProcess.getStoreFromPackage(gpkg, false);
+        // get base level geometry, check srid
+        ContentFeatureSource fs = store.getFeatureSource("RoadSegments");
+        SimpleFeature mainStreet =
+                DataUtilities.first(fs.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
+        MultiLineString baseGeometry = (MultiLineString) mainStreet.getDefaultGeometry();
+        assertEquals(4326, baseGeometry.getSRID());
+        // first overview, all features (no filter) and
+        ContentFeatureSource fs_ov1 = store.getFeatureSource("roads_ov1");
+        assertEquals(5, fs_ov1.getCount(Query.ALL));
+        SimpleFeature mainStreetOv1 =
+                DataUtilities.first(fs_ov1.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
+        MultiLineString ov1Geometry = (MultiLineString) mainStreetOv1.getDefaultGeometry();
+        assertEquals(4326, ov1Geometry.getSRID());
+        assertEquals(3, ov1Geometry.getNumPoints());
+        assertEquals(new Coordinate(0.0002, 0.0007), ov1Geometry.getCoordinates()[0]);
+        assertEquals(new Coordinate(0.0014, 0.001), ov1Geometry.getCoordinates()[1]);
+        assertEquals(new Coordinate(0.0042, 0.0018), ov1Geometry.getCoordinates()[2]);
+        // second overview, just a single feature, and more simplified
+        ContentFeatureSource fs_ov2 = store.getFeatureSource("roads_ov2");
+        assertEquals(1, fs_ov2.getCount(Query.ALL));
+        SimpleFeature mainStreetOv2 =
+                DataUtilities.first(fs_ov2.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
+        MultiLineString ov2Geometry = (MultiLineString) mainStreetOv2.getDefaultGeometry();
+        assertEquals(4326, ov2Geometry.getSRID());
+        assertEquals(2, ov2Geometry.getNumPoints());
+        assertEquals(new Coordinate(0.0002, 0.0007), ov2Geometry.getCoordinates()[0]);
+        assertEquals(new Coordinate(0.0042, 0.0018), ov2Geometry.getCoordinates()[1]);
+
+        // check the overview tables have been registered among the extensions
+        GeneralizedTablesExtension extension = gpkg.getExtension(GeneralizedTablesExtension.class);
+        List<GeoPkgExtension.Association> associations = extension.getAssociations();
+        assertThat(associations, hasItem(hasProperty("tableName", equalTo("roads_ov1"))));
+        assertThat(associations, hasItem(hasProperty("tableName", equalTo("roads_ov2"))));
+        assertThat(associations, hasItem(hasProperty("tableName", equalTo("gpkgext_generalized"))));
+
+        // get the definitions, they are ordered by generalization distance
+        List<GeneralizedTable> generalizedTables = extension.getGeneralizedTables(primaryTableName);
+        assertEquals(2, generalizedTables.size());
+        // first generalized table
+        GeneralizedTable ov1 = generalizedTables.get(0);
+        assertEquals(primaryTableName, ov1.getPrimaryTable());
+        assertEquals("roads_ov1", ov1.getGeneralizedTable());
+        assertEquals(0.00001, ov1.getDistance(), 0d);
+        // second generalized table
+        GeneralizedTable ov2 = generalizedTables.get(1);
+        assertEquals(primaryTableName, ov2.getPrimaryTable());
+        assertEquals("roads_ov2", ov2.getGeneralizedTable());
+        assertEquals(0.0001, ov2.getDistance(), 0d);
+    }
+
+    public String getXml(String xmlInnerRequest) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3"
                 + ".org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" "
@@ -883,7 +959,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "      <wps:Data>"
                 + "        <wps:ComplexData mimeType=\"text/xml; "
                 + "subtype=geoserver/geopackage\"><![CDATA["
-                + getXMLInnerRequest()
+                + xmlInnerRequest
                 + "]]></wps:ComplexData>"
                 + "      </wps:Data>"
                 + "    </wps:Input>"
@@ -974,6 +1050,30 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "      <maxZoom>11</maxZoom>"
                 + "    </coverage>"
                 + "  </tiles>"
+                + "</geopackage>";
+    }
+
+    private String getXMLInnerRequestOverviews() {
+        return "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <features name=\"roads\" identifier=\"roads\">"
+                + "    <featuretype>cite:RoadSegments</featuretype>"
+                + "    <overviews>"
+                + "      <overview>"
+                + "         <name>roads_ov1</name>"
+                + "         <distance>0.00001</distance>"
+                + "      </overview>"
+                + "      <overview>"
+                + "         <name>roads_ov2</name>"
+                + "         <distance>0.0001</distance>"
+                + "         <filter xmlns:fes=\"http://www.opengis.net/fes/2.0\">"
+                + "            <fes:PropertyIsEqualTo>"
+                + "            <fes:ValueReference>NAME</fes:ValueReference>"
+                + "            <fes:Literal>Main Street</fes:Literal>"
+                + "            </fes:PropertyIsEqualTo>"
+                + "         </filter>"
+                + "      </overview>"
+                + "    </overviews>"
+                + "  </features>"
                 + "</geopackage>";
     }
 
@@ -1142,5 +1242,25 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "    </wps:RawDataOutput>"
                 + "  </wps:ResponseForm>"
                 + "</wps:Execute>";
+    }
+
+    @Test
+    public void testScaleDenominatorDistanceProjected() throws FactoryException {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:32632", true);
+        double originalDistance = 100;
+        double scale = GeoPackageProcess.distanceToScale(crs, originalDistance);
+        assertEquals(357142, scale, 1d);
+        double distance = GeoPackageProcess.scaleToDistance(crs, scale);
+        assertEquals(originalDistance, distance, 0.1d);
+    }
+
+    @Test
+    public void testScaleDenominatorDistanceGeographic() throws FactoryException {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326", true);
+        double originalDistance = 0.001; // in degrees
+        double scale = GeoPackageProcess.distanceToScale(crs, originalDistance);
+        assertEquals(397569, scale, 1d);
+        double distance = GeoPackageProcess.scaleToDistance(crs, scale);
+        assertEquals(originalDistance, distance, 1e-6);
     }
 }

@@ -259,6 +259,40 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
         }
     }
 
+    @Test
+    public void testJsonLdQueryFailsIfNotExisting() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append("&cql_filter= features.notexisting IS NULL");
+        MockHttpServletResponse result = getAsServletResponse(sb.toString());
+        assertTrue(
+                result.getContentAsString()
+                        .contains(
+                                "Failed to resolve filter &amp;quot;features/notexisting&amp;quot; IS NULL against the template. "
+                                        + "Check the path specified in the filter."));
+    }
+
+    @Test
+    public void testJsonLdQueryOGCAPIFailsIfNotExisting() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&filter-lang=cql-text")
+                        .append("&filter= features.notexisting")
+                        .append(" = 'name_2' ");
+        MockHttpServletResponse result = getAsServletResponse(sb.toString());
+        assertTrue(
+                result.getContentAsString()
+                        .contains(
+                                "Failed to resolve filter features.notexisting = 'name_2' against the template. "
+                                        + "Check the path specified in the filter."));
+    }
+
     private void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);
         assertNotNull(feature.getString("@id"));

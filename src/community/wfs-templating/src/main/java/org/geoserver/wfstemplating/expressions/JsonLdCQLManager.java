@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.geoserver.util.XCQL;
 import org.geoserver.wfstemplating.builders.impl.TemplateBuilderContext;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -90,7 +91,7 @@ public class JsonLdCQLManager {
             contextPos = determineContextPos(xpathFunction);
         String literalXpath = removeBackDots(xpathFunction);
         String cleanedCql = cleanCQL(this.strCql, xpathFunction, literalXpath);
-        Filter templateFilter = ECQL.toFilter(cleanedCql);
+        Filter templateFilter = XCQL.toFilter(cleanedCql);
         TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
         templateFilter.accept(visitor, null);
         return templateFilter;

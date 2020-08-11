@@ -126,7 +126,7 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
             String strFilter, String outputFormat, Operation operation) throws Exception {
         FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
         RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
-        if (strFilter != null && strFilter.indexOf(".") != -1) {
+        if (strFilter != null && strFilter.indexOf("features.") != -1) {
             if (root != null) {
                 replaceFilter(strFilter, root, typeInfo, operation);
             }
@@ -139,7 +139,14 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         JsonPathVisitor visitor = new JsonPathVisitor(typeInfo.getFeatureType());
         /* Todo find a better way to replace json-ld path with corresponding template attribute*/
         // Get filter from string in order to make it accept the visitor
-        Filter f = (Filter) XCQL.toFilter(strFilter).accept(visitor, root);
+        Filter old = XCQL.toFilter(strFilter);
+        Filter f = (Filter) old.accept(visitor, root);
+        if (old.equals(f))
+            throw new RuntimeException(
+                    "Failed to resolve filter "
+                            + strFilter
+                            + " against the template. "
+                            + "Check the path specified in the filter.");
         List<Filter> templateFilters = new ArrayList<>();
         templateFilters.addAll(visitor.getFilters());
         if (templateFilters != null && templateFilters.size() > 0) {

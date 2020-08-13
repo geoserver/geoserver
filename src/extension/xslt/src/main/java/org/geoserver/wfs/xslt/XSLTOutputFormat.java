@@ -41,6 +41,7 @@ import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
 import org.geotools.feature.FeatureCollection;
@@ -57,7 +58,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Andrea Aime - GeoSolutions
  */
 public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
-        implements ApplicationContextAware, DisposableBean {
+        implements ApplicationContextAware, DisposableBean, ComplexFeatureAwareFormat {
 
     static Map<String, String> formats = new ConcurrentHashMap<String, String>();
 

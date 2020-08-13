@@ -28,6 +28,7 @@ import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -51,7 +52,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Simone Giannecchini, GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
  */
-public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
+public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
+        implements ComplexFeatureAwareFormat {
     private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
     // store the response type

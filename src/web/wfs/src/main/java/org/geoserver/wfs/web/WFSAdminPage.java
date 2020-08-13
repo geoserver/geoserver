@@ -71,6 +71,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         form.add(new TextField<Integer>("maxNumberOfFeaturesForPreview"));
         form.add(new CheckBox("featureBounding"));
         form.add(new CheckBox("hitsIgnoreMaxFeatures"));
+        form.add(new CheckBox("simpleConversionEnabled"));
 
         // service level
         RadioGroup sl = new RadioGroup("serviceLevel");

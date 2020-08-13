@@ -297,6 +297,7 @@ Sets the WFS specific publishing parameters.
 
 * **Per-Request Feature Limit**—Sets the maximum number of features for a layer a WFS GetFeature operation should generate (regardless of the actual number of query hits)
 * **Maximum number of decimals**—Sets the maximum number of decimals in GML output.
+* **Activate complex to simple features conversion** - If the target output format does not handle complex features natively, this option enables the conversion of complex features to simple features, using only SF-0 (simple) attributes.  This means that nested features and multiple-value attributes will be omitted from the final result, instead of throwing errors while generating the output. Output formats capable of handling complex features are not affected.
 
   .. note::
 

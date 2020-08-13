@@ -54,6 +54,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.feature.FeatureCollection;
@@ -66,7 +67,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 
-public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
+public class GML3OutputFormat extends WFSGetFeatureOutputFormat
+        implements ComplexFeatureAwareFormat {
 
     /** Enables the optimized encoders */
     public static final boolean OPTIMIZED_ENCODING =
@@ -467,5 +469,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         public void warning(TransformerException exception) throws TransformerException {
             throw exception;
         }
+    }
+
+    @Override
+    public boolean supportsComplexFeatures(Object value, Operation operation) {
+        return true;
     }
 }

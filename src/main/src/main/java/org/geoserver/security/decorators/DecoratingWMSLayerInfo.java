@@ -371,4 +371,14 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
         delegate.setMetadataBBoxRespected(metadataBBoxRespected);
     }
+
+    @Override
+    public boolean isSimpleConversionEnabled() {
+        return delegate.isSimpleConversionEnabled();
+    }
+
+    @Override
+    public void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput) {
+        delegate.setSimpleConversionEnabled(activateComplexToSimpleOutput);
+    }
 }

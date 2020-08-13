@@ -374,4 +374,16 @@ public interface ResourceInfo extends CatalogInfo {
 
     /** Set the list of disabled services names for this resource */
     void setDisabledServices(List<String> disabledServices);
+
+    /**
+     * Flag that determines if complex features will be converted to simple feature for compatible
+     * output formats.
+     */
+    boolean isSimpleConversionEnabled();
+
+    /**
+     * Sets the flag that determines if complex features will be converted to simple feature for
+     * compatible output formats.
+     */
+    void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput);
 }

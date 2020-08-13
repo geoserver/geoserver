@@ -75,6 +75,14 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "encodeMeasures", new PropertyModel<>(model, "resource.encodeMeasures"));
         add(encodeMeasures);
 
+        CheckBox complexToSimple =
+                new CheckBox(
+                        "complexToSimple",
+                        new PropertyModel<Boolean>(model, "resource.simpleConversionEnabled"));
+        Border complexToSimpleBorder = new FormComponentFeedbackBorder("complexToSimpleBorder");
+        complexToSimpleBorder.add(complexToSimple);
+        add(complexToSimpleBorder);
+
         // other srs list
         dialog = new GeoServerDialog("wfsDialog");
         add(dialog);

@@ -17,6 +17,7 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <!-- matches both gt-app-schema and gt-app-schema-resolver jars -->
+                <include>gs-app-schema-core*.jar</include>
                 <include>gt-app-schema-*.jar</include>
                 <include>gt-complex-*.jar</include>
                 <include>commons-digester-*.jar</include>

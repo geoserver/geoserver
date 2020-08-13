@@ -324,4 +324,14 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     public void setDisabledServices(List<String> disabledServices) {
         delegate.setDisabledServices(disabledServices);
     }
+
+    @Override
+    public boolean isSimpleConversionEnabled() {
+        return delegate.isSimpleConversionEnabled();
+    }
+
+    @Override
+    public void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput) {
+        delegate.setSimpleConversionEnabled(activateComplexToSimpleOutput);
+    }
 }

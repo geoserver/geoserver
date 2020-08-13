@@ -246,4 +246,14 @@ public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo>
     public void setDisabledServices(List<String> disabledServices) {
         delegate.setDisabledServices(disabledServices);
     }
+
+    @Override
+    public boolean isSimpleConversionEnabled() {
+        return delegate.isSimpleConversionEnabled();
+    }
+
+    @Override
+    public void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput) {
+        delegate.setSimpleConversionEnabled(activateComplexToSimpleOutput);
+    }
 }

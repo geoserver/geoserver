@@ -21,6 +21,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-app-schema-core</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>
         </dependency>
@@ -43,6 +48,11 @@
             -->
             <groupId>org.geoserver</groupId>
             <artifactId>gs-wms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-kml</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.opencsv</groupId>

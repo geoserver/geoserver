@@ -194,6 +194,8 @@ The content of the output depends on specified properties in the template file, 
 * if a :code:`"$source": "xpath"` attribute is present, it will act as a context against which all xpath expression will be evaluated. In the case of an array it will be use to iterate over a collection of element; if source evaluates to null the entire object/array will be skipped;
 * a :code:`../` syntax in an xpath means that xpath evaluation will be relative to the previous :code:`$source`. Give the above template file, the xpath :code:`"../gsml:shape"` will be evaluate not against the corresponding :code:`"$source": "gsml:specification/gsml:GeologicUnit"`, but against the parent one :code:`"$source": "gsml:MappedFeature"`.
 
+.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the `property function <https://docs.geotools.org/latest/userguide/library/main/function_list.html#property-propertyname-returns-propertyvalue>`_
+
 
 Filtering Support
 ------------------
@@ -366,9 +368,10 @@ Below an example configuration file for a Complex Feature type:
 
 
 Given the above configuration file, the plugin will act in the following way:
- * the encoding of nested arrays and objects will be skipped, by encoding only their attributes;
- * arrays' and objects' attribute names will be concatenated with the ones of their json attributes;
- * the final output will have a flat list of attributes with names produced by the concatenation.
+
+ * the encoding of nested arrays and objects will be skipped, by encoding only their attributes.
+ * Arrays' and objects' attribute names will be concatenated with the ones of their json attributes.
+ * The final output will have a flat list of attributes with names produced by the concatenation.
 
 An example output, give this configuration file, can be seen in the output section.
 
@@ -378,4 +381,8 @@ Environment parametrization
 A template configuration can also be manipulated on the fly, replacing existing attributes, attributes' names and sources using the :code:`env` parameter. 
 To achieve this the attribute name, the attribute, or the source should be replaced by the env function in the following way :code:`$${env('nameOfTheEnvParameter','defaultValue')}`. 
 If in the request it is specified an env query parameter :code:`env='nameOfTheEnvParameter':'newValue'`, the default value will be replaced in the final output with the one specified in the request.
-The functionality is supported also for filter arguments, eg. :code:`"$filter":"xpath('gsml:ControlledConcept/gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.
+
+The functionality allows also to manipulate dynamically filters and expression. For example it is possible to change Filter arguments: :code:`"$filter":"xpath('gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.
+
+Xpaths can be manipulated as well to be totally or partially replaced: :code:`$${xpath(env('xpath','gsml:ControlledConcept/gsml:name')}` or :code:`$${xpath(strConcat('env('gsml:ControlledConcept',xpath','/gsml:name')))}`.
+

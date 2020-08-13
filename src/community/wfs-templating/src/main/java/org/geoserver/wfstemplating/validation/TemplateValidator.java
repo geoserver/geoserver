@@ -13,6 +13,7 @@ import org.geoserver.wfstemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.wfstemplating.builders.impl.IteratingBuilder;
 import org.geoserver.wfstemplating.builders.impl.RootBuilder;
 import org.geoserver.wfstemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.wfstemplating.expressions.XpathFunction;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
@@ -104,7 +105,7 @@ public class TemplateValidator {
     }
 
     public boolean validate(Object toValidate, ValidateExpressionVisitor visitor) {
-        Object result = null;
+
         if (toValidate instanceof Expression) ((Expression) toValidate).accept(visitor, null);
         else {
             ((Filter) toValidate).accept(visitor, null);
@@ -149,29 +150,28 @@ public class TemplateValidator {
 
     private PropertyName completeXpathForValidation(
             PropertyName pn, String source, int contextPos) {
-        if (pn instanceof AttributeExpressionImpl) {
-            AttributeExpressionImpl old = (AttributeExpressionImpl) pn;
-            String strXpath = old.getPropertyName();
-            int i = 0;
-            String newSource = source;
-            if (newSource != null) {
-                while (i < contextPos) {
-                    strXpath = strXpath.replaceFirst("\\.\\./", "");
-                    if (newSource.lastIndexOf('/') != -1)
-                        newSource = source.substring(0, source.lastIndexOf('/'));
-                    else newSource = "";
-                    i++;
-                }
-                String newXpath;
-                if (!newSource.equals("")) newXpath = newSource + "/" + old.getPropertyName();
-                else newXpath = old.getPropertyName();
-                return new AttributeExpressionImpl(newXpath, old.getNamespaceContext());
-            } else {
-                return pn;
+        String strXpath = pn.getPropertyName();
+        int i = 0;
+        String newSource = source;
+        if (newSource != null) {
+            while (i < contextPos) {
+                strXpath = strXpath.replaceFirst("\\.\\./", "");
+                if (newSource.lastIndexOf('/') != -1)
+                    newSource = source.substring(0, source.lastIndexOf('/'));
+                else newSource = "";
+                i++;
             }
-        } else {
-            return null;
+            String newXpath;
+            if (!newSource.equals("") && !strXpath.startsWith(newSource))
+                newXpath = newSource + "/" + pn.getPropertyName();
+            else newXpath = pn.getPropertyName();
+            if (pn instanceof AttributeExpressionImpl)
+                pn = new AttributeExpressionImpl(newXpath, pn.getNamespaceContext());
+            else if (pn instanceof XpathFunction) {
+                ((XpathFunction) pn).setPropertyName(newXpath);
+            }
         }
+        return pn;
     }
 
     private Object completeXpathWithVisitor(Object cql, String source, int contextPos) {
@@ -179,9 +179,10 @@ public class TemplateValidator {
                 new DuplicatingFilterVisitor() {
                     @Override
                     public Object visit(PropertyName filter, Object extraData) {
+                        filter = (PropertyName) super.visit(filter, extraData);
                         Object result = completeXpathForValidation(filter, source, contextPos);
                         if (result != null) return result;
-                        return super.visit(filter, extraData);
+                        return filter;
                     }
                 };
         if (cql instanceof Expression) return ((Expression) cql).accept(visitor, null);

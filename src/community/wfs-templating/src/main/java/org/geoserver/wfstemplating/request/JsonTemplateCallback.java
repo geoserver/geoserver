@@ -25,6 +25,7 @@ import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.response.GeoJsonTemplateGetFeatureResponse;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
+import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 
@@ -128,14 +129,25 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
 
             JsonPathVisitor visitor = new JsonPathVisitor(fti.getFeatureType());
             if (q.getFilter() != null) {
-                Filter newFilter = (Filter) q.getFilter().accept(visitor, root);
-                List<Filter> templateFilters = new ArrayList<>();
-                templateFilters.addAll(visitor.getFilters());
-                if (templateFilters != null && templateFilters.size() > 0) {
-                    templateFilters.add(newFilter);
-                    newFilter = ff.and(templateFilters);
+                Filter old = q.getFilter();
+                String cql = ECQL.toCQL(old);
+                if (cql.contains("features/")) {
+                    Filter newFilter = (Filter) old.accept(visitor, root);
+                    List<Filter> templateFilters = new ArrayList<>();
+                    templateFilters.addAll(visitor.getFilters());
+                    if (templateFilters != null && templateFilters.size() > 0) {
+                        templateFilters.add(newFilter);
+                        newFilter = ff.and(templateFilters);
+                    }
+                    q.setFilter(newFilter);
+                    if (newFilter.equals(old)) {
+                        throw new RuntimeException(
+                                "Failed to resolve filter "
+                                        + cql
+                                        + " against the template. "
+                                        + "Check the path specified in the filter.");
+                    }
                 }
-                q.setFilter(newFilter);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.api.features.FeaturesResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -16,6 +17,7 @@ import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.XCQL;
@@ -38,6 +40,8 @@ import org.springframework.http.HttpHeaders;
  * {@link TemplateBuilder} tree to get the corresponding {@link Filter}
  */
 public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
+
+    static final FormatOptionsKvpParser PARSER = new FormatOptionsKvpParser("env");
 
     private Catalog catalog;
 
@@ -66,18 +70,23 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
                                 ? request.getRawKvp().get("ENV").toString()
                                 : null;
 
-                if (envParam != null) {
-                    String[] arEnvParams = envParam.split(";");
-                    for (String e : arEnvParams) {
-                        String[] singleParam = e.split(":");
-                        EnvFunction.setLocalValue(singleParam[0], singleParam[1]);
-                    }
-                }
+                setEnvParameter(envParam);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
         return super.operationDispatched(request, operation);
+    }
+
+    private void setEnvParameter(String env) {
+        if (env != null) {
+            try {
+                Map<String, Object> localEnvVars = (Map<String, Object>) PARSER.parse(env);
+                EnvFunction.setLocalValues(localEnvVars);
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid syntax for environment variables", e);
+            }
+        }
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {
@@ -117,7 +126,7 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
             String strFilter, String outputFormat, Operation operation) throws Exception {
         FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
         RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
-        if (strFilter != null && strFilter.indexOf(".") != -1) {
+        if (strFilter != null && strFilter.indexOf("features.") != -1) {
             if (root != null) {
                 replaceFilter(strFilter, root, typeInfo, operation);
             }
@@ -130,7 +139,14 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         JsonPathVisitor visitor = new JsonPathVisitor(typeInfo.getFeatureType());
         /* Todo find a better way to replace json-ld path with corresponding template attribute*/
         // Get filter from string in order to make it accept the visitor
-        Filter f = (Filter) XCQL.toFilter(strFilter).accept(visitor, root);
+        Filter old = XCQL.toFilter(strFilter);
+        Filter f = (Filter) old.accept(visitor, root);
+        if (old.equals(f))
+            throw new RuntimeException(
+                    "Failed to resolve filter "
+                            + strFilter
+                            + " against the template. "
+                            + "Check the path specified in the filter.");
         List<Filter> templateFilters = new ArrayList<>();
         templateFilters.addAll(visitor.getFilters());
         if (templateFilters != null && templateFilters.size() > 0) {

@@ -37,14 +37,14 @@
       "gsml:GeologicUnit": {
         "$source": "gsml:specification/gsml:GeologicUnit",
         "@id": "${@id}",
-        "description": "${gml:description}",
+        "description": "$${xpath(env('description','gml:description'))}",
         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
         "gsml:composition": [
           {
             "$source": "gsml:composition"
           },
           {
-            "previousContextValue": "${../gml:description}",
+            "previousContextValue": "$${xpath(strConcat('../',env('previous','gml:description')))}",
             "gsml:compositionPart": [
               {
                 "$source": "gsml:CompositionPart"

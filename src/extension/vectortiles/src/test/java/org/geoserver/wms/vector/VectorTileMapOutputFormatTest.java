@@ -507,9 +507,7 @@ public class VectorTileMapOutputFormatTest {
 
     @Test
     public void testPregeneralized() throws Exception {
-        /**
-         * Simple class to MOCK a Datastore supporting PreGeneralized features
-         */
+        /** Simple class to MOCK a Datastore supporting PreGeneralized features */
         final class PregenDataStore extends MemoryDataStore {
 
             final class _FeatureSource extends MemoryFeatureSource {

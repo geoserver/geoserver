@@ -286,7 +286,75 @@ For example:
       </Graphic>
     </PointSymbolizer>
 
-In this example an SVG graphic is being used, so the size is specified explicitly. 
+In this example an SVG graphic is being used, so the size is specified explicitly.
+
+Parameterized (like QGIS) SVG images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Just like QGIS, Geoserver can handle SVG images in which parts of the SVG-attributes are 
+named parameters as defined in the `SVG Parameters 1.0 spec <https://www.w3.org/TR/SVGParamPrimer/>`_.
+
+A QGIS SVG like: `poi_peak.svg <https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg>`_ has as SVG source:
+
+.. code-block:: xml
+
+   <svg enable-background="new 0 0 580 580" height="580" viewBox="0 0 580 580" width="580" xmlns="http://www.w3.org/2000/svg">
+   <path d="m290.565 67.281l-255.498 442.534-1.087 1.885 511.229.393 2.18.002z" fill="param(fill)" 
+    fill-opacity="param(fill-opacity)" stroke="param(outline)" stroke-opacity="param(outline-opacity)" stroke-width="param(outline-width)"/>
+   </svg>
+
+The 'param'-constructs mean that you can define the parameters: fill, fill-opacity, outline, outline-opacity and outline-width as so called SVG URL references,
+e.g. a refence to this image with red fill would be: ``poi_peak.svg?fill=#FF0000``.
+
+Note: when you edit svg's yourself (e.g. in Inkscape) you should save your svg's as 'simple svg'.
+
+Now in the SLD the OnlineResource uri without any parameters in the 'href':
+
+.. code-block:: xml
+
+   <se:OnlineResource xlink:href="poi_peak.svg" xlink:type="simple"/>
+
+the peak .svg will be shown with (black) defaults: 
+
+|peak_black|
+
+With only the 'fill' parameter defined as #ff0000 (red):
+
+.. code-block:: xml
+
+   <se:OnlineResource xlink:href="poi_peak.svg?fill=#ff0000" xlink:type="simple"/>
+
+the icon will be shown as: 
+
+|peak_redfill|
+
+Note that when you need to define several parameters, the query-parameters should be url-encoded. 
+For example if you want a green peak with 25% opacity: ``?fill=#00ff00&opacity=0.25``, you need to encode both the '#' ( ``%23`` ) and the '&' ( ``&amp;`` ) signs:
+
+.. code-block:: xml
+
+   <se:OnlineResource xlink:href="poi_peak.svg?fill=%2300ff00&amp;opacity=0.25" xlink:type="simple"/>
+
+This will be shown as: 
+
+|peak_green25opacity|
+
+White fill, red outlined peaks (note that the parameters for 'stroke' in the SVG above is actually called 'outline' !):
+
+.. code-block:: xml
+
+  <se:OnlineResource xlink:href="poi_peak.svg?fill=%23ffffff&amp;outline=%23ff0000&amp;outline-width=5" xlink:type="simple"/>
+
+shown as:
+
+|peak_whitered|
+
+
+.. |peak_black| image:: images/peak_black.png
+.. |peak_redfill| image:: images/peak_redfill.png
+.. |peak_green25opacity| image:: images/peak_green25opacity.png
+.. |peak_whitered| image:: images/peak_whitered.png
+
 
 Bulk WKT Shapes
 ~~~~~~~~~~~~~~~

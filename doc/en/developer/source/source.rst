@@ -322,7 +322,7 @@ Updating from canonical
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Generally developers always work on a recent version of the official source code. The following example 
-shows how to pull down the latest changes for the master branch from the canonical repository::
+shows how to pull down the latest changes for the main development branch from the canonical repository::
 
   % git checkout master
   % git pull upstream master

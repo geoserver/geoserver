@@ -506,7 +506,7 @@ Non-string values will be converted into a string representation automatically.
      - Returns the upper case version of the string
    * - strTrim
      - ``string``:String
-     - Returns a copy of the string, with leading and trailing white space omitted
+     - Returns a copy of the string, with leading and trailing blank-space omitted
    
    
    

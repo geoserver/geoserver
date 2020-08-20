@@ -88,7 +88,7 @@ concatenated to form a single label::
       label: "Serious " "Freaking " "Highway";
    }
 
-Note the whitespace within the label strings here; *no whitespace is added*
+Note the blank-space within the label strings here; *no blank-space is added*
 when concatenating strings, so you must be explicit about where you want it
 included.  You can also mix CQL expressions in with literal string values
 here::

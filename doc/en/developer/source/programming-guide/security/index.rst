@@ -34,7 +34,7 @@ Security Services
 * Role services
 * Authentication filters
 * Authentication providers
-* Master password providers
+* Root password providers
 
 The interface provides some common methods for all security services,
 including::
@@ -182,11 +182,11 @@ Password Policy
 ``PasswordPolicy`` is the interface for validating user passwords, applying constraints such
 as password length, character mix, etc...
 
-MasterPasswordProvider
+RootPasswordProvider
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Security service that provides a method for obtaining the GeoServer master password.
-The master password serves two purposes.
+Security service that provides a method for obtaining the GeoServer root password.
+The root password serves two purposes.
 
 #. Is the password for the GeoServer "root" account
 #. Protects the GeoServer keystore that is used to store encryption keys

@@ -1,9 +1,9 @@
 .. _rest_api_masterpassword:
 
-Root Password
+Keystore Password
 ===============
 
-The ``root password`` is used to encrypt the GeoServer key store and for an emergency login using
+The ``keystore password`` is used to encrypt the GeoServer key store and for an emergency login using
 the user ``root``.
 
 
@@ -14,7 +14,7 @@ the user ``root``.
 ``/security/masterpw[.<format>]``
 ---------------------------------
 
-Fetches the root password and allows to change the root password
+Fetches the keystore password and allows to change the keystore password
 
 .. list-table::
    :header-rows: 1
@@ -25,17 +25,17 @@ Fetches the root password and allows to change the root password
      - Formats
      - Default Format
    * - GET
-     - Fetch the root password
+     - Fetch the keystore password
      - 200,403
      - XML, JSON
      - 
    * - PUT
-     - Changes the root password
+     - Changes the keystore password
      - 200,405,422
      - XML, JSON
      -
 
-Formats for PUT (root password change).
+Formats for PUT (keystore password change).
 
 **XML**
 
@@ -66,8 +66,8 @@ Exceptions
      - 403
    * - PUT without administrative privileges
      - 405
-   * - PUT with the wrong current root password
+   * - PUT with the wrong current keystore password
      - 422
-   * - PUT with a new root password rejected by the password policy
+   * - PUT with a new keystore password rejected by the password policy
      - 422
 

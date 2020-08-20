@@ -34,7 +34,7 @@ Security Services
 * Role services
 * Authentication filters
 * Authentication providers
-* Root password providers
+* Keystore password providers
 
 The interface provides some common methods for all security services,
 including::
@@ -185,8 +185,8 @@ as password length, character mix, etc...
 RootPasswordProvider
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Security service that provides a method for obtaining the GeoServer root password.
-The root password serves two purposes.
+Security service that provides a method for obtaining the GeoServer keystore password.
+The keystore password serves two purposes.
 
 #. Is the password for the GeoServer "root" account
 #. Protects the GeoServer keystore that is used to store encryption keys

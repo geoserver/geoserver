@@ -17,9 +17,9 @@ paths:
 
     get:
       operationId: getMasterPW
-      summary: Get master password
+      summary: Get keystore password
       description: |
-        Displays the master password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
+        Displays the keystore password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
       produces:
         - application/xml
         - application/json
@@ -41,18 +41,18 @@ paths:
 
     post:
       operationId: postMasterPW
-      description: Invalid. Use PUT to change master password.
+      description: Invalid. Use PUT to change keystore password.
       responses:
         405:
           description: Method Not Allowed
 
     put:
       operationId: putMasterPW
-      summary: Update master password
-      description: Changes master password. Must supply current master password. HTTPS is strongly suggested, otherwise password will be sent in plain text.
+      summary: Update keystore password
+      description: Changes keystore password. Must supply current keystore password. HTTPS is strongly suggested, otherwise password will be sent in plain text.
       parameters:
         - name: MasterPWBody
-          description: The old and new master password information to upload.
+          description: The old and new keystore password information to upload.
           in: body
           required: true
           schema:
@@ -64,11 +64,11 @@ paths:
         200:
           description: OK
         422:
-          description: Unprocessable Entity. This error code will show when the current master password supplied is incorrect, or if the new master password is rejected by the password policy.
+          description: Unprocessable Entity. This error code will show when the current keystore password supplied is incorrect, or if the new keystore password is rejected by the password policy.
 
     delete:
       operationId: deleteMasterPW
-      description: Invalid. Use PUT to change master password.
+      description: Invalid. Use PUT to change keystore password.
       responses:
         405:
           description: Method Not Allowed
@@ -535,7 +535,7 @@ definitions:
     properties:
       oldMasterPassword:
         type: string
-        description: Current master password
+        description: Current keystore password
 
   UpdateMasterPW:
     title: masterPassword
@@ -545,11 +545,11 @@ definitions:
     properties:
       oldMasterPassword:
         type: string
-        description: Current master password
+        description: Current keystore password
         example: oldPassword
       newMasterPassword:
         type: string
-        description: New master password
+        description: New keystore password
         example: newPassword
 
   CatalogMode:

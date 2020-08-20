@@ -53,7 +53,7 @@ This full blown deployment is composed by:
 * A set of pure Replicas GeoServer instances whic can only receive messages from the topic.
 * A set of MOM brokers so that each GeoServer instance is configured with a set of available brokers (failover). Each broker use the shared database as persistence. Doing so if a broker fails for some reason, messages can still be written and read from the shared database.
 
-All the produced code is based on spring-jms to ensure portability amongst different MOM, but if you look at the schema, we are also leveraging ActiveMQ VirtualTopics to get dinamic routing (you can dynamically attach primary and replica).
+All the produced code is based on spring-jms to ensure portability amongst different MOM, but if you look at the schema, we are also leveraging ActiveMQ VirtualTopics to get dynamic routing (you can dynamically attach primary and replica).
 
 The VirtualTopics feature has also other advantages explained here: http://activemq.apache.org/virtual-destinations.html
 

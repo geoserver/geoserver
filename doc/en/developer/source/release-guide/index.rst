@@ -140,7 +140,7 @@ When creating the first release candidate of a series, there are some extra step
       git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
       git push geoserver master
       
-* Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the primary development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
+* Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
 
 * Update the main, nightly, geogig-plugin and live-docs jobs on build.geoserver.org:
   

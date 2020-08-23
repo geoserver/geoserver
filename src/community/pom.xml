@@ -549,12 +549,6 @@
       </modules>
     </profile>
     <profile>
-      <id>web-resource</id>
-      <modules>
-        <module>web-resource</module>
-      </modules>
-    </profile>
-    <profile>
       <id>gwc-sqlite</id>
       <modules>
         <module>gwc-sqlite</module>

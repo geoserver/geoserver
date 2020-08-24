@@ -31,7 +31,7 @@ before_script:
 install:
   - if [ "$ACTION" == "docs" ]; then sudo pip install sphinx requests; fi
 script:
-  - if [ "$ACTION" == "build" ]; then mvn -X -f src/pom.xml -B -U -T3 -fae -Prelease --builder smart clean install $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease --builder smart  clean install $COMMUNITY_ARGS; fi
+  - if [ "$ACTION" == "build" ]; then mvn -f src/pom.xml -B -U -T3 -fae -Prelease --builder smart clean install $ARGS && mvn -f src/community/pom.xml -nsu -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease --builder smart  clean install $COMMUNITY_ARGS; fi
   - if [ "$ACTION" == "build" ]; then grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50; fi
   - if [ "$ACTION" == "docs" ]; then mvn -f doc/en install; fi
   - if [ "$ACTION" == "package" ]; then mvn -f src/pom.xml -B -U -T3 -fae --builder smart -Prelease,communityRelease clean install -DskipTests; mvn -f src/pom.xml assembly:single -nsu -N; mvn -f src/community/pom.xml assembly:single -nsu -N; fi

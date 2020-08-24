@@ -78,18 +78,6 @@
     <enabled>false</enabled>
    </releases>
   </repository>
-   
-   <repository>
-      <id>geosolutions</id>
-      <name>geosolutions repository</name>
-      <url>https://maven.geo-solutions.it/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-     <releases>
-       <enabled>true</enabled>
-     </releases>
-    </repository>
  </repositories>
 
  <dependencyManagement>

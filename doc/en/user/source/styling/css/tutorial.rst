@@ -320,7 +320,7 @@ You will see that the borders are missing! In the GeoServer CSS module, each typ
 * **fill**, which controls whether or not Polygon fills are applied. This specified the color or graphic to use for the fill.
 * **stroke**, which controls whether or not Line and Polygon outline strokes are applied. This specifies the color (or graphic fill) of the stroke.
 * **mark**, which controls whether or not point markers are drawn. This identifies a Well-Known Mark or image URL to use.
-* **label**, which controls whether or not to draw labels on the map. This identifies the text to use for labeling the map, usually as a CQL expression. 
+* **label**, which controls whether or not to draw labels on the map. This identifies the text to use for labelling the map, usually as a CQL expression. 
 * **halo-radius**, which controls whether or not to draw a halo around labels. This specifies how large such halos should be.
 
 .. seealso:: 
@@ -430,7 +430,7 @@ So far, we haven't set titles for any of the style rules. This doesn't really ca
 
 Because of the way that CSS is translated to SLD, each SLD rule is a combination of several CSS rules. This is handled by combining the titles with the word "with". If the title is omitted for a rule, then it is simply not included in the SLD output.
 
-The final CSS should looks like this::
+The final CSS should look like this::
 
     /* @title Population < 2M */
     [PERSONS < 2000000] {

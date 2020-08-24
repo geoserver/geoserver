@@ -54,11 +54,6 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
-    <dependency>
-      <!-- blazing fast LZW compression/decompression -->
-      <groupId>com.ning</groupId>
-      <artifactId>compress-lzf</artifactId>
-    </dependency>
 
     <!-- Testing -->
     <dependency>

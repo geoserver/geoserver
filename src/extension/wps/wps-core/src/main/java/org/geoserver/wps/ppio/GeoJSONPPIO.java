@@ -8,6 +8,9 @@ package org.geoserver.wps.ppio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
@@ -19,6 +22,7 @@ import org.locationtech.jts.geom.Geometry;
  * @author Andrea Aime - OpenGeo
  */
 public abstract class GeoJSONPPIO extends CDataPPIO {
+    private final static GeoServer gs = (GeoServer) GeoServerExtensions.bean("geoServer");
 
     protected GeoJSONPPIO(Class clazz) {
         super(clazz, clazz, "application/json");
@@ -45,7 +49,9 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
 
         @Override
         public void encode(Object value, OutputStream os) throws IOException {
-            FeatureJSON json = new FeatureJSON();
+            int decimals = gs.getSettings().getNumDecimals();
+            GeometryJSON js = new GeometryJSON(decimals);
+            FeatureJSON json = new FeatureJSON(js);
             // commented out due to GEOT-3209
             // json.setEncodeFeatureCRS(true);
             // json.setEncodeFeatureCollectionCRS(true);
@@ -70,7 +76,8 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
 
         @Override
         public void encode(Object value, OutputStream os) throws IOException {
-            GeometryJSON json = new GeometryJSON();
+            int decimals = gs.getSettings().getNumDecimals();
+            GeometryJSON json = new GeometryJSON(decimals);
             json.write((Geometry) value, os);
         }
 

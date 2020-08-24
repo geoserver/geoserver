@@ -79,7 +79,7 @@ In some circumstances, you might want to completely disable the web administrati
 Disable the Auto-complete on web administration interface login 
 ---------------------------------------------------------------
 
-In a production environment, it is a good practise to turn off Auto Complete on Web Admin login form.
+To disable the Auto Complete on Web Admin login form:
 
 * Set the Java system property geoserver.login.autocomplete to off by adding -Dgeoserver.login.autocomplete=off to your container's JVM options
 * If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.

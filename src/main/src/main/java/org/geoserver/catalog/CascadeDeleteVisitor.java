@@ -62,8 +62,8 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         catalog.remove(workspace);
     }
 
-    public void visit(NamespaceInfo workspace) {
-        catalog.remove(workspace);
+    public void visit(NamespaceInfo namespace) {
+        catalog.remove(namespace);
     }
 
     void visitStore(StoreInfo store) {

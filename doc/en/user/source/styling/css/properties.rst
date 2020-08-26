@@ -227,7 +227,7 @@ Polygon symbology
 .. _css_properties_text1:
 
 Text symbology (labelling) - part 1
-----------------------------------
+-----------------------------------
 
 .. list-table:: 
     :widths: 15 15 60 10
@@ -354,7 +354,7 @@ Text symbology (labelling) - part 1
 .. _css_properties_text2:
 
 Text symbology (labelling) - part 2
-----------------------------------
+-----------------------------------
 
 .. list-table:: 
     :widths: 15 15 60 10
@@ -442,7 +442,7 @@ Text symbology (labelling) - part 2
 .. _css_properties_text3:
 
 Text symbology (labelling) - part 3
-----------------------------------
+-----------------------------------
 
 .. list-table:: 
     :widths: 15 15 60 10

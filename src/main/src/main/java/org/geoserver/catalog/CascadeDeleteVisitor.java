@@ -38,6 +38,12 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
     public void visit(Catalog catalog) {}
 
     public void visit(WorkspaceInfo workspace) {
+        // remove layer groups contained in this workspace. Do this first to speed up
+        // visit(LayerInfo) looking for related groups
+        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
+            group.accept(this);
+        }
+
         // remove owned stores
         for (StoreInfo s : catalog.getStoresByWorkspace(workspace, StoreInfo.class)) {
             s.accept(this);
@@ -52,11 +58,6 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         // remove styles contained in this workspace
         for (StyleInfo style : catalog.getStylesByWorkspace(workspace)) {
             style.accept(this);
-        }
-
-        // remove layer groups contained in this workspace
-        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
-            group.accept(this);
         }
 
         catalog.remove(workspace);

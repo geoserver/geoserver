@@ -122,6 +122,24 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testResourceConfigurationPageInfoLabels() {
+        LayerInfo layer =
+                getGeoServerApplication()
+                        .getCatalog()
+                        .getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+
+        final String storeNamePath = "publishedinfo:tabs:panel:theList:0:content:storeName";
+        assertNotNull(tester.getComponentFromLastRenderedPage(storeNamePath).getMarkup());
+        tester.assertLabel(storeNamePath, layer.getResource().getStore().getName());
+
+        final String nativeNamePath = "publishedinfo:tabs:panel:theList:0:content:nativeName";
+        assertNotNull(tester.getComponentFromLastRenderedPage(nativeNamePath).getMarkup());
+        tester.assertLabel(nativeNamePath, layer.getResource().getNativeName());
+    }
+
+    @Test
     public void testUpdateResource() {
         LayerInfo layer =
                 getGeoServerApplication()

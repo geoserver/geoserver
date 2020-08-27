@@ -16,11 +16,15 @@
  */
 package org.geoserver.wps.ppio;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.*;
+import java.util.List;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
-import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.filter.text.cql2.CQL;
@@ -30,12 +34,6 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
-
-import java.io.*;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class GeoJSONPPIOTest extends WPSTestSupport {
     private InputStream is;
@@ -62,20 +60,21 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
     @Test
     public void testEncodeGeometries() throws Exception {
         WKTReader reader = new WKTReader();
-        Point point = (Point)reader.read("POINT(1.123456789 2.0)");
+        Point point = (Point) reader.read("POINT(1.123456789 2.0)");
 
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
         ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
-        new GeoJSONPPIO.Geometries().encode(point, os);
+        new GeoJSONPPIO.Geometries(gs).encode(point, os);
         String output = os.toString();
         assertEquals(output, "{\"type\":\"Point\",\"coordinates\":[1.12345679,2]}");
 
-        GeoServerInfo global = getGeoServer().getGlobal();
         int dec = global.getSettings().getNumDecimals();
         global.getSettings().setNumDecimals(4);
         getGeoServer().save(global);
 
         ByteArrayOutputStream os2 = new ByteArrayOutputStream(1024);
-        new GeoJSONPPIO.Geometries().encode(point, os2);
+        new GeoJSONPPIO.Geometries(gs).encode(point, os2);
         String output2 = os2.toString();
         assertEquals(output2, "{\"type\":\"Point\",\"coordinates\":[1.1235,2]}");
 
@@ -106,8 +105,10 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
 
         assertEquals("Wrong number of states", 49, states.size());
 
+        GeoServer gs = getGeoServer();
+        GeoServerInfo global = gs.getGlobal();
         ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
-        new GeoJSONPPIO.FeatureCollections().encode(states, os);
+        new GeoJSONPPIO.FeatureCollections(gs).encode(states, os);
 
         String json = os.toString();
 
@@ -139,22 +140,21 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         }
         assertEquals("Block line", 1, lines);
 
-        GeoServerInfo global = getGeoServer().getGlobal();
         int dec = global.getSettings().getNumDecimals();
-        global.getSettings().setNumDecimals(4);
+        global.getSettings().setNumDecimals(2);
         getGeoServer().save(global);
 
         ByteArrayOutputStream os2 = new ByteArrayOutputStream(1024);
-        new GeoJSONPPIO.FeatureCollections().encode(states, os2);
+        new GeoJSONPPIO.FeatureCollections(gs).encode(states, os2);
 
         String json2 = os2.toString();
 
         String[] state = json2.split("]]]]}");
         String[] coords = state[0].split(",");
         // This part of the test shows reducing the precision from 8 to 4.
-        assertEquals("[-88.0879", coords[7]);
-        assertEquals("[-88.3117", coords[9]);
-        assertEquals("37.4203]", coords[14]);
+        assertEquals("[-88.09", coords[7]);
+        assertEquals("[-88.31", coords[9]);
+        assertEquals("37.42]", coords[14]);
 
         // Resetting the number of decimals so that the next test will pass.
         global.getSettings().setNumDecimals(dec);

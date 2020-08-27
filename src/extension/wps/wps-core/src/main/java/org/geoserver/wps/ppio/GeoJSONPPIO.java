@@ -8,7 +8,6 @@ package org.geoserver.wps.ppio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.feature.FeatureCollection;
@@ -22,10 +21,16 @@ import org.locationtech.jts.geom.Geometry;
  * @author Andrea Aime - OpenGeo
  */
 public abstract class GeoJSONPPIO extends CDataPPIO {
-    private final static GeoServer gs = (GeoServer) GeoServerExtensions.bean("geoServer");
+    GeoServer gs;
 
     protected GeoJSONPPIO(Class clazz) {
         super(clazz, clazz, "application/json");
+        this.gs = (GeoServer) GeoServerExtensions.bean("geoServer");
+    }
+
+    protected GeoJSONPPIO(Class clazz, GeoServer gs) {
+        super(clazz, clazz, "application/json");
+        this.gs = gs;
     }
 
     @Override
@@ -45,6 +50,10 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
     public static class FeatureCollections extends GeoJSONPPIO {
         public FeatureCollections() {
             super(FeatureCollection.class);
+        }
+
+        protected FeatureCollections(GeoServer gs) {
+            super(FeatureCollection.class, gs);
         }
 
         @Override
@@ -72,6 +81,10 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
     public static class Geometries extends GeoJSONPPIO {
         public Geometries() {
             super(Geometry.class);
+        }
+
+        protected Geometries(GeoServer gs) {
+            super(Geometry.class, gs);
         }
 
         @Override

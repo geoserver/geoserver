@@ -198,6 +198,12 @@
     <bean id="CSVPPIO" class="org.geoserver.wps.ppio.CSVPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>
+    <bean id="geoJsonGeometriesPPIO" class="org.geoserver.wps.ppio.GeoJSONPPIO.Geometries">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="geoJsonFeatureCollectionPPIO" class="org.geoserver.wps.ppio.GeoJSONPPIO.FeatureCollections">
+        <constructor-arg ref="geoServer"/>
+    </bean>
     <bean id="classificationStatsPPIO" class="org.geoserver.wps.gs.ClassificationStatsPPIO"/>
 
     <!-- Register the GeoServer factory and processes -->

@@ -16,7 +16,7 @@ failover:(tcp://broker1:61616,tcp://broker2:61616,tcp://broker3:61616)
 Only the primary broker starts up its transport connectors and so the clients can only connect to the primary.
 
 Primary failure
---------------
+---------------
 
 If the primary looses connection to the database or looses the exclusive lock then it immediately shuts down. If a primary shuts down or fails, one of the other replicas will grab the lock and so the topology switches to the following diagram
 

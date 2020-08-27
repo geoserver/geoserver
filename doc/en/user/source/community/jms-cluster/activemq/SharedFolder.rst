@@ -47,7 +47,7 @@ Clients should be using the Failover Transport to connect to the available broke
 Only the primary broker starts up its transport connectors and so the clients can only connect to the primary.
 
 Primary failure
---------------
+---------------
 If the primary looses the exclusive lock then it immediately shuts down. If a primary shuts down or fails, one of the other replicas will grab the lock and so the topology switches to the following diagram
 
 .. figure:: images/MasterFailed.png
@@ -57,7 +57,7 @@ One of the other other replicas immediately grabs the exclusive lock on the file
 Clients lose connection to the stopped primary and then the failover transport tries to connect to the available brokers - of which the only one available is the new primary.
 
 Primary restart
---------------
+---------------
 At any time you can restart other brokers which join the cluster and start as replicas waiting to become a primary if the primary is shutdown or a failure occurs.
 So the following topology is created after a restart of an old primary...
 

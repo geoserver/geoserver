@@ -8,7 +8,7 @@ The REST API allows you to adjust GeoServer security settings.
 .. note:: Read the :api:`API reference for /security <security.yaml>`.
 
 Listing the keystore password
----------------------------
+-----------------------------
 
 **Retrieve the keystore password for the "root" account**
 
@@ -22,7 +22,7 @@ Listing the keystore password
 
 
 Changing the keystore password
-----------------------------
+------------------------------
 
 **Change to a new keystore password**
 

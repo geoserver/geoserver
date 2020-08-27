@@ -86,7 +86,7 @@ The GeoServer keystore is password protected with a :ref:`security_master_passwd
 .. _security_master_passwd:
 
 Keystore password
----------------
+-----------------
 
 It is also possible to set a **keystore password** for GeoServer. This password serves two purposes:
 

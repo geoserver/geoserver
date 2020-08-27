@@ -1,7 +1,7 @@
 .. _rest_api_masterpassword:
 
 Keystore Password
-===============
+=================
 
 The ``keystore password`` is used to encrypt the GeoServer key store and for an emergency login using
 the user ``root``.

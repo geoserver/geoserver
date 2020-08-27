@@ -38,7 +38,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
 
     @Override
     public Component getPageBodyComponent(String id) {
-        // do a check that the root password is not set
+        // do a check that the keystore password is not set
         GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
         if (secMgr.checkAuthenticationForAdminRole()) {
             return new SecurityWarningsPanel(id);

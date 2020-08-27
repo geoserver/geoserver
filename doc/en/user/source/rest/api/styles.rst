@@ -161,7 +161,7 @@ The ``quietOnNotFound`` parameter avoids to log an Exception when the style is n
 ``pretty``
 ^^^^^^^^^^
 
-The ``pretty`` parameter returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format - in this case the API returns the exact content of the underlying file. The HTML, XML, and JSON formats do not support this parameter.
+The ``pretty`` parameter returns the style in a human-readable format, with proper blank-space and indentation. This parameter has no effect if you request a style in its native format - in this case the API returns the exact content of the underlying file. The HTML, XML, and JSON formats do not support this parameter.
 
 ``/workspaces/<ws>/styles[.<format>]``
 --------------------------------------

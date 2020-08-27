@@ -180,7 +180,7 @@ For this tutorial, we do not use data sources provided by a J2EE container.
  
 The first element ``<spatialExtension>`` specifies which spatial extension the module should use. "universal" means that there is no spatial db extension at all, meaning the tile grid is not stored as a geometry, using simple double values instead.
 
-This xml fragment describes 3 tables, first we need a master table where information for each pyramid level is saved. Second and third, the attribute mappings for storing image data, envelopes and tile names are specified. To keep this tutorial simple, we will not further discuss these xml elements. After creating the sql tables things will become clear.
+This xml fragment describes 3 tables, first we need a primary table where information for each pyramid level is saved. Second and third, the attribute mappings for storing image data, envelopes and tile names are specified. To keep this tutorial simple, we will not further discuss these xml elements. After creating the sql tables things will become clear.
 
 3) Create the configuration xml :file:`osm.postgis.xml` for the map (osm for "open street map") 
 

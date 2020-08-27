@@ -51,7 +51,7 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
         ft.setValue("newPassword", "bar");
         ft.setValue("newPasswordConfirm", "bar");
         ft.submit("save");
-        assertTrue(testErrorMessagesWithRegExp(".*Current master password invalid.*"));
+        assertTrue(testErrorMessagesWithRegExp(".*Current keystore password invalid.*"));
     }
 
     @Test

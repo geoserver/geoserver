@@ -61,7 +61,7 @@ Run the `geoserver-release <http://hudson.opengeo.org/hudson/job/geoserver-relea
 
 **BRANCH**
 
-  The branch to release from, "2.2.x", "2.1.x", etc... This must be a stable branch. Releases are not performed from master.
+  The branch to release from, "2.2.x", "2.1.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
 
 **REV**
 

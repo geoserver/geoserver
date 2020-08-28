@@ -1861,7 +1861,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         + "&WIDTH=100&HEIGHT=100";
 
         BufferedImage wfsNGImage = getAsImage(wmsUrl, "image/png");
-        ImageIO.write(wfsNGImage, "png", new File("D://cascaded_wfs_layer_response.png"));
         ImageAssert.assertEquals(
                 new File("./src/test/resources/geoserver/wfs-ng/cascaded_wfs_layer_response.png"),
                 wfsNGImage,

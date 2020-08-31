@@ -76,6 +76,14 @@ In some circumstances, you might want to completely disable the web administrati
 * Set the Java system property GEOSERVER_CONSOLE_DISABLED to true by adding -DGEOSERVER_CONSOLE_DISABLED=true to your container's JVM options
 * Remove all of the gs-web*-.jar files from WEB-INF/lib
 
+Disable the Auto-complete on web administration interface login 
+---------------------------------------------------------------
+
+To disable the Auto Complete on Web Admin login form:
+
+* Set the Java system property geoserver.login.autocomplete to off by adding -Dgeoserver.login.autocomplete=off to your container's JVM options
+* If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.
+
 X-Frame-Options Policy
 ----------------------
 

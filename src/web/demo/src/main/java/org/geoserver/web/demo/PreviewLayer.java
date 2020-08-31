@@ -225,6 +225,9 @@ public class PreviewLayer {
         params.put("width", String.valueOf(request.getWidth()));
         params.put("height", String.valueOf(request.getHeight()));
         params.put("srs", String.valueOf(request.getSRS()));
+        params.put(
+                "styles",
+                request.getStyles().size() > 0 ? request.getStyles().get(0).getName() : "");
 
         return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);
     }

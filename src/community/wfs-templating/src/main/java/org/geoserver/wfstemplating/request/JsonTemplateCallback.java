@@ -131,7 +131,7 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
             if (q.getFilter() != null) {
                 Filter old = q.getFilter();
                 String cql = ECQL.toCQL(old);
-                if (cql.contains("features/")) {
+                if (cql.contains("features/") || cql.contains("features.")) {
                     Filter newFilter = (Filter) old.accept(visitor, root);
                     List<Filter> templateFilters = new ArrayList<>();
                     templateFilters.addAll(visitor.getFilters());

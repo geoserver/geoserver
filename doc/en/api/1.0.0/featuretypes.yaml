@@ -112,7 +112,6 @@ paths:
                     ]
                   }
                 }
-
     post:
       operationId: postFeatureTypes
       description: |
@@ -242,7 +241,6 @@ paths:
                     ]
                   }
                 }
-
     post:
       operationId: postFeatureTypes
       description: |
@@ -337,7 +335,7 @@ paths:
                       "points_of_interest",
                       "sampleKeyword\\@language=ab\\;",
                       "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-                      "??????\\@language=ru\\;\\@vocabulary=friendly\\;"
+                      "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
                     ]
                   },
                   "metadataLinks": {
@@ -477,7 +475,7 @@ paths:
                             <string>points_of_interest</string>
                             <string>fred\@language=ab\;</string>
                             <string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
-                            <string>??????\@language=ru\;\@vocabulary=Friendly\;</string>
+                            <string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
                     </keywords>
                     <metadataLinks>
                             <metadataLink>
@@ -709,7 +707,7 @@ paths:
                       "points_of_interest",
                       "sampleKeyword\\@language=ab\\;",
                       "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-                      "??????\\@language=ru\\;\\@vocabulary=friendly\\;"
+                      "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
                     ]
                   },
                   "metadataLinks": {
@@ -849,7 +847,7 @@ paths:
                             <string>points_of_interest</string>
                             <string>fred\@language=ab\;</string>
                             <string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
-                            <string>??????\@language=ru\;\@vocabulary=Friendly\;</string>
+                            <string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
                     </keywords>
                     <metadataLinks>
                             <metadataLink>
@@ -1227,7 +1225,7 @@ definitions:
                     "points_of_interest",
                     "sampleKeyword\\@language=ab\\;",
                     "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-                    "??????\\@language=ru\\;\\@vocabulary=friendly\\;"
+                    "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
                   ]
                 },
                 "metadataLinks": {

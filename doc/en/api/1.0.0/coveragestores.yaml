@@ -130,7 +130,7 @@ paths:
         - name: quietOnNotFound
           in: query
           required: false
-          description: When set to true, avoids logg an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
+          description: When set to true, avoids logging an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
           type: boolean
       responses:
         200:
@@ -284,7 +284,7 @@ paths:
         - name: filename
           in: query
           required: false
-          description: The filename parameter specifies the target file name for a file that needs to bharvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
+          description: The filename parameter specifies the target file name for a file that needs to beharvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
           type: string
         - name: updateBBox
           in: query
@@ -343,7 +343,7 @@ paths:
         - name: filename
           in: query
           required: false
-          description: The filename parameter specifies the target file name for a file that needs to bharvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
+          description: The filename parameter specifies the target file name for a file that needs to beharvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
           type: string
       responses:
         200:

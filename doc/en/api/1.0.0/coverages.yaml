@@ -538,7 +538,7 @@ paths:
           type: string    
         - name: quietOnNotFound
           in: query
-          description: The quietOnNotFound parameter avoids l an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+          description: The quietOnNotFound parameter avoids logging an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
           type: boolean
           required: false
           default: false

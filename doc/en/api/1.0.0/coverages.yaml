@@ -1018,7 +1018,7 @@ definitions:
         description: The number of decimal places to use when encoding floating point numbers from data of this feature type.
       responseSRS:
         type: object
-        description: The Ss that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
+        description: The SRSs that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
         properties:
           string:
             type: string

@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: GeoWebCache Blobstores
-  description: BlobStores configure the persistance of tile data.
+  description: BlobStores configure the persistence of tile data.
   contact:
     name: GeoServer
     email: 'geoserver-users@sourceforge.net'

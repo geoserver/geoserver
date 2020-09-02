@@ -6,8 +6,8 @@
     ant -f release.xml -Dcurrent=2.17 -Drelease=2.18
   -->
   <tstamp/>
-  <property name="current" value="2.17"/>
-  <property name="release" value="2.18"/>
+  <property name="current" value="2.18"/>
+  <property name="release" value="2.19"/>
   
   <target name="test">
      <echo>current: ${current}</echo>
@@ -30,9 +30,9 @@
       <replacefilter token="${current}" value="${release}"/>
     </replace>
     <replace dir="..">
-      <include name="pom.xml"/>
-      <replacefilter token="23-SNAPSHOT" value="24-SNAPSHOT"/>
-      <replacefilter token="1.17-SNAPSHOT" value="1.18-SNAPSHOT"/>
+      <include name="src/pom.xml"/>
+      <replacefilter token="24-SNAPSHOT" value="25-SNAPSHOT"/>
+      <replacefilter token="1.19-SNAPSHOT" value="1.19-SNAPSHOT"/>
     </replace>
   </target>
 

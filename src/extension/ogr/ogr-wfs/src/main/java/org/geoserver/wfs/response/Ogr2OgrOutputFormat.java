@@ -55,7 +55,8 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements FormatConverter {
+public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
+        implements FormatConverter, ComplexFeatureAwareFormat {
 
     /** The types of geometries a shapefile can handle */
     private static final Set<Class> SHAPEFILE_GEOM_TYPES =

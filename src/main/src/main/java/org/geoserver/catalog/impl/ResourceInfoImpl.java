@@ -77,6 +77,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected List<String> disabledServices = new ArrayList<>();
 
+    protected Boolean simpleConversionEnabled = false;
+
     protected transient Catalog catalog;
 
     protected ResourceInfoImpl() {}
@@ -381,6 +383,16 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     @Override
     public void setDisabledServices(List<String> disabledServices) {
         this.disabledServices = disabledServices;
+    }
+
+    @Override
+    public boolean isSimpleConversionEnabled() {
+        return simpleConversionEnabled == null ? false : simpleConversionEnabled;
+    }
+
+    @Override
+    public void setSimpleConversionEnabled(boolean simpleConversionEnabled) {
+        this.simpleConversionEnabled = simpleConversionEnabled;
     }
 
     public int hashCode() {

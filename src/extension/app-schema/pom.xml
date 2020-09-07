@@ -21,11 +21,18 @@
     <name>Application Schema Support</name>
 
     <modules>
+        <module>app-schema-core</module>
         <module>app-schema-test</module>
         <module>sample-data-access-test</module>
     </modules>
 
     <profiles>
+        <profile>
+            <id>app-schema</id>
+            <modules>
+                <module>app-schema-core</module>
+            </modules>
+        </profile>
         <profile>
             <id>app-schema-online-test</id>
             <modules>

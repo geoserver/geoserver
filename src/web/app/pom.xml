@@ -508,6 +508,11 @@
       <id>app-schema</id>
       <dependencies>
         <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-app-schema-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-app-schema</artifactId>
             <version>${gt.version}</version>

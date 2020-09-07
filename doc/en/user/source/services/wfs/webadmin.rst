@@ -27,6 +27,8 @@ The `Open Geospatial Consortium <http://www.opengeospatial.org/>`_ (OGC) Web Fea
 
 **Ignore maximum number of features when calculating hits** - When calculating the total number of hits, ignore the Maximum number of features setting. This can be used to get the count of matching features, even if they would not be made available for download because they exceed the maximum count specified. On very large data sets, this can slow down the response.
 
+**Activate complex to simple features conversion** - Enables the conversion of complex features to simple features, using only SF-0 (simple) attributes for compatible output formats like CSV, KML, SHAPE-ZIP.
+
 Service Levels
 --------------
 

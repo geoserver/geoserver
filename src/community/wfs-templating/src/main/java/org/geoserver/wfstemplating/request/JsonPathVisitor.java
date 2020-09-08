@@ -6,11 +6,14 @@ package org.geoserver.wfstemplating.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.geoserver.wfstemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.wfstemplating.builders.SourceBuilder;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
+import org.geoserver.wfstemplating.builders.impl.CompositeBuilder;
 import org.geoserver.wfstemplating.builders.impl.DynamicValueBuilder;
+import org.geoserver.wfstemplating.builders.impl.IteratingBuilder;
 import org.geoserver.wfstemplating.builders.impl.StaticBuilder;
 import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
 import org.geotools.factory.CommonFactoryFinder;
@@ -55,7 +58,7 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
             try {
                 currentSource = null;
                 currentEl = 0;
-                newExpression = findFunction(builder.getChildren(), elements);
+                newExpression = findFunction(builder, Arrays.asList(elements));
                 newExpression = findXpathArg(newExpression);
                 if (newExpression != null) {
                     return newExpression;
@@ -97,27 +100,49 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
      * Find the corresponding function to which json-ld path is pointing, by iterating over
      * builder's tree
      */
-    public Object findFunction(List<TemplateBuilder> children, String[] eles)
+    public Object findFunction(TemplateBuilder builder, List<String> pathElements)
             throws ServiceException {
-        TemplateBuilder jb = findBuilder(children, eles);
+
+        int lastElI = pathElements.size() - 1;
+        String lastEl = pathElements.get(lastElI);
+        String index = extractArrayIndexIfPresent(lastEl);
+        // we might have a path like path.to.an.array_1 pointing
+        // to a template array attribute eg "array":["${xpath}","$${xpath}", "static value"]
+        if (index != null) {
+            lastEl = lastEl.substring(0, lastEl.indexOf('_'));
+            pathElements.set(lastElI, lastEl);
+        }
+        // find the builder to which the path is pointing
+        TemplateBuilder jb = findBuilder(builder, pathElements);
         if (jb != null) {
+            if (jb instanceof IteratingBuilder && index != null) {
+                // retrieve the builder based on the position
+                IteratingBuilder itb = (IteratingBuilder) jb;
+                jb = getChildFromIterating(itb, Integer.parseInt(index) - 1);
+            }
+
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
-                if (currentEl + 1 != eles.length) throw new ServiceException("error");
                 if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
                 }
             } else if (jb instanceof StaticBuilder) {
                 JsonNode staticNode = ((StaticBuilder) jb).getStaticValue();
-                while (currentEl < eles.length) {
-                    JsonNode child = staticNode.get(eles[currentEl]);
+                while (currentEl < pathElements.size()) {
+                    JsonNode child = staticNode.get(pathElements.get(currentEl - 1));
                     staticNode = child != null ? child : staticNode;
                     currentEl++;
                 }
-                if (currentEl != eles.length) throw new ServiceException("error");
                 return FF.literal(staticNode.asText());
             }
+        }
+        return null;
+    }
+
+    private String extractArrayIndexIfPresent(String elem) {
+        if (elem.indexOf("_") != -1) {
+            return elem.split("_")[1];
         }
         return null;
     }
@@ -126,36 +151,19 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
      * Find the corresponding function to which json-ld path is pointing, by iterating over
      * builder's tree
      */
-    public TemplateBuilder findBuilder(List<TemplateBuilder> children, String[] eles) {
+    private TemplateBuilder findBuilder(TemplateBuilder parent, List<String> pathElements) {
+        List<TemplateBuilder> children = parent.getChildren();
+        int length = pathElements.size();
         if (children != null) {
             for (TemplateBuilder jb : children) {
                 String key = ((AbstractTemplateBuilder) jb).getKey();
-                if (key == null || key.equals(eles[currentEl])) {
-                    if (jb instanceof SourceBuilder) {
-                        SourceBuilder sb = (SourceBuilder) jb;
-                        String source = sb.getStrSource();
-                        if (source != null) {
-                            if (currentSource != null) {
-                                source = "/" + source;
-                                currentSource += source;
-                            } else {
-                                currentSource = source;
-                            }
-                        }
-                        addFilter(sb.getFilter());
-                    }
-                    if (jb instanceof DynamicValueBuilder || jb instanceof StaticBuilder) {
+                if (keyMatched(jb, key, pathElements)) {
+                    boolean isLastEl = currentEl == length;
+                    if (isLastEl || jb instanceof StaticBuilder) {
                         return jb;
-                    } else {
-                        if (key != null) currentEl++;
-                        TemplateBuilder result = findBuilder(jb.getChildren(), eles);
-                        if (result != null) {
-                            return result;
-                        }
-                    }
-                } else {
-                    if (jb.getChildren() != null) {
-                        TemplateBuilder result = findBuilder(jb.getChildren(), eles);
+                    } else if (jb instanceof SourceBuilder) {
+                        pickSourceAndFilter((SourceBuilder) jb);
+                        TemplateBuilder result = findBuilder(jb, pathElements);
                         if (result != null) {
                             return result;
                         }
@@ -164,6 +172,51 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
             }
         }
         return null;
+    }
+
+    // In case a path specifying an element in an array has been specified
+    // eg. path.to.array.1
+    private TemplateBuilder getChildFromIterating(IteratingBuilder itb, int position) {
+        List<TemplateBuilder> children = itb.getChildren();
+        if (position < children.size()) return children.get(position);
+        return null;
+    }
+
+    private boolean keyMatched(TemplateBuilder jb, String key, List<String> pathElements) {
+        // CompositeBuilder (if children of an Iterating builder) have null key
+        boolean allowNullKey = jb instanceof CompositeBuilder && key == null;
+        // the key matched one element of the path
+        boolean keyMatchedOtherBuilder = (key != null && key.equals(pathElements.get(currentEl)));
+
+        if (keyMatchedOtherBuilder) currentEl++;
+
+        return allowNullKey || keyMatchedOtherBuilder;
+    }
+
+    // checks whether the parent builder key and the lastMatchedKey are equals
+    // to avoid to continue iterating over a builder branch unnecessarily
+    private boolean parentKeyEqualsLastMatchedKey(TemplateBuilder parent, String lastMatchedKey) {
+        String parentKey = null;
+        if (parent instanceof AbstractTemplateBuilder)
+            parentKey = ((AbstractTemplateBuilder) parent).getKey();
+
+        if (lastMatchedKey != null && parentKey != null && !parentKey.equals(lastMatchedKey))
+            return false;
+        return true;
+    }
+
+    // takes source and filter from the SourceBuilder
+    private void pickSourceAndFilter(SourceBuilder sb) {
+        String source = sb.getStrSource();
+        if (source != null) {
+            if (currentSource != null) {
+                source = "/" + source;
+                currentSource += source;
+            } else {
+                currentSource = source;
+            }
+        }
+        addFilter(sb.getFilter());
     }
 
     /**

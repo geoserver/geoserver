@@ -94,7 +94,6 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     protected void writeKey(TemplateOutputWriter writer) throws IOException {
         if (key != null && !key.evaluate(null).equals(""))
             writer.writeElementName(key.evaluate(null));
-        else throw new RuntimeException("Cannot write null key value");
     }
 
     public NamespaceSupport getNamespaces() {

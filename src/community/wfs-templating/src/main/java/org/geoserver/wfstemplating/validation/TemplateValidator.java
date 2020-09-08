@@ -10,7 +10,6 @@ import org.geoserver.wfstemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.wfstemplating.builders.SourceBuilder;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
 import org.geoserver.wfstemplating.builders.impl.DynamicValueBuilder;
-import org.geoserver.wfstemplating.builders.impl.IteratingBuilder;
 import org.geoserver.wfstemplating.builders.impl.RootBuilder;
 import org.geoserver.wfstemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.wfstemplating.expressions.XpathFunction;
@@ -80,8 +79,6 @@ public class TemplateValidator {
                             siblingSource = pn.getPropertyName();
                         }
                     }
-                } else {
-                    if (sb instanceof IteratingBuilder) return false;
                 }
                 if (!validateExpressions(
                         jb, visitor, siblingSource != null ? siblingSource : source)) return false;

@@ -57,7 +57,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application/json")
                         .append(
-                                "&cql_filter=features.gsml:GeologicUnit.description = 'Olivine basalt'");
+                                "&cql_filter=features.properties.gsml:GeologicUnit.description = 'Olivine basalt'");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
@@ -75,7 +75,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
                         .append("/items?f=application%2Fgeo%2Bjson")
                         .append("&filter-lang=cql-text")
                         .append(
-                                "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name")
+                                "&filter= features.properties.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name")
                         .append(" = 'name_2' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
@@ -119,7 +119,7 @@ public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexT
                         .append(" <wfs:Query typeName=\"gsml:MappedFeature\">")
                         .append(" <ogc:Filter><ogc:PropertyIsEqualTo> ")
                         .append(
-                                "<ogc:PropertyName>features.gsml:GeologicUnit.description</ogc:PropertyName>")
+                                "<ogc:PropertyName>features.properties.gsml:GeologicUnit.description</ogc:PropertyName>")
                         .append("<ogc:Literal>Olivine basalt</ogc:Literal>")
                         .append("</ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query>")
                         .append("</wfs:GetFeature>");

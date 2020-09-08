@@ -826,6 +826,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testXmlPostWithWorkSpaceQualifier() throws Exception {
+        MockHttpServletResponse response = postAsServletResponse("sf/wms?", STATES_GETMAP);
+        checkImage(response);
+    }
+
+    @Test
     public void testRemoteOWSGet() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) return;
 

@@ -6,19 +6,21 @@
 package org.geoserver.importer;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.IOUtils;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
@@ -99,36 +101,49 @@ public class SpatialFile extends FileData {
 
         // getBaseName only gets the LAST extension so beware for .shp.aux.xml stuff
         final String baseName = getBaseName(file.getName());
+        final String baseExtension = getExtension(file.getName());
+        final String basePath = file.getParent();
 
-        File[] files = file.getParentFile().listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.equals(file)) {
-                    continue;
-                }
+        // look for style files
+        Iterator styleExtensionsIt = styleExtensions.iterator();
+        while (styleFile == null && styleExtensionsIt.hasNext()) {
+            Object ext = styleExtensionsIt.next();
+            File style = new File(basePath, baseName + "." + ext);
+            if (style.exists()) {
+                // TODO: deal with multiple style files? for now we just grab the first
+                styleFile = style;
+            }
+        }
 
-                if (!f.getName().startsWith(baseName)) {
-                    continue;
-                }
+        // The previous version of the code was doing a File.listFiles,
+        // looking for files with same name of the input file. However
+        // this was resulting in very time consuming operation when importing
+        // a file living into a directory containing thousands of files.
+        // Especially on system doing continuous ingest of a new file every few minute
+        // with a continuously growing directory.
 
-                if (!f.isFile()) {
-                    continue;
-                }
+        // Looking for supplemental files
+        List<SupplementalFileExtensionsProvider> extensionsProviders =
+                GeoServerExtensions.extensions(SupplementalFileExtensionsProvider.class);
 
-                String ext = f.getName().substring(baseName.length());
-                // once the basename is stripped, extension(s) should be present
-                if (ext.charAt(0) == '.') {
-                    if (".prj".equalsIgnoreCase(ext)) {
-                        prjFile = f;
-                    } else if (styleFile == null && styleExtensions.contains(ext.substring(1))) {
-                        // TODO: deal with multiple style files? for now we just grab the first
-                        styleFile = f;
+        // different providers can provide same supplementalFile extension so let's use a set
+        Set<File> supplementalSet = new HashSet<>();
+        for (SupplementalFileExtensionsProvider provider : extensionsProviders) {
+            // get extensions from each provider
+            for (String extension : provider.getExtensions(baseExtension)) {
+                File supplementalFile = new File(basePath, baseName + "." + extension);
+                if (supplementalFile.exists()) {
+                    if ("prj".equalsIgnoreCase(extension)) {
+                        prjFile = supplementalFile;
                     } else {
-                        suppFiles.add(f);
+                        supplementalSet.add(supplementalFile);
                     }
                 }
             }
         }
+
+        suppFiles = supplementalSet.stream().collect(Collectors.toList());
+
         if (format == null) {
             format = DataFormat.lookup(file);
         }

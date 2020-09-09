@@ -22,4 +22,6 @@
   <bean id="gmlFormat" class="org.geoserver.importer.format.GMLFileFormat" />
   <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat" />
 
+  <bean id="spatialFileExtensionsProvider" class="org.geoserver.importer.SpatialFileExtensionsProvider" />
+
 </beans>

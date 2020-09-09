@@ -6,7 +6,6 @@
 package org.geoserver.importer;
 
 import static org.geoserver.importer.ImporterTestUtils.unpack;
-import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Arrays;
@@ -17,10 +16,19 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 
 public class DirectoryTest extends TestCase {
 
-    public void testMosaicAuxillaryFiles() throws Exception {
+    @Override
+    public void setUp() {
+        GeoServerExtensionsHelper.singleton(
+                "spatialFileExtensionsProvider",
+                new SpatialFileExtensionsProvider(),
+                SupplementalFileExtensionsProvider.class);
+    }
+
+    public void testMosaicAuxiliaryFiles() throws Exception {
         File unpack = ImporterTestUtils.unpack("mosaic/bm.zip");
 
         // all types of junk!

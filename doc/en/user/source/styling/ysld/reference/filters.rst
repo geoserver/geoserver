@@ -9,7 +9,7 @@ A filter can take a great many different forms.
 
 .. note:: A scale is a type of filter, but is :ref:`discussed separately <ysld_reference_scalezoom>`.
 
-.. note:: For more information, please see the `GeoTools CQL documentation <http://docs.geotools.org/stable/userguide/library/cql/ecql.html>`_ and `GeoServer CQL tutorial <../../../geoserver/tutorials/cql/cql_tutorial.html>`_.
+.. note:: For more information, please see the :geotools:`GeoTools CQL documentation <library/cql/ecql.html>` and :ref:`GeoServer CQL tutorial <cql_tutorial>`.
 
 Syntax
 ------

@@ -9,7 +9,8 @@ Postgis Raster
 Adding an Postgis raster data store
 -----------------------------------
 
-Read the geotools documentation for Postgis raster Support: `<https://docs.geotools.org/latest/userguide/unsupported/imagemosaic-jdbc/pgraster.html>`_.
+Read the geotools documentation for Postgis raster Support: :geotools:`Postgis raster Support <library/coverage/pgraster.html>`.
+
 After creating the xml config file proceed to the section `Configuring GeoServer` in the  :doc:`Image Mosaic JDBC Tutorial</tutorials/imagemosaic-jdbc/imagemosaic-jdbc_tutorial>`
 
   

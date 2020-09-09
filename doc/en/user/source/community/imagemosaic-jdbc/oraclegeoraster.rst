@@ -9,7 +9,8 @@ Oracle Georaster
 Adding an Oracle Georaster data store
 --------------------------------------
 
-Read the geotools documentation for Oracle Georaster Support: `<https://docs.geotools.org/latest/userguide/unsupported/imagemosaic-jdbc/oracle-raster.html>`_.
+Read the geotools documentation for Oracle Georaster Support: :geotools:`Oracle Georaster Support <library/coverage/oracle.html>`.
+
 After creating the xml config file proceed to the section `Configuring GeoServer` in the  :doc:`Image Mosaic JDBC Tutorial</tutorials/imagemosaic-jdbc/imagemosaic-jdbc_tutorial>`
 
   

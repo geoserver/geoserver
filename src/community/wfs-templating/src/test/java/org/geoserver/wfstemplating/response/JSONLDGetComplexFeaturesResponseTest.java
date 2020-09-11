@@ -293,6 +293,26 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                                         + "Check the path specified in the filter."));
     }
 
+    @Test
+    public void testJsonLdQueryPointingToArray() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&filter-lang=cql-text")
+                        .append("&filter= features.gsml:positionalAccuracy.valueArray_1 > 120");
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        JSONArray features = result.getJSONArray("features");
+        assertEquals(features.size(), 2);
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject f = features.getJSONObject(i);
+            JSONArray values =
+                    f.getJSONObject("gsml:positionalAccuracy").getJSONArray("valueArray");
+            assertTrue(values.getInt(0) > 120);
+        }
+    }
+
     private void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);
         assertNotNull(feature.getString("@id"));
@@ -300,6 +320,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
         assertNotNull(geom);
         assertEquals(String.valueOf(geom.get("@type")), "Polygon");
         assertNotNull(geom.get("wkt"));
+        checkSimpleArrayWithDynamicValues(feature);
         JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
         String geologicUnitDescr = geologicUnit.getString("description");
         assertNotNull(geologicUnitDescr);
@@ -325,6 +346,16 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                 assertTrue(lithology.size() > 0);
             }
         }
+    }
+
+    private void checkSimpleArrayWithDynamicValues(JSONObject feature) {
+        JSONArray arrayWithDynamic =
+                feature.getJSONObject("gsml:positionalAccuracy").getJSONArray("valueArray");
+        String value = feature.getJSONObject("gsml:positionalAccuracy").getString("value");
+
+        assertEquals(value, arrayWithDynamic.getString(0));
+        assertEquals("someStaticVal", arrayWithDynamic.getString(1));
+        assertEquals("duplicated value: " + value, arrayWithDynamic.getString(2));
     }
 
     @After

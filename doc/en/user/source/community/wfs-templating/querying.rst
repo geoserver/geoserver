@@ -36,10 +36,10 @@ Consider the following JSON-LD output example:
                 "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
             ],
             "name": "MERCIA MUDSTONE GROUP",
-            "valueArray": [
-            "100",
-            "someStaticVal"
-            ]
+            "gsml:positionalAccuracy":{
+                "value":"100",
+                "valueArray": ["100","someStaticVal"]
+            },
             "gsml:GeologicUnit": {
                 "@id": "gu.25678",
                 "description": "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",

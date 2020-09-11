@@ -17,6 +17,7 @@ import org.geoserver.wfstemplating.builders.impl.RootBuilder;
 import org.geoserver.wfstemplating.builders.jsonld.JsonLdRootBuilder;
 import org.geoserver.wfstemplating.configuration.TemplateConfiguration;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
+import org.geoserver.wfstemplating.validation.JsonLdContextValidation;
 import org.geoserver.wfstemplating.writers.JsonLdWriter;
 import org.geoserver.wfstemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.FeatureCollection;
@@ -45,7 +46,9 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         //  writing the context to the output.
         //  This is thus working only for one featureType and so the RootBuilder is being got before
         // iteration.
-        try (JsonLdWriter writer = (JsonLdWriter) helper.getOutputWriter(output)) {
+
+        JsonLdContextValidation validator = null;
+        try {
             FeatureTypeInfo info =
                     helper.getFirstFeatureTypeInfo(
                             GetFeatureRequest.adapt(getFeature.getParameters()[0]));
@@ -53,13 +56,47 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
                     (JsonLdRootBuilder)
                             configuration.getTemplate(
                                     info, TemplateIdentifier.JSONLD.getOutputFormat());
-            writer.setContextHeader(root.getContextHeader());
-            writer.startTemplateOutput();
-            iterateFeatureCollection(writer, featureCollection, root);
-            writer.endTemplateOutput();
+            boolean validate = root.isSemanticValidation();
+            // setting it back to false
+            root.setSemanticValidation(false);
+            if (validate) {
+                validate(featureCollection, root);
+            }
+            try (JsonLdWriter writer = (JsonLdWriter) helper.getOutputWriter(output)) {
+                write(featureCollection, root, writer);
+            } catch (Exception e) {
+                throw new ServiceException(e);
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        } finally {
+            if (validator != null) {
+                validator.validate();
+            }
+        }
+    }
+
+    private void validate(FeatureCollectionResponse featureCollection, JsonLdRootBuilder root)
+            throws IOException {
+        JsonLdContextValidation validator = new JsonLdContextValidation();
+        try (JsonLdWriter writer =
+                (JsonLdWriter) helper.getOutputWriter(new FileOutputStream(validator.init()))) {
+            write(featureCollection, root, writer);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+        validator.validate();
+    }
+
+    private void write(
+            FeatureCollectionResponse featureCollection,
+            JsonLdRootBuilder root,
+            JsonLdWriter writer)
+            throws IOException {
+        writer.setContextHeader(root.getContextHeader());
+        writer.startTemplateOutput();
+        iterateFeatureCollection(writer, featureCollection, root);
+        writer.endTemplateOutput();
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.geoserver.util.XCQL;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
 import org.geoserver.wfstemplating.builders.impl.RootBuilder;
+import org.geoserver.wfstemplating.builders.jsonld.JsonLdRootBuilder;
 import org.geoserver.wfstemplating.configuration.TemplateConfiguration;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.expressions.JsonLdCQLManager;
@@ -60,10 +61,15 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         String outputFormat = getFormatSupportingTemplating(request);
         if ("FEATURES".equalsIgnoreCase(request.getService()) && outputFormat != null) {
             try {
+                FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
+                RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
+                if (root instanceof JsonLdRootBuilder) {
+                    setSemanticValidation((JsonLdRootBuilder) root, request);
+                }
                 String filterLang = (String) request.getKvp().get("FILTER-LANG");
                 if (filterLang != null && filterLang.equalsIgnoreCase("CQL-TEXT")) {
                     String filter = (String) request.getKvp().get("FILTER");
-                    replaceJsonLdPathWithFilter(filter, outputFormat, operation);
+                    replaceJsonLdPathWithFilter(filter, root, typeInfo, operation);
                 }
                 String envParam =
                         request.getRawKvp().get("ENV") != null
@@ -123,9 +129,8 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
     }
 
     private void replaceJsonLdPathWithFilter(
-            String strFilter, String outputFormat, Operation operation) throws Exception {
-        FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
-        RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
+            String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            throws Exception {
         if (strFilter != null && strFilter.indexOf("features.") != -1) {
             if (root != null) {
                 replaceFilter(strFilter, root, typeInfo, operation);
@@ -163,6 +168,14 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
                 operation.getParameters()[i] = newFilter;
                 break;
             }
+        }
+    }
+
+    private void setSemanticValidation(JsonLdRootBuilder root, Request request) {
+        Map rawKvp = request.getRawKvp();
+        Object value = rawKvp != null ? rawKvp.get("validation") : null;
+        if (value != null) {
+            root.setSemanticValidation(Boolean.valueOf(value.toString()));
         }
     }
 

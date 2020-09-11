@@ -313,6 +313,21 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
         }
     }
 
+    @Test
+    public void testJsonLdContextValidationFails() throws Exception {
+        setUpMappedFeature();
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&validation=true");
+        MockHttpServletResponse result = getAsServletResponse(sb.toString());
+        String strResult = result.getContentAsString();
+        assertTrue(
+                strResult.contains(
+                        "Validation failed. Unable to resolve the following fields against the @context: proportion,previousContextValue,lithology,valueArray,type,value,@codeSpace."));
+    }
+
     private void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);
         assertNotNull(feature.getString("@id"));

@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>	
         <include>gs-wfs-templating-*.jar</include>
+        <include>jsonld-java-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

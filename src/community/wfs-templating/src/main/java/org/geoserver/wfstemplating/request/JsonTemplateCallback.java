@@ -6,6 +6,7 @@ package org.geoserver.wfstemplating.request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.*;
@@ -20,6 +21,7 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wfstemplating.builders.TemplateBuilder;
 import org.geoserver.wfstemplating.builders.impl.RootBuilder;
+import org.geoserver.wfstemplating.builders.jsonld.JsonLdRootBuilder;
 import org.geoserver.wfstemplating.configuration.TemplateConfiguration;
 import org.geoserver.wfstemplating.configuration.TemplateIdentifier;
 import org.geoserver.wfstemplating.response.GeoJsonTemplateGetFeatureResponse;
@@ -61,9 +63,9 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                 GetFeatureRequest getFeature =
                         GetFeatureRequest.adapt(operation.getParameters()[0]);
                 List<Query> queries = getFeature.getQueries();
-
                 if (getFeature != null && queries != null && queries.size() > 0) {
-                    handleTemplateFilters(queries, request.getOutputFormat());
+                    handleTemplateFiltersAndValidation(
+                            queries, request.getOutputFormat(), isValidation(request));
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -72,8 +74,18 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
         return super.operationDispatched(request, operation);
     }
 
+    private boolean isValidation(Request request) {
+        Map rawKvp = request.getRawKvp();
+        if (rawKvp != null) {
+            Object validation = request.getRawKvp().get("validation");
+            return validation != null ? Boolean.valueOf(validation.toString()) : false;
+        }
+        return false;
+    }
+
     // iterate over queries to eventually handle a templates query paths
-    private void handleTemplateFilters(List<Query> queries, String outputFormat)
+    private void handleTemplateFiltersAndValidation(
+            List<Query> queries, String outputFormat, boolean validation)
             throws ExecutionException {
         for (Query q : queries) {
             List<FeatureTypeInfo> featureTypeInfos = getFeatureTypeInfoFromQuery(q);
@@ -83,6 +95,9 @@ public class JsonTemplateCallback extends AbstractDispatcherCallback {
                 for (int i = 0; i < featureTypeInfos.size(); i++) {
                     FeatureTypeInfo fti = featureTypeInfos.get(i);
                     RootBuilder root = rootBuilders.get(i);
+                    if (validation && root instanceof JsonLdRootBuilder) {
+                        ((JsonLdRootBuilder) root).setSemanticValidation(validation);
+                    }
                     replaceTemplatePath(q, fti, root);
                 }
             }

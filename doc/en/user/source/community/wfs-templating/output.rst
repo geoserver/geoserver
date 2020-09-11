@@ -138,6 +138,18 @@ The output, given the template files showed in the configuration section, will l
     ]
     }
 
+JSON-LD Validation
+''''''''''''''''''
+
+The plugin provides a validation for the json-ld output against the ``@context`` defined in the template. It is possible to require it by specifying a new query parameter in the request: ``validation=true``.
+The validation takes advantage form the json-ld api and performes the following steps:
+
+* the `expansion algorithm <https://www.w3.org/TR/json-ld11-api/#expansion-algorithm>`_ is executed against the json-ld output, expanding each features' attribute name to IRIs, removing those with no reference in the ``@context`` and the ``@context`` itself;
+
+* the `compaction algorithm <https://www.w3.org/TR/json-ld11-api/#compaction-algorithm>`_ is then executed on the expansion result, putting back the ``@context`` and shortens to the terms the expanded attribute names as in the original output;
+
+* finally the result of the compaction process is compared to the original json-ld and if some attributes are missing it means that they were not referenced in the ``@context``. An exception is thrown with a message pointing to the missing attributes.
+
 GEOJSON
 --------
 

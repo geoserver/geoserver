@@ -12,11 +12,21 @@ public class JsonLdRootBuilder extends GeoJsonRootBuilder {
 
     protected JsonNode contextHeader;
 
+    private boolean semanticValidation = false;
+
     public JsonNode getContextHeader() {
         return contextHeader;
     }
 
     public void setContextHeader(JsonNode contextHeader) {
         this.contextHeader = contextHeader;
+    }
+
+    public boolean isSemanticValidation() {
+        return semanticValidation;
+    }
+
+    public void setSemanticValidation(boolean semanticValidation) {
+        this.semanticValidation = semanticValidation;
     }
 }

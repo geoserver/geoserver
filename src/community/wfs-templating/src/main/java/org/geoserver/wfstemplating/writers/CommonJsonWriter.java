@@ -158,6 +158,9 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
         } else if (result == null) {
             if (flatOutput) writeElementName(key);
             writeNull();
+        } else {
+            if (flatOutput) writeElementName(key);
+            writeValue(result.toString());
         }
     }
 

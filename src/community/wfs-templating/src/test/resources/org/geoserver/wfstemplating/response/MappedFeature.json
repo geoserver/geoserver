@@ -32,7 +32,8 @@
       "name": "${gml:name}",
       "gsml:positionalAccuracy": {
         "type": "$${env('positionalAccuracyType','CGI_NumericValue')}",
-        "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
+        "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}",
+        "valueArray": ["${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}","someStaticVal","$${strConcat('duplicated value: ', xpath('gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue'))}"]
       },
       "gsml:GeologicUnit": {
         "$source": "gsml:specification/gsml:GeologicUnit",

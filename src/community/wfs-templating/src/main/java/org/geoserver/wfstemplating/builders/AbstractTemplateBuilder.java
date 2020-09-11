@@ -93,8 +93,9 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
      */
     protected void writeKey(TemplateOutputWriter writer) throws IOException {
         if (key != null && !key.evaluate(null).equals(""))
+            // key might be and EnvFunction or a Literal. In both cases
+            // no argument is needed for the evaluation thus passing null.
             writer.writeElementName(key.evaluate(null));
-        else throw new RuntimeException("Cannot write null key value");
     }
 
     public NamespaceSupport getNamespaces() {

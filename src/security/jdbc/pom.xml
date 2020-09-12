@@ -39,7 +39,7 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <scope>test</scope>
-      <version>5.1.17</version>
+      <version>8.0.16</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.security</groupId>

@@ -147,10 +147,10 @@ If needed, different storage can be used for the index — like a spatial DBMS, 
      - Y
      - The connection parameters used by the specified SPI. The list of these connection parameters can be found in the GeoTools documentation on the relevant store:
 
-       * `PostGIS <http://docs.geotools.org/latest/userguide/library/jdbc/postgis.html>`_
-       * `Oracle <http://docs.geotools.org/latest/userguide/library/jdbc/oracle.html>`_
-       * `H2 <http://docs.geotools.org/latest/userguide/library/jdbc/h2.html>`_
-       * `SQLServer <http://docs.geotools.org/latest/userguide/library/jdbc/sqlserver.html>`_
+       * :geotools:`PostGIS <library/jdbc/postgis.html>`
+       * :geotools:`Oracle <library/jdbc/oracle.html>`
+       * :geotools:`H2 <library/jdbc/h2.html>`
+       * :geotools:`SQLServer <library/jdbc/sqlserver.html>`
 
        If JNDI is used, the connection parameters will include ``jndiReferenceName`` instead of ``host``, ``port``, etc.
        Note that for any connection parameters that include a space (such as ``loose bbox``), the space must be escaped by preceding it with a backslash (``loose\ bbox``).

@@ -114,7 +114,7 @@ Here is shown an example of datastore.properties suitable for Postgis.
      - **N** default 'false'
      - Boolean flag that specifies if for the database queries prepared statements should be used. This improves performance, because the database query parser has to parse the query only once     
 
-.. note:: The first 8 parameters are valid for each DBMS used, the last 4 may vary from different DBMS. for more information see `GeoTools JDBC documentation <http://docs.geotools.org/latest/userguide/library/jdbc/index.html>`_
+.. note:: The first 8 parameters are valid for each DBMS used, the last 4 may vary from different DBMS. for more information see :geotools`GeoTools JDBC documentation <jdbc/index.html>`.
  
 indexer.properties
 """"""""""""""""""

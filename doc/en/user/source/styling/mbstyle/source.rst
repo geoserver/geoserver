@@ -3,7 +3,7 @@
 Publishing a GeoServer Layer for use with Mapbox Styles
 =======================================================
 
-GeoServer can be configured to serve layers as vector tiles which can be used as sources for Mapbox styles rendered by client-side applications such as OpenLayers.
+GeoServer can be configured to serve layers as vector tiles to be used as sources for Mapbox styles rendered by client-side applications such as OpenLayers.
 
 1. :ref:`production_container.enable_cors` in GeoServer.
 
@@ -12,6 +12,9 @@ GeoServer can be configured to serve layers as vector tiles which can be used as
 3. Follow the :ref:`vectortiles.tutorial` to publish your layers in ``application/vnd.mapbox-vector-tile`` format (You only need to do the "Publish vector tiles in GeoWebCache" step).
 
 Once these steps are complete, you will be able to use your GeoServer layers in any Mapbox-compatible client application that can access your GeoServer.
+
+Source
+------
 
 The source syntax to use these GeoServer layers in your MapBox Style is::
 
@@ -33,7 +36,7 @@ The source syntax to use these GeoServer layers in your MapBox Style is::
 
 .. note:: 
 
-   ``<source-name>`` should be replaced by a source name of your choice. It will be used to refer to the source elsewhere in the Mapbox Style.
+   ``<source-name>`` should be replaced by a source name of your choice. It will be used to refer to the source when defining a layer in the Mapbox Style.
 
 .. note:: 
 

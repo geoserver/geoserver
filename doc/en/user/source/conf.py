@@ -112,7 +112,8 @@ extlinks = {
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s',''),
+    'api': ('http://docs.geoserver.org/stable/en/api/#1.0.0/%s',''),
+    'geotools': ('https://docs.geotools.org/stable/userguide/%s',''),
     'download_release': (download_release,None),
     'download_extension': (download_extension,None),
     'download_community': (download_community,None)

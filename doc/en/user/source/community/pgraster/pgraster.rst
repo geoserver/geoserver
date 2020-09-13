@@ -4,8 +4,8 @@ PGRaster
 ========
 
 The PGRaster geoserver module adds the ability to simplify the configuration of a PostGis Raster based ImageMosaic-JDBC store.
-Before proceeding, make sure to take a look to the `PostGis Raster plugin documentation
-<http://docs.geotools.org/latest/userguide/library/coverage/pgraster.html>`_ for background information. Note that configuration files, table creations and raster imports explained in that documentation, will be automatically handled by this module.
+Before proceeding, make sure to take a look to the :geotools:`PostGis Raster plugin documentation
+<library/coverage/pgraster.html>` for background information. Note that configuration files, table creations and raster imports explained in that documentation, will be automatically handled by this module.
 
 **This module allows to do the following steps automatically:**
 
@@ -18,7 +18,7 @@ Requirements
 ------------
 
 * You must have a PostGIS 2.0 database where your raster tiles will be stored.
-* Raster tiles should have been previously created using ``gdal_retile`` since this module will simply import them and configure the store. The ImageMosaic JDBC setup example documentation provides `examples <http://docs.geotools.org/latest/userguide/library/coverage/jdbc/prepare.html>`_ of how to do that.
+* Raster tiles should have been previously created using ``gdal_retile`` since this module will simply import them and configure the store. The ImageMosaic JDBC setup example documentation provides :geotools:`examples <library/coverage/jdbc/prepare.html>` of how to do that.
 * In case you want to perform automatic import of the raster tiles into the database, you need to have raster2pgsql and psql executables installed on your machine and configured on your ``PATH``. (In case your PostGIS 2.0 installation is on the same machine where you will run GeoServer, the executables should be already available).
     
 Installation

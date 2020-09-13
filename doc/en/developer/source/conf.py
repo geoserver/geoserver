@@ -105,9 +105,10 @@ extlinks = {
     'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s',''),
     'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
+    'geotools': ('https://docs.geotools.org/stable/userguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/%s','')
+    'api': ('http://docs.geoserver.org/stable/en/api/#1.0.0/%s','')
 }
 
 # Options for HTML output

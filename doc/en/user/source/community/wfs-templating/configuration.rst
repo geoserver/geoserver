@@ -194,7 +194,7 @@ The content of the output depends on specified properties in the template file, 
 * if a :code:`"$source": "xpath"` attribute is present, it will act as a context against which all xpath expression will be evaluated. In the case of an array it will be use to iterate over a collection of element; if source evaluates to null the entire object/array will be skipped;
 * a :code:`../` syntax in an xpath means that xpath evaluation will be relative to the previous :code:`$source`. Give the above template file, the xpath :code:`"../gsml:shape"` will be evaluate not against the corresponding :code:`"$source": "gsml:specification/gsml:GeologicUnit"`, but against the parent one :code:`"$source": "gsml:MappedFeature"`.
 
-.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the `property function <https://docs.geotools.org/latest/userguide/library/main/function_list.html#property-propertyname-returns-propertyvalue>`_
+.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the :geotools:`property function <library/main/function_list.html#property-propertyname-returns-propertyvalue>`.
 
 
 Filtering Support

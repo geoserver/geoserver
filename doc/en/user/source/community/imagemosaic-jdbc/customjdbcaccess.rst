@@ -11,7 +11,7 @@ Adding a coverage based on Custom JDBC Access
 
 This extension  is targeted to users having a special database layout for storing their image data or use a special data base extension concerning raster data.
 
-Read the geotools documentation for Custom JDBC Access: `<https://docs.geotools.org/latest/userguide/unsupported/imagemosaic-jdbc/customized.html>`_.
+Read the geotools documentation for Custom JDBC Access: :geotools:`Custom JDBC Access <library/coverage/jdbc/customized.html>`.
 
 After developing the custom plugin, package the classes into a jar file and copy it into the :file:`WEB-INF/lib`  directory of the geoserver installation.
 

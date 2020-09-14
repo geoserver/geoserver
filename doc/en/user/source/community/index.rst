@@ -58,5 +58,4 @@ officially part of the GeoServer releases. They are however built along with the
    importer-jdbc/index
    hana/index
    features-templating/index
-   ogc-api/index
    gsr/index

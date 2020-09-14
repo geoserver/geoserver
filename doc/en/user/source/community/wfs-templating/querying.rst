@@ -36,8 +36,9 @@ Consider the following JSON-LD output example:
                 "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
             ],
             "name": "MERCIA MUDSTONE GROUP",
-            "gsml:positionalAccuracy": {
-                "value": "100.0"
+            "gsml:positionalAccuracy":{
+                "value":"100",
+                "valueArray": ["100","someStaticVal"]
             },
             "gsml:GeologicUnit": {
                 "@id": "gu.25678",
@@ -123,6 +124,9 @@ The following are example of valid CQL filters:
 
 * features.gsml:GeologicUnit.description = 'some string value'
 * features."@id" = "3245"
-* features.name in ("MERCIA MUDSTONE", "UKNOWN") AND features.gsml:positionalAccuracy.value = "100"
+* features.name in ("MERCIA MUDSTONE", "UKNOWN")
+* features.gsml:positionalAccuracy.valueArray_1 = "100"
+
+As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form ``{attributeName}_{index}``, as in ``features.gsml:positionalAccuracy.valueArray_1.``
 
 Is worth mentioning that, as demonstrated in the examples above, ``""`` can be used to escape the attributes path components.

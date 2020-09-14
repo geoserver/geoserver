@@ -155,7 +155,7 @@ public class JsonTemplateReader implements TemplateReader {
                 } else if (childNode.isArray()) {
                     getBuilderFromJsonArray(nodeName, childNode, iteratingBuilder, factory);
                 } else {
-                    getBuilderFromJsonAttribute(nodeName, node, iteratingBuilder, factory);
+                    getBuilderFromJsonAttribute(null, childNode, iteratingBuilder, factory);
                 }
             }
         }

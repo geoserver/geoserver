@@ -1753,11 +1753,11 @@
       </dependencies>
     </profile>
     <profile>
-      <id>wfs-templating</id>
+      <id>features-templating</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-wfs-templating</artifactId>
+          <artifactId>gs-features-templating</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

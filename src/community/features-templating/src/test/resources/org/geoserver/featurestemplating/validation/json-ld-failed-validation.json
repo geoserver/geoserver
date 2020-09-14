@@ -1,0 +1,101 @@
+{
+  "@context": {
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "schema": "https://schema.org/",
+    "dc": "http://purl.org/dc/terms/",
+    "Feature": "gsp:Feature",
+    "FeatureCollection": "schema:Collection",
+    "Point": "sf:Point",
+    "name":"schema:name",
+    "gsml":"http://geosciml.org",
+    "wkt": "gsp:asWKT",
+    "features": {
+      "@container": "@set",
+      "@id": "schema:hasPart"
+    },
+    "geometry": "sf:geometry",
+    "description": "dc:description",
+    "value":"schema:value",
+    "title": "dc:title",
+    "name": "schema:name",
+    "role":"schema:role",
+    "proportion":"schema:proportion",
+    "lithology":"schema:lithology",
+    "vocabulary":"schema:vocabulary",
+    "lang": "schema:lang"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "@id": "mf4",
+      "@type": [
+        "Feature",
+        "gsml:MappedFeature",
+        "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
+      ],
+      "name": "MURRADUC BASALT",
+      "gsml:positionalAccuracy": {
+        "@type": "CGI_NumericValue",
+        "value": "120.0"
+      },
+      "gsml:GeologicUnit": {
+        "@type":"gsml:GeologicUnit",
+        "@id": "gu.25682",
+        "description": "Olivine basalt",
+        "geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+        "gsml:composition": [
+          {
+            "@type":"gsml:composition",
+            "gsml:compositionPart": [
+              {
+                "role": {
+                  "value": "interbedded component"
+                },
+                "proportion": {
+                  "dataType": "CGI_ValueProperty",
+                  "CGI_TermValue": {
+                    "dataType": "CGI_TermValue",
+                    "value": {
+                      "value": "significant"
+                    }
+                  }
+                },
+                "lithology": [
+                  {
+                    "@id": "cc.1",
+                    "name": {
+                      "value": [
+                        "name_a",
+                        "name_b",
+                        "name_c"
+                      ],
+                      "lang": "en"
+                    },
+                    "vocabulary": {
+                      "nilReason": "urn:ogc:def:nil:OGC::missing"
+                    }
+                  },
+                  {
+                    "@id": "cc.2",
+                    "name": {
+                      "value": "name_2",
+                      "lang": "en"
+                    },
+                    "vocabulary": {
+                      "nilReason": "urn:ogc:def:nil:OGC::missing"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "geometry": {
+        "@type": "Polygon",
+        "wkt": "POLYGON ((-1.3 52.5, -1.3 52.6, -1.2 52.6, -1.2 52.5, -1.3 52.5))"
+      }
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +51,10 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.data.store.ReTypingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -77,8 +80,12 @@ import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
@@ -414,17 +421,23 @@ public class GeoPackageProcess implements GeoServerProcess {
             }
         }
         query.setFilter(filter);
+        // delegate to the data source if possible
+        boolean sortOnGeometry = isGeometrySorted(features.getSort(), ft.getFeatureType());
+        if (features.getSort() != null && !sortOnGeometry) {
+            query.getSortBy().addAll(Arrays.asList(features.getSort()));
+        }
 
         GetFeatureType getFeature = Wfs20Factory.eINSTANCE.createGetFeatureType();
         getFeature.getAbstractQueryExpression().add(query);
 
         FeatureCollectionResponse fc = getFeatureDelegate.run(GetFeatureRequest.adapt(getFeature));
 
-        for (FeatureCollection collection : fc.getFeatures()) {
-            if (!(collection instanceof SimpleFeatureCollection)) {
+        for (FeatureCollection genericCollection : fc.getFeatures()) {
+            if (!(genericCollection instanceof SimpleFeatureCollection)) {
                 throw new ServiceException(
                         "GeoPackage OutputFormat does not support Complex Features.");
             }
+            SimpleFeatureCollection collection = (SimpleFeatureCollection) genericCollection;
 
             FeatureEntry e = new FeatureEntry();
             e.setTableName(layer.getName());
@@ -436,7 +449,12 @@ public class GeoPackageProcess implements GeoServerProcess {
 
             e.setBounds(bounds);
 
-            gpkg.add(e, (SimpleFeatureCollection) collection);
+            if (sortOnGeometry) {
+                SimpleFeatureCollection sorted = sort(collection, features.getSort());
+                gpkg.add(e, sorted);
+            } else {
+                gpkg.add(e, collection);
+            }
 
             if (features.isIndexed()) {
                 gpkg.createSpatialIndex(e);
@@ -466,6 +484,42 @@ public class GeoPackageProcess implements GeoServerProcess {
         if (contents.isContext()) {
             contextWriter.addFeatureTypeContext(ft, layer.getName());
         }
+    }
+
+    /** Sorts the feature collection locally, replacing geometry sorting by geohash sorting */
+    private SimpleFeatureCollection sort(SimpleFeatureCollection fc, SortBy[] sort) {
+        GeoHashCollection ghc = new GeoHashCollection(fc);
+
+        // adapt sort to use geohash instead of the geometry
+        SortBy[] adaptedSort =
+                Arrays.stream(sort)
+                        .map(
+                                sb -> {
+                                    String name = sb.getPropertyName().getPropertyName();
+                                    if (fc.getSchema().getDescriptor(name)
+                                            instanceof GeometryDescriptor) {
+                                        return filterFactory.sort(
+                                                ghc.getGeoHashFieldName(), SortOrder.ASCENDING);
+                                    } else {
+                                        return sb;
+                                    }
+                                })
+                        .toArray(n -> new SortBy[n]);
+
+        // sort by geohash
+        SortedSimpleFeatureCollection sorted =
+                new SortedSimpleFeatureCollection(ghc, adaptedSort, 100000);
+
+        // remove the geohash, casting to the original feature type
+        return new ReTypingFeatureCollection(sorted, fc.getSchema());
+    }
+
+    private boolean isGeometrySorted(SortBy[] sort, FeatureType featureType) {
+        if (sort == null || sort.length == 0) return false;
+
+        return Arrays.stream(sort)
+                .map(s -> featureType.getDescriptor(s.getPropertyName().getPropertyName()))
+                .anyMatch(p -> p instanceof GeometryDescriptor);
     }
 
     /**

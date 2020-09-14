@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureReader;
+import org.geotools.data.store.ContentFeatureCollection;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geopkg.FeatureEntry;
@@ -942,6 +944,59 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertEquals(0.0001, ov2.getDistance(), 0d);
     }
 
+    @Test
+    public void testGeoPackageSortNameFID() throws Exception {
+        String urlPath = string(post("wps", getXml(getXMLInnerRequestSortNameFID()))).trim();
+        String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
+        MockHttpServletResponse response = getAsServletResponse(resourceUrl);
+        File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
+        FileUtils.writeByteArrayToFile(file, getBinary(response));
+        assertNotNull(file);
+        assertEquals("test.gpkg", file.getName());
+        assertTrue(file.exists());
+
+        GeoPackage gpkg = new GeoPackage(file);
+
+        List<FeatureEntry> featureEntries = gpkg.features();
+        assertEquals(1, featureEntries.size());
+
+        JDBCDataStore store = GeoPackageProcess.getStoreFromPackage(gpkg, true);
+        ContentFeatureCollection fc = store.getFeatureSource("RoadSegments").getFeatures();
+        SimpleFeature[] features = fc.toArray(new SimpleFeature[fc.size()]);
+        assertEquals("106", features[0].getAttribute("FID")); // dirt road
+        assertEquals("105", features[1].getAttribute("FID")); // main street
+        assertEquals("104", features[2].getAttribute("FID")); // route 5, fid desc
+        assertEquals("103", features[3].getAttribute("FID")); // route 5, fid desc
+        assertEquals("102", features[4].getAttribute("FID")); // route 5, fid desc
+    }
+
+    @Test
+    public void testGeoPackageSortGeoHash() throws Exception {
+        String urlPath = string(post("wps", getXml(getXMLInnerRequestSortGeoHash()))).trim();
+        String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
+        MockHttpServletResponse response = getAsServletResponse(resourceUrl);
+        File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
+        FileUtils.writeByteArrayToFile(file, getBinary(response));
+        assertNotNull(file);
+        assertEquals("test.gpkg", file.getName());
+        assertTrue(file.exists());
+
+        GeoPackage gpkg = new GeoPackage(file);
+
+        List<FeatureEntry> featureEntries = gpkg.features();
+        assertEquals(1, featureEntries.size());
+
+        JDBCDataStore store = GeoPackageProcess.getStoreFromPackage(gpkg, true);
+        ContentFeatureCollection fc = store.getFeatureSource("RoadSegments").getFeatures();
+        SimpleFeature[] features = fc.toArray(new SimpleFeature[fc.size()]);
+        Arrays.stream(features).forEach(f -> System.out.println(f));
+        assertEquals("106", features[0].getAttribute("FID")); // 7zzzzzycx6un (vertical line)
+        assertEquals("102", features[1].getAttribute("FID")); // ebpbpbn
+        assertEquals("105", features[2].getAttribute("FID")); // s000001, Main Street
+        assertEquals("103", features[3].getAttribute("FID")); // s000001, Route 5
+        assertEquals("104", features[4].getAttribute("FID")); // s000006
+    }
+
     public String getXml(String xmlInnerRequest) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3"
@@ -1073,6 +1128,39 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "         </filter>"
                 + "      </overview>"
                 + "    </overviews>"
+                + "  </features>"
+                + "</geopackage>";
+    }
+
+    private String getXMLInnerRequestSortNameFID() {
+        return "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <features name=\"roads\" identifier=\"roads\">"
+                + "    <featuretype>cite:RoadSegments</featuretype>"
+                + "    <sort xmlns:fes=\"http://www.opengis.net/fes/2.0\">"
+                + "      <fes:SortProperty>"
+                + "         <fes:ValueReference>NAME</fes:ValueReference>"
+                + "      </fes:SortProperty>"
+                + "      <fes:SortProperty>"
+                + "         <fes:ValueReference>FID</fes:ValueReference>"
+                + "         <fes:SortOrder>DESC</fes:SortOrder>"
+                + "      </fes:SortProperty>"
+                + "    </sort>"
+                + "  </features>"
+                + "</geopackage>";
+    }
+
+    private String getXMLInnerRequestSortGeoHash() {
+        return "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <features name=\"roads\" identifier=\"roads\">"
+                + "    <featuretype>cite:RoadSegments</featuretype>"
+                + "    <sort xmlns:fes=\"http://www.opengis.net/fes/2.0\">"
+                + "      <fes:SortProperty>"
+                + "         <fes:ValueReference>the_geom</fes:ValueReference>"
+                + "      </fes:SortProperty>"
+                + "      <fes:SortProperty>"
+                + "         <fes:ValueReference>NAME</fes:ValueReference>"
+                + "      </fes:SortProperty>"
+                + "    </sort>"
                 + "  </features>"
                 + "</geopackage>";
     }

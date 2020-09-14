@@ -58,7 +58,7 @@ officially part of the GeoServer releases. They are however built along with the
    csw-iso/index
    importer-jdbc/index
    hana/index
-   wfs-templating/index
+   features-templating/index
    ogc-api/index
    gsr/index
    imagemosaic-jdbc/index

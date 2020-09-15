@@ -22,7 +22,7 @@ GeoPackage WPS Process
 
 A custom GeoPackage can be created with any number of tiles and features layers using the ``GeoPackage`` WPS Process (see :ref:`wps_processes`).
 
-The WPS process takes in one parameter: ``contents`` which is an xml schema that represents the desired output.
+The WPS process takes in one parameter: ``contents`` which is an XML schema that represents the desired output.
 
 General outline of a ``contents`` scheme::
 
@@ -109,8 +109,8 @@ Each tiles layer has the following properties:
   * ``layers`` (mandatory): comma-separated list of layers that will be included
   * ``styles``, ``sld``, and ``sldbody`` are mutually exclusive, having one is mandatory
       * ``styles``: list of comma-separated styles to be used
-      * ``sld``: path to sld style file
-      * ``sldbody``: inline sld style file
+      * ``sld``: path to SLD style file
+      * ``sldbody``: inline SLD style file
   * ``format`` (optional): mime-type of image format of tiles (image/png or image/jpeg)
   * ``bgcolor`` (optional): background colour as a six-digit hexadecimal RGB value
   * ``transparent`` (optional): transparency (true or false)

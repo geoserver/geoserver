@@ -4,25 +4,25 @@ GeoPackage As Output
 GeoPackage WMS Output Format
 ----------------------------
 
-Any WMS :ref:`wms_getmap` request can be returned in the form of a Geopackage by specifying ``format=geopackage`` as output format (see :ref:`wms_output_formats`). \
+Any WMS :ref:`wms_getmap` request can be returned in the form of a GeoPackage by specifying ``format=geopackage`` as output format (see :ref:`wms_output_formats`). \
 The returned result will be a GeoPackage file with a single tile layer. 
 
 The following additional parameters can be passed on using :ref:`format_options`:
-  * ``tileset_name``: name to be used for tileset in geopackage file (default is name of layer(s)).
+  * ``tileset_name``: name to be used for tileset in GeoPackage file (default is name of layer(s)).
   * ``min_zoom``, ``max_zoom``, ``min_column``, ``max_column``, ``min_row``, ``max_row``: set the minimum and maximum zoom level, column, and rows
   * ``gridset``: name of gridset to use (otherwise default for CRS is used)
         
 GeoPackage WFS Output Format
 ----------------------------    
 
-Any WFS :ref:`wfs_getfeature` request can be returned as a Geopackage by specifying ``format=geopackage`` as output format (see :ref:`wfs_output_formats`). The returned result will be a GeoPackage file with a single features layer.
+Any WFS :ref:`wfs_getfeature` request can be returned as a GeoPackage by specifying ``format=geopackage`` as output format (see :ref:`wfs_output_formats`). The returned result will be a GeoPackage file with a single features layer.
 
 GeoPackage WPS Process
 ----------------------
 
 A custom GeoPackage can be created with any number of tiles and features layers using the ``GeoPackage`` WPS Process (see :ref:`wps_processes`).
 
-The WPS process takes in one parameter: ``contents`` which is an xml schema that represents the desired output.
+The WPS process takes in one parameter: ``contents`` which is an XML schema that represents the desired output.
 
 General outline of a ``contents`` scheme::
 
@@ -50,10 +50,10 @@ General outline of a ``contents`` scheme::
       </geopackage>
 
 
-Each geopackage has a mandatory ``name``, which will be the name of the file (with the extension .gpkg added).
+Each GeoPackage has a mandatory ``name``, which will be the name of the file (with the extension .gpkg added).
 Each layer (features or tiles) has the following properties:
 
-  * ``name`` (mandatory): the name of the layer in the geopackage;
+  * ``name`` (mandatory): the name of the layer in the GeoPackage;
   * ``identifier`` (optional): an identifier for the layer;
   * ``description`` (optional): a description for the layer;
   * ``srs`` ( mandatory for tiles, optional for features): coordinate reference system; for features the default is the SRS of the feature type;
@@ -109,8 +109,8 @@ Each tiles layer has the following properties:
   * ``layers`` (mandatory): comma-separated list of layers that will be included
   * ``styles``, ``sld``, and ``sldbody`` are mutually exclusive, having one is mandatory
       * ``styles``: list of comma-separated styles to be used
-      * ``sld``: path to sld style file
-      * ``sldbody``: inline sld style file
+      * ``sld``: path to SLD style file
+      * ``sldbody``: inline SLD style file
   * ``format`` (optional): mime-type of image format of tiles (image/png or image/jpeg)
   * ``bgcolor`` (optional): background colour as a six-digit hexadecimal RGB value
   * ``transparent`` (optional): transparency (true or false)
@@ -135,7 +135,7 @@ where the ``name`` of a known gridset is specified; or a custom gridset may be d
 		      <matrixWidth>4</matrixWidth>
 		      <matrixHeight>4</matrixHeight>
 		      <pixelXSize>0.17</pixelXSize>
-		      <pixelYSize>0.17</pizelYSize>
+		      <pixelYSize>0.17</pixelYSize>
 		      </grid>
 		      <grid>...</grid>
 		      ...

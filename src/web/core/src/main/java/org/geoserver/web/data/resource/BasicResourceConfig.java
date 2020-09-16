@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -55,6 +56,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     public BasicResourceConfig(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
+        add(new Label("storeName", model.getObject().getStore().getName()));
+        add(new Label("nativeName", model.getObject().getNativeName()));
         TextField<String> name = new TextField<String>("name");
         name.setRequired(true);
         add(name);

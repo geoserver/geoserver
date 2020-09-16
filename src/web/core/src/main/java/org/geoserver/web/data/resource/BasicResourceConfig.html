@@ -9,6 +9,18 @@
         <fieldset>
           <legend><span><wicket:message key="basicResourceInfo">Basic Resource Info</wicket:message></span></legend>
           <ul>
+            <li class="info-link">
+              <em>
+                <b><wicket:message key="storeName">Store Name</wicket:message>:</b>
+                <span wicket:id="storeName"></span>
+              </em>
+            </li>
+            <li class="info-link">
+              <em>
+                <b><wicket:message key="nativeName">Native Name</wicket:message>:</b>
+                <span wicket:id="nativeName"></span>
+              </em>
+            </li>
             <li>
               <label for="name"><wicket:message key="name">Name</wicket:message></label>
               <input id="name" class="text" type="text" wicket:id="name"/>

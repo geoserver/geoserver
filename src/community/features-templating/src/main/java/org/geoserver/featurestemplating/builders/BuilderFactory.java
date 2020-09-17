@@ -26,6 +26,7 @@ public class BuilderFactory {
 
     private boolean isJsonLd;
     private boolean flatOutput;
+    private String separator = "_";
 
     public BuilderFactory(boolean isJsonLd) {
         this.isJsonLd = isJsonLd;
@@ -43,7 +44,7 @@ public class BuilderFactory {
         if (isJsonLd) {
             iterating = new JsonLdIteratingBuilder(key, namespaces);
         } else {
-            if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces);
+            if (flatOutput) iterating = new FlatIteratingBuilder(key, namespaces, separator);
             else iterating = new IteratingBuilder(key, namespaces);
         }
         return iterating;
@@ -61,7 +62,7 @@ public class BuilderFactory {
         if (isJsonLd) {
             composite = new JsonLdCompositeBuilder(key, namespaces);
         } else {
-            if (flatOutput) composite = new FlatCompositeBuilder(key, namespaces);
+            if (flatOutput) composite = new FlatCompositeBuilder(key, namespaces, separator);
             else composite = new CompositeBuilder(key, namespaces);
         }
         return composite;
@@ -81,7 +82,8 @@ public class BuilderFactory {
         if (isJsonLd) {
             dynamic = new JsonLdDynamicBuilder(key, expression, namespaces);
         } else {
-            if (flatOutput) dynamic = new FlatDynamicBuilder(key, expression, namespaces);
+            if (flatOutput)
+                dynamic = new FlatDynamicBuilder(key, expression, namespaces, separator);
             else dynamic = new DynamicValueBuilder(key, expression, namespaces);
         }
         return dynamic;
@@ -101,7 +103,8 @@ public class BuilderFactory {
         if (isJsonLd) {
             staticBuilder = new StaticBuilder(key, strValue, namespaces);
         } else {
-            if (flatOutput) staticBuilder = new FlatStaticBuilder(key, strValue, namespaces);
+            if (flatOutput)
+                staticBuilder = new FlatStaticBuilder(key, strValue, namespaces, separator);
             else staticBuilder = new StaticBuilder(key, strValue, namespaces);
         }
         return staticBuilder;
@@ -121,7 +124,8 @@ public class BuilderFactory {
         if (isJsonLd) {
             staticBuilder = new StaticBuilder(key, value, namespaces);
         } else {
-            if (flatOutput) staticBuilder = new FlatStaticBuilder(key, value, namespaces);
+            if (flatOutput)
+                staticBuilder = new FlatStaticBuilder(key, value, namespaces, separator);
             else staticBuilder = new StaticBuilder(key, value, namespaces);
         }
         return staticBuilder;
@@ -144,5 +148,9 @@ public class BuilderFactory {
      */
     public void setFlatOutput(boolean flatOutput) {
         this.flatOutput = flatOutput;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
     }
 }

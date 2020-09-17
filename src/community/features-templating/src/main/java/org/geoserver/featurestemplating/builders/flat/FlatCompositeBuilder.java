@@ -19,9 +19,9 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
 
     private AttributeNameHelper attributeNameHelper;
 
-    public FlatCompositeBuilder(String key, NamespaceSupport namespaces) {
+    public FlatCompositeBuilder(String key, NamespaceSupport namespaces, String separator) {
         super(key, namespaces);
-        attributeNameHelper = new AttributeNameHelper();
+        attributeNameHelper = new AttributeNameHelper(getKey(), separator);
     }
 
     @Override
@@ -41,6 +41,6 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
     }
 
     public void setParentKey(String parentKey) {
-        this.attributeNameHelper = new AttributeNameHelper(getKey(), parentKey);
+        this.attributeNameHelper.setParentKey(parentKey);
     }
 }

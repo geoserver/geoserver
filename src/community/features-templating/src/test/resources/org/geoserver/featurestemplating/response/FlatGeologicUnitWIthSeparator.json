@@ -1,0 +1,50 @@
+{
+  "$VendorOptions": "flat_output:true;separator:.",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "gsml:GeologicUnit"
+    },
+    {
+      "properties": {
+        "@id": "${@id}",
+        "description": "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}",
+        "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+        "gsml:composition": [
+          {
+            "$source": "gsml:composition"
+          },
+          {
+            "gsml:compositionPart": [
+              {
+                "$source": "gsml:CompositionPart"
+              },
+              {
+                "gsml:role_value": "${gsml:role}",
+                "gsml:role_codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole",
+                "proportion_dataType": "CGI_ValueProperty",
+                "proportion_CGI_TermValue_dataType": "CGI_TermValue",
+                "proportion_CGI_TermValue_value": "${gsml:proportion/gsml:CGI_TermValue}",
+                "lithology": [
+                  {
+                    "$source": "gsml:lithology"
+                  },
+                  {
+                    "@id": "${gsml:ControlledConcept/@id}",
+                    "name": {
+                      "value": "${gsml:ControlledConcept/gsml:name}",
+                      "@lang": "en"
+                    },
+                    "vocabulary": {
+                      "@href": "urn:ogc:def:nil:OGC::missing"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

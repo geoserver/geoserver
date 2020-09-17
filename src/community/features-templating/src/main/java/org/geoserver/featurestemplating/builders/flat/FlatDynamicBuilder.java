@@ -15,9 +15,10 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
 
     private AttributeNameHelper nameHelper;
 
-    public FlatDynamicBuilder(String key, String expression, NamespaceSupport namespaces) {
+    public FlatDynamicBuilder(
+            String key, String expression, NamespaceSupport namespaces, String separator) {
         super(key, expression, namespaces);
-        nameHelper = new AttributeNameHelper();
+        nameHelper = new AttributeNameHelper(getKey(), separator);
     }
 
     protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {
@@ -28,6 +29,6 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
 
     @Override
     public void setParentKey(String parentKey) {
-        this.nameHelper = new AttributeNameHelper(getKey(), parentKey);
+        this.nameHelper.setParentKey(parentKey);
     }
 }

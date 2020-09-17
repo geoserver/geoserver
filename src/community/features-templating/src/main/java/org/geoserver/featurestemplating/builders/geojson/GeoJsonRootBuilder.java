@@ -4,14 +4,16 @@
  */
 package org.geoserver.featurestemplating.builders.geojson;
 
-import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.FLAT_OUTPUT;
+import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.*;
 
+import java.util.Arrays;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 
 /** GeoJson root builder used to support flat_output vendor parameter */
 public class GeoJsonRootBuilder extends RootBuilder {
 
     public GeoJsonRootBuilder() {
-        supportedOptions.add(FLAT_OUTPUT.getVendorOptionName());
+        supportedOptions.addAll(
+                Arrays.asList(FLAT_OUTPUT.getVendorOptionName(), SEPARATOR.getVendorOptionName()));
     }
 }

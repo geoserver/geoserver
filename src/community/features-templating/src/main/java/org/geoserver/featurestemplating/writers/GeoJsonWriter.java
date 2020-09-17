@@ -11,9 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
 import org.geoserver.api.features.CollectionDocument;
@@ -227,6 +225,63 @@ public class GeoJsonWriter extends CommonJsonWriter {
             writeValue(env.getMaxY());
         }
         endArray();
+    }
+
+    public void writeStaticContent(String key, Object staticContent, String separator)
+            throws IOException {
+        if (separator == null || staticContent instanceof String)
+            super.writeStaticContent(key, staticContent);
+        else {
+            JsonNode jsonNode = (JsonNode) staticContent;
+            if (jsonNode.isArray()) {
+                writeArrayNodeFlat(key, jsonNode, separator);
+            } else if (jsonNode.isObject()) {
+                writeObjectNodeFlat(key, jsonNode, separator);
+            } else {
+                writeValueNode(key, jsonNode);
+            }
+        }
+    }
+
+    private void writeArrayNodeFlat(String nodeName, JsonNode arNode, String separator)
+            throws IOException {
+        Iterator<JsonNode> arrayIterator = arNode.elements();
+        int i = 1;
+        while (arrayIterator.hasNext()) {
+            JsonNode node = arrayIterator.next();
+            String arrayNodeName = nodeName + "_" + i;
+            if (node.isValueNode()) {
+                writeValueNode(arrayNodeName, node);
+            } else if (node.isObject()) {
+                writeObjectNodeFlat(arrayNodeName, node, separator);
+            } else if (node.isArray()) {
+                writeArrayNodeFlat(arrayNodeName, node, separator);
+            }
+            i++;
+        }
+    }
+
+    private void writeObjectNodeFlat(String superNodeName, JsonNode node, String separator)
+            throws IOException {
+        Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+        while (iterator.hasNext()) {
+            Map.Entry<String, JsonNode> nodEntry = iterator.next();
+            String entryName = nodEntry.getKey();
+            String newEntryName;
+            if (entryName != null) {
+                newEntryName = superNodeName + separator + entryName;
+            } else {
+                newEntryName = null;
+            }
+            JsonNode childNode = nodEntry.getValue();
+            if (childNode.isObject()) {
+                writeObjectNodeFlat(newEntryName, childNode, separator);
+            } else if (childNode.isValueNode()) {
+                writeValueNode(newEntryName, childNode);
+            } else {
+                writeArrayNodeFlat(newEntryName, childNode, separator);
+            }
+        }
     }
 
     public void incrementNumberReturned() {

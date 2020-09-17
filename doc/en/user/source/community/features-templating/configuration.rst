@@ -307,7 +307,8 @@ The evaluation of a filter is handled by the module in the following way:
 Inspire GeoJSON Output
 ----------------------
 
-In order to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_, it is possible to provide a VendorOption in the template file by adding the following attribute :code:`"$VendorOptions": "flat_output:true"`.
+In order to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_ (`see also <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md>`_), it is possible to provide a VendorOption in the template file by adding the following attribute :code:`"$VendorOptions": "flat_output:true"`.
+Along with the :code:`flat_output` vendor option it is possible to specify a  :code:`separator` option, to customize the attribute name separator eg :code:`"$VendorOptions": "flat_output:true;separator:."`. Default is :code:`_`.
 Below an example configuration file for a Complex Feature type:
 
 .. code-block:: json
@@ -339,13 +340,13 @@ Below an example configuration file for a Complex Feature type:
                            "$source":"gsml:CompositionPart"
                         },
                         {
-                           "gsml:role.value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
-                           "gsml:role.@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
+                           "gsml:role_value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
+                           "gsml:role_codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
                            "proportion":{
                               "$source":"gsml:proportion",
                               "@dataType":"CGI_ValueProperty",
-                              "CGI_TermValue.@dataType":"CGI_TermValue",
-                              "CGI_TermValue.value":"${gsml:CGI_TermValue}"
+                              "CGI-TermValue_@dataType":"CGI_TermValue",
+                              "CGI-TermValue_value":"${gsml:CGI_TermValue}"
                            },
                            "lithology":[
                               {

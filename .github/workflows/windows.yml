@@ -8,20 +8,23 @@ jobs:
     runs-on: [windows-latest]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+      with:
+        # 500 commits, set to 0 to get all
+        fetch-depth: 500
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
     - name: Maven repository caching
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
       with:
         path: ~/.m2/repository
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
-      run: mvn -B clean install -Dall -T2 -Prelease -Pwindows-github-build --file src/pom.xml
+      run: mvn --% -B clean install -Dall -T2 -Prelease -Pwindows-github-build -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 --file src/pom.xml -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS
     - name: Remove SNAPSHOT jars from repository
       run: |
         cmd --% /c for /f %i in ('dir /a:d /s /b %userprofile%\*SNAPSHOT*') do rd /s /q %i

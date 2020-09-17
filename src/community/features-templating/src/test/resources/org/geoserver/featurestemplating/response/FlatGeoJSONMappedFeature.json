@@ -24,13 +24,13 @@
                   "$source":"gsml:CompositionPart"
                 },
                 {
-                  "gsml:role.value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
-                  "gsml:role.@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
+                  "gsml:role_value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
+                  "gsml:role_@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
                   "proportion":{
                     "$source":"gsml:proportion",
                     "@dataType":"CGI_ValueProperty",
-                    "CGI_TermValue.@dataType":"CGI_TermValue",
-                    "CGI_TermValue.value":"${gsml:CGI_TermValue}"
+                    "CGI_TermValue_@dataType":"CGI_TermValue",
+                    "CGI_TermValue_value":"${gsml:CGI_TermValue}"
                   },
                   "lithology":[
                     {

@@ -110,7 +110,7 @@ public abstract class CommonJsonWriter extends com.fasterxml.jackson.core.JsonGe
 
     @Override
     public void writeElementName(Object elementName) throws IOException {
-        writeFieldName(elementName.toString());
+        if (elementName != null) writeFieldName(elementName.toString());
     }
 
     /**

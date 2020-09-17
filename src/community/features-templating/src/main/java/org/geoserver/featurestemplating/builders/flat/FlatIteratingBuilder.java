@@ -20,8 +20,9 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
     private AttributeNameHelper nameHelper;
 
-    public FlatIteratingBuilder(String key, NamespaceSupport namespaces) {
+    public FlatIteratingBuilder(String key, NamespaceSupport namespaces, String separator) {
         super(key, namespaces);
+        nameHelper = new AttributeNameHelper(getKey(), separator);
     }
 
     @Override
@@ -76,6 +77,6 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
     @Override
     public void setParentKey(String parentKey) {
-        this.nameHelper = new AttributeNameHelper(getKey(), parentKey);
+        this.nameHelper.setParentKey(parentKey);
     }
 }

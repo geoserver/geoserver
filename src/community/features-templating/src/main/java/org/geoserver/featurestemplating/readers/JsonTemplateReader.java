@@ -4,7 +4,7 @@
  */
 package org.geoserver.featurestemplating.readers;
 
-import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.FLAT_OUTPUT;
+import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
@@ -221,7 +221,15 @@ public class JsonTemplateReader implements TemplateReader {
             builder.setVendorOptions(arrOp);
         }
         String strFlatOutput = builder.getVendorOption(FLAT_OUTPUT.getVendorOptionName());
-        if (strFlatOutput != null)
-            factory.setFlatOutput(Boolean.valueOf(strFlatOutput).booleanValue());
+        if (strFlatOutput != null) {
+            boolean flatOutput = Boolean.valueOf(strFlatOutput).booleanValue();
+            factory.setFlatOutput(flatOutput);
+            if (flatOutput) {
+                String delimiter = builder.getVendorOption(SEPARATOR.getVendorOptionName());
+                if (delimiter != null) {
+                    factory.setSeparator(delimiter);
+                }
+            }
+        }
     }
 }

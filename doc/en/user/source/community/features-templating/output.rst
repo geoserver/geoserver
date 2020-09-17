@@ -294,19 +294,19 @@ While by using the flat_output VendorOption the output will be:
          },
          "properties":{
             "name":"FeatureName: MURRADUC BASALT",
-            "gsml:GeologicUnit.description":"Olivine basalt",
-            "gsml:GeologicUnit.gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.gsml:role.value":"FeatureName: interbedded component",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.gsml:role.@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.proportion.@dataType":"CGI_ValueProperty",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.proportion.CGI_TermValue.@dataType":"CGI_TermValue",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.proportion.CGI_TermValue.value":"significant",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology_1.name_1":"name_a",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology_1.name_2":"name_b",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology_1.name_3":"name_c",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology_1.vocabulary":"@href:urn:ogc:def:nil:OGC::missing",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology_2.name":"name_2",
-            "gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology_2.vocabulary":"@href:urn:ogc:def:nil:OGC::missing"
+            "gsml:GeologicUnit_description":"Olivine basalt",
+            "gsml:GeologicUnit_gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value":"FeatureName: interbedded component",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType":"CGI_ValueProperty",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI-TermValue_@dataType":"CGI_TermValue",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI-TermValue_value":"significant",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_1":"name_a",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_2":"name_b",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_3":"name_c",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_vocabulary":"@href:urn:ogc:def:nil:OGC::missing",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_name":"name_2",
+            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_vocabulary":"@href:urn:ogc:def:nil:OGC::missing"
          }
       }
    ]

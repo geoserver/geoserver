@@ -20,7 +20,8 @@ public class RootBuilder implements TemplateBuilder {
 
     /** Enum listing available vendor options */
     public enum VendorOption {
-        FLAT_OUTPUT("flat_output");
+        FLAT_OUTPUT("flat_output"),
+        SEPARATOR("separator");
 
         private String vendorOptionName;
 

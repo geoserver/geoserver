@@ -508,7 +508,7 @@
       <dependencies>
         <dependency>
             <groupId>org.geoserver.extension</groupId>
-            <artifactId>gs-app-schema-web</artifactId>
+            <artifactId>gs-app-schema-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

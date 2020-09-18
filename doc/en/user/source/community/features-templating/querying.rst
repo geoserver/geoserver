@@ -125,8 +125,8 @@ The following are example of valid CQL filters:
 * features.gsml:GeologicUnit.description = 'some string value'
 * features."@id" = "3245"
 * features.name in ("MERCIA MUDSTONE", "UKNOWN")
-* features.gsml:positionalAccuracy.valueArray_1 = "100"
+* features.gsml:positionalAccuracy.valueArray1 = "100"
 
-As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form ``{attributeName}_{index}``, as in ``features.gsml:positionalAccuracy.valueArray_1.``
+As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form ``{attributeName}{index}``, as in ``features.gsml:positionalAccuracy.valueArray1.``
 
 Is worth mentioning that, as demonstrated in the examples above, ``""`` can be used to escape the attributes path components.

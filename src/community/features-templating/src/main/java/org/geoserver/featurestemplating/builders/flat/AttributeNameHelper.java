@@ -47,9 +47,9 @@ class AttributeNameHelper {
         String parentKey = this.parentKey;
         if (parentKey != null && !parentKey.equals(PROPERTIES_KEY))
             key = parentKey + separator + key;
-        if (separator != "_") key = replaceDefaultSeparatorWithCustom(key, separator);
+        key = replaceDefaultSeparatorWithCustom(key, separator);
         String itKey;
-        if (elementsSize > 0) itKey = key + "_" + (index + 1);
+        if (elementsSize > 0) itKey = key + separator + (index + 1);
         else itKey = key;
         return itKey;
     }

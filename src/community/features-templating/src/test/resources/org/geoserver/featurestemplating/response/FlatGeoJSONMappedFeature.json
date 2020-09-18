@@ -10,13 +10,11 @@
       "geometry":"${gsml:shape}",
       "properties":{
         "name":"$${strConcat('FeatureName: ', xpath('gml:name'))}",
-        "gsml:GeologicUnit":{
-          "$source":"gsml:specification/gsml:GeologicUnit",
-          "description":"${gml:description}",
-          "gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
-          "gsml:composition":[
+        "gsml:GeologicUnit_description":"${gsml:specification/gsml:GeologicUnit/gml:description}",
+        "gsml:GeologicUnit_gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
+        "gsml:GeologicUnit_gsml:composition":[
             {
-              "$source":"gsml:composition"
+              "$source":"gsml:specification/gsml:GeologicUnit/gsml:composition"
             },
             {
               "gsml:compositionPart":[
@@ -46,7 +44,6 @@
             }
           ]
         }
-      }
     }
   ]
 }

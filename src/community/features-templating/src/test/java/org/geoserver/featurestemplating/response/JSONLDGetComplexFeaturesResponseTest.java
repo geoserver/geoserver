@@ -301,7 +301,7 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTes
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
                         .append("&filter-lang=cql-text")
-                        .append("&filter= features.gsml:positionalAccuracy.valueArray_1 > 120");
+                        .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONArray features = result.getJSONArray("features");
         assertEquals(features.size(), 2);

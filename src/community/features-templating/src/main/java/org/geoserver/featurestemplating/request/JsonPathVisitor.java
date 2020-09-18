@@ -20,7 +20,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.geotools.ows.ServiceException;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -100,25 +99,25 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
      * Find the corresponding function to which json-ld path is pointing, by iterating over
      * builder's tree
      */
-    public Object findFunction(TemplateBuilder builder, List<String> pathElements)
-            throws ServiceException {
+    public Object findFunction(TemplateBuilder builder, List<String> pathElements) {
 
         int lastElI = pathElements.size() - 1;
         String lastEl = pathElements.get(lastElI);
-        String index = extractArrayIndexIfPresent(lastEl);
-        // we might have a path like path.to.an.array_1 pointing
+        char[] charArr = lastEl.toCharArray();
+        int index = extractArrayIndexIfPresent(charArr);
+        // we might have a path like path.to.an.array1 pointing
         // to a template array attribute eg "array":["${xpath}","$${xpath}", "static value"]
-        if (index != null) {
-            lastEl = lastEl.substring(0, lastEl.indexOf('_'));
-            pathElements.set(lastElI, lastEl);
+        if (index != 0) {
+            lastEl = String.valueOf(charArr);
+            pathElements.set(lastElI, lastEl.substring(0, charArr.length - 1));
         }
         // find the builder to which the path is pointing
         TemplateBuilder jb = findBuilder(builder, pathElements);
         if (jb != null) {
-            if (jb instanceof IteratingBuilder && index != null) {
+            if (jb instanceof IteratingBuilder && index != 0) {
                 // retrieve the builder based on the position
                 IteratingBuilder itb = (IteratingBuilder) jb;
-                jb = getChildFromIterating(itb, Integer.parseInt(index) - 1);
+                jb = getChildFromIterating(itb, index - 1);
             }
 
             if (jb instanceof DynamicValueBuilder) {
@@ -140,11 +139,13 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
         return null;
     }
 
-    private String extractArrayIndexIfPresent(String elem) {
-        if (elem.indexOf("_") != -1) {
-            return elem.split("_")[1];
+    private int extractArrayIndexIfPresent(char[] charArr) {
+        int lastIdx = charArr.length - 1;
+        char lastElem = charArr[lastIdx];
+        if (Character.isDigit(lastElem)) {
+            return Character.getNumericValue(lastElem);
         }
-        return null;
+        return 0;
     }
 
     /**

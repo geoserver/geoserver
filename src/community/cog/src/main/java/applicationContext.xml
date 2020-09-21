@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="coverageReaderInputObjectCogConverter" class="org.geoserver.cog.CoverageReaderCogInputObjectConverter">
+        <constructor-arg ref="catalog"/>
+    </bean>
+
+    <bean id="COGGeoTIFFExclusionFilter" class="org.geoserver.platform.NameExclusionFilter">
+        <property name="beanId" value="geotiffStorePanel" />
+    </bean>
+    <bean id="CogGeotiffStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+        <property name="id" value="geotiffRaster" />
+        <property name="factoryClass" value="org.geotools.gce.geotiff.GeoTiffFormat" />
+        <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+        <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+        <property name="componentClass" value="org.geoserver.web.data.store.cog.panel.CogRasterEditPanel" />
+    </bean>
+    <bean id="CogSettingsPanel" class="org.geoserver.web.data.settings.SettingsPluginPanelInfo">
+        <description>This bean adds the necessary form fields for COG Settings</description>
+        <property name="id" value="cogSettingsPanel"/>
+        <property name="titleKey" value="CogSettings"/>
+        <property name="componentClass" value="org.geoserver.web.data.store.cog.panel.CogSettingsPluginPanel"/>
+        <property name="priority" value="100"/>
+    </bean>
+    <bean id="cogSettingsInitializer" class="org.geoserver.cog.CogSettingsInitializer" />
+    <bean id="cogSettingsXStreamInitializer" class="org.geoserver.cog.CogSettingsXStreamInitializer" />
+    <bean id="cogEncryptedFieldsProvider" class=" org.geoserver.cog.CogEncryptedFieldsProvider" />
+</beans>

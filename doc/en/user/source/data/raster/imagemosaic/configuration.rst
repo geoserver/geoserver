@@ -104,6 +104,8 @@ A sample configuration file follows::
   LevelsNum=1
    
 
+.. _mosaic_datastore_properties:   
+   
 :file:`datastore.properties`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

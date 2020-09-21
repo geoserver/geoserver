@@ -68,6 +68,22 @@ public class ConfigurationPasswordEncryptionHelper {
     public Set<String> getEncryptedFields(StoreInfo info) {
         if (!(info instanceof DataStoreInfo)) {
             // only datastores supposed at this time, TODO: fix this
+
+            List<EncryptedFieldsProvider> encryptedFieldsProviders =
+                    GeoServerExtensions.extensions(EncryptedFieldsProvider.class);
+            if (!encryptedFieldsProviders.isEmpty()) {
+                Set<String> fields = new HashSet<String>();
+                for (EncryptedFieldsProvider provider : encryptedFieldsProviders) {
+                    Set<String> providedFields = provider.getEncryptedFields(info);
+                    if (providedFields != null && !providedFields.isEmpty()) {
+                        fields.addAll(providedFields);
+                    }
+                }
+                if (!fields.isEmpty()) {
+                    return fields;
+                }
+            }
+
             return Collections.emptySet();
         }
 

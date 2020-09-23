@@ -73,7 +73,7 @@ public class Monitor implements ApplicationListener<ApplicationEvent> {
 
         // notify listeners
         for (RequestDataListener listener : listeners) {
-            listener.requestUpdated(req);
+            listener.requestStarted(req);
         }
         // have the DAO persist/propagate the change
         if (config.getMode() != Mode.HISTORY) {

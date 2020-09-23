@@ -184,7 +184,7 @@ public class MonitorFilter implements GeoServerFilter {
             data.setResourcesProcessingTime(renderingTimeLayers);
             if (data.getEndTime() == null) data.setEndTime(new Date());
         }
-        monitor.update();
+        // monitor.update();
         data = monitor.current();
 
         monitor.complete();

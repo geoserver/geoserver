@@ -96,7 +96,7 @@ public class MonitorCallback implements DispatcherCallback {
             }
         }
 
-        monitor.update();
+        // monitor.update();
 
         return operation;
     }
@@ -117,7 +117,7 @@ public class MonitorCallback implements DispatcherCallback {
             data.setErrorMessage(request.getError().getLocalizedMessage());
             data.setError(request.getError());
 
-            monitor.update();
+            // monitor.update();
         }
     }
 

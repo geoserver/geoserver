@@ -16,4 +16,6 @@
         <property name="componentClass"
                   value="org.geoserver.web.data.store.dggs.DGGSGeometryStoreEditPanel" />
     </bean>
+    
+    <bean id="rHealPixUICleaner" class="org.geoserver.web.data.store.dggs.SharedInterpreterUICleaner"/>
 </beans>

@@ -4,10 +4,9 @@
  */
 package org.geoserver.geopkg.wps;
 
+import com.google.common.base.Strings;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,9 +18,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import net.opengis.wfs20.GetFeatureType;
-import net.opengis.wfs20.QueryType;
-import net.opengis.wfs20.Wfs20Factory;
 import net.opengis.wps10.ExecuteType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -38,10 +34,6 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
-import org.geoserver.wfs.GetFeature;
-import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -56,6 +48,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.Entry;
@@ -79,6 +73,7 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -88,7 +83,6 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
 
 @DescribeProcess(title = "GeoPackage", description = "Geopackage Process")
 public class GeoPackageProcess implements GeoServerProcess {
@@ -104,8 +98,6 @@ public class GeoPackageProcess implements GeoServerProcess {
     private Catalog catalog;
 
     private WPSResourceManager resources;
-
-    private GetFeature getFeatureDelegate;
 
     private GeoPackageGetMapOutputFormat mapOutput;
 
@@ -125,9 +117,6 @@ public class GeoPackageProcess implements GeoServerProcess {
         this.resolverProvider = resolverProvider;
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
-
-        this.getFeatureDelegate = new GetFeature(geoServer.getService(WFSInfo.class), catalog);
-        this.getFeatureDelegate.setFilterFactory(filterFactory);
     }
 
     private static final int TEMP_DIR_ATTEMPTS = 10000;
@@ -364,52 +353,42 @@ public class GeoPackageProcess implements GeoServerProcess {
             throws IOException {
         FeaturesLayer features = (FeaturesLayer) layer;
         QName ftName = features.getFeatureType();
-        String ns =
-                ftName.getNamespaceURI() != null ? ftName.getNamespaceURI() : ftName.getPrefix();
-        FeatureTypeInfo ft = catalog.getFeatureTypeByName(ns, ftName.getLocalPart());
+        FeatureTypeInfo ft;
+        if (Strings.isNullOrEmpty(ftName.getNamespaceURI())) {
+            if (Strings.isNullOrEmpty(ftName.getPrefix())) {
+                ft = catalog.getFeatureTypeByName(ftName.getLocalPart());
+            } else {
+                ft = catalog.getFeatureTypeByName(ftName.getPrefix() + ":" + ftName.getLocalPart());
+            }
+        } else {
+            ft = catalog.getFeatureTypeByName(ftName.getNamespaceURI(), ftName.getLocalPart());
+        }
 
-        QueryType query = Wfs20Factory.eINSTANCE.createQueryType();
-        query.getTypeNames().add(ftName);
+        Query q = new Query();
         if (features.getSrs() == null) {
             if (ft != null) {
                 try {
-                    query.setSrsName(new URI(ft.getSRS()));
-                } catch (URISyntaxException e) {
+                    q.setCoordinateSystemReproject(CRS.decode(ft.getSRS(), true));
+                } catch (FactoryException e) {
                     throw new RuntimeException(e);
                 }
             }
-        } else {
-            query.setSrsName(features.getSrs());
         }
-
         if (features.getPropertyNames() != null) {
-            query.getPropertyNames().addAll(features.getPropertyNames());
+            q.setPropertyNames(
+                    features.getPropertyNames()
+                            .stream()
+                            .map(qn -> qn.getLocalPart())
+                            .toArray(n -> new String[n]));
         }
-        Filter filter = features.getFilter();
 
+        Filter filter = features.getFilter();
         // add bbox to filter if there is one
+        FeatureType sourceSchema = ft.getFeatureType();
         if (features.getBbox() != null) {
-            String defaultGeometry =
-                    catalog.getFeatureTypeByName(features.getFeatureType().getLocalPart())
-                            .getFeatureType()
-                            .getGeometryDescriptor()
-                            .getLocalName();
+            String defaultGeometry = sourceSchema.getGeometryDescriptor().getLocalName();
 
             Envelope e = features.getBbox();
-            // HACK: because we are going through wfs 2.0, flip the coordinates (specified
-            // in xy) which will then be later flipped back to xy
-            if (query.getSrsName() != null) {
-                try {
-                    CoordinateReferenceSystem crs = CRS.decode(query.getSrsName().toString());
-                    if (crs instanceof GeographicCRS) {
-                        // flip the bbox
-                        e = new Envelope(e.getMinY(), e.getMaxY(), e.getMinX(), e.getMaxX());
-                    }
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-
             Filter bboxFilter =
                     filterFactory.bbox(
                             filterFactory.property(defaultGeometry),
@@ -420,45 +399,49 @@ public class GeoPackageProcess implements GeoServerProcess {
                 filter = filterFactory.and(filter, bboxFilter);
             }
         }
-        query.setFilter(filter);
-        // delegate to the data source if possible
-        boolean sortOnGeometry = isGeometrySorted(features.getSort(), ft.getFeatureType());
-        if (features.getSort() != null && !sortOnGeometry) {
-            query.getSortBy().addAll(Arrays.asList(features.getSort()));
+        if (filter != null) {
+            // handle geometric filter reprojection
+            if (sourceSchema.getCoordinateReferenceSystem() != null) {
+                filter = applyDefaultCRS(filter, sourceSchema.getCoordinateReferenceSystem());
+            }
+            filter = reprojectFilter(filter, sourceSchema);
+            q.setFilter(filter);
         }
 
-        GetFeatureType getFeature = Wfs20Factory.eINSTANCE.createGetFeatureType();
-        getFeature.getAbstractQueryExpression().add(query);
+        // delegate to the data source if possible
+        boolean sortOnGeometry = isGeometrySorted(features.getSort(), sourceSchema);
+        if (features.getSort() != null && !sortOnGeometry) {
+            q.setSortBy(features.getSort());
+        }
 
-        FeatureCollectionResponse fc = getFeatureDelegate.run(GetFeatureRequest.adapt(getFeature));
+        FeatureCollection<? extends FeatureType, ? extends Feature> fc =
+                ft.getFeatureSource(null, null).getFeatures(q);
 
-        for (FeatureCollection genericCollection : fc.getFeatures()) {
-            if (!(genericCollection instanceof SimpleFeatureCollection)) {
-                throw new ServiceException(
-                        "GeoPackage OutputFormat does not support Complex Features.");
-            }
-            SimpleFeatureCollection collection = (SimpleFeatureCollection) genericCollection;
+        if (!(fc instanceof SimpleFeatureCollection)) {
+            throw new ServiceException(
+                    "GeoPackage OutputFormat does not support Complex Features.");
+        }
+        SimpleFeatureCollection collection = (SimpleFeatureCollection) fc;
 
-            FeatureEntry e = new FeatureEntry();
-            e.setTableName(layer.getName());
-            addLayerMetadata(e, features);
-            ReferencedEnvelope bounds = collection.getBounds();
-            if (features.getBbox() != null) {
-                bounds = ReferencedEnvelope.reference(bounds.intersection(features.getBbox()));
-            }
+        FeatureEntry e = new FeatureEntry();
+        e.setTableName(layer.getName());
+        addLayerMetadata(e, features);
+        ReferencedEnvelope bounds = collection.getBounds();
+        if (features.getBbox() != null) {
+            bounds = ReferencedEnvelope.reference(bounds.intersection(features.getBbox()));
+        }
 
-            e.setBounds(bounds);
+        e.setBounds(bounds);
 
-            if (sortOnGeometry) {
-                SimpleFeatureCollection sorted = sort(collection, features.getSort());
-                gpkg.add(e, sorted);
-            } else {
-                gpkg.add(e, collection);
-            }
+        if (sortOnGeometry) {
+            SimpleFeatureCollection sorted = sort(collection, features.getSort());
+            gpkg.add(e, sorted);
+        } else {
+            gpkg.add(e, collection);
+        }
 
-            if (features.isIndexed()) {
-                gpkg.createSpatialIndex(e);
-            }
+        if (features.isIndexed()) {
+            gpkg.createSpatialIndex(e);
         }
 
         List<GeoPackageProcessRequest.Overview> overviews = features.getOverviews();
@@ -484,6 +467,19 @@ public class GeoPackageProcess implements GeoServerProcess {
         if (contents.isContext()) {
             contextWriter.addFeatureTypeContext(ft, layer.getName());
         }
+    }
+
+    /** Applies a default CRS to all geometric filter elements that do not already have one */
+    public Filter applyDefaultCRS(Filter filter, CoordinateReferenceSystem defaultCRS) {
+        DefaultCRSFilterVisitor defaultVisitor =
+                new DefaultCRSFilterVisitor(filterFactory, defaultCRS);
+        return (Filter) filter.accept(defaultVisitor, null);
+    }
+
+    /** Reprojects all geometric filter elements to the native CRS of the provided schema */
+    public Filter reprojectFilter(Filter filter, FeatureType schema) {
+        ReprojectingFilterVisitor visitor = new ReprojectingFilterVisitor(filterFactory, schema);
+        return (Filter) filter.accept(visitor, null);
     }
 
     /** Sorts the feature collection locally, replacing geometry sorting by geohash sorting */

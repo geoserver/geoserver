@@ -174,10 +174,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertEquals("fifteen description", fe.getDescription());
         assertEquals("f15", fe.getIdentifier());
         assertEquals(32615, fe.getSrid().intValue());
-        assertEquals(500000, fe.getBounds().getMinX(), 0.0001);
-        assertEquals(500000, fe.getBounds().getMinY(), 0.0001);
-        assertEquals(500100, fe.getBounds().getMaxX(), 0.0001);
-        assertEquals(500100, fe.getBounds().getMaxY(), 0.0001);
+        // these are 15 superimposed points. A previous result included the geometry
+        // of the polygon, which is not extracted at all in the WPS request
+        assertEquals(500050, fe.getBounds().getMinX(), 0.0001);
+        assertEquals(500050, fe.getBounds().getMinY(), 0.0001);
+        assertEquals(500050, fe.getBounds().getMaxX(), 0.0001);
+        assertEquals(500050, fe.getBounds().getMaxY(), 0.0001);
 
         assertFalse(gpkg.hasSpatialIndex(fe));
         assertTrue(gpkg.hasSpatialIndex(features.get(1)));

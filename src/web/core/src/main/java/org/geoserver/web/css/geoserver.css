@@ -932,6 +932,7 @@ padding-top: 1em;
   bottom: 0px;
   padding: 10px 0px;
   background-color: #fff;
+  z-index: 100;
 }
 .toolbar-sticky .form-button-save, .toolbar-sticky .form-button-apply, .toolbar-sticky .form-button-validate, .toolbar-sticky .form-button-ok,
 .toolbar-sticky .form-button-import, .toolbar-sticky .form-button-close, .toolbar-sticky .form-button-start, .toolbar-sticky .form-button-back {

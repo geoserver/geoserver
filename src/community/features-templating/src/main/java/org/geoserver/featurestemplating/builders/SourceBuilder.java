@@ -7,7 +7,7 @@ package org.geoserver.featurestemplating.builders;
 import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.geoserver.featurestemplating.expressions.JsonLdCQLManager;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
@@ -98,7 +98,7 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
      * @param source the string source
      */
     public void setSource(String source) {
-        JsonLdCQLManager cqlManager = new JsonLdCQLManager(source, namespaces);
+        TemplateCQLManager cqlManager = new TemplateCQLManager(source, namespaces);
         Expression sourceExpr = cqlManager.getExpressionFromString();
         if (sourceExpr instanceof Literal)
             this.source =

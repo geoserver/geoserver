@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
-import org.geoserver.featurestemplating.expressions.JsonLdCQLManager;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
@@ -31,7 +31,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     public DynamicValueBuilder(String key, String expression, NamespaceSupport namespaces) {
         super(key, namespaces);
         this.namespaces = namespaces;
-        JsonLdCQLManager cqlManager = new JsonLdCQLManager(expression, namespaces);
+        TemplateCQLManager cqlManager = new TemplateCQLManager(expression, namespaces);
         if (expression.startsWith("$${")) {
             this.cql = cqlManager.getExpressionFromString();
         } else if (expression.startsWith("${")) {

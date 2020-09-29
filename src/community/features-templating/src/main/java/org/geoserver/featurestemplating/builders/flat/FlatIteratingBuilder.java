@@ -22,7 +22,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
     public FlatIteratingBuilder(String key, NamespaceSupport namespaces, String separator) {
         super(key, namespaces);
-        nameHelper = new AttributeNameHelper(getKey(), separator);
+        nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
             context = evaluateSource(context);
             if (context.getCurrentObj() != null) {
                 if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
-                else evaluateInternal(writer, context, 0, 0);
+                else evaluateInternal(writer, context, 0, 1);
             }
         } else {
             if (evaluateFilter(context)) {
@@ -51,11 +51,15 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
         List elements = (List) context.getCurrentObj();
         int elementsSize = elements.size();
+        int actualIndex = 1;
         for (int i = 0; i < elementsSize; i++) {
             Object o = elements.get(i);
             TemplateBuilderContext childContext = new TemplateBuilderContext(o);
             childContext.setParent(context.getParent());
-            evaluateInternal(writer, childContext, elementsSize, i);
+            if (evaluateFilter(childContext)) {
+                evaluateInternal(writer, childContext, elementsSize, actualIndex);
+                actualIndex++;
+            }
         }
     }
 
@@ -65,13 +69,11 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
             int elementsSize,
             int index)
             throws IOException {
-        if (evaluateFilter(context)) {
-            for (TemplateBuilder child : children) {
-                ((FlatBuilder) child)
-                        .setParentKey(
-                                nameHelper.getCompleteIteratingAttributeName(elementsSize, index));
-                child.evaluate(writer, context);
-            }
+        for (TemplateBuilder child : children) {
+            ((FlatBuilder) child)
+                    .setParentKey(
+                            nameHelper.getCompleteIteratingAttributeName(elementsSize, index));
+            child.evaluate(writer, context);
         }
     }
 

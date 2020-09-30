@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -589,20 +590,29 @@ public class GetFeature {
                                         .getConnectionParameters()
                                         .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
                                         .toString())) {
-                            String otherSRS =
-                                    (String) meta.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+
                             if (query.getSrsName() != null) {
-                                if (otherSRS.contains(query.getSrsName().toString())) {
-                                    if (hints == null) hints = new Hints();
-                                    try {
-                                        hints.put(
-                                                ResourcePool.MAP_CRS,
-                                                CRS.decode(query.getSrsName().toString()));
-                                    } catch (NoSuchAuthorityCodeException ne) {
-                                        LOGGER.log(Level.SEVERE, ne.getMessage(), ne);
-                                    } catch (FactoryException e) {
-                                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                                String otherSrsStr =
+                                        (String) meta.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+                                // create list of other srs
+                                List<String> otherSRSList = Arrays.asList(otherSrsStr.split(","));
+                                try {
+                                    CoordinateReferenceSystem requestedCRS =
+                                            CRS.decode(query.getSrsName().toString());
+                                    for (String otherSRS : otherSRSList) {
+                                        if (!CRS.isTransformationRequired(
+                                                CRS.decode(otherSRS), requestedCRS)) {
+                                            // no transformation required, mark to skip
+                                            // re-projection
+                                            if (hints == null) hints = new Hints();
+                                            hints.put(ResourcePool.MAP_CRS, requestedCRS);
+                                            break;
+                                        }
                                     }
+                                } catch (NoSuchAuthorityCodeException ne) {
+                                    LOGGER.log(Level.SEVERE, ne.getMessage(), ne);
+                                } catch (FactoryException e) {
+                                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                                 }
                             }
                         }

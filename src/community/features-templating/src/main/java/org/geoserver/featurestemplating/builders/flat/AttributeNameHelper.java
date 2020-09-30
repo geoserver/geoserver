@@ -4,24 +4,26 @@
  */
 package org.geoserver.featurestemplating.builders.flat;
 
+import org.opengis.filter.expression.Expression;
+
 /** An helper class to help creating attribute names when producing a flat geoJson output */
 class AttributeNameHelper {
 
-    private String key;
+    private Expression key;
     private String parentKey;
 
     private String separator;
 
     static final String PROPERTIES_KEY = "properties";
 
-    AttributeNameHelper(String key, String separator) {
+    AttributeNameHelper(Expression key, String separator) {
         this.key = key;
         this.separator = separator;
     }
 
     String getFinalAttributeName() {
         String parentKey = this.parentKey;
-        String key = this.key;
+        String key = this.key != null ? this.key.evaluate(null).toString() : null;
         if (parentKey != null && !parentKey.equals(PROPERTIES_KEY) && key != null)
             key = parentKey + separator + key;
         else if (key == null) key = parentKey;
@@ -32,7 +34,7 @@ class AttributeNameHelper {
 
     String getCompleteCompositeAttributeName() {
         String parentKey = this.parentKey;
-        String key = this.key;
+        String key = this.key != null ? this.key.evaluate(null).toString() : null;
         if (parentKey != null && !parentKey.equals(PROPERTIES_KEY)) {
             if (key != null && !key.equals(PROPERTIES_KEY)) key = parentKey + separator + key;
             else if (key == null || key.equals(PROPERTIES_KEY)) key = parentKey;
@@ -43,13 +45,13 @@ class AttributeNameHelper {
     }
 
     String getCompleteIteratingAttributeName(int elementsSize, int index) {
-        String key = this.key;
+        String key = this.key != null ? this.key.evaluate(null).toString() : null;
         String parentKey = this.parentKey;
         if (parentKey != null && !parentKey.equals(PROPERTIES_KEY))
             key = parentKey + separator + key;
         key = replaceDefaultSeparatorWithCustom(key, separator);
         String itKey;
-        if (elementsSize > 0) itKey = key + separator + (index + 1);
+        if (elementsSize > 0) itKey = key + separator + (index);
         else itKey = key;
         return itKey;
     }

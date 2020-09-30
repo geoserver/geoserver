@@ -18,7 +18,7 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.jsonld.JsonLdRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.expressions.JsonLdCQLManager;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.response.GeoJsonTemplateGetFeatureResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
@@ -160,8 +160,8 @@ public class JsonTemplateCallBackOGC extends AbstractDispatcherCallback {
         }
         // Taking back a string from Function cause
         // OGC API get a string cql filter from query string
-        String newFilter = JsonLdCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");
-        newFilter = JsonLdCQLManager.quoteXpathAttribute(newFilter);
+        String newFilter = TemplateCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");
+        newFilter = TemplateCQLManager.quoteXpathAttribute(newFilter);
         for (int i = 0; i < operation.getParameters().length; i++) {
             Object p = operation.getParameters()[i];
             if (p != null && ((String.valueOf(p)).trim().equals(strFilter.trim()))) {

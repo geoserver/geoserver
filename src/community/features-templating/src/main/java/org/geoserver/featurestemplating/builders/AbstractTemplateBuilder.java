@@ -6,7 +6,7 @@ package org.geoserver.featurestemplating.builders;
 
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.geoserver.featurestemplating.expressions.JsonLdCQLManager;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
@@ -71,7 +71,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
      * @throws CQLException
      */
     public void setFilter(String filter) throws CQLException {
-        JsonLdCQLManager cqlManager = new JsonLdCQLManager(filter, namespaces);
+        TemplateCQLManager cqlManager = new TemplateCQLManager(filter, namespaces);
         this.filter = cqlManager.getFilterFromString();
         this.filterContextPos = cqlManager.getContextPos();
     }
@@ -106,7 +106,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
         Expression keyExpr;
         if (key != null) {
             if (key.startsWith("$${")) {
-                JsonLdCQLManager cqlManager = new JsonLdCQLManager(key, null);
+                TemplateCQLManager cqlManager = new TemplateCQLManager(key, null);
                 keyExpr = cqlManager.getExpressionFromString();
             } else {
                 keyExpr = new LiteralExpressionImpl(key);

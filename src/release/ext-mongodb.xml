@@ -11,6 +11,7 @@
       <includes>
         <include>*mongo*.jar</include>
         <include>*bson*.jar</include>
+        <include>gt-app-schema-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:topp="http://www.topp.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	numberOfFeatures="14" timeStamp="2020-07-13T06:04:12.204Z">
+	<gml:boundedBy>
+		<gml:Envelope srsDimension="2"
+			srsName="urn:ogc:def:crs:EPSG::3857">
+			<gml:lowerCorner>-1.15494624783E7 5533487.0362</gml:lowerCorner>
+			<gml:upperCorner>-1.15404718637E7 5540015.947</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<gml:featureMembers>
+		<topp:roads22 gml:id="roads22.499">
+			<gml:boundedBy>
+				<gml:Envelope srsName="urn:ogc:def:crs:EPSG::3857"
+					srsDimension="2">
+					<gml:lowerCorner>-1.15483110819E7 5536203.8346</gml:lowerCorner>
+					<gml:upperCorner>-1.1546179091E7 5539638.1559</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<topp:the_geom>
+				<gml:MultiLineString
+					srsName="urn:ogc:def:crs:EPSG::3857" srsDimension="2">
+					<gml:lineStringMember>
+						<gml:LineString>
+							<gml:posList>-1.1546179091E7 5536203.8346 -1.15462154035E7
+								5536256.005 -1.15463616537E7 5536677.4475 -1.15463996418E7
+								5536806.1827 -1.15466362009E7 5537257.0528 -1.15468077676E7
+								5537486.498 -1.15468272767E7 5537521.7128 -1.15468519266E7
+								5537548.3656 -1.15469326045E7 5537660.9317 -1.15469657151E7
+								5537710.7633 -1.15470192359E7 5537779.5179 -1.15470413069E7
+								5537813.8827 -1.15470829184E7 5537873.1717 -1.15471406481E7
+								5537961.6641 -1.15472552558E7 5538139.5058 -1.15473232261E7
+								5538226.3116 -1.15473784143E7 5538310.5107 -1.15478481005E7
+								5538983.3359 -1.15479092605E7 5539070.1277 -1.1548019699E7
+								5539223.9532 -1.15481437227E7 5539400.9751 -1.15482260134E7
+								5539515.3858 -1.15482705501E7 5539578.0352 -1.15483110819E7
+								5539638.1559
+							</gml:posList>
+						</gml:LineString>
+					</gml:lineStringMember>
+				</gml:MultiLineString>
+			</topp:the_geom>
+		</topp:roads22>
+		<topp:roads22 gml:id="roads22.558">
+			<gml:boundedBy>
+				<gml:Envelope srsName="urn:ogc:def:crs:EPSG::3857"
+					srsDimension="2">
+					<gml:lowerCorner>-1.15449186979E7 5534606.08</gml:lowerCorner>
+					<gml:upperCorner>-1.15433741726E7 5534632.7355</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<topp:the_geom>
+				<gml:MultiLineString
+					srsName="urn:ogc:def:crs:EPSG::3857" srsDimension="2">
+					<gml:lineStringMember>
+						<gml:LineString>
+							<gml:posList>-1.15433741726E7 5534616.0157 -1.15434176514E7
+								5534613.5778 -1.1543513907E7 5534632.7355 -1.15437875732E7
+								5534615.5684 -1.15447482228E7 5534606.4382 -1.15449186979E7
+								5534606.08
+							</gml:posList>
+						</gml:LineString>
+					</gml:lineStringMember>
+				</gml:MultiLineString>
+			</topp:the_geom>
+		</topp:roads22>
+	</gml:featureMembers>
+</wfs:FeatureCollection>

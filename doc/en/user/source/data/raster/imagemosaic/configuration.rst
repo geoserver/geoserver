@@ -73,6 +73,9 @@ The table below describes the various elements in this configuration file.
    * - SuggestedSPI
      - Y
      - Suggested plugin for reading the image files.
+   * - SuggestedFormat
+     - N
+     - Suggested GridFormat for reading the image files.
    * - Envelope2D
      - N
      - Envelope for the mosaic formatted as ``LLX,LLY URX,URY`` (notice the space between the lower left and upper right coordinate pairs).
@@ -96,6 +99,7 @@ A sample configuration file follows::
   ExpandToRGB=false
   LocationAttribute=location
   SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi
+  SuggestedFormat=org.geotools.gce.geotiff.GeoTiffFormat
   CheckAuxiliaryMetadata=false
   LevelsNum=1
    

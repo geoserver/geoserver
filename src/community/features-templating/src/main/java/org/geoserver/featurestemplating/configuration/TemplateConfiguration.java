@@ -72,11 +72,17 @@ public class TemplateConfiguration {
         CacheKey key = new CacheKey(typeInfo, fileName);
         WFSTemplate template = templateCache.get(key);
         if (template.checkTemplate()) templateCache.put(key, template);
-        boolean isValid;
         RootBuilder root = template.getRootBuilder();
+        // check if reload is needed anyway and eventually reload the template
+        if (root != null && root.needsReload()) {
+            template.reloadTemplate();
+            templateCache.put(key, template);
+            root = template.getRootBuilder();
+        }
+
         if (root != null) {
             TemplateValidator validator = new TemplateValidator(typeInfo);
-            isValid = validator.validateTemplate(root);
+            boolean isValid = validator.validateTemplate(root);
             if (!isValid) {
                 throw new RuntimeException(
                         "Failed to validate template for feature type "

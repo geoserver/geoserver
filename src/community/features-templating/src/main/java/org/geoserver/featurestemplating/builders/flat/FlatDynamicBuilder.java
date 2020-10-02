@@ -18,7 +18,7 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
     public FlatDynamicBuilder(
             String key, String expression, NamespaceSupport namespaces, String separator) {
         super(key, expression, namespaces);
-        nameHelper = new AttributeNameHelper(getKey(), separator);
+        nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
     protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {

@@ -15,10 +15,8 @@ import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
-import org.geoserver.featurestemplating.expressions.JsonLdCQLManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
-import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -226,16 +224,13 @@ public class JsonPathVisitor extends DuplicatingFilterVisitor {
      */
     private String completeXPath(String xpath) {
         if (currentSource != null && !isSimple) xpath = currentSource + "/" + xpath;
-        return JsonLdCQLManager.quoteXpathAttribute(xpath);
+        return xpath;
     }
 
     private void addFilter(Filter filter) {
         if (filter != null) {
-            String f = CQL.toCQL(filter);
-            if (!f.contains("@")) {
-                filter = (Filter) findXpathArg(filter);
-                filters.add(filter);
-            }
+            filter = (Filter) findXpathArg(filter);
+            filters.add(filter);
         }
     }
 

@@ -30,7 +30,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  * to extracts the xpath from the function as a literal, to substitute it after cql encoding
  * happened with an AttributeExpression.
  */
-public class JsonLdCQLManager {
+public class TemplateCQLManager {
 
     private String strCql;
 
@@ -38,7 +38,7 @@ public class JsonLdCQLManager {
 
     private NamespaceSupport namespaces;
 
-    public JsonLdCQLManager(String strCql, NamespaceSupport namespaces) {
+    public TemplateCQLManager(String strCql, NamespaceSupport namespaces) {
         this.strCql = strCql;
         this.namespaces = namespaces;
     }
@@ -349,7 +349,8 @@ public class JsonLdCQLManager {
      */
     public static String quoteXpathAttribute(String xpath) {
         int atIndex = xpath.indexOf("@");
-        if (atIndex != -1) {
+        int quotedAtIndex = xpath.indexOf("\"@\"");
+        if (atIndex != -1 && quotedAtIndex == -1) {
             Pattern pattern = Pattern.compile("[a-zA-Z()<>.\\-1-9*]");
             String substring = xpath.substring(atIndex + 1);
             StringBuilder xpathAttribute = new StringBuilder("@");

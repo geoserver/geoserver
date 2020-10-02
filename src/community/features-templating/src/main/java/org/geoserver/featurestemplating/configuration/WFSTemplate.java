@@ -47,6 +47,7 @@ public class WFSTemplate {
                     try {
                         RootBuilder root = watcher.getTemplate();
                         this.builderTree = root;
+                        return true;
                     } catch (IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
@@ -54,6 +55,19 @@ public class WFSTemplate {
             }
         }
         return false;
+    }
+
+    public void reloadTemplate() {
+        synchronized (this) {
+            if (watcher != null) {
+                try {
+                    RootBuilder root = watcher.getTemplate();
+                    this.builderTree = root;
+                } catch (IOException ioe) {
+                    throw new RuntimeException(ioe);
+                }
+            }
+        }
     }
 
     /**

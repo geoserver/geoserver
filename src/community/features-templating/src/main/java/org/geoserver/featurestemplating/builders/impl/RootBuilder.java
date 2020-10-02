@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.builders.impl;
 import java.io.IOException;
 import java.util.*;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 
 /** The root of the builders' tree. It triggers the evaluation process */
@@ -64,7 +65,12 @@ public class RootBuilder implements TemplateBuilder {
      * @return
      */
     public String getVendorOption(String optionName) {
-        return vendorOptions.get(optionName);
+        String optionValue = vendorOptions.get(optionName);
+        if (optionValue != null && optionValue.startsWith("$${")) {
+            TemplateCQLManager cqlManager = new TemplateCQLManager(optionValue, null);
+            return cqlManager.getExpressionFromString().evaluate(null).toString();
+        }
+        return optionValue;
     }
 
     /**
@@ -87,5 +93,9 @@ public class RootBuilder implements TemplateBuilder {
     protected boolean supportVendorOption(String vendorOptionName) {
         if (supportedOptions.contains(vendorOptionName)) return true;
         else return false;
+    }
+
+    public boolean needsReload() {
+        return false;
     }
 }

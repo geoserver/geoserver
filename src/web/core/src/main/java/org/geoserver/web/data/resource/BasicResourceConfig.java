@@ -396,7 +396,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 new CRSPanel(
                         "nativeSRS",
                         new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"),
-                        otherSRS) {
+                        otherSRS,
+                        !otherSRS.isEmpty()) {
 
                     /** serialVersionUID */
                     private static final long serialVersionUID = -7725670382699858126L;

@@ -3,7 +3,7 @@
 External Web Map Server
 =======================
 
-GeoServer has the ability to proxy a remote Web Map Service (WMS).  This process is sometimes known as **Cascading WMS**.  Loading a remote WMS is useful for many reasons.  If you don't manage or have access to the remote WMS, you can now manage its output as if it were local.  Even if the remote WMS is not GeoServer, you can use GeoServer features to treat its output (watermarking, decoration, printing, etc).
+GeoServer has the ability to proxy a remote Web Map Service (WMS).  Supported WMS versions are 1.1.1 and 1.3.0.  This process is sometimes known as **Cascading WMS**.  Loading a remote WMS is useful for many reasons.  If you don't manage or have access to the remote WMS, you can now manage its output as if it were local.  Even if the remote WMS is not GeoServer, you can use GeoServer features to treat its output (watermarking, decoration, printing, etc).
 
 To access a remote WMS, it is necessary to load it as a store in GeoServer.  GeoServer must be able to access the capabilities document of the remote WMS for the store to be successfully loaded.
 
@@ -36,7 +36,7 @@ To connect to an external WMS, it is necessary to load it as a new store.  To st
    * - :guilabel:`Enabled`
      - Enables the store.  If disabled, no data from the remote WMS will be served.
    * - :guilabel:`Capabilities URL`
-     - The full URL to access the capabilities document of the remote WMS.
+     - The URL to access the capabilities document of the remote WMS. If URL contains just server address "https://host.org/wms" the required WMS GetCapabilities query parameters will be added automatically. Alternatively URL can be a full URL to access the capabilities document "https://host.org/wms?service=WMS&version=1.1.1&request=GetCapabilities".
    * - :guilabel:`User Name`
      - If the WMS requires authentication, the user name to connect as.
    * - :guilabel:`Password`

@@ -53,7 +53,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
                     // check resolution first
                     if (dggs.getZone(testedZoneId).getResolution() != resolution)
                         return Collections.emptyIterator();
-                    return dggs.polygon(polygon, resolution);
+                    return dggs.polygon(polygon, resolution, false);
                 });
     }
 
@@ -76,7 +76,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
         Integer resolution = (Integer) getParameterValue(null, 2);
         DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 3);
 
-        return dggs.polygon(polygon, resolution);
+        return dggs.polygon(polygon, resolution, false);
     }
 
     @Override

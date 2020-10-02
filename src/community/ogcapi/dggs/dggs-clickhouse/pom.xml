@@ -25,10 +25,34 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-jdbc</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+        <dependency>
           <groupId>ru.yandex.clickhouse</groupId>
           <artifactId>clickhouse-jdbc</artifactId>
           <version>0.2.4</version>
       </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-jdbc</artifactId>
+            <version>${gt.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-sample-data</artifactId>
+            <version>${gt.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>${gt.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
 </project>

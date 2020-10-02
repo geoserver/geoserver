@@ -22,10 +22,7 @@ import java.util.List;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.dggs.DGGSInstance;
-import org.geotools.dggs.Zone;
 import org.geotools.feature.NameImpl;
-import org.locationtech.jts.algorithm.MinimumBoundingCircle;
-import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.type.Name;
 
 /**
@@ -39,19 +36,11 @@ public class DGGSGeometryStore extends ContentDataStore implements DGGSStore {
     public static final String GEOMETRY = "geometry";
 
     DGGSInstance dggs;
-    double[] levelThresholds;
+    DGGSResolutionCalculator resolutions;
 
     public DGGSGeometryStore(DGGSInstance dggs) {
         this.dggs = dggs;
-
-        // compute threshold switch levels (arbitrary heuristic)
-        levelThresholds = new double[dggs.getResolutions().length];
-        for (int i = 0; i < levelThresholds.length; i++) {
-            Zone zone = dggs.getZone(0, 0, i);
-            Polygon polygon = zone.getBoundary();
-            double radius = new MinimumBoundingCircle(polygon).getRadius();
-            levelThresholds[i] = radius / 100;
-        }
+        this.resolutions = new DGGSResolutionCalculator(dggs);
     }
 
     @Override

@@ -16,8 +16,8 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.util.logging.Logging;
 
 /**
- * Factory for rHealPix DGGS instances. For now it always returns a TB16-Pix instance, but it should
- * be easy to extent to allow any parametrization.
+ * Factory for rHealPix DGGS instances. TODO: for now it always returns a TB16-Pix instance, but it
+ * should be easy to extend it to allow any parametrization.
  */
 public class RHealPixDGGSFactory implements DGGSFactory {
 

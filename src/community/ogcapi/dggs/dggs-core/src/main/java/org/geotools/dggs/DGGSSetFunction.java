@@ -20,7 +20,11 @@ import java.util.Iterator;
 
 /**
  * Implemented by functions matching a fixed set of zones, when invoked using static reference
- * parameters (reference zone id, distances, resolutions or levels)
+ * parameters (reference zone id, distances, resolutions or levels).
+ *
+ * <p>A DGGSFunction can be used in an expression ``function(....) = true`` to * express a well
+ * known filter against DGGSs, which stores can then optimize out for a more * efficient execution
+ * plan.
  */
 public interface DGGSSetFunction extends DGGSFunction {
 

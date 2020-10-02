@@ -4,12 +4,26 @@
  */
 package org.geoserver.api.dggs;
 
+import freemarker.ext.beans.BeanModel;
+import freemarker.template.SimpleDate;
+import freemarker.template.SimpleHash;
 import freemarker.template.Template;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModelException;
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.FreemarkerTemplateSupport;
 import org.geoserver.api.features.GetFeatureHTMLMessageConverter;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.util.ISO8601Formatter;
 import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -23,6 +37,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConverter
         implements Ordered {
+
+    ISO8601Formatter dateFormatter = new ISO8601Formatter();
+
     public DGGSFeatureHTMLMessageConverter(
             FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(templateSupport, geoServer);
@@ -43,6 +60,12 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
                 typeInfo, "zones-content.ftl", DGGSFeatureHTMLMessageConverter.class);
     }
 
+    @Override
+    protected Template getEmptyTemplate(FeatureTypeInfo typeInfo) throws IOException {
+        return templateSupport.getTemplate(
+                typeInfo, "getfeature-empty.ftl", GetFeatureHTMLMessageConverter.class);
+    }
+
     protected Template getComplexContentTemplate(FeatureTypeInfo typeInfo) throws IOException {
         return templateSupport.getTemplate(
                 typeInfo, "getfeature-complex-content.ftl", GetFeatureHTMLMessageConverter.class);
@@ -60,5 +83,50 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
                 referenceFeatureType,
                 "getfeature-header.ftl",
                 GetFeatureHTMLMessageConverter.class);
+    }
+
+    protected void addLinkFunctions(String baseURL, Map<String, Object> model) {
+        super.addLinkFunctions(baseURL, model);
+        model.put("zoneLink", (TemplateMethodModelEx) this::getZoneLink);
+    }
+
+    private Object getZoneLink(List arguments) throws TemplateModelException {
+        FeatureTypeInfo ft = (FeatureTypeInfo) ((BeanModel) arguments.get(0)).getWrappedObject();
+        DimensionInfo time = ft.getMetadata().get(FeatureTypeInfo.TIME, DimensionInfo.class);
+        SimpleHash feature = (SimpleHash) arguments.get(1);
+        APIRequestInfo requestInfo = APIRequestInfo.get();
+        Map<String, String> kvp = new HashMap<>();
+        kvp.put("f", "html");
+        kvp.put("zone_id", (String) getAttribute(feature, "zoneId"));
+        if (time != null) {
+            if (time.getEndAttribute() == null) {
+                Date date = getDateAttribute(feature, time.getAttribute());
+                kvp.put("datetime", dateFormatter.format(date));
+            } else {
+                // Should we consider open ended ranges here? would be new
+                // GeoServer wise
+                Date start = getDateAttribute(feature, time.getAttribute());
+                Date end = getDateAttribute(feature, time.getEndAttribute());
+                kvp.put("datetime", dateFormatter.format(start) + "/" + dateFormatter.format(end));
+            }
+        }
+
+        return ResponseUtils.buildURL(
+                requestInfo.getBaseURL(),
+                ResponseUtils.appendPath(
+                        requestInfo.getServiceLandingPage(),
+                        "/collections/" + feature.get("typeName") + "/zone/"),
+                kvp,
+                URLMangler.URLType.SERVICE);
+    }
+
+    private Date getDateAttribute(SimpleHash feature, String attribute)
+            throws TemplateModelException {
+        return ((SimpleDate) ((SimpleHash) feature.get(attribute)).get("rawValue")).getAsDate();
+    }
+
+    private Object getAttribute(SimpleHash feature, String attribute)
+            throws TemplateModelException {
+        return ((SimpleHash) feature.get(attribute)).get("rawValue").toString();
     }
 }

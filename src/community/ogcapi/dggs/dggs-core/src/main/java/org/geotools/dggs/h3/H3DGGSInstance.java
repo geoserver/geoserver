@@ -29,6 +29,7 @@ import java.util.stream.IntStream;
 import org.geotools.data.store.EmptyIterator;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
+import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteCoordinateSequenceFactory;
@@ -40,6 +41,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.predicate.RectangleContains;
 import org.locationtech.jts.operation.predicate.RectangleIntersects;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 
 public class H3DGGSInstance implements DGGSInstance {
 
@@ -98,26 +101,50 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Iterator<Zone> zonesFromEnvelope(Envelope envelope, int resolution) {
+    public Iterator<Zone> zonesFromEnvelope(
+            Envelope envelope, int targetResolution, boolean compact) {
         Envelope intersection = envelope.intersection(WORLD);
         if (intersection.isNull()) {
             return new EmptyIterator();
         }
-        return new H3ZoneIterator<>(
-                h3,
-                // When crossing the dateline, the parent and child are not always sitting on the
-                // same side of the dateline, need to drill down.
-                // TODO: determine a safe distance from the envelope to the dateline at which this
-                // won't cause mis-matches (depends on the current resolution)
-                // Also, a parent does not cover the exact same area as
-                // the children, so we need to check if a 1-ring overlaps to dedice whether to skip
-                // a cell.
-                id ->
-                        h3.h3GetResolution(id) < resolution
-                                && (ringOverlaps((long) id, envelope)
-                                        || datelineCrossing((long) id)),
-                id -> h3.h3GetResolution(id) == resolution && overlaps((long) id, envelope),
-                id -> new H3Zone(this, id));
+        // When crossing the dateline, the parent and child are not always sitting on the
+        // same side of the dateline, need to drill down.
+        // TODO: determine a safe distance from the envelope to the dateline at which this
+        // won't cause mis-matches (depends on the current resolution)
+        // Also, a parent does not cover the exact same area as
+        // the children, so we need to check if a 1-ring overlaps to dedice whether to skip
+        // a cell.
+        if (compact) {
+            // we pick parents when they are contained in the envelope
+            return new H3ZoneIterator<>(
+                    h3,
+                    id -> {
+                        // drill if it's a parent that is not fully contained in the target
+                        // envelope, but still overlaps it, or is spanning the dateline
+                        int r = h3.h3GetResolution(id);
+                        return r < targetResolution
+                                && (ringOverlaps(id, envelope)
+                                        && !containedInEnvelope(id, envelope));
+                    },
+                    id -> {
+                        // accept if at target resolution and overlaps the envelope, or it's a
+                        // parent fully contained in the envelope
+                        int r = h3.h3GetResolution(id);
+                        return (r == targetResolution && overlaps((long) id, envelope))
+                                || (r < targetResolution && containedInEnvelope(id, envelope));
+                    },
+                    id -> new H3Zone(this, id));
+        } else {
+            return new H3ZoneIterator<>(
+                    h3,
+                    id ->
+                            h3.h3GetResolution(id) < targetResolution
+                                    && (ringOverlaps(id, envelope) || datelineCrossing(id)),
+                    id ->
+                            h3.h3GetResolution(id) == targetResolution
+                                    && overlaps((long) id, envelope),
+                    id -> new H3Zone(this, id));
+        }
     }
 
     private boolean datelineCrossing(long id) {
@@ -142,6 +169,28 @@ public class H3DGGSInstance implements DGGSInstance {
         // get the fixed boundary, check if there is an overlap
         H3Zone zone = new H3Zone(this, zoneId);
         Polygon polygon = zone.getBoundary();
+        if (boundaryIntersects(envelope, polygon)) {
+            return true;
+        }
+
+        return false;
+
+        //        // check dateline intersection case
+        //        if (!zone.overlapsDateline()) return false;
+        //
+        //        // offset polyon in the two directions (blind, could determine a dateline
+        //        // overlap and just apply it in one direction)
+        //        Polygon offset1 = (Polygon) polygon.copy();
+        //        offset1.apply(new FilterFunction_offset.OffsetOrdinateFilter(360, 0));
+        //        if (boundaryIntersects(envelope, offset1)) {
+        //            return true;
+        //        }
+        //        Polygon offset2 = (Polygon) polygon.copy();
+        //        offset2.apply(new FilterFunction_offset.OffsetOrdinateFilter(-360, 0));
+        //        return boundaryIntersects(envelope, offset2);
+    }
+
+    private boolean boundaryIntersects(Envelope envelope, Polygon polygon) {
         if (!polygon.getEnvelopeInternal().intersects(envelope)) return false;
 
         // ok, go for a full test then...
@@ -277,7 +326,8 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Iterator<Zone> polygon(Polygon polygon, int resolution) {
+    public Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact) {
+        if (compact) throw new UnsupportedOperationException("TODO: Compact not yet implemented");
         List<GeoCoord> shell = getGeoCoords(polygon.getExteriorRing());
         List<List<GeoCoord>> holes =
                 IntStream.range(0, polygon.getNumInteriorRing())
@@ -294,5 +344,17 @@ public class H3DGGSInstance implements DGGSInstance {
         return Arrays.stream(ring.getCoordinates())
                 .map(c -> new GeoCoord(c.y, c.x))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo) {
+        long id = h3.stringToH3(zoneId);
+        H3Index idx = new H3Index(id);
+        long lowest = idx.lowestIdChild(resolution);
+        long highest = idx.highestIdChild(resolution);
+        String lowestId = h3.h3ToString(lowest);
+        String highestId = h3.h3ToString(highest);
+        return ff.between(
+                ff.property(DGGSStore.ZONE_ID), ff.literal(lowestId), ff.literal(highestId));
     }
 }

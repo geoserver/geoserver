@@ -66,6 +66,7 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
 
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", request.getBaseURL());
+        model.put("request", request);
         model.put("response", response);
         addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
@@ -80,36 +81,52 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
             // process content template for all feature collections found
             for (int i = 0; i < collections.size(); i++) {
                 FeatureCollection fc = collections.get(i);
-                if (fc != null && !fc.isEmpty()) {
-                    Template content = null;
+                if (fc != null) {
                     FeatureTypeInfo typeInfo = getResource(fc);
-                    if (!(fc.getSchema() instanceof SimpleFeatureType)) {
-                        // if there is a specific template for complex features, use that.
-                        content = getComplexContentTemplate(typeInfo);
-                    }
-                    if (content == null) {
-                        content = getContentTemplate(typeInfo);
-                    }
-                    model.put("data", fc);
-                    // allow building a collection backlink
-                    if (fc instanceof TypeInfoCollectionWrapper && includeCollectionLink()) {
-                        FeatureTypeInfo info =
-                                ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
-                        if (info != null) {
-                            model.put("collection", info.prefixedName());
+                    if (!fc.isEmpty()) {
+                        Template content = null;
+                        if (!(fc.getSchema() instanceof SimpleFeatureType)) {
+                            // if there is a specific template for complex features, use that.
+                            content = getComplexContentTemplate(typeInfo);
                         }
-                    }
-                    try {
-                        content.process(model, osw);
-                    } catch (TemplateException e) {
-                        String msg =
-                                "Error occurred processing content template "
-                                        + content.getName()
-                                        + " for "
-                                        + typeInfo.prefixedName();
-                        throw (IOException) new IOException(msg).initCause(e);
-                    } finally {
-                        model.remove("data");
+                        if (content == null) {
+                            content = getContentTemplate(typeInfo);
+                        }
+                        model.put("featureInfo", typeInfo);
+                        model.put("data", fc);
+                        // allow building a collection backlink
+                        if (fc instanceof TypeInfoCollectionWrapper && includeCollectionLink()) {
+                            FeatureTypeInfo info =
+                                    ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
+                            if (info != null) {
+                                model.put("collection", info.prefixedName());
+                            }
+                        }
+                        try {
+                            content.process(model, osw);
+                        } catch (TemplateException e) {
+                            String msg =
+                                    "Error occurred processing content template "
+                                            + content.getName()
+                                            + " for "
+                                            + typeInfo.prefixedName();
+                            throw (IOException) new IOException(msg).initCause(e);
+                        } finally {
+                            model.remove("data");
+                        }
+                    } else {
+                        Template template = getEmptyTemplate(typeInfo);
+                        model.put("collection", typeInfo.prefixedName());
+                        try {
+                            template.process(model, osw);
+                        } catch (TemplateException e) {
+                            String msg =
+                                    "Error occurred processing empty template "
+                                            + template.getName()
+                                            + " for "
+                                            + typeInfo.prefixedName();
+                            throw (IOException) new IOException(msg).initCause(e);
+                        }
                     }
                 }
             }
@@ -137,6 +154,10 @@ public class GetFeatureHTMLMessageConverter extends AbstractHTMLMessageConverter
 
     protected Template getContentTemplate(FeatureTypeInfo typeInfo) throws IOException {
         return templateSupport.getTemplate(typeInfo, "getfeature-content.ftl", this.getClass());
+    }
+
+    protected Template getEmptyTemplate(FeatureTypeInfo typeInfo) throws IOException {
+        return templateSupport.getTemplate(typeInfo, "getfeature-empty.ftl", this.getClass());
     }
 
     protected Template getComplexContentTemplate(FeatureTypeInfo typeInfo) throws IOException {

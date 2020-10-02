@@ -16,6 +16,7 @@
  */
 package org.geotools.dggs.h3;
 
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,7 +40,6 @@ import org.geotools.dggs.DGGSFactoryFinder;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -54,7 +54,7 @@ import org.locationtech.jts.io.WKTReader;
 public class H3DGGSInstanceTest {
 
     private static final ReferencedEnvelope WORLD =
-            new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
+            new ReferencedEnvelope(-180, 180, -90, 90, WGS84);
     private static final GeometryFactory GF = new GeometryFactory();
     private DGGSInstance h3i;
     private H3Core h3;
@@ -81,7 +81,7 @@ public class H3DGGSInstanceTest {
 
     @Test
     public void zonesFromEnvelopeWorldResZero() {
-        Iterator<Zone> zonesIterator = h3i.zonesFromEnvelope(WORLD, 0);
+        Iterator<Zone> zonesIterator = h3i.zonesFromEnvelope(WORLD, 0, false);
         Set<Zone> zones = new HashSet<>();
         zonesIterator.forEachRemaining(zones::add);
         assertEquals(122, zones.size());
@@ -90,8 +90,7 @@ public class H3DGGSInstanceTest {
     @Test
     public void zonesFromEnvelopeAcrossDateline() throws IOException {
         Iterator<Zone> zonesIterator =
-                h3i.zonesFromEnvelope(
-                        new ReferencedEnvelope(179, 181, -10, 10, DefaultGeographicCRS.WGS84), 0);
+                h3i.zonesFromEnvelope(new ReferencedEnvelope(179, 181, -10, 10, WGS84), 0, false);
         Set<Zone> zones = new HashSet<>();
         zonesIterator.forEachRemaining(zones::add);
         assertEquals(2, zones.size());
@@ -111,22 +110,19 @@ public class H3DGGSInstanceTest {
 
     @Test
     public void countZonesFromEnvelopeWorldResTwo() {
-        ReferencedEnvelope envelope =
-                new ReferencedEnvelope(-1, 1, -1, 1, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(-1, 1, -1, 1, WGS84);
         assertZoneCount(envelope, 2);
     }
 
     @Test
     public void countZonesCloseToPole() {
-        ReferencedEnvelope envelope =
-                new ReferencedEnvelope(102, 103, 88.9, 90, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(102, 103, 88.9, 90, WGS84);
         assertZoneCount(envelope, 4);
     }
 
     @Test
     public void countZonesCloseToDateline() {
-        ReferencedEnvelope envelope =
-                new ReferencedEnvelope(175, 176, 81.4, 81.7, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(175, 176, 81.4, 81.7, WGS84);
         assertZoneCount(envelope, 1);
     }
 
@@ -141,8 +137,7 @@ public class H3DGGSInstanceTest {
             double lon2 = lon1 + (random.nextDouble() * (180 - lon1));
             double lat1 = random.nextDouble() * 180 - 90;
             double lat2 = lat1 + (random.nextDouble() * (90 - lat1));
-            ReferencedEnvelope envelope =
-                    new ReferencedEnvelope(lon1, lon2, lat1, lat2, DefaultGeographicCRS.WGS84);
+            ReferencedEnvelope envelope = new ReferencedEnvelope(lon1, lon2, lat1, lat2, WGS84);
             int resolution = (int) (random.nextDouble() * MAX_RESOLUTION);
             try {
                 assertZoneCount(envelope, resolution);
@@ -154,7 +149,7 @@ public class H3DGGSInstanceTest {
 
     public void assertZoneCount(ReferencedEnvelope envelope, int resolution) {
         long count = h3i.countZonesFromEnvelope(envelope, resolution);
-        int expected = Iterators.size(h3i.zonesFromEnvelope(envelope, resolution));
+        int expected = Iterators.size(h3i.zonesFromEnvelope(envelope, resolution, false));
         assertEquals(expected, count);
     }
 
@@ -218,7 +213,7 @@ public class H3DGGSInstanceTest {
         List<String> neighbors = new ArrayList<>();
         iterator.forEachRemaining(z -> neighbors.add(z.getId()));
         // get all
-        Iterator<Zone> zonesIterator = h3i.zonesFromEnvelope(WORLD, 0);
+        Iterator<Zone> zonesIterator = h3i.zonesFromEnvelope(WORLD, 0, false);
         Set<String> expected = new HashSet<>();
         zonesIterator.forEachRemaining(z -> expected.add(z.getId()));
         expected.remove("8075fffffffffff"); // center cell not expected
@@ -257,7 +252,7 @@ public class H3DGGSInstanceTest {
                 (Polygon) new WKTReader().read("POLYGON((-1 -1, -1 1, 1 1, 1 -1, -1 -1))");
 
         Set<String> actual = new HashSet<>();
-        h3i.polygon(polygon, 3).forEachRemaining(z -> actual.add(z.getId()));
+        h3i.polygon(polygon, 3, false).forEachRemaining(z -> actual.add(z.getId()));
         // visually verified
         Set<String> expected =
                 new HashSet<>(
@@ -267,5 +262,32 @@ public class H3DGGSInstanceTest {
                                 "83754efffffffff",
                                 "83755dfffffffff"));
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void zonesFromEnvelopeCompact() {
+        // hitting the area of the central
+        Iterator<Zone> zonesIterator =
+                h3i.zonesFromEnvelope(new ReferencedEnvelope(-14, 4, -6, 11.7, WGS84), 1, true);
+        Set<String> zones = new HashSet<>();
+        zonesIterator.forEachRemaining(z -> zones.add(z.getId()));
+        System.out.println(zones);
+        // should have collected the central pentagon plus 11 smaller zones around it
+        assertEquals(12, zones.size());
+        assertThat(zones, CoreMatchers.hasItem("8075fffffffffff"));
+        assertThat(
+                zones,
+                CoreMatchers.hasItems(
+                        "8154fffffffffff",
+                        "81583ffffffffff",
+                        "81827ffffffffff",
+                        "817cbffffffffff",
+                        "8158bffffffffff",
+                        "8159bffffffffff",
+                        "8182fffffffffff",
+                        "81993ffffffffff",
+                        "81997ffffffffff",
+                        "817dbffffffffff",
+                        "81547ffffffffff"));
     }
 }

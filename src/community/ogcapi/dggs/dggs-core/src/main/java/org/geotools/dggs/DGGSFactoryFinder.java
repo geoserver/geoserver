@@ -16,7 +16,11 @@
  */
 package org.geotools.dggs;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.geotools.util.factory.FactoryCreator;
@@ -44,6 +48,16 @@ public class DGGSFactoryFinder {
         return getServiceRegistry()
                 .getFactories(DGGSFactory.class, null, null)
                 .filter(DGGSFactory::isAvailable);
+    }
+
+    /**
+     * Returns a DGGSFactory by the given identifier, if present and available
+     *
+     * @param factoryId
+     * @return
+     */
+    public static synchronized Optional<DGGSFactory> getFactory(String factoryId) {
+        return getExtensionFactories().filter(f -> factoryId.equals(f.getId())).findFirst();
     }
 
     /**
@@ -82,5 +96,29 @@ public class DGGSFactoryFinder {
      */
     public static synchronized void scanForPlugins() {
         getServiceRegistry().scanForPlugins();
+    }
+
+    /**
+     * Returns a factory instance based on the factory id and its configuration parameters.
+     *
+     * @param factoryId
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    public static DGGSInstance createInstance(String factoryId, Map<String, Serializable> params)
+            throws IOException {
+        if (factoryId == null)
+            throw new IllegalArgumentException("Cannot create a store with a missing factory id");
+
+        DGGSFactory factory =
+                DGGSFactoryFinder.getExtensionFactories()
+                        .filter(f -> factoryId.equals(f.getId()))
+                        .findFirst()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Cannot find DGGS factory for id " + factoryId));
+        return factory.createInstance(params);
     }
 }

@@ -10,7 +10,10 @@ import java.util.logging.Logger;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -81,6 +84,11 @@ public class APIConfigurationSupport extends WebMvcConfigurationSupport {
 
     public void setCallbacks(List<DispatcherCallback> callbacks) {
         this.callbacks = callbacks;
+    }
+
+    @Override
+    protected void addFormatters(FormatterRegistry registry) {
+        GeoServerExtensions.extensions(Converter.class).forEach(c -> registry.addConverter(c));
     }
 
     // SHARE (or move to a callback handler/list class of sort?)

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import jep.JepException;
 import jep.SharedInterpreter;
 import org.geotools.dggs.DGGSFactory;
@@ -86,7 +87,7 @@ public class RHealPixInstanceTest {
 
     @Test
     public void zonesFromEnvelopeWorldResZero() {
-        Iterator<Zone> zonesIterator = rpix.zonesFromEnvelope(WORLD, 0);
+        Iterator<Zone> zonesIterator = rpix.zonesFromEnvelope(WORLD, 0, false);
         Set<Zone> zones = new HashSet<>();
         zonesIterator.forEachRemaining(zones::add);
         assertEquals(6, zones.size());
@@ -96,7 +97,9 @@ public class RHealPixInstanceTest {
     public void zonesFromEnvelopeAcrossDateline() throws IOException {
         Iterator<Zone> zonesIterator =
                 rpix.zonesFromEnvelope(
-                        new ReferencedEnvelope(-181, -179, -10, 10, DefaultGeographicCRS.WGS84), 0);
+                        new ReferencedEnvelope(-181, -179, -10, 10, DefaultGeographicCRS.WGS84),
+                        0,
+                        false);
         Set<Zone> zones = new HashSet<>();
         zonesIterator.forEachRemaining(zones::add);
         assertEquals(1, zones.size());
@@ -174,9 +177,9 @@ public class RHealPixInstanceTest {
 
     public void assertZoneCount(ReferencedEnvelope envelope, int resolution) {
         long count = rpix.countZonesFromEnvelope(envelope, resolution);
-        int expected = Iterators.size(rpix.zonesFromEnvelope(envelope, resolution));
+        int expected = Iterators.size(rpix.zonesFromEnvelope(envelope, resolution, false));
         List<String> expectedZones = new ArrayList<>();
-        rpix.zonesFromEnvelope(envelope, resolution)
+        rpix.zonesFromEnvelope(envelope, resolution, false)
                 .forEachRemaining(z -> expectedZones.add(z.getId()));
         assertEquals(
                 "Expected " + expected + " " + expectedZones + " but got " + count,
@@ -226,7 +229,7 @@ public class RHealPixInstanceTest {
         List<String> neighbors = new ArrayList<>();
         iterator.forEachRemaining(z -> neighbors.add(z.getId()));
         // get all
-        Iterator<Zone> zonesIterator = rpix.zonesFromEnvelope(WORLD, 1);
+        Iterator<Zone> zonesIterator = rpix.zonesFromEnvelope(WORLD, 1, false);
         Set<String> expected = new HashSet<>();
         zonesIterator.forEachRemaining(z -> expected.add(z.getId()));
         expected.remove("R3"); // don't expect R3 itself
@@ -269,10 +272,30 @@ public class RHealPixInstanceTest {
                 (Polygon) new WKTReader().read("POLYGON((-1 -1, -1 1, 1 1, 1 -1, -1 -1))");
 
         Set<String> actual = new HashSet<>();
-        rpix.polygon(polygon, 4).forEachRemaining(z -> actual.add(z.getId()));
+        rpix.polygon(polygon, 4, false).forEachRemaining(z -> actual.add(z.getId()));
         // visually verified
         Set<String> expected =
                 new HashSet<>(Arrays.asList("R4430", "R4434", "R4433", "R4431", "R4437", "R4436"));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void zonesFromEnvelopeCompact() throws IOException {
+        Iterator<Zone> zonesIterator =
+                rpix.zonesFromEnvelope(
+                        new ReferencedEnvelope(-20, 21, -13.2, 21, DefaultGeographicCRS.WGS84),
+                        2,
+                        true);
+        Set<String> actual = new TreeSet<>();
+        zonesIterator.forEachRemaining(z -> actual.add(z.getId()));
+        // returns the R4 zone, plus a ring of zones at resolution 2 around it,
+        // 3*4 + 4 corners, totally 17
+        assertEquals(17, actual.size());
+        Set<String> expected =
+                new HashSet<>(
+                        Arrays.asList(
+                                "R4", "R08", "R16", "R17", "R18", "R26", "R32", "R35", "R38", "R50",
+                                "R53", "R56", "R62", "R70", "R71", "R72", "R80"));
         assertEquals(expected, actual);
     }
 }

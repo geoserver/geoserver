@@ -57,7 +57,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
 
             // try again
             CoverageDimensionInfo dimension = getSSTCoverageDimensionInfo();
-            assertEquals("g*m^2*s^-2", dimension.getUnit());
+            assertEquals("g·m²/s²", dimension.getUnit());
         } finally {
             aliasResource.delete();
             getGeoServer().reload();
@@ -79,7 +79,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
 
             // try again
             CoverageDimensionInfo dimension = getSSTCoverageDimensionInfo();
-            assertEquals("g*m^2*s^-2", dimension.getUnit());
+            assertEquals("g·m²/s²", dimension.getUnit());
         } finally {
             aliasResource.delete();
             getGeoServer().reset();
@@ -102,7 +102,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
 
             // try again
             CoverageDimensionInfo dimension = getSSTCoverageDimensionInfo();
-            assertEquals("g*m^2*s^-2", dimension.getUnit());
+            assertEquals("g·m²/s²", dimension.getUnit());
         } finally {
             replacementsResource.delete();
             getGeoServer().reset();

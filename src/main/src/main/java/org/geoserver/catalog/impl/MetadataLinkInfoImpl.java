@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -72,7 +73,13 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
         return content;
     }
 
-    static final List<String> protocols = Arrays.asList("http", "https", "ftp");
+    static final List<String> protocols = new ArrayList<>(Arrays.asList("http", "https", "ftp"));
+
+    /** Adds a value to the list of accepted protocols, meant to be used for testing */
+    public static void addProtocol(String protocol) {
+        if (!protocols.contains(protocol)) protocols.add(protocol);
+    }
+
     /** @throws IllegalArgumentException if the url is invalid for use as a Metadata Link */
     public static void validate(String url) {
         if (url == null) return;

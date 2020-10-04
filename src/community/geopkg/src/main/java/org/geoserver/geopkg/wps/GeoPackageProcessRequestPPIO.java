@@ -52,7 +52,7 @@ public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
         } else if (input instanceof GeoPackageProcessRequest) {
             return input;
         } else if (input instanceof String) {
-            return decode(IOUtils.toInputStream((String) input));
+            return decode(IOUtils.toInputStream((String) input, "UTF-8"));
         } else {
             throw new IllegalArgumentException(
                     "Cannot convert " + input + " into a GeoPackageProcessRequest object");

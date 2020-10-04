@@ -638,6 +638,7 @@
     </bean>
 
     <bean id="PDFMapProducer" class="org.geoserver.wms.map.PDFMapOutputFormat">
+      <constructor-arg index="0" ref="wms" />
     </bean>
     <bean id="PDFMapResponse" class="org.geoserver.wms.map.PDFMapResponse">
       <constructor-arg ref="wms" />

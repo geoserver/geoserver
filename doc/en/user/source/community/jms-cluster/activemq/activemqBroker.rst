@@ -30,7 +30,7 @@ To configure the persistence for the messages to deliver you need to setup the <
   </persistenceAdapter>
   ...
 
-In the above section we defined a jdbcPersistenceAdapter connected to a dataSource called #postgres-ds that forces the broker to use PostgreSQL for persisting its messages when the delivery cannot be guaranteed (e.g. a slave goes down unexpectedly).
+In the above section we defined a jdbcPersistenceAdapter connected to a dataSource called #postgres-ds that forces the broker to use PostgreSQL for persisting its messages when the delivery cannot be guaranteed (e.g. a replica goes down unexpectedly).
 You now need to configure your own datasource as specified in the following section which are specific for different DBMS.
 
 Oracle datasource

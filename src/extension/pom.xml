@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.18-SNAPSHOT</version>
+    <version>2.19-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -111,13 +111,6 @@
       </modules>
     </profile>
 
-    <profile>
-      <id>imagemosaic-jdbc</id>
-      <modules>
-        <module>imagemosaic-jdbc</module>
-      </modules>
-    </profile>
-    
     <profile>
       <id>jp2k</id>
       <modules>
@@ -386,7 +379,6 @@
         <module>excel</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
-        <module>imagemosaic-jdbc</module>
         <module>control-flow</module>
         <module>wps</module>
         <module>querylayer</module>
@@ -434,7 +426,6 @@
         <module>excel</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
-        <module>imagemosaic-jdbc</module>
         <module>control-flow</module>
         <module>wps</module>
         <module>querylayer</module>

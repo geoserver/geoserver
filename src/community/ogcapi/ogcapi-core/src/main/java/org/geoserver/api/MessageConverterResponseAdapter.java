@@ -100,6 +100,7 @@ public class MessageConverterResponseAdapter<T>
         return responses
                 .stream()
                 .filter(r -> getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt)))
+                .filter(r -> r.canHandle(Dispatcher.REQUEST.get().getOperation()))
                 .findFirst();
     }
 

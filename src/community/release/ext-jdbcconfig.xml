@@ -10,7 +10,6 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-jdbcconfig-*.jar</include>
-        <include>compress-lzf-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

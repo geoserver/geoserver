@@ -22,14 +22,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.cache.CacheResponseStatus;
 import org.apache.http.client.cache.HttpCacheContext;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -125,12 +129,18 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     public GetMapKvpRequestReader(WMS wms) {
         this(wms, null);
+        this.wms = wms;
     }
 
     public GetMapKvpRequestReader(WMS wms, HttpClientConnectionManager manager) {
         super(GetMapRequest.class);
+        this.wms = wms;
         // configure the http client used to fetch remote styles
-        RequestConfig requestConfig = RequestConfig.DEFAULT;
+        Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
+        int timeoutMillis = getTimeoutMillis();
+        builder.setConnectTimeout(timeoutMillis);
+        builder.setSocketTimeout(timeoutMillis);
+        RequestConfig requestConfig = builder.build();
 
         wms.getGeoServer()
                 .addListener(
@@ -155,13 +165,16 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                                 }
                             }
                         });
-        this.wms = wms;
         this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
         createHttpClient(
                 wms,
                 manager,
                 requestConfig,
                 (CacheConfiguration) wms.getRemoteResourcesCacheConfiguration().clone());
+    }
+
+    private int getTimeoutMillis() {
+        return wms.getServiceInfo().getRemoteStyleTimeout();
     }
 
     private synchronized void createHttpClient(
@@ -243,11 +256,24 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // set the raw params used to create the request
         getMap.setRawKvp(rawKvp);
 
+        boolean citeCompliant = wms.getServiceInfo().isCiteCompliant();
+
         // wms 1.3, srs changed to crs
         if (kvp.containsKey("crs")) {
             getMap.setSRS((String) kvp.get("crs"));
+        } else if (citeCompliant && WMS.VERSION_1_3_0.equals(WMS.version(getMap.getVersion()))) {
+            throw new ServiceException("GetMap CRS parameter is mandatory in WMS 1.3");
         }
         // do some additional checks
+
+        if (citeCompliant && rawKvp != null && rawKvp.containsKey("transparent")) {
+            String trans = (String) rawKvp.get("transparent");
+
+            if (!trans.equalsIgnoreCase("false") && !trans.equalsIgnoreCase("true")) {
+                throw new Exception(
+                        "Invalid value of GetMap TRANSPARENT parameter, choose between true or false");
+            }
+        }
 
         // srs
         String epsgCode = getMap.getSRS();
@@ -288,6 +314,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (layerParam != null) {
             List<String> layerNames = KvpUtils.readFlat(layerParam);
             requestedLayerInfos.addAll(parseLayers(layerNames, remoteOwsUrl, remoteOwsType));
+        } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
+            // The SLD extensions to WMS allow a request not to have layers, as long as a full SLD
+            // is specified either using &sld or &sld_body. The error must not be thrown in these
+            // conditions (which are probably not what INSPIRE had in mind, but nonetheless a OGC
+            // specification.
+            throw new ServiceException(
+                    "GetMap LAYERS parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
         // raw styles parameter
@@ -295,6 +328,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         List<String> styleNameList = new ArrayList<String>();
         if (stylesParam != null) {
             styleNameList.addAll(KvpUtils.readFlat(stylesParam));
+        } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
+            // The SLD extensions to WMS allow a request not to have styles, as long as a full SLD
+            // is specified either using &sld or &sld_body. The error must not be thrown in these
+            // conditions (which are probably not what INSPIRE had in mind, but nonetheless a OGC
+            // specification.
+            throw new ServiceException(
+                    "GetMap STYLES parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
         // raw interpolations parameter
@@ -683,7 +723,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         CloseableHttpResponse response = null;
         try {
             HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
-            response = httpClient.execute(httpget, cacheContext);
+            response = executeRequest(cacheContext, httpget);
 
             if (cacheContext != null) {
                 CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
@@ -735,6 +775,24 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 response.close();
             }
         }
+    }
+
+    /** Executes the HTTP request with the max request time settings. */
+    private CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
+            throws IOException, ClientProtocolException {
+        // get the max request time from WMS settings
+        int hardTimeout = wms.getServiceInfo().getRemoteStyleMaxRequestTime();
+        TimerTask task =
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (httpget != null) {
+                            httpget.abort();
+                        }
+                    }
+                };
+        new Timer(true).schedule(task, hardTimeout);
+        return httpClient.execute(httpget, cacheContext);
     }
 
     private List<Interpolation> parseInterpolations(

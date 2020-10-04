@@ -36,44 +36,46 @@ class IdentifyServiceResult {
 
     public static List<IdentifyResult> encode(FeatureCollection collection, LayerOrTable layer) {
         final List<IdentifyResult> results = new ArrayList<>();
-        FeatureIterator iterator = collection.features();
-        while (iterator.hasNext()) {
-            Feature feature = iterator.next();
-            // Get the default geometry from the FeatureType for consistency (see GEOS-8852)
-            GeometryDescriptor defaultGeometry;
-            FeatureTypeInfo featureType = (FeatureTypeInfo) layer.layer.getResource();
-            try {
-                defaultGeometry = featureType.getFeatureType().getGeometryDescriptor();
-            } catch (IOException e) {
-                throw new IllegalArgumentException(
-                        "Unable to determine geometry type for identify request");
-            }
+        try (FeatureIterator iterator = collection.features()) {
+            while (iterator.hasNext()) {
+                Feature feature = iterator.next();
+                // Get the default geometry from the FeatureType for consistency (see GEOS-8852)
+                GeometryDescriptor defaultGeometry;
+                FeatureTypeInfo featureType = (FeatureTypeInfo) layer.layer.getResource();
+                try {
+                    defaultGeometry = featureType.getFeatureType().getGeometryDescriptor();
+                } catch (IOException e) {
+                    throw new IllegalArgumentException(
+                            "Unable to determine geometry type for identify request");
+                }
 
-            SpatialReference spatialReference;
-            try {
-                spatialReference =
-                        SpatialReferences.fromCRS(defaultGeometry.getCoordinateReferenceSystem());
-            } catch (FactoryException e) {
-                throw new RuntimeException(e);
+                SpatialReference spatialReference;
+                try {
+                    spatialReference =
+                            SpatialReferences.fromCRS(
+                                    defaultGeometry.getCoordinateReferenceSystem());
+                } catch (FactoryException e) {
+                    throw new RuntimeException(e);
+                }
+                IdentifyResult result = new IdentifyResult();
+                result.setLayerName(layer.getName());
+                result.setLayerId(layer.getId());
+                result.setGeometry(
+                        new GeometryEncoder()
+                                .toRepresentation(
+                                        (org.locationtech.jts.geom.Geometry)
+                                                feature.getProperty(defaultGeometry.getName())
+                                                        .getValue(),
+                                        spatialReference));
+                result.setAttributes(
+                        FeatureEncoder.attributeList(feature, FeatureEncoder.OBJECTID_FIELD_NAME));
+                result.setGeometryType(result.getGeometry().getGeometryType());
+                result.getGeometry().setSpatialReference(spatialReference);
+                result.setValue(feature.getIdentifier().toString());
+                result.getAttributes().put("synthetic_id", feature.getIdentifier().toString());
+                result.setDisplayFieldName("synthetic_id");
+                results.add(result);
             }
-            IdentifyResult result = new IdentifyResult();
-            result.setLayerName(layer.getName());
-            result.setLayerId(layer.getId());
-            result.setGeometry(
-                    new GeometryEncoder()
-                            .toRepresentation(
-                                    (org.locationtech.jts.geom.Geometry)
-                                            feature.getProperty(defaultGeometry.getName())
-                                                    .getValue(),
-                                    spatialReference));
-            result.setAttributes(
-                    FeatureEncoder.attributeList(feature, FeatureEncoder.OBJECTID_FIELD_NAME));
-            result.setGeometryType(result.getGeometry().getGeometryType());
-            result.getGeometry().setSpatialReference(spatialReference);
-            result.setValue(feature.getIdentifier().toString());
-            result.getAttributes().put("synthetic_id", feature.getIdentifier().toString());
-            result.setDisplayFieldName("synthetic_id");
-            results.add(result);
         }
 
         return results;

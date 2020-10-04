@@ -20,6 +20,7 @@ import org.geoserver.security.xml.XMLRoleServiceConfig;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -177,6 +178,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
 
     @Test
     public void testHideGroups() throws Exception {
+        Assume.assumeFalse(System.getProperty("macos-github-build") != null);
         GeoServerUserGroupService ugService =
                 getSecurityManager().loadUserGroupService(ugStore.getName());
         assertTrue(ugService.getUserGroups().contains(users));
@@ -254,6 +256,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
 
     @Test
     public void testRemoveUserNotInGroup() throws Exception {
+        Assume.assumeFalse(System.getProperty("macos-github-build") != null);
         GeoServerUserGroupService ugService =
                 getSecurityManager().loadUserGroupService(ugStore.getName());
         GeoServerUserGroupStore ugStore = ugService.createStore();

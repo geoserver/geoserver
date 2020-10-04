@@ -170,7 +170,7 @@ Then the following code must be written in the Tomcat configuration file :file:`
         testWhileIdle="true"
         poolPreparedStatements="true"
         maxOpenPreparedStatements="100"
-        validationQuery="SELECT SYSDATE FROM DUAL"
+        validationQuery="SELECT 1"
         maxAge="600000"
         rollbackOnReturn="true"
         />

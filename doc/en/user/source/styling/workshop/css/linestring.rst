@@ -359,7 +359,7 @@ This section explores the use of attribute selectors and the :kbd:`@scale` selec
 
 #. As shown above selectors can be combined in the same rule:
 
-   * Selectors separated by whitespace are combined CQL Filter AND
+   * Selectors separated by blank-space are combined CQL Filter AND
    * Selectors separated by a comma are combined using CQL Filter OR
 
    Our first rule `[@scale < 9000000] [scalerank > 7]` checks that the scale is less than 9M AND scalerank is greater than 7.

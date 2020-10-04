@@ -10,6 +10,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
+import org.opengis.feature.FeatureVisitor;
 
 /**
  * Simple interface allowing access to the original main {@link FeatureTypeInfo} behind a feature
@@ -37,6 +38,11 @@ public interface TypeInfoCollectionWrapper {
         public FeatureTypeInfo getFeatureTypeInfo() {
             return featureTypeInfo;
         }
+
+        @Override
+        protected boolean canDelegate(FeatureVisitor visitor) {
+            return true;
+        }
     }
 
     class Simple extends DecoratingSimpleFeatureCollection implements TypeInfoCollectionWrapper {
@@ -50,6 +56,11 @@ public interface TypeInfoCollectionWrapper {
 
         public FeatureTypeInfo getFeatureTypeInfo() {
             return featureTypeInfo;
+        }
+
+        @Override
+        protected boolean canDelegate(FeatureVisitor visitor) {
+            return true;
         }
     }
 

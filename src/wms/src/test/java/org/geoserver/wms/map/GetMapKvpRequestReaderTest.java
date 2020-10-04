@@ -6,15 +6,22 @@
 package org.geoserver.wms.map;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -22,6 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic;
 import javax.media.jai.InterpolationBilinear;
 import javax.media.jai.InterpolationNearest;
@@ -31,6 +43,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
@@ -49,6 +62,7 @@ import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -57,6 +71,9 @@ import org.opengis.filter.sort.SortOrder;
 
 @SuppressWarnings("unchecked")
 public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
+
+    private static final Logger LOG = Logging.getLogger(GetMapKvpRequestReaderTest.class);
+
     GetMapKvpRequestReader reader;
 
     Dispatcher dispatcher;
@@ -976,5 +993,263 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         viewParams = viewParamsList.get(1);
         assertEquals("WHERE PERSONS > 1000000", viewParams.get("where"));
         assertEquals("ABCD", viewParams.get("str"));
+    }
+
+    public void testMissingLayersAndStylesParametersWithSld() throws Exception {
+        URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
+        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put("sld", decoded);
+        raw.put("format", "image/jpeg");
+        raw.put("crs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "true");
+        raw.put("request", "GetMap");
+        raw.put("version", "1.3.0");
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+    }
+
+    public void testMissingCrsParameterInGetMapRequest11() throws Exception {
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("styles", MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("format", "image/jpeg");
+        raw.put("srs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "true");
+        raw.put("request", "GetMap");
+        raw.put("version", "1.1.0");
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+    }
+
+    private void validateMissingParameterInGetMapRequest13(String paramToRemove) throws Exception {
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("styles", MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("format", "image/jpeg");
+        raw.put("crs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "true");
+        raw.put("request", "GetMap");
+        raw.put("version", "1.3.0");
+        raw.remove(paramToRemove);
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+            throw new Exception("Shouldn't get here");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), not(containsString("Shouldn't get here")));
+        }
+        service.setCiteCompliant(false);
+        geoServer.save(service);
+    }
+
+    public void testMissingStylesParameterInGetMapRequest13() throws Exception {
+        validateMissingParameterInGetMapRequest13("styles");
+    }
+
+    public void testMissingCrsParameterInGetMapRequest13() throws Exception {
+        validateMissingParameterInGetMapRequest13("crs");
+    }
+
+    public void testTransparencyValueInInspireGetMapRequest() throws Exception {
+        // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
+        HashMap raw = new HashMap();
+        raw.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("styles", MockData.BASIC_POLYGONS.getLocalPart());
+        raw.put("format", "image/jpeg");
+        raw.put("crs", "epsg:3003");
+        raw.put("bbox", "-10,-10,10,10");
+        raw.put("height", "600");
+        raw.put("width", "800");
+        raw.put("transparent", "ZZZZZZ");
+        raw.put("request", "GetMap");
+
+        GeoServer geoServer = getGeoServer();
+        WMSInfo service = geoServer.getService(WMSInfo.class);
+        service.setCiteCompliant(true);
+        geoServer.save(service);
+
+        try {
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
+            throw new Exception("Shouldn't get here");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), not(containsString("Shouldn't get here")));
+        }
+        service.setCiteCompliant(false);
+        geoServer.save(service);
+    }
+
+    /** Tests the timeout parameter and the max execution time. */
+    public void testSldTooLongLookup() throws Exception {
+        HttpServer server = createServer();
+        GeoServer geoServer = this.getGeoServer();
+        WMSInfo wmsInfo = geoServer.getService(WMSInfo.class);
+        wmsInfo.setRemoteStyleMaxRequestTime(1000);
+        geoServer.save(wmsInfo);
+        try {
+            WMS wms = new WMS(getGeoServer());
+            reader = new GetMapKvpRequestReader(wms);
+            server.start();
+            int port = server.getAddress().getPort();
+
+            // nothing matches the required style name
+            HashMap kvp = new HashMap();
+            URL url = new URL("http://localhost:" + port + "/sld/style.sld");
+            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+            kvp.put(
+                    "layers",
+                    MockData.BASIC_POLYGONS.getPrefix()
+                            + ":"
+                            + MockData.BASIC_POLYGONS.getLocalPart());
+            kvp.put("styles", "ThisStyleDoesNotExists");
+
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            Instant startInstant = Instant.now();
+            try {
+                reader.setLaxStyleMatchAllowed(false);
+                request =
+                        (GetMapRequest)
+                                reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+            } catch (ServiceException e) {
+                LOG.log(Level.INFO, e.getMessage(), e);
+            }
+            long millis = Instant.now().toEpochMilli() - startInstant.toEpochMilli();
+            assertTrue("Max timeout should be 2 seconds", millis < 2000);
+        } finally {
+            server.stop(0);
+            wmsInfo = geoServer.getService(WMSInfo.class);
+            wmsInfo.setRemoteStyleMaxRequestTime(60000);
+            geoServer.save(wmsInfo);
+        }
+    }
+
+    /** Tests the timeout parameter. */
+    public void testSldTimeoutLookup() throws Exception {
+        HttpServer server = createServer();
+        GeoServer geoServer = this.getGeoServer();
+        WMSInfo wmsInfo = geoServer.getService(WMSInfo.class);
+        wmsInfo.setRemoteStyleTimeout(1000);
+        geoServer.save(wmsInfo);
+        try {
+            WMS wms = new WMS(getGeoServer());
+            reader = new GetMapKvpRequestReader(wms);
+            server.start();
+            int port = server.getAddress().getPort();
+
+            // nothing matches the required style name
+            HashMap kvp = new HashMap();
+            URL url = new URL("http://localhost:" + port + "/sld/style.sld");
+            kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
+            kvp.put(
+                    "layers",
+                    MockData.BASIC_POLYGONS.getPrefix()
+                            + ":"
+                            + MockData.BASIC_POLYGONS.getLocalPart());
+            kvp.put("styles", "ThisStyleDoesNotExists");
+
+            GetMapRequest request = (GetMapRequest) reader.createRequest();
+            Instant startInstant = Instant.now();
+            try {
+                reader.setLaxStyleMatchAllowed(false);
+                request =
+                        (GetMapRequest)
+                                reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                fail("The style looked up, 'ThisStyleDoesNotExists', should not have been found");
+            } catch (ServiceException e) {
+                LOG.log(Level.INFO, e.getMessage(), e);
+            }
+            long millis = Instant.now().toEpochMilli() - startInstant.toEpochMilli();
+            assertTrue("Max timeout should be 2 seconds", millis < 2000);
+        } finally {
+            server.stop(0);
+            wmsInfo = geoServer.getService(WMSInfo.class);
+            wmsInfo.setRemoteStyleTimeout(30000);
+            geoServer.save(wmsInfo);
+        }
+    }
+
+    /** Creates a HTTP embedded server with a dynamic port for testing the configures timeout. */
+    private HttpServer createServer() throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        LOG.log(
+                Level.INFO,
+                "Creating a mock http server at port: {0}",
+                server.getAddress().getPort());
+        server.createContext("/sld", createLongResponseHandler());
+        ThreadPoolExecutor threadPoolExecutor =
+                (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+        server.setExecutor(threadPoolExecutor);
+
+        return server;
+    }
+
+    private HttpHandler createLongResponseHandler() {
+        HttpHandler handler =
+                new HttpHandler() {
+
+                    @Override
+                    public void handle(com.sun.net.httpserver.HttpExchange t) throws IOException {
+                        try {
+                            t.sendResponseHeaders(200, 5000000000l);
+                            TimeUnit.SECONDS.sleep(4);
+                            OutputStream outputStream = t.getResponseBody();
+                            outputStream.write("This is a bad style".getBytes());
+                            outputStream.flush();
+                            outputStream.close();
+                        } catch (InterruptedException e) {
+                            LOG.log(Level.INFO, e.getMessage(), e);
+                        }
+                    }
+                };
+        return handler;
     }
 }

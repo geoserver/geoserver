@@ -79,7 +79,8 @@ When enabled, the stored tiles will be GZIP compressed.
 Access Type
 ~~~~~~~~~~~
 Stored tiles will be created either as Public (readable and writable by any user that can access the S3 bucket), or Private
-(readable and writable only by the user identified by the AWS credentials specified above).
+(readable and writable only by the user identified by the AWS credentials specified above). 
+**Important**: if the bucket itself is setup to block all public access, then the blobstore needs to be setup to Private as well, or AWS will return a 403 when attempting to store tiles.
 
 
 

@@ -37,6 +37,7 @@ The parameters to set are
  * ``writeParameters`` : a set of writing parameters (optional, applies for raster input only). See :ref:`writing_params` below section for more details on writing parameters defintion.
  * ``minimizeReprojections`` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See :ref:`heterogeneous_imagemosaic` below section for more details on this param.
  * ``bestResolutionOnMatchingCRS`` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See :ref:`heterogeneous_imagemosaic` below section for more details on this param.
+ * ``targetVerticalCRS`` : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See :ref:`vertical_resampling` below section for more details on this param 
  * ``resolutionsDifferenceTolerance`` : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If
 
    * the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value, 
@@ -473,3 +474,76 @@ A typical :file:`indexer.properties` of such ImageMosaic will look like this::
     CrsAttribute=crs
     PropertyCollectors=CRSExtractorSPI(crs),ResolutionXExtractorSPI(resX),ResolutionYExtractorSPI(resY)
 
+
+.. _vertical_resampling:
+
+Vertical data resampling on download
+++++++++++++++++++++++++++++++++++++
+Coverages containing elevations data (i.e. DTM/DEM/DSM) have pixel values representing elevations/heights referred to a specific VerticalCRS.
+
+The associated VerticalCRS can be specified in the layer configuration, at the very bottom of the page, where a new optional Vertical Coordinate Reference System section shows up. 
+
+The following example shows a DSM layer being configured to specify EPSG:5778 as adopted VerticalCRS. 
+
+  .. figure:: images/verticalCRS.png
+    :align: center
+
+This section will only show up if:
+
+ * The wps-download module has been deployed in GeoServer
+ * The underlying data is single-band and datatype is at least 16 bit. (i.e.: no Byte datatype, no RGB images, ...)
+ 
+WPS Download - Vertical resampling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Resampling the data to a different VerticalCRS as part of the Raster Download Process is possible by specifying the **targetVerticalCRS** parameter in the WPS Download request. For example:
+
+.. code-block:: xml
+
+    <wps:Input>
+      <ows:Identifier>targetVerticalCRS</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>EPSG:9274</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+
+.. note::
+   An exception will be thrown when specifying a targetVerticalCRS but no source VerticalCRS has been assigned to the requested layer through the above setting.
+
+Custom VerticalCRS definitions and grid transformations
+```````````````````````````````````````````````````````
+Custom verticalCRS definitions can be specified in GeoServer via properties file as any other Coordinate Reference System, as explained in :ref:`Custom CRS Definitions <crs_custom>` page.
+
+This is an example of the above VerticalCRS being added as a WKT in the :file:`user_projections/epsg.properties` file::
+
+      9274=VERT_CS["EVRF2000 Austria height", \
+         VERT_DATUM["European Vertical Reference Frame 2000 Austria", \
+           2000, AUTHORITY["EPSG","1261"]], \
+         AXIS["gravity-related height (H)",up], \
+         UNIT["m",1.0], \
+      AUTHORITY["EPSG","9274"]]
+
+Transformations between VerticalCRSs can be supported through Vertical Grid Offset files (similarly to how NTV2 Grid Shift can be used in support of 2D grid transformation).
+
+Custom Coordinate Operations are defined in :file:`user_projections/epsg_operations.properties` file within the data directory (create it if it doesn't exist).
+
+Each line in :file:`epsg_operations.properties` will describe a coordinate operation consisting of a `source CRS`, a `target CRS`, and a math transform with its parameter values. Use the following syntax::
+
+  <source crs code>,<target crs code>=<WKT math transform>
+
+The Math Transform is a ``Vertical Offset by Grid Interpolation`` requiring 2 parameters:
+
+#. A ``Vertical offset file`` referring an offset file containing a vertical offset for each pixel of the grid. The referred file need to be available in the :file:`user_projections` directory,
+#. An ``Interpolation CRS code`` containing the EPSG code of the 2D CoordinateReferenceSystem of the grid file.
+
+Example
+```````
+
+Custom Vertical Grid Shift file for the transformation between the above Vertical CRSs ::
+
+  5778,9274=PARAM_MT["Vertical Offset by Grid Interpolation", \
+  PARAMETER["Vertical offset file", "GV_Hoehengrid_V1.tif"], \
+  PARAMETER["Interpolation CRS code", 4312]]
+
+
+.. note::
+   Only GeoTIFF vertical offset files are supported at the moment. Vertical resampling will access pixels from that GeoTIFF using tiled loading. Therefore, make sure that the grid file is not striped (a gdalinfo call reporting ``Band 1 Block = NNN x 1`` means a striped file. In that case, consider retiling it for better access before using it as a Vertical Offset File)

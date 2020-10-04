@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.geoserver.community</groupId>
         <artifactId>gs-taskmanager</artifactId>
-        <version>2.18-SNAPSHOT</version>
+        <version>2.19-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-taskmanager-metadata</artifactId>
     <packaging>jar</packaging>
-    <version>2.18-SNAPSHOT</version>
+    <version>2.19-SNAPSHOT</version>
 
     <name>GeoServer Task Manager Metadata</name>
     <description>

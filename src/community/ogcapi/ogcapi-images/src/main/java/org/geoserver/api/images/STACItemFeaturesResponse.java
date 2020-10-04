@@ -26,7 +26,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.GeoJSONBuilder;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.data.FileGroupProvider;
 import org.geotools.feature.FeatureCollection;
@@ -280,13 +279,10 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     @Override
     public boolean canHandle(Operation operation) {
-        if ("GetImages".equalsIgnoreCase(operation.getId())) {
-            // also check that the resultType is "results"
-            GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
-            if (req.isResultTypeResults()) {
-                // call subclass hook
-                return canHandleInternal(operation);
-            }
+        if ("GetImages".equalsIgnoreCase(operation.getId())
+                || "GetImage".equalsIgnoreCase(operation.getId())) {
+            // call subclass hook
+            return canHandleInternal(operation);
         }
         return false;
     }

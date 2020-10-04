@@ -54,7 +54,7 @@ paths:
           Adds a new style entry to the server. 
           Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/styles/{style}` to upload the style in this case.
 
-          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then separately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - $ref: "#/parameters/StyleInfoPost"
@@ -99,7 +99,7 @@ paths:
       operationId: getStyle
       summary: Retrieve a style
       description: |
-        Retrieves a single style. Used to both request the style info and the style defintion body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
+        Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
         
         The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
@@ -303,7 +303,7 @@ paths:
           Adds a new style entry to the server. 
           Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/workspaces/{workspace}/styles/{style}` to upload the style in this case.
 
-          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/workspaces/{workspace}/styles/{style}` to make any desired changes to the generated catalog entry.
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then separately PUT the style info at `/workspaces/{workspace}/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /workspaces/{workspace}/styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - name: workspace
@@ -365,7 +365,7 @@ paths:
       operationId: getWorkspaceStyle
       summary: Retrieve a style from a given workspace
       description: |
-        Retrieves a single style. Used to both request the style info and the style defintion body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
+        Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
         
         The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         

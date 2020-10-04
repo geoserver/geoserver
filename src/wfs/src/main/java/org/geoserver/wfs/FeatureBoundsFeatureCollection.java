@@ -6,7 +6,9 @@
 package org.geoserver.wfs;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -17,6 +19,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 
 /**
@@ -115,6 +118,16 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
         public Object getAttribute(String path) {
             if (type.getDescriptor(path) == null) return null;
             return delegate.getAttribute(path);
+        }
+
+        @Override
+        public List<Object> getAttributes() {
+            List<Object> result = new ArrayList<>();
+            List<AttributeDescriptor> descriptors = type.getAttributeDescriptors();
+            for (int i = 0; i < descriptors.size(); i++) {
+                result.add(delegate.getAttribute(descriptors.get(i).getName()));
+            }
+            return result;
         }
 
         public Object[] getAttributes(Object[] attributes) {

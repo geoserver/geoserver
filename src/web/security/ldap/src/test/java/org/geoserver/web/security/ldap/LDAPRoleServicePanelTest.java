@@ -31,13 +31,7 @@ import org.junit.Test;
 
 /** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
 @CreateLdapServer(
-    transports = {
-        @CreateTransport(
-            protocol = "LDAP",
-            address = "localhost",
-            port = LDAPTestUtils.LDAP_SERVER_PORT
-        )
-    },
+    transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
     allowAnonymousAccess = true
 )
 @CreateDS(
@@ -76,7 +70,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         config = new LDAPRoleServiceConfig();
         config.setName("test");
         if (setRequiredFields) {
-            config.setServerURL(ldapServerUrl + "/" + basePath);
+            config.setServerURL(getServerURL());
             config.setGroupSearchBase(GROUPS_BASE);
         }
         config.setBindBeforeGroupSearch(needsAuthentication);
@@ -84,6 +78,10 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         config.setUser(AUTH_USER);
         config.setPassword(AUTH_PASSWORD);
         setupPanel(config);
+    }
+
+    private String getServerURL() {
+        return ldapServerUrl + ":" + serverRule.getLdapServer().getPort() + "/" + basePath;
     }
 
     @Override
@@ -186,7 +184,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     }
 
     private void checkBaseConfig() {
-        tester.assertModelValue("form:panel:serverURL", ldapServerUrl + "/" + basePath);
+        tester.assertModelValue("form:panel:serverURL", getServerURL());
         tester.assertModelValue("form:panel:groupSearchBase", GROUPS_BASE);
         tester.assertModelValue("form:panel:groupSearchFilter", GROUP_SEARCH_FILTER);
         tester.assertModelValue(

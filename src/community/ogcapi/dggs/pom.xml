@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  ~  
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+	<groupId>org.geoserver.community</groupId>
+        <artifactId>gs-ogcapi</artifactId>
+    	<version>2.19-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-dggs</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>dggs-core</module>
+        <module>web-dggs</module>
+        <module>dggs-clickhouse</module>
+        <module>ogcapi-dggs</module>
+    </modules>
+    
+</project>

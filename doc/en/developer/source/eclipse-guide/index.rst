@@ -144,12 +144,11 @@ The SSL port used ``8443``.
      .. image:: ssl.jpeg
      
 On first time startup, a key store is created in ``<home directory>/.geoserver/keystore.jks``. 
-The password is **changeit** and the key store contains a self signed certificate for the host name
+The password is **changeit** and the key store contains a self-signed certificate for the host name
 passed in the ``ssl.hostname`` parameter.
 
 Test the SSL connection by opening a browser and entering  
-**https://ux-desktop03.mc-home.local:8443/geoserver**. The browser should complain about the self 
-singed certificate which does not hurt for test and development setups. 
+**https://ux-desktop03.mc-home.local:8443/geoserver**. The browser should complain about the self-signed certificate which does not hurt for test and development setups. 
 
 
 Eclipse preferences
@@ -199,8 +198,8 @@ Text editors
 
    .. note::
 
-      Showing whitespace characters can help insure that unecessary whitespace 
-      is not unintentionaly comitted.
+      Showing whitespace characters can help ensure that unnecessary whitespace 
+      is not unintentionally committed.
    
    .. image:: text_editors.png
 

@@ -19,7 +19,7 @@ Functions are evaluated at rendering time, so the output is passed as the parame
 List of functions
 -----------------
 
-A reference list of functions can be found in the `GeoServer User Manual <../../../geoserver/filter/function_reference.html>`_ and is also available in raw form in the `GeoTools User Manual <http://docs.geotools.org/latest/userguide/library/main/function_list.html>`_.
+A reference list of functions can be found in the `GeoServer User Manual <../../../geoserver/filter/function_reference.html>`_ and is also available in raw form in the :geotools:`GeoTools User Manual Function List <library/main/function_list.html>`.
 
 The functions can be broken up loosely into categories such as geometric, math, and string functions.
 

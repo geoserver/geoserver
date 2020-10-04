@@ -91,7 +91,7 @@ The :ref:`Security <security_webadmin>` section configures the built-in :ref:`se
 
 * The :ref:`Authentication <security_webadmin_auth>` page manages authentication filters, filter chains, and providers.
 
-* The :ref:`Passwords <security_webadmin_passwd>` page manages the password policies for users and the master (root) account.
+* The :ref:`Passwords <security_webadmin_passwd>` page manages the password policies for users and the root account.
 
 * The :ref:`Users, Groups, Roles <security_webadmin_ugr>` page manages the users, groups, and roles, and how they are all associated with each other. Passwords for user accounts can be changed here.
 

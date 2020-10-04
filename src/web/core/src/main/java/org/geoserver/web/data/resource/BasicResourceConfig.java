@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -26,11 +27,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.PatternValidator;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.KeywordInfo;
-import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
@@ -49,6 +46,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     private static final long serialVersionUID = -552158739086379566L;
 
+    public static final String URN_OGC_PREFIX = "urn:ogc:def:crs:EPSG::";
+    public static final String EPSG_PREFIX = "EPSG:";
+
     DropDownChoice<ProjectionPolicy> projectionPolicy;
 
     CRSPanel declaredCRS;
@@ -56,6 +56,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     public BasicResourceConfig(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
+        add(new Label("storeName", model.getObject().getStore().getName()));
+        add(new Label("nativeName", model.getObject().getNativeName()));
         TextField<String> name = new TextField<String>("name");
         name.setRequired(true);
         add(name);
@@ -95,7 +97,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         // for resources coming from WMS and WFS Datastore
         // then check if it has more than one SRS, then add FIND SRS button in Native SRS
         // which will allow user to set other SRS as Native SRS
-        List<String> otherSRS = getOtherSRSFromWFSOrWMS(model.getObject());
+        List<String> otherSRS = getOtherSRS(model.getObject());
         CRSPanel nativeCRS;
         if (otherSRS.isEmpty()) {
             // normal behavior for resoureces not belonging to WFS and WMS Store
@@ -330,7 +332,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     public boolean addOtherSRS(ResourceInfo resourceInfo) {
 
         // first check if its WFS-NG or WMSStore
-        List<String> otherSRS = getOtherSRSFromWFSOrWMS(resourceInfo);
+        List<String> otherSRS = getOtherSRS(resourceInfo);
 
         if (otherSRS != null) {
             if (!otherSRS.isEmpty()) {
@@ -360,11 +362,19 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         return "";
     }
 
-    private List<String> getOtherSRSFromWFSOrWMS(ResourceInfo resourceInfo) {
+    /**
+     * Returns a list of alternative SRS for resources that support multiple ones, e.g., WMS, WFS,
+     * WMTS cascaded layers
+     */
+    private List<String> getOtherSRS(ResourceInfo resourceInfo) {
         // first check if its WFS-NG
-        List<String> otherSRS = DataStoreUtils.getOtherSRSFromWfsNg(resourceInfo);
-        // second check if its wms
-        if (otherSRS.isEmpty()) otherSRS = DataStoreUtils.getOtherSRSFromWMSStore(resourceInfo);
+        List<String> otherSRS = Collections.EMPTY_LIST;
+        if (resourceInfo instanceof FeatureTypeInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWfsNg((FeatureTypeInfo) resourceInfo);
+        else if (resourceInfo instanceof WMSLayerInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWMSStore((WMSLayerInfo) resourceInfo);
+        else if (resourceInfo instanceof WMTSLayerInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWMTSStore((WMTSLayerInfo) resourceInfo);
 
         return otherSRS;
     }

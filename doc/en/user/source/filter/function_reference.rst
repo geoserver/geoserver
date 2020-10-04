@@ -145,6 +145,9 @@ Feature functions
      - Returns the value of the property ``propertyName``.  
        Allows property names to be computed or specified by 
        :ref:`sld_variable_substitution`.
+   * - mapGet
+     - ``f``:Feature, ``map``:Map, ``key``:String
+     - Get the value of the map ``map`` related to the specified ``key``.
      
 Spatial Relationship functions
 ------------------------------
@@ -503,7 +506,7 @@ Non-string values will be converted into a string representation automatically.
      - Returns the upper case version of the string
    * - strTrim
      - ``string``:String
-     - Returns a copy of the string, with leading and trailing white space omitted
+     - Returns a copy of the string, with leading and trailing blank-space omitted
    
    
    

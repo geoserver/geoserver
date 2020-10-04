@@ -8,6 +8,7 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 import java.util.ArrayList;
 import javax.vecmath.GVector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
@@ -279,7 +280,7 @@ public class HolesRemover {
     }
 
     private static LineString reverseWindingOrder(LineString vertices) {
-        return (LineString) vertices.reverse();
+        return (LineString) ((Geometry) vertices).reverse();
     }
 
     private static int determineWindingOrder(LineString vertices) {

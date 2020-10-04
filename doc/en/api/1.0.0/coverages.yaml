@@ -30,7 +30,7 @@ paths:
           type: string
         - name: list
           description: |
-            If the list parameter value is equal to "all" all the coverages available in the data source (even the non published ones) will be returned.
+            If the list parameter value is equal to "all" all the coverages available in the data source (even the non-published ones) will be returned.
           in: query
           required: false
           type: string
@@ -82,7 +82,7 @@ paths:
     post:
       operationId: postWorkspaceCoverageStore
       description: |
-        Create a new coverage, the underlying data store must exists.
+        Create a new coverage, the underlying data store must exist.
       parameters:
         - name: workspace
           in: path
@@ -133,7 +133,7 @@ paths:
             type: string
           - name: list
             description: |
-              If the list parameter value is equal to "all" all the coverages available in the data source (even the non published ones) will be returned.
+              If the list parameter value is equal to "all" all the coverages available in the data source (even the non-published ones) will be returned.
             in: query
             required: false
             type: string
@@ -239,13 +239,13 @@ paths:
             type: string
           - name: quietOnNotFound
             in: query
-            description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+            description: The quietOnNotFound parameter avoids logging an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
             type: boolean
             required: false
             default: false
         responses:
           200:
-            description: Succesful response containing coverage
+            description: Successful response containing coverage
             schema:
               type: object
               properties:
@@ -538,7 +538,7 @@ paths:
           type: string    
         - name: quietOnNotFound
           in: query
-          description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+          description: The quietOnNotFound parameter avoids logging an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
           type: boolean
           required: false
           default: false
@@ -829,7 +829,7 @@ paths:
             $ref: "#/definitions/CoverageInfo"
         - name: calculate
           in: query
-          description: 'Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".'
+          description: 'Comma-separated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".'
           required: false
           type: array
           collectionFormat: csv
@@ -882,7 +882,7 @@ definitions:
         description: The native name of the resource. This name corresponds to the physical resource that feature type is derived from -- a shapefile name, a database table, etc...
       namespace:
         type: object
-        description: The namespace uri of the resource. Example would be an application schema namespace uri.
+        description: The namespace URI of the resource. Example would be an application schema namespace URI.
         properties:
           name:
             type: string
@@ -972,7 +972,7 @@ definitions:
             description: The coordinate reference system object of the bounding box.
       latLonBoundingBox:
         type: object
-        description: The bounds of the resource in lat / lon. This value represents a "fixed value" and is not calulated on the underlying dataset.
+        description: The bounds of the resource in lat / lon. This value represents a "fixed value" and is not calculated on the underlying dataset.
         properties:
           minx:
             type: number
@@ -1018,7 +1018,7 @@ definitions:
         description: The number of decimal places to use when encoding floating point numbers from data of this feature type.
       responseSRS:
         type: object
-        description: The srs's that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
+        description: The SRSs that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
         properties:
           string:
             type: string
@@ -1071,7 +1071,7 @@ definitions:
             type: array
             items:
               type: object
-              description: raster dimenion
+              description: raster dimension
               properties:
                 description:
                   type: string
@@ -1133,7 +1133,7 @@ definitions:
                 description: translation to apply in Y
           interpolationMethods:
             type: object
-            description: available interporlations methods for this coverage
+            description: available interpolations methods for this coverage
             properties:
               string:
                 type: array

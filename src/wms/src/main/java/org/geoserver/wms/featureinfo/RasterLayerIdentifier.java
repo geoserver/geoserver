@@ -6,9 +6,10 @@
 package org.geoserver.wms.featureinfo;
 
 import it.geosolutions.jaiext.range.Range;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,13 +27,16 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.clip.CroppedGridCoverage2DReader;
+import org.geoserver.wms.map.RasterSymbolizerVisitor;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.FeatureCollection;
@@ -47,6 +51,8 @@ import org.geotools.image.util.ImageUtilities;
 import org.geotools.ows.ServiceException;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RenderingTransformationHelper;
+import org.geotools.styling.Style;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -58,9 +64,11 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
@@ -88,18 +96,174 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         return type == MapLayerInfo.TYPE_RASTER;
     }
 
-    public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
-            throws Exception {
-        final MapLayerInfo layer = params.getLayer();
-        final Filter filter = params.getFilter();
-        final SortBy[] sort = params.getSort();
+    public List<FeatureCollection> identify(
+            FeatureInfoRequestParameters requestParams, int maxFeatures) throws Exception {
+        final MapLayerInfo layer = requestParams.getLayer();
+        final Filter filter = requestParams.getFilter();
+        final SortBy[] sort = requestParams.getSort();
         final CoverageInfo cinfo = layer.getCoverage();
         final GridCoverage2DReader reader =
                 handleClipParam(
-                        params,
+                        requestParams,
                         (GridCoverage2DReader)
                                 cinfo.getGridCoverageReader(
                                         new NullProgressListener(), GeoTools.getDefaultHints()));
+        DirectPosition position = getQueryPosition(requestParams, cinfo, reader);
+
+        // check that the provided point is inside the bbox for this coverage
+        if (!reader.getOriginalEnvelope().contains(position)) {
+            return null;
+        }
+        GeneralParameterValue[] parameters =
+                setupReadParameters(requestParams, layer, filter, sort, cinfo, reader, position);
+        if (parameters == null) return null;
+
+        GridCoverage2D coverage = readCoverage(requestParams, reader, parameters);
+
+        if (coverage == null) {
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.fine("Unable to load raster data for this request.");
+            return null;
+        }
+
+        FeatureCollection pixel = null;
+        try {
+            final double[] pixelValues = coverage.evaluate(position, (double[]) null);
+            if (requestParams.isExcludeNodataResults() && pixelsAreNodata(coverage, pixelValues)) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Returning no result due to nodata pixel");
+                }
+                for (int i = 0; i < pixelValues.length; i++) {
+                    pixelValues[i] = Double.NaN;
+                }
+            }
+            pixel = wrapPixelInFeatureCollection(coverage, pixelValues, cinfo.getQualifiedName());
+        } catch (PointOutsideCoverageException e) {
+            // it's fine, users might legitimately query point outside, we just don't
+            // return anything
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            coverage.dispose(true);
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+        return Collections.singletonList(pixel);
+    }
+
+    private GeneralParameterValue[] setupReadParameters(
+            FeatureInfoRequestParameters requestParams,
+            MapLayerInfo layer,
+            Filter filter,
+            SortBy[] sort,
+            CoverageInfo cinfo,
+            GridCoverage2DReader reader,
+            DirectPosition position)
+            throws IOException, TransformException, ServiceException {
+        // read from the request
+        GetMapRequest getMap = requestParams.getGetMapRequest();
+        GeneralParameterValue[] parameters =
+                wms.getWMSReadParameters(
+                        getMap,
+                        layer,
+                        filter,
+                        sort,
+                        requestParams.getTimes(),
+                        requestParams.getElevations(),
+                        reader,
+                        true);
+
+        // now get the position in raster space using the world to grid related to
+        // corner
+        final MathTransform worldToGrid =
+                reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER).inverse();
+        final DirectPosition rasterMid = worldToGrid.transform(position, null);
+        // create a 20X20 rectangle aruond the mid point and then intersect with the
+        // original range
+        final Rectangle2D.Double rasterArea = new Rectangle2D.Double();
+        rasterArea.setFrameFromCenter(
+                rasterMid.getOrdinate(0),
+                rasterMid.getOrdinate(1),
+                rasterMid.getOrdinate(0) + 2,
+                rasterMid.getOrdinate(1) + 2);
+        final Rectangle integerRasterArea = rasterArea.getBounds();
+        final GridEnvelope gridEnvelope = reader.getOriginalGridRange();
+        final Rectangle originalArea =
+                (gridEnvelope instanceof GridEnvelope2D)
+                        ? (GridEnvelope2D) gridEnvelope
+                        : new Rectangle();
+        XRectangle2D.intersect(integerRasterArea, originalArea, integerRasterArea);
+        // paranoiac check, did we fall outside the coverage raster area? This should
+        // never really happne if the request is well formed.
+        if (integerRasterArea.isEmpty()) {
+            return null;
+        }
+
+        // now set the extra request parameters for this request
+        String[] propertyNames = requestParams.getPropertyNames();
+        for (int k = 0; k < parameters.length; k++) {
+            if (!(parameters[k] instanceof Parameter<?>)) {
+                continue;
+            }
+
+            final Parameter<?> parameter = (Parameter<?>) parameters[k];
+            ReferenceIdentifier name = parameter.getDescriptor().getName();
+            if (name.equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
+                //
+                // create a suitable geometry for this request reusing the getmap (we
+                // could probably optimize)
+                //
+                parameter.setValue(
+                        new GridGeometry2D(
+                                new GridEnvelope2D(integerRasterArea),
+                                reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
+                                reader.getCoordinateReferenceSystem()));
+            } else if (propertyNames != null
+                    && propertyNames.length > 0
+                    && name.equals(AbstractGridFormat.BANDS.getName())) {
+                int[] bands = new int[propertyNames.length];
+                Set<String> requestedNames = new HashSet<>(Arrays.asList(propertyNames));
+                List<String> dimensionNames =
+                        cinfo.getDimensions()
+                                .stream()
+                                .map(d -> d.getName())
+                                .collect(Collectors.toList());
+                for (int i = 0, j = 0;
+                        i < dimensionNames.size() && !requestedNames.isEmpty();
+                        i++) {
+                    String dimensionName = dimensionNames.get(i);
+                    if (requestedNames.remove(dimensionName)) {
+                        bands[j++] = i;
+                    }
+                }
+                if (!requestedNames.isEmpty()) {
+                    String availableNames =
+                            dimensionNames.stream().collect(Collectors.joining(", "));
+                    throw new ServiceException(
+                            "Could not find the following requested properties "
+                                    + requestedNames
+                                    + ", available property names are "
+                                    + availableNames,
+                            org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE,
+                            "PropertyName");
+                }
+                parameter.setValue(bands);
+            }
+        }
+        return parameters;
+    }
+
+    private DirectPosition getQueryPosition(
+            FeatureInfoRequestParameters params, CoverageInfo cinfo, GridCoverage2DReader reader) {
+        CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
+
+        CoordinateReferenceSystem targetCRS;
+        if ((cinfo.getProjectionPolicy() == ProjectionPolicy.NONE)
+                || (cinfo.getProjectionPolicy() == ProjectionPolicy.REPROJECT_TO_DECLARED)) {
+            targetCRS = cinfo.getNativeCRS();
+        } else {
+            targetCRS = cinfo.getCRS();
+        }
 
         // set the requested position in model space for this request
         final Coordinate middle =
@@ -111,15 +275,6 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                         params.getHeight());
         double x = middle.x;
         double y = middle.y;
-        CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
-
-        CoordinateReferenceSystem targetCRS;
-        if ((cinfo.getProjectionPolicy() == ProjectionPolicy.NONE)
-                || (cinfo.getProjectionPolicy() == ProjectionPolicy.REPROJECT_TO_DECLARED)) {
-            targetCRS = cinfo.getNativeCRS();
-        } else {
-            targetCRS = cinfo.getCRS();
-        }
         // coverage median position in the coverage (target) CRS
         DirectPosition targetCoverageMedianPosition = reader.getOriginalEnvelope().getMedian();
 
@@ -183,133 +338,49 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             }
             position = new DirectPosition2D(targetCRS, x, y);
         }
+        return position;
+    }
 
-        // check that the provided point is inside the bbox for this coverage
-        if (!reader.getOriginalEnvelope().contains(position)) {
-            return null;
-        }
+    private GridCoverage2D readCoverage(
+            FeatureInfoRequestParameters params,
+            GridCoverage2DReader reader,
+            GeneralParameterValue[] parameters)
+            throws IOException, SchemaException, TransformException, FactoryException {
+        GridCoverage2D coverage = reader.read(parameters);
 
-        // read from the request
-        GetMapRequest getMap = params.getGetMapRequest();
-        GeneralParameterValue[] parameters =
-                wms.getWMSReadParameters(
-                        getMap,
-                        layer,
-                        filter,
-                        sort,
-                        params.getTimes(),
-                        params.getElevations(),
-                        reader,
-                        true);
-
-        // now get the position in raster space using the world to grid related to
-        // corner
-        final MathTransform worldToGrid =
-                reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER).inverse();
-        final DirectPosition rasterMid = worldToGrid.transform(position, null);
-        // create a 20X20 rectangle aruond the mid point and then intersect with the
-        // original range
-        final Rectangle2D.Double rasterArea = new Rectangle2D.Double();
-        rasterArea.setFrameFromCenter(
-                rasterMid.getOrdinate(0),
-                rasterMid.getOrdinate(1),
-                rasterMid.getOrdinate(0) + 2,
-                rasterMid.getOrdinate(1) + 2);
-        final Rectangle integerRasterArea = rasterArea.getBounds();
-        final GridEnvelope gridEnvelope = reader.getOriginalGridRange();
-        final Rectangle originalArea =
-                (gridEnvelope instanceof GridEnvelope2D)
-                        ? (GridEnvelope2D) gridEnvelope
-                        : new Rectangle();
-        XRectangle2D.intersect(integerRasterArea, originalArea, integerRasterArea);
-        // paranoiac check, did we fall outside the coverage raster area? This should
-        // never really happne if the request is well formed.
-        if (integerRasterArea.isEmpty()) {
-            return null;
-        }
-
-        // now set the extra request parameters for this request
-        String[] propertyNames = params.getPropertyNames();
-        for (int k = 0; k < parameters.length; k++) {
-            if (!(parameters[k] instanceof Parameter<?>)) {
-                continue;
-            }
-
-            final Parameter<?> parameter = (Parameter<?>) parameters[k];
-            ReferenceIdentifier name = parameter.getDescriptor().getName();
-            if (name.equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
-                //
-                // create a suitable geometry for this request reusing the getmap (we
-                // could probably optimize)
-                //
-                parameter.setValue(
-                        new GridGeometry2D(
-                                new GridEnvelope2D(integerRasterArea),
-                                reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
-                                reader.getCoordinateReferenceSystem()));
-            } else if (propertyNames != null
-                    && propertyNames.length > 0
-                    && name.equals(AbstractGridFormat.BANDS.getName())) {
-                int[] bands = new int[propertyNames.length];
-                Set<String> requestedNames = new HashSet<>(Arrays.asList(propertyNames));
-                List<String> dimensionNames =
-                        cinfo.getDimensions()
-                                .stream()
-                                .map(d -> d.getName())
-                                .collect(Collectors.toList());
-                for (int i = 0, j = 0;
-                        i < dimensionNames.size() && !requestedNames.isEmpty();
-                        i++) {
-                    String dimensionName = dimensionNames.get(i);
-                    if (requestedNames.remove(dimensionName)) {
-                        bands[j++] = i;
-                    }
-                }
-                if (!requestedNames.isEmpty()) {
-                    String availableNames =
-                            dimensionNames.stream().collect(Collectors.joining(", "));
-                    throw new ServiceException(
-                            "Could not find the following requested properties "
-                                    + requestedNames
-                                    + ", available property names are "
-                                    + availableNames,
-                            org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE,
-                            "PropertyName");
-                }
-                parameter.setValue(bands);
+        //
+        Style style = params.getStyle();
+        RasterSymbolizerVisitor visitor =
+                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+        style.accept(visitor);
+        Expression transformation = visitor.getRasterRenderingTransformation();
+        if (transformation != null) {
+            RenderingTransformationHelper helper =
+                    new RenderingTransformationHelper() {
+                        @Override
+                        protected GridCoverage2D readCoverage(
+                                GridCoverage2DReader reader, Object params, GridGeometry2D readGG)
+                                throws IOException {
+                            throw new UnsupportedOperationException(
+                                    "This helper is meant to be used with a coverage already read");
+                        }
+                    };
+            Object result =
+                    helper.applyRenderingTransformation(
+                            transformation,
+                            DataUtilities.source(FeatureUtilities.wrapGridCoverage(coverage)),
+                            Query.ALL,
+                            Query.ALL,
+                            null,
+                            coverage.getCoordinateReferenceSystem2D(),
+                            null);
+            if (result instanceof GridCoverage2D) {
+                coverage = (GridCoverage2D) result;
+            } else {
+                coverage = null;
             }
         }
-
-        final GridCoverage2D coverage = reader.read(parameters);
-        if (coverage == null) {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine("Unable to load raster data for this request.");
-            return null;
-        }
-
-        FeatureCollection pixel = null;
-        try {
-            final double[] pixelValues = coverage.evaluate(position, (double[]) null);
-            if (params.isExcludeNodataResults() && pixelsAreNodata(coverage, pixelValues)) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("Returning no result due to nodata pixel");
-                }
-                for (int i = 0; i < pixelValues.length; i++) {
-                    pixelValues[i] = Double.NaN;
-                }
-            }
-            pixel = wrapPixelInFeatureCollection(coverage, pixelValues, cinfo.getQualifiedName());
-        } catch (PointOutsideCoverageException e) {
-            // it's fine, users might legitimately query point outside, we just don't
-            // return anything
-        } finally {
-            RenderedImage ri = coverage.getRenderedImage();
-            coverage.dispose(true);
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-            }
-        }
-        return Collections.singletonList(pixel);
+        return coverage;
     }
 
     private boolean pixelsAreNodata(GridCoverage2D coverage, final double values[]) {

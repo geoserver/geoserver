@@ -36,6 +36,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml.producer.FeatureTransformer;
 import org.geotools.gml.producer.FeatureTransformer.FeatureTypeNamespaces;
@@ -55,7 +56,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Gabriel Rold?n
  * @version $Id$
  */
-public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
+public class GML2OutputFormat extends WFSGetFeatureOutputFormat
+        implements ComplexFeatureAwareFormat {
     private static final int NO_FORMATTING = -1;
     private static final int INDENT_SIZE = 2;
     public static final String formatName = "GML2";
@@ -281,5 +283,10 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
                         "typeName",
                         meta.prefixedName());
         return buildURL(baseUrl, "wfs", params, URLType.SERVICE);
+    }
+
+    @Override
+    public boolean supportsComplexFeatures(Object value, Operation operation) {
+        return true;
     }
 }

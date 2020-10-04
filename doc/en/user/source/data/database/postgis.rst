@@ -245,4 +245,106 @@ To insert multi-line text (for use with labeling) remember to use escaped text::
    INSERT INTO place VALUES (ST_GeomFromText('POINT(-71.060316 48.432044)', 4326), E'Westfield\nTower');
 
 
+JsonPointer Function support
+----------------------------
+
+GeoServer is able to translate the ``jsonPointer`` function to a query using PostgreSQL support for JSON types. 
+The following are the main characteristics of the implementation:
+
+* The jsonPointer function syntax is like the following: ``jsonPointer(attributeName,'/path/to/json/attribute')``.
+
+* The function is able to select attributes inside json arrays by specifying the index of the target element in the json path eg. ``'/path/to/array/element/0'``.
+
+* When accessing a JSON property it is implicitly assumed that the same property will have the same type on all features, otherwise a cast exception will be thrown by the database.
+
+* GeoServer will perform a cast automatically to the expect type from the evaluation; the cast is completely delegated to the database.
+
+* If the property doesn't exists no errors will be issued, but the features that have that property will be excluded; hence the property we whish to query is not mandatory in all features.
+
+Examples
+````````
+
+Having a json column storing jsonvalues like the following,
+
+.. code-block :: json
+
+  { "name": "city name", 
+    "description": "the city description",
+    "districts": [
+      {
+       "name":"district1",
+       "population": 2000
+      },
+      {
+       "name":"district2",
+       "population": 5000
+      }
+    ]
+    "population":{
+      "average_age": 35,
+      "toal": 50000 
+    }
+  }
+
+and assuming an attribute name as ``city``, valid jsonPointer functions would be: 
+
+* ``jsonPointer(city, '/name')``.
+
+* ``jsonPointer(city, '/population/average_age')``.
+
+* ``jsonPointer(city, '/districts/0/name')``.
+
+An example cql_filter would then be ``jsonPointer(city, '/population/average_age') > 30``.
+
+While an example rule in a sld style sheet could be:
+
+.. code-block:: xml 
+
+   <Rule>
+     <Name>Cities</Name>
+        <ogc:Filter>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Function name="jsonPointer">
+              <ogc:PropertyName>city</ogc:PropertyName>
+              <ogc:Literal>/population/average_age</ogc:Literal>
+            </ogc:Function>
+            <ogc:Literal>35</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
+          </ogc:Filter>          
+        <PointSymbolizer>
+          <Graphic>
+            <Mark>
+              <WellKnownName>square</WellKnownName>
+                <Fill>
+                  <CssParameter name="fill">#FF0000</CssParameter>
+                </Fill>
+            </Mark>
+            <Size>16</Size>
+          </Graphic>
+       </PointSymbolizer>
+    </Rule>
+
+
+DataTypes
+`````````
+
+PostgreSQL defines two JSON datatypes: 
+
+ * ``json`` that stores an exact copy of the input text.
+
+ * ``jsonb`` which store the value in a decomposed binary format.
+
+The jsonPointer function supports both, as well as the text format if it contains a valid json representation. 
+Anyways, the PostgreSQL documentation recommends usage of jsonb, as it is faster to process. 
+
+PostgreSQL supports also indexing on json types. And index on a specific json attribute can be created as follow:
+
+``CREATE INDEX description_index ON table_name 
+((column_name -> path -> to ->> json_attribute ))``.
+
+Index can also be specified in partial way:
+
+``CREATE INDEX description_index ON table_name
+((column_name -> path -> to ->> json_attribute )) 
+WHERE (column_name -> path -> to ->> json_attribute) IS NOT NULL``.
 

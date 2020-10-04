@@ -27,7 +27,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RelationshipModelReader extends BaseMessageConverter<RelationshipModel> {
-    private static final Logger LOGGER =
+
+    static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(RelationshipModelReader.class);
 
     public RelationshipModelReader() {
@@ -73,6 +74,6 @@ public class RelationshipModelReader extends BaseMessageConverter<RelationshipMo
             }
         }
         throw new HttpMessageNotReadableException(
-                this.getClass().getName() + " does not support deserialization");
+                this.getClass().getName() + " does not support deserialization", inputMessage);
     }
 }

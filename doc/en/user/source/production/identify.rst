@@ -14,9 +14,15 @@ mechanisms:
   * as an environment variable
   * as a servlet context parameter
 
-``GEOSERVER_NODE_OPTS`` is a semicolumn separate list of key/value pairs and it can contain the following keys:
+``GEOSERVER_NODE_OPTS`` is a semicolon separated list of key/value pairs and it can contain the following keys:
 
-  * id: the string identifying the node, which in turn can be a static string, or use the ``$host_ip`` and ``$host_name`` to report the host IP address or host name respectively
+  * id: the string identifying the node, which in turn can be a static string, or include the following substitution tokens
+
+    * ``$host_ip`` The IP address of the node
+    * ``$host_name`` The hostname of the node
+    * ``$host_short_name`` The hostname truncated to not include the domain (``foo.local`` becomes ``foo``)
+    * ``$host_compact_name`` The hostname with all domain parts shortened to their first character (``foo.local`` becomes ``foo.l``)
+
   * color: the label color, as a CSS color
   * background: the background color, as a CSS color
 

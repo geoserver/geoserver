@@ -58,7 +58,7 @@ On macOS using decomposed unicode paths, and a default APFS case-insensitive fil
    core.ignorecase false
    core.precomposeunicode true
 
-We recommend making these changes to ``--gloabl`` (or ``--system``) as they reflect the operating system and file system on your local machine.
+We recommend making these changes to ``--global`` (or ``--system``) as they reflect the operating system and file system on your local machine.
 
 Some useful reading on this subject:
 
@@ -266,7 +266,7 @@ Release tags are used to mark releases from the stable or maintenance branches. 
 * 2.15.1
 
 
-Release tagas are only used during a versioned release of the software. At any given time a release branch
+Release tags are only used during a versioned release of the software. At any given time a release branch
 corresponds to the exact state of the last release from that branch. During release these branches are tagged.
 
 Release branches are also present in all repositories.
@@ -322,7 +322,7 @@ Updating from canonical
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Generally developers always work on a recent version of the official source code. The following example 
-shows how to pull down the latest changes for the master branch from the canonical repository::
+shows how to pull down the latest changes for the main development branch from the canonical repository::
 
   % git checkout master
   % git pull upstream master

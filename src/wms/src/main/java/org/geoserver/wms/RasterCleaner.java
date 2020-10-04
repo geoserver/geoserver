@@ -10,6 +10,7 @@ import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedImageAdapter;
 import javax.media.jai.RenderedImageList;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
@@ -62,6 +63,10 @@ public class RasterCleaner extends AbstractDispatcherCallback {
         if (list != null) {
             images.remove();
             for (RenderedImage image : list) {
+                if (image instanceof RenderedImageAdapter) {
+                    image = ((RenderedImageAdapter) image).getWrappedImage();
+                }
+
                 if (image instanceof RenderedImageTimeDecorator)
                     image = ((RenderedImageTimeDecorator) image).getDelegate();
 

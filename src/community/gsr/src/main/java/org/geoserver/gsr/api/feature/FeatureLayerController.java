@@ -172,8 +172,6 @@ public class FeatureLayerController extends AbstractGSRController {
             boolean returnEditMoment)
             throws IOException, ServiceException {
         LayerOrTable entry;
-        List<EditResult> editResults;
-        Long id;
 
         entry = LayerDAO.find(catalog, workspaceName, layerId);
         if (entry == null) {

@@ -5,9 +5,15 @@
  */
 package org.geoserver.wfs.json;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
@@ -22,6 +28,7 @@ import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -45,7 +52,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Simone Giannecchini, GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
  */
-public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
+public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
+        implements ComplexFeatureAwareFormat {
     private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
     // store the response type
@@ -331,7 +339,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
     }
 
-    private FeaturesInfo encodeSimpleFeatures(
+    protected FeaturesInfo encodeSimpleFeatures(
             GeoJSONBuilder jsonWriter,
             List<FeatureCollection> resultsList,
             boolean featureBounding,
@@ -378,17 +386,19 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         jsonWriter.setAxisOrder(CRS.AxisOrder.EAST_NORTH);
                     }
                     // start writing the simple feature geometry JSON object
-                    jsonWriter.key("geometry");
                     Geometry aGeom = (Geometry) simpleFeature.getDefaultGeometry();
-                    // Write the geometry, whether it is a null or not
-                    if (aGeom != null) {
-                        jsonWriter.writeGeom(aGeom);
-                        hasGeom = true;
-                    } else {
-                        jsonWriter.value(null);
-                    }
-                    if (defaultGeomType != null) {
-                        jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
+                    if (aGeom != null || writeNullGeometries()) {
+                        jsonWriter.key("geometry");
+                        // Write the geometry, whether it is a null or not
+                        if (aGeom != null) {
+                            jsonWriter.writeGeom(aGeom);
+                            hasGeom = true;
+                        } else {
+                            jsonWriter.value(null);
+                        }
+                        if (defaultGeomType != null) {
+                            jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
+                        }
                     }
                     // start writing feature properties JSON object
                     jsonWriter.key("properties");
@@ -425,7 +435,22 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             jsonWriter.value(TemporalUtils.printDate((Date) value));
                         } else {
                             jsonWriter.key(ad.getLocalName());
-                            jsonWriter.value(value);
+                            if ((value instanceof Double && Double.isNaN((Double) value))
+                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                                jsonWriter.value(null);
+                            } else if ((value instanceof Double
+                                            && ((Double) value) == Double.POSITIVE_INFINITY)
+                                    || value instanceof Float
+                                            && ((Float) value) == Float.POSITIVE_INFINITY) {
+                                jsonWriter.value("Infinity");
+                            } else if ((value instanceof Double
+                                            && ((Double) value) == Double.NEGATIVE_INFINITY)
+                                    || value instanceof Float
+                                            && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                                jsonWriter.value("-Infinity");
+                            } else {
+                                jsonWriter.value(value);
+                            }
                         }
                     }
                     jsonWriter.endObject(); // end the properties
@@ -446,7 +471,17 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return new FeaturesInfo(crs, hasGeom, featureCount);
     }
 
-    private String getIdOption() {
+    /**
+     * By spec the geometry should be there and null. This method allows subclasses to go outside of
+     * the spec and save some payload.
+     *
+     * @return
+     */
+    protected boolean writeNullGeometries() {
+        return true;
+    }
+
+    protected String getIdOption() {
         // include fid?
         String id_option = null; // null - default, "" - none, or "property"
         Request request = Dispatcher.REQUEST.get();

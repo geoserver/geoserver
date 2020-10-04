@@ -207,14 +207,14 @@ The ``fonts`` section is optional. It contains the path of the fonts you want to
 * Symbol
 * ZapfDingbats
 
-Host whitelist definition
--------------------------
+Host allow-list definition
+--------------------------
 
 In this section, you can put as many entries as you want, even for the same type of filter. If at least one matches, the Map server can be used.
 
 This section is not for defining which client can request maps. It is just here to avoid having the print module used as a proxy to access documents from computers behind firewalls.
 
-There are 3 ways to whitelist a host.
+There are 3 ways to allow-list a host.
 
 Allowing every local services:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

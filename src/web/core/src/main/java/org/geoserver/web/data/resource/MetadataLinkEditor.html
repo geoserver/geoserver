@@ -6,13 +6,19 @@
     <table wicket:id="table">
       <tr>
         <th><wicket:message key="type">Type</wicket:message></th>
+        <th><wicket:message key="about">About</wicket:message></th>
         <th><wicket:message key="format">Format</wicket:message></th>
         <th><wicket:message key="url">URL</wicket:message></th>
         <th></th>
       </tr>
       <tr wicket:id="links">
-        <td><select wicket:id="type"></select></td>
-        <td><input wicket:id="format" type="text" class="text"/></td>
+        <td><input wicket:id="type" type="text" list="commonTypes"></input>
+          <datalist id="commonTypes" style="display:none;">
+            <option wicket:id="commonTypes">KEY</option>
+          </datalist>
+        </td>
+        <td><input wicket:id="about" type="text" class="text"/></td>
+        <td><input wicket:id="format" type="text"/></td>
         <td><span wicket:id="urlBorder"><input wicket:id="metadataLinkURL" type="text" class="text"/></span></td>
         <td><a href="#" wicket:id="removeLink"><wicket:message key="remove">Remove</wicket:message></a></td>
       </tr>

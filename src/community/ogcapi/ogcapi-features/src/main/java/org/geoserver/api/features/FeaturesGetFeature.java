@@ -5,18 +5,15 @@
 
 package org.geoserver.api.features;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -25,7 +22,7 @@ import org.geoserver.wfs.request.Query;
 import org.geotools.util.logging.Logging;
 
 /** A subclass of GetFeature that builds proper API Feature nex/prev links */
-class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
+public class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
 
     static final Logger LOGGER = Logging.getLogger(FeaturesGetFeature.class);
 
@@ -64,42 +61,13 @@ class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
             return;
         }
         String collectionName = typeInfo.prefixedName();
-        String itemsPath =
-                "ogc/features/collections/" + ResponseUtils.urlEncode(collectionName) + "/items";
-
-        // clean up the KVP params, remove the ones that are not WFS3 specific
-        List<String> PARAMS_BLACKLIST =
-                Arrays.asList(
-                        "SERVICE",
-                        "VERSION",
-                        "REQUEST",
-                        "TYPENAME",
-                        "TYPENAMES",
-                        "COUNT",
-                        "OUTPUTFORMAT",
-                        "STARTINDEX",
-                        "LIMIT");
-        kvp = new CaseInsensitiveMap(kvp);
-        for (String param : PARAMS_BLACKLIST) {
-            kvp.remove(param);
-        }
-        // remove the SRSNAME if its value is 4326
-        if ("EPSG:4326".equals(kvp.get("SRSNAME"))) {
-            kvp.remove("SRSNAME");
-        }
+        String itemsPath = getItemsPath(collectionName);
 
         // in WFS3 params are normally lowercase (and are case sensitive)...
         // TODO: we might need a list of parameters and their "normalized case" for WFS3, we'll
         // wait for the filtering/crs extensions to show up before deciding exactly what exactly to
         // do
-        kvp =
-                kvp.entrySet()
-                        .stream()
-                        .collect(
-                                Collectors.toMap(
-                                        entry -> entry.getKey().toLowerCase(),
-                                        entry -> entry.getValue()));
-
+        kvp = APIRequestInfo.get().getSimpleQueryMap();
         // build prev link if needed
         if (offset > 0) {
             // previous offset calculated as the current offset - maxFeatures, or 0 if this is a
@@ -116,6 +84,10 @@ class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
             kvp.put("limit", String.valueOf(maxFeatures));
             result.setNext(buildURL(itemsPath, kvp));
         }
+    }
+
+    protected String getItemsPath(String collectionName) {
+        return "ogc/features/collections/" + ResponseUtils.urlEncode(collectionName) + "/items";
     }
 
     private String buildURL(String itemsPath, Map<String, String> kvp) {

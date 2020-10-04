@@ -24,7 +24,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     @Override
     protected void qualifyRequest(
             WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {
-        if (WebMapService.class.isInstance(service.getService())) {
+        if (WebMapService.class.isInstance(service.getService()) && request.getRawKvp() != null) {
             String layers = (String) request.getRawKvp().get("LAYERS");
             if (layers != null) {
                 request.getRawKvp().put("LAYERS", qualifyLayerNamesKVP(layers, ws));

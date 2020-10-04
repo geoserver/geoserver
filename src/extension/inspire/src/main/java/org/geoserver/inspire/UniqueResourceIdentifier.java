@@ -38,6 +38,10 @@ public class UniqueResourceIdentifier implements Serializable {
         this.metadataURL = metadataURL;
     }
 
+    public UniqueResourceIdentifier(UniqueResourceIdentifier identifier) {
+        this(identifier.code, identifier.namespace, identifier.metadataURL);
+    }
+
     public String getCode() {
         return code;
     }

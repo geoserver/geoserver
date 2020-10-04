@@ -37,10 +37,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
@@ -837,6 +849,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     @Test
     public void testXmlPost() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wms?", STATES_GETMAP);
+        checkImage(response);
+    }
+
+    @Test
+    public void testXmlPostWithWorkSpaceQualifier() throws Exception {
+        MockHttpServletResponse response = postAsServletResponse("sf/wms?", STATES_GETMAP);
         checkImage(response);
     }
 
@@ -1778,9 +1796,21 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         getClass().getResource("/geoserver/wfs-ng/wfs_response_4326.xml"),
                         "text/xml"));
 
+        URL remoteRequestURL3857 =
+                new URL(
+                        baseURL
+                                + "/wfs?PROPERTYNAME=the_geom&FILTER=%3Cogc%3AFilter+xmlns%3Axs%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3ABBOX%3E%3Cogc%3APropertyName%3Ethe_geom%3C%2Fogc%3APropertyName%3E%3Cgml%3AEnvelope+srsDimension%3D%222%22+srsName%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2Fsrs%2Fepsg.xml%233857%22%3E%3Cgml%3AlowerCorner%3E-1.1546746187616E7+5534640.824992%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-1.1542775460466E7+5538611.552142%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Fogc%3ABBOX%3E%3C%2Fogc%3AFilter%3E&TYPENAME=topp%3Aroads22&REQUEST=GetFeature&RESULTTYPE=RESULTS&OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&SRSNAME=EPSG%3A3857&VERSION=1.1.0&SERVICE=WFS");
+
+        client.expectGet(
+                remoteRequestURL3857,
+                new MockHttpResponse(
+                        getClass().getResource("/geoserver/wfs-ng/wfs_response_3857.xml"),
+                        "text/xml"));
+
         TestHttpClientProvider.bind(client, descURL);
         TestHttpClientProvider.bind(client, descFeatureURL);
         TestHttpClientProvider.bind(client, remoteRequestURL);
+        TestHttpClientProvider.bind(client, remoteRequestURL3857);
 
         // MOCKING Catalog
         URL url = getClass().getResource("/geoserver/wfs-ng/wfs_cap_110.xml");
@@ -1810,7 +1840,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         ((FeatureTypeInfoImpl) ftInfo).setStore(storeInfo);
         ((FeatureTypeInfoImpl) ftInfo).setMetadata(new MetadataMap());
         ftInfo.setSRS("EPSG:26713");
-        ftInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,EPSG:3857");
+        ftInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,urn:ogc:def:crs:EPSG::3857");
         getCatalog().add(ftInfo);
 
         // setting mock feature type as resource of Layer from Test Data
@@ -1837,10 +1867,26 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         + "&WIDTH=100&HEIGHT=100";
 
         BufferedImage wfsNGImage = getAsImage(wmsUrl, "image/png");
-        // ImageIO.write(wfsNGImage, "png", new File("D://cascaded_wfs_layer_response.png"));
         ImageAssert.assertEquals(
                 new File("./src/test/resources/geoserver/wfs-ng/cascaded_wfs_layer_response.png"),
                 wfsNGImage,
+                300);
+
+        // make a request in EPSG:3857, which should match the other SRS urn:ogc:def:crs:EPSG::3857
+        // assert that that remote request was made in urn:ogc:def:crs:EPSG::3857 format
+        // assert response
+        String wmsUrlURNSrs =
+                "wms?LAYERS=topp_roads22&styles=line"
+                        + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG%3A3857"
+                        + "&BBOX=-11546669.827478563,5534717.185129326,-11542851.820603596,5538535.192004295"
+                        + "&WIDTH=100&HEIGHT=100";
+
+        BufferedImage wfsNGImageURNSrs = getAsImage(wmsUrlURNSrs, "image/png");
+        ImageAssert.assertEquals(
+                new File(
+                        "./src/test/resources/geoserver/wfs-ng/cascaded_wfs_layer_response_3857.png"),
+                wfsNGImageURNSrs,
                 300);
     }
 
@@ -1938,6 +1984,22 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         "image/png");
 
         ImageAssert.assertEquals(expectedImage, response, 100);
+    }
+
+    @Test
+    public void testVendorOptionClipMosaic() throws Exception {
+        String clipPolygon = "POLYGON ((8 38, 10 38, 10 40, 8 40, 8 38))";
+        String url =
+                "wms?LAYERS=mosaic&"
+                        + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                        + "&BBOX=7,37,11,41&WIDTH=200&HEIGHT=200&bgcolor=0xFF0000"
+                        + "&CLIP="
+                        + clipPolygon;
+        BufferedImage response = getAsImage(url, "image/png");
+
+        File expected = new File("./src/test/resources/org/geoserver/wms/wms_clip_mosaic.png");
+        ImageAssert.assertEquals(expected, response, 100);
     }
 
     @Test

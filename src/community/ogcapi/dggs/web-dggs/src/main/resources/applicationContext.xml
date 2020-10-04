@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2020 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="dggsGeometryDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+        <property name="id" value="dggs-geometry" />
+        <property name="factoryClass"
+                  value="org.geotools.dggs.gstore.DGGSGeometryStoreFactory" />
+        <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+        <property name="icon" value="img/icons/geosilk/page_white_vector.png" />
+        <property name="componentClass"
+                  value="org.geoserver.web.data.store.dggs.DGGSGeometryStoreEditPanel" />
+    </bean>
+    
+    <bean id="rHealPixUICleaner" class="org.geoserver.web.data.store.dggs.SharedInterpreterUICleaner"/>
+</beans>

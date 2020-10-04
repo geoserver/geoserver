@@ -16,6 +16,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -25,10 +30,12 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.inspire.UniqueResourceIdentifier;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.ComponentBuilder;
@@ -39,7 +46,7 @@ import org.geoserver.wms.WMSInfo;
 import org.geotools.util.Converters;
 import org.junit.Test;
 
-public class InspirePanelTest extends GeoServerWicketTestSupport {
+public class InspirePanelTest extends GeoServerWicketTestSupport implements Serializable {
 
     private void startPage(final ServiceInfo serviceInfo) {
 
@@ -545,5 +552,101 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
         assertEquals(1, messages.size());
         String message = (String) ((ValidationErrorFeedback) messages.get(0)).getMessage();
         assertTrue(message.contains("Service Metadata URL"));
+    }
+
+    @Test
+    public void testSerializedModel() {
+        UniqueResourceIdentifier identifier =
+                new UniqueResourceIdentifier("one", "http://www.geoserver.org/one");
+        UniqueResourceIdentifiers identifiers = new UniqueResourceIdentifiers();
+        identifiers.add(identifier);
+        ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        clearInspireMetadata(serviceInfo.getMetadata());
+        serviceInfo.getMetadata().put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        serviceInfo.getMetadata().put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        serviceInfo.getMetadata().put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        serviceInfo.getMetadata().put(SPATIAL_DATASET_IDENTIFIER_TYPE.key, identifiers);
+        getGeoServer().save(serviceInfo);
+
+        ServiceModel model = new ServiceModel(WFSInfo.class);
+
+        tester.startPage(
+                new FormTestPage(
+                        new ComponentBuilder() {
+                            private static final long serialVersionUID = -5996984687607456244L;
+
+                            @Override
+                            public Component buildComponent(String id) {
+                                InspireAdminPanel adminPanel = new InspireAdminPanel(id, model);
+                                byte[] serialized;
+                                try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                                    try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
+                                        oos.writeObject(adminPanel);
+                                    }
+                                    serialized = os.toByteArray();
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                InspireAdminPanel adminPanel2;
+                                try (ByteArrayInputStream is =
+                                        new ByteArrayInputStream(serialized)) {
+                                    try (ObjectInputStream ois = new ObjectInputStream(is)) {
+                                        adminPanel2 = (InspireAdminPanel) ois.readObject();
+                                    }
+                                } catch (IOException | ClassNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                return adminPanel2;
+                            }
+                        }));
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue(
+                "panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers:container:"
+                        + "identifiers:listContainer:items:1:itemProperties:0:component:border:border_body:txt",
+                "two");
+        formTester.submit();
+
+        // test if it has been saved to the model of the page
+
+        ServiceModel pageModel =
+                (ServiceModel)
+                        tester.getComponentFromLastRenderedPage("form:panel").getDefaultModel();
+
+        identifier = new UniqueResourceIdentifier("two", "http://www.geoserver.org/one");
+        identifiers = new UniqueResourceIdentifiers();
+        identifiers.add(identifier);
+
+        assertEquals(
+                identifiers,
+                pageModel.getObject().getMetadata().get(SPATIAL_DATASET_IDENTIFIER_TYPE.key));
+    }
+
+    /** LoadableDetachable Service model like in real life */
+    private class ServiceModel extends LoadableDetachableModel<ServiceInfo> {
+
+        private static final long serialVersionUID = 7281859913779496011L;
+
+        /* reference via local workspace */
+        Class<? extends ServiceInfo> serviceClass;
+
+        /* direct reference */
+        ServiceInfo service;
+
+        ServiceModel(Class<? extends ServiceInfo> serviceClass) {
+            this.serviceClass = serviceClass;
+        }
+
+        @Override
+        protected ServiceInfo load() {
+            if (serviceClass != null) {
+                return getGeoServer().getService(serviceClass);
+            }
+            return service;
+        }
+
+        @Override
+        public void detach() {
+            service = null;
+        }
     }
 }

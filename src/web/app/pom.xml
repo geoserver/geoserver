@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.18-SNAPSHOT</version>
+    <version>2.19-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
@@ -512,6 +512,11 @@
     <profile>
       <id>app-schema</id>
       <dependencies>
+        <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-app-schema-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-app-schema</artifactId>
@@ -1755,6 +1760,16 @@
           <artifactId>gs-ogcapi-tiled-features</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-dggs</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-dggs</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1788,11 +1803,11 @@
       </dependencies>
     </profile>
     <profile>
-      <id>json-ld</id>
+      <id>features-templating</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-json-ld</artifactId>
+          <artifactId>gs-features-templating</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

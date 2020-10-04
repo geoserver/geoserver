@@ -64,4 +64,4 @@ The process limits editor shows all inputs for which a limit can be provided. An
 
    The process limit page, with input limits configured
 
-.. warning:: In order for the limits to be saved, click **both** :guilabel:`Apply` on this page and then :guilabel:`Submit` on the main WPS security page.
+.. warning:: In order for the limits to be saved: click on :guilabel:`OK` on this :guilabel:`Process limits` page; and then click :guilabel:`OK` on the :guilabel:`Process selection` page; and finally :guilabel:`Save` on the :guilabel:`WPS security` page.

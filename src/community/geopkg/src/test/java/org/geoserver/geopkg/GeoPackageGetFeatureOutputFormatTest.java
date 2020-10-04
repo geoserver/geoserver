@@ -68,7 +68,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         ;
         fct.getFeature().add(fs.getFeatures());
 
-        testGetFeature(fct, false);
+        testGetFeature(fct, true);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         fs = getFeatureSource(SystemTestData.STREAMS);
         fct.getFeature().add(fs.getFeatures());
 
-        testGetFeature(fct, false);
+        testGetFeature(fct, true);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         assertEquals(1, coll.size());
 
         fct.getFeature().add(coll);
-        testGetFeature(fct, false);
+        testGetFeature(fct, true);
     }
 
     @Test

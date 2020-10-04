@@ -99,7 +99,7 @@ letters in the first half of the alphabet,  the rule would look like::
 
 .. note:: 
     The current implementation of property filters uses ECQL syntax, described
-    on the `GeoTools documentation <http://docs.geotools.org/latest/userguide/library/cql/index.html>`_.
+    on the :geotools:`GeoTools documentation <library/cql/index.html>`.
 
 Filtering on type
 -----------------

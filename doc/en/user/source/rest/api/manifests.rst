@@ -78,8 +78,8 @@ Below is the default implementation that is used when no custom properties file 
 where:
 
 * ``resourceNameRegex``—Group(1) will be used to match the attribute name of the resource.
-* ``resourceAttributeExclusions``—Comma-separated list of properties to exclude (blacklist), used to exclude parameters that are too verbose such that the resource properties list is left open. Users can add their JARs (with custom properties) having the complete list of properties.
-* ``versionAttributeInclusions``—Comma-separated list of properties to include (whitelist). Also supports renaming properties (using ``key:replace``) which is used to align the output of the ``versions`` request to the output of the web page. The model uses a map to store attributes, so the last attribute found in the manifest file will be used.
+* ``resourceAttributeExclusions``—Comma-separated list of properties to exclude (deny-list), used to exclude parameters that are too verbose such that the resource properties list is left open. Users can add their JARs (with custom properties) having the complete list of properties.
+* ``versionAttributeInclusions``—Comma-separated list of properties to include (allow-list). Also supports renaming properties (using ``key:replace``) which is used to align the output of the ``versions`` request to the output of the web page. The model uses a map to store attributes, so the last attribute found in the manifest file will be used.
 
 
 .. _rest_api_manifests_manifest:

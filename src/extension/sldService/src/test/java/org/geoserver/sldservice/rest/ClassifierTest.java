@@ -2448,7 +2448,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 int i2 = label.indexOf("%)");
                 percentagesSum += Double.valueOf(label.substring(i + 1, i2));
                 Matcher matcher = rgx.matcher(e.getLabel());
-                matcher.find();
+                assertTrue(matcher.find());
             }
         }
         assertTrue(100.0 == percentagesSum);
@@ -2536,5 +2536,117 @@ public class ClassifierTest extends SLDServiceBaseTest {
             assertTrue(rgxMatcher.find());
         }
         assertTrue(percentagesSum == 100.0);
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterCustomZeroValues() throws Exception {
+        // test custom classes with intervals outside data values
+        // to test 0.0% value is put inside labels
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "customClasses=100000,800000,#FF0000;800000,1600000,#00FF00&fullSLD=true"
+                        + "&percentages=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(3, entries.length);
+        for (ColorMapEntry e : entries) {
+            if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                assertEquals(0d, Double.valueOf(label.substring(i + 1, i2)), 0d);
+            }
+        }
+    }
+
+    @Test
+    public void testPercentagesInRuleLabelsVectorCustomZeroValues() throws Exception {
+        // test custom classes with intervals outside data values
+        // to test 0.0% value is put inside labels
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&customClasses=10000,30000,#FF0000;30000,50000,#00FF00"
+                        + "&percentages=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        assertTrue(rules.length == 2);
+        for (Rule r : rules) {
+            r.getDescription().getTitle().toString().contains("(0.0%)");
+        }
+    }
+
+    @Test
+    public void testStandardDeviationClassificationVectors() throws Exception {
+
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&ramp=red&method=standardDeviation"
+                        + "&intervals=5";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(domArea, baos);
+        String result = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkSLD(result.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+
+        assertEquals(" < -8.463556903291966", rules[0].getDescription().getTitle().toString());
+        assertEquals(
+                " >= -8.463556903291966 AND <19.428814365569345",
+                rules[1].getDescription().getTitle().toString());
+        assertEquals(
+                " >= 19.428814365569345 AND <47.321185634430655",
+                rules[2].getDescription().getTitle().toString());
+        assertEquals(
+                " >= 47.321185634430655 AND <75.21355690329196",
+                rules[3].getDescription().getTitle().toString());
+        assertEquals(" >= 75.21355690329196", rules[4].getDescription().getTitle().toString());
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsVectorsStandardDeviation() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPathArea =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=bar&ramp=red&method=standardDeviation"
+                        + "&intervals=4&open=true&percentages=true";
+        Document domArea = getAsDOM(restPathArea, 200);
+        print(domArea);
+        ByteArrayOutputStream baosArea = new ByteArrayOutputStream();
+        print(domArea, baosArea);
+        String resultArea = baosArea.toString().replace("\r", "").replace("\n", "");
+        Rule[] rulesArea =
+                checkSLD(resultArea.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
+        double percentagesSum = 0d;
+        for (Rule r : rulesArea) {
+            Matcher rgxMatcher = rgx.matcher(r.getDescription().getTitle());
+            assertTrue(rgxMatcher.find());
+            String label = r.getDescription().getTitle().toString();
+            int i = label.lastIndexOf("(");
+            int i2 = label.indexOf("%)");
+            percentagesSum += Double.valueOf(label.substring(i + 1, i2));
+        }
+        assertEquals(100d, percentagesSum, 0d);
     }
 }

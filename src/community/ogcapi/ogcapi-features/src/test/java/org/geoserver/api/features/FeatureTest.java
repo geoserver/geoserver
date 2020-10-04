@@ -341,7 +341,7 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testFirstPage() throws Exception {
         String expectedNextURL =
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?startIndex=3&limit=3";
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/items?limit=3&startIndex=3";
 
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =

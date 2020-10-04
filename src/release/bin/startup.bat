@@ -30,7 +30,7 @@ goto checkDataDir
 
 :trySystemJava
   echo The JAVA_HOME environment variable is not defined, trying to use System Java
-for /f %%i in ('where java') do set RUN_JAVA=%%i
+for /f "tokens=*" %%i in ('where java') do set RUN_JAVA=%%i
 rem --- we might be on amd64 having only x86 jre installed ---
 if "%RUN_JAVA%"=="" if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE%"=="x86" (
     rem --- restart the batch in x86 mode---

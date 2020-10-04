@@ -14,11 +14,11 @@
       <input wicket:id="uriValue" type="text" size="60"/>
       <p class="instruct"><wicket:message key="setURIasNamespace">Set a valid URI (Universal Resource Identifier) as namespace.</wicket:message></p>
     </li>
-    <li class="button-group selfclear">
-      <input class="btnTxt" wicket:id="submit" type="submit"><wicket:message key="submit"/>
-      <input class="btnTxt" wicket:id="cancel" type="submit"><wicket:message key="cancel"/>
-    </li>
   </ul>
+  <div class="button-group toolbar-sticky selfclear">
+    <input class="form-button-save" wicket:id="submit" type="submit"><wicket:message key="save"/>
+    <input class="form-button-cancel" wicket:id="cancel" type="submit"><wicket:message key="cancel"/>
+  </div>
 <div wicket:id="feedback"></div>
 </form>
 </wicket:extend>

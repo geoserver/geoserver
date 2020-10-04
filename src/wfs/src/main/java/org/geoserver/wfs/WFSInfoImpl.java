@@ -23,6 +23,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean hitsIgnoreMaxFeatures = false;
     protected List<String> srs = new ArrayList<String>();
     protected Boolean allowGlobalQueries = true;
+    protected Boolean simpleConversionEnabled = false;
 
     public WFSInfoImpl() {}
 
@@ -122,6 +123,16 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
 
     @Override
+    public boolean isSimpleConversionEnabled() {
+        return simpleConversionEnabled == null ? false : simpleConversionEnabled;
+    }
+
+    @Override
+    public void setSimpleConversionEnabled(boolean simpleConversionEnabled) {
+        this.simpleConversionEnabled = simpleConversionEnabled;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -134,6 +145,11 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
         result = prime * result + (allowGlobalQueries == null ? 0 : allowGlobalQueries.hashCode());
+        result =
+                prime * result
+                        + (simpleConversionEnabled == null
+                                ? 0
+                                : simpleConversionEnabled.hashCode());
         return result;
     }
 

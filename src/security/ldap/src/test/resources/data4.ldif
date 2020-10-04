@@ -57,6 +57,7 @@ cn: extra
 member: uid=extra,ou=People,dc=example,dc=com
 member: cn=nested,ou=Groups,dc=example,dc=com
 
+
 dn: uid=extra,ou=People,dc=example,dc=com
 objectClass: top
 objectClass: inetOrgPerson
@@ -83,3 +84,27 @@ objectClass: top
 objectClass: groupOfNames
 cn: nested
 member: uid=nestedUser,ou=People,dc=example,dc=com
+
+dn: cn=nested5,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: nested5
+member: uid=nestedUser,ou=People,dc=example,dc=com
+
+dn: cn=nested2,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: nested2
+member: cn=nested,ou=Groups,dc=example,dc=com
+
+dn: cn=nested3,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: nested3
+member: cn=nested,ou=Groups,dc=example,dc=com
+
+dn: cn=nested4,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: nested4
+member: cn=nested3,ou=Groups,dc=example,dc=com

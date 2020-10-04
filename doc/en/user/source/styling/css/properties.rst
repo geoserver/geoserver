@@ -52,7 +52,7 @@ Point symbology
       * no
     - * ``mark-label-obstacle``
       * boolean
-      * If true the point symbol will be consider an obstable for labels, no label will overlap it
+      * If true the point symbol will be considered an obstacle for labels, no label will overlap it
       * no
     - * ``mark-anchor``
       * expression 
@@ -147,7 +147,7 @@ Line symbology
       * no
     - * ``stroke-label-obstacle``
       * boolean
-      * If true the line will be consider an obstable for labels, no label will overlap it
+      * If true the line will be considered an obstacle for labels, no label will overlap it
       * no
 
 .. _css_properties_polygon:
@@ -197,7 +197,7 @@ Polygon symbology
       * no
     - * ``fill-label-obstacle``
       * boolean
-      * If true the polygon will be consider an obstable for labels, no label will overlap it
+      * If true the polygon will be considered an obstacle for labels, no label will overlap it
       * no
     - * ``graphic-margin``
       * List of lengths
@@ -217,7 +217,7 @@ Polygon symbology
       * no
     - * ``random-symbol-count``
       * positive integer number
-      * Number of suymbols to be placed in the texture fill tile. May not be respected due to location conflicts (no two symbols are allowed to overlap). Defaults to 16.
+      * Number of symbols to be placed in the texture fill tile. May not be respected due to location conflicts (no two symbols are allowed to overlap). Defaults to 16.
       * no
     - * ``random-tile-size``
       * positive integer number
@@ -226,8 +226,8 @@ Polygon symbology
 
 .. _css_properties_text1:
 
-Text symbology (labeling) - part 1
-----------------------------------
+Text symbology (labelling) - part 1
+-----------------------------------
 
 .. list-table:: 
     :widths: 15 15 60 10
@@ -253,7 +253,7 @@ Text symbology (labeling) - part 1
       * yes
     - * ``label-offset``
       * expression 
-      * This is for fine-tuning label-anchor. x and y values specify pixels to adjust the label position. For lines, a single value will make the label be parallel to the line, at the given distance, while two values will force a point style placement, with the label painted horizonally at the center of the line (plus the given offsets)
+      * This is for fine-tuning label-anchor. x and y values specify pixels to adjust the label position. For lines, a single value will make the label be parallel to the line, at the given distance, while two values will force a point style placement, with the label painted horizontally at the center of the line (plus the given offsets)
       * yes
     - * ``label-rotation``
       * expression 
@@ -272,7 +272,7 @@ Text symbology (labeling) - part 1
       * The type of the image referenced by a url()
       * No, defaults to 'image/jpeg'
     - * ``shield-placement``
-      * one of ``label``, ``indipendent``, defaults to ``label``
+      * one of ``label``, ``independent``, defaults to ``label``
       * Placement of the shield relative to the label. The default is ``label``, meaning the shield
         will move along with the label and be centered with it (classic road shield). ``independent``
         places the shield independently instead, using its own anchor and offset properties. The latter
@@ -340,7 +340,7 @@ Text symbology (labeling) - part 1
     - * ``label-group``
       * one of: ``true`` or ``false``
       * If true, the render will treat features with the same label text as a
-        single feature for the purpose of labeling.  This is equivalent to the 
+        single feature for the purpose of labelling.  This is equivalent to the 
         :ref:`group<labeling_group>` vendor parameter.
       * no
     - * ``label-max-displacement``
@@ -353,8 +353,8 @@ Text symbology (labeling) - part 1
 
 .. _css_properties_text2:
 
-Text symbology (labeling) - part 2
-----------------------------------
+Text symbology (labelling) - part 2
+-----------------------------------
 
 .. list-table:: 
     :widths: 15 15 60 10
@@ -435,14 +435,14 @@ Text symbology (labeling) - part 2
     - * ``label-priority``
       * expression
       * Specifies an expression to use in determining which
-        features to prefer if there are labeling conflicts.  This is equivalent
+        features to prefer if there are labelling conflicts.  This is equivalent
         to the :ref:`Priority<labeling_priority>` SLD extension.
       * yes
  
 .. _css_properties_text3:
 
-Text symbology (labeling) - part 3
-----------------------------------
+Text symbology (labelling) - part 3
+-----------------------------------
 
 .. list-table:: 
     :widths: 15 15 60 10
@@ -498,7 +498,7 @@ Raster symbology
       * Accepts Expression?
     - * ``raster-channels``
       * string
-      * The list of raster channels to be used in the output. It can be "auto" to make the renderer choose the best course of action, or a list of band numbers, a single one will generate a gray image, three will generate an RGB one, four will generate a RGBA one. E.g., "1 3 7" to choose the first, third and seventh band of the input raster to make a RGB image
+      * The list of raster channels to be used in the output. It can be "auto" to make the renderer choose the best course of action, or a list of band numbers, a single one will generate a gray image, three will generate an RGB one, four will generate a RGBA one. E.g., "1 3 7" to choose the first, third and seventh band of the input raster to make an RGB image
       * no
     - * ``raster-composite``
       * string 
@@ -510,7 +510,7 @@ Raster symbology
       * yes
     - * ``raster-opacity``
       * floating point
-      * A value comprised between 0 and 1, 0 meaning completely transparent, 1 meaning completely opaque. This controls the whole raster trasparency. 
+      * A value comprised between 0 and 1, 0 meaning completely transparent, 1 meaning completely opaque. This controls the whole raster transparency. 
       * no
     - * ``raster-contrast-enhancement``
       * string
@@ -526,7 +526,7 @@ Raster symbology
       * no
     - * ``raster-color-map``
       * string
-      * Applies a color map to single banded input. The contents is a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1 and label will have a null value), or ``color-map-entry(color, value, opacity, label)``. The values must be provided in increasing order.
+      * Applies a color map to single banded input. The contents are a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1 and label will have a null value), or ``color-map-entry(color, value, opacity, label)``. The values must be provided in increasing order.
       * no
     - * ``raster-color-map-type``
       * string
@@ -575,7 +575,7 @@ Shared
       * no
     - * ``transform``
       * function
-      * Applies a rendering transformationon the current level. The function syntax is ``txName(key1:value1,key1:value2)``. Values can be single ones, or space separated lists. 
+      * Applies a rendering transformation on the current level. The function syntax is ``txName(key1:value1,key1:value2)``. Values can be single ones, or space separated lists. 
       * no
     
 .. _css_properties_symbol:

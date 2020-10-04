@@ -8,8 +8,10 @@ package org.geoserver.api;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,8 +44,6 @@ public class APIRequestInfo {
     String baseURL;
     List<MediaType> requestedMediaTypes;
     APIDispatcher dispatcher;
-
-    private Map<String, String[]> queryMap;
 
     /**
      * Constructs a {@link APIRequestInfo} object, generating content based on the passed request.
@@ -84,8 +84,30 @@ public class APIRequestInfo {
                 requestAttributes.getAttribute(APIRequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
     }
 
-    public Map<String, String[]> getQueryMap() {
-        return queryMap;
+    /**
+     * Returns the query map as a simple String to String map, removing eventual repeated parameters
+     * and empty ones
+     *
+     * @return
+     */
+    public Map<String, String> getSimpleQueryMap() {
+        Map<String, String[]> queryMap = request.getParameterMap();
+        if (queryMap == null) {
+            return null;
+        }
+
+        // create a normalized map
+        Map<String, String> result = new LinkedHashMap<>();
+
+        for (Map.Entry<String, String[]> entry : queryMap.entrySet()) {
+            String key = entry.getKey();
+            Arrays.stream(entry.getValue())
+                    .filter(v -> v != null && !v.isEmpty())
+                    .findFirst()
+                    .ifPresent(v -> result.put(key, v));
+        }
+
+        return result;
     }
 
     /** Sets the provided APIRequestInfo into the {@link RequestContextHolder} */
@@ -192,5 +214,16 @@ public class APIRequestInfo {
                         () ->
                                 new RuntimeException(
                                         "Could not find a service base URL at this stage, maybe the service has not been dispatched yet"));
+    }
+
+    /**
+     * The current request path, with the base path removed. Useful to build self links
+     *
+     * @return
+     */
+    public String getRequestPath() {
+        String pathInfo = request.getPathInfo();
+        String servletPath = request.getServletPath();
+        return ResponseUtils.appendPath(servletPath, pathInfo);
     }
 }

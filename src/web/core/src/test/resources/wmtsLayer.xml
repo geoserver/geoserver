@@ -1,0 +1,16 @@
+<layer>
+  <name>bmapgelaende</name>
+  <id>LayerInfoImpl-3f2427e:172cbb93637:-7ffd</id>
+  <type>WMTS</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="wmtsLayer">
+    <id>WMTSLayerInfoImpl-3f2427e:172cbb93637:-7ffe</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-06-19 09:06:39.272 UTC</dateCreated>
+</layer>

@@ -28,8 +28,8 @@ public class ServiceEdits implements GSRModel {
                 new Comparator<LayerEdits>() {
                     @Override
                     public int compare(LayerEdits o1, LayerEdits o2) {
-                        if (o1.getId() == o2.getId()) return 0;
-                        return o1.getId() < o2.getId() ? -1 : 1;
+                        if (o1.getId().intValue() == o2.getId().intValue()) return 0;
+                        return o1.getId().intValue() < o2.getId().intValue() ? -1 : 1;
                     }
                 });
     }

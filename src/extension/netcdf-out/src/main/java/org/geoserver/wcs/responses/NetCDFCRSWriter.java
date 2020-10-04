@@ -35,9 +35,9 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
+import org.opengis.referencing.crs.GeneralDerivedCRS;
+import org.opengis.referencing.operation.Conversion;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.Projection;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -292,17 +292,17 @@ class NetCDFCRSWriter {
             CoordinateReferenceSystem crs,
             Variable var,
             NetCDFProjection projection) {
-        if (!(crs instanceof ProjectedCRS)) {
+        if (!(crs instanceof GeneralDerivedCRS)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(
-                        "The provided CRS is not a projected CRS\n"
+                        "The provided CRS is not a projected or derived CRS\n"
                                 + "No projection information needs to be added");
             }
             return;
         }
         Map<String, String> referencingToNetCDFParameters = projection.getParameters();
-        ProjectedCRS projectedCRS = (ProjectedCRS) crs;
-        Projection conversionFromBase = projectedCRS.getConversionFromBase();
+        GeneralDerivedCRS projectedCRS = (GeneralDerivedCRS) crs;
+        Conversion conversionFromBase = projectedCRS.getConversionFromBase();
         if (conversionFromBase != null) {
 
             // getting the list of parameters needed for the NetCDF mapping

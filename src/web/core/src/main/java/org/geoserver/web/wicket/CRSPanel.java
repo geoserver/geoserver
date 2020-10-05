@@ -8,6 +8,7 @@ package org.geoserver.web.wicket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -69,6 +70,8 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
 
     protected SRSProvider srsProvider = new SRSProvider();
 
+    boolean useSRSFromList = false;
+
     /**
      * Constructs the CRS panel.
      *
@@ -122,6 +125,27 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     public CRSPanel(String id, IModel<CoordinateReferenceSystem> model, List<String> otherSRS) {
         super(id, model);
         this.srsProvider = new SRSProvider(otherSRS);
+        initComponents();
+    }
+
+    /**
+     * Constructs the CRS panel with an explicit model.
+     *
+     * @param id The component id.
+     * @param model The model, usually a {@link PropertyModel}.
+     * @param otherSRS list of srs to show in popup
+     * @param useSRSFromList flag to ensure the srsTextField is always populated with SRS code from
+     *     srs items from otherSRS items. This will ensure that non EPSG:XXX formats will stay
+     *     intact on GUI and Catalog
+     */
+    public CRSPanel(
+            String id,
+            IModel<CoordinateReferenceSystem> model,
+            List<String> otherSRS,
+            boolean useSRSFromList) {
+        super(id, model);
+        this.srsProvider = new SRSProvider(otherSRS);
+        this.useSRSFromList = useSRSFromList;
         initComponents();
     }
 
@@ -223,6 +247,28 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         setConvertedInput(crs);
     }
 
+    private String getSupportedSRS(CoordinateReferenceSystem crs) {
+
+        List<String> supportedSRSList =
+                this.srsProvider
+                        .getItems()
+                        .stream()
+                        .map(srsObject -> srsObject.getCode())
+                        .collect(Collectors.toList());
+
+        for (String supportedSRS : supportedSRSList) {
+            try {
+                if (CRS.equalsIgnoreMetadata(CRS.decode(supportedSRS), crs)) {
+                    return supportedSRS;
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Unknown code " + supportedSRS, e);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Subclasses can override to perform custom behaviors when the SRS is updated, which happens
      * either when the text field is left or when the find dialog returns
@@ -269,6 +315,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
             if (crs != null) {
                 Integer epsgCode = CRS.lookupEpsgCode(crs, false);
                 String srs = srsTextField.getModelObject();
+                if (useSRSFromList) srs = getSupportedSRS(crs);
                 // do not append
                 if (srs != null
                         && srs.contains(

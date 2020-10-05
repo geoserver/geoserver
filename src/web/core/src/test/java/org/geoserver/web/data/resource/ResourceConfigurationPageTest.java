@@ -459,6 +459,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
                         .getDefaultModelObjectAsString();
         assertFalse(newNativeSRS.equalsIgnoreCase(actualNativeSRS));
+        assertTrue(newNativeSRS.equalsIgnoreCase("urn:ogc:def:crs:EPSG::4326"));
 
         // click submit and go back to LayerPage
         FormTester ft = tester.newFormTester("publishedinfo");

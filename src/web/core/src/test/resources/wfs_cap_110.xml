@@ -191,7 +191,7 @@
 				<ows:Keyword>roads</ows:Keyword>
 			</ows:Keywords>
 			<DefaultSRS>EPSG:26713</DefaultSRS>
-			<OtherSRS>EPSG:4326</OtherSRS>
+			<OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
 			<OtherSRS>EPSG:3857</OtherSRS>
 			<ows:WGS84BoundingBox>
 				<ows:LowerCorner>-103.87779468316292 44.37288961726252</ows:LowerCorner>

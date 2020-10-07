@@ -215,7 +215,7 @@ public abstract class GeoServerLoader {
                                 "Layer '" + l.getName() + "' references a missing style");
                     }
                 }
-                
+
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Failed to load layer " + lc.resource.name(), e);
             }

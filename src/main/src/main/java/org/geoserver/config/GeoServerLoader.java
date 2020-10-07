@@ -210,10 +210,9 @@ public abstract class GeoServerLoader {
 
                 for (StyleInfo style : l.getStyles()) {
                     if (null == style) {
-                        LOGGER.log(Level.SEVERE, 
-                                "Layer '" 
-                                        + l.getName()
-                                        + "' references a missing style");
+                        LOGGER.log(
+                                Level.SEVERE,
+                                "Layer '" + l.getName() + "' references a missing style");
                     }
                 }
                 

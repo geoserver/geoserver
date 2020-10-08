@@ -339,10 +339,9 @@ public class PreviewLayer {
      * @param serviceName "WFS" or "WMS"
      */
     public boolean hasServiceSupport(String serviceName) {
-        LayerInfo linfo = GeoServerApplication.get().getCatalog().getLayerByName(this.getName());
-        if (linfo != null && linfo.getResource() != null && serviceName != null) {
+        if (layerInfo != null && layerInfo.getResource() != null && serviceName != null) {
             List<String> disabledServices =
-                    DisabledServiceResourceFilter.disabledServices(linfo.getResource());
+                    DisabledServiceResourceFilter.disabledServices(layerInfo.getResource());
             return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
         }
         // layer group and backward compatibility

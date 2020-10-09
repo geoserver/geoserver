@@ -38,6 +38,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.geofence.core.model.IPAddressRange;
 import org.geoserver.geofence.core.model.LayerAttribute;
 import org.geoserver.geofence.core.model.LayerDetails;
 import org.geoserver.geofence.core.model.RuleLimits;
@@ -405,7 +406,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         protected DropDownChoice<CatalogMode> catalogModeChoice;
 
         protected TextArea<String> allowedArea;
-
+        
         protected Label allowedAreaLabel;
 
         protected Label catalogModeChoiceLabel;
@@ -414,6 +415,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             super(id);
 
             add(new TextField<>("priority", ruleFormModel.bind("rule.priority")).setRequired(true));
+            
             add(
                     roleChoice =
                             new DropDownChoice<>(
@@ -564,6 +566,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         }
                     });
 
+            add(new TextField<String>("addressRange", ruleFormModel.bind("rule.addressRange")));
+
             add(
                     grantTypeChoice =
                             new DropDownChoice<>(
@@ -602,6 +606,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                                     && !layerChoice.getConvertedInput().isEmpty());
                         }
                     });
+            
 
             add(
                     allowedAreaLabel =
@@ -645,6 +650,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             catalogModeChoice.setOutputMarkupId(true);
             catalogModeChoice.setOutputMarkupPlaceholderTag(true);
         }
+
+		
     }
 
     protected class LayerDetailsPanel extends Panel {

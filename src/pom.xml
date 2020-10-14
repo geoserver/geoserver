@@ -620,7 +620,7 @@
    <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
-    <version>4.12</version>
+    <version>4.13.1</version>
     <scope>test</scope>
    </dependency>
    <dependency>
@@ -1977,7 +1977,7 @@
   <image.tests>true</image.tests>
   <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
-  <gf.version>3.4.2</gf.version>
+  <gf.version>3.5-SNAPSHOT</gf.version>
   <jasypt.version>1.9.2</jasypt.version>
   <hibernate-version>3.6.9.Final</hibernate-version>
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>

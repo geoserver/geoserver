@@ -6,7 +6,7 @@ package org.geoserver.web;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.apache.wicket.util.tester.TagTester;
 import org.junit.Test;

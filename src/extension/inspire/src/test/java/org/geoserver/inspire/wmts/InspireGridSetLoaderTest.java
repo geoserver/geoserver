@@ -7,7 +7,7 @@ package org.geoserver.inspire.wmts;
 import static org.geoserver.inspire.wmts.InspireGridSetLoader.INSPIRE_GRID_SET_NAME;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.geoserver.gwc.GWC;
 import org.geoserver.test.GeoServerSystemTestSupport;

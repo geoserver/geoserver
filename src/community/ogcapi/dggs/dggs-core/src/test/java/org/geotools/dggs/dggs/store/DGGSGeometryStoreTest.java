@@ -24,7 +24,7 @@ import static org.geotools.dggs.gstore.DGGSGeometryStore.ZONE_ID;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.io.Serializable;

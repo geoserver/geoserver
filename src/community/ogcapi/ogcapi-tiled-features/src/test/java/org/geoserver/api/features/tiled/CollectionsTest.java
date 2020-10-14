@@ -6,7 +6,7 @@ package org.geoserver.api.features.tiled;
 
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.data.test.MockData;

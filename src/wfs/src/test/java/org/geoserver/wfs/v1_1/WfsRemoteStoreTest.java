@@ -7,7 +7,7 @@ package org.geoserver.wfs.v1_1;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.net.URL;
 import org.geoserver.catalog.CascadeDeleteVisitor;

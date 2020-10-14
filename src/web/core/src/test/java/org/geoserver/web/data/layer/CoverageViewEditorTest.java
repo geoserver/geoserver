@@ -5,7 +5,7 @@
 package org.geoserver.web.data.layer;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.xml.namespace.QName;
 import org.apache.wicket.markup.html.form.Button;

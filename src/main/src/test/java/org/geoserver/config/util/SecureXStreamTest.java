@@ -8,7 +8,7 @@ package org.geoserver.config.util;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.geoserver.config.util.SecureXStream.ForbiddenClassExceptionEx;
 import org.geoserver.util.PropertyRule;

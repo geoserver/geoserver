@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.wicket.browser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import org.apache.wicket.Component;

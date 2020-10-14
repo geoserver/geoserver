@@ -5,7 +5,8 @@
  */
 package org.geoserver.web.data.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.web.StringValidatable;
 import org.geoserver.web.data.resource.BasicResourceConfig.ResourceNameValidator;

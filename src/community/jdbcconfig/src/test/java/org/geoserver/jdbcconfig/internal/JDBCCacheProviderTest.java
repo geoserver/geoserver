@@ -4,12 +4,14 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
-import com.google.common.cache.Cache;
 import java.io.Serializable;
+
 import org.geoserver.util.CacheProvider;
 import org.junit.Test;
+
+import com.google.common.cache.Cache;
 
 /**
  * Test class for the {@link JDBCCacheProvider}

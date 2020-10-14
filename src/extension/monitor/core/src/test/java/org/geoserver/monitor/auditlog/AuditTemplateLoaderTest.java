@@ -4,14 +4,16 @@
  */
 package org.geoserver.monitor.auditlog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
-import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
+
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.TemplateUtils;
 import org.junit.Test;
+
+import freemarker.template.Configuration;
 
 public class AuditTemplateLoaderTest {
 

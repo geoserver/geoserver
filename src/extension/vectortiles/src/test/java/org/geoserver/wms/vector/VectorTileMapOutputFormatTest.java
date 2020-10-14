@@ -5,11 +5,18 @@
 package org.geoserver.wms.vector;
 
 import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
 import org.apache.wicket.spring.test.ApplicationContextMock;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.config.GeoServerLoader;
@@ -62,6 +70,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.google.common.collect.ImmutableSet;
 
 public class VectorTileMapOutputFormatTest {
 

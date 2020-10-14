@@ -9,14 +9,16 @@
  */
 package org.geoserver.gsr.controller.map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,6 +30,9 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.gsr.JsonSchemaTest;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class QueryControllerTimeTest extends ControllerTest {
     public static final QName TIME_ELEVATION =

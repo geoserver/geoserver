@@ -4,7 +4,8 @@
  */
 package org.geoserver.fgdb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.ogr.OGRDataStoreFactory;

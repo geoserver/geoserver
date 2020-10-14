@@ -9,10 +9,11 @@
  */
 package org.geoserver.gsr.model.renderer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.geoserver.gsr.JsonSchemaTest;
 import org.geoserver.gsr.model.symbol.Outline;
 import org.geoserver.gsr.model.symbol.SimpleFillSymbol;

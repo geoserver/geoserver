@@ -6,14 +6,21 @@
 
 package org.geoserver.util;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -23,16 +30,16 @@ import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.IAnswer;
 import org.geotools.util.logging.LoggerAdapter;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 import org.junit.internal.AssumptionViolatedException;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 public class LoggerRuleTest {
 
-    @Rule public ExpectedException exception = ExpectedException.none();
+    // @Rule public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testDoNothingUntilRun() {
@@ -120,9 +127,16 @@ public class LoggerRuleTest {
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
 
-        exception.expect(sameInstance(ex));
         try {
-            s.evaluate();
+            Assert.assertThrows(
+                    IllegalArgumentException.class,
+                    new ThrowingRunnable() {
+
+                        @Override
+                        public void run() throws Throwable {
+                            s.evaluate();
+                        }
+                    });
         } finally {
             verify(log, desc, base);
         }
@@ -322,8 +336,9 @@ public class LoggerRuleTest {
             if (!ex.getMessage().equals("LoggerRule can't capture logs for LoggerAdapter")) {
                 throw ex;
             }
-            // Eventually hopefully we can handle this case and we can fail if this particular
-            // assumption failure occurs.  For now it's a pass rather than an ignore.
+            // Eventually hopefully we can handle this case and we can fail if this
+            // particular
+            // assumption failure occurs. For now it's a pass rather than an ignore.
         } finally {
             verify(log, desc, base);
         }

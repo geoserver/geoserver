@@ -6,12 +6,16 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
 import javax.imageio.ImageIO;
+
 import org.apache.commons.io.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;

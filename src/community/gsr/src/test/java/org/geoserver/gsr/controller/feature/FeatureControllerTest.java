@@ -9,13 +9,15 @@
  */
 package org.geoserver.gsr.controller.feature;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 public class FeatureControllerTest extends ControllerTest {
     private String query(String service, String layer, String feature, String params) {

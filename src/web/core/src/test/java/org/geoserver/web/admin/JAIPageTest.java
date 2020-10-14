@@ -5,7 +5,9 @@
  */
 package org.geoserver.web.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.sun.media.jai.mlib.MlibWarpRIF;
 import com.sun.media.jai.opimage.WarpRIF;

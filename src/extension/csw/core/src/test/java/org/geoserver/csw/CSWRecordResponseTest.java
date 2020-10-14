@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -19,11 +19,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.xml.transform.TransformerException;
-import net.opengis.cat.csw20.Csw20Factory;
-import net.opengis.cat.csw20.ElementSetType;
-import net.opengis.cat.csw20.GetRecordsType;
-import net.opengis.cat.csw20.RequestBaseType;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -47,6 +45,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import net.opengis.cat.csw20.Csw20Factory;
+import net.opengis.cat.csw20.ElementSetType;
+import net.opengis.cat.csw20.GetRecordsType;
+import net.opengis.cat.csw20.RequestBaseType;
 
 public class CSWRecordResponseTest extends CSWSimpleTestSupport {
 

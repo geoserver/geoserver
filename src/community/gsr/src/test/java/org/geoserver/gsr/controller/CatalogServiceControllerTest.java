@@ -9,13 +9,15 @@
  */
 package org.geoserver.gsr.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.jsoup.nodes.Document;
+import org.junit.Test;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.jsoup.nodes.Document;
-import org.junit.Test;
 
 public class CatalogServiceControllerTest extends ControllerTest {
 

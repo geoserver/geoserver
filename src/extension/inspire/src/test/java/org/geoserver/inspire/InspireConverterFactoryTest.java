@@ -4,7 +4,7 @@
  */
 package org.geoserver.inspire;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geotools.util.Converters;
 import org.junit.Test;

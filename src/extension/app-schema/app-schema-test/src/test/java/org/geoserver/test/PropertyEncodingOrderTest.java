@@ -5,7 +5,7 @@
  */
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Test;

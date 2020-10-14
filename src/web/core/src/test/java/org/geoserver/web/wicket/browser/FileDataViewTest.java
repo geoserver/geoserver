@@ -6,7 +6,7 @@
 package org.geoserver.web.wicket.browser;
 
 import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;

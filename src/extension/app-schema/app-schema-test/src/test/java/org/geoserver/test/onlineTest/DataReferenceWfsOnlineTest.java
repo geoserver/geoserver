@@ -5,13 +5,16 @@
  */
 package org.geoserver.test.onlineTest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
 import org.geoserver.wfs.WFSInfo;

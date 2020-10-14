@@ -6,12 +6,13 @@
 
 package org.geoserver.ysld;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.PrintWriter;
+
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.SLD;

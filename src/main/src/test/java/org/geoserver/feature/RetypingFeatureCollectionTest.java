@@ -4,7 +4,7 @@
  */
 package org.geoserver.feature;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 import org.geotools.data.DataUtilities;

@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
 public class XYGeomTest extends AbstractAppSchemaTestSupport {
-
+	 	
     @Override
     protected XYGeomMockData createTestData() {
         return new XYGeomMockData();

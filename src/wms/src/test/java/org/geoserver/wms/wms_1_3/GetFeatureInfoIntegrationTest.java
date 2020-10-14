@@ -6,7 +6,11 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -17,9 +21,9 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.xml.namespace.QName;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -54,6 +58,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * A GetFeatureInfo 1.3.0 integration test suite covering both spec mandates and geoserver specific

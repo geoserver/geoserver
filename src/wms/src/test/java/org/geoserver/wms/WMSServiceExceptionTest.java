@@ -7,19 +7,26 @@ package org.geoserver.wms;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+
 import javax.imageio.ImageIO;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+
 import org.geoserver.wfs.json.JSONType;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class WMSServiceExceptionTest extends WMSTestSupport {
 

@@ -5,7 +5,8 @@
  */
 package org.geoserver.csw;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.platform.ServiceException;
 import org.junit.Test;

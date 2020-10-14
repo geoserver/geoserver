@@ -6,10 +6,11 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Test;
 import org.w3c.dom.Document;

@@ -5,11 +5,14 @@
  */
 package org.geoserver.wps.gs.download;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
-import it.geosolutions.imageio.plugins.tiff.PrivateTIFFTagSet;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -31,11 +34,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
 import javax.xml.namespace.QName;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -102,6 +107,9 @@ import org.opengis.util.ProgressListener;
 import org.springframework.util.MimeType;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+
+import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
+import it.geosolutions.imageio.plugins.tiff.PrivateTIFFTagSet;
 
 /**
  * This class tests checks if the DownloadProcess class behaves correctly.

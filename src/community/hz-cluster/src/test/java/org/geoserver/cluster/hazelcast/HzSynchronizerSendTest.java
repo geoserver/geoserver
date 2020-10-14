@@ -5,12 +5,13 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.geoserver.cluster.ConfigChangeEventMatcher.configChangeEvent;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 import java.util.Arrays;
+
 import org.easymock.IExpectationSetters;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;

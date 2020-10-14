@@ -6,8 +6,10 @@
 package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.data.test.MockData.*;
-import static org.junit.Assert.*;
+import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Map;

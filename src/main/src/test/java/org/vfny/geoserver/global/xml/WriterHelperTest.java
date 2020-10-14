@@ -5,7 +5,7 @@
  */
 package org.vfny.geoserver.global.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;

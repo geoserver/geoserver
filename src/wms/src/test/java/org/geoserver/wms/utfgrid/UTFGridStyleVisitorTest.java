@@ -6,10 +6,15 @@
 package org.geoserver.wms.utfgrid;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.util.Map;
+
 import org.geotools.renderer.composite.BlendComposite.BlendingMode;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;

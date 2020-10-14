@@ -5,7 +5,7 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;

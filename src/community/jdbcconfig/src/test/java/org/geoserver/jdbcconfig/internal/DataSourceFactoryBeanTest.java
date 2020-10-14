@@ -4,20 +4,28 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.google.common.base.Optional;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
 import org.easymock.EasyMock;
 import org.geoserver.jdbcloader.DataSourceFactoryBean;
 import org.junit.Test;
+
+import com.google.common.base.Optional;
 
 /** @author Kevin Smith, OpenGeo */
 public class DataSourceFactoryBeanTest {

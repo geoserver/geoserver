@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.decoration;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -14,6 +15,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
+
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wms.WMSMapContent;
 import org.hamcrest.CoreMatchers;

@@ -25,6 +25,9 @@ This page is displayed both when creating a new rule and modifying an existing r
 
 Priority can be changed manually by specifying a priority number. If this priority number is already occupied by another rule, this will cause that rule and all rules after it to shift one place to a lower priority.
 
+If using the IP Address range to limit access then on Linux (and other systems with IPv6 enabled) to add the ``-Djava.net.preferIPv4Stack=true`` flag to the GeoServer startup options to make sure that the IP range matching works with IPv4 style 
+addresses. Currently, IPv6 style address ranges are not supported by GeoFence.
+
 When Access type LIMIT is selected, additional options are displayed that allows the user to select the Catalog Mode and the Allowed Area (WKT) associated with this rule.
 
 .. figure:: images/limit.png

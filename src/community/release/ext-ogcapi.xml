@@ -35,6 +35,9 @@
         <include>*dggs*.jar</include>
         <include>h3*.jar</include>
         <include>jep*.jar</include>
+        <include>*clickhouse*.jar</include>
+        <include>*httpmime*.jar</include>
+        <include>*lz4*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -42,6 +42,7 @@ import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.filter.function.FilterFunction_offset;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -64,6 +65,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     final GeometryFactory gf = new GeometryFactory();
     final Set<String> northPoleZones;
     final Set<String> southPoleZones;
+    final SoftValueHashMap<String, RHealPixZone> zoneCache = new SoftValueHashMap<>(10000);
 
     public RHealPixDGGSInstance(JEPWebRuntime runtime, String identifier) {
         this.runtime = runtime;
@@ -102,15 +104,20 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
     @Override
     public RHealPixZone getZone(String id) {
-        try {
-            @SuppressWarnings("PMD.CloseResource") // the runtime is responsible for closing it
-            SharedInterpreter interpreter = runtime.getInterpreter();
-            setCellId(interpreter, "id", id);
-            interpreter.exec("c = dggs.cell(id)");
-            return new RHealPixZone(this, id);
-        } catch (JepException e) {
-            throw new IllegalArgumentException("Invalid zone identifier '" + id + "'", e);
+        RHealPixZone zone = zoneCache.get(id);
+        if (zone == null) {
+            try {
+                @SuppressWarnings("PMD.CloseResource") // the runtime is responsible for closing it
+                SharedInterpreter interpreter = runtime.getInterpreter();
+                setCellId(interpreter, "id", id);
+                interpreter.exec("c = dggs.cell(id)");
+                zone = new RHealPixZone(this, id);
+                zoneCache.put(id, zone);
+            } catch (JepException e) {
+                throw new IllegalArgumentException("Invalid zone identifier '" + id + "'", e);
+            }
         }
+        return zone;
     }
 
     @Override

@@ -17,16 +17,13 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
-
 import javax.imageio.ImageIO;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.wfs.json.JSONType;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class WMSServiceExceptionTest extends WMSTestSupport {
 

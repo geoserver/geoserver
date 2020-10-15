@@ -29,7 +29,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.TreeSet;
-
 import org.geoserver.data.test.MockCreator;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.security.GeoServerRoleStore;

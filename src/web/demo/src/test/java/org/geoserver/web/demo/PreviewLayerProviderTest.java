@@ -5,13 +5,15 @@
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -19,6 +21,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
 

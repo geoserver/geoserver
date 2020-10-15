@@ -4,10 +4,11 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;

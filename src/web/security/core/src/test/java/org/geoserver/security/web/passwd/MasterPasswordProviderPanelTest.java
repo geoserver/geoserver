@@ -5,10 +5,13 @@
  */
 package org.geoserver.security.web.passwd;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.net.URL;
 import java.util.Set;
+
 import org.apache.wicket.Component;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.security.password.URLMasterPasswordProvider;

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.logging.Logger;
-
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;

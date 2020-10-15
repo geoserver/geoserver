@@ -5,12 +5,14 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;

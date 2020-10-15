@@ -5,21 +5,25 @@
  */
 package org.geoserver.wfs.kvp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
-import net.opengis.wfs.WfsFactory;
+
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.WFSException;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
+
+import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.QueryType;
+import net.opengis.wfs.WfsFactory;
 
 public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
 

@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.data.test.LiveSystemTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerRoleService;

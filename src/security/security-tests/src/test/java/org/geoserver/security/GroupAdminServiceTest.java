@@ -14,7 +14,6 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;

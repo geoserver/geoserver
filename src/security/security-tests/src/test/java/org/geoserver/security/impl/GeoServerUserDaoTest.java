@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import org.geoserver.platform.resource.Files;
 import org.geoserver.security.PropertyFileWatcher;
 import org.junit.Before;

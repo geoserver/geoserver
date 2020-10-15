@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.KeyStoreProvider;

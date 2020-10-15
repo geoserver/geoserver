@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
@@ -18,9 +20,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 
 public class WCSSettingsControllerTest extends CatalogRESTTestSupport {
 

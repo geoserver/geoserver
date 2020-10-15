@@ -4,13 +4,15 @@
  */
 package org.geoserver.wms.utfgrid;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
+
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -21,6 +23,9 @@ import org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 public class UTFGridIntegrationTest extends WMSTestSupport {
 

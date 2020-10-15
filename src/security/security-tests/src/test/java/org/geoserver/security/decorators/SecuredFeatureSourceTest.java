@@ -19,7 +19,6 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
 import org.geotools.data.DataAccess;

@@ -5,10 +5,11 @@
  */
 package org.geoserver.wms;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.config.GeoServerInfo;

@@ -13,7 +13,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
@@ -22,9 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
 

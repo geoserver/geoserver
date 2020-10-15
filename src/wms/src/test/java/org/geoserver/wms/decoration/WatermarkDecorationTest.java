@@ -8,12 +8,14 @@
  */
 package org.geoserver.wms.decoration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.util.URLs;

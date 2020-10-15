@@ -67,11 +67,11 @@ public class GeoServerWicketOnlineTestSupport {
             if (location.startsWith(GEOSERVER_BASE_URL)) {
                 location = location.substring(GEOSERVER_BASE_URL.length() + 1);
             }
-			/*
-			 * if (GEOSERVER_BASE_URL.endsWith("geoserver") &&
-			 * location.startsWith("/geoserver")){ location =
-			 * location.substring("geoserver".length()+1); }
-			 */
+            /*
+             * if (GEOSERVER_BASE_URL.endsWith("geoserver") &&
+             * location.startsWith("/geoserver")){ location =
+             * location.substring("geoserver".length()+1); }
+             */
             huc.disconnect();
 
             huc = prepareGet(location, jsessionid, null);

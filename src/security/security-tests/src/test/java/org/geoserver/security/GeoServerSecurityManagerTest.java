@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.security.config.SecurityManagerConfig;

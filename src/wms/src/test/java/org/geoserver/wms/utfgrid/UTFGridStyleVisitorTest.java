@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.util.Map;
-
 import org.geotools.renderer.composite.BlendComposite.BlendingMode;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;

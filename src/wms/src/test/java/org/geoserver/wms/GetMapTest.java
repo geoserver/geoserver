@@ -5,11 +5,14 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMockData.DummyRasterMapProducer;
 import org.geotools.factory.CommonFactoryFinder;

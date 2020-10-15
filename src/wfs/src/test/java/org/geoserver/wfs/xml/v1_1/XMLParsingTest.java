@@ -5,23 +5,25 @@
  */
 package org.geoserver.wfs.xml.v1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.Map;
-import net.opengis.wfs.GetFeatureWithLockType;
-import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.NativeType;
-import net.opengis.wfs.PropertyType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.UpdateElementType;
+
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.xsd.Parser;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
+
+import net.opengis.wfs.GetFeatureWithLockType;
+import net.opengis.wfs.InsertElementType;
+import net.opengis.wfs.NativeType;
+import net.opengis.wfs.PropertyType;
+import net.opengis.wfs.TransactionType;
+import net.opengis.wfs.UpdateElementType;
 
 public class XMLParsingTest extends WFSTestSupport {
 

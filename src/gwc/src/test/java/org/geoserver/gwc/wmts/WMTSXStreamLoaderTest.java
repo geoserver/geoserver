@@ -4,8 +4,8 @@
  */
 package org.geoserver.gwc.wmts;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import java.io.InputStream;
 import org.geoserver.config.util.XStreamPersister;

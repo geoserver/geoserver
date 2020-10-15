@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 import java.util.Set;
-
 import org.geoserver.security.AccessMode;
 import org.junit.Before;
 import org.junit.Test;

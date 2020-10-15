@@ -5,11 +5,14 @@
  */
 package org.geoserver.wms.describelayer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;

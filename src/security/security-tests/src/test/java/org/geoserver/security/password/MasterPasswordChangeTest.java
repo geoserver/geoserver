@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityTestSupport;

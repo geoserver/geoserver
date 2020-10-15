@@ -15,7 +15,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wms.WMSMapContent;
 import org.hamcrest.CoreMatchers;

@@ -6,7 +6,7 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionDefaultValueSetting;

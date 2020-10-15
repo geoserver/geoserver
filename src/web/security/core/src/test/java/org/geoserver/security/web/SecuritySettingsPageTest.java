@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.GeoServerSecurityManager;

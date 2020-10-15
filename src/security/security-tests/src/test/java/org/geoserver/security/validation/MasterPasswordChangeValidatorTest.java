@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
-
 import org.geoserver.security.password.MasterPasswordChangeRequest;
 import org.geoserver.security.password.MasterPasswordProviderException;
 import org.geoserver.security.password.URLMasterPasswordProvider;

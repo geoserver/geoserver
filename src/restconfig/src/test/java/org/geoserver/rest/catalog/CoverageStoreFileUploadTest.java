@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;

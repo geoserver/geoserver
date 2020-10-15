@@ -4,10 +4,12 @@
  */
 package org.geoserver.wms.kvp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
+
 import org.geotools.image.palette.InverseColorMapOp;
 import org.junit.Test;
 

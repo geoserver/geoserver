@@ -5,11 +5,14 @@
  */
 package org.geoserver.wms.web.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.util.tester.FormTester;

@@ -4,13 +4,17 @@
  */
 package org.geoserver.featurestemplating.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class JSONLDGetComplexFeaturesResponseFilteringTest extends TemplateJSONComplexTestSupport {

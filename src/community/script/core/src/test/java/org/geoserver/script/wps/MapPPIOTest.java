@@ -4,7 +4,8 @@
  */
 package org.geoserver.script.wps;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -19,11 +21,13 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import org.junit.Test;
+import org.w3c.dom.Document;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-import org.junit.Test;
-import org.w3c.dom.Document;
 
 public class MapPPIOTest {
 

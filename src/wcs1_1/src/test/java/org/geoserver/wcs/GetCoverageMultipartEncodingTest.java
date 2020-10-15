@@ -7,15 +7,19 @@ package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+
 import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Test;

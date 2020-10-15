@@ -13,10 +13,8 @@ import static org.junit.Assert.assertTrue;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;

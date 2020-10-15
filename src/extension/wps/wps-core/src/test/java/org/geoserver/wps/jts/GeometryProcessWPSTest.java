@@ -5,7 +5,10 @@
  */
 package org.geoserver.wps.jts;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.geojson.geom.GeometryJSON;

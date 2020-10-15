@@ -10,8 +10,9 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertNull;
 
+import de.micromata.opengis.kml.v_2_2_0.Feature;
 import java.util.Iterator;
-
+import junit.framework.AssertionFailedError;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -20,9 +21,6 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.junit.Test;
-
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import junit.framework.AssertionFailedError;
 
 public class FeatureIteratorFactoryTest {
 

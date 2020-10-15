@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;

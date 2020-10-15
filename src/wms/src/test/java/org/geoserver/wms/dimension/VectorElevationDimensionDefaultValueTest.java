@@ -5,12 +5,15 @@
  */
 package org.geoserver.wms.dimension;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.util.Collections;
+
 import javax.xml.namespace.QName;
+
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;

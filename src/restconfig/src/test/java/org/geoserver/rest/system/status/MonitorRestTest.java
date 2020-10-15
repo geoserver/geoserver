@@ -9,14 +9,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.StringReader;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.system.status.MetricInfo;
 import org.geoserver.system.status.MetricValue;
@@ -27,12 +29,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class MonitorRestTest extends GeoServerSystemTestSupport {
 

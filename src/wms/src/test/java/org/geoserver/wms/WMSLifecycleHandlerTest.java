@@ -4,8 +4,8 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.*;
 import java.io.IOException;

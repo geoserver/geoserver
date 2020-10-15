@@ -16,7 +16,8 @@
  */
 package org.geoserver.wps.ppio;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
+
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;

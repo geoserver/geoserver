@@ -5,10 +5,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.List;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;

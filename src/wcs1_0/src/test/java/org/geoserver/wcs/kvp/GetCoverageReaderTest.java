@@ -12,13 +12,11 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 
 import java.util.HashMap;
 import java.util.Map;
-
+import net.opengis.wcs10.GetCoverageType;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException;
-
-import net.opengis.wcs10.GetCoverageType;
 
 public class GetCoverageReaderTest extends WCSTestSupport {
 

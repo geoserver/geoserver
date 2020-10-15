@@ -4,14 +4,17 @@
  */
 package org.geoserver.wcs2_0;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
-import net.opengis.wcs20.GetCoverageType;
-import net.opengis.wcs20.ScalingType;
+
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
@@ -34,6 +37,9 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+
+import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.ScalingType;
 
 /**
  * Testing WCS 2.0 Core {@link GetCoverage}

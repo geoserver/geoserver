@@ -4,13 +4,13 @@
  */
 package org.geoserver.featurestemplating.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -20,6 +20,10 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestSupport {
 

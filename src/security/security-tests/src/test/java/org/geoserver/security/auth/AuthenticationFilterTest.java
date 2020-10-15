@@ -15,11 +15,9 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;

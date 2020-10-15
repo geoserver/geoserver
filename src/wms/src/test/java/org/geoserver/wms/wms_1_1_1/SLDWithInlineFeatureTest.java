@@ -13,9 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
 import javax.imageio.ImageIO;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;

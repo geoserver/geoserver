@@ -141,7 +141,7 @@ public class DGGSQuerySplitter {
                                     })
                             .toArray(n -> new SortBy[n]);
             result.setSortBy(adaptedSort);
-        } else if (query.getSortBy() == null || query.getMaxFeatures() < Integer.MAX_VALUE) {
+        } else if (query.getStartIndex() != null || query.getMaxFeatures() < Integer.MAX_VALUE) {
             // need a sort to do paging, the underlying store might not have a primary key
             result.setSortBy(new SortBy[] {FF.sort(ZONE_ID, SortOrder.ASCENDING)});
         }

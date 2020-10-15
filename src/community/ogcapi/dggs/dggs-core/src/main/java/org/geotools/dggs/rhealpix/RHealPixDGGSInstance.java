@@ -432,7 +432,8 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
     @Override
     public Filter getChildFilter(FilterFactory2 ff, String zoneId, int resolution, boolean upTo) {
-        Filter baseFilter = ff.like(ff.property(DGGSStore.ZONE_ID), zoneId + "%");
+        Filter baseFilter =
+                ff.like(ff.property(DGGSStore.ZONE_ID), zoneId + "%", "%", "?", "\\", true);
         Filter resolutionFilter;
         if (upTo) {
             resolutionFilter = ff.lessOrEqual(ff.property(RESOLUTION), ff.literal(resolution));

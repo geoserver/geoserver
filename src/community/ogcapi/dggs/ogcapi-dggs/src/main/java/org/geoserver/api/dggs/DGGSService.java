@@ -36,7 +36,9 @@ import org.geoserver.api.features.FeaturesGetFeature;
 import org.geoserver.api.features.FeaturesResponse;
 import org.geoserver.api.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.ows.URLMangler;
@@ -51,6 +53,7 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.EMFUtils;
 import org.locationtech.jts.geom.Coordinate;
@@ -295,7 +298,6 @@ public class DGGSService {
         }
         DGGSInstance dggs = getDGGSInstance(collectionId);
         int resolution = dggs.getZone(zoneId).getResolution();
-
         PropertyIsEqualTo neighborFilter =
                 FF.equals(
                         FF.function(
@@ -304,9 +306,6 @@ public class DGGSService {
                                 FF.literal(zoneId),
                                 FF.literal(distance)),
                         FF.literal(true));
-        // second filter to help a bit in implementations that cannot optimize the above function
-        PropertyIsEqualTo resolutionFilter =
-                FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
         return runGetFeature(
                 collectionId,
                 datetime,
@@ -314,7 +313,7 @@ public class DGGSService {
                 limit,
                 format,
                 request -> {
-                    mixFilter(request, FF.and(neighborFilter, resolutionFilter));
+                    mixFilter(request, neighborFilter);
                 },
                 collectionName ->
                         "ogc/dggs/collections/"
@@ -462,11 +461,6 @@ public class DGGSService {
                                 FF.literal(zoneId),
                                 FF.literal(resolution)),
                         FF.literal(true));
-        // second filter to help a bit in implementations that cannot optimize the above function
-        Filter resolutionFilter =
-                FF.equals(
-                        FF.property(RESOLUTION),
-                        FF.literal(resolution == null ? zone.getResolution() + 1 : resolution));
         return runGetFeature(
                 collectionId,
                 datetime,
@@ -474,7 +468,7 @@ public class DGGSService {
                 limit,
                 format,
                 request -> {
-                    mixFilter(request, FF.and(childFilter, resolutionFilter));
+                    mixFilter(request, childFilter);
                 },
                 collectionName ->
                         "ogc/dggs/collections/"
@@ -506,8 +500,6 @@ public class DGGSService {
                         FF.literal(true));
         // another filter to help implementation that cannot optimize out the above call
         Zone zone = dggs.getZone(zoneId);
-        Filter resolutionFilter =
-                FF.less(FF.property(RESOLUTION), FF.literal(zone.getResolution()));
         return runGetFeature(
                 collectionId,
                 datetime,
@@ -515,7 +507,7 @@ public class DGGSService {
                 limit,
                 format,
                 request -> {
-                    mixFilter(request, FF.and(parentFilter, resolutionFilter));
+                    mixFilter(request, parentFilter);
                 },
                 collectionName ->
                         "ogc/dggs/collections/"
@@ -564,6 +556,8 @@ public class DGGSService {
 
     private Filter buildDateTimeFilter(FeatureTypeInfo ft, DateTimeList dateTimeList)
             throws IOException {
+        DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time == null) return Filter.INCLUDE;
         if (dateTimeList == null || dateTimeList.isEmpty()) {
             dateTimeList = new DateTimeList();
             dateTimeList.add(wms.getDefaultTime(ft));
@@ -581,7 +575,7 @@ public class DGGSService {
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     @HTMLResponseBody(templateName = "zone.ftl", fileName = "zone.html")
-    public FeaturesResponse zone(
+    public FeaturesResponse point(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "point") String pointSpec,
             @RequestParam(name = "resolution") int resolution,
@@ -607,7 +601,8 @@ public class DGGSService {
                         format,
                         request -> {
                             Query query = request.getQueries().get(0);
-                            query.setFilter(
+                            mixFilter(
+                                    request,
                                     FF.equals(FF.property("zoneId"), FF.literal(zone.getId())));
                         },
                         collectionName ->
@@ -641,8 +636,8 @@ public class DGGSService {
                     )
                     String format)
             throws Exception {
-        Polygon polygon = (Polygon) new WKTReader().read(polygonWKT);
-        Filter resolutionFilter = FF.less(FF.property(RESOLUTION), FF.literal(resolution));
+        Polygon polygon = getPolygon(polygonWKT);
+        Filter resolutionFilter = FF.lessOrEqual(FF.property(RESOLUTION), FF.literal(resolution));
         PropertyIsEqualTo polygonFilter =
                 FF.equals(
                         FF.function(
@@ -669,6 +664,20 @@ public class DGGSService {
                                         + "/zones/");
 
         return response;
+    }
+
+    public Polygon getPolygon(String polygonWKT) {
+        try {
+            Polygon polygon = (Polygon) new WKTReader().read(polygonWKT);
+            polygon.setUserData(DefaultGeographicCRS.WGS84);
+            return polygon;
+        } catch (ParseException e) {
+            throw new APIException(
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "Invalid WKT specification for the polygon parameter",
+                    HttpStatus.BAD_REQUEST,
+                    e);
+        }
     }
 
     private Point getPoint(String pointSpec) throws ParseException {

@@ -105,12 +105,13 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
         }
     }
 
-    private PropertyIsEqualTo getFilterFrom(Iterator<Zone> zones) {
+    private Filter getFilterFrom(Iterator<Zone> zones) {
         List<Expression> expressions = new ArrayList<>();
         expressions.add(FF.property(ClickHouseDGGSDataStore.ZONE_ID));
         while (zones.hasNext()) {
             expressions.add(FF.literal(zones.next().getId()));
         }
+        if (expressions.size() == 1) return Filter.EXCLUDE;
         Function inFunction =
                 FF.function("in", expressions.toArray(new Expression[expressions.size()]));
         return FF.equal(inFunction, FF.literal(Boolean.TRUE), false);

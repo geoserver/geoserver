@@ -143,7 +143,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
 
                 // write out the geometry
                 jsonWriter.key("geometry").object();
-                jsonWriter.key("type").value("any");
+                jsonWriter.key("type").value("polygon");
                 jsonWriter.key("identifiers");
                 jsonWriter.array();
                 jsonWriter.value(simpleFeature.getAttribute("zoneId"));

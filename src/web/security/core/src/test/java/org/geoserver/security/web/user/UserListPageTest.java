@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.SortedSet;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;

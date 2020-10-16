@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.junit.Before;

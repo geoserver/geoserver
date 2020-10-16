@@ -8,12 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import net.opengis.wcs20.RangeItemType;
+import net.opengis.wcs20.RangeSubsetType;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.platform.OWS20Exception;
 import org.junit.Test;
-
-import net.opengis.wcs20.RangeItemType;
-import net.opengis.wcs20.RangeSubsetType;
 
 public class RangeSubsetKvpParserTest {
 

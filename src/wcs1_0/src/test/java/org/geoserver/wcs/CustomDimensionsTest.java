@@ -10,10 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.awt.image.BufferedImage;
-
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;

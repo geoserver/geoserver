@@ -6,14 +6,11 @@
 
 package org.geoserver.wms.featureinfo;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -50,12 +47,11 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -72,8 +68,6 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private static final String templateFolder = "/org/geoserver/wms/featureinfo/";
 
     private String currentTemplate;
-
-    @Rule public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
@@ -215,19 +209,20 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-        exception.expect(
-                allOf(
-                        instanceOf(IOException.class),
-                        hasProperty(
-                                "cause",
-                                allOf(
-                                        instanceOf(TemplateException.class),
-                                        hasProperty(
-                                                "message",
-                                                Matchers.containsString(
-                                                        "freemarker.template.utility.Execute"))))));
+        IOException e =
+                Assert.assertThrows(
+                        IOException.class,
+                        new ThrowingRunnable() {
 
-        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+                            @Override
+                            public void run() throws Throwable {
+                                outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+                            }
+                        });
+        System.out.println(e.getMessage());
+        assertThat(
+                "Bad Message",
+                e.getMessage().contains("Error occurred processing content template content.ftl"));
     }
 
     /**

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.form.DropDownChoice;

@@ -9,11 +9,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import org.geoserver.platform.OWS20Exception;
-import org.junit.Test;
-
 import net.opengis.wcs20.ScaleToExtentType;
 import net.opengis.wcs20.TargetAxisExtentType;
+import org.geoserver.platform.OWS20Exception;
+import org.junit.Test;
 
 /**
  * Parses the scaleExtent WCS 2.0 kvp key

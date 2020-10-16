@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.impl.ServiceAccessRule;

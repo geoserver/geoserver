@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.List;

@@ -9,6 +9,7 @@ package org.geoserver.wms.decoration;
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
@@ -16,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.util.HashMap;
-
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.geometry.jts.ReferencedEnvelope;

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestHandler;

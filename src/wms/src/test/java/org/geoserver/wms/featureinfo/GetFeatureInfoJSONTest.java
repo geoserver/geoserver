@@ -19,9 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.xml.namespace.QName;
-
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -44,11 +46,6 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 

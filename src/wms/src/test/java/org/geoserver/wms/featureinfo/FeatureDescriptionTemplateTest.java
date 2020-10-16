@@ -7,9 +7,10 @@ package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertNotNull;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
-
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.TemplateUtils;
 import org.geotools.data.DataUtilities;
@@ -19,9 +20,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class FeatureDescriptionTemplateTest {
 

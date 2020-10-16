@@ -11,7 +11,8 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
+import net.opengis.wcs20.InterpolationAxisType;
+import net.opengis.wcs20.InterpolationType;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
@@ -22,9 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import net.opengis.wcs20.InterpolationAxisType;
-import net.opengis.wcs20.InterpolationType;
 
 @RunWith(Parameterized.class)
 public class InterpolationKvpParserTest extends GeoServerSystemTestSupport {

@@ -9,11 +9,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import org.geoserver.platform.OWS20Exception;
-import org.junit.Test;
-
 import net.opengis.wcs20.DimensionSliceType;
 import net.opengis.wcs20.DimensionTrimType;
+import org.geoserver.platform.OWS20Exception;
+import org.junit.Test;
 
 public class SubsetKvpParserTest {
 

@@ -13,12 +13,10 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;

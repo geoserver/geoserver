@@ -19,14 +19,12 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.renderable.ParameterBlock;
-
 import javax.imageio.ImageReader;
 import javax.media.jai.Interpolation;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedImageAdapter;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.TiledImage;
-
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.map.QuickTileCache.MapKey;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;

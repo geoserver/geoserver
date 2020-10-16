@@ -5,16 +5,14 @@
  */
 package org.geoserver.wfs;
 
-import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.data.test.SystemTestData;

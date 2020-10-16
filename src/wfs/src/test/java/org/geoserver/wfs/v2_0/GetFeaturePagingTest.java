@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;

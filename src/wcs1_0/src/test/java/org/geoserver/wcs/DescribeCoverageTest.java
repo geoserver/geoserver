@@ -5,17 +5,16 @@
  */
 package org.geoserver.wcs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.ROTATED_CAD;
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;

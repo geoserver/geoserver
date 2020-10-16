@@ -12,7 +12,6 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;

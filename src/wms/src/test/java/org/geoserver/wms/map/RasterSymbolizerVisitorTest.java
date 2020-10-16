@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;

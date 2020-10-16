@@ -10,7 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 
 import java.net.URL;
 import java.util.Set;
-
 import org.apache.wicket.Component;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.security.password.URLMasterPasswordProvider;

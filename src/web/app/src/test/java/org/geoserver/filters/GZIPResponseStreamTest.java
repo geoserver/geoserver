@@ -13,12 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 

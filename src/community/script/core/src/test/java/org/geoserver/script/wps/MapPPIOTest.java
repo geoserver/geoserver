@@ -4,7 +4,7 @@
  */
 package org.geoserver.script.wps;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.ByteArrayInputStream;

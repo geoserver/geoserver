@@ -12,7 +12,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMockData.DummyRasterMapProducer;
 import org.geotools.factory.CommonFactoryFinder;

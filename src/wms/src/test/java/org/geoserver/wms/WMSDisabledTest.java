@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;

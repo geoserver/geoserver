@@ -14,9 +14,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;

@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,7 +30,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.WfsFactory;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -45,10 +46,6 @@ import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.WfsFactory;
 
 public class Ogr2OgrFormatTest {
 

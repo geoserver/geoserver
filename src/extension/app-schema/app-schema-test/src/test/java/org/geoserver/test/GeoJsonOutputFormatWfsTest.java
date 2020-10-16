@@ -12,12 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
 
 /** Validates JSON output format for complex features. */
 public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSupport {

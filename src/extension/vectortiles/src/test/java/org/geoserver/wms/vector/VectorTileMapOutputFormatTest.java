@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableSet;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import org.apache.wicket.spring.test.ApplicationContextMock;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.config.GeoServerLoader;
@@ -70,8 +70,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.google.common.collect.ImmutableSet;
 
 public class VectorTileMapOutputFormatTest {
 

@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
 public class XYGeomTest extends AbstractAppSchemaTestSupport {
-	 	
+
     @Override
     protected XYGeomMockData createTestData() {
         return new XYGeomMockData();

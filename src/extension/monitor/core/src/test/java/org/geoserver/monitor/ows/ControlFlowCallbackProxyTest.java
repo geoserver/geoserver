@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Proxy;
-
 import org.geoserver.monitor.MemoryMonitorDAO;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorDAO;

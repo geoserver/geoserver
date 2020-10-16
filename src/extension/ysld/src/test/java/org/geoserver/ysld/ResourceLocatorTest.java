@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.instanceOf;
 
 import java.io.File;
 import java.io.PrintWriter;
-
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.SLD;

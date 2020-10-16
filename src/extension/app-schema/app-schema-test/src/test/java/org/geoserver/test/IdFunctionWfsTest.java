@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.junit.Test;

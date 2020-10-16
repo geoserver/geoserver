@@ -10,9 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Map;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;

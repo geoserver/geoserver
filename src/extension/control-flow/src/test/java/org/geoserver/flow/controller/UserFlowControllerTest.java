@@ -8,7 +8,6 @@ package org.geoserver.flow.controller;
 import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.Cookie;
-
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -42,7 +41,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
             // starting the next one
             t1.start();
             waitBlocked(t1, MAX_WAIT);
-            
+
             t2.start();
             waitBlocked(t2, MAX_WAIT);
 

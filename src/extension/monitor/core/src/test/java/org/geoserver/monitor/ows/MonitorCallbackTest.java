@@ -16,9 +16,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
+import net.opengis.ows11.CodeType;
+import net.opengis.ows11.Ows11Factory;
+import net.opengis.wcs10.DescribeCoverageType;
+import net.opengis.wcs10.GetCoverageType;
+import net.opengis.wcs10.Wcs10Factory;
+import net.opengis.wcs11.Wcs11Factory;
+import net.opengis.wfs.DeleteElementType;
+import net.opengis.wfs.DescribeFeatureTypeType;
+import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.InsertElementType;
+import net.opengis.wfs.LockFeatureType;
+import net.opengis.wfs.LockType;
+import net.opengis.wfs.QueryType;
+import net.opengis.wfs.TransactionType;
+import net.opengis.wfs.UpdateElementType;
+import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -66,23 +80,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import net.opengis.ows11.CodeType;
-import net.opengis.ows11.Ows11Factory;
-import net.opengis.wcs10.DescribeCoverageType;
-import net.opengis.wcs10.GetCoverageType;
-import net.opengis.wcs10.Wcs10Factory;
-import net.opengis.wcs11.Wcs11Factory;
-import net.opengis.wfs.DeleteElementType;
-import net.opengis.wfs.DescribeFeatureTypeType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.LockFeatureType;
-import net.opengis.wfs.LockType;
-import net.opengis.wfs.QueryType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.UpdateElementType;
-import net.opengis.wfs.WfsFactory;
 
 public class MonitorCallbackTest {
 

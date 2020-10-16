@@ -9,10 +9,8 @@ import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;

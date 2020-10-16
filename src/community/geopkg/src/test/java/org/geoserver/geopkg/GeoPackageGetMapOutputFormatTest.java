@@ -16,10 +16,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.GetMapRequest;

@@ -34,7 +34,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.IAnswer;

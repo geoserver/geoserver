@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.mapml.MapMLConstants;
 import org.junit.Before;
 import org.junit.Ignore;

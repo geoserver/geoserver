@@ -11,12 +11,11 @@ package org.geoserver.gsr.controller.map;
 
 import static org.junit.Assert.assertTrue;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.gsr.JsonSchemaTest;
 import org.geoserver.gsr.controller.ControllerTest;
 import org.junit.Test;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class LayerListControllerTest extends ControllerTest {
     private String query(String service, String params) {

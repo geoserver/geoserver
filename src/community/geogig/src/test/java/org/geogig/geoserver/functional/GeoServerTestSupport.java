@@ -129,10 +129,7 @@ class GeoServerTestSupport extends GeoServerSystemTestSupport {
         }
     }
 
-    /**
-     * Copied from parent class to do the same work on MockMultipartHttpServletRequest.
-     *
-     */
+    /** Copied from parent class to do the same work on MockMultipartHttpServletRequest. */
     private void kvp(MockHttpServletRequest request, String path) {
         Map<String, Object> params = KvpUtils.parseQueryString(path);
         for (String key : params.keySet()) {

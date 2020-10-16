@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
-
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerDataDirectoryTest;

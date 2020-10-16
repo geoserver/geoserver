@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.ogr.OGRDataStoreFactory;
@@ -164,10 +163,7 @@ public class OGRDataStoreFactoryTest {
         return s == -1 ? null : name.substring(0, s);
     }
 
-    /**
-     * * Unpack archive to directory (maintaining directory structure).
-     *
-     */
+    /** * Unpack archive to directory (maintaining directory structure). */
     public static void unpack(File archive, File directory) throws IOException {
         // see http://stackoverflow.com/questions/10633595/java-zip-how-to-unzip-folder
         ZipInputStream zip = new ZipInputStream(new FileInputStream(archive));

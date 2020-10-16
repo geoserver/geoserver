@@ -9,11 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.junit.Test;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.junit.Test;
 
 public class GeoJSONGetSimpleFeaturesResponseTest extends TemplateJSONSimpleTestSupport {
 

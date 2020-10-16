@@ -13,19 +13,16 @@ import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.google.common.base.Optional;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
 import org.apache.commons.dbcp.BasicDataSource;
 import org.easymock.EasyMock;
 import org.geoserver.jdbcloader.DataSourceFactoryBean;
 import org.junit.Test;
-
-import com.google.common.base.Optional;
 
 /** @author Kevin Smith, OpenGeo */
 public class DataSourceFactoryBeanTest {

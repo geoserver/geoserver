@@ -18,7 +18,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.wicket.util.file.File;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;

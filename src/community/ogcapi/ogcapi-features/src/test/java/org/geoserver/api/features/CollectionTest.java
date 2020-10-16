@@ -11,11 +11,11 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.api.APIDispatcher;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,8 +28,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.w3c.dom.Document;
-
-import com.jayway.jsonpath.DocumentContext;
 
 public class CollectionTest extends FeaturesTestSupport {
 

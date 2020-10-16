@@ -11,7 +11,6 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.geoserver.cluster.ConfigChangeEventMatcher.configChangeEvent;
 
 import java.util.Arrays;
-
 import org.easymock.IExpectationSetters;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;

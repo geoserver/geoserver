@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
 import org.geoserver.hibernate.HibUtil;
 import org.geoserver.monitor.Filter;
 import org.geoserver.monitor.MonitorConfig.Mode;
@@ -46,7 +45,7 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
         p.put("driver", "org.h2.Driver");
         p.put("url", "jdbc:h2:mem:monitoring");
         File file = new File("./target/monitoring/db.properties");
-        
+
         if (!file.getParentFile().exists()) {
             assertTrue(file.getParentFile().mkdirs());
         }

@@ -59,6 +59,9 @@ public class GWCConfig implements Cloneable, Serializable {
     /** Whether to automatically cache GeoServer layers or they should be enabled explicitly */
     private boolean cacheLayersByDefault = true;
 
+    /** do clients need to provide a tiled=true parameter to get WMS tiling */
+    private boolean requireTiledParameter = true;
+
     /** Whether to cache any non default Style associated to the layer */
     private boolean cacheNonDefaultStyles;
 
@@ -149,6 +152,14 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setDirectWMSIntegrationEnabled(boolean directWMSIntegrationEnabled) {
         this.directWMSIntegrationEnabled = directWMSIntegrationEnabled;
+    }
+
+    public boolean isRequireTiledParameter() {
+        return requireTiledParameter;
+    }
+
+    public void setRequireTiledParameter(boolean requireTiledParameter) {
+        this.requireTiledParameter = requireTiledParameter;
     }
 
     public boolean isWMSCEnabled() {

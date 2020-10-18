@@ -5,7 +5,9 @@
 package org.geoserver.rest;
 
 import freemarker.core.ParseException;
-import freemarker.template.*;
+import freemarker.template.Configuration;
+import freemarker.template.ObjectWrapper;
+import freemarker.template.Template;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;

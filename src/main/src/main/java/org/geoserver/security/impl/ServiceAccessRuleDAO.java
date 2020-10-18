@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.impl;
 
-import static org.geoserver.security.impl.DataAccessRule.*;
+import static org.geoserver.security.impl.DataAccessRule.ANY;
 
 import java.io.IOException;
 import java.util.Map;

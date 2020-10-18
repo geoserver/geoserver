@@ -6,7 +6,7 @@ package org.geoserver.web.admin;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
 import com.sun.media.jai.util.CacheDiagnostics;
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;

@@ -7,7 +7,7 @@ package org.geoserver.wcs;
 
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;

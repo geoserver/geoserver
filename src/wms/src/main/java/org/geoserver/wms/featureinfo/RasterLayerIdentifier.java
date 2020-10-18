@@ -6,7 +6,7 @@
 package org.geoserver.wms.featureinfo;
 
 import it.geosolutions.jaiext.range.Range;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.io.IOException;

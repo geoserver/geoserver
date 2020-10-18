@@ -8,7 +8,13 @@ package org.geoserver.wfs.json;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.junit.Before;

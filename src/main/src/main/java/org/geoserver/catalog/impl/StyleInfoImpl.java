@@ -7,7 +7,13 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 import java.util.Date;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;

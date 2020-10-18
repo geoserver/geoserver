@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.decoration;
 
-import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.*;
+import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.BOTH;
+import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.IMPERIAL;
+import static org.geoserver.wms.decoration.ScaleLineDecoration.MeasurementSystem.METRIC;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

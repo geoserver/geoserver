@@ -9,7 +9,7 @@ import it.geosolutions.jaiext.colorindexer.CachingColorIndexer;
 import it.geosolutions.jaiext.colorindexer.ColorIndexer;
 import it.geosolutions.jaiext.colorindexer.LRUColorIndexer;
 import it.geosolutions.jaiext.colorindexer.Quantizer;
-import java.awt.*;
+import java.awt.Transparency;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.IOException;

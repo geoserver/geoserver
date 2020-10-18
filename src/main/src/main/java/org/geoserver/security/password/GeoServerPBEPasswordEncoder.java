@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.password;
 
-import static org.geoserver.security.SecurityUtils.*;
+import static org.geoserver.security.SecurityUtils.scramble;
+import static org.geoserver.security.SecurityUtils.toBytes;
+import static org.geoserver.security.SecurityUtils.toChars;
 
 import java.io.IOException;
 import java.util.Arrays;

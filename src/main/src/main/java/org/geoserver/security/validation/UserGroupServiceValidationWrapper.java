@@ -6,7 +6,12 @@
 
 package org.geoserver.security.validation;
 
-import static org.geoserver.security.validation.UserGroupServiceException.*;
+import static org.geoserver.security.validation.UserGroupServiceException.GROUPNAME_REQUIRED;
+import static org.geoserver.security.validation.UserGroupServiceException.GROUP_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.UserGroupServiceException.GROUP_NOT_FOUND_$1;
+import static org.geoserver.security.validation.UserGroupServiceException.USERNAME_REQUIRED;
+import static org.geoserver.security.validation.UserGroupServiceException.USER_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.UserGroupServiceException.USER_NOT_FOUND_$1;
 
 import java.io.IOException;
 import java.util.SortedSet;

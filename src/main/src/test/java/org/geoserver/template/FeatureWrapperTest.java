@@ -5,7 +5,7 @@
  */
 package org.geoserver.template;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

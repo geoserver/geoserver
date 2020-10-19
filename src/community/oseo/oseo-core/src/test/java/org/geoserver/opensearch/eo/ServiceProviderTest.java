@@ -4,10 +4,10 @@
  */
 package org.geoserver.opensearch.eo;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import org.geoserver.catalog.ServiceResourceProvider;

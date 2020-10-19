@@ -6,7 +6,21 @@
 
 package org.geoserver.security.xml;
 
-import static org.geoserver.security.xml.XMLConstants.*;
+import static org.geoserver.security.xml.XMLConstants.A_GROUP_ENABLED_UR;
+import static org.geoserver.security.xml.XMLConstants.A_GROUP_NAME_UR;
+import static org.geoserver.security.xml.XMLConstants.A_MEMBER_NAME_UR;
+import static org.geoserver.security.xml.XMLConstants.A_PROPERTY_NAME_UR;
+import static org.geoserver.security.xml.XMLConstants.A_USER_ENABLED_UR;
+import static org.geoserver.security.xml.XMLConstants.A_USER_NAME_UR;
+import static org.geoserver.security.xml.XMLConstants.A_USER_PASSWORD_UR;
+import static org.geoserver.security.xml.XMLConstants.E_GROUPS_UR;
+import static org.geoserver.security.xml.XMLConstants.E_GROUP_UR;
+import static org.geoserver.security.xml.XMLConstants.E_MEMBER_UR;
+import static org.geoserver.security.xml.XMLConstants.E_PROPERTY_UR;
+import static org.geoserver.security.xml.XMLConstants.E_USERREGISTRY_UR;
+import static org.geoserver.security.xml.XMLConstants.E_USERS_UR;
+import static org.geoserver.security.xml.XMLConstants.E_USER_UR;
+import static org.geoserver.security.xml.XMLConstants.NSP_UR;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;

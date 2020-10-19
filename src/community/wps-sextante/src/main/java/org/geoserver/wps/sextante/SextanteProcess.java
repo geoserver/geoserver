@@ -7,7 +7,6 @@ package org.geoserver.wps.sextante;
 
 import static org.geoserver.wps.sextante.SextanteProcessFactory.*;
 
-import org.locationtech.jts.geom.Envelope;
 import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.ITaskMonitor;
@@ -15,7 +14,6 @@ import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
 import es.unex.sextante.dataObjects.IDataObject;
 import es.unex.sextante.exceptions.GeoAlgorithmExecutionException;
-import es.unex.sextante.exceptions.WrongParameterIDException;
 import es.unex.sextante.outputs.Output;
 import es.unex.sextante.outputs.OutputRasterLayer;
 import es.unex.sextante.parameters.Parameter;
@@ -26,6 +24,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.Process;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.util.ProgressListener;
 
 public class SextanteProcess implements Process {

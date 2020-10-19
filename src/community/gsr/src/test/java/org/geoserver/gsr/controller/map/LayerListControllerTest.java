@@ -9,7 +9,7 @@
  */
 package org.geoserver.gsr.controller.map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

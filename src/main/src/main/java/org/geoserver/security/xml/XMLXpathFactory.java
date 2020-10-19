@@ -6,7 +6,13 @@
 
 package org.geoserver.security.xml;
 
-import static org.geoserver.security.xml.XMLConstants.*;
+import static org.geoserver.security.xml.XMLConstants.A_VERSION_RR;
+import static org.geoserver.security.xml.XMLConstants.A_VERSION_UR;
+import static org.geoserver.security.xml.XMLConstants.E_ROLEREGISTRY_RR;
+import static org.geoserver.security.xml.XMLConstants.E_USERREGISTRY_UR;
+import static org.geoserver.security.xml.XMLConstants.NSP_RR;
+import static org.geoserver.security.xml.XMLConstants.NSP_UR;
+import static org.geoserver.security.xml.XMLConstants.VERSION_RR_1_0;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;

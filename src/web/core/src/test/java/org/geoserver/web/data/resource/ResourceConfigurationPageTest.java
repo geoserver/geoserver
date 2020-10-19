@@ -16,10 +16,10 @@ import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ALLOW_MULTITHREADIN
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.EXCESS_GRANULE_REMOVAL;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.MERGE_BEHAVIOR;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;

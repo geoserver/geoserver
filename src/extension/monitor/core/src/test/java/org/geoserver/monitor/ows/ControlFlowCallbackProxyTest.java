@@ -5,7 +5,8 @@
  */
 package org.geoserver.monitor.ows;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Proxy;
 import org.geoserver.monitor.MemoryMonitorDAO;

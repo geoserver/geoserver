@@ -6,7 +6,8 @@
 package org.geoserver.wcs.kvp;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.HashMap;

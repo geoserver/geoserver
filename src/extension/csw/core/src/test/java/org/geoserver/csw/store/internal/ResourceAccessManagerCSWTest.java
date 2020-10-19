@@ -4,7 +4,7 @@
  */
 package org.geoserver.csw.store.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.List;

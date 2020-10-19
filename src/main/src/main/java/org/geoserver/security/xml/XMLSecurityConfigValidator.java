@@ -6,7 +6,13 @@
 
 package org.geoserver.security.xml;
 
-import static org.geoserver.security.xml.XMLSecurityConfigException.*;
+import static org.geoserver.security.xml.XMLSecurityConfigException.CHECK_INTERVAL_INVALID;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_CHANGE_INVALID_$2;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_REQUIRED;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILE_CREATE_FAILED_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.ROLE_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_REQUIRED;
 
 import java.io.File;
 import java.io.IOException;

@@ -5,7 +5,9 @@
 package org.geoserver.rest;
 
 import freemarker.template.SimpleHash;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

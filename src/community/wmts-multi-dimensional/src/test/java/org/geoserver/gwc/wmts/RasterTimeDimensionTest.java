@@ -5,9 +5,9 @@
 package org.geoserver.gwc.wmts;
 
 import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
 import java.util.Date;

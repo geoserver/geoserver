@@ -245,9 +245,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         return response.getStatus();
     }
 
-    /**
-     * @return the content of the last response as an {@link InputStream}
-     */
+    /** @return the content of the last response as an {@link InputStream} */
     @Override
     public InputStream getLastResponseInputStream() throws Exception {
         return new ByteArrayInputStream(getBinary(getLastResponse()));

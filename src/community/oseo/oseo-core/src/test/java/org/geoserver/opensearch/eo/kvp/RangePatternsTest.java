@@ -4,8 +4,12 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.*;
-import static org.junit.Assert.*;
+import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.FULL_RANGE_PATTERN;
+import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.LEFT_RANGE_PATTERN;
+import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.RIGHT_RANGE_PATTERN;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

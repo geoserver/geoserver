@@ -5,7 +5,8 @@
 package org.geotools.renderer.lite;
 
 import com.google.common.base.Preconditions;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -7,7 +7,7 @@ package org.geoserver.ows;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -29,7 +29,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletResponse;
 import junit.framework.TestCase;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.ows.TestDispatcherCallback.Status;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;

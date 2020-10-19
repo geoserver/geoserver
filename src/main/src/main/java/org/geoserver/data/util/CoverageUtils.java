@@ -5,7 +5,7 @@
  */
 package org.geoserver.data.util;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

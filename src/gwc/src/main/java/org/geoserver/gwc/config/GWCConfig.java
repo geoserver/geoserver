@@ -5,7 +5,7 @@
  */
 package org.geoserver.gwc.config;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;

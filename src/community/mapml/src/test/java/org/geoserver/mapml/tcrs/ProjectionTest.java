@@ -4,7 +4,8 @@
  */
 package org.geoserver.mapml.tcrs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.opengis.geometry.MismatchedDimensionException;

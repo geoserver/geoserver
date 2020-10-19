@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.jdbc;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_INVALID;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_INVALID;
@@ -15,7 +17,8 @@ import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DRIVER_CLA
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JDBCURL_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JNDINAME_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.USERNAME_REQUIRED;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;

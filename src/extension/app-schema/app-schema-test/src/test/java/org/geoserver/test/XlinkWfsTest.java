@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.junit.Test;

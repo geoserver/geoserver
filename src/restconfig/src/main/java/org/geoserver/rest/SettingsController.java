@@ -7,7 +7,11 @@ package org.geoserver.rest;
 import freemarker.template.ObjectWrapper;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import org.geoserver.config.*;
+import org.geoserver.config.ContactInfo;
+import org.geoserver.config.CoverageAccessInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.JAIInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -18,7 +22,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Settings controller

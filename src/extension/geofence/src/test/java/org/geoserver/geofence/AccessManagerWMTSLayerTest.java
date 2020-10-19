@@ -7,7 +7,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.Arrays;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.TestHttpClientRule;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;

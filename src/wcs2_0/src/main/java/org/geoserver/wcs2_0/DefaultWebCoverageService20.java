@@ -5,7 +5,8 @@
  */
 package org.geoserver.wcs2_0;
 
-import static org.geoserver.wcs2_0.util.RequestUtils.*;
+import static org.geoserver.wcs2_0.util.RequestUtils.checkService;
+import static org.geoserver.wcs2_0.util.RequestUtils.checkVersion;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;

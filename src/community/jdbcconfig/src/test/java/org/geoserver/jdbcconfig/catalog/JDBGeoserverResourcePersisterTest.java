@@ -5,9 +5,9 @@
 package org.geoserver.jdbcconfig.catalog;
 
 import static org.geoserver.config.FileExistsMatcher.fileExists;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;

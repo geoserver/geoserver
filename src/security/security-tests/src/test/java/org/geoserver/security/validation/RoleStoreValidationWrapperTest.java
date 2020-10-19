@@ -5,11 +5,26 @@
  */
 package org.geoserver.security.validation;
 
-import static org.easymock.EasyMock.*;
 import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
-import static org.geoserver.security.validation.RoleServiceException.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.replay;
+import static org.geoserver.security.validation.RoleServiceException.ADMIN_ROLE_NOT_REMOVABLE_$1;
+import static org.geoserver.security.validation.RoleServiceException.ALREADY_EXISTS;
+import static org.geoserver.security.validation.RoleServiceException.ALREADY_EXISTS_IN;
+import static org.geoserver.security.validation.RoleServiceException.GROUPNAME_NOT_FOUND_$1;
+import static org.geoserver.security.validation.RoleServiceException.GROUPNAME_REQUIRED;
+import static org.geoserver.security.validation.RoleServiceException.GROUP_ADMIN_ROLE_NOT_REMOVABLE_$1;
+import static org.geoserver.security.validation.RoleServiceException.NAME_REQUIRED;
+import static org.geoserver.security.validation.RoleServiceException.NOT_FOUND;
+import static org.geoserver.security.validation.RoleServiceException.RESERVED_NAME;
+import static org.geoserver.security.validation.RoleServiceException.ROLE_IN_USE_$2;
+import static org.geoserver.security.validation.RoleServiceException.USERNAME_NOT_FOUND_$1;
+import static org.geoserver.security.validation.RoleServiceException.USERNAME_REQUIRED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,7 +34,11 @@ import org.geoserver.data.test.MockTestData;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupStore;
-import org.geoserver.security.impl.*;
+import org.geoserver.security.impl.DataAccessRule;
+import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.ServiceAccessRule;
+import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Test;
 

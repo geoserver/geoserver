@@ -5,13 +5,17 @@
 package org.geoserver.catalog;
 
 import com.google.common.io.Files;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.geotools.styling.*;
+import org.geotools.styling.ResourceLocator;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.EntityResolver;

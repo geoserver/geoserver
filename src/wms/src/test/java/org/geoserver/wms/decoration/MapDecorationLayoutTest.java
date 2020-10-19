@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.decoration;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

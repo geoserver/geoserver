@@ -5,8 +5,6 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.geoserver.security.SecurityUtils.*;
-
 import java.util.logging.Logger;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.feature.FeatureCollection;

@@ -5,7 +5,7 @@
  */
 package org.geoserver.wfs.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;

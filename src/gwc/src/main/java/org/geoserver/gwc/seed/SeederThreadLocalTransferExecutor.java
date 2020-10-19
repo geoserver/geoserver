@@ -4,7 +4,8 @@
  */
 package org.geoserver.gwc.seed;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geowebcache.seed.SeederThreadPoolExecutor;
 

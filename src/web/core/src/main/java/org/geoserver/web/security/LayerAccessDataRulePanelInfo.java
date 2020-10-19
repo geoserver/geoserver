@@ -4,10 +4,12 @@
  */
 package org.geoserver.web.security;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 

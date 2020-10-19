@@ -6,7 +6,10 @@
 
 package org.geoserver.security.auth;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -20,10 +23,27 @@ import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
-import org.geoserver.security.config.*;
+import org.geoserver.security.config.BasicAuthenticationFilterConfig;
+import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
+import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
+import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
-import org.geoserver.security.filter.*;
+import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
+import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
+import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
+import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderFilter;
+import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerLogoutFilter;
+import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerRoleFilter;
+import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.password.MasterPasswordProviderConfig;

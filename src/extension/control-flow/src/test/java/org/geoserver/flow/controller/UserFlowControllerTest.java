@@ -5,7 +5,7 @@
  */
 package org.geoserver.flow.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
@@ -41,6 +41,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
             // starting the next one
             t1.start();
             waitBlocked(t1, MAX_WAIT);
+
             t2.start();
             waitBlocked(t2, MAX_WAIT);
 

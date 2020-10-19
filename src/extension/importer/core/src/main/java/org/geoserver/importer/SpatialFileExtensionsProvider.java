@@ -4,7 +4,12 @@
  */
 package org.geoserver.importer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /** A Class reporting a Set of default file extensions for some commonly used spatial files */
 public class SpatialFileExtensionsProvider implements SupplementalFileExtensionsProvider {

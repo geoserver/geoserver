@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;

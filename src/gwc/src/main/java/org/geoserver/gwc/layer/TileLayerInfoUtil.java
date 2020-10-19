@@ -5,7 +5,7 @@
  */
 package org.geoserver.gwc.layer;
 
-import static org.geoserver.gwc.GWC.*;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.util.ArrayList;
 import java.util.Arrays;

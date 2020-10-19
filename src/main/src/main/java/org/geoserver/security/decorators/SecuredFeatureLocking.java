@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.geoserver.security.SecurityUtils.*;
+import static org.geoserver.security.SecurityUtils.getWriteQuery;
 
 import java.io.IOException;
 import org.geoserver.security.WrapperPolicy;

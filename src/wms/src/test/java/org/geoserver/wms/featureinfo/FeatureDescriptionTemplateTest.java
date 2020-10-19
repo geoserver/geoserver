@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

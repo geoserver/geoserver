@@ -4,11 +4,24 @@
  */
 package org.geoserver.jdbcstore;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.geoserver.platform.resource.ResourceMatchers.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.geoserver.platform.resource.ResourceMatchers.directory;
+import static org.geoserver.platform.resource.ResourceMatchers.resource;
+import static org.geoserver.platform.resource.ResourceMatchers.undefined;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.describedAs;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;

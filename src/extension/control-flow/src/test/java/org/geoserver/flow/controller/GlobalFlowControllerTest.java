@@ -5,7 +5,7 @@
  */
 package org.geoserver.flow.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.CountDownLatch;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;

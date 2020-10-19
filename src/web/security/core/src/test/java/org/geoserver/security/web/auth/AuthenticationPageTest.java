@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.web.auth;
 
-import static org.geoserver.security.GeoServerSecurityFilterChain.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;

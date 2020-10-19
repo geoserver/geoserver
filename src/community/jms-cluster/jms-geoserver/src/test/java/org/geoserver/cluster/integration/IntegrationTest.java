@@ -11,7 +11,7 @@ import static org.geoserver.cluster.integration.IntegrationTestsUtils.resetEvent
 import static org.geoserver.cluster.integration.IntegrationTestsUtils.resetJmsConfiguration;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.InputStream;

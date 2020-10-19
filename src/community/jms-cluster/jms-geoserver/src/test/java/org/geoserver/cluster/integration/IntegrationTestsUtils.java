@@ -5,7 +5,7 @@
 package org.geoserver.cluster.integration;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;

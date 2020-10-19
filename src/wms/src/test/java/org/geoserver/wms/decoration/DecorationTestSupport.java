@@ -10,7 +10,7 @@ package org.geoserver.wms.decoration;
  * application directory.
  */
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

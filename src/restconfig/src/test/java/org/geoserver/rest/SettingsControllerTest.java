@@ -5,11 +5,17 @@
 package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.geoserver.config.*;
+import org.geoserver.config.ContactInfo;
+import org.geoserver.config.CoverageAccessInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;

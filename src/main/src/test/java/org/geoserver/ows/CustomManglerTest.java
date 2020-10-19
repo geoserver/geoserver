@@ -5,8 +5,8 @@
  */
 package org.geoserver.ows;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
-import static org.junit.Assert.*;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.List;

@@ -7,7 +7,12 @@ package org.geoserver.importer.rest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import java.util.NoSuchElementException;
-import org.geoserver.importer.*;
+import org.geoserver.importer.Directory;
+import org.geoserver.importer.FileData;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -16,7 +21,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ControllerAdvice

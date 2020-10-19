@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw.response;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.io.BufferedReader;
 import java.io.IOException;

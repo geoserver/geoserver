@@ -4,7 +4,7 @@
  */
 package org.geoserver.community.mbstyle;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;

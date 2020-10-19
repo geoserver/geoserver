@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw.response;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.io.Writer;
 import javax.xml.transform.TransformerException;

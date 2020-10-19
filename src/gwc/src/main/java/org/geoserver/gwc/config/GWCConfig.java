@@ -19,11 +19,14 @@ import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
+import com.sun.istack.logging.Logger;
 
 public class GWCConfig implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 3287178222706781438L;
 
+    private static Logger LOG = Logger.getLogger(GWCConfig.class);
+    
     private String version;
 
     private boolean directWMSIntegrationEnabled;
@@ -101,7 +104,7 @@ public class GWCConfig implements Cloneable, Serializable {
         Map<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
         map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         setCacheConfigurations(map);
-
+        setRequireTiledParameter(true);
         readResolve();
     }
 
@@ -159,6 +162,8 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public void setRequireTiledParameter(boolean requireTiledParameter) {
+        
+        LOG.info("changing rtp from "+this.requireTiledParameter+" to "+requireTiledParameter);
         this.requireTiledParameter = requireTiledParameter;
     }
 
@@ -238,7 +243,7 @@ public class GWCConfig implements Cloneable, Serializable {
             return this;
         }
         GWCConfig sane = GWCConfig.getOldDefaults();
-
+        sane.setRequireTiledParameter(true);
         // sane.setCacheLayersByDefault(cacheLayersByDefault);
         if (metaTilingX > 0) {
             sane.setMetaTilingX(metaTilingX);
@@ -291,6 +296,7 @@ public class GWCConfig implements Cloneable, Serializable {
         setGutter(0);
         // this is not an old default, but a new feature so we enabled it anyway
         setCacheNonDefaultStyles(true);
+        setRequireTiledParameter(true);
         setDefaultCachingGridSetIds(new HashSet<String>(Arrays.asList("EPSG:4326", "EPSG:900913")));
         Set<String> oldDefaultFormats =
                 new HashSet<String>(Arrays.asList("image/png", "image/jpeg"));
@@ -346,6 +352,7 @@ public class GWCConfig implements Cloneable, Serializable {
         clone.setDefaultVectorCacheFormats(getDefaultVectorCacheFormats());
         clone.setDefaultOtherCacheFormats(getDefaultOtherCacheFormats());
         clone.setCacheConfigurations(getCacheConfigurations());
+        clone.setRequireTiledParameter(this.isRequireTiledParameter());
 
         return clone;
     }
@@ -371,6 +378,7 @@ public class GWCConfig implements Cloneable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         GWCConfig gwcConfig = (GWCConfig) o;
         return directWMSIntegrationEnabled == gwcConfig.directWMSIntegrationEnabled
+                && requireTiledParameter == gwcConfig.requireTiledParameter
                 && WMSCEnabled == gwcConfig.WMSCEnabled
                 && TMSEnabled == gwcConfig.TMSEnabled
                 && securityEnabled == gwcConfig.securityEnabled
@@ -398,6 +406,7 @@ public class GWCConfig implements Cloneable, Serializable {
         return Objects.hash(
                 version,
                 directWMSIntegrationEnabled,
+                requireTiledParameter,
                 WMSCEnabled,
                 TMSEnabled,
                 WMTSEnabled,

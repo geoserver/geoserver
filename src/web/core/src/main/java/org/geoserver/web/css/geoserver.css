@@ -1328,6 +1328,9 @@ list-style-type: none;
   Customize Wicket's autocomplete
   -------------*/
 
+div.wicket-aa-container {
+    z-index: 110;
+}
 div.wicket-aa {
     background-color:white;
     border:1px solid #CCCCCC;

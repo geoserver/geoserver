@@ -6,22 +6,25 @@
 package org.geoserver.web;
 
 import java.io.File;
-import java.io.FileInputStream;
+import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
-import org.custommonkey.xmlunit.Validator;
-import org.geotools.util.URLs;
-import org.xml.sax.InputSource;
+import org.custommonkey.xmlunit.jaxp13.Validator;
 
 public class WebXmlTest extends TestCase {
 
-    public void testWebXmlDTDCompliance() throws Exception {
-        // makes sure web.xml is DTD compliant (without requiring internet access in the process)
-        InputSource is = new InputSource(new FileInputStream("src/main/webapp/WEB-INF/web.xml"));
-        Validator v =
-                new Validator(
-                        is,
-                        URLs.fileToUrl(new File("src/test/java/org/geoserver/web/web-app_2_3.dtd"))
-                                .toString());
-        assertTrue(v.isValid());
+    public void testWebXmlXSZDCompliance() throws Exception {
+        String xsd = "src/test/java/org/geoserver/web/";
+        String web = "src/main/webapp/WEB-INF/web.xml";
+
+        Validator v = new Validator();
+        v.addSchemaSource(new StreamSource(new File(xsd + "web-app_3_1.xsd")));
+        v.addSchemaSource(new StreamSource(new File(xsd + "web-common_3_1.xsd")));
+        v.addSchemaSource(new StreamSource(new File(xsd + "javaee_7.xsd")));
+        v.addSchemaSource(new StreamSource(new File(xsd + "javaee_web_services_client_1_4.xsd")));
+        v.addSchemaSource(new StreamSource(new File(xsd + "jsp_2_3.xsd")));
+        v.addSchemaSource(new StreamSource(new File(xsd + "xml.xsd")));
+
+        StreamSource is = new StreamSource(new File(web));
+        assertTrue("web", v.isInstanceValid(is));
     }
 }

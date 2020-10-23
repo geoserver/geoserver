@@ -40,6 +40,25 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
     @Override
     public Optional<File> convert(
             Object input, @Nullable CoverageInfo coverageInfo, @Nullable Hints hints) {
+        return convert(input, coverageInfo, null, hints);
+    }
+
+    /**
+     * Performs the conversion of the input object to a file object. If this converter is not able
+     * to convert the input to a File, an empty {@link Optional} will be returned.
+     *
+     * @param input The input object.
+     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
+     * @param coverageStoreInfo The grid coverage store metadata, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @return
+     */
+    @Override
+    public Optional<File> convert(
+            Object input,
+            @Nullable CoverageInfo coverageInfo,
+            @Nullable CoverageStoreInfo coverageStoreInfo,
+            @Nullable Hints hints) {
         if (!(input instanceof String)) {
             return Optional.empty();
         }

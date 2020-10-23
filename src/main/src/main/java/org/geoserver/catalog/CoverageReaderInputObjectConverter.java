@@ -19,7 +19,6 @@ import org.opengis.coverage.grid.GridCoverageReader;
  *
  * @author joshfix Created on 2/13/20
  */
-@FunctionalInterface
 public interface CoverageReaderInputObjectConverter<T> {
 
     /**
@@ -34,4 +33,22 @@ public interface CoverageReaderInputObjectConverter<T> {
      * @return an {@link Optional} containing the converted value.
      */
     Optional<T> convert(Object input, @Nullable CoverageInfo coverageInfo, @Nullable Hints hints);
+
+    /**
+     * This method inspects the provided input object in an attempt to convert it to a custom class.
+     * Any of the accompanying method parameters may optionally be used to better inform the
+     * decision making logic. If an implementation does not support conversion for the given input
+     * object, the method should return an empty {@link Optional}.
+     *
+     * @param input The input object.
+     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
+     * @param coverageStoreInfo The grid coverage store metadata, may be <code>null</code>.
+     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @return an {@link Optional} containing the converted value.
+     */
+    Optional<T> convert(
+            Object input,
+            @Nullable CoverageInfo coverageInfo,
+            @Nullable CoverageStoreInfo coverageStoreInfo,
+            @Nullable Hints hints);
 }

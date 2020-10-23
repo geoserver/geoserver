@@ -1831,5 +1831,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>cog</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cog</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
 </profiles>
 </project>

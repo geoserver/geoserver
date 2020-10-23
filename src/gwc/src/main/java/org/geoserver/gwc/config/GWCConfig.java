@@ -28,6 +28,8 @@ public class GWCConfig implements Cloneable, Serializable {
 
     private boolean directWMSIntegrationEnabled;
 
+    private boolean requireTiledParameter = true;
+
     private boolean WMSCEnabled;
 
     private boolean TMSEnabled;

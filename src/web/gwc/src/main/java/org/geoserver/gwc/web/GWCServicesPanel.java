@@ -22,7 +22,7 @@ public class GWCServicesPanel extends Panel {
         final IModel<Boolean> wmsIntegrationEnabledModel =
                 new PropertyModel<Boolean>(gwcConfigModel, "directWMSIntegrationEnabled");
         final IModel<Boolean> requiredTiledParamEnabledModel =
-                new PropertyModel<Boolean>(gwcConfigModel, "requiredTiledParameter");
+                new PropertyModel<Boolean>(gwcConfigModel, "requireTiledParameter");
         final IModel<Boolean> wmsCEnabledModel =
                 new PropertyModel<Boolean>(gwcConfigModel, "WMSCEnabled");
         final IModel<Boolean> tmsEnabledModel =

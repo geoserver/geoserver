@@ -428,7 +428,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
      * is not set.
      */
     @Test
-    public void testDirectWMSIntegrationWithRequiredTileParameter() throws Exception {
+    public void testDirectWMSIntegrationWithRequireTileParameter() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 

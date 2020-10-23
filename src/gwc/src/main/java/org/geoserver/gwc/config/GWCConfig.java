@@ -19,14 +19,11 @@ import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
-import com.sun.istack.logging.Logger;
 
 public class GWCConfig implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 3287178222706781438L;
 
-    private static Logger LOG = Logger.getLogger(GWCConfig.class);
-    
     private String version;
 
     private boolean directWMSIntegrationEnabled;
@@ -162,8 +159,6 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public void setRequireTiledParameter(boolean requireTiledParameter) {
-        
-        LOG.info("changing rtp from "+this.requireTiledParameter+" to "+requireTiledParameter);
         this.requireTiledParameter = requireTiledParameter;
     }
 

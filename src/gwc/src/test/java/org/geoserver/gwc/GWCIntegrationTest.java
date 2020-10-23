@@ -413,11 +413,45 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("image/png", response.getContentType());
         assertNull(response.getHeader("geowebcache-tile-index"));
 
-        request = request + "&tiled=true";
+        String tiledRequest = request + "&tiled=true";
+        response = getAsServletResponse(tiledRequest);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertNotNull(response.getHeader("geowebcache-tile-index"));
+    }
+
+    /**
+     * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches
+     * a gwc tile should return with the proper {@code geowebcache-tile-index} HTTP response header.
+     * If requireTileParameter is set to false - direct integration should work even if tiled=true
+     * is not set.
+     */
+    @Test
+    public void testDirectWMSIntegrationWithRequiredTileParameter() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+        String request;
+        MockHttpServletResponse response;
+
+        request = buildGetMap(true, layerName, "EPSG:4326", null);
+        response = getAsServletResponse(request);
+
+        gwc.getConfig().setRequireTiledParameter(true);
         response = getAsServletResponse(request);
 
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
+        assertNull(response.getHeader("geowebcache-tile-index"));
+
+        gwc.getConfig().setRequireTiledParameter(false);
+        response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertNotNull(response.getHeader("geowebcache-tile-index"));
     }
 
     @Test

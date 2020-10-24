@@ -16,6 +16,9 @@
  */
 package org.geootols.dggs.clickhouse;
 
+import java.io.IOException;
+import java.util.Map;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -47,5 +50,13 @@ public class ClickHouseJDBCDataStoreFactory extends JDBCDataStoreFactory {
     @Override
     public String getDescription() {
         return "Clickhouse alphanumeric datastore";
+    }
+
+    @Override
+    public BasicDataSource createDataSource(Map params) throws IOException {
+        BasicDataSource ds = super.createDataSource(params);
+        ds.addConnectionProperty("max_query_size", "1000000");
+        ds.addConnectionProperty("socket_timeout", "300000");
+        return ds;
     }
 }

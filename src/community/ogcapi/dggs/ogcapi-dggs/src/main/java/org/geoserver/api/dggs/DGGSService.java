@@ -75,7 +75,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/** Implementation of OGC Features API service */
+/** Implementation of OGC API - DGGS */
 @APIService(
     service = "DGGS",
     version = "1.0",
@@ -87,7 +87,7 @@ public class DGGSService {
 
     static final Logger LOGGER = Logging.getLogger(DGGSService.class);
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-dggs-1/1.0/conf/core";
 
@@ -163,7 +163,10 @@ public class DGGSService {
         return collection;
     }
 
-    private FeatureTypeInfo getFeatureType(String collectionId) throws IOException {
+    /**
+     * Returns the feature type for the specified collection, checking it's a valid DGGS collection
+     */
+    protected FeatureTypeInfo getFeatureType(String collectionId) throws IOException {
         // single collection
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(collectionId);
         if (featureType == null) {
@@ -208,6 +211,9 @@ public class DGGSService {
             @RequestParam(name = "resolution", required = false, defaultValue = "0")
                     Integer resolution,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
+            @RequestParam(name = "bbox", required = false) String bbox,
+            @RequestParam(name = "geom", required = false) String wkt,
+            @RequestParam(name = "zones", required = false) String zones,
             @RequestParam(
                         name = "f",
                         required = false,
@@ -215,6 +221,13 @@ public class DGGSService {
                     )
                     String format)
             throws Exception {
+        // handle possible geometry filters
+        DGGSGeometryFilterParser geometryParser =
+                new DGGSGeometryFilterParser(FF, getDGGSInstance(collectionId));
+        geometryParser.setBBOX(bbox);
+        geometryParser.setWKT(wkt);
+        geometryParser.setZoneIds(zones, resolution);
+
         // build the request in a way core WFS machinery can understand it
         return runGetFeature(
                 collectionId,
@@ -233,6 +246,11 @@ public class DGGSService {
                         Filter resolutionFilter =
                                 FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
                         mixFilter(request, resolutionFilter);
+
+                        Filter geometryFilter = geometryParser.getFilter();
+                        if (geometryFilter != null && geometryFilter != Filter.INCLUDE) {
+                            mixFilter(request, geometryFilter);
+                        }
                     }
                 },
                 collectionName ->
@@ -427,7 +445,7 @@ public class DGGSService {
         return link;
     }
 
-    private DGGSInstance getDGGSInstance(String collectionId) throws IOException {
+    DGGSInstance getDGGSInstance(String collectionId) throws IOException {
         FeatureTypeInfo featureType = getFeatureType(collectionId);
         DGGSStore dggsStore = (DGGSStore) featureType.getStore().getDataStore(null);
         return dggsStore.getDGGSFeatureSource(featureType.getNativeName()).getDGGS();
@@ -554,7 +572,7 @@ public class DGGSService {
         return new FeaturesResponse(request.getAdaptee(), response);
     }
 
-    private Filter buildDateTimeFilter(FeatureTypeInfo ft, DateTimeList dateTimeList)
+    protected Filter buildDateTimeFilter(FeatureTypeInfo ft, DateTimeList dateTimeList)
             throws IOException {
         DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null) return Filter.INCLUDE;

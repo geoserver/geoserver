@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.xml.namespace.QName;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.Link;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -26,7 +25,6 @@ import org.geoserver.wfs.json.GeoJSONBuilder;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geoserver.wfs.request.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
@@ -175,11 +173,15 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     protected FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
         // a WFS3 always has a collection reference, so one query
-        Query query = request.getQueries().get(0);
-        QName typeName = query.getTypeNames().get(0);
-        return gs.getCatalog()
-                .getFeatureTypeByName(
-                        new NameImpl(typeName.getNamespaceURI(), typeName.getLocalPart()));
+        return Optional.ofNullable(request.getQueries())
+                .filter(qs -> qs.size() > 0)
+                .map(qs -> qs.get(0))
+                .map(q -> q.getTypeNames())
+                .filter(tns -> tns.size() > 0)
+                .map(tns -> tns.get(0))
+                .map(tn -> new NameImpl(tn.getNamespaceURI(), tn.getLocalPart()))
+                .map(tn -> gs.getCatalog().getFeatureTypeByName(tn))
+                .orElse(null);
     }
 
     @Override

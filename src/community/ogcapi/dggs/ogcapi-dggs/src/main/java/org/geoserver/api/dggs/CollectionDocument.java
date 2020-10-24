@@ -53,10 +53,10 @@ public class CollectionDocument extends AbstractCollectionDocument {
 
         String baseUrl = APIRequestInfo.get().getBaseURL();
 
-        // links
-        Collection<MediaType> formats =
+        // zones links
+        Collection<MediaType> zoneFormats =
                 APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
-        for (MediaType format : formats) {
+        for (MediaType format : zoneFormats) {
             String apiUrl =
                     ResponseUtils.buildURL(
                             baseUrl,
@@ -70,6 +70,25 @@ public class CollectionDocument extends AbstractCollectionDocument {
                             format.toString(),
                             collectionId + " items as " + format.toString(),
                             "zones"));
+        }
+
+        // zones links
+        Collection<MediaType> dapaFormats =
+                APIRequestInfo.get().getProducibleMediaTypes(CollectionDAPA.class, true);
+        for (MediaType format : dapaFormats) {
+            String apiUrl =
+                    ResponseUtils.buildURL(
+                            baseUrl,
+                            "ogc/dggs/collections/" + collectionId + "/dapa",
+                            Collections.singletonMap("f", format.toString()),
+                            URLMangler.URLType.SERVICE);
+            addLink(
+                    new Link(
+                            apiUrl,
+                            "dapa",
+                            format.toString(),
+                            "DAPA for " + collectionId + " as " + format.toString(),
+                            "dapa"));
         }
 
         addSelfLinks("ogc/dggs/collections/" + id);

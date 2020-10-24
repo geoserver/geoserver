@@ -35,10 +35,10 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 public class MessageConverterResponseAdapter<T>
         implements HttpMessageConverter<T>, ApplicationContextAware {
 
-    Class<T> valueClass;
-    Class responseBinding;
-    List<Response> responses;
-    private List<MediaType> supportedMediaTypes;
+    protected final Class<T> valueClass;
+    protected final Class responseBinding;
+    protected List<Response> responses;
+    protected List<MediaType> supportedMediaTypes;
 
     public MessageConverterResponseAdapter(Class<T> valueClass, Class responseBinding) {
         this.valueClass = valueClass;
@@ -123,7 +123,7 @@ public class MessageConverterResponseAdapter<T>
         return r -> responseBinding.isAssignableFrom(r.getBinding());
     }
 
-    private Stream<MediaType> getMediaTypeStream(Response r) {
+    protected Stream<MediaType> getMediaTypeStream(Response r) {
         return r.getOutputFormats()
                 .stream()
                 .filter(f -> f.contains("/"))

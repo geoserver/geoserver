@@ -115,25 +115,39 @@ public class H3DGGSInstance implements DGGSInstance {
         // the children, so we need to check if a 1-ring overlaps to dedice whether to skip
         // a cell.
         if (compact) {
-            // we pick parents when they are contained in the envelope
-            return new H3ZoneIterator<>(
-                    h3,
-                    id -> {
-                        // drill if it's a parent that is not fully contained in the target
-                        // envelope, but still overlaps it, or is spanning the dateline
-                        int r = h3.h3GetResolution(id);
-                        return r < targetResolution
-                                && (ringOverlaps(id, envelope)
-                                        && !containedInEnvelope(id, envelope));
-                    },
-                    id -> {
-                        // accept if at target resolution and overlaps the envelope, or it's a
-                        // parent fully contained in the envelope
-                        int r = h3.h3GetResolution(id);
-                        return (r == targetResolution && overlaps((long) id, envelope))
-                                || (r < targetResolution && containedInEnvelope(id, envelope));
-                    },
-                    id -> new H3Zone(this, id));
+            // we pick parents when they are contained in the envelope, there is a start of
+            // compaction
+            // but it's not complete
+            List<Long> zones = new ArrayList<>();
+            new H3ZoneIterator<>(
+                            h3,
+                            id -> {
+                                // drill if it's a parent that is not fully contained in the target
+                                // envelope, but still overlaps it, or is spanning the dateline
+                                int r = h3.h3GetResolution(id);
+                                return r < targetResolution
+                                        && (ringOverlaps(id, envelope)
+                                                && !containedInEnvelope(id, envelope));
+                            },
+                            id -> {
+                                // accept if at target resolution and overlaps the envelope, or it's
+                                // a
+                                // parent fully contained in the envelope
+                                int r = h3.h3GetResolution(id);
+                                return (r == targetResolution && overlaps((long) id, envelope))
+                                        || (r < targetResolution
+                                                && containedInEnvelope(id, envelope));
+                            },
+                            id -> id)
+                    .forEachRemaining(id -> zones.add(id));
+            // full compaction using H3 library
+            try {
+                List<Long> compacted = h3.compact(zones);
+                return compacted.stream().map(id -> (Zone) new H3Zone(this, id)).iterator();
+            } catch (IllegalArgumentException e) {
+                // we might get a "bad input to compact" with no explanation as to why...
+                return zones.stream().map(id -> (Zone) new H3Zone(this, id)).iterator();
+            }
         } else {
             return new H3ZoneIterator<>(
                     h3,
@@ -174,20 +188,6 @@ public class H3DGGSInstance implements DGGSInstance {
         }
 
         return false;
-
-        //        // check dateline intersection case
-        //        if (!zone.overlapsDateline()) return false;
-        //
-        //        // offset polyon in the two directions (blind, could determine a dateline
-        //        // overlap and just apply it in one direction)
-        //        Polygon offset1 = (Polygon) polygon.copy();
-        //        offset1.apply(new FilterFunction_offset.OffsetOrdinateFilter(360, 0));
-        //        if (boundaryIntersects(envelope, offset1)) {
-        //            return true;
-        //        }
-        //        Polygon offset2 = (Polygon) polygon.copy();
-        //        offset2.apply(new FilterFunction_offset.OffsetOrdinateFilter(-360, 0));
-        //        return boundaryIntersects(envelope, offset2);
     }
 
     private boolean boundaryIntersects(Envelope envelope, Polygon polygon) {
@@ -327,7 +327,6 @@ public class H3DGGSInstance implements DGGSInstance {
 
     @Override
     public Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact) {
-        if (compact) throw new UnsupportedOperationException("TODO: Compact not yet implemented");
         List<GeoCoord> shell = getGeoCoords(polygon.getExteriorRing());
         List<List<GeoCoord>> holes =
                 IntStream.range(0, polygon.getNumInteriorRing())
@@ -337,6 +336,9 @@ public class H3DGGSInstance implements DGGSInstance {
         // small numbers, but it's memory bound and gets slow
         // pretty quickly due to memory pressure,
         List<Long> zones = h3.polyfill(shell, holes, resolution);
+        if (compact) {
+            zones = h3.compact(zones);
+        }
         return zones.stream().map(id -> (Zone) new H3Zone(this, id)).iterator();
     }
 
@@ -354,7 +356,25 @@ public class H3DGGSInstance implements DGGSInstance {
         long highest = idx.highestIdChild(resolution);
         String lowestId = h3.h3ToString(lowest);
         String highestId = h3.h3ToString(highest);
-        return ff.between(
-                ff.property(DGGSStore.ZONE_ID), ff.literal(lowestId), ff.literal(highestId));
+        String prefix = getPrefix(lowestId, highestId);
+        Filter prefixFilter =
+                ff.like(ff.property(DGGSStore.ZONE_ID), prefix + "%", "%", "?", "\\", true);
+        Filter matchFilter =
+                ff.between(
+                        ff.property(DGGSStore.ZONE_ID),
+                        ff.literal(lowestId),
+                        ff.literal(highestId));
+        // return ff.and(prefixFilter, matchFilter);
+        return matchFilter;
+    }
+
+    private String getPrefix(String a, String b) {
+        int length = a.length();
+        for (int i = 0; i < length; i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                return a.substring(0, i);
+            }
+        }
+        return a;
     }
 }

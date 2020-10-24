@@ -37,6 +37,7 @@ h5,
 h6 {
 color: #0082b6;
 font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+margin-bottom: 0.25em;
 }
 
 h1 { /* override blueprint.css */

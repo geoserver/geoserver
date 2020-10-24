@@ -122,8 +122,8 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         assertXpathExists(tileSetPath + "[1]/Format", dom);
         assertXpathExists(tileSetPath + "[1]/Layers", dom);
         assertXpathExists(tileSetPath + "[1]/Styles", dom);
-        
-        //Test RequireTiledParameter==false
+
+        // Test RequireTiledParameter==false
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
         GWC.get().getConfig().setRequireTiledParameter(false);
         dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);

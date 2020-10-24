@@ -62,7 +62,8 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     private boolean isTiled(GetCapabilitiesRequest request) {
-        return Boolean.valueOf(request.getRawKvp().get("TILED")).booleanValue()||!gwc.getConfig().isRequireTiledParameter();
+        return Boolean.valueOf(request.getRawKvp().get("TILED")).booleanValue()
+                || !gwc.getConfig().isRequireTiledParameter();
     }
 
     /**
@@ -104,7 +105,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
             return;
         }
         Version version = WMS.version(request.getVersion(), true);
-        if (!WMS.VERSION_1_1_1.equals(version) || !isTiled(request) ) {
+        if (!WMS.VERSION_1_1_1.equals(version) || !isTiled(request)) {
             return;
         }
 

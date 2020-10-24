@@ -24,9 +24,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.geotools.data.Query;
+import org.geotools.dggs.DGGSFilterTransformer;
 import org.geotools.dggs.DGGSFilterVisitor;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.gstore.DGGSResolutionCalculator;
+import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
@@ -34,6 +36,7 @@ import org.geotools.jdbc.BasicSQLDialect;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -160,7 +163,13 @@ public class DGGSQuerySplitter {
         // turn all spatial filters into checks against zoneId, if possible
         Filter adapted =
                 DGGSFilterTransformer.adapt(filter, dggs, resolutionCalculator, resolution);
-        result.setFilter(adapted);
+        if (resolution != DGGSFilterTransformer.RESOLUTION_NOT_SPECIFIED) {
+            PropertyIsEqualTo resolutionFilter =
+                    FF.equals(FF.property(DGGSStore.RESOLUTION), FF.literal(resolution));
+            result.setFilter(FF.and(adapted, resolutionFilter));
+        } else {
+            result.setFilter(adapted);
+        }
 
         return result;
     }

@@ -79,6 +79,7 @@ class RHealPixZoneIterator<R> implements Iterator<R> {
             } else {
                 if (drill.apply(zone)) {
                     candidates.addAll(
+                            0,
                             rpix.runtime.runSafe(
                                     si -> {
                                         setCellId(si, "id", test);

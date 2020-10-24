@@ -18,18 +18,18 @@ package org.geootols.dggs.clickhouse;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.geotools.data.jdbc.FilterToSQL;
+import org.geotools.jdbc.BasicSQLDialect;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.jdbc.PreparedStatementSQLDialect;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.type.GeometryDescriptor;
 
-class ClickHouseDialect extends PreparedStatementSQLDialect {
+class ClickHouseDialect extends BasicSQLDialect {
 
     private static final String GEOMETRY_NOT_SUPPORTED =
             "Geometry functions are not supported in ClickHouse, this store is provided as pure JDBC support to DGGS";
@@ -39,9 +39,8 @@ class ClickHouseDialect extends PreparedStatementSQLDialect {
     }
 
     @Override
-    public void setGeometryValue(
-            Geometry g, int dimension, int srid, Class binding, PreparedStatement ps, int column)
-            throws SQLException {
+    public void encodeGeometryValue(Geometry value, int dimension, int srid, StringBuffer sql)
+            throws IOException {
         throw new UnsupportedOperationException(GEOMETRY_NOT_SUPPORTED);
     }
 
@@ -66,5 +65,12 @@ class ClickHouseDialect extends PreparedStatementSQLDialect {
             Hints hints)
             throws IOException, SQLException {
         throw new UnsupportedOperationException(GEOMETRY_NOT_SUPPORTED);
+    }
+
+    @Override
+    public FilterToSQL createFilterToSQL() {
+        FilterToSQL f2s = new ClickHouseFilterToSQL();
+        f2s.setCapabilities(BASE_DBMS_CAPABILITIES);
+        return f2s;
     }
 }

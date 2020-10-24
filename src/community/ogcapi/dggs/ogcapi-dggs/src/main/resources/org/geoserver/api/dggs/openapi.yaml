@@ -117,6 +117,9 @@ paths:
         - $ref: '#/components/parameters/resolution'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'        
       responses:
         '200':
           $ref: '#/components/responses/ZoneList'
@@ -233,6 +236,202 @@ paths:
         '500':
           $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
 
+  /collections/{collectionId}/dapa:
+    get:
+      tags:
+        - DAPA
+      summary: list the available data retrieval patterns
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dapa'
+              example:
+                title: Data retrieval patterns
+                description: The following endpoints are available to retrieve and
+                  process the observations in addition to the standard feature queries.
+                  The endpoints are described in the API definition and the links
+                  point to the specification of the operation in the OpenAPI definition
+                  with the available input parameters and the response schema.
+                endpoints:
+                  - title: retrieve a time series for selected variables for each station
+                      in an area
+                    description: |-
+                      This DAPA endpoint returns observation values at the selected location
+                        in the selected time interval or at the selected time instant.
+  
+                      All values in the time interval for each requested variable 
+                      (parameter `variables`) are aggregated and each of the requested statistical 
+                      functions (parameter `functions`) is applied to the aggregated values.
+                    links:
+                      - rel: ogc-dapa-endpoint
+                        title: Execute the data retrieval pattern with the default parameters
+                        href: /collections/observation/dapa/area
+                      - rel: ogc-dapa-endpoint-definition
+                        title: Detailed description in the API definition (OpenAPI 3.0)
+                        href: /api?f=json#/paths/~1collections~1observation~1dapa
+                      - rel: ogc-dapa-endpoint-documentation
+                        title: Detailed description in the API documentation
+                        href: /api?f=html#/DAPA/get_collections_observation_dapa
+                    id: area
+                    inputCollectionId: observation
+                    mediaTypes:
+                      - application/geo+json
+                      - text/csv
+                    externalDocs:
+                      description: Example requests and responses
+                      url: https://github.com/cportele/ogc-api-dev/blob/master/dapa/06-area.md
+                  - title: retrieve a time series for selected variables for each station
+                      in an area and apply functions on the values of each time step
+                    description: "This DAPA endpoint returns a time series for an area\
+                      \ (parameter `bbox`, `coord` or `coordRef`) in the selected time\
+                      \ interval or at the selected time instant (parameter `datetime`).\
+                      \ \n\nAll values in the area for each requested variable (parameter\
+                      \ `variables`) are aggregated for each time step and each of the\
+                      \ requested statistical functions (parameter `functions`) is applied\
+                      \ to the aggregated values."
+                    links:
+                      - rel: ogc-dapa-endpoint
+                        title: Execute the data retrieval pattern with the default parameters
+                        href: /collections/observation/dapa/area:aggregate-space
+                      - rel: ogc-dapa-endpoint-definition
+                        title: Detailed description in the API definition (OpenAPI 3.0)
+                        href: /api?f=json#/paths/~1collections~1observation~1dapa
+                      - rel: ogc-dapa-endpoint-documentation
+                        title: Detailed description in the API documentation
+                        href: /api?f=html#/DAPA/get_collections_observation_dapa
+                    id: area:aggregate-space
+                    inputCollectionId: observation
+                    mediaTypes:
+                      - application/geo+json
+                      - text/csv
+                    externalDocs:
+                      description: Example requests and responses
+                      url: https://github.com/cportele/ogc-api-dev/blob/master/dapa/10-area-agg-space.md
+            text/html:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+          
+  /collections/{collectionId}/dapa/variables:
+    get:
+      tags:
+        - DAPA
+      summary: fetch the observable properties included in this observation collection
+      parameters:
+        - $ref: '#/components/parameters/collectionId' 
+        - $ref: '#/components/parameters/f'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variables'
+              example:
+                variables:
+                  - id: B01
+                    title: Variable of type Long
+                  - id: B02
+                    title: Variable of type Long
+                  - id: SNWD
+                    title: Snow depth
+            text/html:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+  /collections/{collectionId}/dapa/area:aggregate-space-time:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables for each zone in an
+        area and apply functions on all values
+      description: "This DAPA endpoint returns observation values for an area (parameter\
+        \ `bbox`, `coord` or `coordRef`) in the selected time interval or at the selected\
+        \ time instant (parameter `datetime`). \n\nAll values for each requested variable\
+        \ (parameter `variables`) are aggregated and each of the requested statistical\
+        \ functions (parameter `functions`) is applied to the aggregated values."
+      externalDocs:
+        description: Example requests and responses
+        url: https://github.com/cportele/ogc-api-dev/blob/master/dapa/11-area-agg-space-time.md
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/functions'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                PRCP_count,PRCP_max,PRCP_mean,PRCP_min,PRCP_std-dev,TMAX_count,TMAX_max,TMAX_mean,TMAX_min,TMAX_std-dev,TMIN_count,TMIN_max,TMIN_mean,TMIN_min,TMIN_std-dev
+                3545,490.0,33.057137,0.0,57.29267,2425,351.0,251.16705,67.0,32.354607,2430,206.0,139.8475,20.0,21.919683
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                features:
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 5.8
+                            - 47.2
+                          - - 15.1
+                            - 47.2
+                          - - 15.1
+                            - 55.1
+                          - - 5.8
+                            - 55.1
+                          - - 5.8
+                            - 47.2
+                    properties:
+                      phenomenonTime: 2019-08-07/2019-08-11
+                      TMIN_count: 2430
+                      TMAX_count: 2425
+                      PRCP_count: 3545
+                      TMIN_min: 20
+                      TMAX_mean: 251.16705
+                      PRCP_std-dev: 57.29267
+                      TMIN_std-dev: 21.919683
+                      TMIN_max: 206
+                      TMAX_max: 351
+                      PRCP_min: 0
+                      PRCP_mean: 33.057137
+                      TMAX_min: 67
+                      PRCP_max: 490
+                      TMAX_std-dev: 32.354607
+                      TMIN_mean: 139.8475
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
 components:
   schemas:
     collection:
@@ -437,6 +636,71 @@ components:
       type: integer
       minimum: 0
       example: 10
+    dapa:
+      type: object
+      properties:
+        endpoints:
+          type: array
+          items:
+            required:
+              - id
+              - inputCollectionId
+            type: object
+            properties:
+              mediaTypes:
+                type: array
+                items:
+                  type: string
+              externalDocs:
+                required:
+                  - url
+                type: object
+                properties:
+                  url:
+                    type: string
+                  description:
+                    type: string
+              inputCollectionId:
+                type: string
+              id:
+                type: string
+              title:
+                type: string
+              links:
+                type: array
+                items:
+                  $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link
+              description:
+                type: string
+        title:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link
+        description:
+          type: string
+    Variables:
+      type: object
+      properties:
+        variables:
+          type: array
+          items:
+            required:
+              - id
+            type: object
+            properties:
+              title:
+                type: string
+              uom:
+                type: string
+              description:
+                type: string
+              id:
+                type: string
+    htmlSchema:
+      type: string
+      example: <html>...</html>
   responses:
     NotSupported:
       description: None of the requested media types is supported at the path.
@@ -767,8 +1031,8 @@ components:
         maximum: 10000
         default: 10
       style: form
-    zoneIdList:
-      name: zoneIdList
+    zones:
+      name: zones
       in: query
       description: |-
         Comma separated list of zone identifiers
@@ -808,3 +1072,50 @@ components:
         type: string
       style: form
       explode: false
+    geom:
+      name: geom
+      in: query
+      description: 'A Well Known Text representation of a (MULTI)POLYGON geometry
+        as defined in Simple Feature Access - Part 1: Common Architecture.'
+      required: false
+      style: form
+      explode: false
+      schema:
+        pattern: ^\s*MULTIPOLYGON\s*\(\s*(\(\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*(?:\s*\,\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*)*\))\s*(?:\s*\,\s*(\(\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*(?:\s*\,\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*)*\))\s*)*\)\s*$|^\s*POLYGON\s*\(\s*(\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\))\s*(?:\s*\,\s*(\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\))\s*)*\)\s*$
+        type: string
+    functions:
+      name: functions
+      in: query
+      description: The statistical function(s) to apply when aggregating multiple values to a single value.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - std-dev
+            - count
+            - max
+            - mean
+            - min
+            - sum
+        default:
+          - max
+          - mean
+          - min
+    variables:
+      name: variables
+      in: query
+      description: |-
+        A comma-separated list of values with names of observable properties that should be returned in the response.
+        More information about the available properties can be retrieved from the `../variables` path.
+        The default is to return all observed properties.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string

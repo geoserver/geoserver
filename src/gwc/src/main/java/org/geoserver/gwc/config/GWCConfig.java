@@ -154,7 +154,7 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public boolean isRequireTiledParameter() {
-        if(requireTiledParameter == null) {
+        if (requireTiledParameter == null) {
             return true;
         }
         return requireTiledParameter;

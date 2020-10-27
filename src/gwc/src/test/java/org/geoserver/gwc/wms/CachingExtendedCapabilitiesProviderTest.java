@@ -127,7 +127,6 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
         GWC.get().getConfig().setRequireTiledParameter(false);
         dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
-        print(dom);
         assertXpathExists(tileSetPath, dom);
 
         assertXpathEvaluatesTo(String.valueOf(numTileSets), "count(" + tileSetPath + ")", dom);

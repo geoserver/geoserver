@@ -28,7 +28,7 @@ public class GWCConfig implements Cloneable, Serializable {
 
     private boolean directWMSIntegrationEnabled;
 
-    private boolean requireTiledParameter = true;
+    private Boolean requireTiledParameter = true;
 
     private boolean WMSCEnabled;
 
@@ -154,6 +154,9 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public boolean isRequireTiledParameter() {
+        if(requireTiledParameter == null) {
+            return true;
+        }
         return requireTiledParameter;
     }
 

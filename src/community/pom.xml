@@ -98,7 +98,7 @@
             <descriptor>release/ext-smart-data-loader.xml</descriptor>
             <descriptor>release/ext-cov-json.xml</descriptor>
             <descriptor>release/ext-schemaless-features.xml</descriptor>
-		   <descriptor>release/ext-web-auth.xml</descriptor>
+		    <descriptor>release/ext-web-auth.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -270,7 +270,7 @@
         <module>smart-data-loader</module>
         <module>rest-openapi</module>
         <module>schemaless-features</module>
-		<module>web-auth</module>
+		<module>authbasic</module>
       </modules>
     </profile>
     <profile>
@@ -730,9 +730,9 @@
           </modules>
       </profile>
 	<profile>
-      <id>web-auth</id>
+      <id>authbasic</id>
       <modules>
-        <module>web-auth</module>
+        <module>authbasic</module>
       </modules>
     </profile>
   </profiles>

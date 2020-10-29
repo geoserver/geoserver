@@ -10,7 +10,7 @@
 		<version>2.19-SNAPSHOT</version>
 	</parent>
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>web-auth</artifactId>
+	<artifactId>authbasic</artifactId>
 	<packaging>jar</packaging>
 	<version>2.19-SNAPSHOT</version>
 	<name>HTTP Based Authorization</name>

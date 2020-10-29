@@ -101,7 +101,7 @@
           <descriptor>release/ext-metadata.xml</descriptor>
           <descriptor>release/ext-gsr.xml</descriptor>
           <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>
-		  <descriptor>release/ext-web-auth.xml</descriptor>
+		  <descriptor>release/ext-authbasic.xml</descriptor>
           <!-- As per our discussion on list, the module does not work, leaving it for eventual salvage,
                but not providing an assembly. This one has been left for those interested
                <descriptor>release/ext-importer-bdb.xml</descriptor>
@@ -293,7 +293,7 @@
         <module>importer-bdb</module>
         <module>imagemosaic-jdbc</module>
 		<module>cog</module>
-		<module>web-auth</module>		
+		<module>authbasic</module>		
       </modules>
     </profile>
     <profile>
@@ -775,9 +775,9 @@
       </modules>
     </profile>
 	<profile>
-      <id>web-auth</id>
+      <id>authbasic</id>
       <modules>
-        <module>web-auth</module>
+        <module>authbasic</module>
       </modules>
     </profile>
   </profiles>  

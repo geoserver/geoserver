@@ -1,5 +1,5 @@
 <assembly>
-  <id>web-auth</id>
+  <id>authbasic</id>
   <formats>
     <format>zip</format>
   </formats>

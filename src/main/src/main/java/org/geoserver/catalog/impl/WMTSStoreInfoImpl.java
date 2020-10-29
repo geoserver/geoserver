@@ -136,7 +136,7 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     }
 
     @Override
-    public boolean isUseSecuredHttp() {
+    public boolean isUseURLVerificationCheks() {
         return useSecuredHttp;
     }
 

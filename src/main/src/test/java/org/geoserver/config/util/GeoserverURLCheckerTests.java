@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.net.URL;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -25,7 +24,6 @@ public class GeoserverURLCheckerTests extends GeoServerSystemTestSupport {
     @Before
     public void setUp() throws Exception {
         // assert bean exists
-        //  assertNotNull(GeoserverURLConfigService.getSingleton());
         // verify SPI Factory has the bean registered
         assertFalse(URLCheckers.getURLCheckerList().isEmpty());
     }
@@ -39,7 +37,7 @@ public class GeoserverURLCheckerTests extends GeoServerSystemTestSupport {
         checker.setEnabled(true);
         checker = super.geoserverURLConfigServiceBean.save();
         assertTrue(checker.isEnabled());
-        assertTrue(URLCheckers.getURLCheckerList().size() == 1);
+        assertTrue(URLCheckers.getEnabledURLCheckerList().size() == 1);
     }
 
     @Test

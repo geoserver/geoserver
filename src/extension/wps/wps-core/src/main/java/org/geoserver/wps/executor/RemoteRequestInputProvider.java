@@ -24,7 +24,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
-import org.geotools.data.ows.URLCheckerFactory;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
@@ -62,7 +62,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         InputReferenceType ref = input.getReference();
         URL destination = new URL(ref.getHref());
         if(destination.getProtocol().toLowerCase().startsWith("http"))
-            URLCheckerFactory.evaluate(destination);        
+            URLCheckers.evaluate(destination);        
         HttpMethod method = null;
         GetMethod refMethod = null;
         InputStream input = null;

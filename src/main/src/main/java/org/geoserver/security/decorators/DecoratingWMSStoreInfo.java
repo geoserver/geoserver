@@ -190,7 +190,7 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
     }
 
     @Override
-    public boolean isUseSecuredHttp() {
+    public boolean isUseURLVerificationCheks() {
         return delegate.isEnabled();
     }
 

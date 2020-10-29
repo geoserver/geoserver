@@ -158,12 +158,4 @@ public class GeoserverURLConfigService {
     public GeoserverURLChecker getGeoserverURLCheckerCopy() throws Exception {
         return (GeoserverURLChecker) geoserverURLChecker.clone();
     }
-
-    //    public static GeoserverURLConfigService getSingleton() {
-    //        if (singleton == null)
-    //            singleton = GeoServerExtensions.bean(GeoserverURLConfigService.class);
-    //
-    //        return singleton;
-    //    }
-
 }

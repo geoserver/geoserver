@@ -66,7 +66,7 @@ public interface HTTPStoreInfo extends StoreInfo {
      */
     public void setUseConnectionPooling(boolean useHttpConnectionPooling);
 
-    public boolean isUseSecuredHttp();
+    public boolean isUseURLVerificationCheks();
 
     public void setUseSecuredHttp(boolean useSecuredHttp);
 }

@@ -757,17 +757,16 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     @Test
-    public void testHttpSecutiry() throws Exception {
+    public void testHttpSecurity() throws Exception {
         URLEntry googleOnly =
                 new URLEntry(
                         "google only",
                         "only allow url starting with http://www.google.com",
                         "^(http://www.google).*$");
         addURLEntryGeoserverURLConfigService(googleOnly);
-        //GeoserverURLConfigService.getSingleton().addAndsave(googleOnly);
-        //tests static methods in  org.vfny.geoserver.util.Requests
+        // tests static methods in  org.vfny.geoserver.util.Requests
         enableGeoserverURLConfigService(true);
-        //WPS process should  through exception when evaluating this resource
+        // WPS process should  through exception when evaluating this resource
         String externalNotAllowedURL = "http://www.unallowed.com/resource.xml";
         String request =
                 "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection"

@@ -46,33 +46,4 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
         char[] passwd = mpp.doGetMasterPassword();
         assertTrue(Arrays.equals("geoserver".toCharArray(), passwd));
     }
-
-    @Test
-    public void testSecuredAccess() throws Exception {
-        File tmp = File.createTempFile("passwd_secured", "tmp", new File("target"));
-        tmp = tmp.getCanonicalFile();
-
-        URLMasterPasswordProviderConfig config = new URLMasterPasswordProviderConfig();
-        config.setName("test_secured");
-        config.setReadOnly(false);
-        config.setLoginEnabled(true);
-        config.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
-        config.setURL(URLs.fileToUrl(tmp));
-        config.setEncrypting(true);
-
-        URLMasterPasswordProvider mpp = new URLMasterPasswordProvider();
-        mpp.setSecurityManager(getSecurityManager());
-        mpp.initializeFromConfig(config);
-        mpp.setName(config.getName());
-        mpp.doSetMasterPassword("geoserver".toCharArray());
-
-        try {
-            mpp.doGetMasterPassword();
-            // fail();
-        } catch (Exception e) {
-
-        } finally {
-
-        }
-    }
 }

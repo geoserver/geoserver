@@ -1919,7 +1919,7 @@ public class ResourcePool {
         if (TestHttpClientProvider.testModeEnabled()
                 && capabilitiesURL.startsWith(TestHttpClientProvider.MOCKSERVER)) {
             HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
-            if (info.isUseSecuredHttp()) client = ControlledHttpClientFactory.wrap(client);
+            if (info.isUseURLVerificationCheks()) client = ControlledHttpClientFactory.wrap(client);
             return client;
         }
 
@@ -1934,7 +1934,7 @@ public class ResourcePool {
         } else {
             client = new SimpleHttpClient();
         }
-        if (info.isUseSecuredHttp()) client = ControlledHttpClientFactory.wrap(client);
+        if (info.isUseURLVerificationCheks()) client = ControlledHttpClientFactory.wrap(client);
         String username = info.getUsername();
         String password = info.getPassword();
         int connectTimeout = info.getConnectTimeout();
@@ -2841,7 +2841,7 @@ public class ResourcePool {
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());
-        target.setUseSecuredHttp(source.isUseSecuredHttp());
+        target.setUseSecuredHttp(source.isUseURLVerificationCheks());
     }
 
     /** */
@@ -2853,7 +2853,7 @@ public class ResourcePool {
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());
-        target.setUseSecuredHttp(source.isUseSecuredHttp());
+        target.setUseSecuredHttp(source.isUseURLVerificationCheks());
     }
 
     /**

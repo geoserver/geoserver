@@ -22,9 +22,9 @@ import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
 /**
- * Retrieve real system information metrics defined in {@link MetricInfo} using OSHI library
+ * Retrieve real system information metrics defined in {@link MetricInfo} using OSHI library.
  *
- * <p>Is possible to extends this class to change or add others low level APIs and use this new
+ * <p>It's possible to extend this class to change or add other low level APIs and use this new
  * class as main collector after register using autowiring.
  *
  * @author sandr
@@ -37,19 +37,22 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
 
     private static Log log = LogFactory.getLog(OSHISystemInfoCollector.class);
 
-    private OperatingSystem os;
+    private transient OperatingSystem os;
 
-    private HardwareAbstractionLayer hal;
+    private transient HardwareAbstractionLayer hal;
 
-    private CentralProcessor pr;
+    private transient CentralProcessor pr;
 
-    private GlobalMemory mm;
+    private transient GlobalMemory mm;
 
-    private Sensors ss;
+    private transient Sensors ss;
 
-    private FileSystem fs;
+    private transient FileSystem fs;
 
     private volatile double cpuUsage = 0;
+
+    private volatile long[][] oldTicks;
+    private volatile long[] oldLoadTicks;
 
     public OSHISystemInfoCollector() {
         SystemInfo si = new SystemInfo();
@@ -59,6 +62,8 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
         mm = hal.getMemory();
         ss = hal.getSensors();
         fs = os.getFileSystem();
+        oldTicks = pr.getProcessorCpuLoadTicks();
+        oldLoadTicks = pr.getSystemCpuLoadTicks();
         // compute CPU usage for this process
         new Thread(
                         () -> {
@@ -106,7 +111,7 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     {
                         MetricValue mv = new MetricValue(info);
                         mv.setAvailable(true);
-                        mv.setValue(os.getFamily() + " " + os.getVersion().getVersion());
+                        mv.setValue(os.getFamily() + " " + os.getVersionInfo().getVersion());
                         si = Collections.singletonList(mv);
                         break;
                     }
@@ -114,14 +119,14 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     {
                         MetricValue mv = new MetricValue(info);
                         mv.setAvailable(true);
-                        mv.setValue(pr.getSystemUptime());
+                        mv.setValue(os.getSystemUptime());
                         si = Collections.singletonList(mv);
                         break;
                     }
                 case SYSTEM_AVERAGE_LOAD_1:
                     {
                         MetricValue mv = new MetricValue(info);
-                        double lv = pr.getSystemLoadAverage();
+                        double lv = pr.getSystemLoadAverage(1)[0];
                         if (lv > 0) {
                             mv.setAvailable(true);
                             mv.setValue(lv);
@@ -187,7 +192,8 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 case CPU_LOAD:
                     {
                         MetricValue mv = new MetricValue(info);
-                        double cpuLoad = pr.getSystemCpuLoad();
+                        double cpuLoad = pr.getSystemCpuLoadBetweenTicks(oldLoadTicks);
+                        oldLoadTicks = pr.getSystemCpuLoadTicks();
                         if (cpuLoad >= 0) {
                             mv.setAvailable(true);
                             mv.setValue(cpuLoad * 100.0);
@@ -199,7 +205,8 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 case PER_CPU_LOAD:
                     {
                         si = new ArrayList<>();
-                        double[] loads = pr.getProcessorCpuLoadBetweenTicks();
+                        double[] loads = pr.getProcessorCpuLoadBetweenTicks(oldTicks);
+                        oldTicks = pr.getProcessorCpuLoadTicks();
                         if (loads.length > 0) {
                             for (int i = 0; i < loads.length; i++) {
                                 double value = loads[i] * 100.0;
@@ -251,9 +258,9 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     {
                         MetricValue mv = new MetricValue(info);
                         mv.setAvailable(true);
-                        double total = mm.getSwapTotal();
+                        double total = mm.getVirtualMemory().getSwapTotal();
                         if (total > 0.0) {
-                            double used = mm.getSwapUsed();
+                            double used = mm.getVirtualMemory().getSwapUsed();
                             mv.setValue(used / total * 100);
                         } else {
                             mv.setValue(0);
@@ -265,7 +272,7 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     {
                         MetricValue mv = new MetricValue(info);
                         mv.setAvailable(true);
-                        mv.setValue(mm.getSwapTotal());
+                        mv.setValue(mm.getVirtualMemory().getSwapTotal());
                         si = Collections.singletonList(mv);
                         break;
                     }
@@ -273,8 +280,8 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     {
                         MetricValue mv = new MetricValue(info);
                         mv.setAvailable(true);
-                        long total = mm.getSwapTotal();
-                        long free = total - mm.getSwapUsed();
+                        long total = mm.getVirtualMemory().getSwapTotal();
+                        long free = total - mm.getVirtualMemory().getSwapUsed();
                         mv.setValue(free);
                         si = Collections.singletonList(mv);
                         break;
@@ -283,12 +290,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 case FILE_SYSTEM_TOTAL_USAGE:
                     {
                         si = Collections.emptyList();
-                        OSFileStore[] fss = fs.getFileStores();
-                        if (fss.length > 0) {
+                        List<OSFileStore> fss = fs.getFileStores();
+                        if (!fss.isEmpty()) {
                             double total = 0;
                             double used = 0;
-                            for (int i = 0; i < fss.length; i++) {
-                                OSFileStore fs = fss[i];
+                            for (OSFileStore fs : fss) {
                                 double fsTotal = fs.getTotalSpace();
                                 total += fsTotal;
                                 used += fsTotal - fs.getUsableSpace();
@@ -306,11 +312,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     }
                 case PARTITION_USED:
                     {
-                        OSFileStore[] fss = fs.getFileStores();
-                        if (fss.length > 0) {
+                        List<OSFileStore> fss = fs.getFileStores();
+                        if (!fss.isEmpty()) {
                             si = new ArrayList<>();
-                            for (int i = 0; i < fss.length; i++) {
-                                OSFileStore fs = fss[i];
+                            int i = 0;
+                            for (OSFileStore fs : fss) {
                                 MetricValue mv = new MetricValue(info);
                                 double total = fs.getTotalSpace();
                                 if (total > 0.0) {
@@ -330,11 +336,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     }
                 case PARTITION_TOTAL:
                     {
-                        OSFileStore[] fss = fs.getFileStores();
-                        if (fss.length > 0) {
+                        List<OSFileStore> fss = fs.getFileStores();
+                        if (!fss.isEmpty()) {
                             si = new ArrayList<>();
-                            for (int i = 0; i < fss.length; i++) {
-                                OSFileStore fs = fss[i];
+                            int i = 0;
+                            for (OSFileStore fs : fss) {
                                 MetricValue mv = new MetricValue(info);
                                 mv.setValue(fs.getTotalSpace());
                                 mv.setAvailable(true);
@@ -348,11 +354,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     }
                 case PARTITION_FREE:
                     {
-                        OSFileStore[] fss = fs.getFileStores();
-                        if (fss.length > 0) {
+                        List<OSFileStore> fss = fs.getFileStores();
+                        if (!fss.isEmpty()) {
                             si = new ArrayList<>();
-                            for (int i = 0; i < fss.length; i++) {
-                                OSFileStore fs = fss[i];
+                            int i = 0;
+                            for (OSFileStore fs : fss) {
                                 MetricValue mv = new MetricValue(info);
                                 mv.setValue(fs.getUsableSpace());
                                 mv.setAvailable(true);
@@ -368,12 +374,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 case NETWORK_INTERFACES_SEND:
                     {
                         si = Collections.emptyList();
-                        NetworkIF[] nis = hal.getNetworkIFs();
-                        if (nis.length > 0) {
+                        List<NetworkIF> nis = hal.getNetworkIFs();
+                        if (!nis.isEmpty()) {
                             double total = 0;
-                            for (int i = 0; i < nis.length; i++) {
-                                NetworkIF ni = nis[i];
-                                ni.updateNetworkStats();
+                            for (NetworkIF ni : nis) {
+                                ni.updateAttributes();
                                 total += ni.getBytesSent();
                             }
                             MetricValue mv = new MetricValue(info);
@@ -386,12 +391,11 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                 case NETWORK_INTERFACES_RECEIVED:
                     {
                         si = Collections.emptyList();
-                        NetworkIF[] nis = hal.getNetworkIFs();
-                        if (nis.length > 0) {
+                        List<NetworkIF> nis = hal.getNetworkIFs();
+                        if (!nis.isEmpty()) {
                             double total = 0;
-                            for (int i = 0; i < nis.length; i++) {
-                                NetworkIF ni = nis[i];
-                                ni.updateNetworkStats();
+                            for (NetworkIF ni : nis) {
+                                ni.updateAttributes();
                                 total += ni.getBytesRecv();
                             }
                             MetricValue mv = new MetricValue(info);
@@ -403,12 +407,12 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     }
                 case NETWORK_INTERFACE_SEND:
                     {
-                        NetworkIF[] nis = hal.getNetworkIFs();
-                        if (nis.length > 0) {
+                        List<NetworkIF> nis = hal.getNetworkIFs();
+                        if (!nis.isEmpty()) {
                             si = new ArrayList<>();
-                            for (int i = 0; i < nis.length; i++) {
-                                NetworkIF ni = nis[i];
-                                ni.updateNetworkStats();
+                            int i = 0;
+                            for (NetworkIF ni : nis) {
+                                ni.updateAttributes();
                                 MetricValue mv = new MetricValue(info);
                                 mv.setValue(ni.getBytesSent());
                                 mv.setAvailable(true);
@@ -422,18 +426,18 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
                     }
                 case NETWORK_INTERFACE_RECEIVED:
                     {
-                        NetworkIF[] nis = hal.getNetworkIFs();
-                        if (nis.length > 0) {
+                        List<NetworkIF> nis = hal.getNetworkIFs();
+                        if (!nis.isEmpty()) {
                             si = new ArrayList<>();
-                            for (int i = 0; i < nis.length; i++) {
-                                NetworkIF ni = nis[i];
-                                ni.updateNetworkStats();
+                            int i = 0;
+                            for (NetworkIF ni : nis) {
+                                ni.updateAttributes();
                                 MetricValue mv = new MetricValue(info);
                                 mv.setValue(ni.getBytesRecv());
                                 mv.setAvailable(true);
                                 mv.setDescription(
                                         "Network interface [" + ni.getName() + "] received");
-                                mv.setPriority(info.getPriority() + (i + 1) * 3);
+                                mv.setPriority(info.getPriority() + (i++) * 3);
                                 mv.setIdentifier(ni.getName());
                                 si.add(mv);
                             }

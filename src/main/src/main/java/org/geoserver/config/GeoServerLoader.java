@@ -211,15 +211,18 @@ public abstract class GeoServerLoader {
                 catalog.add(l);
 
                 LOGGER.info("Loaded layer '" + l.getName() + "'");
-
+                List<StyleInfo> badStyles = new ArrayList<>();
                 for (StyleInfo style : l.getStyles()) {
                     if (null == style) {
                         LOGGER.log(
                                 Level.SEVERE,
                                 "Layer '" + l.getName() + "' references a missing style");
                     }
+                    badStyles.add(style);
                 }
-
+                if (!badStyles.isEmpty()) {
+                    l.getStyles().removeAll(badStyles);
+                }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Failed to load layer " + lc.resource.name(), e);
             }

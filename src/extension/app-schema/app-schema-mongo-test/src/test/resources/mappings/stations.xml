@@ -19,7 +19,7 @@
       <parameters>
         <Parameter>
           <name>data_store</name>
-          <value>mongodb://localhost/d8ebb794-cb65-4e75-bfd4-4d7f3d0d3528</value>
+          <value>mongodb://{mongoHost}:{mongoPort}/{dataBaseName}</value>
         </Parameter>
         <Parameter>
           <name>namespace</name>

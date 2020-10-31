@@ -121,7 +121,7 @@ public class Dispatcher extends AbstractController {
     int xmlPostRequestLogBufferSize = 1024;
 
     /** thread local variable for the request */
-    public static final ThreadLocal<Request> REQUEST = new InheritableThreadLocal<Request>();
+    public static final ThreadLocal<Request> REQUEST = new InheritableThreadLocal<>();
 
     static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -328,7 +328,7 @@ public class Dispatcher extends AbstractController {
                 up.setFileItemFactory(new DiskFileItemFactory());
 
                 // treat regular form fields as additional kvp parameters
-                Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap(new LinkedHashMap());
+                Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
                     for (FileItem item : (List<FileItem>) up.parseRequest(httpRequest)) {
                         if (item.isFormField()) {
@@ -350,7 +350,7 @@ public class Dispatcher extends AbstractController {
                     }
                 }
 
-                Map<String, String> kvpItems = new LinkedHashMap();
+                Map<String, String> kvpItems = new LinkedHashMap<>();
                 for (Map.Entry<String, FileItem> e : kvpFileItems.entrySet()) {
                     kvpItems.put(e.getKey(), e.getValue().toString());
                 }
@@ -660,7 +660,7 @@ public class Dispatcher extends AbstractController {
         Object[] parameters = new Object[operation.getParameterTypes().length];
 
         for (int i = 0; i < parameters.length; i++) {
-            Class parameterType = operation.getParameterTypes()[i];
+            Class<?> parameterType = operation.getParameterTypes()[i];
 
             // first check for servlet request and response
             if (parameterType.isAssignableFrom(HttpServletRequest.class)) {
@@ -898,14 +898,14 @@ public class Dispatcher extends AbstractController {
         // step 6: write response
         if (result != null) {
             // look up respones
-            List responses = GeoServerExtensions.extensions(Response.class);
+            List<Response> responses = GeoServerExtensions.extensions(Response.class);
 
             // first filter by binding, and canHandle
             O:
             for (Iterator itr = responses.iterator(); itr.hasNext(); ) {
                 Response response = (Response) itr.next();
 
-                Class binding = response.getBinding();
+                Class<?> binding = response.getBinding();
 
                 if (!binding.isAssignableFrom(result.getClass())
                         || !response.canHandle(opDescriptor)) {
@@ -956,10 +956,10 @@ public class Dispatcher extends AbstractController {
                 // sort by class hierarchy
                 Collections.sort(
                         responses,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Class c1 = ((Response) o1).getBinding();
-                                Class c2 = ((Response) o2).getBinding();
+                        new Comparator<Response>() {
+                            public int compare(Response o1, Response o2) {
+                                Class<?> c1 = o1.getBinding();
+                                Class<?> c2 = o2.getBinding();
 
                                 if (c1.equals(c2)) {
                                     return 0;
@@ -1134,10 +1134,10 @@ public class Dispatcher extends AbstractController {
         return response;
     }
 
-    Collection loadServices() {
-        Collection services = GeoServerExtensions.extensions(Service.class);
+    Collection<Service> loadServices() {
+        Collection<Service> services = GeoServerExtensions.extensions(Service.class);
 
-        if (!(new HashSet(services).size() == services.size())) {
+        if (!(new HashSet<>(services).size() == services.size())) {
             String msg = "Two identical service descriptors found";
             throw new IllegalStateException(msg);
         }
@@ -1147,7 +1147,7 @@ public class Dispatcher extends AbstractController {
 
     Service findService(String id, String ver, String namespace) throws ServiceException {
         Version version = (ver != null) ? new Version(ver) : null;
-        Collection services = loadServices();
+        Collection<Service> services = loadServices();
 
         // the id is actually the pathinfo, in case workspace specific services
         // are active we want to skip the workspace part in the path and go directly to the
@@ -1157,10 +1157,10 @@ public class Dispatcher extends AbstractController {
         }
 
         // first just match on service,request
-        List matches = new ArrayList();
+        List<Service> matches = new ArrayList<>();
 
-        for (Iterator itr = services.iterator(); itr.hasNext(); ) {
-            Service sBean = (Service) itr.next();
+        for (Iterator<Service> itr = services.iterator(); itr.hasNext(); ) {
+            Service sBean = itr.next();
 
             if (sBean.getId().equalsIgnoreCase(id)) {
                 matches.add(sBean);
@@ -1175,13 +1175,13 @@ public class Dispatcher extends AbstractController {
 
         // if multiple, use version to filter match
         if (matches.size() > 1) {
-            List vmatches = new ArrayList(matches);
+            List<Service> vmatches = new ArrayList<>(matches);
 
             // match up the version
             if (version != null) {
                 // version specified, look for a match
-                for (Iterator itr = vmatches.iterator(); itr.hasNext(); ) {
-                    Service s = (Service) itr.next();
+                for (Iterator<Service> itr = vmatches.iterator(); itr.hasNext(); ) {
+                    Service s = itr.next();
 
                     if (version.equals(s.getVersion())) {
                         continue;
@@ -1193,15 +1193,15 @@ public class Dispatcher extends AbstractController {
                 if (vmatches.isEmpty()) {
                     // no matching version found, drop out and next step
                     // will sort to return highest version
-                    vmatches = new ArrayList(matches);
+                    vmatches = new ArrayList<>(matches);
                 }
             }
 
             // if still multiple matches use namespace, if available, to filter
             if (namespace != null && vmatches.size() > 1) {
-                List nmatches = new ArrayList(vmatches);
-                for (Iterator itr = nmatches.iterator(); itr.hasNext(); ) {
-                    Service s = (Service) itr.next();
+                List<Service> nmatches = new ArrayList<>(vmatches);
+                for (Iterator<Service> itr = nmatches.iterator(); itr.hasNext(); ) {
+                    Service s = itr.next();
                     if (s.getNamespace() != null && !s.getNamespace().equals(namespace)) {
                         // service declares namespace, kick it out if there is no match, otherwise
                         // leave it along
@@ -1217,12 +1217,9 @@ public class Dispatcher extends AbstractController {
             // multiple services found, sort by version
             if (vmatches.size() > 1) {
                 // use highest version
-                Comparator comparator =
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Service s1 = (Service) o1;
-                                Service s2 = (Service) o2;
-
+                Comparator<Service> comparator =
+                        new Comparator<Service>() {
+                            public int compare(Service s1, Service s2) {
                                 return s1.getVersion().compareTo(s2.getVersion());
                             }
                         };
@@ -1239,10 +1236,10 @@ public class Dispatcher extends AbstractController {
         return sBean;
     }
 
-    public static Collection loadKvpRequestReaders() {
-        Collection kvpReaders = GeoServerExtensions.extensions(KvpRequestReader.class);
+    public static Collection<KvpRequestReader> loadKvpRequestReaders() {
+        Collection<KvpRequestReader> kvpReaders = GeoServerExtensions.extensions(KvpRequestReader.class);
 
-        if (!(new HashSet(kvpReaders).size() == kvpReaders.size())) {
+        if (!(new HashSet<>(kvpReaders).size() == kvpReaders.size())) {
             String msg = "Two identical kvp readers found";
             throw new IllegalStateException(msg);
         }
@@ -1250,13 +1247,13 @@ public class Dispatcher extends AbstractController {
         return kvpReaders;
     }
 
-    public static KvpRequestReader findKvpRequestReader(Class type) {
-        Collection kvpReaders = loadKvpRequestReaders();
+    public static KvpRequestReader findKvpRequestReader(Class<?> type) {
+        Collection<KvpRequestReader> kvpReaders = loadKvpRequestReaders();
 
-        List matches = new ArrayList();
+        List<KvpRequestReader> matches = new ArrayList<>();
 
-        for (Iterator itr = kvpReaders.iterator(); itr.hasNext(); ) {
-            KvpRequestReader kvpReader = (KvpRequestReader) itr.next();
+        for (Iterator<KvpRequestReader> itr = kvpReaders.iterator(); itr.hasNext(); ) {
+            KvpRequestReader kvpReader = itr.next();
 
             if (kvpReader.getRequestBean().isAssignableFrom(type)) {
                 matches.add(kvpReader);
@@ -1269,12 +1266,9 @@ public class Dispatcher extends AbstractController {
 
         if (matches.size() > 1) {
             // sort by class hierarchy
-            Comparator comparator =
-                    new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            KvpRequestReader kvp1 = (KvpRequestReader) o1;
-                            KvpRequestReader kvp2 = (KvpRequestReader) o2;
-
+            Comparator<KvpRequestReader> comparator =
+                    new Comparator<KvpRequestReader>() {
+                        public int compare(KvpRequestReader kvp1, KvpRequestReader kvp2) {
                             if (kvp2.getRequestBean().isAssignableFrom(kvp1.getRequestBean())) {
                                 return -1;
                             }
@@ -1289,10 +1283,10 @@ public class Dispatcher extends AbstractController {
         return (KvpRequestReader) matches.get(0);
     }
 
-    static Collection loadXmlReaders() {
+    static Collection<XmlRequestReader> loadXmlReaders() {
         List<XmlRequestReader> xmlReaders = GeoServerExtensions.extensions(XmlRequestReader.class);
 
-        if (!(new HashSet<XmlRequestReader>(xmlReaders).size() == xmlReaders.size())) {
+        if (!(new HashSet<>(xmlReaders).size() == xmlReaders.size())) {
 
             String msg = "Two identical xml readers found";
             for (int i = 0; i < xmlReaders.size(); i++) {
@@ -1324,10 +1318,10 @@ public class Dispatcher extends AbstractController {
      */
     public static XmlRequestReader findXmlReader(
             String namespace, String element, String serviceId, String ver) {
-        Collection xmlReaders = loadXmlReaders();
+        Collection<XmlRequestReader> xmlReaders = loadXmlReaders();
 
         // first just match on namespace, element
-        List matches = new ArrayList();
+        List<XmlRequestReader> matches = new ArrayList<>();
 
         for (Iterator itr = xmlReaders.iterator(); itr.hasNext(); ) {
             XmlRequestReader xmlReader = (XmlRequestReader) itr.next();
@@ -1383,12 +1377,12 @@ public class Dispatcher extends AbstractController {
 
         // if multiple, use version to filter match
         if (matches.size() > 1) {
-            List vmatches = new ArrayList(matches);
+            List<XmlRequestReader> vmatches = new ArrayList<>(matches);
 
             // match up the service
             if (serviceId != null) {
-                for (Iterator itr = vmatches.iterator(); itr.hasNext(); ) {
-                    XmlRequestReader r = (XmlRequestReader) itr.next();
+                for (Iterator<XmlRequestReader> itr = vmatches.iterator(); itr.hasNext(); ) {
+                    XmlRequestReader r = itr.next();
 
                     if (r.getServiceId() == null || serviceId.equalsIgnoreCase(r.getServiceId())) {
                         continue;
@@ -1421,19 +1415,16 @@ public class Dispatcher extends AbstractController {
                 if (vmatches.isEmpty()) {
                     // no matching version found, drop out and next step
                     // will sort to return highest version
-                    vmatches = new ArrayList(matches);
+                    vmatches = new ArrayList<>(matches);
                 }
             }
 
             // multiple readers found, sort by version and by service match
             if (vmatches.size() > 1) {
                 // use highest version
-                Comparator comparator =
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                XmlRequestReader r1 = (XmlRequestReader) o1;
-                                XmlRequestReader r2 = (XmlRequestReader) o2;
-
+                Comparator<XmlRequestReader> comparator =
+                        new Comparator<XmlRequestReader>() {
+                            public int compare(XmlRequestReader r1, XmlRequestReader r2) {
                                 Version v1 = r1.getVersion();
                                 Version v2 = r2.getVersion();
 
@@ -1604,9 +1595,9 @@ public class Dispatcher extends AbstractController {
      * @param request {@link Request} object
      * @return a {@link Map} containing the parsed parameters.
      */
-    public static Map readOpContext(Request request) {
+    public static Map<String, String> readOpContext(Request request) {
 
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<>();
         if (request.getPath() != null) {
             map.put("service", request.getPath());
         }
@@ -1633,7 +1624,7 @@ public class Dispatcher extends AbstractController {
         parser.setInput(input);
         parser.nextTag();
 
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<>();
         map.put("request", parser.getName());
         map.put("namespace", parser.getNamespace());
 

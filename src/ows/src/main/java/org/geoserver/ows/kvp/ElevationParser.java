@@ -158,7 +158,7 @@ public class ElevationParser {
         }
     }
 
-    private void addValue(Collection result, Double step) {
+    private void addValue(Collection<Double> result, Double step) {
         for (Iterator it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
             if (element instanceof Double) {
@@ -174,8 +174,8 @@ public class ElevationParser {
         result.add(step);
     }
 
-    private void addPeriod(Collection result, NumberRange<Double> newRange) {
-        for (Iterator it = result.iterator(); it.hasNext(); ) {
+    private void addPeriod(Collection<Object> result, NumberRange<Double> newRange) {
+        for (Iterator<Object> it = result.iterator(); it.hasNext(); ) {
             final Object element = it.next();
             if (element instanceof Double) {
                 // convert
@@ -184,6 +184,7 @@ public class ElevationParser {
                 }
             } else {
                 // convert
+                @SuppressWarnings("unchecked")
                 final NumberRange<Double> local = (NumberRange<Double>) element;
                 if (local.contains(newRange)) return;
                 if (newRange.contains(local)) it.remove();

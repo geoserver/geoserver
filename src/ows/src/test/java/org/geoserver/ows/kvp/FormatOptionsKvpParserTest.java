@@ -40,6 +40,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
                     }
                 };
 
+        @SuppressWarnings("unchecked")
         Map<String, String> actual =
                 (Map<String, String>) parser.parse("key1:value1;key2:value2;key3;key4:value4");
         assertEquals(expected, actual);
@@ -60,6 +61,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
                     }
                 };
 
+        @SuppressWarnings("unchecked")
         Map<String, String> actual =
                 (Map<String, String>)
                         parser.parse("key1:value\\:1;key2:value\\:2;key3:value\\:3\\;ZZZ");
@@ -81,6 +83,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
                     }
                 };
 
+        @SuppressWarnings("unchecked")
         Map<String, String> actual =
                 (Map<String, String>)
                         parser.parse("key1:value:1;key2:value:2;key3:value:3\\:ZZ\\;XX");
@@ -102,6 +105,7 @@ public class FormatOptionsKvpParserTest extends TestCase {
                     }
                 };
 
+        @SuppressWarnings("unchecked")
         Map<String, String> actual =
                 (Map<String, String>) parser.parse("key1:value:1;key2:value:2;key3:value:3");
         assertEquals(expected.size(), actual.size());

@@ -21,15 +21,17 @@ public class ElevationKvpParserTest extends TestCase {
 
     public void testPeriod() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List elements = new ArrayList((Collection) parser.parse("1/100/1"));
+        @SuppressWarnings("unchecked")
+        List<Double> elements = new ArrayList<>((Collection<Double>) parser.parse("1/100/1"));
         assertTrue(elements.get(0) instanceof Double);
         assertTrue(elements.size() == 100);
         assertEquals(1.0, ((Double) elements.get(0)));
     }
 
+    @SuppressWarnings("unchecked")
     public void testMixed() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List elements = new ArrayList((Collection) parser.parse("5,3,4,1,2,8.9,1/9"));
+        List<Object> elements = new ArrayList<>((Collection<Object>) parser.parse("5,3,4,1,2,8.9,1/9"));
         assertTrue(elements.get(0) instanceof NumberRange);
         assertEquals(1.0, ((NumberRange<Double>) elements.get(0)).getMinimum());
         assertEquals(9.0, ((NumberRange<Double>) elements.get(0)).getMaximum());
@@ -37,7 +39,8 @@ public class ElevationKvpParserTest extends TestCase {
 
     public void testOutOfOrderSequence() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List elements = new ArrayList((Collection) parser.parse("5,3,4,1,2,8.9"));
+        @SuppressWarnings("unchecked")
+        List<Object> elements = new ArrayList<>((Collection) parser.parse("5,3,4,1,2,8.9"));
         assertEquals(1.0, elements.get(0));
         assertEquals(2.0, elements.get(1));
         assertEquals(3.0, elements.get(2));
@@ -48,7 +51,8 @@ public class ElevationKvpParserTest extends TestCase {
 
     public ElevationKvpParser testOrderedSequence() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List elements = new ArrayList((Collection) parser.parse("1,2,3,4,5,8.9"));
+        @SuppressWarnings("unchecked")
+        List<Object> elements = new ArrayList((Collection) parser.parse("1,2,3,4,5,8.9"));
         assertEquals(1.0, elements.get(0));
         assertEquals(2.0, elements.get(1));
         assertEquals(3.0, elements.get(2));

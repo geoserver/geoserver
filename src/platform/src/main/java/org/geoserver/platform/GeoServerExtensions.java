@@ -73,8 +73,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<String, File>();
 
     /** SPI lookups are very expensive, we need to cache them */
-    static SoftValueHashMap<Class, List<Object>> spiCache =
-            new SoftValueHashMap<Class, List<Object>>(40);
+    static SoftValueHashMap<Class, List<?>> spiCache = new SoftValueHashMap<>(40);
 
     /**
      * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)}
@@ -135,7 +134,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         if (!ExtensionProvider.class.isAssignableFrom(extensionPoint)
                 && !ExtensionFilter.class.isAssignableFrom(extensionPoint)) {
 
-            List<Object> secondary = new ArrayList<Object>();
+            List<T> secondary = new ArrayList<>();
             for (ExtensionProvider xp : extensions(ExtensionProvider.class, context)) {
                 try {
                     if (extensionPoint.isAssignableFrom(xp.getExtensionPoint())) {
@@ -149,9 +148,10 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
 
         // load from factory spi
-        List<Object> spiExtensions = spiCache.get(extensionPoint);
+        @SuppressWarnings("unchecked")
+        List<T> spiExtensions = (List<T>) spiCache.get(extensionPoint);
         if (spiExtensions == null) {
-            spiExtensions = new ArrayList<Object>();
+            spiExtensions = new ArrayList<>();
             new FactoryRegistry(extensionPoint)
                     .getFactories(extensionPoint, false)
                     .forEach(spiExtensions::add);
@@ -217,8 +217,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         return bean;
     }
 
-    private static void filter(List objects, List<ExtensionFilter> filters, List result) {
-        for (Object bean : objects) {
+    private static <T> void filter(List<T> objects, List<ExtensionFilter> filters, List<T> result) {
+        for (T bean : objects) {
             if (!excludeBean(null, bean, filters)) result.add(bean);
         }
     }

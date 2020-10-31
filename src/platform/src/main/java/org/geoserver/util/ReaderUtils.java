@@ -463,7 +463,7 @@ public class ReaderUtils {
         }
         NodeList klist = keywordsElem.getElementsByTagName("keyword");
         int kCount = klist.getLength();
-        List keywords = new ArrayList(kCount);
+        List<String> keywords = new ArrayList<>(kCount);
         String kword;
         Element kelem;
 
@@ -482,7 +482,7 @@ public class ReaderUtils {
             return new ArrayList();
         }
 
-        ArrayList ss = new ArrayList(s.length);
+        List<Object> ss = new ArrayList<>(s.length);
 
         for (int i = 0; i < s.length; i++) ss.add(s[i]);
 

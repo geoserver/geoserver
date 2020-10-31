@@ -27,7 +27,7 @@ public class ErrorHandler extends DefaultHandler {
 
     Level level;
 
-    public List errors = new ArrayList();
+    public List<SAXParseException> errors = new ArrayList<>();
 
     public ErrorHandler() {}
 

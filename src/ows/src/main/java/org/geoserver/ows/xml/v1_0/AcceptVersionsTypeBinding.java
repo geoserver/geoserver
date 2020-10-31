@@ -12,6 +12,8 @@ import org.geotools.xsd.AbstractComplexEMFBinding;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
 
+import java.util.List;
+
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptVersionsType.
  *
@@ -63,7 +65,9 @@ public class AcceptVersionsTypeBinding extends AbstractComplexEMFBinding {
      */
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         AcceptVersionsType acceptVersions = owsfactory.createAcceptVersionsType();
-        acceptVersions.getVersion().addAll(node.getChildValues("Version"));
+        @SuppressWarnings("unchecked")
+        List<String> versions = node.getChildValues("Version");
+        acceptVersions.getVersion().addAll(versions);
 
         return acceptVersions;
     }

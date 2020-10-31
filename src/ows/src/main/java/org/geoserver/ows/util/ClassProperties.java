@@ -95,7 +95,7 @@ public class ClassProperties {
             if (type == null) {
                 return setter;
             } else {
-                Class target = setter.getParameterTypes()[0];
+                Class<?> target = setter.getParameterTypes()[0];
                 if (target.isAssignableFrom(type)
                         || (target.isPrimitive() && type == wrapper(target))
                         || (type.isPrimitive() && target == wrapper(type))) {
@@ -129,7 +129,7 @@ public class ClassProperties {
                 if (type == null) {
                     return getter;
                 } else {
-                    Class target = getter.getReturnType();
+                    Class<?> target = getter.getReturnType();
                     if (type.isAssignableFrom(target)
                             || (target.isPrimitive() && type == wrapper(target))
                             || (type.isPrimitive() && target == wrapper(type))) {

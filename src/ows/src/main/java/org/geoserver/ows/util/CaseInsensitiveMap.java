@@ -5,6 +5,8 @@
  */
 package org.geoserver.ows.util;
 
+import org.checkerframework.checker.units.qual.K;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -15,10 +17,10 @@ import java.util.TreeMap;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public class CaseInsensitiveMap implements Map {
-    Map delegate = new TreeMap();
+public class CaseInsensitiveMap<V> implements Map<String, V> {
+    Map<String, V> delegate = new TreeMap<>();
 
-    public CaseInsensitiveMap(Map delegate) {
+    public CaseInsensitiveMap(Map<String, V> delegate) {
         putAll(delegate);
     }
 
@@ -34,7 +36,7 @@ public class CaseInsensitiveMap implements Map {
         return delegate.containsValue(value);
     }
 
-    public Set entrySet() {
+    public Set<Map.Entry<String, V>> entrySet() {
         return delegate.entrySet();
     }
 
@@ -42,7 +44,7 @@ public class CaseInsensitiveMap implements Map {
         return delegate.equals(o);
     }
 
-    public Object get(Object key) {
+    public V get(Object key) {
         return delegate.get(upper(key));
     }
 
@@ -54,24 +56,24 @@ public class CaseInsensitiveMap implements Map {
         return delegate.isEmpty();
     }
 
-    public Set keySet() {
+    public Set<String> keySet() {
         return delegate.keySet();
     }
 
-    public Object put(Object key, Object value) {
+    public V put(String key, V value) {
         return delegate.put(upper(key), value);
     }
 
-    public void putAll(Map t) {
+    public void putAll(Map<? extends String, ? extends V> t) {
         // make sure to upcase all keys
-        for (Object entry : t.entrySet()) {
-            Object key = ((Entry) entry).getKey();
-            Object value = ((Entry) entry).getValue();
+        for (Entry<? extends String, ? extends V> entry : t.entrySet()) {
+            String key = entry.getKey();
+            V value = entry.getValue();
             put(key, value);
         }
     }
 
-    public Object remove(Object key) {
+    public V remove(Object key) {
         return delegate.remove(upper(key));
     }
 
@@ -79,13 +81,14 @@ public class CaseInsensitiveMap implements Map {
         return delegate.size();
     }
 
-    public Collection values() {
+    public Collection<V> values() {
         return delegate.values();
     }
 
-    Object upper(Object key) {
+    @SuppressWarnings("unchecked")
+    <T> T upper(T key) {
         if ((key != null) && key instanceof String) {
-            return ((String) key).toUpperCase();
+            return (T) ((String) key).toUpperCase();
         }
 
         return key;
@@ -101,10 +104,10 @@ public class CaseInsensitiveMap implements Map {
      *
      * <p>If the instance is already a case insensitive map it is returned as is.
      */
-    public static Map wrap(Map other) {
+    public static <V> Map<String, V> wrap(Map<String, V> other) {
         if (other instanceof CaseInsensitiveMap) {
             return other;
         }
-        return new CaseInsensitiveMap(other);
+        return new CaseInsensitiveMap<>(other);
     }
 }

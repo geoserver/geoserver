@@ -12,6 +12,8 @@ import org.geotools.xsd.AbstractComplexBinding;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
 
+import java.util.List;
+
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptFormatsType.
  *
@@ -60,7 +62,9 @@ public class AcceptFormatsTypeBinding extends AbstractComplexBinding {
      */
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         AcceptFormatsType acceptFormats = owsfactory.createAcceptFormatsType();
-        acceptFormats.getOutputFormat().addAll(node.getChildValues("OutputFormat"));
+        @SuppressWarnings("unchecked")
+        List<String> outputFormats = node.getChildValues("OutputFormat");
+        acceptFormats.getOutputFormat().addAll(outputFormats);
 
         return acceptFormats;
     }

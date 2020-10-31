@@ -66,7 +66,7 @@ public class KvpRequestReader {
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
     /** The class of the request bean */
-    private Class requestBean;
+    private Class<?> requestBean;
 
     /** A list of kvp names to filter. */
     protected Set<String> filter;
@@ -88,7 +88,7 @@ public class KvpRequestReader {
     }
 
     /** @return The class of the request bean. */
-    public final Class getRequestBean() {
+    public final Class<?> getRequestBean() {
         return requestBean;
     }
 

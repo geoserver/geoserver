@@ -184,7 +184,7 @@ public class CatalogStyleChangeListenerTest {
     public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
         when(mockMediator.getLayerInfosFor(same(mockStyle)))
                 .thenReturn(Collections.singleton(mockLayerInfo));
-        when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(Collections.EMPTY_LIST);
+        when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(Collections.emptyList());
 
         CatalogPostModifyEventImpl postModifyEvent = new CatalogPostModifyEventImpl();
         postModifyEvent.setSource(mockStyle);
@@ -200,7 +200,7 @@ public class CatalogStyleChangeListenerTest {
         LayerGroupInfo mockGroup = mock(LayerGroupInfo.class);
         when(GWC.tileLayerName(mockGroup)).thenReturn("mockGroup");
 
-        when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(Collections.EMPTY_LIST);
+        when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(Collections.emptyList());
         when(mockMediator.getLayerGroupsFor(same(mockStyle)))
                 .thenReturn(Collections.singleton(mockGroup));
 

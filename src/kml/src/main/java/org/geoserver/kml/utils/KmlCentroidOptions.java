@@ -27,7 +27,7 @@ public class KmlCentroidOptions {
         return create(
                 context != null && context.getRequest() != null
                         ? context.getRequest().getFormatOptions()
-                        : Collections.EMPTY_MAP);
+                        : Collections.emptyMap());
     }
 
     /** Creates centroid options from the specified format options. */

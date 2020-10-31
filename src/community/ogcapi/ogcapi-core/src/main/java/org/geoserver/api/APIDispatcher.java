@@ -83,7 +83,7 @@ public class APIDispatcher extends AbstractController {
 
     // SHARE
     /** list of callbacks */
-    protected List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
+    protected List<DispatcherCallback> callbacks = Collections.emptyList();
 
     private List<DocumentCallback> documentCallbacks;
     private List<OpenAPICallback> apiCallbacks;

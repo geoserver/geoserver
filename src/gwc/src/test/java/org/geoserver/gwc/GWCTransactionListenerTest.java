@@ -130,7 +130,7 @@ public class GWCTransactionListenerTest {
 
         when(mediator.getTileLayersByFeatureType(
                         eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart())))
-                .thenReturn(Collections.EMPTY_SET);
+                .thenReturn(Collections.emptySet());
 
         listener.dataStoreChange(event);
         // nothing else to do

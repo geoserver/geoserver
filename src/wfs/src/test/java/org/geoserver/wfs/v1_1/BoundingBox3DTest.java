@@ -34,7 +34,7 @@ public class BoundingBox3DTest extends WFSTestSupport {
         // add extra types
         dataDirectory.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "With3D", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 getClass(),
                 getCatalog());
     }

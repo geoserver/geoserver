@@ -44,7 +44,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         Catalog catalog = getCatalog();
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 PagedUniqueProcessTest.class,
                 catalog);

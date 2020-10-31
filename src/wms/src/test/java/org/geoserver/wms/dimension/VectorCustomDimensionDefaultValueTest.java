@@ -60,7 +60,7 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         ((SystemTestData) testData)
                 .addVectorLayer(
                         TIME_ELEVATION_CUSTOM,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         "TimeElevationCustom.properties",
                         getClass(),
                         getCatalog());

@@ -80,7 +80,7 @@ public class ApplicationSchemaXSD extends XSD {
     TypeMappingProfile typeMappingProfile;
 
     public ApplicationSchemaXSD(NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs) {
-        this(ns, catalog, baseURL, wfs, Collections.EMPTY_LIST);
+        this(ns, catalog, baseURL, wfs, Collections.emptyList());
     }
 
     public ApplicationSchemaXSD(
@@ -96,7 +96,7 @@ public class ApplicationSchemaXSD extends XSD {
         this.types = types;
 
         if (this.types == null) {
-            types = Collections.EMPTY_LIST;
+            types = Collections.emptyList();
         }
 
         if (this.ns == null) {

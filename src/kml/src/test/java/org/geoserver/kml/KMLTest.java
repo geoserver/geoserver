@@ -93,7 +93,7 @@ public class KMLTest extends WMSTestSupport {
         testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
         testData.addStyle("outputMode", "outputMode.sld", getClass(), catalog);
         testData.addVectorLayer(
-                STORM_OBS, Collections.EMPTY_MAP, "storm_obs.properties", getClass(), catalog);
+                STORM_OBS, Collections.emptyMap(), "storm_obs.properties", getClass(), catalog);
 
         Map<SystemTestData.LayerProperty, Object> properties =
                 new HashMap<SystemTestData.LayerProperty, Object>();

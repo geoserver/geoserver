@@ -120,7 +120,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 "forestsManyRules", "ForestsManyRules.sld", CapabilitiesTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "squares.properties",
                 CapabilitiesTest.class,
                 catalog);

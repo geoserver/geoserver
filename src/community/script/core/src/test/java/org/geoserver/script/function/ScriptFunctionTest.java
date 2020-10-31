@@ -36,7 +36,7 @@ public class ScriptFunctionTest extends ScriptTestSupport {
     public void testRun() throws Exception {
         ScriptFunctionFactory sff = new ScriptFunctionFactory(scriptMgr);
 
-        Function f = sff.function("factorial", Collections.EMPTY_LIST, null);
+        Function f = sff.function("factorial", Collections.emptyList(), null);
         assertNotNull(f);
         assertEquals(120, ((Number) f.evaluate(5)).intValue());
     }

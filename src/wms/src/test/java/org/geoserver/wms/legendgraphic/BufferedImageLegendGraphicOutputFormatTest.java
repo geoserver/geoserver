@@ -542,7 +542,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                         String.class,
                         false,
                         false,
-                        Collections.EMPTY_LIST,
+                        Collections.emptyList(),
                         null,
                         null);
         builder.add(new AttributeDescriptorImpl(at, new NameImpl("ID"), 0, 1, false, null));
@@ -554,7 +554,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                         crs,
                         false,
                         false,
-                        Collections.EMPTY_LIST,
+                        Collections.emptyList(),
                         null,
                         null);
 
@@ -791,7 +791,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
         ;
 
-        req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.EMPTY_MAP));
+        req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.emptyMap()));
 
         FeatureTypeInfo ftInfo =
                 getCatalog()

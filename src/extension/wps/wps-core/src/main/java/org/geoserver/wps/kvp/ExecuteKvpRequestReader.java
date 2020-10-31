@@ -178,7 +178,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
             // separate the id form the value/attribute
             int idx = input.indexOf("=");
             if (idx == -1) {
-                result.add(new IOParam(input, null, Collections.EMPTY_MAP));
+                result.add(new IOParam(input, null, Collections.emptyMap()));
             } else {
                 String inputId = input.substring(0, idx);
                 String[] valueAttributes = input.substring(idx + 1, input.length()).split("@");

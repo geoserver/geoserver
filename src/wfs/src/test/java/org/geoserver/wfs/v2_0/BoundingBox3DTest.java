@@ -33,7 +33,7 @@ public class BoundingBox3DTest extends WFS20TestSupport {
         // add extra types
         dataDirectory.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "With3D", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 org.geoserver.wfs.v1_1.BoundingBox3DTest.class,
                 getCatalog());
     }

@@ -47,7 +47,7 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
         testData.addStyle("population", "Population.sld", GetMapIntegrationTest.class, catalog);
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 GetMapIntegrationTest.class,
                 catalog);

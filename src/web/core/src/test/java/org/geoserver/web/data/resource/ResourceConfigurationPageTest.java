@@ -101,7 +101,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         testData.addVectorLayer(
                 LINES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "null_srid_line.properties",
                 ResourceConfigurationPageTest.class,
                 getCatalog());

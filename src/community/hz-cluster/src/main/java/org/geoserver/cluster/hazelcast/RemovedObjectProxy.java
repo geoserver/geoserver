@@ -104,7 +104,7 @@ class RemovedObjectProxy implements InvocationHandler {
 
         Class<?> returnType = method.getReturnType();
         if (List.class.isAssignableFrom(returnType)) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return null;
     }

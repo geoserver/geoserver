@@ -57,7 +57,7 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         testData.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
         testData.addVectorLayer(
                 DISPERSED_FEATURES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "Dispersed.properties",
                 getClass(),
                 catalog);

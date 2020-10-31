@@ -55,7 +55,7 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
         this(
                 mime,
                 outputFormats == null
-                        ? Collections.EMPTY_SET
+                        ? Collections.emptySet()
                         : new HashSet<String>(Arrays.asList(outputFormats)));
     }
 

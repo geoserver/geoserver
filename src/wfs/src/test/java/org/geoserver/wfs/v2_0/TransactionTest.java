@@ -53,7 +53,7 @@ public class TransactionTest extends WFS20TestSupport {
         getTestData()
                 .addVectorLayer(
                         WITH_GML,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         org.geoserver.wfs.v1_1.TransactionTest.class,
                         getCatalog());
         getTestData()
@@ -62,7 +62,7 @@ public class TransactionTest extends WFS20TestSupport {
                                 SystemTestData.SF_URI,
                                 "PrimitiveGeoFeatureId",
                                 SystemTestData.SF_PREFIX),
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         TestData.class,
                         getCatalog());
     }

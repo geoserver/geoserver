@@ -136,7 +136,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                     Level.SEVERE,
                     "Unable to fetch available formats for cascaded layer " + getNativeName());
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -208,7 +208,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         // on error default to super
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     @Override

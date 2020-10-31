@@ -75,7 +75,7 @@ public class IconService extends AbstractController {
         try {
             Style style = styleInfo.getStyle();
             Map<String, Object> properties =
-                    q != null ? KvpUtils.parseQueryString("?" + q) : Collections.EMPTY_MAP;
+                    q != null ? KvpUtils.parseQueryString("?" + q) : Collections.emptyMap();
             Map<String, String> kvp = new HashMap<String, String>();
             for (String key : properties.keySet()) {
                 Object value = properties.get(key);

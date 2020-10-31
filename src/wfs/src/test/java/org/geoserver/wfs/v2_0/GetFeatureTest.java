@@ -55,12 +55,12 @@ public class GetFeatureTest extends WFS20TestSupport {
     protected void setUpInternal(SystemTestData data) throws Exception {
         data.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 org.geoserver.wfs.v1_1.GetFeatureTest.class,
                 getCatalog());
         data.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "PrimitiveGeoFeatureId", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 TestData.class,
                 getCatalog());
     }
@@ -1006,7 +1006,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         getTestData()
                 .addVectorLayer(
                         new QName(SystemTestData.SF_URI, "new", SystemTestData.SF_PREFIX),
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         org.geoserver.wfs.v1_1.GetFeatureTest.class,
                         getCatalog());
         // reloadCatalogAndConfiguration();

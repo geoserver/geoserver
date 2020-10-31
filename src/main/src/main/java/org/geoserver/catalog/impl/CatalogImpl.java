@@ -298,7 +298,7 @@ public class CatalogImpl implements Catalog {
         if (workspaceName != null) {
             workspace = getWorkspaceByName(workspaceName);
             if (workspace == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
 
@@ -551,7 +551,7 @@ public class CatalogImpl implements Catalog {
             ns = getNamespaceByURI(namespace);
         }
         if (ns == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return getResourcesByNamespace(ns, clazz);
@@ -1054,7 +1054,7 @@ public class CatalogImpl implements Catalog {
         if (workspaceName != null) {
             workspace = getWorkspaceByName(workspaceName);
             if (workspace == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
 
@@ -1481,7 +1481,7 @@ public class CatalogImpl implements Catalog {
         if (workspaceName != null) {
             workspace = getWorkspaceByName(workspaceName);
             if (workspace == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
 

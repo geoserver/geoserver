@@ -47,8 +47,8 @@ public class GetFeatureTest extends WFSTestSupport {
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
 
-        data.addVectorLayer(NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
-        data.addVectorLayer(FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer(NULL_GEOMETRIES, Collections.emptyMap(), getClass(), getCatalog());
+        data.addVectorLayer(FIFTEEN_DUPLICATE, Collections.emptyMap(), getClass(), getCatalog());
     }
 
     @Before

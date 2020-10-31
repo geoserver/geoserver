@@ -34,7 +34,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
     @Before
     public void cleanupCallbacks() {
         getMap = applicationContext.getBean(GetMap.class);
-        getMap.setGetMapCallbacks((List<GetMapCallback>) Collections.EMPTY_LIST);
+        getMap.setGetMapCallbacks(Collections.emptyList());
     }
 
     @Test

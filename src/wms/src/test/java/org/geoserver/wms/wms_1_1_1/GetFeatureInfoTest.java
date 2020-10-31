@@ -140,7 +140,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("stacker", "stacker.sld", GetFeatureInfoTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "squares.properties",
                 GetFeatureInfoTest.class,
                 catalog);

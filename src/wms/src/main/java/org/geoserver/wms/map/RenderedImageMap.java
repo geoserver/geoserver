@@ -48,7 +48,7 @@ public class RenderedImageMap extends WebMap {
      */
     @SuppressWarnings("unchecked")
     public List<GridCoverage2D> getRenderedCoverages() {
-        return renderedCoverages == null ? Collections.EMPTY_LIST : renderedCoverages;
+        return renderedCoverages == null ? Collections.emptyList() : renderedCoverages;
     }
 
     /**

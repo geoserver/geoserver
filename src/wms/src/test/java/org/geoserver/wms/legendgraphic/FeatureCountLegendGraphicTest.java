@@ -54,7 +54,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                 "scaleDependent", "scaleDependent.sld", GetLegendGraphicTest.class, catalog);
         testData.addVectorLayer(
                 SF_STATES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 GetMapIntegrationTest.class,
                 catalog);

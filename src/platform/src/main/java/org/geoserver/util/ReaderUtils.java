@@ -459,7 +459,7 @@ public class ReaderUtils {
      */
     public static List getKeyWords(Element keywordsElem) {
         if (keywordsElem == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         NodeList klist = keywordsElem.getElementsByTagName("keyword");
         int kCount = klist.getLength();

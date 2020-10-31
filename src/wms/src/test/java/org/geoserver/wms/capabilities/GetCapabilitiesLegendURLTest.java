@@ -124,7 +124,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         testData.addStyle("squares", "squares.sld", GetFeatureInfoTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "squares.properties",
                 GetCapabilitiesLegendURLTest.class,
                 catalog);

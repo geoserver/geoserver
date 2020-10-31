@@ -173,7 +173,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         this.getLegendGraphicFormats = getLegendGraphicFormats;
         this.baseURL = baseURL;
         this.extCapsProviders =
-                extCapsProviders == null ? Collections.EMPTY_LIST : extCapsProviders;
+                extCapsProviders == null ? Collections.emptyList() : extCapsProviders;
         this.setNamespaceDeclarationEnabled(false);
         setIndentation(2);
         final Charset encoding = wms.getCharSet();

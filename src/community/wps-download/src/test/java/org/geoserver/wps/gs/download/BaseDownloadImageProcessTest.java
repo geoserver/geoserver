@@ -59,7 +59,7 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
         // a world covering layer with no dimensions
         testData.addVectorLayer(
                 GIANT_POLYGON,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "giantPolygon.properties",
                 SystemTestData.class,
                 getCatalog());

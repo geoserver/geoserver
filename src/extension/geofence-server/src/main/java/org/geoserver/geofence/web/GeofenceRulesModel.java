@@ -84,7 +84,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
 
     public static final Property<ShortRule> ACCESS =
             new RuleBeanProperty<ShortRule>("access", "access");
-    
+
     public static final Property<ShortRule> ADDRESS_RANGE =
             new RuleBeanProperty<ShortRule>("addressRange", "addressRange");
 
@@ -128,7 +128,16 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ShortRule>>
             getProperties() {
         return Arrays.asList(
-                PRIORITY, ROLE, USER, SERVICE, REQUEST, WORKSPACE, LAYER, ACCESS, ADDRESS_RANGE, BUTTONS);
+                PRIORITY,
+                ROLE,
+                USER,
+                SERVICE,
+                REQUEST,
+                WORKSPACE,
+                LAYER,
+                ACCESS,
+                ADDRESS_RANGE,
+                BUTTONS);
     }
 
     @Override
@@ -274,9 +283,11 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setWorkspace(shortRule.getWorkspace());
         rule.setLayer(shortRule.getLayer());
         rule.setAccess(shortRule.getAccess());
-        
+
         rule.setAddressRange(
-                shortRule.getAddressRange() != null ? new IPAddressRange(shortRule.getAddressRange()) : null);
+                shortRule.getAddressRange() != null
+                        ? new IPAddressRange(shortRule.getAddressRange())
+                        : null);
     }
 
     public LayerDetails getDetails(Long ruleId) {

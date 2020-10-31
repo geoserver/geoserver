@@ -42,11 +42,11 @@ public class RecordFeatureTypeRegistryConfiguration implements FeatureTypeRegist
 
     @Override
     public Collection<Schema> getSchemas() {
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     @Override
     public Collection<Configuration> getConfigurations() {
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 }

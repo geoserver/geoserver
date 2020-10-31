@@ -49,7 +49,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
                         WATTEMP,
                         "watertemp.zip",
                         null,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         getClass(),
                         getCatalog());
     }

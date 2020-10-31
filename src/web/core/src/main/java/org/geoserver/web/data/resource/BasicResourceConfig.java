@@ -374,7 +374,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
      */
     private List<String> getOtherSRS(ResourceInfo resourceInfo) {
         // first check if its WFS-NG
-        List<String> otherSRS = Collections.EMPTY_LIST;
+        List<String> otherSRS = Collections.emptyList();
         if (resourceInfo instanceof FeatureTypeInfo)
             otherSRS = DataStoreUtils.getOtherSRSFromWfsNg((FeatureTypeInfo) resourceInfo);
         else if (resourceInfo instanceof WMSLayerInfo)

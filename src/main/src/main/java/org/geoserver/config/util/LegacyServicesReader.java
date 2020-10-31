@@ -239,7 +239,7 @@ public class LegacyServicesReader {
                     baseMap.put("baseMapStyles", styles);
                     baseMap.put("rawBaseMapStyles", baseMapStyles);
                 } else {
-                    baseMap.put("baseMapStyles", Collections.EMPTY_LIST);
+                    baseMap.put("baseMapStyles", Collections.emptyList());
                     baseMap.put("rawBaseMapStyles", "");
                 }
 

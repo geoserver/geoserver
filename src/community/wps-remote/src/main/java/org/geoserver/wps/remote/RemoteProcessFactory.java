@@ -197,7 +197,7 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
 
     /** */
     public Map<Key, ?> getImplementationHints() {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     /** Registers a new remote service */

@@ -57,7 +57,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         super.onSetUp(testData);
         testData.addVectorLayer(
                 TEMPORAL_DATA,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "TemporalData.properties",
                 SystemTestData.class,
                 getCatalog());

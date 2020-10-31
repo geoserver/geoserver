@@ -159,7 +159,7 @@ public abstract class Query extends RequestObject {
         @Override
         public List<XlinkPropertyNameType> getXlinkPropertyNames() {
             // no equivalent in wfs 2.0
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 }

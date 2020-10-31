@@ -872,7 +872,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             GetMapRequest getMap, List<Filter> rawFilters, List<Filter> cqlFilters) {
         List<Filter> filters = rawFilters;
         List featureId =
-                (getMap.getFeatureId() != null) ? getMap.getFeatureId() : Collections.EMPTY_LIST;
+                (getMap.getFeatureId() != null) ? getMap.getFeatureId() : Collections.emptyList();
 
         if (!featureId.isEmpty()) {
             if (!filters.isEmpty()) {

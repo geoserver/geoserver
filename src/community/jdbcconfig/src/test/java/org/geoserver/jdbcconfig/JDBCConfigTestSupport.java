@@ -281,7 +281,7 @@ public class JDBCConfigTestSupport {
                 .andStubReturn(true);
 
         expect(appContext.getBeansOfType((Class) anyObject()))
-                .andReturn(Collections.EMPTY_MAP)
+                .andReturn(Collections.emptyMap())
                 .anyTimes();
         expect(appContext.getBeanNamesForType((Class) anyObject()))
                 .andReturn(new String[] {})

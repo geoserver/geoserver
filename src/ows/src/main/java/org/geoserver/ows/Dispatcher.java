@@ -129,7 +129,7 @@ public class Dispatcher extends AbstractController {
     int XML_LOOKAHEAD = 8192;
 
     /** list of callbacks */
-    List<DispatcherCallback> callbacks = Collections.EMPTY_LIST;
+    List<DispatcherCallback> callbacks = Collections.emptyList();
 
     /** SOAP namespaces */
     public static final String SOAP_12_NS = "http://www.w3.org/2003/05/soap-envelope";

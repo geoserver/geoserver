@@ -60,7 +60,7 @@ public class GetFeatureTest extends WFSTestSupport {
     protected void setUpInternal(SystemTestData data) throws Exception {
         data.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 getClass(),
                 getCatalog());
     }
@@ -499,7 +499,7 @@ public class GetFeatureTest extends WFSTestSupport {
         getTestData()
                 .addVectorLayer(
                         new QName(SystemTestData.SF_URI, "new", SystemTestData.SF_PREFIX),
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         getClass(),
                         getCatalog());
 

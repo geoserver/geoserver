@@ -52,7 +52,7 @@ public class WMSTest extends WMSTestSupport {
         super.onSetUp(testData);
         testData.addVectorLayer(
                 TIME_WITH_START_END,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "TimeElevationWithStartEnd.properties",
                 getClass(),
                 getCatalog());

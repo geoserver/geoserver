@@ -35,7 +35,7 @@ public abstract class AbstractMapResponse extends Response {
         this(
                 responseBinding,
                 outputFormats == null
-                        ? Collections.EMPTY_SET
+                        ? Collections.emptySet()
                         : new HashSet<String>(Arrays.asList(outputFormats)));
     }
 

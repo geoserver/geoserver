@@ -101,7 +101,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      * Map of String,Object which contains kvp's which are specific to a particular output format.
      */
     public Map getFormatOptions() {
-        return formatOptions == null ? Collections.EMPTY_MAP : formatOptions;
+        return formatOptions == null ? Collections.emptyMap() : formatOptions;
     }
 
     /** Map of strings that make up the SLD enviroment for variable substitution */
@@ -359,18 +359,18 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     public void setLayers(List<MapLayerInfo> layers) {
-        this.mandatoryParams.layers = layers == null ? Collections.EMPTY_LIST : layers;
+        this.mandatoryParams.layers = layers == null ? Collections.emptyList() : layers;
     }
 
     public void setStyles(List<Style> styles) {
         this.mandatoryParams.styles =
-                styles == null ? Collections.EMPTY_LIST : new ArrayList<Style>(styles);
+                styles == null ? Collections.emptyList() : new ArrayList<Style>(styles);
     }
 
     /** Sets interpolations methods for layers. */
     public void setInterpolations(List<Interpolation> interpolations) {
         this.optionalParams.interpolationMethods =
-                interpolations == null ? Collections.EMPTY_LIST : interpolations;
+                interpolations == null ? Collections.emptyList() : interpolations;
     }
 
     /** Sets the url specified by the "SLD" parameter. */
@@ -720,7 +720,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         ScaleComputationMethod scaleMethod;
 
         /** by layer interpolation methods * */
-        List<Interpolation> interpolationMethods = Collections.EMPTY_LIST;
+        List<Interpolation> interpolationMethods = Collections.emptyList();
 
         /** polgon wkt to clip WMS response * */
         Geometry clip;

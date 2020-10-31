@@ -38,7 +38,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
 
     /** Constructs an ObjectToMapWrapper for the provided clazz. */
     public ObjectToMapWrapper(Class<T> clazz) {
-        this(clazz, Collections.EMPTY_LIST);
+        this(clazz, Collections.emptyList());
     }
 
     /**

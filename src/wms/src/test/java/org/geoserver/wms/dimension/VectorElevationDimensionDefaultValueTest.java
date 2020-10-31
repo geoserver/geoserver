@@ -55,7 +55,7 @@ public class VectorElevationDimensionDefaultValueTest extends WMSTestSupport {
         ((SystemTestData) testData)
                 .addVectorLayer(
                         ELEVATION_WITH_START_END,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         "TimeElevationWithStartEnd.properties",
                         getClass(),
                         getCatalog());

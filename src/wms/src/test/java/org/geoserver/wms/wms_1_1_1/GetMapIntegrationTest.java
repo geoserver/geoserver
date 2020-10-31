@@ -207,7 +207,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "jiffleBandSelect", "jiffleBandSelect.sld", GetMapIntegrationTest.class, catalog);
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 getClass(),
                 catalog);
@@ -251,14 +251,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         testData.addVectorLayer(
                 GIANT_POLYGON,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "giantPolygon.properties",
                 SystemTestData.class,
                 getCatalog());
 
         testData.addVectorLayer(
                 LARGE_POLYGON,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "slightlyLessGiantPolygon.properties",
                 GetMapTest.class,
                 getCatalog());

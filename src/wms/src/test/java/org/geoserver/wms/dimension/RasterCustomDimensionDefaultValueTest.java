@@ -51,7 +51,7 @@ public class RasterCustomDimensionDefaultValueTest extends WMSTestSupport {
                         WATTEMP_CUSTOM,
                         "custwatertemp.zip",
                         null,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         getClass(),
                         getCatalog());
     }

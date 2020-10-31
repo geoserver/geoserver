@@ -247,7 +247,7 @@ public class LegacyCoverageInfoReader {
     public Map<String, Serializable> parameters() {
         Element parameters = ReaderUtils.getChildElement(coverage, "parameters");
         if (parameters == null) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
         HashMap<String, Serializable> map = new HashMap<String, Serializable>();

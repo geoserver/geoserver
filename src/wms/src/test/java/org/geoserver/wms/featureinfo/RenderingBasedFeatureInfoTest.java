@@ -94,19 +94,19 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
         testData.addVectorLayer(
                 GRID,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "grid.properties",
                 RenderingBasedFeatureInfoTest.class,
                 getCatalog());
         testData.addVectorLayer(
                 REPEATED,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "repeated_lines.properties",
                 RenderingBasedFeatureInfoTest.class,
                 getCatalog());
         testData.addVectorLayer(
                 GIANT_POLYGON,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "giantPolygon.properties",
                 SystemTestData.class,
                 getCatalog());

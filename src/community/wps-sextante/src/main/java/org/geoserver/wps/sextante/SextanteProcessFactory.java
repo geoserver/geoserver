@@ -405,6 +405,6 @@ public class SextanteProcessFactory implements ProcessFactory {
     }
 
     public Map<Key, ?> getImplementationHints() {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 }

@@ -49,7 +49,7 @@ public class TransactionTest extends WFSTestSupport {
     @Before
     public void revert() throws Exception {
         revertLayer(CiteTestData.ROAD_SEGMENTS);
-        getTestData().addVectorLayer(WITH_GML, Collections.EMPTY_MAP, getClass(), getCatalog());
+        getTestData().addVectorLayer(WITH_GML, Collections.emptyMap(), getClass(), getCatalog());
     }
 
     @Test

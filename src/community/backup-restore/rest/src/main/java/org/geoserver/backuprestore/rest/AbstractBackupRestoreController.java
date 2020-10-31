@@ -165,7 +165,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         xStream.omitField(RestoreExecutionAdapter.class, "restoreCatalog");
 
         Class synchronizedListType =
-                Collections.synchronizedList(Collections.EMPTY_LIST).getClass();
+                Collections.synchronizedList(Collections.emptyList()).getClass();
         xStream.alias("synchList", synchronizedListType);
 
         ClassAliasingMapper optionsMapper = new ClassAliasingMapper(xStream.getMapper());

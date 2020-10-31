@@ -92,7 +92,7 @@ public class WriterHelper {
      * @throws ConfigurationException When an IO exception occurs.
      */
     public void openTag(String tagName) throws ConfigurationException {
-        openTag(tagName, Collections.EMPTY_MAP);
+        openTag(tagName, Collections.emptyMap());
     }
 
     /**
@@ -186,7 +186,7 @@ public class WriterHelper {
      * @throws ConfigurationException When an IO exception occurs.
      */
     public void textTag(String tagName, String data) throws ConfigurationException {
-        textTag(tagName, Collections.EMPTY_MAP, data);
+        textTag(tagName, Collections.emptyMap(), data);
     }
 
     /**

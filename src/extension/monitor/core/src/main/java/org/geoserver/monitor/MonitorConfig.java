@@ -137,7 +137,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     public Set<String> getIgnorePostProcessors() {
         String list = props.getProperty("ignorePostProcessors");
 
-        if (list == null || list.isEmpty()) return Collections.EMPTY_SET;
+        if (list == null || list.isEmpty()) return Collections.emptySet();
 
         return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(list.split(","))));
     }

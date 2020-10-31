@@ -67,10 +67,10 @@ public class KvpUtils {
 
         public List readFlat(final String rawList) {
             if ((rawList == null || rawList.trim().equals(""))) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             } else if (rawList.equals("*")) {
                 // handles explicit unconstrained case
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
             // -1 keeps trailing empty strings in the pack
             String[] split = rawList.split(getRegExp(), -1);
@@ -223,7 +223,7 @@ public class KvpUtils {
                 LOGGER.finest("found implicit all requested");
             }
 
-            kvpList.add(Collections.EMPTY_LIST);
+            kvpList.add(Collections.emptyList());
             return kvpList;
 
             // handles explicit unconstrained case
@@ -232,7 +232,7 @@ public class KvpUtils {
                 LOGGER.finest("found explicit all requested");
             }
 
-            kvpList.add(Collections.EMPTY_LIST);
+            kvpList.add(Collections.emptyList());
             return kvpList;
 
             // handles explicit, constrained element lists
@@ -573,7 +573,7 @@ public class KvpUtils {
         int index = path.indexOf('?');
 
         if (index == -1) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
         String queryString = path.substring(index + 1);

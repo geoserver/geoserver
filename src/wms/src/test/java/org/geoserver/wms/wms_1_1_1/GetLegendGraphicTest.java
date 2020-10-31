@@ -51,7 +51,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
 
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 getClass(),
                 catalog);

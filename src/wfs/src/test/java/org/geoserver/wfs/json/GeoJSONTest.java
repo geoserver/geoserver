@@ -67,10 +67,10 @@ public class GeoJSONTest extends WFSTestSupport {
         security.mkdir();
         File layers = new File(security, "layers.properties");
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
-        data.addVectorLayer(LINE3D, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer(LINE3D, Collections.emptyMap(), getClass(), getCatalog());
 
         // A feature type with Lat-Lon/North-East axis ordering.
-        data.addVectorLayer(POINT_LATLON, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer(POINT_LATLON, Collections.emptyMap(), getClass(), getCatalog());
         CoordinateReferenceSystem crsLatLon = CRS.decode("urn:ogc:def:crs:EPSG::4326");
         FeatureTypeInfo pointLatLon =
                 getCatalog()
@@ -82,7 +82,7 @@ public class GeoJSONTest extends WFSTestSupport {
         getCatalog().save(pointLatLon);
 
         // A feature type with Lon-Lat/East-North axis ordering.
-        data.addVectorLayer(POINT_LONLAT, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer(POINT_LONLAT, Collections.emptyMap(), getClass(), getCatalog());
         CoordinateReferenceSystem crsLonLat = CRS.decode("EPSG:4326", true);
         FeatureTypeInfo pointLonLat =
                 getCatalog()
@@ -96,10 +96,10 @@ public class GeoJSONTest extends WFSTestSupport {
         // A feature with a constant test setup for testing geometry/geometry_name consistency with
         // null geometries
         data.addVectorLayer(
-                MULTI_GEOMETRIES_WITH_NULL, Collections.EMPTY_MAP, getClass(), getCatalog());
+                MULTI_GEOMETRIES_WITH_NULL, Collections.emptyMap(), getClass(), getCatalog());
 
         // A feature type with reduced precision
-        data.addVectorLayer(POINT_REDUCED, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer(POINT_REDUCED, Collections.emptyMap(), getClass(), getCatalog());
         FeatureTypeInfo pointReduced =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -113,7 +113,7 @@ public class GeoJSONTest extends WFSTestSupport {
         // add a feature with NaN and infinite for both float and double
         data.addVectorLayer(
                 NAN_INFINITE,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "nanInfinite.properties",
                 getClass(),
                 getCatalog());

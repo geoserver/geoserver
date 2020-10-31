@@ -106,7 +106,7 @@ public class DGGSFactoryFinder {
      * @return
      * @throws IOException
      */
-    public static DGGSInstance createInstance(String factoryId, Map<String, Serializable> params)
+    public static DGGSInstance createInstance(String factoryId, Map<String, ?> params)
             throws IOException {
         if (factoryId == null)
             throw new IllegalArgumentException("Cannot create a store with a missing factory id");

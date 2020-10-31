@@ -2009,7 +2009,7 @@
   <pmd.version>6.20.0</pmd.version>
   <checkstyle.skip>false</checkstyle.skip>
   <qa>false</qa>
-  <lint>deprecation</lint>
+  <lint>deprecation,unchecked</lint>
  </properties>
 
  <profiles>

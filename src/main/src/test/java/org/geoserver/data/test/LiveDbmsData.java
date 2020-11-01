@@ -133,7 +133,8 @@ public class LiveDbmsData extends LiveSystemTestData {
         // Map<String, String>
         Properties p = new Properties();
         p.load(new FileInputStream(fixture));
-        Map<String, String> filters = new HashMap(p);
+        Map<String, String> filters = new HashMap<>();
+        p.forEach((k, v) -> filters.put((String) k, (String) v));
 
         // replace the keys contained in catalog.xml with the actual values
         if (filteredPaths != null && filteredPaths.size() > 0) {

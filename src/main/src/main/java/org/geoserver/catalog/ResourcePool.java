@@ -46,6 +46,7 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
+import org.eclipse.xsd.util.XSDSchemaLocator;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
@@ -93,7 +94,6 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.GML;
 import org.geotools.measure.Measure;
 import org.geotools.ows.wms.Layer;
@@ -685,6 +685,7 @@ public class ResourcePool {
      * @parm loader
      * @task REVISIT: cache these?
      */
+    @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> getParams(Map<K, V> m, GeoServerResourceLoader loader) {
         @SuppressWarnings("unchecked")
         Map<K, V> params = Collections.synchronizedMap(new HashMap<K, V>(m));
@@ -796,7 +797,7 @@ public class ResourcePool {
     }
 
     public List<AttributeTypeInfo> loadAttributes(FeatureTypeInfo info) throws IOException {
-        List<AttributeTypeInfo> attributes = new ArrayList();
+        List<AttributeTypeInfo> attributes = new ArrayList<>();
         FeatureType ft = getFeatureType(info);
 
         for (PropertyDescriptor pd : ft.getDescriptors()) {
@@ -843,7 +844,8 @@ public class ResourcePool {
         if (schemaFile != null) {
             // TODO: farm this schema loading stuff to some utility class
             // parse the schema + generate attributes from that
-            List locators = Arrays.asList(GML.getInstance().createSchemaLocator());
+            List<XSDSchemaLocator> locators =
+                    Arrays.asList(GML.getInstance().createSchemaLocator());
             XSDSchema schema = null;
             try {
                 schema = Schemas.parse(schemaFile.getAbsolutePath(), locators, null);
@@ -1334,14 +1336,17 @@ public class ResourcePool {
                                         Filter.class,
                                         CoordinateReferenceSystem.class,
                                         int.class);
-                        return (FeatureSource)
-                                m.invoke(
-                                        null,
-                                        fs,
-                                        schema,
-                                        info.filter(),
-                                        resultCRS,
-                                        info.getProjectionPolicy().getCode());
+                        @SuppressWarnings("unchecked")
+                        FeatureSource<? extends FeatureType, ? extends Feature> invoke =
+                                (FeatureSource)
+                                        m.invoke(
+                                                null,
+                                                fs,
+                                                schema,
+                                                info.filter(),
+                                                resultCRS,
+                                                info.getProjectionPolicy().getCode());
+                        return invoke;
                     } catch (Exception e) {
                         throw new DataSourceException("Creation of a versioning wrapper failed", e);
                     }
@@ -1354,6 +1359,7 @@ public class ResourcePool {
             // additional
             // attributes
             if (hints != null && hints.containsKey(JOINS)) {
+                @SuppressWarnings("unchecked")
                 List<Join> joins = (List<Join>) hints.get(JOINS);
                 SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
                 typeBuilder.init(schema);
@@ -1438,7 +1444,7 @@ public class ResourcePool {
 
         // let's get the target unit
         SingleCRS horizontalCRS = CRS.getHorizontalCRS(crs);
-        Unit targetUnit;
+        Unit<?> targetUnit;
         if (horizontalCRS != null) {
             // leap of faith, the first axis is an horizontal one (
             targetUnit = getFirstAxisUnit(horizontalCRS.getCoordinateSystem());
@@ -1461,7 +1467,8 @@ public class ResourcePool {
         } else if (targetUnit != null && targetUnit.isCompatible(SI.METRE)) {
             // ok, we assume the target is not a geographic one, but we might
             // have to convert between meters and feet maybe
-            UnitConverter converter = mt.getUnit().getConverterTo(targetUnit);
+            @SuppressWarnings("unchecked") // cannot convert between two Unit<?>....
+            UnitConverter converter = mt.getUnit().getConverterTo((Unit) targetUnit);
             return converter.convert(mt.doubleValue());
         } else {
             return mt.doubleValue();
@@ -2248,16 +2255,17 @@ public class ResourcePool {
         public CatalogResourceCache(int hardReferences) {
             super(hardReferences);
             super.cleaner =
-                    new ValueCleaner() {
+                    new ValueCleaner<K, V>() {
 
                         @Override
-                        public void clean(Object key, Object object) {
-                            dispose((K) key, (V) object);
+                        public void clean(K key, V object) {
+                            dispose(key, object);
                         }
                     };
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public V remove(Object key) {
             V object = super.remove(key);
             if (object != null) {
@@ -2267,6 +2275,7 @@ public class ResourcePool {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void clear() {
             for (Entry entry : entrySet()) {
                 try {

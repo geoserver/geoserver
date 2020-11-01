@@ -37,7 +37,7 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
     protected Map<String, Serializable> map;
 
     public MetadataMap() {
-        this(new HashMap());
+        this(new HashMap<>());
     }
 
     public MetadataMap(Map<String, Serializable> map) {

@@ -66,6 +66,7 @@ public class AcceptableRange {
         this.dataType = dataType;
     }
 
+    @SuppressWarnings("unchecked")
     public Range getSearchRange(Object value) {
         if (value instanceof Range) {
             Range range = (Range) value;

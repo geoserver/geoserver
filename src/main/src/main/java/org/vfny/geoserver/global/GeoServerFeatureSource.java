@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.global;
 
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -247,7 +248,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         String[] propNames = null;
 
         if (query.retrieveAllProperties()) {
-            List<String> props = new ArrayList();
+            List<String> props = new ArrayList<>();
 
             for (int i = 0; i < schema.getAttributeCount(); i++) {
                 AttributeDescriptor att = schema.getDescriptor(i);
@@ -265,7 +266,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         } else {
             String[] queriedAtts = query.getPropertyNames();
             int queriedAttCount = queriedAtts.length;
-            List allowedAtts = new LinkedList();
+            List<String> allowedAtts = new LinkedList<>();
 
             for (int i = 0; i < queriedAttCount; i++) {
                 if (schema.getDescriptor(queriedAtts[i]) != null) {
@@ -670,7 +671,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         }
     }
 
-    public Set getSupportedHints() {
+    public Set<RenderingHints.Key> getSupportedHints() {
         return source.getSupportedHints();
     }
 

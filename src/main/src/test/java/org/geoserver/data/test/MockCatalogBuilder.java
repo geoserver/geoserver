@@ -15,13 +15,16 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -84,22 +87,22 @@ public class MockCatalogBuilder {
     File dataDirRoot;
     Callback callback;
 
-    LinkedList<WorkspaceInfo> workspaces = new LinkedList();
-    LinkedList<NamespaceInfo> namespaces = new LinkedList();
-    LinkedList<DataStoreInfo> dataStores = new LinkedList();
-    LinkedList<CoverageStoreInfo> coverageStores = new LinkedList();
-    LinkedList<FeatureTypeInfo> featureTypes = new LinkedList();
-    LinkedList<CoverageInfo> coverages = new LinkedList();
-    LinkedList<LayerInfo> layers = new LinkedList();
-    LinkedList<StyleInfo> styles = new LinkedList();
-    LinkedList<LayerGroupInfo> layerGroups = new LinkedList();
+    LinkedList<WorkspaceInfo> workspaces = new LinkedList<>();
+    LinkedList<NamespaceInfo> namespaces = new LinkedList<>();
+    LinkedList<DataStoreInfo> dataStores = new LinkedList<>();
+    LinkedList<CoverageStoreInfo> coverageStores = new LinkedList<>();
+    LinkedList<FeatureTypeInfo> featureTypes = new LinkedList<>();
+    LinkedList<CoverageInfo> coverages = new LinkedList<>();
+    LinkedList<LayerInfo> layers = new LinkedList<>();
+    LinkedList<StyleInfo> styles = new LinkedList<>();
+    LinkedList<LayerGroupInfo> layerGroups = new LinkedList<>();
 
-    LinkedList<FeatureTypeInfo> featureTypesByNamespace = new LinkedList();
-    LinkedList<FeatureTypeInfo> featureTypesAll = new LinkedList();
-    LinkedList<CoverageInfo> coveragesByNamespace = new LinkedList();
-    LinkedList<CoverageInfo> coveragesAll = new LinkedList();
-    LinkedList<DataStoreInfo> dataStoresAll = new LinkedList();
-    LinkedList<CoverageStoreInfo> coverageStoresAll = new LinkedList();
+    LinkedList<FeatureTypeInfo> featureTypesByNamespace = new LinkedList<>();
+    LinkedList<FeatureTypeInfo> featureTypesAll = new LinkedList<>();
+    LinkedList<CoverageInfo> coveragesByNamespace = new LinkedList<>();
+    LinkedList<CoverageInfo> coveragesAll = new LinkedList<>();
+    LinkedList<DataStoreInfo> dataStoresAll = new LinkedList<>();
+    LinkedList<CoverageStoreInfo> coverageStoresAll = new LinkedList<>();
 
     public MockCatalogBuilder(Catalog catalog, File dataDirRoot) {
         this.catalog = catalog;
@@ -169,6 +172,9 @@ public class MockCatalogBuilder {
         return this;
     }
 
+    // IAnswer cannot be fixed,
+    // https://stackoverflow.com/questions/56954/easymock-how-do-i-create-a-mock-of-a-genericized-class-without-a-warning
+    @SuppressWarnings("unchecked")
     public MockCatalogBuilder dataStore(String name) {
         String dsId = newId();
         final WorkspaceInfo ws = workspaces.peekLast();
@@ -182,7 +188,7 @@ public class MockCatalogBuilder {
         // setup the property data store
         final File propDir = new File(dataDirRoot, name);
 
-        HashMap cxParams = new HashMap();
+        Map<String, Serializable> cxParams = new HashMap<>();
         cxParams.put(PropertyDataStoreFactory.DIRECTORY.key, propDir);
         cxParams.put(PropertyDataStoreFactory.NAMESPACE.key, ns.getURI());
         expect(ds.getConnectionParameters()).andReturn(cxParams).anyTimes();
@@ -253,7 +259,7 @@ public class MockCatalogBuilder {
                             }
                         })
                 .anyTimes();
-        expect(cs.getConnectionParameters()).andReturn(new HashMap()).anyTimes();
+        expect(cs.getConnectionParameters()).andReturn(new HashMap<>()).anyTimes();
 
         expect(catalog.getCoverageStore(csId)).andReturn(cs).anyTimes();
         expect(catalog.getCoverageStoreByName(name)).andReturn(cs).anyTimes();
@@ -309,6 +315,7 @@ public class MockCatalogBuilder {
         return featureType(name, null, ProjectionPolicy.NONE, null, DEFAULT_LATLON_ENVELOPE);
     }
 
+    @SuppressWarnings("unchecked")
     public MockCatalogBuilder featureType(
             final String name,
             String srs,
@@ -540,7 +547,7 @@ public class MockCatalogBuilder {
             throw new RuntimeException(e);
         }
 
-        expect(r.getKeywords()).andReturn((List) Arrays.asList(new Keyword(name))).anyTimes();
+        expect(r.getKeywords()).andReturn(Arrays.asList(new Keyword(name))).anyTimes();
         expect(r.isEnabled()).andReturn(true).anyTimes();
         expect(r.isAdvertised()).andReturn(true).anyTimes();
         expect(r.getProjectionPolicy()).andReturn(projPolicy).anyTimes();
@@ -751,7 +758,11 @@ public class MockCatalogBuilder {
                         .andReturn(featureTypes)
                         .anyTimes();
                 expect(catalog.getResourcesByStore(ds, ResourceInfo.class))
-                        .andReturn((List) featureTypes)
+                        .andReturn(
+                                featureTypes
+                                        .stream()
+                                        .map(ft -> (ResourceInfo) ft)
+                                        .collect(Collectors.toList()))
                         .anyTimes();
                 expect(catalog.getFeatureTypesByDataStore(ds)).andReturn(featureTypes).anyTimes();
             }
@@ -763,7 +774,11 @@ public class MockCatalogBuilder {
                         .andReturn(coverages)
                         .anyTimes();
                 expect(catalog.getResourcesByStore(cs, ResourceInfo.class))
-                        .andReturn((List) coverages)
+                        .andReturn(
+                                coverages
+                                        .stream()
+                                        .map(c -> (ResourceInfo) c)
+                                        .collect(Collectors.toList()))
                         .anyTimes();
                 expect(catalog.getCoveragesByCoverageStore(cs)).andReturn(coverages).anyTimes();
             }
@@ -816,7 +831,7 @@ public class MockCatalogBuilder {
             expect(catalog.getLayerGroupsByWorkspace(ws)).andReturn(layerGroups).anyTimes();
 
             // add all the resources for this workspace
-            List<ResourceInfo> m = new LinkedList(featureTypesByNamespace);
+            List<ResourceInfo> m = new LinkedList<>(featureTypesByNamespace);
             m.addAll(coveragesByNamespace);
             expect(catalog.getResourcesByNamespace(ns, ResourceInfo.class)).andReturn(m).anyTimes();
             // expect(catalog.getResourcesByNamespace(ns.getPrefix(),
@@ -833,16 +848,16 @@ public class MockCatalogBuilder {
             //    .andReturn(coveragesByNamespace).anyTimes();
 
             dataStoresAll.addAll(dataStores);
-            dataStores = new LinkedList();
+            dataStores = new LinkedList<>();
 
             coverageStoresAll.addAll(coverageStores);
-            coverageStores = new LinkedList();
+            coverageStores = new LinkedList<>();
 
             featureTypesAll.addAll(featureTypesByNamespace);
-            featureTypesByNamespace = new LinkedList();
+            featureTypesByNamespace = new LinkedList<>();
 
             coveragesAll.addAll(coveragesByNamespace);
-            coveragesByNamespace = new LinkedList();
+            coveragesByNamespace = new LinkedList<>();
         } else if (!workspaces.isEmpty()) {
 
             // all the resources
@@ -884,13 +899,13 @@ public class MockCatalogBuilder {
 
             replay(catalog);
 
-            featureTypesAll = new LinkedList();
-            coveragesAll = new LinkedList();
-            dataStoresAll = new LinkedList();
-            coverageStoresAll = new LinkedList();
-            styles = new LinkedList();
-            workspaces = new LinkedList();
-            namespaces = new LinkedList();
+            featureTypesAll = new LinkedList<>();
+            coveragesAll = new LinkedList<>();
+            dataStoresAll = new LinkedList<>();
+            coverageStoresAll = new LinkedList<>();
+            styles = new LinkedList<>();
+            workspaces = new LinkedList<>();
+            namespaces = new LinkedList<>();
         }
 
         return this;

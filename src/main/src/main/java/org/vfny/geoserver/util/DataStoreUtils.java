@@ -6,6 +6,7 @@
 package org.vfny.geoserver.util;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,8 +55,8 @@ public abstract class DataStoreUtils {
      * it into a renaming wrapper so that feature type names are good ones from the wfs point of
      * view (that is, no ":" in the type names)
      */
-    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(Map params)
-            throws IOException {
+    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(
+            Map<String, Serializable> params) throws IOException {
         DataAccessFactory factory = aquireFactory(params);
         if (factory == null) {
             return null;
@@ -87,9 +88,10 @@ public abstract class DataStoreUtils {
      *
      * <p>bleck
      */
-    public static DataAccessFactory aquireFactory(Map params) {
-        for (Iterator i = getAvailableDataStoreFactories().iterator(); i.hasNext(); ) {
-            DataAccessFactory factory = (DataAccessFactory) i.next();
+    public static DataAccessFactory aquireFactory(Map<String, Serializable> params) {
+        for (Iterator<DataAccessFactory> i = getAvailableDataStoreFactories().iterator();
+                i.hasNext(); ) {
+            DataAccessFactory factory = i.next();
             initializeDataStoreFactory(factory);
 
             if (factory.canProcess(params)) {
@@ -114,8 +116,9 @@ public abstract class DataStoreUtils {
         if (displayName == null) {
             return null;
         }
-        for (Iterator i = getAvailableDataStoreFactories().iterator(); i.hasNext(); ) {
-            DataAccessFactory factory = (DataAccessFactory) i.next();
+        for (Iterator<DataAccessFactory> i = getAvailableDataStoreFactories().iterator();
+                i.hasNext(); ) {
+            DataAccessFactory factory = i.next();
             initializeDataStoreFactory(factory);
 
             if (displayName.equals(factory.getDisplayName())) {
@@ -171,11 +174,12 @@ public abstract class DataStoreUtils {
      *
      * @return Descriptions for user to choose from
      */
-    public static List listDataStoresDescriptions() {
-        List list = new ArrayList();
+    public static List<String> listDataStoresDescriptions() {
+        List<String> list = new ArrayList<>();
 
-        for (Iterator i = getAvailableDataStoreFactories().iterator(); i.hasNext(); ) {
-            DataAccessFactory factory = (DataAccessFactory) i.next();
+        for (Iterator<DataAccessFactory> i = getAvailableDataStoreFactories().iterator();
+                i.hasNext(); ) {
+            DataAccessFactory factory = i.next();
             initializeDataStoreFactory(factory);
 
             list.add(factory.getDisplayName());
@@ -184,12 +188,12 @@ public abstract class DataStoreUtils {
         return list;
     }
 
-    public static Map defaultParams(String description) {
+    public static Map<String, Serializable> defaultParams(String description) {
         return defaultParams(aquireFactory(description));
     }
 
-    public static Map defaultParams(DataAccessFactory factory) {
-        Map defaults = new HashMap();
+    public static Map<String, Serializable> defaultParams(DataAccessFactory factory) {
+        Map<String, Serializable> defaults = new HashMap<>();
         Param[] params = factory.getParametersInfo();
 
         for (int i = 0; i < params.length; i++) {
@@ -225,14 +229,15 @@ public abstract class DataStoreUtils {
      *
      * @return Map with real values that may be acceptable to Factory
      */
-    public static Map toConnectionParams(DataAccessFactory factory, Map params) throws IOException {
-        Map map = new HashMap(params.size());
+    public static Map<String, Object> toConnectionParams(
+            DataAccessFactory factory, Map<String, ?> params) throws IOException {
+        Map<String, Object> map = new HashMap<>(params.size());
 
         Param[] info = factory.getParametersInfo();
 
         // Convert Params into the kind of Map we actually need
-        for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
-            String key = (String) i.next();
+        for (Iterator<String> i = params.keySet().iterator(); i.hasNext(); ) {
+            String key = i.next();
 
             Object value = find(info, key).lookUp(params);
 
@@ -245,7 +250,7 @@ public abstract class DataStoreUtils {
     }
 
     public static Collection<DataAccessFactory> getAvailableDataStoreFactories() {
-        List<DataAccessFactory> factories = new ArrayList();
+        List<DataAccessFactory> factories = new ArrayList<>();
         Iterator<DataAccessFactory> it = DataAccessFinder.getAvailableDataStores();
         while (it.hasNext()) {
             factories.add(it.next());

@@ -50,6 +50,7 @@ public class TreeSetConverter extends CollectionConverter {
         super.marshal(source, writer, context);
     }
 
+    @SuppressWarnings("unchecked")
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         TreeSet result = null;
         Comparator unmarshalledComparator =

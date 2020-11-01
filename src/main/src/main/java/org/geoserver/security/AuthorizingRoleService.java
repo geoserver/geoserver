@@ -89,27 +89,27 @@ public abstract class AuthorizingRoleService implements GeoServerRoleStore {
 
     @Override
     public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
-        return filterGroups(role, new TreeSet(delegate.getGroupNamesForRole(role)));
+        return filterGroups(role, new TreeSet<>(delegate.getGroupNamesForRole(role)));
     }
 
     @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
-        return filterUsers(role, new TreeSet(delegate.getUserNamesForRole(role)));
+        return filterUsers(role, new TreeSet<>(delegate.getUserNamesForRole(role)));
     }
 
     @Override
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
-        return filterUserRoles(username, new TreeSet(delegate.getRolesForUser(username)));
+        return filterUserRoles(username, new TreeSet<>(delegate.getRolesForUser(username)));
     }
 
     @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
-        return filterGroupRoles(groupname, new TreeSet(delegate.getRolesForGroup(groupname)));
+        return filterGroupRoles(groupname, new TreeSet<>(delegate.getRolesForGroup(groupname)));
     }
 
     @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
-        return filterRoles(new TreeSet(delegate.getRoles()));
+        return filterRoles(new TreeSet<>(delegate.getRoles()));
     }
 
     @Override

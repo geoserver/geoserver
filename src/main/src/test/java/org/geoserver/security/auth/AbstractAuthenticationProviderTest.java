@@ -171,8 +171,8 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         getSecurityManager().saveSecurityConfig(config);
     }
 
-    protected void prepareFilterChain(Class filterChainClass, String pattern, String... filterNames)
-            throws Exception {
+    protected void prepareFilterChain(
+            Class<?> filterChainClass, String pattern, String... filterNames) throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         GeoServerSecurityFilterChain filterChain = config.getFilterChain();
 

@@ -2942,55 +2942,67 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(expected, actual);
 
         // multivalued literals
-        List values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft2");
+        List<String> strValues = new ArrayList<>();
+        strValues.add("ft1");
+        strValues.add("ft2");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ANY);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ANY);
         expected = Sets.newHashSet(ft1, ft2);
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft1");
+        strValues = new ArrayList<>();
+        strValues.add("ft1");
+        strValues.add("ft1");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ALL);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ALL);
         expected = Sets.newHashSet(ft1);
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft2");
+        strValues = new ArrayList<String>();
+        strValues.add("ft1");
+        strValues.add("ft2");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ALL);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ALL);
         expected = Sets.newHashSet();
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<String>();
-        values.add("ft1");
-        values.add("ft1");
-        values.add("ft2");
+        strValues = new ArrayList<String>();
+        strValues.add("ft1");
+        strValues.add("ft1");
+        strValues.add("ft2");
         filter =
                 factory.equal(
-                        factory.literal(values), factory.property("name"), true, MatchAction.ONE);
+                        factory.literal(strValues),
+                        factory.property("name"),
+                        true,
+                        MatchAction.ONE);
         expected = Sets.newHashSet(ft2);
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
         // multivalued literals with multivalued fields
 
-        values = new ArrayList<Keyword>();
-        values.add(new Keyword("keyword1"));
-        values.add(new Keyword("keyword2"));
+        List<Keyword> keywords = new ArrayList<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("keyword2"));
         filter =
                 factory.equal(
-                        factory.literal(values),
+                        factory.literal(strValues),
                         factory.property("keywords"),
                         true,
                         MatchAction.ANY);
@@ -2998,12 +3010,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<Keyword>();
-        values.add(new Keyword("keyword1"));
-        values.add(new Keyword("keyword1"));
+        keywords = new ArrayList<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("keyword1"));
         filter =
                 factory.equal(
-                        factory.literal(values),
+                        factory.literal(strValues),
                         factory.property("keywords"),
                         true,
                         MatchAction.ALL);
@@ -3011,12 +3023,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
         assertEquals(expected, actual);
 
-        values = new ArrayList<Keyword>();
-        values.add(new Keyword("keyword1"));
-        values.add(new Keyword("blah"));
+        keywords = new ArrayList<>();
+        keywords.add(new Keyword("keyword1"));
+        keywords.add(new Keyword("blah"));
         filter =
                 factory.equal(
-                        factory.literal(values),
+                        factory.literal(strValues),
                         factory.property("keywords"),
                         true,
                         MatchAction.ONE);

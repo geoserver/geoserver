@@ -148,13 +148,13 @@ public class GeoServerImplTest {
 
     static class TestListener extends ConfigurationListenerAdapter {
 
-        List<String> gPropertyNames = new ArrayList();
-        List<Object> gOldValues = new ArrayList();
-        List<Object> gNewValues = new ArrayList();
+        List<String> gPropertyNames = new ArrayList<>();
+        List<Object> gOldValues = new ArrayList<>();
+        List<Object> gNewValues = new ArrayList<>();
 
-        List<String> sPropertyNames = new ArrayList();
-        List<Object> sOldValues = new ArrayList();
-        List<Object> sNewValues = new ArrayList();
+        List<String> sPropertyNames = new ArrayList<>();
+        List<Object> sOldValues = new ArrayList<>();
+        List<Object> sNewValues = new ArrayList<>();
 
         public void handleGlobalChange(
                 GeoServerInfo global,

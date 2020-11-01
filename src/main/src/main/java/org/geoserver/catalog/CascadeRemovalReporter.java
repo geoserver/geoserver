@@ -78,7 +78,11 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                         : Arrays.asList(modifications);
         for (CatalogInfo ci : objects.keySet()) {
             if (catalogClass == null || catalogClass.isAssignableFrom(ci.getClass())) {
-                if (mods == null || mods.contains(objects.get(ci))) result.add((T) ci);
+                if (mods == null || mods.contains(objects.get(ci))) {
+                    @SuppressWarnings("unchecked")
+                    T cast = (T) ci;
+                    result.add(cast);
+                }
             }
         }
         return result;

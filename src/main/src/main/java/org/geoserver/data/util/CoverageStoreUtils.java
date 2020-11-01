@@ -128,8 +128,8 @@ public final class CoverageStoreUtils {
      *
      * @return Descriptions for user to choose from
      */
-    public static List listDataFormatsDescriptions() {
-        List list = new ArrayList();
+    public static List<String> listDataFormatsDescriptions() {
+        List<String> list = new ArrayList<>();
         Format[] formats = GridFormatFinder.getFormatArray();
         final int length = formats.length;
 
@@ -142,8 +142,8 @@ public final class CoverageStoreUtils {
         return Collections.synchronizedList(list);
     }
 
-    public static List listDataFormats() {
-        List list = new ArrayList();
+    public static List<Format> listDataFormats() {
+        List<Format> list = new ArrayList<>();
         Format[] formats = GridFormatFinder.getFormatArray();
         final int length = formats.length;
 
@@ -160,8 +160,8 @@ public final class CoverageStoreUtils {
         return Collections.synchronizedMap(defaultParams(aquireFactory(description)));
     }
 
-    public static Map defaultParams(Format factory) {
-        Map defaults = new HashMap();
+    public static Map<String, Object> defaultParams(Format factory) {
+        Map<String, Object> defaults = new HashMap<>();
         ParameterValueGroup params = factory.getReadParameters();
 
         if (params != null) {
@@ -208,13 +208,14 @@ public final class CoverageStoreUtils {
      *
      * @return Map with real values that may be acceptable to GDSFactory
      */
-    public static Map toParams(GridFormatFactorySpi factory, Map params) throws IOException {
-        final Map map = new HashMap(params.size());
+    public static Map<String, Object> toParams(GridFormatFactorySpi factory, Map<String, ?> params)
+            throws IOException {
+        final Map<String, Object> map = new HashMap<>(params.size());
 
         final ParameterValueGroup info = factory.createFormat().getReadParameters();
         // Convert Params into the kind of Map we actually need
-        for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
-            String key = (String) i.next();
+        for (Iterator<String> i = params.keySet().iterator(); i.hasNext(); ) {
+            String key = i.next();
             Object value = find(info, key).getValue();
             if (value != null) {
                 map.put(key, value);

@@ -57,6 +57,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
                 || WebMapTileServer.class.isAssignableFrom(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public Object secure(Object object, WrapperPolicy policy) {
         // null check
         if (object == null) return null;
@@ -73,7 +74,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
         if (DataStore.class.isAssignableFrom(clazz)) {
             return new ReadOnlyDataStore((DataStore) object, policy);
         } else if (DataAccess.class.isAssignableFrom(clazz)) {
-            return new ReadOnlyDataAccess((DataAccess) object, policy);
+            return new ReadOnlyDataAccess<>((DataAccess) object, policy);
         }
 
         // for FeatureSource and family, we only return writable wrappers if the

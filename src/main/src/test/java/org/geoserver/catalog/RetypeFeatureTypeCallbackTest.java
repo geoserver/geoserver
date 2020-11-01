@@ -230,12 +230,13 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
         }
 
         @Override
-        public FeatureSource wrapFeatureSource(
-                FeatureTypeInfo featureTypeInfo, FeatureSource featureSource) {
+        @SuppressWarnings("unchecked")
+        public <T extends FeatureType, U extends Feature> FeatureSource<T, U> wrapFeatureSource(
+                FeatureTypeInfo featureTypeInfo, FeatureSource<T, U> featureSource) {
             TestRetypedSource wrapped =
                     new TestRetypedSource(featureTypeInfo, (SimpleFeatureSource) featureSource);
 
-            return wrapped;
+            return (FeatureSource<T, U>) wrapped;
         }
     }
 

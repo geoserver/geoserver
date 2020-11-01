@@ -43,6 +43,8 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
 /** Support class to find the nearest match to a given dimension value */
+@SuppressWarnings("unchecked") // uses Range in a raw way, not sure it can be generified, must
+// work for Numbers and Dates at the same time
 public abstract class NearestMatchFinder {
 
     /**

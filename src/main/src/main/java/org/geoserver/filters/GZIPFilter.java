@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class GZIPFilter implements Filter {
 
-    private Set myCompressedTypes;
+    private Set<Pattern> myCompressedTypes;
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
@@ -59,7 +59,7 @@ public class GZIPFilter implements Filter {
             String[] typeNames =
                     (compressedTypes == null ? new String[0] : compressedTypes.split(","));
             // TODO: Are commas allowed in mimetypes?
-            myCompressedTypes = new HashSet();
+            myCompressedTypes = new HashSet<>();
             for (int i = 0; i < typeNames.length; i++) {
                 myCompressedTypes.add(Pattern.compile(typeNames[i]));
             }

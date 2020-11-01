@@ -81,7 +81,7 @@ public class LegacyServicesReader {
         }
 
         Element globalElement = ReaderUtils.getChildElement(serverConfiguration, "global");
-        global = new HashMap();
+        global = new HashMap<>();
 
         value("verbose", globalElement, global, Boolean.class);
         value("verboseExceptions", globalElement, global, Boolean.class);
@@ -132,7 +132,7 @@ public class LegacyServicesReader {
 
         Element globalElement = ReaderUtils.getChildElement(serverConfiguration, "global");
 
-        contact = new HashMap();
+        contact = new HashMap<>();
 
         Element contactElement = ReaderUtils.getChildElement(globalElement, "ContactInformation");
         if (contactElement != null) {
@@ -202,7 +202,7 @@ public class LegacyServicesReader {
         text("maxRenderingTime", wmsElement, wms, Integer.class, false, 0);
         text("maxRenderingErrors", wmsElement, wms, Integer.class, false, 0);
 
-        ArrayList<Map> baseMaps = new ArrayList<Map>();
+        ArrayList<Map<String, Object>> baseMaps = new ArrayList<>();
         Element baseMapGroupsElement = ReaderUtils.getChildElement(wmsElement, "BaseMapGroups");
         if (baseMapGroupsElement != null) {
             Element[] baseMapGroupElements =
@@ -225,7 +225,7 @@ public class LegacyServicesReader {
                 if (baseMapStyles != null && !"".equals(baseMapStyles)) {
                     baseMapStyles = baseMapStyles.trim();
                     int j = -1, k = 0;
-                    List styles = new ArrayList();
+                    List<String> styles = new ArrayList<>();
                     while ((j = baseMapStyles.indexOf(',', k)) != -1) {
                         styles.add(baseMapStyles.substring(k, j).trim());
                         k = j + 1;
@@ -299,7 +299,7 @@ public class LegacyServicesReader {
 
         Element mlElement = ReaderUtils.getChildElement(serviceElement, "metadataLink");
         if (mlElement != null) {
-            HashMap metadataLink = new HashMap();
+            Map<String, String> metadataLink = new HashMap<>();
             metadataLink.put("about", ReaderUtils.getAttribute(mlElement, "about", false));
             metadataLink.put("type", ReaderUtils.getAttribute(mlElement, "type", false));
             metadataLink.put(
@@ -309,7 +309,7 @@ public class LegacyServicesReader {
 
         Element keywordsElement = ReaderUtils.getChildElement(serviceElement, "keywords");
         Element[] keywordElements = ReaderUtils.getChildElements(keywordsElement, "keyword");
-        ArrayList keywords = new ArrayList();
+        List<String> keywords = new ArrayList<>();
         if (keywordElements != null) {
             for (int i = 0; i < keywordElements.length; i++) {
                 keywords.add(keywordElements[i].getFirstChild().getTextContent());
@@ -347,11 +347,18 @@ public class LegacyServicesReader {
         throw new Exception("No service element: " + id);
     }
 
-    void value(String parameter, Element element, Map map, Class clazz) throws Exception {
+    <T> void value(String parameter, Element element, Map<String, Object> map, Class<T> clazz)
+            throws Exception {
         value(parameter, element, map, clazz, false, null);
     }
 
-    <T> void value(String parameter, Element element, Map map, Class<T> clazz, boolean man, T def)
+    <T> void value(
+            String parameter,
+            Element element,
+            Map<String, Object> map,
+            Class<T> clazz,
+            boolean man,
+            T def)
             throws Exception {
 
         Element valueElement = ReaderUtils.getChildElement(element, parameter);
@@ -381,11 +388,18 @@ public class LegacyServicesReader {
         map.put(parameter, value);
     }
 
-    void text(String parameter, Element element, Map map, Class clazz) throws Exception {
+    <T> void text(String parameter, Element element, Map<String, Object> map, Class<T> clazz)
+            throws Exception {
         text(parameter, element, map, clazz, false, null);
     }
 
-    <T> void text(String parameter, Element element, Map map, Class<T> clazz, boolean man, T def)
+    <T> void text(
+            String parameter,
+            Element element,
+            Map<String, Object> map,
+            Class<T> clazz,
+            boolean man,
+            T def)
             throws Exception {
 
         String text = ReaderUtils.getChildText(element, parameter);

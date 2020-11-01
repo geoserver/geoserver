@@ -91,6 +91,7 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
             service.setMetadataLink(ml);
         }
 
+        @SuppressWarnings("unchecked")
         List<String> keywords = (List<String>) properties.get("keywords");
         if (keywords != null) {
             for (String kw : keywords) {

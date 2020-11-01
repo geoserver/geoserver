@@ -478,6 +478,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                                         new Converter() {
 
                                             @Override
+                                            @SuppressWarnings("unchecked")
                                             public boolean canConvert(Class cls) {
                                                 return cls.isAssignableFrom(RoleSource.class);
                                             }
@@ -975,13 +976,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      */
     public <T extends GeoServerPasswordEncoder> List<T> loadPasswordEncoders(
             Class<T> filter, Boolean reversible, Boolean strong) {
+        filter = defaultFilterClass(filter);
 
-        filter = (Class<T>) (filter != null ? filter : GeoServerPasswordEncoder.class);
-
-        List list = GeoServerExtensions.extensions(filter);
-        for (Iterator it = list.iterator(); it.hasNext(); ) {
+        List<T> list = GeoServerExtensions.extensions(filter);
+        for (Iterator<T> it = list.iterator(); it.hasNext(); ) {
             boolean remove = false;
-            T pw = (T) it.next();
+            T pw = it.next();
             if (reversible != null && !reversible.equals(pw.isReversible())) {
                 remove = true;
             }
@@ -1006,6 +1006,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             }
         }
         return list;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends GeoServerPasswordEncoder> Class<T> defaultFilterClass(Class<T> filter) {
+        return (Class<T>) (filter != null ? filter : GeoServerPasswordEncoder.class);
     }
 
     /**
@@ -2778,7 +2783,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (migrationHelper != null) {
                 migrationHelper.migrationPersister(xp);
             }
-            return (C) loadConfigFile(dir, xp);
+            @SuppressWarnings("unchecked")
+            C config = (C) loadConfigFile(dir, xp);
+            return config;
         }
 
         /** loads the named entity config from persistence */

@@ -26,9 +26,9 @@ import org.opengis.filter.Filter;
 public class SecuredFeatureLocking<T extends FeatureType, F extends Feature>
         extends SecuredFeatureStore<T, F> implements FeatureLocking<T, F> {
 
-    FeatureLocking lockDelegate;
+    FeatureLocking<T, F> lockDelegate;
 
-    protected SecuredFeatureLocking(FeatureLocking delegate, WrapperPolicy policy) {
+    protected SecuredFeatureLocking(FeatureLocking<T, F> delegate, WrapperPolicy policy) {
         super(delegate, policy);
         this.lockDelegate = delegate;
     }

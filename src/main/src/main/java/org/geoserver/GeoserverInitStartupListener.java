@@ -284,7 +284,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 }
             }
             try {
-                Class h2Driver = Class.forName("org.h2.Driver");
+                Class<?> h2Driver = Class.forName("org.h2.Driver");
                 Method m = h2Driver.getMethod("unload");
                 m.invoke(null);
             } catch (Exception e) {
@@ -339,7 +339,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // We need to store them and unregister later to avoid concurrent modification
             // exceptions
             final IIORegistry ioRegistry = IIORegistry.getDefaultInstance();
-            Set<IIOServiceProvider> providersToUnload = new HashSet();
+            Set<IIOServiceProvider> providersToUnload = new HashSet<>();
             for (Iterator<Class<?>> cats = ioRegistry.getCategories(); cats.hasNext(); ) {
                 Class<?> category = cats.next();
                 for (Iterator it = ioRegistry.getServiceProviders(category, false);

@@ -553,7 +553,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        return (T) SecuredObjects.secure(info, policy);
+        @SuppressWarnings("unchecked")
+        T result = (T) SecuredObjects.secure(info, policy);
+        return result;
     }
 
     /**
@@ -598,7 +600,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 || store instanceof CoverageStoreInfo
                 || store instanceof WMSStoreInfo
                 || store instanceof WMTSStoreInfo) {
-            return (T) SecuredObjects.secure(store, policy);
+            @SuppressWarnings("unchecked")
+            T result = (T) SecuredObjects.secure(store, policy);
+            return result;
         } else {
             throw new RuntimeException("Unknown store type " + store.getClass());
         }
@@ -1279,12 +1283,18 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     public void fireModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     public void firePostModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 

@@ -600,6 +600,7 @@ public class LegacyCatalogImporter {
 
             GeneralGridEnvelope range = new GeneralGridEnvelope(low, high);
 
+            @SuppressWarnings("unchecked")
             Map<String, Double> tx = (Map<String, Double>) grid.get("geoTransform");
             if (tx != null) {
                 double[] matrix = new double[3 * 3];

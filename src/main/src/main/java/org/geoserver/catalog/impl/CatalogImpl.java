@@ -102,7 +102,7 @@ public class CatalogImpl implements Catalog {
     protected CatalogFacade facade;
 
     /** listeners */
-    protected List listeners = new CopyOnWriteArrayList<>();
+    protected List<CatalogListener> listeners = new CopyOnWriteArrayList<>();
 
     /** resources */
     protected ResourcePool resourcePool;
@@ -271,7 +271,9 @@ public class CatalogImpl implements Catalog {
         if (clazz != null
                 && clazz.isAssignableFrom(DataStoreInfo.class)
                 && (name == null || name.equals(Catalog.DEFAULT))) {
-            return (T) getDefaultDataStore(workspace);
+            @SuppressWarnings("unchecked")
+            T cast = (T) getDefaultDataStore(workspace);
+            return cast;
         }
 
         T store = facade.getStoreByName(ws, name, clazz);
@@ -311,7 +313,7 @@ public class CatalogImpl implements Catalog {
         return facade.getStoresByWorkspace(workspace, clazz);
     }
 
-    public List getStores(Class clazz) {
+    public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
         return facade.getStores(clazz);
     }
 
@@ -339,7 +341,7 @@ public class CatalogImpl implements Catalog {
         return getStoresByWorkspace(workspace, DataStoreInfo.class);
     }
 
-    public List getDataStores() {
+    public List<DataStoreInfo> getDataStores() {
         return getStores(DataStoreInfo.class);
     }
 
@@ -391,7 +393,7 @@ public class CatalogImpl implements Catalog {
         return getStoresByWorkspace(workspace, CoverageStoreInfo.class);
     }
 
-    public List getCoverageStores() {
+    public List<CoverageStoreInfo> getCoverageStores() {
         return getStores(CoverageStoreInfo.class);
     }
 
@@ -532,11 +534,12 @@ public class CatalogImpl implements Catalog {
         }
     }
 
-    public List getResources(Class clazz) {
+    public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
         return facade.getResources(clazz);
     }
 
-    public List getResourcesByNamespace(NamespaceInfo namespace, Class clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            NamespaceInfo namespace, Class<T> clazz) {
         return facade.getResourcesByNamespace(namespace, clazz);
     }
 
@@ -586,11 +589,11 @@ public class CatalogImpl implements Catalog {
         return (FeatureTypeInfo) getResourceByName(name, FeatureTypeInfo.class);
     }
 
-    public List getFeatureTypes() {
+    public List<FeatureTypeInfo> getFeatureTypes() {
         return getResources(FeatureTypeInfo.class);
     }
 
-    public List getFeatureTypesByNamespace(NamespaceInfo namespace) {
+    public List<FeatureTypeInfo> getFeatureTypesByNamespace(NamespaceInfo namespace) {
         return getResourcesByNamespace(namespace, FeatureTypeInfo.class);
     }
 
@@ -630,11 +633,11 @@ public class CatalogImpl implements Catalog {
         return (CoverageInfo) getResourceByName(name, CoverageInfo.class);
     }
 
-    public List getCoverages() {
+    public List<CoverageInfo> getCoverages() {
         return getResources(CoverageInfo.class);
     }
 
-    public List getCoveragesByNamespace(NamespaceInfo namespace) {
+    public List<CoverageInfo> getCoveragesByNamespace(NamespaceInfo namespace) {
         return getResourcesByNamespace(namespace, CoverageInfo.class);
     }
 
@@ -1159,7 +1162,7 @@ public class CatalogImpl implements Catalog {
         return facade.getNamespaceByURI(uri);
     }
 
-    public List getNamespaces() {
+    public List<NamespaceInfo> getNamespaces() {
         return facade.getNamespaces();
     }
 
@@ -1472,7 +1475,7 @@ public class CatalogImpl implements Catalog {
         return style;
     }
 
-    public List getStyles() {
+    public List<StyleInfo> getStyles() {
         return facade.getStyles();
     }
 
@@ -1617,7 +1620,7 @@ public class CatalogImpl implements Catalog {
     }
 
     // Event methods
-    public Collection getListeners() {
+    public Collection<CatalogListener> getListeners() {
         return Collections.unmodifiableCollection(listeners);
     }
 
@@ -1690,7 +1693,10 @@ public class CatalogImpl implements Catalog {
     }
 
     public void fireModified(
-            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         CatalogModifyEventImpl event = new CatalogModifyEventImpl();
 
         event.setSource(object);
@@ -1702,7 +1708,10 @@ public class CatalogImpl implements Catalog {
     }
 
     public void firePostModified(
-            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         CatalogPostModifyEventImpl event = new CatalogPostModifyEventImpl();
         event.setSource(object);
         event.setPropertyNames(propertyNames);

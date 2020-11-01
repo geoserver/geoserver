@@ -214,7 +214,10 @@ public interface GeoServer {
      * the configuration subsystem.
      */
     void fireGlobalModified(
-            GeoServerInfo global, List<String> propertyNames, List oldValues, List newValues);
+            GeoServerInfo global,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues);
 
     /**
      * Fires the event for a settings configuration being modified.
@@ -223,7 +226,10 @@ public interface GeoServer {
      * the configuration subsystem.
      */
     void fireSettingsModified(
-            SettingsInfo global, List<String> propertyNames, List oldValues, List newValues);
+            SettingsInfo global,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues);
 
     /**
      * Fires the event for the logging configuration being modified.
@@ -232,7 +238,10 @@ public interface GeoServer {
      * the configuration subsystem.
      */
     void fireLoggingModified(
-            LoggingInfo logging, List<String> propertyNames, List oldValues, List newValues);
+            LoggingInfo logging,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues);
 
     /**
      * Fires the event for a service configuration being modified.
@@ -241,7 +250,10 @@ public interface GeoServer {
      * the configuration subsystem.
      */
     void fireServiceModified(
-            ServiceInfo service, List<String> propertyNames, List oldValues, List newValues);
+            ServiceInfo service,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues);
 
     /** Disposes the configuration. */
     void dispose();

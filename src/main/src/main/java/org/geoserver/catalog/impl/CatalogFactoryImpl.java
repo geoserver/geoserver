@@ -118,7 +118,7 @@ public class CatalogFactoryImpl implements CatalogFactory {
         return new StyleInfoImpl(catalog);
     }
 
-    public Object create(Class clazz) {
+    public <T extends Object> T create(Class<T> clazz) {
         return null;
     }
 }

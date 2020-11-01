@@ -813,6 +813,7 @@ public class XStreamPersister {
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 
+            @SuppressWarnings("unchecked")
             Set<String> encryptionFields = (Set<String>) context.get(ENCRYPTED_FIELDS_KEY);
             if (encryptionFields == null) {
                 encryptionFields = Collections.emptySet();
@@ -853,6 +854,7 @@ public class XStreamPersister {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void populateMap(
                 HierarchicalStreamReader reader, UnmarshallingContext context, Map map) {
 
@@ -930,7 +932,7 @@ public class XStreamPersister {
         protected String getComplexTypeId(Class clazz) {
             String typeId = backwardBreifMap.get(clazz);
             if (typeId == null) {
-                List<Class> matches = new ArrayList<Class>();
+                List<Class<?>> matches = new ArrayList<>();
                 collectSuperclasses(clazz, matches);
                 for (Iterator it = matches.iterator(); it.hasNext(); ) {
                     Class sper = (Class) it.next();
@@ -940,9 +942,9 @@ public class XStreamPersister {
                 }
 
                 if (matches.size() > 1) {
-                    Comparator comparator =
-                            new Comparator<Class>() {
-                                public int compare(Class c1, Class c2) {
+                    Comparator<Class<?>> comparator =
+                            new Comparator<Class<?>>() {
+                                public int compare(Class<?> c1, Class<?> c2) {
                                     if (c2.isAssignableFrom(c1)) {
                                         return -1;
                                     } else {
@@ -962,7 +964,7 @@ public class XStreamPersister {
             return typeId;
         }
 
-        void collectSuperclasses(Class clazz, List<Class> matches) {
+        void collectSuperclasses(Class<?> clazz, List<Class<?>> matches) {
             matches.add(clazz);
             if (clazz.getSuperclass() == null && clazz.getInterfaces().length == 0) {
                 return;
@@ -971,7 +973,7 @@ public class XStreamPersister {
             if (clazz.getSuperclass() != null) {
                 collectSuperclasses(clazz.getSuperclass(), matches);
             }
-            for (Class iface : clazz.getInterfaces()) {
+            for (Class<?> iface : clazz.getInterfaces()) {
                 collectSuperclasses(iface, matches);
             }
         }
@@ -1014,6 +1016,7 @@ public class XStreamPersister {
             writer.endNode();
         }
 
+        @SuppressWarnings("unchecked")
         protected void putCurrentEntryIntoMap(
                 HierarchicalStreamReader reader,
                 UnmarshallingContext context,
@@ -1063,6 +1066,7 @@ public class XStreamPersister {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             Map map = (Map) super.unmarshal(reader, context);
             if (!(map instanceof MetadataMap)) {
@@ -1083,6 +1087,7 @@ public class XStreamPersister {
             return Multimap.class.isAssignableFrom(clazz);
         }
 
+        @SuppressWarnings("unchecked")
         public void marshal(
                 Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
             Multimap map = (Multimap) value;
@@ -1125,7 +1130,7 @@ public class XStreamPersister {
     /** Converters which encodes an object by a reference, or its id. */
     // class ReferenceConverter extends AbstractSingleValueConverter {
     class ReferenceConverter implements Converter {
-        Class clazz;
+        Class<?> clazz;
 
         public ReferenceConverter(Class clazz) {
             this.clazz = clazz;
@@ -1594,7 +1599,7 @@ public class XStreamPersister {
     // catalog object converters
     /** Base class for all custom reflection based converters. */
     protected class AbstractReflectionConverter extends ReflectionConverter {
-        Class clazz;
+        Class<?> clazz;
 
         public AbstractReflectionConverter() {
             this(Object.class);
@@ -1655,6 +1660,7 @@ public class XStreamPersister {
             super(clazz);
         }
 
+        @SuppressWarnings("unchecked")
         private <T> void unsafeCopy(Object source, Object target, Class<T> clazz) {
             OwsUtils.copy((T) source, (T) target, clazz);
         }
@@ -1668,7 +1674,7 @@ public class XStreamPersister {
             Object catalogObject = callback.getCatalogObject();
 
             if (catalogObject != null) {
-                Class i = callback.getObjectClass();
+                Class<?> i = callback.getObjectClass();
 
                 if (i != null) {
                     unsafeCopy(catalogObject, emptyObject, i);
@@ -1826,7 +1832,7 @@ public class XStreamPersister {
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            MultiValuedMap map = new HashSetValuedHashMap();
+            MultiValuedMap<Class, Object> map = new HashSetValuedHashMap<>();
 
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
@@ -1880,7 +1886,7 @@ public class XStreamPersister {
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            Map map = new HashMap();
+            Map<String, CatalogInfo> map = new HashMap<>();
 
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
@@ -1947,10 +1953,10 @@ public class XStreamPersister {
 
             // ensure null list does not result
             if (featureType.getAttributes() == null) {
-                featureType.setAttributes(new ArrayList());
+                featureType.setAttributes(new ArrayList<>());
             }
             if (featureType.getResponseSRS() == null) {
-                featureType.setResponseSRS(new ArrayList());
+                featureType.setResponseSRS(new ArrayList<>());
             }
             if (featureType.getMetadata() == null) {
                 featureType.setMetadata(new MetadataMap());
@@ -2232,7 +2238,7 @@ public class XStreamPersister {
             List<String> primaryKeys = new ArrayList<String>();
             List<VirtualTableParameter> params = new ArrayList<VirtualTableParameter>();
             List<String> geomNames = new ArrayList<String>();
-            List<Class> types = new ArrayList<Class>();
+            List<Class<? extends Geometry>> types = new ArrayList<>();
             List<Integer> srids = new ArrayList<Integer>();
 
             Boolean escapeSql = false;
@@ -2242,7 +2248,7 @@ public class XStreamPersister {
                     primaryKeys.add(reader.getValue());
                 } else if (reader.getNodeName().equals("geometry")) {
                     String geomName = null;
-                    Class type = null;
+                    Class<? extends Geometry> type = null;
                     int srid = -1;
                     while (reader.hasMoreChildren()) {
                         reader.moveDown();
@@ -2462,6 +2468,7 @@ public class XStreamPersister {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected Object instantiateNewInstance(
                 HierarchicalStreamReader reader, UnmarshallingContext context) {
             Object emptyObject = super.instantiateNewInstance(reader, context);

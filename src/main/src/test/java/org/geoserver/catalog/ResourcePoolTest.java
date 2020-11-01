@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
@@ -701,7 +702,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ds.setWorkspace(ws);
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         File dbFile =
                 new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");

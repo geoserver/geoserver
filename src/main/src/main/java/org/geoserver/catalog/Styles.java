@@ -123,7 +123,7 @@ public class Styles {
         }
 
         List<StyleHandler> allHandlers = handlers();
-        List<StyleHandler> matches = new ArrayList();
+        List<StyleHandler> matches = new ArrayList<>();
 
         // look by format
         for (StyleHandler h : allHandlers) {

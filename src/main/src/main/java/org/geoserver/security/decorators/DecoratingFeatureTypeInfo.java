@@ -25,6 +25,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Measure;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.Hints;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -44,8 +45,8 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         super(info);
     }
 
-    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints)
-            throws IOException {
+    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+            ProgressListener listener, Hints hints) throws IOException {
         return delegate.getFeatureSource(listener, hints);
     }
 

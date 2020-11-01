@@ -26,6 +26,7 @@ import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.factory.Hints;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -99,14 +100,15 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     // --------------------------------------------------------------------------
 
     @Override
-    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints)
-            throws IOException {
-        final FeatureSource fs = delegate.getFeatureSource(listener, hints);
+    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+            ProgressListener listener, Hints hints) throws IOException {
+        final FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                delegate.getFeatureSource(listener, hints);
 
         if (policy.level == AccessLevel.METADATA) {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         } else {
-            return (FeatureSource) SecuredObjects.secure(fs, policy);
+            return SecuredObjects.secure(fs, policy);
         }
     }
 

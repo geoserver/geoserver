@@ -420,6 +420,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             super(id);
 
             add(new TextField<>("priority", ruleFormModel.bind("rule.priority")).setRequired(true));
+
             add(
                     roleChoice =
                             new DropDownChoice<>(
@@ -569,6 +570,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             }
                         }
                     });
+
+            add(new TextField<String>("addressRange", ruleFormModel.bind("rule.addressRange")));
 
             add(
                     grantTypeChoice =

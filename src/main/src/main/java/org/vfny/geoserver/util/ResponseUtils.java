@@ -98,7 +98,7 @@ public final class ResponseUtils {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
-    public static List validate(
+    public static List<SAXException> validate(
             InputSource xml,
             URL schemaURL,
             boolean skipTargetNamespaceException,
@@ -114,11 +114,12 @@ public final class ResponseUtils {
         return validate(source, schemaURL, skipTargetNamespaceException, entityResolver);
     }
 
-    public static List validate(Source xml, URL schemaURL, boolean skipTargetNamespaceException) {
+    public static List<SAXException> validate(
+            Source xml, URL schemaURL, boolean skipTargetNamespaceException) {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
-    public static List validate(
+    public static List<SAXException> validate(
             Source xml,
             URL schemaURL,
             boolean skipTargetNamespaceException,
@@ -147,7 +148,7 @@ public final class ResponseUtils {
     // errors in the document will be put in "errors".
     // if errors.size() ==0  then there were no errors.
     private static class Handler extends DefaultHandler {
-        public ArrayList errors = new ArrayList();
+        public List<SAXException> errors = new ArrayList<>();
 
         boolean skipTargetNamespaceException;
 
@@ -189,7 +190,7 @@ public final class ResponseUtils {
         }
     }
 
-    static List exception(Exception e) {
+    static List<SAXException> exception(Exception e) {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Validation error", e);
         }

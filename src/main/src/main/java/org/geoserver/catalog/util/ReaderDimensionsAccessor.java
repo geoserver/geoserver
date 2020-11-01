@@ -96,6 +96,7 @@ public class ReaderDimensionsAccessor {
             };
 
     /** Comparator for TreeSet made either by Double objects, or by NumberRange objects */
+    @SuppressWarnings("unchecked")
     private static final Comparator<Object> ELEVATION_COMPARATOR =
             new Comparator<Object>() {
 
@@ -105,8 +106,8 @@ public class ReaderDimensionsAccessor {
                         if (o2 instanceof Double) {
                             return ((Double) o1).compareTo((Double) o2);
                         } else if (o2 instanceof NumberRange) {
-                            return ((Double) o1)
-                                    .compareTo(((NumberRange<Double>) o2).getMinValue());
+                            NumberRange<Double> nrd = (NumberRange<Double>) o2;
+                            return ((Double) o1).compareTo(nrd.getMinValue());
                         }
                     } else if (o1 instanceof NumberRange) {
                         if (o2 instanceof NumberRange) {
@@ -321,6 +322,7 @@ public class ReaderDimensionsAccessor {
      * in the specified range. They are either {@link Double} objects, or {@link NumberRange}
      * objects, according to what the underlying reader provides.
      */
+    @SuppressWarnings("unchecked")
     public TreeSet<Object> getElevationDomain(NumberRange range, int maxEntries)
             throws IOException {
         if (!hasElevation()) {
@@ -385,6 +387,7 @@ public class ReaderDimensionsAccessor {
                 // unique visitor)
                 UniqueVisitor visitor = new UniqueVisitor(attribute);
                 collection.accepts(visitor, null);
+                @SuppressWarnings("unchecked")
                 TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
                 return result;
             }
@@ -508,7 +511,9 @@ public class ReaderDimensionsAccessor {
             if (typeName != null) {
                 Class<?> type = Class.forName(typeName);
                 if (type == java.util.Date.class) {
-                    result.addAll(new TimeParser().parse(value));
+                    @SuppressWarnings("unchecked")
+                    Collection<Object> parsed = new TimeParser().parse(value);
+                    result.addAll(parsed);
                 } else if (Number.class.isAssignableFrom(type) && !value.contains(",")) {
                     result.add(parseNumberOrRange(value));
                 } else {

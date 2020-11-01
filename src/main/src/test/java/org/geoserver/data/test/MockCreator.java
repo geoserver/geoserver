@@ -450,13 +450,12 @@ public class MockCreator implements Callback {
                         new IAnswer<List<GeoServerPasswordEncoder>>() {
                             @Override
                             public List<GeoServerPasswordEncoder> answer() throws Throwable {
-                                return (List)
-                                        Arrays.asList(
-                                                createEmptyPasswordEncoder(secMgr),
-                                                createPlainTextPasswordEncoder(secMgr),
-                                                createPbePasswordEncoder(secMgr),
-                                                createStrongPbePasswordEncoder(secMgr),
-                                                createDigestPasswordEncoder(secMgr));
+                                return Arrays.asList(
+                                        createEmptyPasswordEncoder(secMgr),
+                                        createPlainTextPasswordEncoder(secMgr),
+                                        createPbePasswordEncoder(secMgr),
+                                        createStrongPbePasswordEncoder(secMgr),
+                                        createDigestPasswordEncoder(secMgr));
                             }
                         })
                 .anyTimes();

@@ -23,7 +23,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.decorators.DecoratingLayerGroupInfo;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 
@@ -330,8 +329,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
     @Override
     public void save(LayerGroupInfo layerGroup) {
         if (layerGroup instanceof AdvertisedLayerGroup) {
-            AbstractDecorator<LayerGroupInfo> decorator =
-                    (AbstractDecorator<LayerGroupInfo>) layerGroup;
+            AdvertisedLayerGroup decorator = (AdvertisedLayerGroup) layerGroup;
             LayerGroupInfo unwrapped = decorator.unwrap(LayerGroupInfo.class);
             delegate.save(unwrapped);
         } else {

@@ -33,7 +33,7 @@ public class SecuredObjects {
      * @return the secured object, or null if the input is null.
      * @throws IllegalArgumentException if the factory is not able to wrap the object
      */
-    public static Object secure(Object object, WrapperPolicy policy) {
+    public static <T> T secure(T object, WrapperPolicy policy) {
         // null safety
         if (object == null) return null;
 
@@ -67,6 +67,8 @@ public class SecuredObjects {
             FACTORY_CACHE.put(clazz, candidate);
         }
 
-        return candidate.secure(object, policy);
+        @SuppressWarnings("unchecked")
+        T result = (T) candidate.secure(object, policy);
+        return result;
     }
 }

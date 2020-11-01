@@ -62,7 +62,7 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
         return new LoggingInfoImpl();
     }
 
-    public Object create(Class clazz) {
+    public <T> T create(Class<T> clazz) {
         if (applicationContext != null) {
             Collection extensions =
                     applicationContext.getBeansOfType(GeoServerFactory.Extension.class).values();

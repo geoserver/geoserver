@@ -23,6 +23,7 @@ public abstract class SectionsKvpParser extends KvpParser {
         setService("wcs");
     }
 
+    @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
         EObject sections = createObject();
         ((Collection) EMFUtils.get(sections, "section"))

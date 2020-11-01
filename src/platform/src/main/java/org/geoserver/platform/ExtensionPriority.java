@@ -22,7 +22,7 @@ public interface ExtensionPriority {
     int LOWEST = 100;
 
     /** Compares two implementations based on extension priority */
-    Comparator COMPARATOR =
+    Comparator<Object> COMPARATOR =
             (Comparator<Object>)
                     (o1, o2) -> {
                         int p1 = ExtensionPriority.LOWEST;

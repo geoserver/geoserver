@@ -456,7 +456,8 @@ public class SecureXStream extends XStream {
             Class[] constructorParamTypes,
             Object[] constructorParamValues) {
         try {
-            Class type = Class.forName(className, false, getClassLoaderReference().getReference());
+            Class<?> type =
+                    Class.forName(className, false, getClassLoaderReference().getReference());
             Constructor constructor = type.getConstructor(constructorParamTypes);
             Object instance = constructor.newInstance(constructorParamValues);
             if (instance instanceof Converter) {

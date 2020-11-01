@@ -59,8 +59,8 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
             }
         } else {
             // create an 'empty' object
-            ServiceInfo service = createServiceFromScratch(gs);
-            return initialize((T) service);
+            T service = createServiceFromScratch(gs);
+            return initialize(service);
         }
     }
 
@@ -68,8 +68,8 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
      * Fills in all the bits that are normally not loaded automatically by XStream, such as empty
      * collections
      */
-    public void initializeService(ServiceInfo info) {
-        initialize((T) info);
+    public void initializeService(T info) {
+        initialize(info);
     }
 
     /**
@@ -82,19 +82,19 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
             // initialize all collections to
             ServiceInfoImpl impl = (ServiceInfoImpl) service;
             if (impl.getClientProperties() == null) {
-                impl.setClientProperties(new HashMap());
+                impl.setClientProperties(new HashMap<>());
             }
             if (impl.getExceptionFormats() == null) {
-                impl.setExceptionFormats(new ArrayList());
+                impl.setExceptionFormats(new ArrayList<>());
             }
             if (impl.getKeywords() == null) {
-                impl.setKeywords(new ArrayList());
+                impl.setKeywords(new ArrayList<>());
             }
             if (impl.getMetadata() == null) {
                 impl.setMetadata(new MetadataMap());
             }
             if (impl.getVersions() == null) {
-                impl.setVersions(new ArrayList());
+                impl.setVersions(new ArrayList<>());
             }
         }
 

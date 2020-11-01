@@ -104,7 +104,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             Name oldName = RESOURCE_NAME_MAPPER.apply(actualValue);
             Name newName = RESOURCE_NAME_MAPPER.apply(proxiedValue);
             if (!oldName.equals(newName)) {
-                Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfoImpl.class);
+                Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfo.class);
                 LayerInfo value = nameMap.remove(oldName);
                 // handle case of feature type without a corresponding layer
                 if (value != null) {
@@ -242,7 +242,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
-        return ModificationProxy.createList(stores.list(clazz, CatalogInfoLookup.TRUE), clazz);
+        List<T> list = stores.list(clazz, CatalogInfoLookup.ptrue());
+        return ModificationProxy.createList(list, clazz);
     }
 
     public DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace) {
@@ -336,7 +337,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
-        return ModificationProxy.createList(resources.list(clazz, CatalogInfoLookup.TRUE), clazz);
+        return ModificationProxy.createList(
+                resources.list(clazz, CatalogInfoLookup.ptrue()), clazz);
     }
 
     public <T extends ResourceInfo> List<T> getResourcesByNamespace(
@@ -519,7 +521,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public List<MapInfo> getMaps() {
-        return ModificationProxy.createList(new ArrayList(maps), MapInfo.class);
+        return ModificationProxy.createList(new ArrayList<>(maps), MapInfo.class);
     }
 
     //
@@ -1130,10 +1132,11 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         if (filter != null && filter != Filter.INCLUDE) {
             return o -> filter.evaluate(o);
         } else {
-            return CatalogInfoLookup.TRUE;
+            return CatalogInfoLookup.ptrue();
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Comparator<Object> comparator(final SortBy sortOrder) {
         return new Comparator<Object>() {
             @Override

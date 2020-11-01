@@ -5,6 +5,7 @@
  */
 package org.geoserver.feature.retype;
 
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
 
     RetypingDataStore store;
 
-    Map listeners = new HashMap();
+    Map<FeatureListener, FeatureListener> listeners = new HashMap<>();
 
     /**
      * Builds a retyping wrapper
@@ -192,7 +193,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
         return typeMap.getFeatureType();
     }
 
-    public Set getSupportedHints() {
+    public Set<RenderingHints.Key> getSupportedHints() {
         return wrapped.getSupportedHints();
     }
 

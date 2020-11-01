@@ -295,7 +295,9 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         oos.close();
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         ObjectInputStream ois = new ObjectInputStream(bis);
-        return (T) ois.readObject();
+        @SuppressWarnings("unchecked")
+        T cast = (T) ois.readObject();
+        return cast;
     }
 
     @Test

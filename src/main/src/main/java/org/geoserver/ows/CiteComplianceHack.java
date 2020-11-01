@@ -23,9 +23,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class CiteComplianceHack implements HandlerInterceptor {
 
     GeoServer gs;
-    Class serviceClass;
+    Class<? extends ServiceInfo> serviceClass;
 
-    public CiteComplianceHack(GeoServer gs, Class serviceClass) {
+    public CiteComplianceHack(GeoServer gs, Class<? extends ServiceInfo> serviceClass) {
         this.gs = gs;
         this.serviceClass = serviceClass;
     }

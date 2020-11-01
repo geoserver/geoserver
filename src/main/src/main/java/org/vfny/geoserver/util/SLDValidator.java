@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -41,7 +42,7 @@ public class SLDValidator {
         this.entityResolver = entityResolver;
     }
 
-    public static String getErrorMessage(InputStream xml, List errors) {
+    public static String getErrorMessage(InputStream xml, List<SAXParseException> errors) {
         return getErrorMessage(new InputStreamReader(xml), errors);
     }
 
@@ -49,7 +50,7 @@ public class SLDValidator {
      * returns a better formated error message - suitable for framing. There's a more complex
      * version in StylesEditorAction. This will kick out a VERY LARGE errorMessage.
      */
-    public static String getErrorMessage(Reader xml, List errors) {
+    public static String getErrorMessage(Reader xml, List<SAXParseException> errors) {
         BufferedReader reader = null;
         StringBuffer result = new StringBuffer();
         result.append("Your SLD is not valid.\n");
@@ -90,7 +91,7 @@ public class SLDValidator {
 
                 while (keep_going) {
                     if ((exceptionNum < errors.size())) {
-                        SAXParseException sax = (SAXParseException) errors.get(exceptionNum);
+                        SAXParseException sax = errors.get(exceptionNum);
 
                         if (sax.getLineNumber() <= linenumber) {
                             String head = "---------------------".substring(0, header.length() - 1);
@@ -169,8 +170,11 @@ public class SLDValidator {
      * @param xml input stream representing the .sld file
      * @return list of SAXExceptions (0 if the file's okay)
      */
-    public List validateSLD(InputSource xml) {
+    public List<Exception> validateSLD(InputSource xml) {
         URL schemaURL = SLDValidator.class.getResource("/schemas/sld/StyledLayerDescriptor.xsd");
-        return ResponseUtils.validate(xml, schemaURL, false, entityResolver);
+        return ResponseUtils.validate(xml, schemaURL, false, entityResolver)
+                .stream()
+                .map(e -> (Exception) e)
+                .collect(Collectors.toList());
     }
 }

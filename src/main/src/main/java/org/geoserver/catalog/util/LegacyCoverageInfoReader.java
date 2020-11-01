@@ -81,7 +81,7 @@ public class LegacyCoverageInfoReader {
     public List<String> keywords() {
         String raw = ReaderUtils.getChildText(coverage, "keywords");
         StringTokenizer st = new StringTokenizer(raw, ", ");
-        ArrayList keywords = new ArrayList();
+        List<String> keywords = new ArrayList<>();
         while (st.hasMoreTokens()) {
             keywords.add(st.nextToken());
         }
@@ -187,11 +187,11 @@ public class LegacyCoverageInfoReader {
         return grid;
     }
 
-    public List<Map> coverageDimensions() throws Exception {
+    public List<Map<String, Object>> coverageDimensions() throws Exception {
         Element[] cdElements = ReaderUtils.getChildElements(coverage, "CoverageDimension");
-        List<Map> cds = new ArrayList<Map>();
+        List<Map<String, Object>> cds = new ArrayList<>();
         for (int i = 0; i < cdElements.length; i++) {
-            HashMap cd = new HashMap();
+            Map<String, Object> cd = new HashMap<>();
             cd.put("name", ReaderUtils.getChildText(cdElements[i], "name"));
             cd.put("description", ReaderUtils.getChildText(cdElements[i], "description"));
 

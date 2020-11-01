@@ -311,7 +311,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
             return Collections.emptyList();
         }
 
-        return new ArrayList(requestChain.getFilterNames());
+        return new ArrayList<>(requestChain.getFilterNames());
     }
 
     public boolean removeForPattern(String pattern) {

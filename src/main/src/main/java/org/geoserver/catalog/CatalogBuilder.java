@@ -8,6 +8,7 @@ package org.geoserver.catalog;
 import java.awt.image.ColorModel;
 import java.awt.image.SampleModel;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -502,7 +503,7 @@ public class CatalogBuilder {
         if (rinfo != null && (ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty())) {
             if (rinfo.getKeywords() != null) {
                 if (ftinfo.getKeywords() == null) {
-                    ((FeatureTypeInfoImpl) ftinfo).setKeywords(new ArrayList());
+                    ((FeatureTypeInfoImpl) ftinfo).setKeywords(new ArrayList<>());
                 }
                 for (String kw : rinfo.getKeywords()) {
                     if (kw == null || "".equals(kw.trim())) {
@@ -972,14 +973,17 @@ public class CatalogBuilder {
     }
 
     /** Builds a coverage from a geotools grid coverage reader. */
-    public CoverageInfo buildCoverage(GridCoverage2DReader reader, Map customParameters)
+    public CoverageInfo buildCoverage(
+            GridCoverage2DReader reader, Map<String, Serializable> customParameters)
             throws Exception {
         return buildCoverage(reader, null, customParameters);
     }
 
     /** Builds a coverage from a geotools grid coverage reader. */
     public CoverageInfo buildCoverage(
-            GridCoverage2DReader reader, String coverageName, Map customParameters)
+            GridCoverage2DReader reader,
+            String coverageName,
+            Map<String, Serializable> customParameters)
             throws Exception {
         return buildCoverageInternal(reader, coverageName, customParameters, null);
     }
@@ -987,7 +991,7 @@ public class CatalogBuilder {
     private CoverageInfo buildCoverageInternal(
             GridCoverage2DReader reader,
             String nativeCoverageName,
-            Map customParameters,
+            Map<String, Serializable> customParameters,
             String specifiedName)
             throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
@@ -1138,12 +1142,12 @@ public class CatalogBuilder {
     }
 
     private GridSampleDimension[] getCoverageSampleDimensions(
-            GridCoverage2DReader reader, Map customParameters)
+            GridCoverage2DReader reader, Map<String, Serializable> customParameters)
             throws TransformException, IOException, Exception {
         GridEnvelope originalRange = reader.getOriginalGridRange();
         Format format = reader.getFormat();
         final ParameterValueGroup readParams = format.getReadParameters();
-        final Map parameters = CoverageUtils.getParametersKVP(readParams);
+        final Map<String, Serializable> parameters = CoverageUtils.getParametersKVP(readParams);
         final int minX = originalRange.getLow(0);
         final int minY = originalRange.getLow(1);
         final int width = originalRange.getSpan(0);

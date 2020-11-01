@@ -335,8 +335,10 @@ class LayerGroupContainmentCache {
                 }
                 int layerIdx = event.getPropertyNames().indexOf("layers");
                 if (layerIdx != -1) {
+                    @SuppressWarnings("unchecked")
                     List<PublishedInfo> oldLayers =
                             (List<PublishedInfo>) event.getOldValues().get(layerIdx);
+                    @SuppressWarnings("unchecked")
                     List<PublishedInfo> newLayers =
                             (List<PublishedInfo>) event.getNewValues().get(layerIdx);
                     updateContainedLayers(groupCache.get(lg.getId()), oldLayers, newLayers);

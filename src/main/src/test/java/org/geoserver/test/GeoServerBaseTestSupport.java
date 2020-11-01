@@ -127,6 +127,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     @Before
+    @SuppressWarnings("unchecked")
     public final void doSetup() throws Exception {
         if (testData == null) {
             test = this;
@@ -137,6 +138,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected T getTestData() {
         return (T) testData;
     }
@@ -171,6 +173,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     protected TestSetupFrequency lookupTestSetupPolicy() {
         Class clazz = getClass();
         while (clazz != null && !Object.class.equals(clazz)) {
+            @SuppressWarnings("unchecked")
             TestSetup testSetup = (TestSetup) clazz.getAnnotation(TestSetup.class);
             if (testSetup != null) {
                 return testSetup.run();
@@ -181,6 +184,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     @AfterClass
+    @SuppressWarnings("unchecked")
     public static final void doTearDownClass() throws Exception {
         if (testData != null) {
             try {

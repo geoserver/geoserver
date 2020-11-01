@@ -299,7 +299,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     "GEOSERVER_DATA_DIR", testData.getDataDirectoryRoot().getPath());
             servletContext.setInitParameter("serviceStrategy", "PARTIAL-BUFFER2");
 
-            List<String> contexts = new ArrayList();
+            List<String> contexts = new ArrayList<>();
             setUpSpring(contexts);
 
             applicationContext =
@@ -2306,24 +2306,24 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *
      * @param raw Map of String,String.
      */
-    protected Map parseKvp(Map /*<String,String>*/ raw) throws Exception {
+    protected Map parseKvp(Map<String, String> raw) throws Exception {
 
         // parse like the dispatcher but make sure we don't change the original map
-        HashMap input = new HashMap(raw);
+        HashMap<String, Object> input = new HashMap<>(raw);
         List<Throwable> errors = KvpUtils.parse(input);
         if (errors != null && errors.size() > 0) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
     }
 
-    protected Map caseInsensitiveKvp(Map input) {
+    protected <V> Map<String, V> caseInsensitiveKvp(Map<String, V> input) {
         // make it case insensitive like the servlet+dispatcher maps
-        Map result = new HashMap();
-        for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {
-            String key = (String) it.next();
+        Map<String, V> result = new HashMap<>();
+        for (Iterator<String> it = input.keySet().iterator(); it.hasNext(); ) {
+            String key = it.next();
             result.put(key.toUpperCase(), input.get(key));
         }
-        return new CaseInsensitiveMap(result);
+        return new CaseInsensitiveMap<>(result);
     }
 
     /**

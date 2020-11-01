@@ -40,6 +40,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
         super(locking, settings);
     }
 
+    @SuppressWarnings("unchecked")
     FeatureLocking<SimpleFeatureType, SimpleFeature> locking() {
         return (FeatureLocking<SimpleFeatureType, SimpleFeature>) source;
     }
@@ -50,6 +51,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * @see
      *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
      */
+    @SuppressWarnings("unchecked")
     public void setFeatureLock(FeatureLock lock) {
         if (source instanceof FeatureLocking) {
             ((FeatureLocking<SimpleFeatureType, SimpleFeature>) source).setFeatureLock(lock);
@@ -59,6 +61,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     }
 
     /** */
+    @SuppressWarnings("unchecked")
     public int lockFeatures(Query query) throws IOException {
         if (source instanceof FeatureLocking) {
             return ((FeatureLocking<SimpleFeatureType, SimpleFeature>) source).lockFeatures(query);

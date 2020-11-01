@@ -46,7 +46,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
 
     FeatureStore<T, F> storeDelegate;
 
-    public SecuredFeatureStore(FeatureStore delegate, WrapperPolicy policy) {
+    public SecuredFeatureStore(FeatureStore<T, F> delegate, WrapperPolicy policy) {
         super(delegate, policy);
         this.storeDelegate = delegate;
     }

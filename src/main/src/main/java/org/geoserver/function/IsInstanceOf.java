@@ -69,7 +69,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
         Expression clazzExpression = parameters.get(0);
 
         // Getting the defined class
-        Class clazz = clazzExpression.evaluate(object, Class.class);
+        Class<?> clazz = clazzExpression.evaluate(object, Class.class);
 
         // Checking the result
         boolean result = false;

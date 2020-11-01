@@ -6,6 +6,7 @@
 package org.geoserver.data.util;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class CoverageUtils {
     public static final int OPAQUE = 1;
 
     public static GeneralParameterValue[] getParameters(ParameterValueGroup params) {
-        final List parameters = new ArrayList();
+        final List<GeneralParameterValue> parameters = new ArrayList<>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (params.values().size() > 0)) {
@@ -68,9 +69,11 @@ public class CoverageUtils {
                     }
                     final Object value = val.getValue();
 
-                    parameters.add(
+                    @SuppressWarnings("unchecked")
+                    ParameterValue pv =
                             new DefaultParameterDescriptor(_key, value.getClass(), null, value)
-                                    .createValue());
+                                    .createValue();
+                    parameters.add(pv);
                 }
             }
 
@@ -124,9 +127,11 @@ public class CoverageUtils {
                     //
                     // /////////////////////////////////////////////////////////
                     final Object value = CoverageUtils.getCvParamValue(_key, val, values);
-                    parameters.add(
-                            new DefaultParameterDescriptor(_key, descr.getValueClass(), null, value)
-                                    .createValue());
+                    @SuppressWarnings("unchecked")
+                    DefaultParameterDescriptor pd =
+                            new DefaultParameterDescriptor(
+                                    _key, descr.getValueClass(), null, value);
+                    parameters.add(pd.createValue());
                 }
             }
 
@@ -139,8 +144,8 @@ public class CoverageUtils {
         }
     }
 
-    public static Map getParametersKVP(ParameterValueGroup params) {
-        final Map parameters = new HashMap();
+    public static Map<String, Serializable> getParametersKVP(ParameterValueGroup params) {
+        final Map<String, Serializable> parameters = new HashMap<>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (params.values().size() > 0)) {
@@ -327,7 +332,7 @@ public class CoverageUtils {
                     value = params.get(key);
                 }
             } else {
-                final Class<? extends Object> target = param.getDescriptor().getValueClass();
+                final Class<?> target = param.getDescriptor().getValueClass();
                 if (key.equalsIgnoreCase("InputTransparentColor")
                         || key.equalsIgnoreCase("OutputTransparentColor")) {
                     if (params.get(key) != null) {

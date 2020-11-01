@@ -55,13 +55,13 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
     public DataAccess<T, F> getDataStore() {
         final DataAccess<T, F> store = delegate.getDataStore();
         if (store == null) return null;
-        else return (DataAccess) SecuredObjects.secure(store, policy);
+        else return SecuredObjects.secure(store, policy);
     }
 
     public FeatureCollection<T, F> getFeatures() throws IOException {
         final FeatureCollection<T, F> fc = delegate.getFeatures(getReadQuery());
         if (fc == null) return null;
-        else return (FeatureCollection) SecuredObjects.secure(fc, policy);
+        else return SecuredObjects.secure(fc, policy);
     }
 
     public FeatureCollection<T, F> getFeatures(Filter filter) throws IOException {
@@ -87,7 +87,10 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                             SimpleFeatureTypeBuilder.retype(
                                     sfc.getSchema(), mixed.getPropertyNames());
                     ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
-                    return (FeatureCollection) SecuredObjects.secure(retyped, policy);
+                    @SuppressWarnings("unchecked")
+                    FeatureCollection<T, F> secure =
+                            (FeatureCollection<T, F>) SecuredObjects.secure(retyped, policy);
+                    return secure;
                 } else {
                     List<PropertyName> readProps = readQuery.getProperties();
                     List<PropertyName> queryProps = query.getProperties();
@@ -101,10 +104,10 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                                         + "by security (because they are required by the schema). "
                                         + "Either the security setup is broken or you have a security breach");
                     }
-                    return (FeatureCollection) SecuredObjects.secure(fc, policy);
+                    return SecuredObjects.secure(fc, policy);
                 }
             } else {
-                return (FeatureCollection) SecuredObjects.secure(fc, policy);
+                return SecuredObjects.secure(fc, policy);
             }
         }
     }

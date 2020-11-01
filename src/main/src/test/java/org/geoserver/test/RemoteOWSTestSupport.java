@@ -55,6 +55,7 @@ public class RemoteOWSTestSupport {
                 // let's check if the remote WFS tests are runnable
                 try {
                     WFSDataStoreFactory factory = new WFSDataStoreFactory();
+                    @SuppressWarnings("unchecked") // incompatible generics here
                     Map<String, Serializable> params =
                             new HashMap(factory.getImplementationHints());
                     URL url =

@@ -588,12 +588,18 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     @SuppressWarnings("rawtypes")
     public void fireModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     public void firePostModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 

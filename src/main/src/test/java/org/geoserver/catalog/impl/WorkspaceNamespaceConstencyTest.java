@@ -23,6 +23,7 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class WorkspaceNamespaceConstencyTest {
 
     @Test

@@ -8,6 +8,7 @@ package org.geoserver.feature;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -66,7 +67,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
     CoordinateReferenceSystem defaultSource;
 
     /** MathTransform cache, keyed by source CRS */
-    HashMap /* <CoordinateReferenceSystem,GeometryCoordinateSequenceTransformer> */ transformers;
+    Map<CoordinateReferenceSystem, GeometryCoordinateSequenceTransformer> transformers;
 
     /** Transformation hints */
     Hints hints = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
@@ -81,7 +82,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         this.schema = FeatureTypes.transform(delegate.getSchema(), target);
 
         // create transform cache
-        transformers = new HashMap();
+        transformers = new HashMap<>();
 
         // cache "default" transform
         CoordinateReferenceSystem source = delegate.getSchema().getCoordinateReferenceSystem();
@@ -175,12 +176,14 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return array;
     }
 
-    public Object[] toArray(Object[] a) {
-        Object[] array = delegate.toArray(a);
+    public <F> F[] toArray(F[] a) {
+        F[] array = delegate.toArray(a);
 
         for (int i = 0; i < array.length; i++) {
             try {
-                array[i] = reproject((SimpleFeature) array[i]);
+                @SuppressWarnings("unchecked")
+                F cast = (F) reproject((SimpleFeature) array[i]);
+                array[i] = cast;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

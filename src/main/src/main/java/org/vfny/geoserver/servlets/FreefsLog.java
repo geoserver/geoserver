@@ -67,7 +67,7 @@ public class FreefsLog extends HttpServlet {
           HACK: we must get a standard API way for releasing resources...
         */
         try {
-            Class sdepfClass = Class.forName("org.geotools.data.arcsde.ConnectionPoolFactory");
+            Class<?> sdepfClass = Class.forName("org.geotools.data.arcsde.ConnectionPoolFactory");
 
             LOGGER.fine("SDE datasource found, releasing resources");
 

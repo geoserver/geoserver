@@ -81,7 +81,7 @@ public class DirectTemplateFeatureCollectionFactory
                     new TemplateFeatureIterator(collection.features(), wrapper);
             List<TemplateFeatureIterator> open = ITERATORS.get();
             if (open == null) {
-                open = new LinkedList();
+                open = new LinkedList<>();
                 ITERATORS.set(open);
             }
             open.add(it);

@@ -32,7 +32,8 @@ public class SecuredSimpleFeatureLocking
         extends SecuredFeatureLocking<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureLocking {
 
-    protected SecuredSimpleFeatureLocking(FeatureLocking delegate, WrapperPolicy policy) {
+    protected SecuredSimpleFeatureLocking(
+            FeatureLocking<SimpleFeatureType, SimpleFeature> delegate, WrapperPolicy policy) {
         super(delegate, policy);
     }
 

@@ -45,7 +45,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
         queryLayers.add(layer);
     }
 
-    public void setQueryLayers(Set layers) {
+    public void setQueryLayers(Set<Layer> layers) {
         queryLayers.clear();
         queryLayers.addAll(layers);
     }

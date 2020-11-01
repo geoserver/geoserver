@@ -236,6 +236,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverage == null) {
             return coverage;
         }
+        @SuppressWarnings("unchecked")
         final Map<String, Object> properties = coverage.getProperties();
         final SampleDimension[] dims = coverage.getSampleDimensions();
 
@@ -541,6 +542,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
             if (gridCoverage instanceof Wrapper) {
                 return ((Wrapper) gridCoverage).unwrap(iface);
@@ -588,7 +590,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                             ? new SimpleInternationalString(name)
                             : sampleDimDescription;
             final List<Category> categories = sampleDim.getCategories();
-            NumberRange configuredRange = info.getRange();
+            NumberRange<? extends Number> configuredRange = info.getRange();
             final String uom = info.getUnit();
             Unit defaultUnit = sampleDim.getUnits();
             Unit unit = defaultUnit;
@@ -671,6 +673,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                         categories != null && !categories.isEmpty()
                                 ? categories.get(0).getRange().getElementClass()
                                 : Double.class;
+                @SuppressWarnings("unchecked")
                 final NumberRange<?> dataRange = configuredRange.castTo(targetType);
                 List<NumberRange<?>> dataRanges = new ArrayList<>();
                 dataRanges.add(dataRange);

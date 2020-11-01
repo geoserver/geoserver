@@ -13,11 +13,12 @@ import java.util.List;
 import java.util.function.Function;
 import org.geotools.data.CloseableIterator;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.DataFeatureCollection;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -29,20 +30,21 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class CompositeFeatureCollection extends DataFeatureCollection {
     /** wrapped collecitons */
-    List<FeatureCollection> collections;
+    List<SimpleFeatureCollection> collections;
 
     SimpleFeatureType schema;
 
-    public CompositeFeatureCollection(List collections) {
+    public CompositeFeatureCollection(List<SimpleFeatureCollection> collections) {
         this.collections = collections;
     }
 
-    public CompositeFeatureCollection(List collections, SimpleFeatureType schema) {
+    public CompositeFeatureCollection(
+            List<SimpleFeatureCollection> collections, SimpleFeatureType schema) {
         this.collections = collections;
         this.schema = schema;
     }
 
-    protected Iterator openIterator() throws IOException {
+    protected Iterator<SimpleFeature> openIterator() throws IOException {
         return new CompositeIterator();
     }
 
@@ -52,7 +54,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
 
     public ReferencedEnvelope getBounds() {
         // crazy, this same mapper inlined in the stream does not compile...
-        Function<FeatureCollection, ReferencedEnvelope> mapper =
+        Function<SimpleFeatureCollection, ReferencedEnvelope> mapper =
                 c -> {
                     final ReferencedEnvelope envelope = c.getBounds();
                     if (envelope == null) {
@@ -96,9 +98,9 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
                 .sum();
     }
 
-    class CompositeIterator implements CloseableIterator {
+    class CompositeIterator implements CloseableIterator<SimpleFeature> {
         int index;
-        FeatureIterator iterator;
+        SimpleFeatureIterator iterator;
 
         public CompositeIterator() {
             index = 0;
@@ -136,7 +138,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
             return false;
         }
 
-        public Object next() {
+        public SimpleFeature next() {
             return iterator.next();
         }
 
@@ -148,20 +150,20 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
         }
     }
 
-    public Object[] toArray(Object[] arg0) {
-        List list = new ArrayList();
+    public <T> T[] toArray(T[] array) {
+        List<SimpleFeature> list = new ArrayList<>();
 
-        Iterator it = collections.iterator();
+        Iterator<SimpleFeatureCollection> it = collections.iterator();
         while (it.hasNext()) {
-            FeatureCollection col = (FeatureCollection) it.next();
-            try (FeatureIterator it2 = col.features()) {
+            SimpleFeatureCollection col = (SimpleFeatureCollection) it.next();
+            try (SimpleFeatureIterator it2 = col.features()) {
                 while (it2.hasNext()) {
-                    list.add(it.next());
+                    list.add(it2.next());
                 }
             }
         }
 
-        return list.toArray(arg0);
+        return list.toArray(array);
     }
 
     public FeatureId getIdentifier() {
@@ -170,7 +172,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
     }
 
     /** @return the collections */
-    public List<FeatureCollection> getCollections() {
+    public List<SimpleFeatureCollection> getCollections() {
         return collections;
     }
 }

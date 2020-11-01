@@ -5,22 +5,24 @@
  */
 package org.geoserver.ows.util;
 
-import org.checkerframework.checker.units.qual.K;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import org.checkerframework.checker.units.qual.K;
 
 /**
  * Map decorator which makes String keys case-insensitive.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public class CaseInsensitiveMap<V> implements Map<String, V> {
-    Map<String, V> delegate = new TreeMap<>();
+// Implementation note, the "K extends String" bit is weird, but fixing String would have meant
+// to have a single parameter map, I've found it to be even more strange to go and declare
+// CaseInsensitiveMap<Object> in the user code
+public class CaseInsensitiveMap<K extends String, V> implements Map<K, V> {
+    Map<K, V> delegate = new TreeMap<>();
 
-    public CaseInsensitiveMap(Map<String, V> delegate) {
+    public CaseInsensitiveMap(Map<K, V> delegate) {
         putAll(delegate);
     }
 
@@ -36,7 +38,7 @@ public class CaseInsensitiveMap<V> implements Map<String, V> {
         return delegate.containsValue(value);
     }
 
-    public Set<Map.Entry<String, V>> entrySet() {
+    public Set<Map.Entry<K, V>> entrySet() {
         return delegate.entrySet();
     }
 
@@ -56,18 +58,18 @@ public class CaseInsensitiveMap<V> implements Map<String, V> {
         return delegate.isEmpty();
     }
 
-    public Set<String> keySet() {
+    public Set<K> keySet() {
         return delegate.keySet();
     }
 
-    public V put(String key, V value) {
+    public V put(K key, V value) {
         return delegate.put(upper(key), value);
     }
 
-    public void putAll(Map<? extends String, ? extends V> t) {
+    public void putAll(Map<? extends K, ? extends V> t) {
         // make sure to upcase all keys
-        for (Entry<? extends String, ? extends V> entry : t.entrySet()) {
-            String key = entry.getKey();
+        for (Entry<? extends K, ? extends V> entry : t.entrySet()) {
+            K key = entry.getKey();
             V value = entry.getValue();
             put(key, value);
         }

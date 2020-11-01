@@ -65,7 +65,7 @@ public class KvpUtils {
             return getRegExp();
         }
 
-        public List readFlat(final String rawList) {
+        public List<String> readFlat(final String rawList) {
             if ((rawList == null || rawList.trim().equals(""))) {
                 return Collections.emptyList();
             } else if (rawList.equals("*")) {
@@ -74,7 +74,7 @@ public class KvpUtils {
             }
             // -1 keeps trailing empty strings in the pack
             String[] split = rawList.split(getRegExp(), -1);
-            return new ArrayList(Arrays.asList(split));
+            return new ArrayList<>(Arrays.asList(split));
         }
     }
     /** Delimeter for KVPs in the raw string */
@@ -86,8 +86,8 @@ public class KvpUtils {
     /** Delimeter for outer value lists in the KVPs */
     public static final Tokenizer OUTER_DELIMETER =
             new Tokenizer("\\)\\(") {
-                public List readFlat(final String rawList) {
-                    List list = new ArrayList(super.readFlat(rawList));
+                public List<String> readFlat(final String rawList) {
+                    List<String> list = new ArrayList<>(super.readFlat(rawList));
                     final int len = list.size();
                     if (len > 0) {
                         String first = (String) list.get(0);
@@ -119,13 +119,13 @@ public class KvpUtils {
      */
     @SuppressWarnings("rawtypes")
     public static List getTypesFromFids(String rawFidList) {
-        List typeList = new ArrayList();
-        List unparsed = readNested(rawFidList);
-        Iterator i = unparsed.listIterator();
+        List<String> typeList = new ArrayList<>();
+        List<List<String>> unparsed = readNested(rawFidList);
+        Iterator<List<String>> i = unparsed.listIterator();
 
         while (i.hasNext()) {
-            List ids = (List) i.next();
-            ListIterator innerIterator = ids.listIterator();
+            List<String> ids = i.next();
+            ListIterator<String> innerIterator = ids.listIterator();
 
             while (innerIterator.hasNext()) {
                 String fid = innerIterator.next().toString();
@@ -141,7 +141,7 @@ public class KvpUtils {
     }
 
     /** Calls {@link #readFlat(String)} with the {@link #INNER_DELIMETER}. */
-    public static List readFlat(String rawList) {
+    public static List<String> readFlat(String rawList) {
         return readFlat(rawList, INNER_DELIMETER);
     }
 
@@ -162,7 +162,7 @@ public class KvpUtils {
      * @return A list of the tokenized string.
      * @see Tokenizer
      */
-    public static List readFlat(final String rawList, final Tokenizer tokenizer) {
+    public static List<String> readFlat(final String rawList, final Tokenizer tokenizer) {
         return tokenizer.readFlat(rawList);
     }
 
@@ -210,12 +210,12 @@ public class KvpUtils {
      * @param rawList The tokenized string.
      * @return A list of lists, containing outer and inner elements.
      */
-    public static List readNested(String rawList) {
+    public static List<List<String>> readNested(String rawList) {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("reading nested: " + rawList);
         }
 
-        List kvpList = new ArrayList(10);
+        List<List<String>> kvpList = new ArrayList<>(10);
 
         // handles implicit unconstrained case
         if (rawList == null) {
@@ -247,8 +247,8 @@ public class KvpUtils {
                     LOGGER.finest("reading complex list");
                 }
 
-                List outerList = readFlat(rawList, OUTER_DELIMETER);
-                Iterator i = outerList.listIterator();
+                List<String> outerList = readFlat(rawList, OUTER_DELIMETER);
+                Iterator<String> i = outerList.listIterator();
 
                 while (i.hasNext()) {
                     kvpList.add(readFlat((String) i.next(), INNER_DELIMETER));
@@ -294,17 +294,16 @@ public class KvpUtils {
     }
 
     /** @param kvp unparsed/unormalized kvp set */
-    public static KvpMap normalize(Map kvp) {
+    public static KvpMap<String, Object> normalize(Map<String, ?> kvp) {
         if (kvp == null) {
             return null;
         }
 
         // create a normalied map
-        KvpMap normalizedKvp = new KvpMap();
+        KvpMap<String, Object> normalizedKvp = new KvpMap<>();
 
-        for (Iterator itr = kvp.entrySet().iterator(); itr.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) itr.next();
-            String key = (String) entry.getKey();
+        for (Map.Entry<String, ?> entry : kvp.entrySet()) {
+            String key = entry.getKey();
             Object value = null;
 
             if (entry.getValue() instanceof String) {
@@ -358,7 +357,7 @@ public class KvpUtils {
      * @param kvp raw or unparsed kvp.
      * @return A list of errors that occured.
      */
-    public static List<Throwable> parse(Map kvp) {
+    public static List<Throwable> parse(Map<String, Object> kvp) {
 
         // look up parser objects
         List<KvpParser> parsers = GeoServerExtensions.extensions(KvpParser.class);
@@ -372,9 +371,8 @@ public class KvpUtils {
 
         // parser the kvp's
         ArrayList<Throwable> errors = new ArrayList<Throwable>();
-        for (Iterator<Map.Entry<Object, Object>> itr = kvp.entrySet().iterator(); itr.hasNext(); ) {
-            Map.Entry<Object, Object> entry = itr.next();
-            String key = (String) entry.getKey();
+        for (Map.Entry<String, Object> entry : kvp.entrySet()) {
+            String key = entry.getKey();
 
             // find the parser for this key value pair
             KvpParser parser = findParser(key, service, request, version, parsers);
@@ -744,9 +742,8 @@ public class KvpUtils {
         return value;
     }
 
-    public static void merge(Map options, Map addition) {
-        for (Object o : addition.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
+    public static <K, V> void merge(Map<K, V> options, Map<K, V> addition) {
+        for (Map.Entry<K, V> entry : addition.entrySet()) {
             if (entry.getValue() == null) options.remove(entry.getKey());
             else options.put(entry.getKey(), entry.getValue());
         }

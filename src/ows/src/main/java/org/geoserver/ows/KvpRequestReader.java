@@ -180,7 +180,7 @@ public class KvpRequestReader {
                 setter = OwsUtils.setter(request.getClass(), property, null);
                 if (setter != null) {
                     // convert
-                    Class target = setter.getParameterTypes()[0];
+                    Class<?> target = setter.getParameterTypes()[0];
                     Object converted = Converters.convert(value, target);
                     if (converted != null) {
                         value = converted;

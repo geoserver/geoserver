@@ -14,7 +14,10 @@ import java.util.Map;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class KvpMap<V> extends HashMap<String, V> {
+// Implementation note, the "K extends String" bit is weird, but fixing String would have meant
+// to have a single parameter map, I've found it to be even more strange to go and declare
+// KvpMap<Object> in the user code
+public class KvpMap<K extends String, V> extends HashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,10 +25,10 @@ public class KvpMap<V> extends HashMap<String, V> {
         super();
     }
 
-    public KvpMap(Map<String, V> other) {
+    public KvpMap(Map<K, V> other) {
         this();
-        for (Iterator<Entry<String, V>> e = other.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry<String, V> entry = e.next();
+        for (Iterator<Entry<K, V>> e = other.entrySet().iterator(); e.hasNext(); ) {
+            Map.Entry<K, V> entry = e.next();
             put(entry.getKey(), entry.getValue());
         }
     }
@@ -42,13 +45,14 @@ public class KvpMap<V> extends HashMap<String, V> {
         return super.getOrDefault(upper(key), defaultValue);
     }
 
-    public V put(String key, V value) {
-        return super.put(upper(key), value);
+    public V put(K key, V value) {
+        return super.put((K) upper(key), value);
     }
 
-    String upper(Object key) {
+    @SuppressWarnings("unchecked")
+    K upper(Object key) {
         if ((key != null) && key instanceof String) {
-            return ((String) key).toUpperCase();
+            return (K) ((String) key).toUpperCase();
         }
 
         return null;

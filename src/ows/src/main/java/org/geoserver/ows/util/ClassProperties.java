@@ -122,7 +122,7 @@ public class ClassProperties {
      * @param type The type of the property.
      * @return The getter for the property, or null if it does not exist.
      */
-    public Method getter(String property, Class type) {
+    public Method getter(String property, Class<?> type) {
         Collection<Method> methods = getters.get(property);
         if (methods != null) {
             for (Method getter : methods) {

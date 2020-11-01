@@ -47,6 +47,7 @@ public class Ows11Util {
         return ls;
     }
 
+    @SuppressWarnings("unchecked") // due to KeywordsType using raw collections
     public static KeywordsType keywords(List<String> keywords) {
         if (keywords == null || keywords.size() == 0) {
             return null;
@@ -109,6 +110,7 @@ public class Ows11Util {
         return exceptionReport(exception, verboseExceptions, null);
     }
 
+    @SuppressWarnings("unchecked") // due to ExceptionType using raw collections
     public static ExceptionReportType exceptionReport(
             ServiceException exception, boolean verboseExceptions, String version) {
 
@@ -147,6 +149,7 @@ public class Ows11Util {
         return report;
     }
 
+    @SuppressWarnings("unchecked") // due to DCPType using raw collections
     public static DCPType dcp(String service, EObject request) {
         String baseUrl = (String) EMFUtils.get(request, "baseUrl");
         if (baseUrl == null) {

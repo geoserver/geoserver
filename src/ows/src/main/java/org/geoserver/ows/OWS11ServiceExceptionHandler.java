@@ -54,7 +54,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
      *
      * @param services List of services this handler handles exceptions for.
      */
-    public OWS11ServiceExceptionHandler(List services) {
+    public OWS11ServiceExceptionHandler(List<Service> services) {
         super(services);
     }
 

@@ -25,6 +25,7 @@ public class OWS11AcceptVersionsKvpParser extends KvpParser {
         setVersion(new Version("1.1.1"));
     }
 
+    @SuppressWarnings("unchecked") // due to EMF module for AcceptVersionsType using raw types
     public Object parse(String value) throws Exception {
         List<String> versions = KvpUtils.readFlat(value);
         for (String version : versions) {

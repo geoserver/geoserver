@@ -31,7 +31,8 @@ public class ElevationKvpParserTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testMixed() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List<Object> elements = new ArrayList<>((Collection<Object>) parser.parse("5,3,4,1,2,8.9,1/9"));
+        List<Object> elements =
+                new ArrayList<>((Collection<Object>) parser.parse("5,3,4,1,2,8.9,1/9"));
         assertTrue(elements.get(0) instanceof NumberRange);
         assertEquals(1.0, ((NumberRange<Double>) elements.get(0)).getMinimum());
         assertEquals(9.0, ((NumberRange<Double>) elements.get(0)).getMaximum());

@@ -41,7 +41,7 @@ public class ServiceException extends RuntimeException {
     protected String locator;
 
     /** List of text recording information about the exception */
-    List exceptionText = new ArrayList();
+    List<String> exceptionText = new ArrayList<>();
 
     /**
      * Constructs the exception from a message.
@@ -203,7 +203,7 @@ public class ServiceException extends RuntimeException {
      *
      * @return A list of String recording information about the exception.
      */
-    public List getExceptionText() {
+    public List<String> getExceptionText() {
         return exceptionText;
     }
 
@@ -213,8 +213,8 @@ public class ServiceException extends RuntimeException {
         if (exceptionText == null || exceptionText.size() == 0) return msg;
 
         StringBuffer sb = new StringBuffer(msg);
-        for (Iterator it = exceptionText.iterator(); it.hasNext(); ) {
-            String extraMessage = (String) it.next();
+        for (Iterator<String> it = exceptionText.iterator(); it.hasNext(); ) {
+            String extraMessage = it.next();
             sb.append(NEW_LINE).append(extraMessage);
         }
         return sb.toString();

@@ -175,7 +175,9 @@ public class OwsUtils {
             throw new IllegalArgumentException("Property " + property + " is not a map");
         }
 
-        ((Map) o).put(key, value);
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> o1 = (Map) o;
+        o1.put(key, value);
     }
 
     /**
@@ -339,7 +341,7 @@ public class OwsUtils {
                 continue;
             }
 
-            Class type = g.getReturnType();
+            Class<?> type = g.getReturnType();
             // only continue if this is a collection or a map
             if (!(Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type))) {
                 continue;
@@ -386,9 +388,10 @@ public class OwsUtils {
     }
 
     /** Helper method for updating a collection based property. Only used if setter is null. */
+    @SuppressWarnings("unchecked")
     static void updateCollectionProperty(Object object, Collection newValue, Method getter)
             throws Exception {
-        Collection oldValue = (Collection) getter.invoke(object, null);
+        Collection<Object> oldValue = (Collection) getter.invoke(object, null);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.addAll(newValue);
@@ -396,8 +399,9 @@ public class OwsUtils {
     }
 
     /** Helper method for updating a map based property. Only used if setter is null. */
+    @SuppressWarnings("unchecked")
     static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
-        Map oldValue = (Map) getter.invoke(object, null);
+        Map<Object, Object> oldValue = (Map) getter.invoke(object, null);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.putAll(newValue);

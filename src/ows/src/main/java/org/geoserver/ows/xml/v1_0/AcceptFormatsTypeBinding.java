@@ -5,14 +5,13 @@
  */
 package org.geoserver.ows.xml.v1_0;
 
+import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.ows10.AcceptFormatsType;
 import net.opengis.ows10.Ows10Factory;
 import org.geotools.xsd.AbstractComplexBinding;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
-
-import java.util.List;
 
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptFormatsType.

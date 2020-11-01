@@ -328,7 +328,8 @@ public class Dispatcher extends AbstractController {
                 up.setFileItemFactory(new DiskFileItemFactory());
 
                 // treat regular form fields as additional kvp parameters
-                Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap<>(new LinkedHashMap<>());
+                Map<String, FileItem> kvpFileItems =
+                        new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
                     for (FileItem item : (List<FileItem>) up.parseRequest(httpRequest)) {
                         if (item.isFormField()) {
@@ -350,12 +351,12 @@ public class Dispatcher extends AbstractController {
                     }
                 }
 
-                Map<String, String> kvpItems = new LinkedHashMap<>();
+                Map<String, Object> kvpItems = new LinkedHashMap<>();
                 for (Map.Entry<String, FileItem> e : kvpFileItems.entrySet()) {
                     kvpItems.put(e.getKey(), e.getValue().toString());
                 }
 
-                request.setOrAppendKvp(parseKVP(request, kvpFileItems));
+                request.setOrAppendKvp(parseKVP(request, kvpItems));
             } else {
                 // regular XML POST
                 // wrap the input stream in a buffered input stream
@@ -1237,7 +1238,8 @@ public class Dispatcher extends AbstractController {
     }
 
     public static Collection<KvpRequestReader> loadKvpRequestReaders() {
-        Collection<KvpRequestReader> kvpReaders = GeoServerExtensions.extensions(KvpRequestReader.class);
+        Collection<KvpRequestReader> kvpReaders =
+                GeoServerExtensions.extensions(KvpRequestReader.class);
 
         if (!(new HashSet<>(kvpReaders).size() == kvpReaders.size())) {
             String msg = "Two identical kvp readers found";
@@ -1496,17 +1498,17 @@ public class Dispatcher extends AbstractController {
         HttpServletRequest request = req.getHttpRequest();
 
         // unparsed kvp set
-        Map kvp = request.getParameterMap();
+        Map<String, String[]> kvp = request.getParameterMap();
 
         if (kvp == null || kvp.isEmpty()) {
-            req.setKvp(new HashMap());
+            req.setKvp(new HashMap<>());
             // req.kvp = null;
             return;
         }
 
         // track parsed kvp and unparsd
-        Map parsedKvp = KvpUtils.normalize(kvp);
-        Map rawKvp = new KvpMap(parsedKvp);
+        Map<String, Object> parsedKvp = KvpUtils.normalize(kvp);
+        Map<String, Object> rawKvp = new KvpMap<>(parsedKvp);
 
         req.setKvp(parsedKvp);
         req.setRawKvp(rawKvp);
@@ -1517,7 +1519,7 @@ public class Dispatcher extends AbstractController {
         parseKVP(req, req.getKvp());
     }
 
-    Map parseKVP(Request req, Map kvp) {
+    Map<String, Object> parseKVP(Request req, Map<String, Object> kvp) {
         List<Throwable> errors = KvpUtils.parse(kvp);
         if (!errors.isEmpty()) {
             req.setError(errors.get(0));

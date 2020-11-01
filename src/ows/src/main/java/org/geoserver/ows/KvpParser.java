@@ -99,7 +99,7 @@ public abstract class KvpParser {
     }
 
     /** @return The type of parsed objects. */
-    protected Class getBinding() {
+    protected Class<?> getBinding() {
         return binding;
     }
 

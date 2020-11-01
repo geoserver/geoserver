@@ -175,9 +175,10 @@ public class TimeKvpParserTest extends TestCase {
      *
      * @throws ParseException if the string can't be parsed.
      */
+    @SuppressWarnings("unchecked")
     public void testInterval() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
-        List l = new ArrayList((Collection) timeKvpParser.parse(PERIOD));
+        List<Object> l = new ArrayList<>((Collection) timeKvpParser.parse(PERIOD));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
         assertInstant(format.parse("2007-01-01T12Z"), l.get(0));
@@ -196,8 +197,8 @@ public class TimeKvpParserTest extends TestCase {
         assertInstant(format.parse("2007-01-01T12Z"), l.get(0));
     }
 
+    @SuppressWarnings("unchecked")
     public void testContinuousInterval() throws ParseException {
-
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_PERIOD));
         // Verify that the list contains at least one element.
@@ -210,6 +211,7 @@ public class TimeKvpParserTest extends TestCase {
         assertEquals(end, range.getMaxValue());
     }
 
+    @SuppressWarnings("unchecked")
     public void testContinuousIntervalDuration() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_PERIOD_TIME_DURATION));
@@ -291,6 +293,7 @@ public class TimeKvpParserTest extends TestCase {
         assertEquals(now.getTime(), range.getMaxValue());
     }
 
+    @SuppressWarnings("unchecked")
     public void testMixedValues() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l =
@@ -311,6 +314,7 @@ public class TimeKvpParserTest extends TestCase {
                 format.parse("2007-02-01T13Z"));
     }
 
+    @SuppressWarnings("unchecked")
     public void testInclusions() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l =
@@ -328,6 +332,7 @@ public class TimeKvpParserTest extends TestCase {
         assertRange(range, format.parse("2007-01-01T12Z"), format.parse("2007-01-31T13Z"));
     }
 
+    @SuppressWarnings("unchecked")
     public void testOrderedValues() throws Exception {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l =

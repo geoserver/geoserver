@@ -233,7 +233,7 @@ Executing this command will return the geometries for all features in given a fe
      typeNames=namespace:featuretype&
      featureID=feature
 
-If the ID of the feature is unknown but you still want to limit the amount of features returned, use the ``count`` parameter for WFS 2.0.0 or the ``maxFeatures`` parameter for earlier WFS versions. In the examples below, ``N`` represents the number of features to return::
+If the ID of the feature is unknown but you still want to limit the number of features returned, use the ``count`` parameter for WFS 2.0.0 or the ``maxFeatures`` parameter for earlier WFS versions. In the examples below, ``N`` represents the number of features to return::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -318,7 +318,7 @@ An example request returning features based on a bounding box (using the feature
      version=2.0.0&
      request=GetFeature&
      typeNames=namespace:featuretype&
-     srsName=CRS
+     srsName=CRS&
      bbox=a1,b1,a2,b2
 
 To request features using a bounding box with CRS different from featureTypes native CRS::
@@ -328,7 +328,7 @@ To request features using a bounding box with CRS different from featureTypes na
      version=2.0.0&
      request=GetFeature&
      typeNames=namespace:featuretype&
-     srsName=CRS
+     srsName=CRS&
      bbox=a1,b1,a2,b2,CRS
 
 LockFeature

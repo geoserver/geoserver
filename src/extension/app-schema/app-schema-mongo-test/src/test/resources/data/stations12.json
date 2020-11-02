@@ -1,18 +1,18 @@
 {
-  "_id": { "$oid" : "58e5889ce4b02461ad5af083"},
+  "_id": { "$oid" : "58e5889ce4b02461ad5af091"},
   "id": "4",
   "name": "station 4",
   "inferredAttribute": "ok",
-  "groupAttribute": "groupAttribute1",
+  "groupAttribute": "groupAttribute3",
   "groupAttribute2": "groupAttribute22",
-  "numericValue": 47.0,
+  "numericValue": 43.0,
   "contact": {
     "mail": "station2@mail.com"
   },
   "geometry": {
     "coordinates": [
-      100,
-      -50
+      10,
+      -12
     ],
     "type": "Point"
   },

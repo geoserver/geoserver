@@ -1,11 +1,11 @@
 {
-  "_id": { "$oid" : "58e5889ce4b02461ad5af083"},
-  "id": "4",
-  "name": "station 4",
+  "_id": { "$oid" : "58e5889ce4b02461ad5af087"},
+  "id": "8",
+  "name": "station 8",
   "inferredAttribute": "ok",
-  "groupAttribute": "groupAttribute1",
+  "groupAttribute": "groupAttribute2",
   "groupAttribute2": "groupAttribute22",
-  "numericValue": 47.0,
+  "numericValue": 97.1,
   "contact": {
     "mail": "station2@mail.com"
   },

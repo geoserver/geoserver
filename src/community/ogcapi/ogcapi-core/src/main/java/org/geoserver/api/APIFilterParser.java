@@ -5,8 +5,10 @@
 package org.geoserver.api;
 
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.cqljson.CQLJsonCompiler;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.filter.Filter;
@@ -17,6 +19,7 @@ public class APIFilterParser {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     public static String CQL_TEXT = "cql-text";
+    public static String CQL_OBJECT = "cql-object";
 
     /**
      * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT}) and
@@ -40,6 +43,10 @@ public class APIFilterParser {
         }
 
         try {
+            CQLJsonCompiler cqlJsonCompiler =
+                    new CQLJsonCompiler(filter, new FilterFactoryImpl());
+            cqlJsonCompiler.compileFilter();
+            Filter jsonFilter = cqlJsonCompiler.getFilter();
             Filter parsedFilter = ECQL.toFilter(filter);
             // in OGC APIs assume CRS84 as the default, but the underlying machinery may default to
             // the native CRS in EPSG axis order instead, best making the CRS explicit instead

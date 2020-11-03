@@ -138,18 +138,17 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
                                         null,
                                         URLMangler.URLType.EXTERNAL));
         // TemplateMethodModelEx accepts generic object arguments instead of just string arguments
-        Object htmlExtensions =
-                model.put(
-                        "htmlExtensions",
-                        new TemplateMethodModelEx() {
-                            @Override
-                            public Object exec(List arguments) throws TemplateModelException {
-                                if (arguments != null) {
-                                    arguments = unwrapArguments(arguments);
-                                }
-                                return processHtmlExtensions(model, arguments);
-                            }
-                        });
+        model.put(
+                "htmlExtensions",
+                new TemplateMethodModelEx() {
+                    @Override
+                    public Object exec(List arguments) throws TemplateModelException {
+                        if (arguments != null) {
+                            arguments = unwrapArguments(arguments);
+                        }
+                        return processHtmlExtensions(model, arguments);
+                    }
+                });
     }
 
     public List<Object> unwrapArguments(List<Object> arguments) {

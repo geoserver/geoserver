@@ -27,7 +27,7 @@ public interface HTMLExtensionCallback<T extends Object> {
      * return HTML, they will be concatenated with a newline to separate them).
      *
      * @param dr The current request
-     * @param value The model value that will be used by the template
+     * @param model The model value that will be used by the template
      * @param htmlExtensionArguments the arguments provided to the htmlExtension function
      */
     public String getExtension(Request dr, Map<String, Object> model, List htmlExtensionArguments)

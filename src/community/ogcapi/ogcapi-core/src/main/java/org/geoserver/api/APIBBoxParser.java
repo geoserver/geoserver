@@ -60,13 +60,9 @@ public class APIBBoxParser {
                             .collect(Collectors.toList());
             return FF.or(filters);
         } else {
-            throw new IllegalArgumentException("Could not understand parsed bbox " + parsed);
+            throw new IllegalArgumentException(
+                    "Could not understand parsed bbox " + Arrays.toString(parsed));
         }
-    }
-
-    /** Parses a BBOX assuming the default {@link DefaultGeographicCRS#WGS84} as the CRS */
-    public static ReferencedEnvelope[] parse() throws FactoryException {
-        return parse();
     }
 
     /** Parses a BBOX assuming the default {@link DefaultGeographicCRS#WGS84} as the CRS */

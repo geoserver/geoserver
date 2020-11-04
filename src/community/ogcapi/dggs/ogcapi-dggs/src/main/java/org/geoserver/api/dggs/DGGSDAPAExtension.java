@@ -32,18 +32,22 @@ import org.geoserver.api.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.platform.ServiceException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.GroupedMatrixAggregate;
 import org.geotools.dggs.MatrixAggregate;
+import org.geotools.dggs.Zone;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.feature.visitor.Aggregate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -52,6 +56,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.referencing.FactoryException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,20 +83,32 @@ public class DGGSDAPAExtension {
         this.service = service;
     }
 
-    @GetMapping(path = "collections/{collectionId}/dapa", name = "getDapaDescription")
+    @GetMapping(path = "collections/{collectionId}/dapa", name = "dapaDescription")
     @ResponseBody
     @HTMLResponseBody(templateName = "dapa.ftl", fileName = "dapa.html")
     public CollectionDAPA dapa(@PathVariable(name = "collectionId") String collectionId)
             throws IOException {
-        FeatureTypeInfo info = service.getFeatureType(collectionId);
+        FeatureTypeInfo info = getFeatureType(collectionId);
         return new CollectionDAPA(collectionId, info);
     }
 
-    @GetMapping(path = "collections/{collectionId}/dapa/variables", name = "getDapaVariables")
+    public FeatureTypeInfo getFeatureType(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
+        FeatureTypeInfo ft = service.getFeatureType(collectionId);
+        DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time == null)
+            throw new APIException(
+                    ServiceException.NO_APPLICABLE_CODE,
+                    "This colleection does not support DAPA",
+                    HttpStatus.NOT_FOUND);
+        return ft;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/dapa/variables", name = "dapaVariables")
     @ResponseBody
     public DAPAVariables variableNames(@PathVariable(name = "collectionId") String collectionId)
             throws IOException {
-        FeatureTypeInfo info = service.getFeatureType(collectionId);
+        FeatureTypeInfo info = getFeatureType(collectionId);
         // TODO: eventually make it work for complex features
         SimpleFeatureType schema = (SimpleFeatureType) info.getFeatureType();
         DAPAVariables result = new DAPAVariables(collectionId, info);
@@ -99,7 +116,7 @@ public class DGGSDAPAExtension {
     }
 
     // this is exactly the same as "zones"
-    @GetMapping(path = "collections/{collectionId}/dapa/area", name = "getDapaArea")
+    @GetMapping(path = "collections/{collectionId}/dapa/area", name = "dapaArea")
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     public FeaturesResponse area(
@@ -113,6 +130,7 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "geom", required = false) String wkt,
             @RequestParam(name = "zones", required = false) String zones,
+            @RequestParam(name = "variables", required = false) String variableNames,
             @RequestParam(
                         name = "f",
                         required = false,
@@ -121,12 +139,21 @@ public class DGGSDAPAExtension {
                     String format)
             throws Exception {
         return service.zones(
-                collectionId, startIndex, limit, resolution, datetime, bbox, wkt, zones, format);
+                collectionId,
+                startIndex,
+                limit,
+                resolution,
+                datetime,
+                bbox,
+                wkt,
+                zones,
+                variableNames,
+                format);
     }
 
     @GetMapping(
         path = "collections/{collectionId}/dapa/area:aggregate-space",
-        name = "areaSpaceAggregate"
+        name = "dapaAreaSpaceAggregate"
     )
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
@@ -141,13 +168,13 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "variables", required = false) String variableNames,
             @RequestParam(name = "resolution", required = false, defaultValue = "0") int resolution)
             throws IOException, FactoryException, ParseException {
-        FeatureTypeInfo ft = service.getFeatureType(collectionId);
+        FeatureTypeInfo ft = getFeatureType(collectionId);
 
         // parse inputs
         DGGSGeometryFilterParser geometryParser =
                 new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId));
         geometryParser.setBBOX(bbox);
-        geometryParser.setWKT(wkt);
+        geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
 
         List<Filter> filters = new ArrayList<>();
@@ -194,7 +221,7 @@ public class DGGSDAPAExtension {
                     gr.getKey().forEach(v -> fb.add(v));
                     gr.getValues().forEach(v -> fb.add(v));
                     return fb.buildFeature(
-                            "space_"
+                            "area_space_time_"
                                     + gr.getKey()
                                             .stream()
                                             .map(k -> k.toString())
@@ -215,7 +242,7 @@ public class DGGSDAPAExtension {
 
     @GetMapping(
         path = "collections/{collectionId}/dapa/area:aggregate-time",
-        name = "areaTimeAggregate"
+        name = "dapaAreaTimeAggregate"
     )
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
@@ -230,13 +257,13 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "variables", required = false) String variableNames,
             @RequestParam(name = "resolution", required = false, defaultValue = "0") int resolution)
             throws IOException, FactoryException, ParseException {
-        FeatureTypeInfo ft = service.getFeatureType(collectionId);
+        FeatureTypeInfo ft = getFeatureType(collectionId);
 
         // parse inputs
         DGGSGeometryFilterParser geometryParser =
                 new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId));
         geometryParser.setBBOX(bbox);
-        geometryParser.setWKT(wkt);
+        geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
 
         List<Filter> filters = new ArrayList<>();
@@ -280,13 +307,13 @@ public class DGGSDAPAExtension {
                     fb.add(geometryParser.getGeometry());
                     gr.getKey().forEach(v -> fb.add(v));
                     gr.getValues().forEach(v -> fb.add(v));
-                    return fb.buildFeature("time_" + gr.getKey().get(0));
+                    return fb.buildFeature("area_time_" + gr.getKey().get(0));
                 });
     }
 
     @GetMapping(
         path = "collections/{collectionId}/dapa/area:aggregate-space-time",
-        name = "areaSpaceTimeAggregate"
+        name = "dapaAreaSpaceTimeAggregate"
     )
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
@@ -305,9 +332,9 @@ public class DGGSDAPAExtension {
         DGGSGeometryFilterParser geometryParser =
                 new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId));
         geometryParser.setBBOX(bbox);
-        geometryParser.setWKT(wkt);
+        geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
-        FeatureTypeInfo ft = service.getFeatureType(collectionId);
+        FeatureTypeInfo ft = getFeatureType(collectionId);
         List<Filter> filters = new ArrayList<>();
         if (geometryParser.getFilter() != null) {
             filters.add(geometryParser.getFilter());
@@ -348,6 +375,129 @@ public class DGGSDAPAExtension {
 
         // wrap as a collection and return
         return DataUtilities.collection(feature);
+    }
+
+    // this is exactly the same as "zone"
+    @GetMapping(path = "collections/{collectionId}/dapa/position", name = "dapaPosition")
+    @ResponseBody
+    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    public FeaturesResponse position(
+            @PathVariable(name = "collectionId") String collectionId,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
+                    BigInteger startIndex,
+            @RequestParam(name = "limit", required = false) BigInteger limit,
+            @RequestParam(name = "resolution", required = false, defaultValue = "0")
+                    Integer resolution,
+            @RequestParam(name = "datetime", required = false, defaultValue = "0/3000")
+                    DateTimeList datetime,
+            @RequestParam(name = "geom", required = false) String wkt,
+            @RequestParam(name = "zone_id", required = false) String zoneId,
+            @RequestParam(name = "variables", required = false) String variableNames,
+            @RequestParam(
+                        name = "f",
+                        required = false,
+                        defaultValue = RFCGeoJSONFeaturesResponse.MIME
+                    )
+                    String format)
+            throws Exception {
+        DGGSInstance dggs = service.getDGGSInstance(collectionId);
+        zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
+
+        return service.zone(collectionId, zoneId, datetime, variableNames, format);
+    }
+
+    // this is exactly the same as "zone"
+    @GetMapping(
+        path = "collections/{collectionId}/dapa/position:aggregate-time",
+        name = "dapaPositionTimeAggregate"
+    )
+    @ResponseBody
+    @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
+    public SimpleFeatureCollection positionTimeAggregate(
+            @PathVariable(name = "collectionId") String collectionId,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
+                    BigInteger startIndex,
+            @RequestParam(name = "limit", required = false) BigInteger limit,
+            @RequestParam(name = "resolution", required = false, defaultValue = "0")
+                    Integer resolution,
+            @RequestParam(name = "datetime", required = false) String dateTimeSpec,
+            @RequestParam(name = "geom", required = false) String wkt,
+            @RequestParam(name = "zone_id", required = false) String zoneId,
+            @RequestParam(name = "functions", required = false, defaultValue = "max,min,count")
+                    Aggregate[] functions,
+            @RequestParam(name = "variables", required = false) String variableNames)
+            throws Exception {
+        FeatureTypeInfo ft = getFeatureType(collectionId);
+        DGGSInstance dggs = service.getDGGSInstance(collectionId);
+        zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
+
+        // parse inputs
+        List<Filter> filters = new ArrayList<>();
+        filters.add(FF.equals(FF.property(DGGSStore.ZONE_ID), FF.literal(zoneId)));
+        if (dateTimeSpec != null) {
+            filters.add(
+                    service.buildDateTimeFilter(ft, new DateTimeConverter().convert(dateTimeSpec)));
+        }
+        Filter filter = service.FF.and(filters);
+        String[] variables = parseVariables(collectionId, variableNames);
+
+        // setup and run the query with aggregation
+        Query q = new Query(ft.getName(), filter);
+        q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
+        SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
+        List<Expression> expressions =
+                Arrays.stream(variables)
+                        .map(v -> (Expression) FF.property(v))
+                        .collect(Collectors.toList());
+        // run a full aggregate and build the feature
+        GroupedMatrixAggregate aggregate =
+                new GroupedMatrixAggregate(
+                        expressions,
+                        Arrays.asList(functions),
+                        Arrays.asList(FF.property(DGGSStore.ZONE_ID)));
+        fs.getFeatures(q).accepts(aggregate, null);
+
+        // build the target feature type and feature
+        SimpleFeatureType targetType =
+                getAreaTimeTargetType(
+                        (SimpleFeatureType) ft.getFeatureType(), variables, functions);
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
+        GroupedMatrixAggregate.IterableResult result =
+                (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
+        Point center = dggs.getZone(zoneId).getCenter();
+        return new GroupMatrixFeatureCollection(
+                targetType,
+                result,
+                gr -> {
+                    fb.add(center);
+                    gr.getKey().forEach(v -> fb.add(v));
+                    gr.getValues().forEach(v -> fb.add(v));
+                    return fb.buildFeature("position_time_" + gr.getKey().get(0));
+                });
+    }
+
+    public String getPositionZoneId(
+            String zoneId, String wkt, Integer resolution, DGGSInstance dggs)
+            throws ParseException {
+        if (zoneId == null) {
+            if (wkt != null) {
+                DGGSGeometryFilterParser parser =
+                        new DGGSGeometryFilterParser(FF, dggs, Point.class);
+                parser.setGeometry(wkt);
+                Geometry geom = parser.getGeometry();
+                if (!(geom instanceof Point))
+                    throw new APIException(
+                            INVALID_PARAMETER_VALUE,
+                            "If no zoneId is provided, geom parameter must be a point in CRS84",
+                            BAD_REQUEST);
+                Point p = (Point) geom;
+                Zone zone = dggs.getZone(p.getX(), p.getY(), resolution);
+                zoneId = zone.getId();
+            } else {
+                zoneId = dggs.getZone(0, 0, 0).getId();
+            }
+        }
+        return zoneId;
     }
 
     private SimpleFeatureType getAreaTimeTargetType(

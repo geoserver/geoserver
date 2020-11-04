@@ -9,8 +9,10 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore // needs a DGGS store with time support
 public class DAPATest extends DGGSTestSupport {
 
     @Test

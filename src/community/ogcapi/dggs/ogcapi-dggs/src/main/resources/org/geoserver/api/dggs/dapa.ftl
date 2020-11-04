@@ -9,6 +9,13 @@
        </#list>
        </ul>
        
+       <h2>Functions</h2>
+       <ul>
+       <#list model.functions as f>
+         <li>${f}</li>         
+       </#list>
+       </ul>
+       
        <h2>Endpoints</h2>
        <p>The following analysis methods are supported on ${model.id}.</p>
        <#list model.endpoints as ep>

@@ -22,8 +22,12 @@
             <tr>
           </#if>
           <#assign odd = !odd>
-        
-          <td><a href="${zoneLink(featureInfo, feature)}">${feature.fid}</a></td>    
+          
+          <#if zoneLink(featureInfo, feature)??>
+          <td><a href="${zoneLink(featureInfo, feature)}">${feature.fid}</a></td>
+          <#else>
+          <td>${feature.fid}</td>
+          </#if>    
           <#list feature.attributes as attribute>
             <#if !attribute.isGeometry>
               <td>${attribute.value?string}</td>

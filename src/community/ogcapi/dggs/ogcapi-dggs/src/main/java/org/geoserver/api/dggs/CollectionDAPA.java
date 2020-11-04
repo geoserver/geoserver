@@ -4,6 +4,8 @@
  */
 package org.geoserver.api.dggs;
 
+import static org.geoserver.ows.util.ResponseUtils.appendPath;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +14,6 @@ import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.ows.util.ResponseUtils;
 
 public class CollectionDAPA extends AbstractDocument {
 
@@ -40,6 +41,8 @@ public class CollectionDAPA extends AbstractDocument {
         addAreaSpaceEndpoint(collectionId);
         addAreaTimeEndpoint(collectionId);
         addAreaSpaceTimeEndpoint(collectionId);
+        addPositionEndpoint(collectionId);
+        addPositionTimeEndpoint(collectionId);
     }
 
     private void addAreaEndpoint(String collectionId) {
@@ -50,19 +53,8 @@ public class CollectionDAPA extends AbstractDocument {
                 "This DAPA endpoint returns "
                         + collectionId
                         + " values for an area (parameter `bbox`, `geom` or `zones`) in the selected time interval or at the selected time instant (parameter `datetime`). \nNo aggregation is performed, this just returns the data as-is.");
-        Link executLink = new Link();
-        executLink.setRel(ENDPOINT_REL);
-        executLink.setClassification(ENDPOINT_REL);
-        executLink.setType("application/geo+json");
-        executLink.setTitle("Execute the data retrieval pattern with the default parameters");
-        String path =
-                ResponseUtils.appendPath(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/dggs/collections",
-                        collectionId,
-                        "dapa/area");
-        executLink.setHref(path);
-        endpoint.addLink(executLink);
+        Link executeLink = getExecuteLink(collectionId, "dapa/area");
+        endpoint.addLink(executeLink);
         endpoint.setMediaTypes(Arrays.asList("application/geo+json", "application/dggs+json"));
 
         endpoints.add(endpoint);
@@ -76,19 +68,8 @@ public class CollectionDAPA extends AbstractDocument {
                 "This DAPA endpoint returns a time series for an area in the selected time inver"
                         + collectionId
                         + " values for an area (parameter `bbox`, `geom` or `zones`) in the selected time interval or at the selected time instant `datetime`). \nAll values in the area for each requested variable (parameter `variables`) are aggregated for each time step and each of the requested statistical functions (parameter `functions`) is applied to the aggregated values");
-        Link executLink = new Link();
-        executLink.setRel(ENDPOINT_REL);
-        executLink.setClassification(ENDPOINT_REL);
-        executLink.setType("application/geo+json");
-        executLink.setTitle("Execute the data retrieval pattern with the default parameters");
-        String path =
-                ResponseUtils.appendPath(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/dggs/collections",
-                        collectionId,
-                        "dapa/area:aggregate-space");
-        executLink.setHref(path);
-        endpoint.addLink(executLink);
+        Link executeLink = getExecuteLink(collectionId, "dapa/area:aggregate-space");
+        endpoint.addLink(executeLink);
         endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);
 
         endpoints.add(endpoint);
@@ -101,19 +82,8 @@ public class CollectionDAPA extends AbstractDocument {
         endpoint.setDescription(
                 "This DAPA endpoint returns a time aggregate for each zone in an area, in the selected time interval.\n"
                         + "Each result contains contains the aggregation functions evaluated over the time series of each value associated to the zone.");
-        Link executLink = new Link();
-        executLink.setRel(ENDPOINT_REL);
-        executLink.setClassification(ENDPOINT_REL);
-        executLink.setType("application/geo+json");
-        executLink.setTitle("Execute the data retrieval pattern with the default parameters");
-        String path =
-                ResponseUtils.appendPath(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/dggs/collections",
-                        collectionId,
-                        "dapa/area:aggregate-time");
-        executLink.setHref(path);
-        endpoint.addLink(executLink);
+        Link executeLink = getExecuteLink(collectionId, "dapa/area:aggregate-time");
+        endpoint.addLink(executeLink);
         endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);
 
         endpoints.add(endpoint);
@@ -127,22 +97,50 @@ public class CollectionDAPA extends AbstractDocument {
                 "This DAPA endpoint returns "
                         + collectionId
                         + " values for an area (parameter `bbox`, `geom` or `zones`) in the selected time interval or at the selected time instant (parameter `datetime`). \nAll values for each requested variable (parameter `variables`) are aggregated and each of the requested statistical functions (parameter `functions`) is applied to the aggregated values.");
-        Link executLink = new Link();
-        executLink.setRel(ENDPOINT_REL);
-        executLink.setClassification(ENDPOINT_REL);
-        executLink.setType("application/geo+json");
-        executLink.setTitle("Execute the data retrieval pattern with the default parameters");
-        String path =
-                ResponseUtils.appendPath(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/dggs/collections",
-                        collectionId,
-                        "dapa/area:aggregate-space-time");
-        executLink.setHref(path);
-        endpoint.addLink(executLink);
+        Link executeLink = getExecuteLink(collectionId, "dapa/area:aggregate-space-time");
+        endpoint.addLink(executeLink);
         endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);
 
         endpoints.add(endpoint);
+    }
+
+    private void addPositionEndpoint(String collectionId) {
+        DAPAEndpoint endpoint = new DAPAEndpoint("position", collectionId);
+        endpoint.setTitle(
+                "This DAPA endpoint returns a time series in the selected zone (or point), in the selected time interval or at the selected time instant (parameter datetime).");
+        endpoint.setDescription(
+                "The time series contains values for each selected variable (parameter variables) for which a value can be interpolated at the location.");
+        Link executeLink = getExecuteLink(collectionId, "dapa/position");
+        endpoint.addLink(executeLink);
+        endpoint.setMediaTypes(Arrays.asList("application/geo+json", "application/dggs+json"));
+
+        endpoints.add(endpoint);
+    }
+
+    private void addPositionTimeEndpoint(String collectionId) {
+        DAPAEndpoint endpoint = new DAPAEndpoint("position:aggregate-time", collectionId);
+        endpoint.setTitle(
+                "This DAPA endpoint returns values at the selected zone (parameter geom or zone_id) in the selected time interval or at the selected time instant (parameter datetime).");
+        endpoint.setDescription(
+                "All values in the time interval for each requested variable (parameter variables) are aggregated and each of the requested statistical functions (parameter functions) is applied to the aggregated values.");
+        Link executeLink = getExecuteLink(collectionId, "dapa/position:aggregate-time");
+        endpoint.addLink(executeLink);
+        endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);
+
+        endpoints.add(endpoint);
+    }
+
+    private Link getExecuteLink(String collectionId, String s) {
+        String baseURL = APIRequestInfo.get().getBaseURL();
+        String path = appendPath(baseURL, "ogc/dggs/collections", collectionId, s);
+
+        Link executeLink = new Link();
+        executeLink.setRel(ENDPOINT_REL);
+        executeLink.setClassification(ENDPOINT_REL);
+        executeLink.setType("application/geo+json");
+        executeLink.setTitle("Execute the data retrieval pattern with the default parameters");
+        executeLink.setHref(path);
+        return executeLink;
     }
 
     public String getTitle() {

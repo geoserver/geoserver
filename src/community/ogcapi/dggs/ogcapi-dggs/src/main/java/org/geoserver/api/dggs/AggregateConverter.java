@@ -43,12 +43,12 @@ public class AggregateConverter implements Converter<String, Aggregate[]> {
                 .toArray(n -> new Aggregate[n]);
     }
 
-    private Aggregate mapAggregate(String n) {
-        Aggregate agg = AGGREGATES.get(n);
+    private Aggregate mapAggregate(String name) {
+        Aggregate agg = AGGREGATES.get(name);
         if (agg == null)
             throw new APIException(
                     ServiceException.INVALID_PARAMETER_VALUE,
-                    "Un-recognized aggregate : " + n,
+                    "Un-recognized aggregate : " + name,
                     HttpStatus.BAD_REQUEST);
         return agg;
     }

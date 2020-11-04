@@ -337,6 +337,11 @@ class AliasedQuery extends Query {
     }
 
     @Override
+    public void setPropertyNames(List<String> names) {
+        this.propertyNames = names;
+    }
+
+    @Override
     public Filter getFilter() {
         return filter;
     }

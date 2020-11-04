@@ -45,12 +45,14 @@ public class LandingPageTest extends OGCApiTestSupport {
                         "getChildren",
                         "getNeighbors",
                         "getParents",
-                        "getDapaDescription",
-                        "getDapaVariables",
-                        "getDapaArea",
-                        "areaSpaceTimeAggregate",
-                        "areaSpaceAggregate",
-                        "areaTimeAggregate"));
+                        "dapaDescription",
+                        "dapaVariables",
+                        "dapaArea",
+                        "dapaAreaSpaceTimeAggregate",
+                        "dapaAreaSpaceAggregate",
+                        "dapaAreaTimeAggregate",
+                        "dapaPosition",
+                        "dapaPositionTimeAggregate"));
     }
 
     @Test

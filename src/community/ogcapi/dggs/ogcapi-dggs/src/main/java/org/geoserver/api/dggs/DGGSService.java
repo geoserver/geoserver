@@ -32,6 +32,7 @@ import org.geoserver.api.DefaultContentType;
 import org.geoserver.api.HTMLResponseBody;
 import org.geoserver.api.Link;
 import org.geoserver.api.OpenAPIMessageConverter;
+import org.geoserver.api.PropertiesParser;
 import org.geoserver.api.features.FeaturesGetFeature;
 import org.geoserver.api.features.FeaturesResponse;
 import org.geoserver.api.features.RFCGeoJSONFeaturesResponse;
@@ -214,6 +215,7 @@ public class DGGSService {
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "geom", required = false) String wkt,
             @RequestParam(name = "zones", required = false) String zones,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(
                         name = "f",
                         required = false,
@@ -225,13 +227,14 @@ public class DGGSService {
         DGGSGeometryFilterParser geometryParser =
                 new DGGSGeometryFilterParser(FF, getDGGSInstance(collectionId));
         geometryParser.setBBOX(bbox);
-        geometryParser.setWKT(wkt);
+        geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
 
         // build the request in a way core WFS machinery can understand it
         return runGetFeature(
                 collectionId,
                 datetime,
+                properties,
                 startIndex,
                 limit,
                 format,
@@ -259,7 +262,7 @@ public class DGGSService {
                                 + "/zones");
     }
 
-    public void mixFilter(GetFeatureRequest request, Filter mix) {
+    void mixFilter(GetFeatureRequest request, Filter mix) {
         Query query = request.getQueries().get(0);
         Filter filter = query.getFilter();
         if (filter == Filter.INCLUDE || filter == null) {
@@ -290,6 +293,7 @@ public class DGGSService {
     public FeaturesResponse neighbors(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
@@ -327,6 +331,7 @@ public class DGGSService {
         return runGetFeature(
                 collectionId,
                 datetime,
+                properties,
                 startIndex,
                 limit,
                 format,
@@ -347,6 +352,7 @@ public class DGGSService {
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(
                         name = "f",
                         required = false,
@@ -359,6 +365,7 @@ public class DGGSService {
                 runGetFeature(
                         collectionId,
                         datetime,
+                        properties,
                         null,
                         null,
                         format,
@@ -457,6 +464,7 @@ public class DGGSService {
     public FeaturesResponse children(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
@@ -482,6 +490,7 @@ public class DGGSService {
         return runGetFeature(
                 collectionId,
                 datetime,
+                properties,
                 startIndex,
                 limit,
                 format,
@@ -500,10 +509,11 @@ public class DGGSService {
     public FeaturesResponse parents(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
+            @RequestParam(name = "datetime", required = false) DateTimeList datetime,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
-            @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
                         name = "f",
                         required = false,
@@ -521,6 +531,7 @@ public class DGGSService {
         return runGetFeature(
                 collectionId,
                 datetime,
+                properties,
                 startIndex,
                 limit,
                 format,
@@ -536,6 +547,7 @@ public class DGGSService {
     public FeaturesResponse runGetFeature(
             String collectionId,
             DateTimeList dateTimeList,
+            String properties,
             BigInteger startIndex,
             BigInteger limit,
             String format,
@@ -548,6 +560,10 @@ public class DGGSService {
                 GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
         Query query = request.createQuery();
         query.setTypeNames(Arrays.asList(new QName(ft.getNamespace().getURI(), ft.getName())));
+        if (properties != null) {
+            List<String> propertyNames = (new PropertiesParser(ft)).parse(properties);
+            query.setPropertyNames(propertyNames);
+        }
         customizeByFormat(query, ft, format);
         query.setFilter(buildDateTimeFilter(ft, dateTimeList));
         request.setStartIndex(startIndex);
@@ -616,6 +632,7 @@ public class DGGSService {
                         datetime,
                         null,
                         null,
+                        null,
                         format,
                         request -> {
                             Query query = request.getQueries().get(0);
@@ -643,6 +660,7 @@ public class DGGSService {
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "polygon") String polygonWKT,
             @RequestParam(name = "resolution") int resolution,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "startIndex", required = false, defaultValue = "0")
                     BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
@@ -669,6 +687,7 @@ public class DGGSService {
                 runGetFeature(
                         collectionId,
                         datetime,
+                        properties,
                         startIndex,
                         limit,
                         format,

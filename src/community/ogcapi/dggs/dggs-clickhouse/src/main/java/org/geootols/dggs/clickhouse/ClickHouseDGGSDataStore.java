@@ -44,6 +44,7 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
@@ -153,7 +154,11 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
 
     private SimpleFeatureType wrapType(SimpleFeatureType ft) {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.init(ft);
+        tb.setName(ft.getName());
+        for (AttributeDescriptor ad : ft.getAttributeDescriptors()) {
+            tb.minOccurs(0);
+            tb.add(ad.getLocalName(), ad.getType().getBinding());
+        }
         tb.add("geometry", Polygon.class, DefaultGeographicCRS.WGS84);
         return tb.buildFeatureType();
     }

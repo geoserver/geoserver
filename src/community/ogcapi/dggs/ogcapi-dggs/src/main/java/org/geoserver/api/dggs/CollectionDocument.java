@@ -19,7 +19,9 @@ import org.geoserver.api.AbstractCollectionDocument;
 import org.geoserver.api.CollectionExtents;
 import org.geoserver.api.Link;
 import org.geoserver.api.features.FeaturesResponse;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
@@ -72,23 +74,26 @@ public class CollectionDocument extends AbstractCollectionDocument {
                             "zones"));
         }
 
-        // zones links
-        Collection<MediaType> dapaFormats =
-                APIRequestInfo.get().getProducibleMediaTypes(CollectionDAPA.class, true);
-        for (MediaType format : dapaFormats) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/dggs/collections/" + collectionId + "/dapa",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            "dapa",
-                            format.toString(),
-                            "DAPA for " + collectionId + " as " + format.toString(),
-                            "dapa"));
+        // DAPA links, if time is available
+        DimensionInfo time = featureType.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time != null) {
+            Collection<MediaType> dapaFormats =
+                    APIRequestInfo.get().getProducibleMediaTypes(CollectionDAPA.class, true);
+            for (MediaType format : dapaFormats) {
+                String apiUrl =
+                        ResponseUtils.buildURL(
+                                baseUrl,
+                                "ogc/dggs/collections/" + collectionId + "/dapa",
+                                Collections.singletonMap("f", format.toString()),
+                                URLMangler.URLType.SERVICE);
+                addLink(
+                        new Link(
+                                apiUrl,
+                                "dapa",
+                                format.toString(),
+                                "DAPA for " + collectionId + " as " + format.toString(),
+                                "dapa"));
+            }
         }
 
         addSelfLinks("ogc/dggs/collections/" + id);

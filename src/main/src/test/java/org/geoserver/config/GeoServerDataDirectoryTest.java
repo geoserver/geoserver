@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.geoserver.catalog.CatalogFactory;
@@ -62,6 +63,8 @@ public class GeoServerDataDirectoryTest {
                 dataDir.getLayerGroups("test").path());
     }
 
+
+    
     @Test
     public void testParsedStyle() throws IOException {
         File styleDir = new File(dataDir.root(), "styles");

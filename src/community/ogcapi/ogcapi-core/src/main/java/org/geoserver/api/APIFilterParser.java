@@ -33,21 +33,26 @@ public class APIFilterParser {
         // right now there is a spec only for cql-text, will be extended when more languages are
         // recognized (could have its own extension point too, if we want to allow easy extension
         // with new custom languages)
-        if (filterLang != null && !filterLang.equals(CQL_TEXT)) {
+        if (filterLang != null && (!filterLang.equals(CQL_TEXT)&&!filterLang.equals(CQL_OBJECT))) {
             throw new InvalidParameterValueException(
-                    "Only supported filter-lang at the moment is "
-                            + CQL_TEXT
+                    "Only supported filter-lang options at the moment is "
+                            + CQL_TEXT + " and " + CQL_OBJECT
                             + " but '"
                             + filterLang
                             + "' was found instead");
         }
 
         try {
-            CQLJsonCompiler cqlJsonCompiler =
-                    new CQLJsonCompiler(filter, new FilterFactoryImpl());
-            cqlJsonCompiler.compileFilter();
-            Filter jsonFilter = cqlJsonCompiler.getFilter();
-            Filter parsedFilter = ECQL.toFilter(filter);
+            Filter parsedFilter=null;
+            if(filterLang==null||filterLang.equals(CQL_TEXT)) {
+                parsedFilter = ECQL.toFilter(filter);
+            }else if(filterLang.equals(CQL_OBJECT)){
+                CQLJsonCompiler cqlJsonCompiler =
+                        new CQLJsonCompiler(filter, new FilterFactoryImpl());
+                cqlJsonCompiler.compileFilter();
+                parsedFilter = cqlJsonCompiler.getFilter();
+            }
+
             // in OGC APIs assume CRS84 as the default, but the underlying machinery may default to
             // the native CRS in EPSG axis order instead, best making the CRS explicit instead
             DefaultCRSFilterVisitor crsDefaulter =

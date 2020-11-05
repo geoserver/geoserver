@@ -295,8 +295,8 @@ public class DGGSDAPAExtension {
 
         // build the target feature type and feature
         SimpleFeatureType targetType =
-                getAreaTimeTargetType(
-                        (SimpleFeatureType) ft.getFeatureType(), variables, functions);
+                getTimeTargetType(
+                        (SimpleFeatureType) ft.getFeatureType(), variables, functions, "area");
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
         GroupedMatrixAggregate.IterableResult result =
                 (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
@@ -459,8 +459,8 @@ public class DGGSDAPAExtension {
 
         // build the target feature type and feature
         SimpleFeatureType targetType =
-                getAreaTimeTargetType(
-                        (SimpleFeatureType) ft.getFeatureType(), variables, functions);
+                getTimeTargetType(
+                        (SimpleFeatureType) ft.getFeatureType(), variables, functions, "position");
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
         GroupedMatrixAggregate.IterableResult result =
                 (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
@@ -500,10 +500,13 @@ public class DGGSDAPAExtension {
         return zoneId;
     }
 
-    private SimpleFeatureType getAreaTimeTargetType(
-            SimpleFeatureType featureType, String[] variables, Aggregate[] functions) {
+    private SimpleFeatureType getTimeTargetType(
+            SimpleFeatureType featureType,
+            String[] variables,
+            Aggregate[] functions,
+            String aggregatorSuffix) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName(featureType.getName() + "_aggregate");
+        builder.setName(featureType.getTypeName() + "_" + aggregatorSuffix + "_time_aggregate");
         builder.add(GEOMETRY, Geometry.class, 4326);
         builder.add(DGGSStore.ZONE_ID, String.class);
         for (String variable : variables) {
@@ -524,7 +527,7 @@ public class DGGSDAPAExtension {
             Aggregate[] functions,
             List<Expression> timeGroupExpressions) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName(featureType.getName() + "_aggregate");
+        builder.setName(featureType.getTypeName() + "_area_space_aggregate");
         builder.add(GEOMETRY, Geometry.class, 4326);
         LinkedHashSet<String> timeAttributes =
                 timeGroupExpressions
@@ -547,7 +550,7 @@ public class DGGSDAPAExtension {
     private SimpleFeatureType getAreaSpaceTimeTargetType(
             SimpleFeatureType featureType, String[] variables, Aggregate[] functions) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName(featureType.getName() + "_aggregate");
+        builder.setName(featureType.getTypeName() + "_area_space_time_aggregate");
         builder.add(GEOMETRY, Geometry.class, 4326);
         builder.add(PHENOMENON_TIME, String.class);
         for (String variable : variables) {

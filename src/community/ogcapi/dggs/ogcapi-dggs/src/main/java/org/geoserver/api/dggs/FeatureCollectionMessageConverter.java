@@ -7,6 +7,7 @@ package org.geoserver.api.dggs;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import javax.xml.namespace.QName;
 import net.opengis.wfs20.GetFeatureType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.Wfs20Factory;
@@ -16,7 +17,10 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -41,17 +45,19 @@ public class FeatureCollectionMessageConverter
             Operation operation,
             Response response)
             throws IOException {
+        Operation wrappedOperation = wrapOperation(value, operation);
         FeatureCollectionResponse fcr =
                 FeatureCollectionResponse.adapt(
                         Wfs20Factory.eINSTANCE.createFeatureCollectionType());
         fcr.setFeatures(Arrays.asList(value));
-        response.write(fcr, httpOutputMessage.getBody(), wrapOperation(operation));
+        setHeaders(fcr, wrappedOperation, response, httpOutputMessage);
+        response.write(fcr, httpOutputMessage.getBody(), wrappedOperation);
     }
 
     @Override
     public Optional<Response> getResponse(MediaType mediaType) {
         Operation originalOperation = Dispatcher.REQUEST.get().getOperation();
-        Operation op = wrapOperation(originalOperation);
+        Operation op = wrapOperation(null, originalOperation);
         return responses
                 .stream()
                 .filter(r -> getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt)))
@@ -59,17 +65,24 @@ public class FeatureCollectionMessageConverter
                 .findFirst();
     }
 
-    public Operation wrapOperation(Operation originalOperation) {
-
-        GetFeatureType request = Wfs20Factory.eINSTANCE.createGetFeatureType();
-        request.setResultType(ResultTypeType.RESULTS);
-        request.setBaseUrl(APIRequestInfo.get().getBaseURL());
+    public Operation wrapOperation(SimpleFeatureCollection fc, Operation originalOperation) {
+        // bridge over expectations from  the WFS subsystem
+        GetFeatureType rawRequest = Wfs20Factory.eINSTANCE.createGetFeatureType();
+        rawRequest.setResultType(ResultTypeType.RESULTS);
+        rawRequest.setBaseUrl(APIRequestInfo.get().getBaseURL());
+        if (fc != null) {
+            GetFeatureRequest request = GetFeatureRequest.adapt(rawRequest);
+            Query query = request.createQuery();
+            SimpleFeatureType schema = fc.getSchema();
+            query.setTypeNames(Arrays.asList(new QName(null, schema.getTypeName())));
+            request.getAdaptedQueries().add(query.getAdaptee());
+        }
         Operation op =
                 new Operation(
                         "GetFeature",
                         originalOperation.getService(),
                         originalOperation.getMethod(),
-                        new Object[] {request});
+                        new Object[] {rawRequest});
         return op;
     }
 }

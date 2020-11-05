@@ -26,8 +26,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.data.Query;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -138,8 +140,12 @@ public class CollectionDocument extends AbstractCollectionDocument {
         return mapPreviewURL;
     }
 
-    public int[] getResolutions() {
-        return fs.getDGGS().getResolutions();
+    public int[] getResolutions() throws IOException {
+        UniqueVisitor visitor = new UniqueVisitor(DGGSStore.RESOLUTION);
+        fs.getFeatures(Query.ALL).accepts(visitor, null);
+        int[] resolutions =
+                visitor.getResult().toList().stream().mapToInt(v -> (Integer) v).toArray();
+        return resolutions;
     }
 
     @JsonProperty("dggs-id")

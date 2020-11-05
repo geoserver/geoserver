@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.eclipse.xsd.XSDElementDeclaration;
@@ -55,7 +57,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         // that will be used when requesting the format in a
         // GEtFeature request:
         // ie ;.../geoserver/wfs?request=getfeature&outputFormat=myOutputFormat
-        super(gs, "csv");
+        super(gs, new LinkedHashSet<>(Arrays.asList("csv", "text/csv")));
     }
 
     /** @return "text/csv"; */

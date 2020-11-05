@@ -31,12 +31,18 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.visitor.CountVisitor;
+import org.geotools.feature.visitor.FeatureAttributeVisitor;
+import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.util.ProgressListener;
 
@@ -71,7 +77,36 @@ public class DGGSFeatureCollection implements SimpleFeatureCollection {
 
     @Override
     public void accepts(FeatureVisitor visitor, ProgressListener progress) throws IOException {
-        DataUtilities.visit(this, visitor, progress);
+        if (isGeometryless(visitor, getSchema())) {
+            delegate.accepts(visitor, progress);
+        } else {
+            DataUtilities.visit(this, visitor, progress);
+        }
+    }
+
+    /**
+     * Returns true if the visitor is geometryless, that is, it's not accessing a geometry field in
+     * the target schema
+     */
+    public static boolean isGeometryless(FeatureVisitor visitor, SimpleFeatureType schema) {
+        if (visitor instanceof FeatureAttributeVisitor) {
+            // pass through unless one of the expressions requires the geometry attribute
+            FilterAttributeExtractor extractor = new FilterAttributeExtractor(schema);
+            for (Expression e : ((FeatureAttributeVisitor) visitor).getExpressions()) {
+                e.accept(extractor, null);
+            }
+
+            for (PropertyName pname : extractor.getPropertyNameSet()) {
+                AttributeDescriptor att = (AttributeDescriptor) pname.evaluate(schema);
+                if (att instanceof GeometryDescriptor) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (visitor instanceof CountVisitor) {
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -4,16 +4,23 @@
  */
 package org.geoserver.api.dggs;
 
+import static org.geoserver.ows.URLMangler.URLType.SERVICE;
 import static org.geoserver.ows.util.ResponseUtils.appendPath;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.api.APIRequestInfo;
 import org.geoserver.api.AbstractDocument;
 import org.geoserver.api.Link;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.data.Query;
+import org.geotools.dggs.gstore.DGGSStore;
+import org.geotools.feature.visitor.MinVisitor;
 
 public class CollectionDAPA extends AbstractDocument {
 
@@ -22,6 +29,7 @@ public class CollectionDAPA extends AbstractDocument {
             Arrays.asList("application/geo+json", "application/dggs+json" /*, "text/csv" */);
     String title = "Data retrieval patterns";
     String description;
+    int minResolution;
     List<DAPAEndpoint> endpoints = new ArrayList<>();
     DAPAVariables variables;
     List<String> functions = new ArrayList<>(AggregateConverter.getAggregates().keySet());
@@ -34,6 +42,7 @@ public class CollectionDAPA extends AbstractDocument {
                         + " zones in addition to the standard DGGS queries.\n The endpoints are described in the API definition and the links point to the specification of the operation in the OpenAPI definition with the available input parameters and the response schema";
         this.variables = new DAPAVariables(collectionId, info);
         this.variables.getLinks().clear();
+        this.minResolution = getMinResolution(info);
         addSelfLinks("ogc/dggs/collections/" + collectionId + "/dapa/variables");
 
         // aggregations
@@ -43,6 +52,12 @@ public class CollectionDAPA extends AbstractDocument {
         addAreaSpaceTimeEndpoint(collectionId);
         addPositionEndpoint(collectionId);
         addPositionTimeEndpoint(collectionId);
+    }
+
+    private int getMinResolution(FeatureTypeInfo info) throws IOException {
+        MinVisitor visitor = new MinVisitor(DGGSStore.RESOLUTION);
+        info.getFeatureSource(null, null).getFeatures(Query.ALL).accepts(visitor, null);
+        return visitor.getResult().toInt();
     }
 
     private void addAreaEndpoint(String collectionId) {
@@ -130,16 +145,23 @@ public class CollectionDAPA extends AbstractDocument {
         endpoints.add(endpoint);
     }
 
-    private Link getExecuteLink(String collectionId, String s) {
+    private Link getExecuteLink(String collectionId, String operation) {
         String baseURL = APIRequestInfo.get().getBaseURL();
-        String path = appendPath(baseURL, "ogc/dggs/collections", collectionId, s);
+        String path = appendPath("ogc/dggs/collections", collectionId, operation);
+        Map<String, String> kvp = new LinkedHashMap<>();
+        kvp.put("resolution", String.valueOf(minResolution));
+        // TODO: let is use HTML if/when an HTML representation for the DAPA resources is produced
+        // by not setting the format. Right now it's necessary otherwise GML tries to run the
+        // encoding
+        kvp.put("f", "application/geo+json");
+        String href = ResponseUtils.buildURL(baseURL, path, kvp, SERVICE);
 
         Link executeLink = new Link();
         executeLink.setRel(ENDPOINT_REL);
         executeLink.setClassification(ENDPOINT_REL);
         executeLink.setType("application/geo+json");
         executeLink.setTitle("Execute the data retrieval pattern with the default parameters");
-        executeLink.setHref(path);
+        executeLink.setHref(href);
         return executeLink;
     }
 

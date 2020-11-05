@@ -22,12 +22,15 @@ import static org.geotools.dggs.gstore.DGGSStore.DGGS_INTRINSIC;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.iterators.SingletonIterator;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureReader;
@@ -47,6 +50,10 @@ import org.geotools.dggs.NeighborFunction;
 import org.geotools.dggs.Zone;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.feature.visitor.FeatureAttributeVisitor;
+import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -55,8 +62,10 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Expression;
@@ -381,5 +390,46 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
     @Override
     protected boolean canRetype() {
         return true;
+    }
+
+    @Override
+    protected boolean handleVisitor(Query query, FeatureVisitor visitor) throws IOException {
+        if (visitor instanceof FeatureAttributeVisitor) {
+            FeatureAttributeVisitor fav = (FeatureAttributeVisitor) visitor;
+            Set<String> attributes = getAttributeSet(fav);
+            // can optimize a few visits based on resolution alone
+            if (attributes != null
+                    && Collections.singleton(DGGSStore.RESOLUTION).equals(attributes)) {
+                int[] resolutions = getDGGS().getResolutions();
+                if (fav instanceof MinVisitor) {
+                    ((MinVisitor) fav).setValue(resolutions[0]);
+                    return true;
+                } else if (fav instanceof MaxVisitor) {
+                    ((MaxVisitor) fav).setValue(resolutions[resolutions.length - 1]);
+                    return true;
+                } else if (fav instanceof UniqueVisitor) {
+                    // converting an array to a list it's harder than it seems, Arrays.asList
+                    // would produce a List with one item, the array given as a param
+                    List<Integer> rl =
+                            Arrays.stream(resolutions)
+                                    .mapToObj(v -> v)
+                                    .collect(Collectors.toList());
+                    ((UniqueVisitor) fav).setValue(rl);
+                    return true;
+                }
+            }
+        }
+        // fall back on default behavior
+        return super.handleVisitor(query, visitor);
+    }
+
+    private Set<String> getAttributeSet(FeatureAttributeVisitor fav) {
+        Set<String> result = new HashSet<>();
+        for (Expression ex : fav.getExpressions()) {
+            AttributeDescriptor ad = ex.evaluate(getSchema(), AttributeDescriptor.class);
+            if (ad == null) return null;
+            result.add(ad.getLocalName());
+        }
+        return result;
     }
 }

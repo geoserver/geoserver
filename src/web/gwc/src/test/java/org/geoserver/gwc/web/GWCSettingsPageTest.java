@@ -78,6 +78,35 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testEditRequireTiledParameter() {
+        GWC gwc = GWC.get();
+        boolean enabled = gwc.getConfig().isRequireTiledParameter();
+        testEditCheckboxOption(
+                "form:gwcServicesPanel:requireTiledParameter",
+                "gwcServicesPanel:requireTiledParameter",
+                enabled);
+        assertEquals(!enabled, gwc.getConfig().isRequireTiledParameter());
+    }
+
+    @Test
+    public void testRequireTiledParameterDefaultsTrue() {
+        GWC gwc = GWC.get();
+        boolean enabled = gwc.getConfig().isRequireTiledParameter();
+        assertTrue(enabled);
+        GWCSettingsPage page = new GWCSettingsPage();
+
+        tester.startPage(page);
+        // print(page, true, true);
+        tester.assertRenderedPage(GWCSettingsPage.class);
+
+        assertNotNull(
+                "form:gwcServicesPanel:requireTiledParameter",
+                tester.getComponentFromLastRenderedPage(
+                        "form:gwcServicesPanel:requireTiledParameter"));
+        tester.assertModelValue("form:gwcServicesPanel:requireTiledParameter", true);
+    }
+
+    @Test
     public void testEditEnableWMSC() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isWMSCEnabled();

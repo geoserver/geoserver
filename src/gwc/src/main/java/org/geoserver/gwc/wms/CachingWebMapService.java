@@ -62,7 +62,7 @@ public class CachingWebMapService implements MethodInterceptor {
         }
 
         final GetMapRequest request = getRequest(invocation);
-        boolean tiled = request.isTiled();
+        boolean tiled = request.isTiled() || !config.isRequireTiledParameter();
         if (!tiled) {
             return (WebMap) invocation.proceed();
         }

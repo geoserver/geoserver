@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.api.APIDispatcher;
@@ -33,6 +34,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.ISO8601Formatter;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -46,6 +48,9 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.feature.visitor.Aggregate;
+import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.geometry.jts.JTS;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
@@ -83,7 +88,7 @@ public class DGGSDAPAExtension {
         this.service = service;
     }
 
-    @GetMapping(path = "collections/{collectionId}/dapa", name = "dapaDescription")
+    @GetMapping(path = "collections/{collectionId}/processes", name = "dapaDescription")
     @ResponseBody
     @HTMLResponseBody(templateName = "dapa.ftl", fileName = "dapa.html")
     public CollectionDAPA dapa(@PathVariable(name = "collectionId") String collectionId)
@@ -104,8 +109,9 @@ public class DGGSDAPAExtension {
         return ft;
     }
 
-    @GetMapping(path = "collections/{collectionId}/dapa/variables", name = "dapaVariables")
+    @GetMapping(path = "collections/{collectionId}/variables", name = "dapaVariables")
     @ResponseBody
+    @HTMLResponseBody(templateName = "dapaVariables.ftl", fileName = "dapa.html")
     public DAPAVariables variableNames(@PathVariable(name = "collectionId") String collectionId)
             throws IOException {
         FeatureTypeInfo info = getFeatureType(collectionId);
@@ -116,7 +122,10 @@ public class DGGSDAPAExtension {
     }
 
     // this is exactly the same as "zones"
-    @GetMapping(path = "collections/{collectionId}/dapa/area", name = "dapaArea")
+    @GetMapping(
+        path = "collections/{collectionId}/processes/area:retrieve",
+        name = "dapaAreaRetrieve"
+    )
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     public FeaturesResponse area(
@@ -152,7 +161,7 @@ public class DGGSDAPAExtension {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/dapa/area:aggregate-space",
+        path = "collections/{collectionId}/processes/area:aggregate-space",
         name = "dapaAreaSpaceAggregate"
     )
     @ResponseBody
@@ -241,7 +250,7 @@ public class DGGSDAPAExtension {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/dapa/area:aggregate-time",
+        path = "collections/{collectionId}/processes/area:aggregate-time",
         name = "dapaAreaTimeAggregate"
     )
     @ResponseBody
@@ -304,15 +313,24 @@ public class DGGSDAPAExtension {
                 targetType,
                 result,
                 gr -> {
-                    fb.add(geometryParser.getGeometry());
+                    fb.add(getFeatureGeometry(ft, geometryParser));
                     gr.getKey().forEach(v -> fb.add(v));
                     gr.getValues().forEach(v -> fb.add(v));
                     return fb.buildFeature("area_time_" + gr.getKey().get(0));
                 });
     }
 
+    public Geometry getFeatureGeometry(
+            FeatureTypeInfo ft, DGGSGeometryFilterParser geometryParser) {
+        Geometry g = geometryParser.getGeometry();
+        if (g == null) {
+            g = JTS.toGeometry(ft.getLatLonBoundingBox());
+        }
+        return g;
+    }
+
     @GetMapping(
-        path = "collections/{collectionId}/dapa/area:aggregate-space-time",
+        path = "collections/{collectionId}/processes/area:aggregate-space-time",
         name = "dapaAreaSpaceTimeAggregate"
     )
     @ResponseBody
@@ -363,8 +381,8 @@ public class DGGSDAPAExtension {
                 getAreaSpaceTimeTargetType(
                         (SimpleFeatureType) ft.getFeatureType(), variables, functions);
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
-        fb.set(GEOMETRY, geometryParser.getGeometry());
-        fb.set(PHENOMENON_TIME, dateTimeSpec != null ? dateTimeSpec : "all");
+        fb.set(GEOMETRY, getFeatureGeometry(ft, geometryParser));
+        fb.set(PHENOMENON_TIME, dateTimeSpec != null ? dateTimeSpec : getFullTimeRangeSpec(ft));
         Iterator iterator = aggregate.getResult().toList().iterator();
         for (String variable : variables) {
             for (Aggregate function : functions) {
@@ -377,8 +395,30 @@ public class DGGSDAPAExtension {
         return DataUtilities.collection(feature);
     }
 
+    private String getFullTimeRangeSpec(FeatureTypeInfo ft) throws IOException {
+        DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time == null) {
+            return null;
+        }
+        MinVisitor minVisitor = new MinVisitor(time.getAttribute());
+        SimpleFeatureCollection features =
+                (SimpleFeatureCollection) ft.getFeatureSource(null, null).getFeatures();
+        features.accepts(minVisitor, null);
+        MaxVisitor maxVisitor =
+                new MaxVisitor(
+                        Optional.ofNullable(time.getEndAttribute()).orElse(time.getAttribute()));
+        features.accepts(maxVisitor, null);
+        Date min = (Date) minVisitor.getResult().getValue();
+        Date max = (Date) maxVisitor.getResult().getValue();
+        ISO8601Formatter formatter = new ISO8601Formatter();
+        return formatter.format(min) + "/" + formatter.format(max);
+    }
+
     // this is exactly the same as "zone"
-    @GetMapping(path = "collections/{collectionId}/dapa/position", name = "dapaPosition")
+    @GetMapping(
+        path = "collections/{collectionId}/processes/position:retrieve",
+        name = "dapaPositionRetrieve"
+    )
     @ResponseBody
     @DefaultContentType(RFCGeoJSONFeaturesResponse.MIME)
     public FeaturesResponse position(
@@ -408,7 +448,7 @@ public class DGGSDAPAExtension {
 
     // this is exactly the same as "zone"
     @GetMapping(
-        path = "collections/{collectionId}/dapa/position:aggregate-time",
+        path = "collections/{collectionId}/processes/position:aggregate-time",
         name = "dapaPositionTimeAggregate"
     )
     @ResponseBody

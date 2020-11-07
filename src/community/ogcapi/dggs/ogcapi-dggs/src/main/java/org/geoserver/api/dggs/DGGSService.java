@@ -613,6 +613,7 @@ public class DGGSService {
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "point") String pointSpec,
             @RequestParam(name = "resolution") int resolution,
+            @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(
                         name = "f",
@@ -630,7 +631,7 @@ public class DGGSService {
                 runGetFeature(
                         collectionId,
                         datetime,
-                        null,
+                        properties,
                         null,
                         null,
                         format,
